@@ -4,11 +4,12 @@ import { Network } from "../../network/networks";
 import { Button, Stack, Step, StepLabel, Stepper } from "@mui/material";
 import AutoWrapStrategyTransactionButton from "../transactionButtons/AutoWrapStrategyTransactionButton";
 import AutoWrapAllowanceTransactionButton from "../transactionButtons/AutoWrapAllowanceTransactionButton";
-import { toVestingToken } from "../useVestingToken";
 import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
 import { getSuperTokenType } from "../../redux/endpoints/adHocSubgraphEndpoints";
 import { TokenType } from "../../redux/endpoints/tokenTypes";
 import useActiveAutoWrap from "../useActiveAutoWrap";
+import { VestingToken } from "../CreateVestingSection";
+import ConnectionBoundaryButton from "../../transactionBoundary/ConnectionBoundaryButton";
 
 const AutoWrapEnableDialogContentSection: FC<{
   closeEnableAutoWrapDialog: () => void;
@@ -48,6 +49,7 @@ const AutoWrapEnableDialogContentSection: FC<{
       return 2;
     }
   }, [isActiveAutoWrapSchedule, isAutoWrapAllowanceSufficient]);
+
   const autoWrapSteps = [
     { label: "Auto-Wrap" },
     { label: "Allowance" },
@@ -62,18 +64,44 @@ const AutoWrapEnableDialogContentSection: FC<{
           </Step>
         ))}
       </Stepper>
-      <AutoWrapStrategyTransactionButton
-        token={toVestingToken(token, network)}
-        isVisible={activeStep == 0}
-        isDisabled={isAutoWrapLoading}
-        network={network}
-      />
-      <AutoWrapAllowanceTransactionButton
-        token={toVestingToken(token, network)}
-        isVisible={activeStep == 1}
-        isDisabled={isAutoWrapLoading}
-        network={network}
-      />
+      <ConnectionBoundaryButton
+        impersonationTitle={"Stop viewing"}
+        changeNetworkTitle={"Change Network"}
+        ButtonProps={{
+          fullWidth: true,
+          variant: "outlined",
+          size: "xl",
+          sx: {
+            display: activeStep == 0 ? "" : "none",
+          },
+        }}
+      >
+        <AutoWrapStrategyTransactionButton
+          token={token as VestingToken}
+          isVisible={activeStep == 0}
+          isDisabled={isAutoWrapLoading}
+          network={network}
+        />
+      </ConnectionBoundaryButton>
+      <ConnectionBoundaryButton
+        impersonationTitle={"Stop viewing"}
+        changeNetworkTitle={"Change Network"}
+        ButtonProps={{
+          fullWidth: true,
+          variant: "outlined",
+          size: "xl",
+          sx: {
+            display: activeStep == 1 ? "" : "none",
+          },
+        }}
+      >
+        <AutoWrapAllowanceTransactionButton
+          token={token as VestingToken}
+          isVisible={activeStep == 1}
+          isDisabled={isAutoWrapLoading}
+          network={network}
+        />
+      </ConnectionBoundaryButton>
       {activeStep == 2 && (
         <Button
           fullWidth={true}

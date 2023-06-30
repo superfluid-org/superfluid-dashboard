@@ -37,6 +37,7 @@ export const TransactionButton: FC<TransactionButtonProps> = ({
     ...ButtonProps,
   };
 
+  //  TODO: Disable prop is protecting/blocking change network and other chage view behaviour??
   if (disabled) {
     return (
       <Button data-cy={dataCy} {...buttonProps} disabled>

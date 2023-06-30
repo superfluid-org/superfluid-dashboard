@@ -100,8 +100,9 @@ const createFetching = (
               return [
                 getKey(x.params),
                 {
+                  // TODO: Here we are getting because of without checking undefine: Uncaught (in promise) Error: invalid BigNumber value (argument="value", value=undefined, code=INVALID_ARGUMENT, version=bignumber/5.7.0
                   balance: ethers.BigNumber.from(
-                    realtimeBalanceOfNowCall.returnValues[0]
+                    realtimeBalanceOfNowCall?.returnValues[0]
                   ).toString(),
                   balanceTimestamp: BigNumber.from(
                     realtimeBalanceOfNowCall.returnValues[3]

@@ -1,4 +1,4 @@
-import { FC, memo } from "react";
+import { FC, memo, useMemo } from "react";
 import ResponsiveDialog from "../../common/ResponsiveDialog";
 import {
   DialogContent,
@@ -18,13 +18,17 @@ import AddTokenWrapFormProvider, {
   PartialAddTokenWrapForm,
 } from "./AddTokenWrapFormProvider";
 import { Controller, useFormContext } from "react-hook-form";
-import TokenSelect from "./TokenSelect";
 import ConnectionBoundary from "../../transactionBoundary/ConnectionBoundary";
 import { Network } from "../../network/networks";
 import AutoWrapEnableDialogContentSection from "../../vesting/dialogs/AutoWrapEnableDialogContentSection";
 import { PlatformWhitelistedStatuses } from "../ScheduledWrapTables";
 import SelectNetwork from "../../network/SelectNetwork";
 import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
+import { TokenDialogButton } from "../../tokenWrapping/TokenDialogButton";
+import { subgraphApi } from "../../redux/store";
+import { useNetworkCustomTokens } from "../../customTokens/customTokens.slice";
+import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { getSuperTokenType } from "../../redux/endpoints/adHocSubgraphEndpoints";
 
 const AutoWrapAddTokenForm: FC<{
   closeEnableAutoWrapDialog: () => void;
@@ -32,9 +36,56 @@ const AutoWrapAddTokenForm: FC<{
 }> = ({ closeEnableAutoWrapDialog, platformWhitelistedStatuses }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
-  const { control, watch, setValue, trigger, reset } =
+  const { control, watch, setValue } =
     useFormContext<PartialAddTokenWrapForm>();
   const [network, token] = watch(["data.network", "data.token"]);
+
+  const networkCustomTokens = useNetworkCustomTokens(network?.id!);
+
+  const listedSuperTokensQuery = subgraphApi.useTokensQuery({
+    chainId: network?.id!,
+    filter: {
+      isSuperToken: true,
+      isListed: true,
+      underlyingAddress_not: "0x0000000000000000000000000000000000000000",
+    },
+  });
+
+  const customSuperTokensQuery = subgraphApi.useTokensQuery(
+    networkCustomTokens.length > 0
+      ? {
+          chainId: network?.id!,
+          filter: {
+            isSuperToken: true,
+            isListed: false,
+            id_in: networkCustomTokens,
+            underlyingAddress_not: "0x0000000000000000000000000000000000000000",
+          },
+        }
+      : skipToken
+  );
+
+  const superTokens = useMemo(
+    () =>
+      (listedSuperTokensQuery.data?.items || [])
+        .concat(customSuperTokensQuery.data?.items || [])
+        .map((x) => ({
+          ...x,
+          type: getSuperTokenType({ ...x, network: network!, address: x.id }),
+          address: x.id,
+          name: x.name,
+          symbol: x.symbol,
+          decimals: 18,
+          isListed: x.isListed,
+        })),
+    [
+      network,
+      listedSuperTokensQuery.isLoading,
+      listedSuperTokensQuery.data,
+      customSuperTokensQuery.isLoading,
+      customSuperTokensQuery.data,
+    ]
+  );
 
   return (
     <>
@@ -82,6 +133,20 @@ const AutoWrapAddTokenForm: FC<{
                         !!platformWhitelistedStatuses[network.id]
                           ?.isWhitelisted,
                     ]}
+                    ButtonProps={{
+                      disabled: !network,
+                      variant: "outlined",
+                      color: "secondary",
+                      size: "large",
+                      sx: {
+                        minWidth: "200px",
+                        justifyContent: "flex-start",
+                        ".MuiButton-startIcon > *:nth-of-type(1)": {
+                          fontSize: "16px",
+                        },
+                        ".MuiButton-endIcon": { marginLeft: "auto" },
+                      },
+                    }}
                   />
                 )}
               />
@@ -94,19 +159,33 @@ const AutoWrapAddTokenForm: FC<{
                 control={control}
                 name="data.token"
                 render={({ field: { onChange, onBlur } }) => (
-                  <TokenSelect
-                    disabled={!network}
-                    network={network}
+                  <TokenDialogButton
                     token={token}
-                    placeholder={"Select token"}
-                    onChange={(e) => {
-                      onChange(e);
+                    tokenSelection={{
+                      showUpgrade: true,
+                      tokenPairsQuery: {
+                        data: superTokens,
+                        isFetching:
+                          listedSuperTokensQuery.isFetching ||
+                          customSuperTokensQuery.isFetching,
+                      },
                     }}
-                    filterArgs={{
-                      underlyingAddress_not:
-                        "0x0000000000000000000000000000000000000000",
-                    }}
+                    onTokenSelect={onChange}
                     onBlur={onBlur}
+                    ButtonProps={{
+                      disabled: !network,
+                      variant: "outlined",
+                      color: "secondary",
+                      size: "large",
+                      sx: {
+                        minWidth: "200px",
+                        justifyContent: "flex-start",
+                        ".MuiButton-startIcon > *:nth-of-type(1)": {
+                          fontSize: "16px",
+                        },
+                        ".MuiButton-endIcon": { marginLeft: "auto" },
+                      },
+                    }}
                   />
                 )}
               />
@@ -155,9 +234,11 @@ const AutoWrapAddTokenDialogSection: FC<{
       PaperProps={{ sx: { borderRadius: "20px", maxWidth: 479 } }}
       keepMounted={true}
     >
-      <AddTokenWrapFormProvider initialFormValues={{
-         network: expectedNetwork,
-      }}>
+      <AddTokenWrapFormProvider
+        initialFormValues={{
+          network: expectedNetwork,
+        }}
+      >
         <AutoWrapAddTokenForm
           closeEnableAutoWrapDialog={closeEnableAutoWrapDialog}
           platformWhitelistedStatuses={platformWhitelistedStatuses}

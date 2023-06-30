@@ -6,11 +6,15 @@ import { Network } from "../../network/networks";
 import { Token } from "@superfluid-finance/sdk-core";
 import { formRestorationOptions } from "../../transactionRestoration/transactionRestorations";
 import { CommonFormEffects } from "../../common/CommonFormEffects";
+import { SuperTokenMinimal } from "../../redux/endpoints/tokenTypes";
+
+
+export type AutoWrapToken = Token & SuperTokenMinimal;
 
 export type ValidAddTokenWrapForm = {
   data: {
     network: Network;
-    token: Token;
+    token: AutoWrapToken;
   };
 };
 
@@ -40,7 +44,7 @@ const AddTokenWrapFormProvider: FC<
       object({
         data: object({
           network: mixed<Network>().required(),
-          token: mixed<Token>().required(),
+          token: mixed<AutoWrapToken>().required(),
         }),
       }),
     []

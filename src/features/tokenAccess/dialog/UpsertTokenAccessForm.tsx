@@ -30,7 +30,11 @@ import { FlowOperatorPermissionSwitch } from "./FlowOperatorPermissionSwitch";
 import AddressSearch from "../../send/AddressSearch";
 import ConnectionBoundaryButton from "../../transactionBoundary/ConnectionBoundaryButton";
 import SelectNetwork from "../../network/SelectNetwork";
-import TokenSelect from "../../auto-wrap/dialogs/TokenSelect";
+import { TokenDialogButton } from "../../tokenWrapping/TokenDialogButton";
+import { useNetworkCustomTokens } from "../../customTokens/customTokens.slice";
+import { subgraphApi } from "../../redux/store";
+import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { getSuperTokenType } from "../../redux/endpoints/adHocSubgraphEndpoints";
 
 export type TokenAccessProps = {
   flowRateAllowance: {
@@ -79,15 +83,21 @@ export const UpsertTokenAccessForm: FC<{
     [initialFormValues]
   );
 
-  const initialTokenAllowanceEther = removeTrailingZero(formatEther(tokenAllowanceWei));
-  const [tokenAllowanceEther, setTokenAllowanceEther] = useState(initialTokenAllowanceEther);
-  
+  const initialTokenAllowanceEther = removeTrailingZero(
+    formatEther(tokenAllowanceWei)
+  );
+  const [tokenAllowanceEther, setTokenAllowanceEther] = useState(
+    initialTokenAllowanceEther
+  );
+
   const initialFlowRateAllowance = {
     amountEther: removeTrailingZero(formatEther(flowRateAllowance.amountWei)),
     unitOfTime: flowRateAllowance.unitOfTime,
   };
-  const [flowRateAllowanceEther, setFlowRateAllowanceEther] = useState(initialFlowRateAllowance);
-  
+  const [flowRateAllowanceEther, setFlowRateAllowanceEther] = useState(
+    initialFlowRateAllowance
+  );
+
   useEffect(() => {
     setTokenAllowanceEther(initialTokenAllowanceEther);
     setFlowRateAllowanceEther(initialFlowRateAllowance);
@@ -170,6 +180,51 @@ export const UpsertTokenAccessForm: FC<{
     />
   );
 
+  const networkCustomTokens = useNetworkCustomTokens(network?.id!);
+
+  const listedSuperTokensQuery = subgraphApi.useTokensQuery({
+    chainId: network?.id!,
+    filter: {
+      isSuperToken: true,
+      isListed: true,
+    },
+  });
+
+  const customSuperTokensQuery = subgraphApi.useTokensQuery(
+    networkCustomTokens.length > 0
+      ? {
+          chainId: network?.id!,
+          filter: {
+            isSuperToken: true,
+            isListed: false,
+            id_in: networkCustomTokens,
+          },
+        }
+      : skipToken
+  );
+
+  const superTokens = useMemo(
+    () =>
+      (listedSuperTokensQuery.data?.items || [])
+        .concat(customSuperTokensQuery.data?.items || [])
+        .map((x) => ({
+          ...x,
+          type: getSuperTokenType({ ...x, network: network!, address: x.id }),
+          address: x.id,
+          name: x.name,
+          symbol: x.symbol,
+          decimals: 18,
+          isListed: x.isListed,
+        })),
+    [
+      network,
+      listedSuperTokensQuery.isLoading,
+      listedSuperTokensQuery.data,
+      customSuperTokensQuery.isLoading,
+      customSuperTokensQuery.data,
+    ]
+  );
+
   return (
     <ConnectionBoundary expectedNetwork={network}>
       {hasUnsavedChanges ? (
@@ -226,13 +281,33 @@ export const UpsertTokenAccessForm: FC<{
                       control={control}
                       name="data.token"
                       render={({ field: { onChange, onBlur } }) => (
-                        <TokenSelect
-                          disabled={!isNewEntry || !network}
-                          network={network}
+                        <TokenDialogButton
                           token={token}
-                          placeholder={"Select token"}
-                          onChange={onChange}
+                          tokenSelection={{
+                            showUpgrade: true,
+                            tokenPairsQuery: {
+                              data: superTokens,
+                              isFetching:
+                                listedSuperTokensQuery.isFetching ||
+                                customSuperTokensQuery.isFetching,
+                            },
+                          }}
+                          onTokenSelect={(x) => onChange(x)}
                           onBlur={onBlur}
+                          ButtonProps={{
+                            disabled: !isNewEntry || !network,
+                            variant: "outlined",
+                            color: "secondary",
+                            size: "large",
+                            sx: {
+                              minWidth: "200px",
+                              justifyContent: "flex-start",
+                              ".MuiButton-startIcon > *:nth-of-type(1)": {
+                                fontSize: "16px",
+                              },
+                              ".MuiButton-endIcon": { marginLeft: "auto" },
+                            },
+                          }}
                         />
                       )}
                     />

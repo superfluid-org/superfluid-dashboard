@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  ButtonProps,
   Collapse,
   IconButton,
   ListItemAvatar,
@@ -140,6 +141,7 @@ const SelectNetwork: FC<{
   isCollapsable?: boolean;
   isIconButton?: boolean;
   onBlur?: () => void;
+  ButtonProps?: ButtonProps;
 }> = ({
   network: selectedNetwork,
   onChange,
@@ -148,6 +150,7 @@ const SelectNetwork: FC<{
   predicates,
   isCollapsable = true,
   isIconButton = true,
+  ButtonProps = {},
   onBlur = () => {},
 }) => {
   const theme = useTheme();
@@ -190,6 +193,7 @@ const SelectNetwork: FC<{
             ".MuiButton-endIcon": { marginLeft: "auto" },
           }}
           translate="no"
+          {...ButtonProps}
         >
           {selectedNetwork?.name || placeholder}
         </Button>
