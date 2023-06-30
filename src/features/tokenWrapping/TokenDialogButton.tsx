@@ -10,6 +10,7 @@ import {
 import TokenIcon from "../token/TokenIcon";
 import { useTokenIsListed } from "../token/useTokenIsListed";
 import TokenDialog, { TokenSelectionProps } from "./TokenDialog";
+import { Network } from "../network/networks";
 
 export const TokenDialogButton: FC<{
   token: TokenMinimal | null | undefined;
@@ -17,15 +18,16 @@ export const TokenDialogButton: FC<{
   ButtonProps?: ButtonProps;
   onTokenSelect: (token: TokenMinimal) => void;
   onBlur?: () => void;
+  network: Network;
 }> = ({
   token = null,
   tokenSelection,
   ButtonProps = {},
   onTokenSelect,
   onBlur = () => {},
+  network,
 }) => {
   const [open, setOpen] = useState(false);
-  const { network } = useExpectedNetwork();
   const isUnderlyingToken = token && isUnderlying(token);
   const isSuperToken = token && isSuper(token);
   const [isListed, isListedLoading] = useTokenIsListed(
@@ -79,6 +81,7 @@ export const TokenDialogButton: FC<{
           onBlur();
         }}
         tokenSelection={tokenSelection}
+        network={network}
       />
     </>
   );

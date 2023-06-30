@@ -254,6 +254,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
             name="data.tokenPair"
             render={({ field: { onChange, onBlur } }) => (
               <TokenDialogButton
+                network={network}
                 token={underlyingToken}
                 tokenSelection={{
                   tokenPairsQuery: {

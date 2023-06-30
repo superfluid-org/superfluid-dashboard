@@ -28,6 +28,7 @@ import {
 import { rpcApi, subgraphApi } from "../redux/store";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { TokenListItem } from "./TokenListItem";
+import { Network } from "../network/networks";
 
 export type TokenSelectionProps = {
   showUpgrade?: boolean;
@@ -42,6 +43,7 @@ interface TokenDialogProps {
   onClose: () => void;
   onSelect: (token: TokenMinimal) => void;
   tokenSelection: TokenSelectionProps;
+  network: Network;
 }
 
 export default memo(function TokenDialog({
@@ -49,9 +51,9 @@ export default memo(function TokenDialog({
   onClose,
   onSelect,
   tokenSelection: { tokenPairsQuery, showUpgrade = false },
+  network,
 }: TokenDialogProps) {
   const theme = useTheme();
-  const { network } = useExpectedNetwork();
   const { visibleAddress } = useVisibleAddress();
 
   const [openCounter, setOpenCounter] = useState(0);

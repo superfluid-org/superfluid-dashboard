@@ -283,6 +283,7 @@ export const UpsertTokenAccessForm: FC<{
                       render={({ field: { onChange, onBlur } }) => (
                         <TokenDialogButton
                           token={token}
+                          network={network!}
                           tokenSelection={{
                             showUpgrade: true,
                             tokenPairsQuery: {

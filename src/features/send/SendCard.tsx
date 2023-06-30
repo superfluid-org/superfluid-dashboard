@@ -330,6 +330,7 @@ export default memo(function SendCard() {
       render={({ field: { onChange, onBlur } }) => (
         <TokenDialogButton
           token={token}
+          network={network}
           tokenSelection={{
             showUpgrade: true,
             tokenPairsQuery: {

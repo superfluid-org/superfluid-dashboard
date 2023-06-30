@@ -143,6 +143,7 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
             name="data.tokenPair"
             render={({ field: { onChange, onBlur } }) => (
               <TokenDialogButton
+                network={network}
                 token={superToken}
                 tokenSelection={{
                   tokenPairsQuery: {
