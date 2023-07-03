@@ -30,7 +30,7 @@ const AutoWrapStrategyTransactionButton: FC<{
   );
 
   const primaryArgs = {
-    superToken: token.address as `0x${string}`,
+    superToken: token.id as `0x${string}`,
     strategy: network.autoWrap!.strategyContractAddress,
     liquidityToken: token.underlyingAddress as `0x${string}`,
     expiry: BigInt(BigNumber.from("3000000000").toString()),
