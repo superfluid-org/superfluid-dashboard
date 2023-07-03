@@ -104,15 +104,18 @@ export const VestingSchedulerAllowanceRowSkeleton = () => {
               sx={{ display: "inline-block" }}
             />
           </TableCell>
+          <TableCell align="center">
+            <Skeleton
+              variant="circular"
+              width={24}
+              height={24}
+              sx={{ display: "inline-block" }}
+            />
+          </TableCell>
         </>
       )}
       <TableCell align="center">
-        <Skeleton
-          variant="circular"
-          width={24}
-          height={24}
-          sx={{ display: "inline-block" }}
-        />
+        {!isBelowMd && <OpenIcon open={false} />}
       </TableCell>
     </TableRow>
   );
