@@ -4,6 +4,7 @@ import {
   TableCell,
   TableRow,
   Typography,
+  colors,
   useMediaQuery,
 } from "@mui/material";
 import { FC, useEffect, useMemo, useState } from "react";
@@ -31,6 +32,7 @@ import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
 import { Add } from "@mui/icons-material";
 import ResponsiveDialog from "../common/ResponsiveDialog";
 import { UpsertTokenAccessForm } from "./dialog/UpsertTokenAccessForm";
+import TooltipWithIcon from "../common/TooltipWithIcon";
 
 interface Props {
   address: Address;
@@ -180,7 +182,18 @@ const TokenAccessRow: FC<Props> = ({
                 justifyContent="space-between"
                 sx={{ width: "auto" }}
               >
-                <Typography variant="subtitle1">Address</Typography>
+                <Stack direction="row" gap={0.5} alignItems="center">
+                  <Typography variant="subtitle1"> Operator</Typography>
+                  <TooltipWithIcon
+                    title="Address that is permitted to manage your streams for a specific Super Token and network."
+                    IconProps={{
+                      sx: {
+                        fontSize: "16px",
+                        color: colors.grey[700],
+                      },
+                    }}
+                  />
+                </Stack>
                 <Stack direction="row" alignItems="center" gap={1.5}>
                   <AddressAvatar
                     address={address}
@@ -205,7 +218,18 @@ const TokenAccessRow: FC<Props> = ({
                 justifyContent="space-between"
                 sx={{ width: "auto" }}
               >
-                <Typography variant="subtitle1">Token Allowance</Typography>
+                <Stack direction="row" gap={0.5} alignItems="center">
+                  <Typography variant="subtitle1">Token Allowance</Typography>
+                  <TooltipWithIcon
+                    title="Defined transfer allowance cap for Super Tokens."
+                    IconProps={{
+                      sx: {
+                        fontSize: "16px",
+                        color: colors.grey[700],
+                      },
+                    }}
+                  />
+                </Stack>
                 {tokenInfo && (
                   <Stack direction="row" alignItems="center" gap={0.5}>
                     <Typography variant="h6">
@@ -230,7 +254,21 @@ const TokenAccessRow: FC<Props> = ({
                 justifyContent="space-between"
                 sx={{ width: "auto" }}
               >
-                <Typography variant="subtitle1">Stream Permissions</Typography>
+                <Stack direction="row" gap={0.5} alignItems="center">
+                  <Typography variant="subtitle1">
+                    Stream Permissions
+                  </Typography>
+                  <TooltipWithIcon
+                    title="Actions that Operator can execute on your behalf."
+                    IconProps={{
+                      sx: {
+                        fontSize: "16px",
+                        color: colors.grey[700],
+                      },
+                    }}
+                  />
+                </Stack>
+
                 <Typography variant="h6">
                   {flowOperatorPermissionsToString(
                     initialAccess.flowOperatorPermissions
@@ -242,7 +280,19 @@ const TokenAccessRow: FC<Props> = ({
                 justifyContent="space-between"
                 sx={{ width: "auto" }}
               >
-                <Typography variant="subtitle1">Stream Allowance</Typography>
+                <Stack direction="row" gap={0.5} alignItems="center">
+                  <Typography variant="subtitle1">Stream Allowance</Typography>
+                  <TooltipWithIcon
+                    title="Defined flow rate allowance cap for Super Tokens."
+                    IconProps={{
+                      sx: {
+                        fontSize: "16px",
+                        color: colors.grey[700],
+                      },
+                    }}
+                  />
+                </Stack>
+
                 {tokenInfo && (
                   <Stack direction="row" alignItems="center" gap={0.5}>
                     <Typography variant="h6">
