@@ -31,7 +31,7 @@ export const namedInjectedWallet = ({
               injectedConnector.name.toLowerCase())
       ),
     createConnector: () => ({
-      connector: injectedConnector,
+      connector: injectedConnector
     }),
   };
 };

@@ -1,5 +1,5 @@
-import { SafeConnector } from "@wagmi/connectors/safe";
 import { Chain, Wallet } from "@rainbow-me/rainbowkit";
+import { SafeConnector } from 'wagmi/connectors/safe'
 
 export interface GnosisSafeOptions {
   chains: Chain[];

@@ -8,7 +8,7 @@ import {
   braveWallet,
   walletConnectWallet,
   coinbaseWallet,
-  rainbowWallet,
+  rainbowWallet
 } from "@rainbow-me/rainbowkit/wallets";
 import bitkeep from "./bitkeep/bitkeep";
 import gnosisSafe from "./gnosisSafeWalletConnector/gnosisSafe";
