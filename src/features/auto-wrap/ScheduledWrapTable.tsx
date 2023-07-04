@@ -63,6 +63,9 @@ const ScheduledWrapTable: FC<TokenSnapshotTableProps> = ({
         selectFromResult: (result) => ({
           ...result,
           wrapSchedules:
+            // At the contract level, when someone creates duplicate schedules,
+            // it won't delete existing schedules and will simply override the existing ones.
+            // As a result, when we query events, we have two active schedules, and the subgraph shows both schedules as active {deletedAt: null}.
             uniqBy(result.data?.wrapSchedules, "wrapScheduleId") ?? [],
         }),
       }
