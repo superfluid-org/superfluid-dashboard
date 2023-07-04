@@ -17,6 +17,7 @@ import {
 import { NATIVE_ASSET_ADDRESS } from "./tokenTypes";
 import { WalletClient } from "wagmi";
 import { ContractFunctionConfig, createPublicClient } from "viem";
+import { uniq } from "lodash";
 
 declare module "@superfluid-finance/sdk-redux" {
   interface TransactionTitleOverrides {
@@ -130,6 +131,37 @@ export const adHocRpcEndpoints = {
       queryFn: async (arg) => {
         return {
           data: await balanceFetcher.getUnderlyingBalance(arg),
+        };
+      },
+      providesTags: (_result, _error, arg) => [
+        {
+          type: "GENERAL",
+          id: arg.chainId, // TODO(KK): Could be made more specific.
+        },
+      ],
+    }),
+    underlyingBalances: builder.query<
+      { balances: Record<string, string> },
+      { chainId: number; accountAddress: string; tokenAddresses: string[] }
+    >({
+      queryFn: async (arg) => {
+        const uniqueAddresses = uniq(arg.tokenAddresses);
+
+        const balancePromises = uniqueAddresses.map((tokenAddress) =>
+          balanceFetcher
+            .getUnderlyingBalance({
+              accountAddress: arg.accountAddress,
+              chainId: arg.chainId,
+              tokenAddress,
+            })
+            .then((x) => ({ [tokenAddress]: x.balance }))
+        );
+        const balances = await Promise.all(balancePromises);
+
+        return {
+          data: {
+            balances: Object.assign({}, ...balances),
+          },
         };
       },
       providesTags: (_result, _error, arg) => [

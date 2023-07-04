@@ -15,7 +15,7 @@ import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
 
-export const { chains: wagmiChains, publicClient: wagmiPublicClient } =
+export const { chains: wagmiChains, publicClient: createPublicClient } =
   configureChains(
     allNetworks,
     [
@@ -28,10 +28,19 @@ export const { chains: wagmiChains, publicClient: wagmiPublicClient } =
     ],
     {
       batch: {
-        multicall: true,
+        // NOTE: It is very important to enable the multicall support, otherwise token balance queries will run into rate limits.
+        multicall: {
+          wait: 100,
+        },
       },
     }
   );
+
+// Note: We need to create the public clients and re-use them to have the automatic multicall batching work.
+export const resolvedPublicClients = wagmiChains.reduce((acc, current) => {
+  acc[current.id] = createPublicClient({ chainId: current.id });
+  return acc;
+}, {} as Record<number, ReturnType<typeof createPublicClient>>);
 
 const { connectors } = getAppWallets({
   appName: "Superfluid Dashboard",
@@ -41,7 +50,9 @@ const { connectors } = getAppWallets({
 export const wagmiConfig = createWagmiConfig({
   autoConnect: false, // Disable because of special Gnosis Safe handling in useAutoConnect.
   connectors,
-  publicClient: wagmiPublicClient,
+  publicClient: (config) =>
+    (config.chainId ? resolvedPublicClients[config.chainId] : null) ??
+    createPublicClient(config),
 });
 
 const WagmiManager: FC<PropsWithChildren> = ({ children }) => {

@@ -80,7 +80,7 @@ export default memo(function TokenDialog({
   );
 
   const { data: _discard, ...underlyingTokenBalancesQuery } =
-    rpcApi.useBalanceOfMulticallQuery(
+    rpcApi.useUnderlyingBalancesQuery(
       underlyingTokens.length && visibleAddress
         ? {
             chainId: network.id,
