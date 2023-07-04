@@ -1629,7 +1629,7 @@
     "@ethersproject/logger" "^5.7.0"
     "@ethersproject/properties" "^5.7.0"
 
-"@ethersproject/address@5.7.0", "@ethersproject/address@^5.7.0":
+"@ethersproject/address@5.7.0", "@ethersproject/address@^5.0.10", "@ethersproject/address@^5.7.0":
   version "5.7.0"
   resolved "https://registry.yarnpkg.com/@ethersproject/address/-/address-5.7.0.tgz#19b56c4d74a3b0a46bfdbb6cfcc0a153fc697f37"
   integrity sha512-9wYhYt7aghVGo758POM5nqcOMaE168Q6aRLJZwUmiqSrAungkG74gSSeKEIR7ukixesdRZGPgVqme6vmxs1fkA==
@@ -1655,7 +1655,7 @@
     "@ethersproject/bytes" "^5.7.0"
     "@ethersproject/properties" "^5.7.0"
 
-"@ethersproject/bignumber@5.7.0", "@ethersproject/bignumber@^5.7.0":
+"@ethersproject/bignumber@5.7.0", "@ethersproject/bignumber@^5.0.14", "@ethersproject/bignumber@^5.7.0":
   version "5.7.0"
   resolved "https://registry.yarnpkg.com/@ethersproject/bignumber/-/bignumber-5.7.0.tgz#e2f03837f268ba655ffba03a57853e18a18dc9c2"
   integrity sha512-n1CAdIHRWjSucQO3MC1zPSVgV/6dy/fjL9pMrPP9peL+QxEg9wOsVqwD4+818B6LUEtaXzVHQiuivzRoxPxUGw==
@@ -1693,15 +1693,6 @@
     "@ethersproject/logger" "^5.7.0"
     "@ethersproject/properties" "^5.7.0"
     "@ethersproject/transactions" "^5.7.0"
-
-"@ethersproject/experimental@^5.7.0":
-  version "5.7.0"
-  resolved "https://registry.yarnpkg.com/@ethersproject/experimental/-/experimental-5.7.0.tgz#9759639434d37beaedfd8acab6f3af7db246b92d"
-  integrity sha512-DWvhuw7Dg8JPyhMbh/CNYOwsTLjXRx/HGkacIL5rBocG8jJC0kmixwoK/J3YblO4vtcyBLMa+sV74RJZK2iyHg==
-  dependencies:
-    "@ethersproject/web" "^5.7.0"
-    ethers "^5.7.0"
-    scrypt-js "3.0.1"
 
 "@ethersproject/hash@5.7.0", "@ethersproject/hash@^5.7.0":
   version "5.7.0"
@@ -2176,6 +2167,15 @@
     fast-check "3.1.1"
     web3-utils "1.10.0"
 
+"@truffle/abi-utils@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@truffle/abi-utils/-/abi-utils-1.0.1.tgz#bf72d595f2eb03905429210b394f416fb774a61e"
+  integrity sha512-ZQUY3XUxEPdqxNaoXsOqF0spTtb6f5RNlnN4MUrVsJ64sOh0FJsY7rxZiUI3khfePmNh4i2qcJrQlKT36YcWUA==
+  dependencies:
+    change-case "3.0.2"
+    fast-check "3.1.1"
+    web3-utils "1.10.0"
+
 "@truffle/blockchain-utils@^0.1.4", "@truffle/blockchain-utils@^0.1.7":
   version "0.1.7"
   resolved "https://registry.yarnpkg.com/@truffle/blockchain-utils/-/blockchain-utils-0.1.7.tgz#cf7923a3ae5b591ae4c2a5ee45994a310ccaf1ee"
@@ -2197,12 +2197,36 @@
     utf8 "^3.0.0"
     web3-utils "1.10.0"
 
+"@truffle/codec@^0.17.0":
+  version "0.17.0"
+  resolved "https://registry.yarnpkg.com/@truffle/codec/-/codec-0.17.0.tgz#af30f4970b743a7b3a1bb199d6e56578c86bb95f"
+  integrity sha512-0Z7DQNCnvW++JuvNj35v/CuJoaFSAp7/+lXWwe+Zoe++E27V+hzRI88ZYxRJa0/q1HE81epd1r0ipqc7WBotig==
+  dependencies:
+    "@truffle/abi-utils" "^1.0.1"
+    "@truffle/compile-common" "^0.9.6"
+    big.js "^6.0.3"
+    bn.js "^5.1.3"
+    cbor "^5.2.0"
+    debug "^4.3.1"
+    lodash "^4.17.21"
+    semver "7.5.2"
+    utf8 "^3.0.0"
+    web3-utils "1.10.0"
+
 "@truffle/compile-common@^0.9.4":
   version "0.9.4"
   resolved "https://registry.yarnpkg.com/@truffle/compile-common/-/compile-common-0.9.4.tgz#064208cda70491692b538f717809bb904a122c20"
   integrity sha512-mnqJB/hLiPHNf+WKwt/2MH6lv34xSG/SFCib7+ckAklutUqVLeFo8EwQxinuHNkU7LY0C+YgZXhK1WTCO5YRJQ==
   dependencies:
     "@truffle/error" "^0.2.0"
+    colors "1.4.0"
+
+"@truffle/compile-common@^0.9.6":
+  version "0.9.6"
+  resolved "https://registry.yarnpkg.com/@truffle/compile-common/-/compile-common-0.9.6.tgz#037d74bc00ded33b9212d886531c2cee998662da"
+  integrity sha512-TCcmr1E0GqMZJ2tOaCRNEllxTBJ/g7TuD6jDJpw5Gt9Bw0YO3Cmp6yPQRynRSO4xMJbHUgiEsSfRgIhswut5UA==
+  dependencies:
+    "@truffle/error" "^0.2.1"
     colors "1.4.0"
 
 "@truffle/contract-schema@^3.4.13", "@truffle/contract-schema@^3.4.9":
@@ -2265,6 +2289,23 @@
     debug "^4.3.1"
     highlightjs-solidity "^2.0.6"
 
+"@truffle/encoder@^1.0.22":
+  version "1.0.22"
+  resolved "https://registry.yarnpkg.com/@truffle/encoder/-/encoder-1.0.22.tgz#af8324371737ae5d0fc1c2750fe3425476391c88"
+  integrity sha512-ghrqKtQlZcx2DX42SlkCTGAnvz8T878FyGfyb8ZiUtOv9HcpqQmPi4q8qJtru7jWIcZZ5nVWw0ICLZCHkni++A==
+  dependencies:
+    "@ensdomains/ensjs" "^2.1.0"
+    "@ethersproject/address" "^5.0.10"
+    "@ethersproject/bignumber" "^5.0.14"
+    "@truffle/codec" "^0.17.0"
+    "@truffle/compile-common" "^0.9.6"
+    big.js "^6.0.3"
+    bignumber.js "^9.0.1"
+    bn.js "^5.1.3"
+    debug "^4.3.1"
+    lodash "^4.17.21"
+    web3-utils "1.10.0"
+
 "@truffle/error@^0.1.1":
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/@truffle/error/-/error-0.1.1.tgz#e52026ac8ca7180d83443dca73c03e07ace2a301"
@@ -2274,6 +2315,11 @@
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/@truffle/error/-/error-0.2.0.tgz#65de6f03f5c041f883cc87677eecf8231428f1ab"
   integrity sha512-Fe0/z4WWb7IP2gBnv3l6zqP87Y0kSMs7oiSLakKJq17q3GUunrHSdioKuNspdggxkXIBhEQLhi8C+LJdwmHKWQ==
+
+"@truffle/error@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@truffle/error/-/error-0.2.1.tgz#71bb8e777a832e0cfe09a8638a70a5177aad8628"
+  integrity sha512-5Qy+z9dg9hP37WNdLnXH4b9MzemWrjTufRq7/DTKqimjyxCP/1zlL8gQEMdiSx1BBtAZz0xypkID/jb7AF/Osg==
 
 "@truffle/hdwallet-provider@^2.1.7":
   version "2.1.12"
@@ -5178,7 +5224,7 @@ ethers@^4.0.32:
     uuid "2.0.1"
     xmlhttprequest "1.8.0"
 
-ethers@^5.0.13, ethers@^5.7.0, ethers@^5.7.2:
+ethers@^5.0.13, ethers@^5.7.2:
   version "5.7.2"
   resolved "https://registry.yarnpkg.com/ethers/-/ethers-5.7.2.tgz#3a7deeabbb8c030d4126b24f84e525466145872e"
   integrity sha512-wswUsmWo1aOK8rR7DIKiWSw9DbLWe6x98Jrn8wcTflTVvaXhAMaB5zGAXy0GYQEQp9iO1iSHWVyARQm11zUtyg==
@@ -7473,7 +7519,7 @@ optionator@^0.8.1:
     type-check "~0.3.2"
     word-wrap "~1.2.3"
 
-os-browserify@~0.3.0:
+os-browserify@^0.3.0, os-browserify@~0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/os-browserify/-/os-browserify-0.3.0.tgz#854373c7f5c2315914fc9bfc6bd8238fdda1ec27"
   integrity sha512-gjcpUc3clBf9+210TRaDWbf+rZZZEshZ+DlXMRCeAjp0xhTrnQsKHypIy1J3d5hKdUzj69t708EHtU8P6bUn0A==
@@ -7652,7 +7698,7 @@ pascal-case@^2.0.0:
     camel-case "^3.0.0"
     upper-case-first "^1.1.0"
 
-path-browserify@^1.0.0:
+path-browserify@^1.0.0, path-browserify@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/path-browserify/-/path-browserify-1.0.1.tgz#d98454a9c3753d5790860f16f68867b9e46be1fd"
   integrity sha512-b7uo2UCUOYZcnF/3ID0lulOJi/bafxa1xPe7ZPsammBSpjSWQkjNxlt635YGS2MiR9GjvuXCtz2emr3jbsz98g==
@@ -8451,6 +8497,13 @@ semver@7.3.7:
   version "7.3.7"
   resolved "https://registry.yarnpkg.com/semver/-/semver-7.3.7.tgz#12c5b649afdbf9049707796e22a4028814ce523f"
   integrity sha512-QlYTucUYOews+WeEujDoEGziz4K6c47V/Bd+LjSSYcA94p+DmINdf7ncaUinThfvZyu13lN9OY1XDxt8C0Tw0g==
+  dependencies:
+    lru-cache "^6.0.0"
+
+semver@7.5.2:
+  version "7.5.2"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-7.5.2.tgz#5b851e66d1be07c1cdaf37dfc856f543325a2beb"
+  integrity sha512-SoftuTROv/cRjCze/scjGyiDtcUyxw1rgYQSZY7XTmtR5hX+dm76iDbTH8TkLPHCQmlbQVSSbNZCPM2hb0knnQ==
   dependencies:
     lru-cache "^6.0.0"
 
