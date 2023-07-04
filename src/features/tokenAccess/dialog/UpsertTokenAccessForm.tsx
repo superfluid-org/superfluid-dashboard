@@ -7,6 +7,7 @@ import {
   Stack,
   TextField,
   Typography,
+  colors,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
@@ -35,6 +36,7 @@ import { useNetworkCustomTokens } from "../../customTokens/customTokens.slice";
 import { subgraphApi } from "../../redux/store";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { getSuperTokenType } from "../../redux/endpoints/adHocSubgraphEndpoints";
+import TooltipWithIcon from "../../common/TooltipWithIcon";
 
 export type TokenAccessProps = {
   flowRateAllowance: {
@@ -316,7 +318,20 @@ export const UpsertTokenAccessForm: FC<{
                 </Grid>
               </Grid>
               <FormGroup>
-                <FormLabel>Operator</FormLabel>
+                <FormLabel>
+                  <Stack direction="row" gap={0.5} alignItems="center">
+                    Operator
+                    <TooltipWithIcon
+                      title="Address that is permitted to manage your streams for a specific Super Token and network."
+                      IconProps={{
+                        sx: {
+                          fontSize: "16px",
+                          color: colors.grey[700],
+                        },
+                      }}
+                    />
+                  </Stack>
+                </FormLabel>
                 <Controller
                   control={control}
                   name="data.operatorAddress"
@@ -339,7 +354,20 @@ export const UpsertTokenAccessForm: FC<{
                 />
               </FormGroup>
               <FormGroup>
-                <FormLabel>Token Allowance</FormLabel>
+                <FormLabel>
+                  <Stack direction="row" gap={0.5} alignItems="center">
+                    Token Allowance
+                    <TooltipWithIcon
+                      title="Defined transfer allowance cap for Super Tokens."
+                      IconProps={{
+                        sx: {
+                          fontSize: "16px",
+                          color: colors.grey[700],
+                        },
+                      }}
+                    />
+                  </Stack>
+                </FormLabel>
                 <Controller
                   control={control}
                   name="data.tokenAllowanceWei"
@@ -360,7 +388,20 @@ export const UpsertTokenAccessForm: FC<{
                 />
               </FormGroup>
               <FormGroup>
-                <FormLabel>Stream Allowance</FormLabel>
+                <FormLabel>
+                  <Stack direction="row" gap={0.5} alignItems="center">
+                    Stream Allowance
+                    <TooltipWithIcon
+                      title="Defined flow rate allowance cap for Super Tokens."
+                      IconProps={{
+                        sx: {
+                          fontSize: "16px",
+                          color: colors.grey[700],
+                        },
+                      }}
+                    />
+                  </Stack>
+                </FormLabel>
                 <Controller
                   control={control}
                   name="data.flowRateAllowance"
@@ -382,7 +423,20 @@ export const UpsertTokenAccessForm: FC<{
                 />
               </FormGroup>
               <FormGroup>
-                <FormLabel>Stream Permissions</FormLabel>
+                <FormLabel>
+                  <Stack direction="row" gap={0.5} alignItems="center">
+                    Stream Permissions
+                    <TooltipWithIcon
+                      title="Actions that Operator can execute on your behalf."
+                      IconProps={{
+                        sx: {
+                          fontSize: "16px",
+                          color: colors.grey[700],
+                        },
+                      }}
+                    />
+                  </Stack>
+                </FormLabel>
                 <Controller
                   control={control}
                   name="data.flowOperatorPermissions"

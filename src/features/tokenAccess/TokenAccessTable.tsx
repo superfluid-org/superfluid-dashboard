@@ -11,6 +11,8 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  Stack,
+  colors,
 } from "@mui/material";
 import TokenAccessRow from "./TokenAccessRow";
 import { FetchingStatus } from "./TokenAccessTables";
@@ -18,6 +20,7 @@ import { Network } from "../network/networks";
 import { subgraphApi } from "../redux/store";
 import NetworkHeadingRow from "../../components/Table/NetworkHeadingRow";
 import TokenAccessLoadingTable from "./TokenAccessLoadingTable";
+import TooltipWithIcon from "../common/TooltipWithIcon";
 
 interface Props {
   address: Address;
@@ -117,15 +120,69 @@ const TokenAccessTable: FC<Props> = ({
           <NetworkHeadingRow colSpan={isBelowMd ? 0 : 6} network={network} />
           {!isBelowMd && (
             <TableRow>
-              <TableCell width="136px" sx={{ pl: 5 }}>
-                Asset
-              </TableCell>
-              <TableCell width="183px">Operator</TableCell>
-              <TableCell width="186px">Token Allowance</TableCell>
-              <TableCell width="183px">Stream Permissions</TableCell>
-              <TableCell width="232px">Stream Allowance</TableCell>
-              <TableCell width="139px" align="center">Actions</TableCell>
-            </TableRow>
+            <TableCell width="136px" sx={{ pl: 5 }}>
+              Asset
+            </TableCell>
+            <TableCell width="183px">
+              <Stack direction="row" gap={0.5} alignItems="center">
+                Operator
+                <TooltipWithIcon
+                  title="Address that is permitted to manage your streams for a specific Super Token and network."
+                  IconProps={{
+                    sx: {
+                      fontSize: "16px",
+                      color: colors.grey[700],
+                    },
+                  }}
+                />
+              </Stack>
+            </TableCell>
+            <TableCell width="186px">
+              <Stack width="186px" direction="row" gap={0.5} alignItems="center">
+                Token Allowance
+                <TooltipWithIcon
+                  title="Defined transfer allowance cap for Super Tokens."
+                  IconProps={{
+                    sx: {
+                      fontSize: "16px",
+                      color: colors.grey[700],
+                    },
+                  }}
+                />
+              </Stack>
+            </TableCell>
+            <TableCell width="190px">
+              <Stack  width="190px" direction="row" gap={0.5} alignItems="center">
+                Stream Permissions
+                <TooltipWithIcon
+                  title="Actions that Operator can execute on your behalf."
+                  IconProps={{
+                    sx: {
+                      fontSize: "16px",
+                      color: colors.grey[700],
+                    },
+                  }}
+                />
+              </Stack>
+            </TableCell>
+            <TableCell width="232px">
+              <Stack width="232px" direction="row" gap={0.5} alignItems="center">
+                Stream Allowance
+                <TooltipWithIcon
+                  title="Defined flow rate allowance cap for Super Tokens."
+                  IconProps={{
+                    sx: {
+                      fontSize: "16px",
+                      color: colors.grey[700],
+                    },
+                  }}
+                />
+              </Stack>
+            </TableCell>
+            <TableCell width="139px" align="center">
+              Actions
+            </TableCell>
+          </TableRow>
           )}
         </TableHead>
         <TableBody>

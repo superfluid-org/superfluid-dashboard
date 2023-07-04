@@ -82,7 +82,7 @@ const TokenAccessTables: FC<{}> = () => {
       >
         <Stack direction="column">
           <Typography variant={isBelowMd ? "h3" : "h4"} component="h1">
-            Permissions & Allowances
+            Approvals
           </Typography>
           <Typography variant="body1" color="secondary">
             Manage your Super Token permissions and allowances in one place.
