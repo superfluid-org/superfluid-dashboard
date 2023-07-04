@@ -1,6 +1,6 @@
 import { Framework } from "@superfluid-finance/sdk-core";
 import promiseRetry from "promise-retry";
-import { wagmiPublicClient } from "../wallet/WagmiManager";
+import { resolvedPublicClients } from "../wallet/WagmiManager";
 import { allNetworks } from "./networks";
 import superfluidMetadata from "@superfluid-finance/metadata";
 import { publicClientToProvider } from "../../utils/wagmiEthersAdapters";
@@ -22,9 +22,7 @@ const readOnlyFrameworks = allNetworks.map((network) => {
         (retry) =>
           Framework.create({
             chainId: network.id,
-            provider: publicClientToProvider(
-              wagmiPublicClient({ chainId: network.id })
-            ),
+            provider: publicClientToProvider(resolvedPublicClients[network.id]),
             customSubgraphQueriesEndpoint: subgraphEndpoint,
           }).catch(retry),
         {

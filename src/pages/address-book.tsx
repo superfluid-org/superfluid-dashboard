@@ -44,10 +44,10 @@ import StreamActiveFilter, {
   StreamActiveType,
 } from "../features/streamsTable/StreamActiveFilter";
 import { getAddress } from "../utils/memoizedEthersUtils";
-import { wagmiPublicClient } from "../features/wallet/WagmiManager";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 import { LoadingButton } from "@mui/lab";
 import { publicClientToProvider } from "../utils/wagmiEthersAdapters";
+import { resolvedPublicClients } from "../features/wallet/WagmiManager";
 
 const AddressBook: NextPage = () => {
   const dispatch = useAppDispatch();
@@ -188,7 +188,7 @@ const AddressBook: NextPage = () => {
             };
 
             const provider = publicClientToProvider(
-              wagmiPublicClient({ chainId: chainIds[0] })
+              resolvedPublicClients[chainIds[0]]
             );
 
             if ((await provider.getCode(parsedItem.address)) !== "0x") {

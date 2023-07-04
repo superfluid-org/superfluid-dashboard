@@ -147,17 +147,16 @@ export const adHocRpcEndpoints = {
       queryFn: async (arg) => {
         const uniqueAddresses = uniq(arg.tokenAddresses);
 
-        const balances = await Promise.all(
-          uniqueAddresses.map(async (tokenAddress) => ({
-            [tokenAddress]: await balanceFetcher
-              .getUnderlyingBalance({
-                accountAddress: arg.accountAddress,
-                chainId: arg.chainId,
-                tokenAddress,
-              })
-              .then((x) => x.balance),
-          }))
+        const balancePromises = uniqueAddresses.map((tokenAddress) =>
+          balanceFetcher
+            .getUnderlyingBalance({
+              accountAddress: arg.accountAddress,
+              chainId: arg.chainId,
+              tokenAddress,
+            })
+            .then((x) => ({ [tokenAddress]: x.balance }))
         );
+        const balances = await Promise.all(balancePromises);
 
         return {
           data: {
