@@ -52,7 +52,6 @@ import { pendingUpdateSlice } from "../pendingUpdates/pendingUpdate.slice";
 import appSettingsReducer from "../settings/appSettings.slice";
 import { assetApiSlice } from "../token/tokenManifestSlice";
 import tokenPriceApi from "../tokenPrice/tokenPriceApi.slice";
-import { adHocMulticallEndpoints } from "./endpoints/adHocMulticallEndpoints";
 import { adHocRpcEndpoints } from "./endpoints/adHocRpcEndpoints";
 import { adHocSubgraphEndpoints } from "./endpoints/adHocSubgraphEndpoints";
 import { flowSchedulerEndpoints } from "./endpoints/flowSchedulerEndpoints";
@@ -74,7 +73,6 @@ export const rpcApi = initializeRpcApiSlice((options) =>
   })
 )
   .injectEndpoints(allRpcEndpoints)
-  .injectEndpoints(adHocMulticallEndpoints)
   .injectEndpoints(adHocRpcEndpoints)
   .injectEndpoints(flowSchedulerEndpoints)
   .injectEndpoints(vestingSchedulerMutationEndpoints)

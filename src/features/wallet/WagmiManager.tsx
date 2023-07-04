@@ -28,7 +28,10 @@ export const { chains: wagmiChains, publicClient: wagmiPublicClient } =
     ],
     {
       batch: {
-        multicall: true,
+        // NOTE: It is very important to enable the multicall support, otherwise token balance queries will run into rate limits.
+        multicall: {
+          wait: 50,
+        },
       },
     }
   );
