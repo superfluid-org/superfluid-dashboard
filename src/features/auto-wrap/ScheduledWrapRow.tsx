@@ -41,7 +41,7 @@ const secondsToWeeks = (seconds: number): number => {
   });
 };
 
-const calculateRequiredTokenAmount = (
+const calculateTokenAmount = (
   limit: number,
   netFlowRate: BigNumberish
 ): BigNumber => {
@@ -68,7 +68,7 @@ const TokenLimitComponent: FC<{
   return (
     <>
       {secondsToWeeks(limit)} Weeks (
-        <Amount decimalPlaces={2} wei={calculateRequiredTokenAmount(limit, netFlowRate)} /> {tokenSymbol})
+        <Amount decimalPlaces={2} wei={calculateTokenAmount(limit, netFlowRate)} /> {tokenSymbol})
     </>
   );
 };
