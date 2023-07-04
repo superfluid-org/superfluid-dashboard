@@ -24,7 +24,7 @@ import AutoWrapEnableDialogSection from "../vesting/dialogs/AutoWrapEnableDialog
 import { differenceInWeeks } from "date-fns";
 import { isCloseToUnlimitedTokenAllowance } from "../../utils/isCloseToUnlimitedAllowance";
 import Amount from "../token/Amount";
-import { BigNumber } from "ethers";
+import { BigNumber, BigNumberish } from "ethers";
 import { formatEther } from "ethers/lib/utils.js";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import TooltipWithIcon from "../common/TooltipWithIcon";
@@ -43,14 +43,13 @@ const secondsToWeeks = (seconds: number): number => {
 
 const calculateRequiredTokenAmount = (
   limit: number,
-  netFlowRate: string
-): string => {
-  const calculateRequiredTokenAmount =
-    Number(formatEther(netFlowRate || 0)) * limit;
-  if (calculateRequiredTokenAmount === 0) {
-    return "0";
+  netFlowRate: BigNumberish
+): BigNumber => {
+  const calculateRequiredTokenAmount = BigNumber.from(netFlowRate).mul(limit);
+  if (calculateRequiredTokenAmount.gte("0")) {
+    return BigNumber.from("0");
   }
-  return Math.abs(calculateRequiredTokenAmount).toFixed(2);
+  return calculateRequiredTokenAmount.abs();
 };
 
 const TokenLimitComponent: FC<{
@@ -69,7 +68,7 @@ const TokenLimitComponent: FC<{
   return (
     <>
       {secondsToWeeks(limit)} Weeks (
-      {calculateRequiredTokenAmount(limit, netFlowRate)} {tokenSymbol})
+        <Amount decimalPlaces={2} wei={calculateRequiredTokenAmount(limit, netFlowRate)} /> {tokenSymbol})
     </>
   );
 };
