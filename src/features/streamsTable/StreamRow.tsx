@@ -1,10 +1,11 @@
-import AllInclusiveIcon from "@mui/icons-material/AllInclusive";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import TimerOutlined from "@mui/icons-material/TimerOutlined";
+import LaunchRoundedIcon from "@mui/icons-material/LaunchRounded";
 import {
   Box,
   CircularProgress,
+  IconButton,
+  Link,
   ListItemText,
   Skeleton,
   Stack,
@@ -103,9 +104,14 @@ interface StreamRowProps {
   ) &
     StreamScheduling;
   network: Network;
+  isHumaFinanceOperatedStream: Boolean;
 }
 
-const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
+const StreamRow: FC<StreamRowProps> = ({
+  stream,
+  network,
+  isHumaFinanceOperatedStream,
+}) => {
   const {
     id,
     sender,
@@ -292,6 +298,19 @@ const StreamRow: FC<StreamRowProps> = ({ stream, network }) => {
                   network={network}
                   IconButtonProps={{ size: "small" }}
                 />
+                {isHumaFinanceOperatedStream && (
+                  <IconButton
+                    component={Link}
+                    href={
+                      "https://app.huma.finance/#/borrow/stream?poolName=Superfluid"
+                    }
+                    target="_blank"
+                    size="small"
+                    data-cy="sender-and-receiver-explorer-links"
+                  >
+                    <LaunchRoundedIcon />
+                  </IconButton>
+                )}
               </>
             )}
           </Stack>

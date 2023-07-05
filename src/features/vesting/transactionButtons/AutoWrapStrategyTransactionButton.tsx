@@ -11,7 +11,6 @@ import { VestingToken } from "../CreateVestingSection";
 import useGetTransactionOverrides from "../../../hooks/useGetTransactionOverrides";
 import { convertOverridesForWagmi } from "../../../utils/convertOverridesForWagmi";
 import { Network } from "../../network/networks";
-import { isEqual } from "lodash";
 
 const TX_TITLE: TransactionTitle = "Enable Auto-Wrap";
 

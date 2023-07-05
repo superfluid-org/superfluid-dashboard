@@ -7,7 +7,11 @@ import { ethers } from "ethers";
 import { gql } from "graphql-request";
 import { uniq } from "lodash";
 import { dateNowSeconds } from "../../../utils/dateUtils";
-import { Network, allNetworks, findNetworkOrThrow } from "../../network/networks";
+import {
+  Network,
+  allNetworks,
+  findNetworkOrThrow,
+} from "../../network/networks";
 import {
   NATIVE_ASSET_ADDRESS,
   SuperTokenMinimal,
@@ -143,6 +147,40 @@ export const adHocSubgraphEndpoints = {
           data: uniq(response.streams.map((x) => x.receiver.id)).map((x) =>
             ethers.utils.getAddress(x)
           ),
+        };
+      },
+    }),
+    findStreamIdsWhereHumaIsOperator: builder.query<
+      string[],
+      { chainId: number; flowOperatorAddress: string; receiverAddress: string }
+    >({
+      queryFn: async (arg) => {
+        const { chainId, flowOperatorAddress, receiverAddress } = arg;
+        const client = await getSubgraphClient(chainId);
+        const query = gql`
+          query findStreamIdsWhereHumaIsOperator(
+            $flowOperatorAddress: String
+            $receiverAddress: String
+          ) {
+            streams(
+              where: {
+                flowUpdatedEvents_: { flowOperator: $flowOperatorAddress }
+                receiver: $receiverAddress
+              }
+            ) {
+              id
+            }
+          }
+        `;
+        const variables = {
+          flowOperatorAddress: flowOperatorAddress.toLowerCase(),
+          receiverAddress: receiverAddress.toLowerCase(),
+        };
+        const response = await client.request<{
+          streams: { id: string }[];
+        }>(query, variables);
+        return {
+          data: uniq(response.streams.map((x) => x.id)),
         };
       },
     }),
@@ -286,7 +324,7 @@ export const adHocSubgraphEndpoints = {
         } = subgraphResult;
 
         const network = findNetworkOrThrow(allNetworks, arg.chainId);
-        
+
         const nativeAssetSuperTokenPairs: SuperTokenPair[] =
           nativeAssetSuperTokens.map((x) => ({
             superToken: {

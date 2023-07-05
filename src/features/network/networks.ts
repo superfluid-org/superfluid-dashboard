@@ -55,6 +55,9 @@ export type Network = Chain & {
     lowerLimit: BigNumberish;
     upperLimit: BigNumberish;
   };
+  humaFinance?: {
+    nftAddress: `0x${string}`;
+  };
 };
 
 const blockExplorers = {
@@ -273,6 +276,9 @@ export const networkDefinition = {
         autoWrapStrategyAddresses[chain.polygonMumbai.id],
       lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
       upperLimit: BigNumber.from(UnitOfTime.Day * 14),
+    },
+    humaFinance: {
+      nftAddress: "0x3ad49C053DCDF96788c0e40c1771d41422ddBb6A",
     },
   } as const,
   avalancheFuji: {

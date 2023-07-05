@@ -77,6 +77,19 @@ const StreamsTable: FC<StreamsTableProps> = ({
     type: StreamTypeFilter.All,
   });
 
+  const humaFinanceOperatedStreamsQuery =
+    subgraphApi.useFindStreamIdsWhereHumaIsOperatorQuery(
+      network.humaFinance && visibleAddress
+        ? {
+            chainId: network.id,
+            flowOperatorAddress: network.humaFinance.nftAddress,
+            receiverAddress: visibleAddress,
+          }
+        : skipToken
+    );
+
+  console.log(humaFinanceOperatedStreamsQuery.data);
+
   const incomingStreamsQuery = subgraphApi.useStreamsQuery(
     {
       chainId: network.id,
@@ -198,7 +211,9 @@ const StreamsTable: FC<StreamsTableProps> = ({
             task.receiver.toLowerCase() === visibleAddress?.toLowerCase()
         )
         .filter((task) => task.__typename === "CreateTask")
-        .map((task) => mapCreateTaskToScheduledStream(task as unknown as CreateTask)),
+        .map((task) =>
+          mapCreateTaskToScheduledStream(task as unknown as CreateTask)
+        ),
     [allTasks, visibleAddress]
   );
 
@@ -435,7 +450,14 @@ const StreamsTable: FC<StreamsTableProps> = ({
             filteredStreams
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((stream) => (
-                <StreamRow key={stream.id} stream={stream} network={network} />
+                <StreamRow
+                  key={stream.id}
+                  stream={stream}
+                  network={network}
+                  isHumaFinanceOperatedStream={(
+                    humaFinanceOperatedStreamsQuery.data || []
+                  ).some((id) => stream.id === id)}
+                />
               ))
           )}
         </TableBody>
