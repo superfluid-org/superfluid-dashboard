@@ -47,7 +47,7 @@ export const ScheduledWrapRowSkeleton = () => {
         </TableCell>
       )}
       <TableCell>
-        <Skeleton variant="rectangular" width={116} height={22} />
+        <Skeleton width={116} height={22} />
       </TableCell>
     </TableRow>
   );

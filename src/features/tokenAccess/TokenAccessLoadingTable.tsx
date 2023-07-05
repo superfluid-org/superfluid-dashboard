@@ -58,7 +58,7 @@ export const SnapshotRowSkeleton = () => {
       </TableCell>
       <TableCell>
         <Stack direction="column" alignItems="center" gap={0.8}>
-          <Skeleton variant="rectangular" width={104} height={40} />
+          <Skeleton width={104} height={40} />
         </Stack>
       </TableCell>
     </TableRow>
