@@ -67,7 +67,11 @@ const TokenLimitComponent: FC<{
   return (
     <>
       {secondsToWeeks(limit)} Weeks (
-        <Amount decimalPlaces={2} wei={calculateTokenAmount(limit, netFlowRate)} /> {tokenSymbol})
+      <Amount
+        decimalPlaces={2}
+        wei={calculateTokenAmount(limit, netFlowRate)}
+      />{" "}
+      {tokenSymbol})
     </>
   );
 };
@@ -283,29 +287,27 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
                 isAutoWrapLoading ? (
                   <Skeleton variant="rectangular" width={60} height={22} />
                 ) : isAutoWrapOK ? (
-                  <ConnectionBoundaryButton
-                    impersonationTitle={"Stop viewing"}
-                    changeNetworkTitle={"Change Network"}
+                  <DisableAutoWrapTransactionButton
+                    key={`auto-wrap-revoke-${superTokenQueryData?.symbol}`}
+                    isDisabled={false}
+                    isVisible={true}
+                    token={superTokenQueryData}
+                    network={network}
                     ButtonProps={{
-                      fullWidth: true,
-                      variant: "outlined",
                       size: "small",
+                      variant: "outlined",
+                      fullWidth: false,
                     }}
-                  >
-                    {" "}
-                    <DisableAutoWrapTransactionButton
-                      key={`auto-wrap-revoke-${superTokenQueryData?.symbol}`}
-                      isDisabled={false}
-                      isVisible={true}
-                      token={superTokenQueryData}
-                      network={network}
-                      ButtonProps={{
-                        size: "small",
+                    ConnectionBoundaryButtonProps={{
+                      impersonationTitle: "Stop viewing",
+                      changeNetworkTitle: "Change Network",
+                      ButtonProps: {
+                        fullWidth: true,
                         variant: "outlined",
-                        fullWidth: false,
-                      }}
-                    />
-                  </ConnectionBoundaryButton>
+                        size: "small",
+                      },
+                    }}
+                  />
                 ) : isAutoWrappable ? (
                   <ConnectionBoundaryButton
                     impersonationTitle={"Stop viewing"}
@@ -399,27 +401,26 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
                 isAutoWrapLoading ? (
                   <Skeleton variant="rectangular" width={116} height={22} />
                 ) : isAutoWrapOK ? (
-                  <ConnectionBoundaryButton
-                    impersonationTitle={"Stop viewing"}
-                    changeNetworkTitle={"Change Network"}
+                  <DisableAutoWrapTransactionButton
+                    key={`auto-wrap-revoke-${superTokenQueryData?.symbol}`}
+                    isDisabled={false}
+                    isVisible={true}
+                    network={network}
+                    token={superTokenQueryData}
                     ButtonProps={{
-                      fullWidth: true,
-                      variant: "outlined",
                       size: "small",
+                      variant: "outlined",
                     }}
-                  >
-                    <DisableAutoWrapTransactionButton
-                      key={`auto-wrap-revoke-${superTokenQueryData?.symbol}`}
-                      isDisabled={false}
-                      isVisible={true}
-                      network={network}
-                      token={superTokenQueryData}
-                      ButtonProps={{
-                        size: "small",
+                    ConnectionBoundaryButtonProps={{
+                      impersonationTitle: "Stop viewing",
+                      changeNetworkTitle: "Change Network",
+                      ButtonProps: {
+                        fullWidth: true,
                         variant: "outlined",
-                      }}
-                    />
-                  </ConnectionBoundaryButton>
+                        size: "small",
+                      },
+                    }}
+                  />
                 ) : isAutoWrappable ? (
                   <ConnectionBoundaryButton
                     impersonationTitle={"Stop viewing"}

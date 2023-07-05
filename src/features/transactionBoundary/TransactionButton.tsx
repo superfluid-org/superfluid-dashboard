@@ -37,33 +37,32 @@ export const TransactionButton: FC<TransactionButtonProps> = ({
     ...ButtonProps,
   };
 
-  //  TODO: Disable prop is protecting/blocking change network and other chage view behaviour??
-  if (disabled) {
-    return (
-      <Button data-cy={dataCy} {...buttonProps} disabled>
-        <span>{children}</span>
-      </Button>
-    );
-  }
-
   return (
     <ConnectionBoundaryButton
       ButtonProps={buttonProps}
       {...ConnectionBoundaryButtonProps}
     >
-      <LoadingButton
-        {...(dataCy ? { "data-cy": dataCy } : {})}
-        color="primary"
-        {...buttonProps}
-        loading={mutationResult.isLoading || transaction?.status === "Pending"}
-        disabled={!signer}
-        onClick={() => {
-          if (!signer) throw Error("Signer not defined.");
-          onClick(signer);
-        }}
-      >
-        <span>{children}</span>
-      </LoadingButton>
+      {disabled ? (
+        <Button data-cy={dataCy} {...buttonProps} disabled>
+          <span>{children}</span>
+        </Button>
+      ) : (
+        <LoadingButton
+          {...(dataCy ? { "data-cy": dataCy } : {})}
+          color="primary"
+          {...buttonProps}
+          loading={
+            mutationResult.isLoading || transaction?.status === "Pending"
+          }
+          disabled={!signer}
+          onClick={() => {
+            if (!signer) throw Error("Signer not defined.");
+            onClick(signer);
+          }}
+        >
+          <span>{children}</span>
+        </LoadingButton>
+      )}
     </ConnectionBoundaryButton>
   );
 };

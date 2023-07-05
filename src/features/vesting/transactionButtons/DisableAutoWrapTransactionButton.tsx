@@ -12,6 +12,7 @@ import { Token } from "@superfluid-finance/sdk-core";
 import { toVestingToken } from "../useVestingToken";
 import { erc20ABI } from "../../../generated";
 import { Network } from "../../network/networks";
+import { ConnectionBoundaryButtonProps } from "../../transactionBoundary/ConnectionBoundaryButton";
 
 const TX_TITLE: TransactionTitle = "Disable Auto-Wrap";
 
@@ -21,7 +22,8 @@ const DisableAutoWrapTransactionButton: FC<{
   isDisabled: boolean;
   ButtonProps?: ButtonProps;
   network: Network;
-}> = ({ token, isVisible, ButtonProps = {}, network, ...props }) => {
+  ConnectionBoundaryButtonProps?: Partial<ConnectionBoundaryButtonProps>
+}> = ({ token, isVisible, ButtonProps = {}, ConnectionBoundaryButtonProps, network, ...props }) => {
   const { data: walletClient } = useWalletClient();
   const vestingToken = toVestingToken(token, network);
   const getGasOverrides = useGetTransactionOverrides();
@@ -69,6 +71,7 @@ const DisableAutoWrapTransactionButton: FC<{
             ConnectionBoundaryButtonProps={{
               impersonationTitle: "Stop viewing",
               changeNetworkTitle: "Change Network",
+              ...ConnectionBoundaryButtonProps,
             }}
             disabled={isButtonDisabled}
             ButtonProps={{

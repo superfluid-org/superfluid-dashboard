@@ -439,24 +439,22 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                             height={24}
                           />
                         ) : isAutoWrapOK ? (
-                          <ConnectionBoundaryButton
-                            impersonationTitle={"Stop viewing"}
-                            changeNetworkTitle={"Change Network"}
-                            ButtonProps={{
-                              fullWidth: true,
-                              variant: "outlined",
-                              size: "medium",
+                          <DisableAutoWrapTransactionButton
+                            key={`auto-wrap-revoke-${tokenSymbol}`}
+                            isDisabled={false}
+                            isVisible={true}
+                            network={network}
+                            token={token as VestingToken}
+                            ConnectionBoundaryButtonProps={{
+                              impersonationTitle: "Stop viewing",
+                              changeNetworkTitle: "Change Network",
+                              ButtonProps: {
+                                fullWidth: true,
+                                variant: "outlined",
+                                size: "medium",
+                              },
                             }}
-                          >
-                            {" "}
-                            <DisableAutoWrapTransactionButton
-                              key={`auto-wrap-revoke-${tokenSymbol}`}
-                              isDisabled={false}
-                              isVisible={true}
-                              network={network}
-                              token={token as VestingToken}
-                            />
-                          </ConnectionBoundaryButton>
+                          />
                         ) : (
                           <ConnectionBoundaryButton
                             impersonationTitle={"Stop viewing"}
@@ -637,25 +635,23 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                           height={24}
                         />
                       ) : isAutoWrapOK ? (
-                        <ConnectionBoundaryButton
-                          impersonationTitle={"Stop viewing"}
-                          changeNetworkTitle={"Change Network"}
-                          ButtonProps={{
-                            fullWidth: true,
-                            variant: "outlined",
-                            size: "medium",
+                        <DisableAutoWrapTransactionButton
+                          key={`auto-wrap-revoke-${tokenSymbol}`}
+                          isDisabled={false}
+                          isVisible={true}
+                          network={network}
+                          token={token as VestingToken}
+                          ButtonProps={{ fullWidth: false }}
+                          ConnectionBoundaryButtonProps={{
+                            impersonationTitle: "Stop viewing",
+                            changeNetworkTitle: "Change Network",
+                            ButtonProps: {
+                              fullWidth: true,
+                              variant: "outlined",
+                              size: "medium",
+                            },
                           }}
-                        >
-                          {" "}
-                          <DisableAutoWrapTransactionButton
-                            key={`auto-wrap-revoke-${tokenSymbol}`}
-                            isDisabled={false}
-                            isVisible={true}
-                            network={network}
-                            token={token as VestingToken}
-                            ButtonProps={{ fullWidth: false }}
-                          />
-                        </ConnectionBoundaryButton>
+                        />
                       ) : (
                         <ConnectionBoundaryButton
                           impersonationTitle={"Stop viewing"}
