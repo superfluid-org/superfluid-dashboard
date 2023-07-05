@@ -306,7 +306,7 @@ const StreamRow: FC<StreamRowProps> = ({
                     }
                     target="_blank"
                     size="small"
-                    data-cy="sender-and-receiver-explorer-links"
+                    data-cy="huma-finance-dapp-link"
                   >
                     <LaunchRoundedIcon />
                   </IconButton>
