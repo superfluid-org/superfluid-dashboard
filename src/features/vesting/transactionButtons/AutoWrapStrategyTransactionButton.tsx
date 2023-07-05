@@ -38,7 +38,7 @@ const AutoWrapStrategyTransactionButton: FC<{
     upperLimit: BigInt(BigNumber.from(network.autoWrap!.upperLimit).toString()),
   };
 
-  const prepare = !props.isDisabled && network.autoWrap && walletClient && walletClient?.chain?.id === network.id;;
+  const prepare = !props.isDisabled && network.autoWrap && walletClient && walletClient.chain.id === network.id;;
   const { config } = usePrepareContractWrite(
     prepare
       ? {
