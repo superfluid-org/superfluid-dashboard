@@ -54,7 +54,7 @@ const ScheduledWrapTable: FC<TokenSnapshotTableProps> = ({
       address
         ? {
             chainId: network.id,
-            where: { account: address.toLowerCase(), deletedAt: null },
+            where: { account: address.toLowerCase(), isActive: true },
             orderBy: "createdAt",
             orderDirection: "desc",
           }
@@ -63,11 +63,7 @@ const ScheduledWrapTable: FC<TokenSnapshotTableProps> = ({
         selectFromResult: (result) => ({
           ...result,
           wrapSchedules:
-            // At the contract level, when someone creates duplicate schedules,
-            // it won't delete existing schedules and will simply override the existing ones.
-            // As a result, when we query events, we have two active schedules, and the subgraph shows both schedules as active {deletedAt: null}.
-            // Solution: We can introduce is_active field in the schema and toggle it when new event received.
-            uniqBy(result.data?.wrapSchedules, "wrapScheduleId") ?? [],
+            result.data?.wrapSchedules ?? [],
         }),
       }
     );

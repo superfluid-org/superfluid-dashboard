@@ -37,4 +37,5 @@ fragment WrapSchedulePart on WrapSchedule {
   lowerLimit
   createdBlockNumber
   updatedBlockNumber
+  isActive
 }

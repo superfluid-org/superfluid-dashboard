@@ -1117,6 +1117,7 @@ enum UserTokenLiquidityToken_orderBy {
   currentWrapSchedule__upperLimit
   currentWrapSchedule__lastExecutedAt
   currentWrapSchedule__amount
+  currentWrapSchedule__isActive
 }
 
 type WrapExecutedEvent implements Event {
@@ -1278,6 +1279,7 @@ type WrapSchedule {
   upperLimit: BigInt
   lastExecutedAt: BigInt
   amount: BigInt
+  isActive: Boolean
   events(skip: Int = 0, first: Int = 100, orderBy: Event_orderBy, orderDirection: OrderDirection, where: Event_filter): [Event!]!
 }
 
@@ -1830,6 +1832,10 @@ input WrapSchedule_filter {
   amount_lte: BigInt
   amount_in: [BigInt!]
   amount_not_in: [BigInt!]
+  isActive: Boolean
+  isActive_not: Boolean
+  isActive_in: [Boolean!]
+  isActive_not_in: [Boolean!]
   events: [String!]
   events_not: [String!]
   events_contains: [String!]
@@ -1861,6 +1867,7 @@ enum WrapSchedule_orderBy {
   upperLimit
   lastExecutedAt
   amount
+  isActive
   events
 }
 

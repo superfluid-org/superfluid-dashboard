@@ -1033,7 +1033,8 @@ export type UserTokenLiquidityToken_OrderBy =
   | 'currentWrapSchedule__lowerLimit'
   | 'currentWrapSchedule__upperLimit'
   | 'currentWrapSchedule__lastExecutedAt'
-  | 'currentWrapSchedule__amount';
+  | 'currentWrapSchedule__amount'
+  | 'currentWrapSchedule__isActive';
 
 export type WrapExecutedEvent = Event & {
   id: Scalars['ID'];
@@ -1193,6 +1194,7 @@ export type WrapSchedule = {
   upperLimit?: Maybe<Scalars['BigInt']>;
   lastExecutedAt?: Maybe<Scalars['BigInt']>;
   amount?: Maybe<Scalars['BigInt']>;
+  isActive?: Maybe<Scalars['Boolean']>;
   events: Array<Event>;
 };
 
@@ -1752,6 +1754,10 @@ export type WrapSchedule_Filter = {
   amount_lte?: InputMaybe<Scalars['BigInt']>;
   amount_in?: InputMaybe<Array<Scalars['BigInt']>>;
   amount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  isActive?: InputMaybe<Scalars['Boolean']>;
+  isActive_not?: InputMaybe<Scalars['Boolean']>;
+  isActive_in?: InputMaybe<Array<Scalars['Boolean']>>;
+  isActive_not_in?: InputMaybe<Array<Scalars['Boolean']>>;
   events?: InputMaybe<Array<Scalars['String']>>;
   events_not?: InputMaybe<Array<Scalars['String']>>;
   events_contains?: InputMaybe<Array<Scalars['String']>>;
@@ -1783,6 +1789,7 @@ export type WrapSchedule_OrderBy =
   | 'upperLimit'
   | 'lastExecutedAt'
   | 'amount'
+  | 'isActive'
   | 'events';
 
 export type _Block_ = {
@@ -2156,6 +2163,7 @@ export type WrapScheduleResolvers<ContextType = MeshContext, ParentType extends 
   upperLimit?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   lastExecutedAt?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   amount?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
+  isActive?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   events?: Resolver<Array<ResolversTypes['Event']>, ParentType, ContextType, RequireFields<WrapScheduleEventsArgs, 'skip' | 'first'>>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -2379,7 +2387,7 @@ export type GetWrapScheduleQueryVariables = Exact<{
 }>;
 
 
-export type GetWrapScheduleQuery = { wrapSchedule?: Maybe<Pick<WrapSchedule, 'id' | 'account' | 'wrapScheduleId' | 'deletedAt' | 'updatedAt' | 'expiredAt' | 'createdAt' | 'lastExecutedAt' | 'strategy' | 'manager' | 'superToken' | 'liquidityToken' | 'amount' | 'upperLimit' | 'lowerLimit' | 'createdBlockNumber' | 'updatedBlockNumber'>> };
+export type GetWrapScheduleQuery = { wrapSchedule?: Maybe<Pick<WrapSchedule, 'id' | 'account' | 'wrapScheduleId' | 'deletedAt' | 'updatedAt' | 'expiredAt' | 'createdAt' | 'lastExecutedAt' | 'strategy' | 'manager' | 'superToken' | 'liquidityToken' | 'amount' | 'upperLimit' | 'lowerLimit' | 'createdBlockNumber' | 'updatedBlockNumber' | 'isActive'>> };
 
 export type GetWrapSchedulesQueryVariables = Exact<{
   where?: InputMaybe<WrapSchedule_Filter>;
@@ -2388,9 +2396,9 @@ export type GetWrapSchedulesQueryVariables = Exact<{
 }>;
 
 
-export type GetWrapSchedulesQuery = { wrapSchedules: Array<Pick<WrapSchedule, 'id' | 'account' | 'wrapScheduleId' | 'deletedAt' | 'updatedAt' | 'expiredAt' | 'createdAt' | 'lastExecutedAt' | 'strategy' | 'manager' | 'superToken' | 'liquidityToken' | 'amount' | 'upperLimit' | 'lowerLimit' | 'createdBlockNumber' | 'updatedBlockNumber'>> };
+export type GetWrapSchedulesQuery = { wrapSchedules: Array<Pick<WrapSchedule, 'id' | 'account' | 'wrapScheduleId' | 'deletedAt' | 'updatedAt' | 'expiredAt' | 'createdAt' | 'lastExecutedAt' | 'strategy' | 'manager' | 'superToken' | 'liquidityToken' | 'amount' | 'upperLimit' | 'lowerLimit' | 'createdBlockNumber' | 'updatedBlockNumber' | 'isActive'>> };
 
-export type WrapSchedulePartFragment = Pick<WrapSchedule, 'id' | 'account' | 'wrapScheduleId' | 'deletedAt' | 'updatedAt' | 'expiredAt' | 'createdAt' | 'lastExecutedAt' | 'strategy' | 'manager' | 'superToken' | 'liquidityToken' | 'amount' | 'upperLimit' | 'lowerLimit' | 'createdBlockNumber' | 'updatedBlockNumber'>;
+export type WrapSchedulePartFragment = Pick<WrapSchedule, 'id' | 'account' | 'wrapScheduleId' | 'deletedAt' | 'updatedAt' | 'expiredAt' | 'createdAt' | 'lastExecutedAt' | 'strategy' | 'manager' | 'superToken' | 'liquidityToken' | 'amount' | 'upperLimit' | 'lowerLimit' | 'createdBlockNumber' | 'updatedBlockNumber' | 'isActive'>;
 
 export type PollQueryVariables = Exact<{
   block: Block_Height;
@@ -2418,6 +2426,7 @@ export const WrapSchedulePartFragmentDoc = gql`
   lowerLimit
   createdBlockNumber
   updatedBlockNumber
+  isActive
 }
     ` as unknown as DocumentNode<WrapSchedulePartFragment, unknown>;
 export const GetWrapScheduleDocument = gql`

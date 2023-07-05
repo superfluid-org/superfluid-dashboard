@@ -1011,7 +1011,8 @@ export type UserTokenLiquidityToken_orderBy =
   | 'currentWrapSchedule__lowerLimit'
   | 'currentWrapSchedule__upperLimit'
   | 'currentWrapSchedule__lastExecutedAt'
-  | 'currentWrapSchedule__amount';
+  | 'currentWrapSchedule__amount'
+  | 'currentWrapSchedule__isActive';
 
 export type WrapExecutedEvent = Event & {
   id: Scalars['ID'];
@@ -1171,6 +1172,7 @@ export type WrapSchedule = {
   upperLimit?: Maybe<Scalars['BigInt']>;
   lastExecutedAt?: Maybe<Scalars['BigInt']>;
   amount?: Maybe<Scalars['BigInt']>;
+  isActive?: Maybe<Scalars['Boolean']>;
   events: Array<Event>;
 };
 
@@ -1730,6 +1732,10 @@ export type WrapSchedule_filter = {
   amount_lte?: InputMaybe<Scalars['BigInt']>;
   amount_in?: InputMaybe<Array<Scalars['BigInt']>>;
   amount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  isActive?: InputMaybe<Scalars['Boolean']>;
+  isActive_not?: InputMaybe<Scalars['Boolean']>;
+  isActive_in?: InputMaybe<Array<Scalars['Boolean']>>;
+  isActive_not_in?: InputMaybe<Array<Scalars['Boolean']>>;
   events?: InputMaybe<Array<Scalars['String']>>;
   events_not?: InputMaybe<Array<Scalars['String']>>;
   events_contains?: InputMaybe<Array<Scalars['String']>>;
@@ -1761,6 +1767,7 @@ export type WrapSchedule_orderBy =
   | 'upperLimit'
   | 'lastExecutedAt'
   | 'amount'
+  | 'isActive'
   | 'events';
 
 export type _Block_ = {
