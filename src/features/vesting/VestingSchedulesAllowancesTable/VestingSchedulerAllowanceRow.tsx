@@ -39,7 +39,7 @@ import { getSuperTokenType } from "../../redux/endpoints/adHocSubgraphEndpoints"
 import { TokenType } from "../../redux/endpoints/tokenTypes";
 import DisableAutoWrapTransactionButton from "../transactionButtons/DisableAutoWrapTransactionButton";
 import { VestingToken } from "../CreateVestingSection";
-import AutoWrapEnableDialogSection from "../dialogs/AutoWrapEnableDialogSection";
+import AutoWrapEnableDialog from "../dialogs/AutoWrapEnableDialog";
 import ConnectionBoundaryButton from "../../transactionBoundary/ConnectionBoundaryButton";
 
 export const EditIconWrapper = styled(Avatar)(({ theme }) => ({
@@ -697,7 +697,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
         </TableCell>
       </TableRow>
       {isAutoWrappable && (
-        <AutoWrapEnableDialogSection
+        <AutoWrapEnableDialog
           key={"auto-wrap-enable-dialog-section"}
           closeEnableAutoWrapDialog={closeEnableAutoWrapDialog}
           isEnableAutoWrapDialogOpen={isEnableAutoWrapDialogOpen}

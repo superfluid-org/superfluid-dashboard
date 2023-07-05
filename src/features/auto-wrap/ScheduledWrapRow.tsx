@@ -20,12 +20,11 @@ import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
 import { TokenType } from "../redux/endpoints/tokenTypes";
 import useActiveAutoWrap from "../vesting/useActiveAutoWrap";
-import AutoWrapEnableDialogSection from "../vesting/dialogs/AutoWrapEnableDialogSection";
-import { differenceInWeeks } from "date-fns";
+import AutoWrapEnableDialog from "../vesting/dialogs/AutoWrapEnableDialog";
+import { differenceInWeeks, fromUnixTime } from "date-fns";
 import { isCloseToUnlimitedTokenAllowance } from "../../utils/isCloseToUnlimitedAllowance";
 import Amount from "../token/Amount";
 import { BigNumber, BigNumberish } from "ethers";
-import { formatEther } from "ethers/lib/utils.js";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import TooltipWithIcon from "../common/TooltipWithIcon";
 import ConnectionBoundaryButton from "../transactionBoundary/ConnectionBoundaryButton";
@@ -36,7 +35,7 @@ interface ScheduledWrapRowProps {
 }
 
 const secondsToWeeks = (seconds: number): number => {
-  return differenceInWeeks(new Date(seconds * 1000), new Date(0), {
+  return differenceInWeeks(fromUnixTime(seconds), new Date(0), {
     roundingMethod: "floor",
   });
 };
@@ -330,7 +329,7 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
                 ) : null
               ) : null}
               {superTokenQueryData && (
-                <AutoWrapEnableDialogSection
+                <AutoWrapEnableDialog
                   key={"auto-wrap-enable-dialog-section"}
                   closeEnableAutoWrapDialog={closeEnableAutoWrapDialog}
                   isEnableAutoWrapDialogOpen={isEnableAutoWrapDialogOpen}
@@ -444,7 +443,7 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
                 ) : null
               ) : null}
               {superTokenQueryData && (
-                <AutoWrapEnableDialogSection
+                <AutoWrapEnableDialog
                   key={"auto-wrap-enable-dialog-section"}
                   closeEnableAutoWrapDialog={closeEnableAutoWrapDialog}
                   isEnableAutoWrapDialogOpen={isEnableAutoWrapDialogOpen}

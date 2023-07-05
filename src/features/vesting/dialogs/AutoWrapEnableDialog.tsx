@@ -6,7 +6,7 @@ import { DialogContent, DialogTitle, IconButton, Stack, Typography, useTheme } f
 import CloseIcon from "@mui/icons-material/Close";
 import AutoWrapEnableDialogContentSection from "./AutoWrapEnableDialogContentSection";
 
-const AutoWrapEnableDialogSection: FC<{ closeEnableAutoWrapDialog: () => void, isEnableAutoWrapDialogOpen: boolean, token: Token, network: Network }> = (
+const AutoWrapEnableDialog: FC<{ closeEnableAutoWrapDialog: () => void, isEnableAutoWrapDialogOpen: boolean, token: Token, network: Network }> = (
   { closeEnableAutoWrapDialog, isEnableAutoWrapDialogOpen, token, network }) => {
   const theme = useTheme();
 
@@ -15,7 +15,7 @@ const AutoWrapEnableDialogSection: FC<{ closeEnableAutoWrapDialog: () => void, i
     open={isEnableAutoWrapDialogOpen}
     onClose={closeEnableAutoWrapDialog}
     PaperProps={{ sx: { borderRadius: "20px", maxWidth: 550 } }}
-    keepMounted={true}
+    keepMounted
   >
     <DialogTitle>
       <Stack alignItems={"center"} component={DialogTitle} gap={0.5} sx={{ p: 3.5 }}>
@@ -42,4 +42,4 @@ const AutoWrapEnableDialogSection: FC<{ closeEnableAutoWrapDialog: () => void, i
   </ResponsiveDialog>
 };
 
-export default memo(AutoWrapEnableDialogSection);
+export default memo(AutoWrapEnableDialog);
