@@ -36,8 +36,7 @@ const DisableAutoWrapTransactionButton: FC<{
     spender: network.autoWrap!.strategyContractAddress,
     amount: BigInt(constants.Zero.toString()),
   };
-
-  const prepare = !props.isDisabled && network.autoWrap && walletClient;
+  const prepare = !props.isDisabled && network.autoWrap && walletClient && walletClient?.chain?.id === network.id;
   const { config } = usePrepareContractWrite(
     prepare
       ? {

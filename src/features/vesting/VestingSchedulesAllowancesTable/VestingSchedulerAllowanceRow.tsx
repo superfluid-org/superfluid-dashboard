@@ -445,6 +445,10 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                             isVisible={true}
                             network={network}
                             token={token as VestingToken}
+                            ButtonProps={{
+                              color: "primary",
+                              variant: "textContained",
+                            }}
                             ConnectionBoundaryButtonProps={{
                               impersonationTitle: "Stop viewing",
                               changeNetworkTitle: "Change Network",
@@ -641,7 +645,11 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                           isVisible={true}
                           network={network}
                           token={token as VestingToken}
-                          ButtonProps={{ fullWidth: false }}
+                          ButtonProps={{
+                            fullWidth: false,
+                            color: "primary",
+                            variant: "textContained",
+                          }}
                           ConnectionBoundaryButtonProps={{
                             impersonationTitle: "Stop viewing",
                             changeNetworkTitle: "Change Network",

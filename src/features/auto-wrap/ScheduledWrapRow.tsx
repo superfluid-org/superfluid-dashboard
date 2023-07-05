@@ -285,7 +285,7 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
             <ConnectionBoundary expectedNetwork={network}>
               {superTokenQueryData && network.autoWrap ? (
                 isAutoWrapLoading ? (
-                  <Skeleton variant="rectangular" width={60} height={22} />
+                  <Skeleton width={60} height={22} />
                 ) : isAutoWrapOK ? (
                   <DisableAutoWrapTransactionButton
                     key={`auto-wrap-revoke-${superTokenQueryData?.symbol}`}
@@ -294,9 +294,13 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
                     token={superTokenQueryData}
                     network={network}
                     ButtonProps={{
-                      size: "small",
-                      variant: "outlined",
                       fullWidth: false,
+                      size: "small",
+                      color: "primary",
+                      variant: "textContained",
+                      sx:{
+                        fontWeight: "500"
+                      }
                     }}
                     ConnectionBoundaryButtonProps={{
                       impersonationTitle: "Stop viewing",
@@ -399,7 +403,7 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
             <ConnectionBoundary expectedNetwork={network}>
               {superTokenQueryData && network.autoWrap ? (
                 isAutoWrapLoading ? (
-                  <Skeleton variant="rectangular" width={116} height={22} />
+                  <Skeleton width={116} height={22} />
                 ) : isAutoWrapOK ? (
                   <DisableAutoWrapTransactionButton
                     key={`auto-wrap-revoke-${superTokenQueryData?.symbol}`}
@@ -409,7 +413,11 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
                     token={superTokenQueryData}
                     ButtonProps={{
                       size: "small",
-                      variant: "outlined",
+                      color: "primary",
+                      variant: "textContained",
+                      sx:{
+                        fontWeight: "500"
+                      }
                     }}
                     ConnectionBoundaryButtonProps={{
                       impersonationTitle: "Stop viewing",
