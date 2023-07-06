@@ -299,7 +299,7 @@ const StreamRow: FC<StreamRowProps> = ({
                   IconButtonProps={{ size: "small" }}
                 />
                 {isHumaFinanceOperatedStream && (
-                  <Tooltip title="Huma Finance">
+                  <Tooltip title="This stream is eligible for income-based borrowing. Visit Huma to learn more.">
                     <IconButton
                       component={Link}
                       href={
