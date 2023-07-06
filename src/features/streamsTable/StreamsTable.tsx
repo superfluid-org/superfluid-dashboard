@@ -88,8 +88,6 @@ const StreamsTable: FC<StreamsTableProps> = ({
         : skipToken
     );
 
-  console.log(humaFinanceOperatedStreamsQuery.data);
-
   const incomingStreamsQuery = subgraphApi.useStreamsQuery(
     {
       chainId: network.id,
