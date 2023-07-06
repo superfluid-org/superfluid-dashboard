@@ -62,6 +62,7 @@ import Page404 from "../../404";
 import { useVisibleAddress } from "../../../features/wallet/VisibleAddressContext";
 import AddressName from "../../../components/AddressName/AddressName";
 import Link from "../../../features/common/Link";
+import { HumaFinanceLink } from "../../../features/streamsTable/StreamRow";
 
 const TEXT_TO_SHARE = (up?: boolean) =>
   encodeURIComponent(`I’m streaming money every second with @Superfluid_HQ! 🌊
@@ -326,6 +327,17 @@ const StreamPageContent: FC<{
     tokenAddress
   );
 
+  const { data: isHumaFinanceOperatedStream } =
+    subgraphApi.useIsHumaFinanceOperatorStreamQuery(
+      network.humaFinance
+        ? {
+            chainId: network.id,
+            streamId: streamId,
+            flowOperatorAddress: network.humaFinance?.nftAddress,
+          }
+        : skipToken
+    );
+
   const { data: scheduledStream, ...scheduledStreamQuery } = useScheduledStream(
     {
       chainId: network.id,
@@ -512,7 +524,12 @@ const StreamPageContent: FC<{
               )}
             </Box>
 
-            <Stack direction="row" justifyContent="flex-end" gap={1}>
+            <Stack
+              direction="row"
+              justifyContent="flex-end"
+              gap={1}
+              alignItems="center"
+            >
               {!!visibleAddress && (
                 <>
                   {isOutgoing && (
@@ -527,6 +544,9 @@ const StreamPageContent: FC<{
                       stream={scheduledStream}
                       network={network}
                     />
+                  )}
+                  {isHumaFinanceOperatedStream && (
+                    <HumaFinanceLink width={30} height={30} />
                   )}
                 </>
               )}

@@ -150,6 +150,40 @@ export const adHocSubgraphEndpoints = {
         };
       },
     }),
+    isHumaFinanceOperatorStream: builder.query<
+      boolean,
+      { chainId: number; flowOperatorAddress: string; streamId: string }
+    >({
+      queryFn: async (arg) => {
+        const { chainId, flowOperatorAddress, streamId } = arg;
+        const client = await getSubgraphClient(chainId);
+        const query = gql`
+          query findStreamIdWhereHumaIsOperator(
+            $flowOperatorAddress: String
+            $streamId: String
+          ) {
+            streams(
+              where: {
+                flowUpdatedEvents_: { flowOperator: $flowOperatorAddress }
+                id: $streamId
+              }
+            ) {
+              id
+            }
+          }
+        `;
+        const variables = {
+          flowOperatorAddress: flowOperatorAddress.toLowerCase(),
+          streamId: streamId,
+        };
+        const response = await client.request<{
+          streams: { id: string }[];
+        }>(query, variables);
+        return {
+          data: response.streams.length > 0,
+        };
+      },
+    }),
     findStreamIdsWhereHumaIsOperator: builder.query<
       string[],
       { chainId: number; flowOperatorAddress: string; receiverAddress: string }
@@ -180,7 +214,7 @@ export const adHocSubgraphEndpoints = {
           streams: { id: string }[];
         }>(query, variables);
         return {
-          data: uniq(response.streams.map((x) => x.id)),
+          data: response.streams.map((x) => x.id),
         };
       },
     }),
