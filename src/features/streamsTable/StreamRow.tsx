@@ -3,7 +3,7 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import {
   Box,
   CircularProgress,
-  Link,
+  IconButton,
   ListItemText,
   Skeleton,
   Stack,
@@ -39,6 +39,7 @@ import ModifyStreamButton from "./ModifyStreamButton";
 import { ActiveStreamIcon, ScheduledStreamIcon } from "./StreamIcons";
 import { StreamScheduling } from "./StreamScheduling";
 import Image from "next/legacy/image";
+import Link from "../common/Link";
 
 export const HumaFinanceLink: FC<{ width?: number; height?: number }> = ({
   width = 24,
@@ -46,11 +47,10 @@ export const HumaFinanceLink: FC<{ width?: number; height?: number }> = ({
 }) => {
   return (
     <Tooltip title="This stream is eligible for income-based borrowing. Visit Huma to learn more.">
-      <Link
-        height={height}
-        width={width}
-        // Link is not at network level, so we can use it as hard-coded.
+      <IconButton
+        component={Link} // Link is not at network level, so we can use it as hard-coded.
         href="https://app.huma.finance/#/borrow/stream?poolName=Superfluid"
+        target="_blank"
       >
         <Image
           unoptimized
@@ -61,7 +61,7 @@ export const HumaFinanceLink: FC<{ width?: number; height?: number }> = ({
           layout="fixed"
           alt="huma-finance logo"
         />
-      </Link>
+      </IconButton>
     </Tooltip>
   );
 };
