@@ -545,11 +545,13 @@ const StreamPageContent: FC<{
                       network={network}
                     />
                   )}
-                  {isHumaFinanceOperatedStream && (
-                    <HumaFinanceLink width={30} height={30} />
-                  )}
                 </>
               )}
+              <>
+                {isHumaFinanceOperatedStream && (
+                  <HumaFinanceLink width={30} height={30} />
+                )}
+              </>
             </Stack>
           </Stack>
 
