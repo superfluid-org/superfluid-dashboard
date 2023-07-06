@@ -299,17 +299,19 @@ const StreamRow: FC<StreamRowProps> = ({
                   IconButtonProps={{ size: "small" }}
                 />
                 {isHumaFinanceOperatedStream && (
-                  <IconButton
-                    component={Link}
-                    href={
-                      "https://app.huma.finance/#/borrow/stream?poolName=Superfluid"
-                    }
-                    target="_blank"
-                    size="small"
-                    data-cy="huma-finance-dapp-link"
-                  >
-                    <LaunchRoundedIcon />
-                  </IconButton>
+                  <Tooltip title="Huma Finance">
+                    <IconButton
+                      component={Link}
+                      href={
+                        "https://app.huma.finance/#/borrow/stream?poolName=Superfluid"
+                      }
+                      target="_blank"
+                      size="small"
+                      data-cy="huma-finance-dapp-link"
+                    >
+                      <LaunchRoundedIcon />
+                    </IconButton>
+                  </Tooltip>
                 )}
               </>
             )}
