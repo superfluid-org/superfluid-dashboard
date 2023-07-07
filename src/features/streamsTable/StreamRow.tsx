@@ -104,6 +104,8 @@ export const StreamRowLoading = () => {
           <TableCell>
             <Skeleton width={30} />
           </TableCell>
+          <TableCell>
+          </TableCell>
         </>
       ) : (
         <TableCell>
