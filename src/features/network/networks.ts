@@ -676,6 +676,40 @@ export const networkDefinition = {
     autoWrapSubgraphUrl: undefined,
     platformUrl: undefined,
   } as const,
+  sepolia:{
+    ...chain.sepolia,
+    blockExplorers: ensureDefined(chain.sepolia.blockExplorers),
+    slugName: "sepolia",
+    v1ShortName: "sepolia",
+    bufferTimeInMinutes: 60,
+    color: "#68B1D5",
+    rpcUrls: {
+      ...chain.sepolia.rpcUrls,
+      superfluid: { http: [superfluidRpcUrls.sepolia] },
+    },
+    fallbackSubgraphUrl:
+      "https://subgraph.satsuma-prod.com/c5br3jaVlJI6/superfluid/eth-sepolia/api",
+    getLinkForTransaction: (txHash: string): string =>
+      `https://sepolia.etherscan.io/tx/${txHash}`,
+    getLinkForAddress: (address: string): string =>
+      `https://sepolia.etherscan.io/address/${address}`,
+    nativeCurrency: {
+      ...ensureDefined(chain.sepolia.nativeCurrency),
+      address: NATIVE_ASSET_ADDRESS,
+      type: TokenType.NativeAssetUnderlyingToken,
+      superToken: {
+        type: TokenType.NativeAssetSuperToken,
+        symbol: "ETHx",
+        address: "0x30a6933Ca9230361972E413a15dC8114c952414e",
+        name: "Super ETH",
+        decimals: 18,
+      },
+    },
+    vestingContractAddress: undefined,
+    vestingSubgraphUrl: undefined,
+    autoWrapSubgraphUrl: undefined,
+    platformUrl: undefined,
+  } as const,
 };
 
 export const allNetworks: Network[] = orderBy(
@@ -694,6 +728,7 @@ export const allNetworks: Network[] = orderBy(
       networkDefinition.celoMainnet,
       networkDefinition.optimismGoerli,
       networkDefinition.arbitrumGoerli,
+      networkDefinition.sepolia,
     ],
     (x) => x.id // Put lower ids first (Ethereum mainnet will be first)
   ),
