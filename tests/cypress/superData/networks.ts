@@ -51,6 +51,7 @@ export const superfluidRpcUrls = {
   "celo-mainnet": "https://rpc-endpoints.superfluid.dev/celo-mainnet",
   "optimism-goerli": "https://rpc-endpoints.superfluid.dev/optimism-goerli",
   "arbitrum-goerli": "https://rpc-endpoints.superfluid.dev/arbitrum-goerli",
+  sepolia: "https://rpc-endpoints.superfluid.dev/eth-sepolia",
 };
 
 export const networkDefinition: {
@@ -70,6 +71,7 @@ export const networkDefinition: {
   celoMainnet: Network;
   optimismGoerli: Network;
   arbitrumGoerli: Network;
+  sepolia: Network;
 } = {
   goerli: {
     ...chain.goerli,
@@ -440,6 +442,33 @@ export const networkDefinition: {
       },
     },
   },
+  sepolia: {
+    ...chain.sepolia,
+    slugName: "sepolia",
+    v1ShortName: "sepolia",
+    bufferTimeInMinutes: 60,
+    color: "#68B1D5",
+    superfluidRpcUrl: superfluidRpcUrls["sepolia"],
+    subgraphUrl:
+      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-sepolia",
+    getLinkForTransaction: (txHash: string): string =>
+      `https://sepolia.etherscan.io/tx/${txHash}`,
+    getLinkForAddress: (address: string): string =>
+      `https://sepolia.etherscan.io/address/${address}`,
+    nativeCurrency: {
+      ...ensureDefined(chain.sepolia.nativeCurrency),
+      address: NATIVE_ASSET_ADDRESS,
+      type: TokenType.NativeAssetUnderlyingToken,
+      superToken: {
+        type: TokenType.NativeAssetSuperToken,
+        symbol: "ETHx",
+        address: "0x30a6933Ca9230361972E413a15dC8114c952414e",
+        name: "Super ETH",
+        decimals: 18,
+      },
+    },
+    platformUrl: undefined,
+  },
 };
 
 export const networks: Network[] = [
@@ -456,6 +485,7 @@ export const networks: Network[] = [
   networkDefinition.celoMainnet,
   networkDefinition.optimismGoerli,
   networkDefinition.arbitrumGoerli,
+  networkDefinition.sepolia,
 ];
 
 export const getNetworkDefaultTokenPair = memoize(

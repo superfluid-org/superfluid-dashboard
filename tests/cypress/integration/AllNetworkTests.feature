@@ -23,6 +23,7 @@ Feature: Test cases that run indefinitely on all supported networks
             | celo            | CELO  |
             | arbitrum-goerli | ETH   |
             | optimism-goerli | ETH   |
+            | sepolia         | SEP   |
 
     Scenario Outline: Superfluid RPCS are not behind on <network>
         Given Superfluid RPCs are not more then 10 minutes behind on <network>
@@ -41,6 +42,7 @@ Feature: Test cases that run indefinitely on all supported networks
             | celo            |
             | arbitrum-goerli |
             | optimism-goerli |
+            | sepolia         |
 
     Scenario Outline: The graph is not behind on <network>
         Given The graph is not more then 10 minutes behind on <network>
@@ -59,6 +61,7 @@ Feature: Test cases that run indefinitely on all supported networks
             | celo            |
             | arbitrum-goerli |
             | optimism-goerli |
+            | sepolia         |
 
     Scenario: Testnet faucet fund check
         Given The faucet contract has got enough funds to send to people
