@@ -129,6 +129,7 @@ export const superfluidRpcUrls = {
   "optimism-goerli": "https://rpc-endpoints.superfluid.dev/optimism-goerli",
   "arbitrum-goerli": "https://rpc-endpoints.superfluid.dev/arbitrum-goerli",
   "sepolia": "https://rpc-endpoints.superfluid.dev/eth-sepolia",
+  "polgyon-zktest": "https://rpc-endpoints.superfluid.dev/zkevm-testnet"
 } as const;
 
 export const superfluidPlatformUrls = {

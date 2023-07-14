@@ -676,7 +676,7 @@ export const networkDefinition = {
     autoWrapSubgraphUrl: undefined,
     platformUrl: undefined,
   } as const,
-  sepolia:{
+  sepolia: {
     ...chain.sepolia,
     blockExplorers: ensureDefined(chain.sepolia.blockExplorers),
     slugName: "sepolia",
@@ -710,6 +710,40 @@ export const networkDefinition = {
     autoWrapSubgraphUrl: undefined,
     platformUrl: undefined,
   } as const,
+  polygonZkevmTestnet: {
+    ...chain.polygonZkEvmTestnet,
+    blockExplorers: ensureDefined(chain.polygonZkEvmTestnet.blockExplorers),
+    slugName: "polgyon-zktest",
+    v1ShortName: "polgyon-zktest",
+    bufferTimeInMinutes: 60,
+    color: "#7c3fe4",
+    rpcUrls: {
+      ...chain.polygonZkEvmTestnet.rpcUrls,
+      superfluid: { http: [superfluidRpcUrls["polgyon-zktest"]] },
+    },
+    fallbackSubgraphUrl:
+      "https://zkevm-testnet.subgraph.x.superfluid.dev",
+    getLinkForTransaction: (txHash: string): string =>
+      `https://testnet-zkevm.polygonscan.com/tx/${txHash}`,
+    getLinkForAddress: (address: string): string =>
+      `https://testnet-zkevm.polygonscan.com/address/${address}`,
+    nativeCurrency: {
+      ...ensureDefined(chain.polygonZkEvmTestnet.nativeCurrency),
+      address: NATIVE_ASSET_ADDRESS,
+      type: TokenType.NativeAssetUnderlyingToken,
+      superToken: {
+        type: TokenType.NativeAssetSuperToken,
+        symbol: "ETHx",
+        address: "0x6345Aa6cec42a85160CF436810F97661e28c1876",
+        name: "Super ETH",
+        decimals: 18,
+      },
+    },
+    vestingContractAddress: undefined,
+    vestingSubgraphUrl: undefined,
+    autoWrapSubgraphUrl: undefined,
+    platformUrl: undefined,
+  } as const,
 };
 
 export const allNetworks: Network[] = orderBy(
@@ -729,6 +763,7 @@ export const allNetworks: Network[] = orderBy(
       networkDefinition.optimismGoerli,
       networkDefinition.arbitrumGoerli,
       networkDefinition.sepolia,
+      networkDefinition.polygonZkevmTestnet,
     ],
     (x) => x.id // Put lower ids first (Ethereum mainnet will be first)
   ),
