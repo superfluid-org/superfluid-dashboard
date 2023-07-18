@@ -10,3 +10,6 @@ Given(/^User clicks on the notification button$/, function () {
 Then(/^Settings page wallet not connected screen is visible$/, function () {
   SettingsPage.validateNotConnectedScreen();
 });
+Then(/^No permissions screen is visible$/, function () {
+  SettingsPage.validateNoPermissionsScreenIsVisible();
+});

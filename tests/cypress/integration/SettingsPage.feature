@@ -19,3 +19,7 @@ Feature: Settings page test cases
     Scenario: Wallet Not connected screen in settings page
         Given "Settings page" is open without connecting a wallet
         Then Settings page wallet not connected screen is visible
+
+    Scenario: No permissions set screen showing up
+        Given "Settings Page" is open with "alice" connected on "polygon"
+        Then No permissions screen is visible
