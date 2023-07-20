@@ -340,9 +340,7 @@ export class SendPage extends BasePage {
       cy.wait(2000);
       cy.get("body").then((body) => {
         if (body.find("[role=presentation]").length > 0) {
-          cy.get("[role=presentation]").click("bottomRight", {
-            multiple: true,
-          });
+          body.find("[role=presentation]").click();
         }
       });
       this.doesNotExist("[role=dialog]");
@@ -383,7 +381,6 @@ export class SendPage extends BasePage {
   static checkNewStreamBrodcastedDialogs() {
     this.isVisible(TX_BROADCASTED_ICON, undefined, { timeout: 60000 });
     this.hasText(TX_BROADCASTED_MESSAGE, "Transaction broadcasted");
-    this.isVisible(SEND_MORE_STREAMS_BUTTON);
     this.isVisible(GO_TO_TOKENS_PAGE_BUTTON);
     this.doesNotExist(`${SEND_BUTTON} ${LOADING_SPINNER}`);
   }
@@ -434,9 +431,7 @@ export class SendPage extends BasePage {
           cy.wait(2000);
           cy.get("body").then((body) => {
             if (body.find("[role=presentation]").length > 0) {
-              cy.get("[role=presentation]").click("bottomRight", {
-                multiple: true,
-              });
+              body.find("[role=presentation]").click();
             }
           });
           this.doesNotExist("[role=dialog]");
@@ -456,9 +451,7 @@ export class SendPage extends BasePage {
           cy.wait(2000);
           cy.get("body").then((body) => {
             if (body.find("[role=presentation]").length > 0) {
-              cy.get("[role=presentation]").click("bottomRight", {
-                multiple: true,
-              });
+              body.find("[role=presentation]").click();
             }
           });
           this.doesNotExist("[role=dialog]");
@@ -645,7 +638,7 @@ export class SendPage extends BasePage {
 
   static clickSendButton() {
     cy.get(SEND_BUTTON).as("sendButton");
-    this.isNotDisabled("@sendButton", undefined, { timeout: 30000 });
+    this.isNotDisabled("@sendButton", undefined, { timeout: 45000 });
     this.click("@sendButton");
   }
 

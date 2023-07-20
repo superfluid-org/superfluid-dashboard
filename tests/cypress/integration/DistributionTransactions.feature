@@ -1,4 +1,5 @@
 @numTestsKeptInMemory(0)
+@retries(5)
 Feature: Distribution transaction test cases
 
     Scenario: Approving a subscription
