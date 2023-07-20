@@ -356,8 +356,11 @@ export class SendPage extends BasePage {
           timeUnit[0].toUpperCase() + timeUnit.substring(1)
         ]!}]`
       );
+      this.hasText(SELECT_TOKEN_BUTTON, selectedToken, undefined, {
+        timeout: 30000,
+      });
+      this.isVisible(PREVIEW_UPFRONT_BUFFER, undefined, { timeout: 30000 });
       this.click(RISK_CHECKBOX);
-      this.isVisible(PREVIEW_UPFRONT_BUFFER);
     });
   }
 
