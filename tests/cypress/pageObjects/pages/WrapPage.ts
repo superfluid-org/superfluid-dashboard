@@ -58,7 +58,10 @@ export class WrapPage extends BasePage {
     this.isVisible(SELECT_TOKEN_BUTTON);
     this.isVisible(WRAP_PREVIEW);
     this.isVisible(TOKEN_PAIR);
-    this.isVisible(CONNECT_WALLET_BUTTON);
+  }
+
+  static checkIfUpgradeButtonIsVisible() {
+    this.isVisible(UPGRADE_BUTTON);
   }
 
   static clearAndInputWrapAmount(amount: string) {
