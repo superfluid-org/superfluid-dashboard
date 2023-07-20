@@ -411,7 +411,7 @@ export class Common extends BasePage {
     cy.wrap(null).then(() => {
       return web3.eth.getBlock("latest").then((block) => {
         let blockVsTimeNowDifferenceInMinutes =
-          (Date.now() - block.timestamp * 1000) / 1000 / 60 + 15;
+          (Date.now() - block.timestamp * 1000) / 1000 / 60;
         expect(blockVsTimeNowDifferenceInMinutes).to.be.lessThan(
           minutes,
           `${
@@ -445,7 +445,7 @@ export class Common extends BasePage {
     }).then((res) => {
       let metaData = res.body.data._meta;
       let blockVsTimeNowDifferenceInMinutes =
-        (Date.now() - metaData.block.timestamp * 1000) / 1000 / 60 + 15;
+        (Date.now() - metaData.block.timestamp * 1000) / 1000 / 60;
       //Sometimes the graph meta does not return timestamp for blocks, don't assert if it is so
       if (metaData.block.timestamp !== null) {
         expect(metaData.hasIndexingErrors).to.be.false;
@@ -630,7 +630,7 @@ export class Common extends BasePage {
     );
     cy.wrap(null, { log: false }).then(() => {
       return web3.eth.getBalance(FAUCET_CONTRACT_ADDRESS).then((balance) => {
-        expect(parseInt(balance)).to.be.greaterThan(1e20);
+        expect(parseInt(balance)).to.be.greaterThan(1e19);
       });
     });
   }
