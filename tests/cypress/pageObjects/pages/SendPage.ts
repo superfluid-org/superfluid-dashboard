@@ -524,7 +524,8 @@ export class SendPage extends BasePage {
       network === "selected network" ? Cypress.env("network") : network;
     this.overrideNextGasPrice();
     this.isVisible(PREVIEW_UPFRONT_BUFFER);
-    this.isNotDisabled(SEND_BUTTON);
+    cy.get(SEND_BUTTON).as("sendButton");
+    this.isNotDisabled("@sendButton");
     this.isEnabled(SEND_BUTTON);
     this.click(SEND_BUTTON);
     this.isVisible(LOADING_SPINNER);
@@ -550,6 +551,8 @@ export class SendPage extends BasePage {
       cy.get("body").then((body) => {
         if (body.find(CANCEL_STREAM_BUTTON).length < 1) {
           this.overrideNextGasPrice();
+          cy.get(SEND_BUTTON).as("sendButton");
+          this.isNotDisabled("@sendButton");
           this.click(SEND_BUTTON);
           this.isVisible(GO_TO_TOKENS_PAGE_BUTTON);
           this.click(OTHER_CLOSE_DIALOG_BUTTON, -1, { timeout: 60000 });

@@ -125,6 +125,7 @@ export class ExportPage extends BasePage {
 
     this.clickExportPreview();
     cy.wait("@exportRequest").then((req) => {
+      //cy.writeFile(`cypress/fixtures/${period}.json`,JSON.parse(req.response?.body))
       cy.fixture("exportData.json").then((data) => {
         expect(JSON.parse(req.response?.body)).to.deep.eq(data[period]);
       });
@@ -146,6 +147,7 @@ export class ExportPage extends BasePage {
         }).as("exportRequest");
         this.clickExportPreview();
         cy.wait("@exportRequest").then((req) => {
+          //cy.writeFile(`cypress/fixtures/${type}.json`,JSON.parse(req.response?.body))
           cy.fixture("exportData.json").then((data) => {
             expect(JSON.parse(req.response?.body)).to.deep.eq(data[type]);
           });
@@ -158,6 +160,7 @@ export class ExportPage extends BasePage {
         }).as("exportRequest");
         this.clickExportPreview();
         cy.wait("@exportRequest").then((req) => {
+          //cy.writeFile(`cypress/fixtures/${type}.json`,JSON.parse(req.response?.body))
           cy.fixture("exportData.json").then((data) => {
             expect(JSON.parse(req.response?.body)).to.deep.eq(data[type]);
           });
@@ -174,6 +177,7 @@ export class ExportPage extends BasePage {
         }).as("exportRequest");
         this.click(EXPORT_PREVIEW);
         cy.wait("@exportRequest").then((req) => {
+          //cy.writeFile(`cypress/fixtures/${type}.json`,JSON.parse(req.response?.body))
           cy.fixture("exportData.json").then((data) => {
             expect(JSON.parse(req.response?.body)).to.deep.eq(data[type]);
           });
@@ -184,16 +188,20 @@ export class ExportPage extends BasePage {
         break;
       case "all columns":
         //Reversing because the first columns aren't rendered when looking from the last
+        //let json = {}
         allColumns.reverse().forEach((column) => {
+          //json[column] = []
           this.get(
             `.MuiDataGrid-cell[data-field=${column}]`,
             0
           ).scrollIntoView();
           cy.get(`.MuiDataGrid-cell[data-field=${column}]`).each((row, i) => {
             cy.fixture("exportData.json").then((data) => {
+              //json[column][i] = row.text()
               expect(row).to.have.text(data[type][column][i]);
             });
           });
+          //cy.writeFile("cypress/fixtures/allColumns.json",json)
         });
         break;
 
