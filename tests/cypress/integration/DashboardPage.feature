@@ -28,7 +28,7 @@ Feature: Dashboard Page test cases
         And User closes the dropdown
         Then No Super Token balance screen is shown
         And User clicks on the no balance wrap button
-        Then Wrap/Unwrap page is open and the wrap container is visible
+        Then Wrap/Unwrap page is open and the wrap container is visible with a wallet connected
         And User clicks on the "dashboard" navigation button
         And User changes the visible networks to "testnet"
         And User opens the network selection dropdown

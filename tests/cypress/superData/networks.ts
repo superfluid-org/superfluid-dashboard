@@ -450,7 +450,7 @@ export const networkDefinition: {
     color: "#68B1D5",
     superfluidRpcUrl: superfluidRpcUrls["sepolia"],
     subgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-sepolia",
+      "https://subgraph.satsuma-prod.com/c5br3jaVlJI6/superfluid/eth-sepolia/api",
     getLinkForTransaction: (txHash: string): string =>
       `https://sepolia.etherscan.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>

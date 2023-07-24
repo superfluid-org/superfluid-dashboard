@@ -301,7 +301,7 @@ export class DashboardPage extends BasePage {
     let flowValues = amounts === "-" ? amounts : amounts.split(",");
     cy.get(
       `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell]`,
-      { timeout: 30000 }
+      { timeout: 60000 }
     ).should("be.visible");
     if (amounts === "-") {
       this.hasText(

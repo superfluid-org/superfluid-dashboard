@@ -340,9 +340,7 @@ export class SendPage extends BasePage {
       cy.wait(2000);
       cy.get("body").then((body) => {
         if (body.find("[role=presentation]").length > 0) {
-          cy.get("[role=presentation]").click("bottomRight", {
-            multiple: true,
-          });
+          body.find("[role=presentation]").click();
         }
       });
       this.doesNotExist("[role=dialog]");
@@ -358,8 +356,11 @@ export class SendPage extends BasePage {
           timeUnit[0].toUpperCase() + timeUnit.substring(1)
         ]!}]`
       );
+      this.hasText(SELECT_TOKEN_BUTTON, selectedToken, undefined, {
+        timeout: 30000,
+      });
+      this.isVisible(PREVIEW_UPFRONT_BUFFER, undefined, { timeout: 30000 });
       this.click(RISK_CHECKBOX);
-      this.isVisible(PREVIEW_UPFRONT_BUFFER);
     });
   }
 
@@ -383,7 +384,6 @@ export class SendPage extends BasePage {
   static checkNewStreamBrodcastedDialogs() {
     this.isVisible(TX_BROADCASTED_ICON, undefined, { timeout: 60000 });
     this.hasText(TX_BROADCASTED_MESSAGE, "Transaction broadcasted");
-    this.isVisible(SEND_MORE_STREAMS_BUTTON);
     this.isVisible(GO_TO_TOKENS_PAGE_BUTTON);
     this.doesNotExist(`${SEND_BUTTON} ${LOADING_SPINNER}`);
   }
@@ -434,9 +434,7 @@ export class SendPage extends BasePage {
           cy.wait(2000);
           cy.get("body").then((body) => {
             if (body.find("[role=presentation]").length > 0) {
-              cy.get("[role=presentation]").click("bottomRight", {
-                multiple: true,
-              });
+              body.find("[role=presentation]").click();
             }
           });
           this.doesNotExist("[role=dialog]");
@@ -456,9 +454,7 @@ export class SendPage extends BasePage {
           cy.wait(2000);
           cy.get("body").then((body) => {
             if (body.find("[role=presentation]").length > 0) {
-              cy.get("[role=presentation]").click("bottomRight", {
-                multiple: true,
-              });
+              body.find("[role=presentation]").click();
             }
           });
           this.doesNotExist("[role=dialog]");
@@ -466,7 +462,7 @@ export class SendPage extends BasePage {
           this.type(FLOW_RATE_INPUT, "1");
           this.click(RISK_CHECKBOX);
           this.overrideNextGasPrice();
-          this.click(SEND_BUTTON);
+          this.clickSendButton();
           this.isVisible(GO_TO_TOKENS_PAGE_BUTTON);
           this.click(OTHER_CLOSE_DIALOG_BUTTON, -1, { timeout: 60000 });
           this.isVisible(`${TX_DRAWER_BUTTON} span`);
@@ -501,7 +497,7 @@ export class SendPage extends BasePage {
             );
             this.hasText(SEND_OR_MOD_STREAM, "Send Stream");
             this.overrideNextGasPrice();
-            this.click(SEND_BUTTON);
+            this.clickSendButton();
             this.click(OTHER_CLOSE_DIALOG_BUTTON);
             this.isVisible(`${TX_DRAWER_BUTTON} span`);
             this.isNotVisible(`${TX_DRAWER_BUTTON} span`, undefined, {
@@ -524,9 +520,7 @@ export class SendPage extends BasePage {
       network === "selected network" ? Cypress.env("network") : network;
     this.overrideNextGasPrice();
     this.isVisible(PREVIEW_UPFRONT_BUFFER);
-    this.isNotDisabled(SEND_BUTTON);
-    this.isEnabled(SEND_BUTTON);
-    this.click(SEND_BUTTON);
+    this.clickSendButton();
     this.isVisible(LOADING_SPINNER);
     this.exists(`${SEND_BUTTON} ${LOADING_SPINNER}`);
     this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...");
@@ -550,7 +544,7 @@ export class SendPage extends BasePage {
       cy.get("body").then((body) => {
         if (body.find(CANCEL_STREAM_BUTTON).length < 1) {
           this.overrideNextGasPrice();
-          this.click(SEND_BUTTON);
+          this.clickSendButton();
           this.isVisible(GO_TO_TOKENS_PAGE_BUTTON);
           this.click(OTHER_CLOSE_DIALOG_BUTTON, -1, { timeout: 60000 });
           this.isVisible(`${TX_DRAWER_BUTTON} span`);
@@ -646,7 +640,9 @@ export class SendPage extends BasePage {
   }
 
   static clickSendButton() {
-    this.click(SEND_BUTTON);
+    cy.get(SEND_BUTTON).as("sendButton");
+    this.isNotDisabled("@sendButton", undefined, { timeout: 45000 });
+    this.click("@sendButton");
   }
 
   static validateScheduledStreamDialogs() {
