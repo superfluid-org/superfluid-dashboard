@@ -139,12 +139,12 @@ const Bridge: NextPage = () => {
           color="secondary"
           textAlign="center"
         >
-          The Bridge is operated by Li.fi, and we cannot take responsibility for
+          The Bridge is operated by LI.FI, and we cannot take responsibility for
           any issues. For support related to the bridge, please refer to the
-          Li.fi{" "}
+          LI.FI{" "}
           <Link href="https://discord.com/invite/lifi" target="_blank">
-            Discord server.
-          </Link>
+            Discord server
+          </Link>.
         </Typography>
       </Stack>
     </Container>
