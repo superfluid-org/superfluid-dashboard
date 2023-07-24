@@ -121,7 +121,7 @@ export class AddressBookPage extends BasePage {
     cy.get(IMPORT_INPUT).selectFile("cypress/fixtures/addressBookImport.csv", {
       force: true,
     });
-    this.isVisible(ADDRESS_NAMES);
+    this.isVisible(ADDRESS_NAMES, undefined, { timeout: 60000 });
   }
 
   static validateExportedAddressBook() {

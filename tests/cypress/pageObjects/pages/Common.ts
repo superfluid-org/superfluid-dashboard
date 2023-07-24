@@ -131,9 +131,7 @@ export class Common extends BasePage {
     }
 
     let chainId = networksBySlug.get(selectedNetwork)?.id;
-
     let networkRpc = networksBySlug.get(selectedNetwork)?.superfluidRpcUrl;
-
     cy.visit(page, {
       onBeforeLoad: (win: any) => {
         const hdwallet = new HDWalletProvider({

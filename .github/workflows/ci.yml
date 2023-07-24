@@ -51,7 +51,7 @@ jobs:
       - name: Cypress tests
         uses: cypress-io/github-action@v4
         with:
-          command: yarn cypress-cloud run --record --parallel --key ${{ secrets.V2_CYPRESS_RECORD_KEY }} --ci-build-id ui-${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt}} --env TAGS="not @ignoreDuringUI",STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }},TX_ACCOUNT_PRIVATE_KEY1=${{ secrets.TX_ACCOUNT_PRIVATE_KEY1 }},TX_ACCOUNT_PRIVATE_KEY2=${{ secrets.TX_ACCOUNT_PRIVATE_KEY2 }},TX_ACCOUNT_PRIVATE_KEY3=${{ secrets.TX_ACCOUNT_PRIVATE_KEY3 }},TX_ACCOUNT_PRIVATE_KEY4=${{ secrets.TX_ACCOUNT_PRIVATE_KEY4 }}
+          command: yarn cypress-cloud run --record --parallel --key ${{ secrets.V2_CYPRESS_RECORD_KEY }} --group UI --ci-build-id ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt}} --env TAGS="not @ignoreDuringUI",STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }},TX_ACCOUNT_PRIVATE_KEY1=${{ secrets.TX_ACCOUNT_PRIVATE_KEY1 }},TX_ACCOUNT_PRIVATE_KEY2=${{ secrets.TX_ACCOUNT_PRIVATE_KEY2 }},TX_ACCOUNT_PRIVATE_KEY3=${{ secrets.TX_ACCOUNT_PRIVATE_KEY3 }},TX_ACCOUNT_PRIVATE_KEY4=${{ secrets.TX_ACCOUNT_PRIVATE_KEY4 }}
           working-directory: tests
         env:
           CYPRESS_baseUrl: ${{ needs.test_setup.outputs.netlify_url }}
@@ -65,7 +65,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        network: ["goerli","gnosis","polygon-mumbai","polygon","optimism","arbitrum-one","avalanche","avalanche-fuji","bsc","ethereum","arbitrum-goerli","optimism-goerli"]
+        network: ["goerli","gnosis","polygon-mumbai","polygon","optimism","arbitrum-one","avalanche","avalanche-fuji","bsc","ethereum","arbitrum-goerli","optimism-goerli","sepolia"]
     steps:
       - uses: actions/checkout@v2
         with:
@@ -80,7 +80,7 @@ jobs:
       - name: Cypress tests
         uses: cypress-io/github-action@v4
         with:
-          command: yarn cypress-cloud run --record --parallel --key ${{ secrets.V2_CYPRESS_RECORD_KEY }} --ci-build-id rejected-${{ matrix.network }}-${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt}} --env network=${{ matrix.network }},TAGS=@rejected,STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }},TX_ACCOUNT_PRIVATE_KEY1=${{ secrets.TX_ACCOUNT_PRIVATE_KEY1 }},TX_ACCOUNT_PRIVATE_KEY2=${{ secrets.TX_ACCOUNT_PRIVATE_KEY2 }},TX_ACCOUNT_PRIVATE_KEY3=${{ secrets.TX_ACCOUNT_PRIVATE_KEY3 }},TX_ACCOUNT_PRIVATE_KEY4=${{ secrets.TX_ACCOUNT_PRIVATE_KEY4 }}
+          command: yarn cypress-cloud run --record --parallel --key ${{ secrets.V2_CYPRESS_RECORD_KEY }} --group rejected-${{ matrix.network }} --ci-build-id ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt}} --env network=${{ matrix.network }},TAGS=@rejected,STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }},TX_ACCOUNT_PRIVATE_KEY1=${{ secrets.TX_ACCOUNT_PRIVATE_KEY1 }},TX_ACCOUNT_PRIVATE_KEY2=${{ secrets.TX_ACCOUNT_PRIVATE_KEY2 }},TX_ACCOUNT_PRIVATE_KEY3=${{ secrets.TX_ACCOUNT_PRIVATE_KEY3 }},TX_ACCOUNT_PRIVATE_KEY4=${{ secrets.TX_ACCOUNT_PRIVATE_KEY4 }}
           working-directory: tests
         env:
           CYPRESS_baseUrl: ${{ needs.test_setup.outputs.netlify_url }}
@@ -110,6 +110,6 @@ jobs:
         uses: cypress-io/github-action@v4
         with:
           working-directory: tests
-          command: yarn cypress-cloud run --browser chrome --config chromeWebSecurity=false --record --parallel --key ${{ secrets.V2_CYPRESS_RECORD_KEY }} --ci-build-id gnosis-${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt}} --env TAGS=@Gnosis
+          command: yarn cypress-cloud run --browser chrome --config chromeWebSecurity=false --record --parallel --key ${{ secrets.V2_CYPRESS_RECORD_KEY }} --group Gnosis --ci-build-id ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt}} --env TAGS=@Gnosis
         env:
           CYPRESS_baseUrl: ${{ needs.test_setup.outputs.netlify_url }}

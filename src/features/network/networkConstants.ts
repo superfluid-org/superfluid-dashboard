@@ -128,6 +128,7 @@ export const superfluidRpcUrls = {
   "celo-mainnet": "https://rpc-endpoints.superfluid.dev/celo-mainnet",
   "optimism-goerli": "https://rpc-endpoints.superfluid.dev/optimism-goerli",
   "arbitrum-goerli": "https://rpc-endpoints.superfluid.dev/arbitrum-goerli",
+  "sepolia": "https://rpc-endpoints.superfluid.dev/eth-sepolia",
 } as const;
 
 export const superfluidPlatformUrls = {

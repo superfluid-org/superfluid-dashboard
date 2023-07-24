@@ -34,6 +34,138 @@
       ]
     },
     {
+      "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x7d342726b69c28d942ad8bfe6ac81b972349d524-0.0-0.0",
+      "flowRate": "3858024691",
+      "startedAtTimestamp": "1671019624",
+      "startedAtBlockNumber": "49488149",
+      "stoppedAtTimestamp": null,
+      "stoppedAtBlockNumber": null,
+      "totalAmountStreamed": null,
+      "chainId": 10,
+      "token": {
+        "id": "0x7d342726b69c28d942ad8bfe6ac81b972349d524",
+        "symbol": "DAIx",
+        "name": "Super Dai Stablecoin",
+        "underlyingAddress": "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
+      },
+      "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0xc4839d1078a09bb44b976eb0a481b7537195d0eef247eb75ceaaac9c715fa211",
+      "virtualPeriods": [
+        {
+          "startTime": 1672524000,
+          "endTime": 1672531199,
+          "amount": "27773919750509",
+          "amountFiat": "0.000027779970320187889468"
+        },
+        {
+          "startTime": 1672531200,
+          "endTime": 1675202399,
+          "amount": "10305551696574509",
+          "amountFiat": "0.010311324357936757742"
+        }
+      ]
+    },
+    {
+      "id": "0xeb85888b31fadf79cb264d065edcb4a14551c28d-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x7d342726b69c28d942ad8bfe6ac81b972349d524-0.0-0.0",
+      "flowRate": "7716049382",
+      "startedAtTimestamp": "1649157821",
+      "startedAtBlockNumber": "5354235",
+      "stoppedAtTimestamp": null,
+      "stoppedAtBlockNumber": null,
+      "totalAmountStreamed": null,
+      "chainId": 10,
+      "token": {
+        "id": "0x7d342726b69c28d942ad8bfe6ac81b972349d524",
+        "symbol": "DAIx",
+        "name": "Super Dai Stablecoin",
+        "underlyingAddress": "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
+      },
+      "sender": "0xeb85888b31fadf79cb264d065edcb4a14551c28d",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0xf85a5812e3ac6af52c9da09c324e9a77eaf845da567c79f0b38ef5bb858144c7",
+      "virtualPeriods": [
+        {
+          "startTime": 1672524000,
+          "endTime": 1672531199,
+          "amount": "55547839501018",
+          "amountFiat": "0.000055559940640375778936"
+        },
+        {
+          "startTime": 1672531200,
+          "endTime": 1675202399,
+          "amount": "20611103393149018",
+          "amountFiat": "0.020622648715873515484"
+        }
+      ]
+    },
+    {
+      "id": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40-0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d-1.0-2.0",
+      "flowRate": "38580",
+      "startedAtTimestamp": "1666786230",
+      "startedAtBlockNumber": "31667386",
+      "stoppedAtTimestamp": null,
+      "stoppedAtBlockNumber": null,
+      "totalAmountStreamed": null,
+      "chainId": 10,
+      "token": {
+        "id": "0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d",
+        "symbol": "ETHx",
+        "name": "Super ETH",
+        "underlyingAddress": "0x0000000000000000000000000000000000000000"
+      },
+      "sender": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "receiver": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
+      "startedAtEvent": "0xf1b69275bfc6f382668b05e1b1642310c2fa95b313e72edf30e918e3946a71a0",
+      "virtualPeriods": [
+        {
+          "startTime": 1672524000,
+          "endTime": 1672531199,
+          "amount": "-277737420",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1672531200,
+          "endTime": 1675202399,
+          "amount": "-103054857420",
+          "amountFiat": "0"
+        }
+      ]
+    },
+    {
+      "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x1e38baa2735128bcc23792ff9aae96ea7aa7ecd2-0.0-0.0",
+      "flowRate": "3858024691",
+      "startedAtTimestamp": "1671106984",
+      "startedAtBlockNumber": "23925296",
+      "stoppedAtTimestamp": null,
+      "stoppedAtBlockNumber": null,
+      "totalAmountStreamed": null,
+      "chainId": 56,
+      "token": {
+        "id": "0x1e38baa2735128bcc23792ff9aae96ea7aa7ecd2",
+        "symbol": "DAIx",
+        "name": "Super Binance-Peg DAI",
+        "underlyingAddress": "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3"
+      },
+      "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0x439d496a7bf74e157184e7a13d1600ba7f71c4cf91d1dc012c4a1bf7758e9682",
+      "virtualPeriods": [
+        {
+          "startTime": 1672524000,
+          "endTime": 1672531199,
+          "amount": "27773919750509",
+          "amountFiat": "0.000027779970320187889468"
+        },
+        {
+          "startTime": 1672531200,
+          "endTime": 1675202399,
+          "amount": "10305551696574509",
+          "amountFiat": "0.010311324357936757742"
+        }
+      ]
+    },
+    {
       "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x66e454105ae553cfa87ad4dc4cdf128c841fcd73-0.0-0.0",
       "flowRate": "3858024691",
       "startedAtTimestamp": "1671024475",
@@ -336,105 +468,6 @@
       ]
     },
     {
-      "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x7d342726b69c28d942ad8bfe6ac81b972349d524-0.0-0.0",
-      "flowRate": "3858024691",
-      "startedAtTimestamp": "1671019624",
-      "startedAtBlockNumber": "49488149",
-      "stoppedAtTimestamp": null,
-      "stoppedAtBlockNumber": null,
-      "totalAmountStreamed": null,
-      "chainId": 10,
-      "token": {
-        "id": "0x7d342726b69c28d942ad8bfe6ac81b972349d524",
-        "symbol": "DAIx",
-        "name": "Super Dai Stablecoin",
-        "underlyingAddress": "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
-      },
-      "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
-      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "startedAtEvent": "0xc4839d1078a09bb44b976eb0a481b7537195d0eef247eb75ceaaac9c715fa211",
-      "virtualPeriods": [
-        {
-          "startTime": 1672524000,
-          "endTime": 1672531199,
-          "amount": "27773919750509",
-          "amountFiat": "0.000027779970320187889468"
-        },
-        {
-          "startTime": 1672531200,
-          "endTime": 1675202399,
-          "amount": "10305551696574509",
-          "amountFiat": "0.010311324357936757742"
-        }
-      ]
-    },
-    {
-      "id": "0xeb85888b31fadf79cb264d065edcb4a14551c28d-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x7d342726b69c28d942ad8bfe6ac81b972349d524-0.0-0.0",
-      "flowRate": "7716049382",
-      "startedAtTimestamp": "1649157821",
-      "startedAtBlockNumber": "5354235",
-      "stoppedAtTimestamp": null,
-      "stoppedAtBlockNumber": null,
-      "totalAmountStreamed": null,
-      "chainId": 10,
-      "token": {
-        "id": "0x7d342726b69c28d942ad8bfe6ac81b972349d524",
-        "symbol": "DAIx",
-        "name": "Super Dai Stablecoin",
-        "underlyingAddress": "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
-      },
-      "sender": "0xeb85888b31fadf79cb264d065edcb4a14551c28d",
-      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "startedAtEvent": "0xf85a5812e3ac6af52c9da09c324e9a77eaf845da567c79f0b38ef5bb858144c7",
-      "virtualPeriods": [
-        {
-          "startTime": 1672524000,
-          "endTime": 1672531199,
-          "amount": "55547839501018",
-          "amountFiat": "0.000055559940640375778936"
-        },
-        {
-          "startTime": 1672531200,
-          "endTime": 1675202399,
-          "amount": "20611103393149018",
-          "amountFiat": "0.020622648715873515484"
-        }
-      ]
-    },
-    {
-      "id": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40-0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d-1.0-2.0",
-      "flowRate": "38580",
-      "startedAtTimestamp": "1666786230",
-      "startedAtBlockNumber": "31667386",
-      "stoppedAtTimestamp": null,
-      "stoppedAtBlockNumber": null,
-      "totalAmountStreamed": null,
-      "chainId": 10,
-      "token": {
-        "id": "0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d",
-        "symbol": "ETHx",
-        "name": "Super ETH",
-        "underlyingAddress": "0x0000000000000000000000000000000000000000"
-      },
-      "sender": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "receiver": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
-      "startedAtEvent": "0xf1b69275bfc6f382668b05e1b1642310c2fa95b313e72edf30e918e3946a71a0",
-      "virtualPeriods": [
-        {
-          "startTime": 1672524000,
-          "endTime": 1672531199,
-          "amount": "-277737420",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1672531200,
-          "endTime": 1675202399,
-          "amount": "-103054857420",
-          "amountFiat": "0"
-        }
-      ]
-    },
-    {
       "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x521677a61d101a80ce0fb903b13cb485232774ee-0.0-0.0",
       "flowRate": "3858024691",
       "startedAtTimestamp": "1671024854",
@@ -532,39 +565,6 @@
           "amountFiat": "0.010311324357936757742"
         }
       ]
-    },
-    {
-      "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x1e38baa2735128bcc23792ff9aae96ea7aa7ecd2-0.0-0.0",
-      "flowRate": "3858024691",
-      "startedAtTimestamp": "1671106984",
-      "startedAtBlockNumber": "23925296",
-      "stoppedAtTimestamp": null,
-      "stoppedAtBlockNumber": null,
-      "totalAmountStreamed": null,
-      "chainId": 56,
-      "token": {
-        "id": "0x1e38baa2735128bcc23792ff9aae96ea7aa7ecd2",
-        "symbol": "DAIx",
-        "name": "Super Binance-Peg DAI",
-        "underlyingAddress": "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3"
-      },
-      "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
-      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "startedAtEvent": "0x439d496a7bf74e157184e7a13d1600ba7f71c4cf91d1dc012c4a1bf7758e9682",
-      "virtualPeriods": [
-        {
-          "startTime": 1672524000,
-          "endTime": 1672531199,
-          "amount": "27773919750509",
-          "amountFiat": "0.000027779970320187889468"
-        },
-        {
-          "startTime": 1672531200,
-          "endTime": 1675202399,
-          "amount": "10305551696574509",
-          "amountFiat": "0.010311324357936757742"
-        }
-      ]
     }
   ],
   "Daily": [
@@ -586,6 +586,858 @@
       "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
       "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
       "startedAtEvent": "0x2026840312d64277db37e453fcb40e7b0093a9015abc92f9de0542e572c36b1c",
+      "virtualPeriods": [
+        {
+          "startTime": 1672524000,
+          "endTime": 1672531199,
+          "amount": "27773919750509",
+          "amountFiat": "0.000027779970320187889468"
+        },
+        {
+          "startTime": 1672531200,
+          "endTime": 1672617599,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033353268029124600863"
+        },
+        {
+          "startTime": 1672617600,
+          "endTime": 1672703999,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033341130181311806282"
+        },
+        {
+          "startTime": 1672704000,
+          "endTime": 1672790399,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033339706671556206436"
+        },
+        {
+          "startTime": 1672790400,
+          "endTime": 1672876799,
+          "amount": "333329475277709",
+          "amountFiat": "0.0003334725110383979755"
+        },
+        {
+          "startTime": 1672876800,
+          "endTime": 1672963199,
+          "amount": "333329475277709",
+          "amountFiat": "0.0003333973941442057734"
+        },
+        {
+          "startTime": 1672963200,
+          "endTime": 1673049599,
+          "amount": "333329475277709",
+          "amountFiat": "0.0003333719252947109994"
+        },
+        {
+          "startTime": 1673049600,
+          "endTime": 1673135999,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033349553075983289445"
+        },
+        {
+          "startTime": 1673136000,
+          "endTime": 1673222399,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033353034116174259719"
+        },
+        {
+          "startTime": 1673222400,
+          "endTime": 1673308799,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033353424947079055251"
+        },
+        {
+          "startTime": 1673308800,
+          "endTime": 1673395199,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033360528895710150006"
+        },
+        {
+          "startTime": 1673395200,
+          "endTime": 1673481599,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033343303624435288387"
+        },
+        {
+          "startTime": 1673481600,
+          "endTime": 1673567999,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033341729671400504314"
+        },
+        {
+          "startTime": 1673568000,
+          "endTime": 1673654399,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033342265066605469145"
+        },
+        {
+          "startTime": 1673654400,
+          "endTime": 1673740799,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033331350577349874593"
+        },
+        {
+          "startTime": 1673740800,
+          "endTime": 1673827199,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033345026379613835018"
+        },
+        {
+          "startTime": 1673827200,
+          "endTime": 1673913599,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033351334421672191882"
+        },
+        {
+          "startTime": 1673913600,
+          "endTime": 1673999999,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033334717900119944507"
+        },
+        {
+          "startTime": 1674000000,
+          "endTime": 1674086399,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033467053435703994379"
+        },
+        {
+          "startTime": 1674086400,
+          "endTime": 1674172799,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033363879118777033696"
+        },
+        {
+          "startTime": 1674172800,
+          "endTime": 1674259199,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033422979109964206297"
+        },
+        {
+          "startTime": 1674259200,
+          "endTime": 1674345599,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033345558464865230248"
+        },
+        {
+          "startTime": 1674345600,
+          "endTime": 1674431999,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033350864456941161728"
+        },
+        {
+          "startTime": 1674432000,
+          "endTime": 1674518399,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033350285747290331323"
+        },
+        {
+          "startTime": 1674518400,
+          "endTime": 1674604799,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033357377835240878496"
+        },
+        {
+          "startTime": 1674604800,
+          "endTime": 1674691199,
+          "amount": "333329475277709",
+          "amountFiat": "0.0003333401077128922299"
+        },
+        {
+          "startTime": 1674691200,
+          "endTime": 1674777599,
+          "amount": "333329475277709",
+          "amountFiat": "0.0003335229851687477064"
+        },
+        {
+          "startTime": 1674777600,
+          "endTime": 1674863999,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033332448997736176598"
+        },
+        {
+          "startTime": 1674864000,
+          "endTime": 1674950399,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033333159672823986001"
+        },
+        {
+          "startTime": 1674950400,
+          "endTime": 1675036799,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033339213391284244033"
+        },
+        {
+          "startTime": 1675036800,
+          "endTime": 1675123199,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033345830958290199371"
+        },
+        {
+          "startTime": 1675123200,
+          "endTime": 1675202399,
+          "amount": "305551697502509",
+          "amountFiat": "0.00030561761328547686516"
+        }
+      ]
+    },
+    {
+      "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x7d342726b69c28d942ad8bfe6ac81b972349d524-0.0-0.0",
+      "flowRate": "3858024691",
+      "startedAtTimestamp": "1671019624",
+      "startedAtBlockNumber": "49488149",
+      "stoppedAtTimestamp": null,
+      "stoppedAtBlockNumber": null,
+      "totalAmountStreamed": null,
+      "chainId": 10,
+      "token": {
+        "id": "0x7d342726b69c28d942ad8bfe6ac81b972349d524",
+        "symbol": "DAIx",
+        "name": "Super Dai Stablecoin",
+        "underlyingAddress": "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
+      },
+      "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0xc4839d1078a09bb44b976eb0a481b7537195d0eef247eb75ceaaac9c715fa211",
+      "virtualPeriods": [
+        {
+          "startTime": 1672524000,
+          "endTime": 1672531199,
+          "amount": "27773919750509",
+          "amountFiat": "0.000027779970320187889468"
+        },
+        {
+          "startTime": 1672531200,
+          "endTime": 1672617599,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033353268029124600863"
+        },
+        {
+          "startTime": 1672617600,
+          "endTime": 1672703999,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033341130181311806282"
+        },
+        {
+          "startTime": 1672704000,
+          "endTime": 1672790399,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033339706671556206436"
+        },
+        {
+          "startTime": 1672790400,
+          "endTime": 1672876799,
+          "amount": "333329475277709",
+          "amountFiat": "0.0003334725110383979755"
+        },
+        {
+          "startTime": 1672876800,
+          "endTime": 1672963199,
+          "amount": "333329475277709",
+          "amountFiat": "0.0003333973941442057734"
+        },
+        {
+          "startTime": 1672963200,
+          "endTime": 1673049599,
+          "amount": "333329475277709",
+          "amountFiat": "0.0003333719252947109994"
+        },
+        {
+          "startTime": 1673049600,
+          "endTime": 1673135999,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033349553075983289445"
+        },
+        {
+          "startTime": 1673136000,
+          "endTime": 1673222399,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033353034116174259719"
+        },
+        {
+          "startTime": 1673222400,
+          "endTime": 1673308799,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033353424947079055251"
+        },
+        {
+          "startTime": 1673308800,
+          "endTime": 1673395199,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033360528895710150006"
+        },
+        {
+          "startTime": 1673395200,
+          "endTime": 1673481599,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033343303624435288387"
+        },
+        {
+          "startTime": 1673481600,
+          "endTime": 1673567999,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033341729671400504314"
+        },
+        {
+          "startTime": 1673568000,
+          "endTime": 1673654399,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033342265066605469145"
+        },
+        {
+          "startTime": 1673654400,
+          "endTime": 1673740799,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033331350577349874593"
+        },
+        {
+          "startTime": 1673740800,
+          "endTime": 1673827199,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033345026379613835018"
+        },
+        {
+          "startTime": 1673827200,
+          "endTime": 1673913599,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033351334421672191882"
+        },
+        {
+          "startTime": 1673913600,
+          "endTime": 1673999999,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033334717900119944507"
+        },
+        {
+          "startTime": 1674000000,
+          "endTime": 1674086399,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033467053435703994379"
+        },
+        {
+          "startTime": 1674086400,
+          "endTime": 1674172799,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033363879118777033696"
+        },
+        {
+          "startTime": 1674172800,
+          "endTime": 1674259199,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033422979109964206297"
+        },
+        {
+          "startTime": 1674259200,
+          "endTime": 1674345599,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033345558464865230248"
+        },
+        {
+          "startTime": 1674345600,
+          "endTime": 1674431999,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033350864456941161728"
+        },
+        {
+          "startTime": 1674432000,
+          "endTime": 1674518399,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033350285747290331323"
+        },
+        {
+          "startTime": 1674518400,
+          "endTime": 1674604799,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033357377835240878496"
+        },
+        {
+          "startTime": 1674604800,
+          "endTime": 1674691199,
+          "amount": "333329475277709",
+          "amountFiat": "0.0003333401077128922299"
+        },
+        {
+          "startTime": 1674691200,
+          "endTime": 1674777599,
+          "amount": "333329475277709",
+          "amountFiat": "0.0003335229851687477064"
+        },
+        {
+          "startTime": 1674777600,
+          "endTime": 1674863999,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033332448997736176598"
+        },
+        {
+          "startTime": 1674864000,
+          "endTime": 1674950399,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033333159672823986001"
+        },
+        {
+          "startTime": 1674950400,
+          "endTime": 1675036799,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033339213391284244033"
+        },
+        {
+          "startTime": 1675036800,
+          "endTime": 1675123199,
+          "amount": "333329475277709",
+          "amountFiat": "0.00033345830958290199371"
+        },
+        {
+          "startTime": 1675123200,
+          "endTime": 1675202399,
+          "amount": "305551697502509",
+          "amountFiat": "0.00030561761328547686516"
+        }
+      ]
+    },
+    {
+      "id": "0xeb85888b31fadf79cb264d065edcb4a14551c28d-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x7d342726b69c28d942ad8bfe6ac81b972349d524-0.0-0.0",
+      "flowRate": "7716049382",
+      "startedAtTimestamp": "1649157821",
+      "startedAtBlockNumber": "5354235",
+      "stoppedAtTimestamp": null,
+      "stoppedAtBlockNumber": null,
+      "totalAmountStreamed": null,
+      "chainId": 10,
+      "token": {
+        "id": "0x7d342726b69c28d942ad8bfe6ac81b972349d524",
+        "symbol": "DAIx",
+        "name": "Super Dai Stablecoin",
+        "underlyingAddress": "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
+      },
+      "sender": "0xeb85888b31fadf79cb264d065edcb4a14551c28d",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0xf85a5812e3ac6af52c9da09c324e9a77eaf845da567c79f0b38ef5bb858144c7",
+      "virtualPeriods": [
+        {
+          "startTime": 1672524000,
+          "endTime": 1672531199,
+          "amount": "55547839501018",
+          "amountFiat": "0.000055559940640375778936"
+        },
+        {
+          "startTime": 1672531200,
+          "endTime": 1672617599,
+          "amount": "666658950555418",
+          "amountFiat": "0.00066706536058249201726"
+        },
+        {
+          "startTime": 1672617600,
+          "endTime": 1672703999,
+          "amount": "666658950555418",
+          "amountFiat": "0.00066682260362623612563"
+        },
+        {
+          "startTime": 1672704000,
+          "endTime": 1672790399,
+          "amount": "666658950555418",
+          "amountFiat": "0.00066679413343112412872"
+        },
+        {
+          "startTime": 1672790400,
+          "endTime": 1672876799,
+          "amount": "666658950555418",
+          "amountFiat": "0.00066694502207679595099"
+        },
+        {
+          "startTime": 1672876800,
+          "endTime": 1672963199,
+          "amount": "666658950555418",
+          "amountFiat": "0.0006667947882884115468"
+        },
+        {
+          "startTime": 1672963200,
+          "endTime": 1673049599,
+          "amount": "666658950555418",
+          "amountFiat": "0.00066674385058942199879"
+        },
+        {
+          "startTime": 1673049600,
+          "endTime": 1673135999,
+          "amount": "666658950555418",
+          "amountFiat": "0.0006669910615196657889"
+        },
+        {
+          "startTime": 1673136000,
+          "endTime": 1673222399,
+          "amount": "666658950555418",
+          "amountFiat": "0.00066706068232348519439"
+        },
+        {
+          "startTime": 1673222400,
+          "endTime": 1673308799,
+          "amount": "666658950555418",
+          "amountFiat": "0.00066706849894158110503"
+        },
+        {
+          "startTime": 1673308800,
+          "endTime": 1673395199,
+          "amount": "666658950555418",
+          "amountFiat": "0.00066721057791420300012"
+        },
+        {
+          "startTime": 1673395200,
+          "endTime": 1673481599,
+          "amount": "666658950555418",
+          "amountFiat": "0.00066686607248870576775"
+        },
+        {
+          "startTime": 1673481600,
+          "endTime": 1673567999,
+          "amount": "666658950555418",
+          "amountFiat": "0.00066683459342801008627"
+        },
+        {
+          "startTime": 1673568000,
+          "endTime": 1673654399,
+          "amount": "666658950555418",
+          "amountFiat": "0.00066684530133210938291"
+        },
+        {
+          "startTime": 1673654400,
+          "endTime": 1673740799,
+          "amount": "666658950555418",
+          "amountFiat": "0.00066662701154699749186"
+        },
+        {
+          "startTime": 1673740800,
+          "endTime": 1673827199,
+          "amount": "666658950555418",
+          "amountFiat": "0.00066690052759227670035"
+        },
+        {
+          "startTime": 1673827200,
+          "endTime": 1673913599,
+          "amount": "666658950555418",
+          "amountFiat": "0.00066702668843344383764"
+        },
+        {
+          "startTime": 1673913600,
+          "endTime": 1673999999,
+          "amount": "666658950555418",
+          "amountFiat": "0.00066669435800239889015"
+        },
+        {
+          "startTime": 1674000000,
+          "endTime": 1674086399,
+          "amount": "666658950555418",
+          "amountFiat": "0.00066934106871407988758"
+        },
+        {
+          "startTime": 1674086400,
+          "endTime": 1674172799,
+          "amount": "666658950555418",
+          "amountFiat": "0.00066727758237554067391"
+        },
+        {
+          "startTime": 1674172800,
+          "endTime": 1674259199,
+          "amount": "666658950555418",
+          "amountFiat": "0.00066845958219928412594"
+        },
+        {
+          "startTime": 1674259200,
+          "endTime": 1674345599,
+          "amount": "666658950555418",
+          "amountFiat": "0.00066691116929730460495"
+        },
+        {
+          "startTime": 1674345600,
+          "endTime": 1674431999,
+          "amount": "666658950555418",
+          "amountFiat": "0.00066701728913882323456"
+        },
+        {
+          "startTime": 1674432000,
+          "endTime": 1674518399,
+          "amount": "666658950555418",
+          "amountFiat": "0.00066700571494580662647"
+        },
+        {
+          "startTime": 1674518400,
+          "endTime": 1674604799,
+          "amount": "666658950555418",
+          "amountFiat": "0.00066714755670481756992"
+        },
+        {
+          "startTime": 1674604800,
+          "endTime": 1674691199,
+          "amount": "666658950555418",
+          "amountFiat": "0.00066668021542578445981"
+        },
+        {
+          "startTime": 1674691200,
+          "endTime": 1674777599,
+          "amount": "666658950555418",
+          "amountFiat": "0.0006670459703374954128"
+        },
+        {
+          "startTime": 1674777600,
+          "endTime": 1674863999,
+          "amount": "666658950555418",
+          "amountFiat": "0.00066664897995472353195"
+        },
+        {
+          "startTime": 1674864000,
+          "endTime": 1674950399,
+          "amount": "666658950555418",
+          "amountFiat": "0.00066666319345647972003"
+        },
+        {
+          "startTime": 1674950400,
+          "endTime": 1675036799,
+          "amount": "666658950555418",
+          "amountFiat": "0.00066678426782568488067"
+        },
+        {
+          "startTime": 1675036800,
+          "endTime": 1675123199,
+          "amount": "666658950555418",
+          "amountFiat": "0.00066691661916580398743"
+        },
+        {
+          "startTime": 1675123200,
+          "endTime": 1675202399,
+          "amount": "611103395005018",
+          "amountFiat": "0.00061123522657095373031"
+        }
+      ]
+    },
+    {
+      "id": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40-0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d-1.0-2.0",
+      "flowRate": "38580",
+      "startedAtTimestamp": "1666786230",
+      "startedAtBlockNumber": "31667386",
+      "stoppedAtTimestamp": null,
+      "stoppedAtBlockNumber": null,
+      "totalAmountStreamed": null,
+      "chainId": 10,
+      "token": {
+        "id": "0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d",
+        "symbol": "ETHx",
+        "name": "Super ETH",
+        "underlyingAddress": "0x0000000000000000000000000000000000000000"
+      },
+      "sender": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "receiver": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
+      "startedAtEvent": "0xf1b69275bfc6f382668b05e1b1642310c2fa95b313e72edf30e918e3946a71a0",
+      "virtualPeriods": [
+        {
+          "startTime": 1672524000,
+          "endTime": 1672531199,
+          "amount": "-277737420",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1672531200,
+          "endTime": 1672617599,
+          "amount": "-3333273420",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1672617600,
+          "endTime": 1672703999,
+          "amount": "-3333273420",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1672704000,
+          "endTime": 1672790399,
+          "amount": "-3333273420",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1672790400,
+          "endTime": 1672876799,
+          "amount": "-3333273420",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1672876800,
+          "endTime": 1672963199,
+          "amount": "-3333273420",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1672963200,
+          "endTime": 1673049599,
+          "amount": "-3333273420",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1673049600,
+          "endTime": 1673135999,
+          "amount": "-3333273420",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1673136000,
+          "endTime": 1673222399,
+          "amount": "-3333273420",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1673222400,
+          "endTime": 1673308799,
+          "amount": "-3333273420",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1673308800,
+          "endTime": 1673395199,
+          "amount": "-3333273420",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1673395200,
+          "endTime": 1673481599,
+          "amount": "-3333273420",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1673481600,
+          "endTime": 1673567999,
+          "amount": "-3333273420",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1673568000,
+          "endTime": 1673654399,
+          "amount": "-3333273420",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1673654400,
+          "endTime": 1673740799,
+          "amount": "-3333273420",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1673740800,
+          "endTime": 1673827199,
+          "amount": "-3333273420",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1673827200,
+          "endTime": 1673913599,
+          "amount": "-3333273420",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1673913600,
+          "endTime": 1673999999,
+          "amount": "-3333273420",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1674000000,
+          "endTime": 1674086399,
+          "amount": "-3333273420",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1674086400,
+          "endTime": 1674172799,
+          "amount": "-3333273420",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1674172800,
+          "endTime": 1674259199,
+          "amount": "-3333273420",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1674259200,
+          "endTime": 1674345599,
+          "amount": "-3333273420",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1674345600,
+          "endTime": 1674431999,
+          "amount": "-3333273420",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1674432000,
+          "endTime": 1674518399,
+          "amount": "-3333273420",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1674518400,
+          "endTime": 1674604799,
+          "amount": "-3333273420",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1674604800,
+          "endTime": 1674691199,
+          "amount": "-3333273420",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1674691200,
+          "endTime": 1674777599,
+          "amount": "-3333273420",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1674777600,
+          "endTime": 1674863999,
+          "amount": "-3333273420",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1674864000,
+          "endTime": 1674950399,
+          "amount": "-3333273420",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1674950400,
+          "endTime": 1675036799,
+          "amount": "-3333273420",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1675036800,
+          "endTime": 1675123199,
+          "amount": "-3333273420",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1675123200,
+          "endTime": 1675202399,
+          "amount": "-3055497420",
+          "amountFiat": "0"
+        }
+      ]
+    },
+    {
+      "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x1e38baa2735128bcc23792ff9aae96ea7aa7ecd2-0.0-0.0",
+      "flowRate": "3858024691",
+      "startedAtTimestamp": "1671106984",
+      "startedAtBlockNumber": "23925296",
+      "stoppedAtTimestamp": null,
+      "stoppedAtBlockNumber": null,
+      "totalAmountStreamed": null,
+      "chainId": 56,
+      "token": {
+        "id": "0x1e38baa2735128bcc23792ff9aae96ea7aa7ecd2",
+        "symbol": "DAIx",
+        "name": "Super Binance-Peg DAI",
+        "underlyingAddress": "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3"
+      },
+      "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0x439d496a7bf74e157184e7a13d1600ba7f71c4cf91d1dc012c4a1bf7758e9682",
       "virtualPeriods": [
         {
           "startTime": 1672524000,
@@ -1990,645 +2842,6 @@
       ]
     },
     {
-      "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x7d342726b69c28d942ad8bfe6ac81b972349d524-0.0-0.0",
-      "flowRate": "3858024691",
-      "startedAtTimestamp": "1671019624",
-      "startedAtBlockNumber": "49488149",
-      "stoppedAtTimestamp": null,
-      "stoppedAtBlockNumber": null,
-      "totalAmountStreamed": null,
-      "chainId": 10,
-      "token": {
-        "id": "0x7d342726b69c28d942ad8bfe6ac81b972349d524",
-        "symbol": "DAIx",
-        "name": "Super Dai Stablecoin",
-        "underlyingAddress": "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
-      },
-      "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
-      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "startedAtEvent": "0xc4839d1078a09bb44b976eb0a481b7537195d0eef247eb75ceaaac9c715fa211",
-      "virtualPeriods": [
-        {
-          "startTime": 1672524000,
-          "endTime": 1672531199,
-          "amount": "27773919750509",
-          "amountFiat": "0.000027779970320187889468"
-        },
-        {
-          "startTime": 1672531200,
-          "endTime": 1672617599,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033353268029124600863"
-        },
-        {
-          "startTime": 1672617600,
-          "endTime": 1672703999,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033341130181311806282"
-        },
-        {
-          "startTime": 1672704000,
-          "endTime": 1672790399,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033339706671556206436"
-        },
-        {
-          "startTime": 1672790400,
-          "endTime": 1672876799,
-          "amount": "333329475277709",
-          "amountFiat": "0.0003334725110383979755"
-        },
-        {
-          "startTime": 1672876800,
-          "endTime": 1672963199,
-          "amount": "333329475277709",
-          "amountFiat": "0.0003333973941442057734"
-        },
-        {
-          "startTime": 1672963200,
-          "endTime": 1673049599,
-          "amount": "333329475277709",
-          "amountFiat": "0.0003333719252947109994"
-        },
-        {
-          "startTime": 1673049600,
-          "endTime": 1673135999,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033349553075983289445"
-        },
-        {
-          "startTime": 1673136000,
-          "endTime": 1673222399,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033353034116174259719"
-        },
-        {
-          "startTime": 1673222400,
-          "endTime": 1673308799,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033353424947079055251"
-        },
-        {
-          "startTime": 1673308800,
-          "endTime": 1673395199,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033360528895710150006"
-        },
-        {
-          "startTime": 1673395200,
-          "endTime": 1673481599,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033343303624435288387"
-        },
-        {
-          "startTime": 1673481600,
-          "endTime": 1673567999,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033341729671400504314"
-        },
-        {
-          "startTime": 1673568000,
-          "endTime": 1673654399,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033342265066605469145"
-        },
-        {
-          "startTime": 1673654400,
-          "endTime": 1673740799,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033331350577349874593"
-        },
-        {
-          "startTime": 1673740800,
-          "endTime": 1673827199,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033345026379613835018"
-        },
-        {
-          "startTime": 1673827200,
-          "endTime": 1673913599,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033351334421672191882"
-        },
-        {
-          "startTime": 1673913600,
-          "endTime": 1673999999,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033334717900119944507"
-        },
-        {
-          "startTime": 1674000000,
-          "endTime": 1674086399,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033467053435703994379"
-        },
-        {
-          "startTime": 1674086400,
-          "endTime": 1674172799,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033363879118777033696"
-        },
-        {
-          "startTime": 1674172800,
-          "endTime": 1674259199,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033422979109964206297"
-        },
-        {
-          "startTime": 1674259200,
-          "endTime": 1674345599,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033345558464865230248"
-        },
-        {
-          "startTime": 1674345600,
-          "endTime": 1674431999,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033350864456941161728"
-        },
-        {
-          "startTime": 1674432000,
-          "endTime": 1674518399,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033350285747290331323"
-        },
-        {
-          "startTime": 1674518400,
-          "endTime": 1674604799,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033357377835240878496"
-        },
-        {
-          "startTime": 1674604800,
-          "endTime": 1674691199,
-          "amount": "333329475277709",
-          "amountFiat": "0.0003333401077128922299"
-        },
-        {
-          "startTime": 1674691200,
-          "endTime": 1674777599,
-          "amount": "333329475277709",
-          "amountFiat": "0.0003335229851687477064"
-        },
-        {
-          "startTime": 1674777600,
-          "endTime": 1674863999,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033332448997736176598"
-        },
-        {
-          "startTime": 1674864000,
-          "endTime": 1674950399,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033333159672823986001"
-        },
-        {
-          "startTime": 1674950400,
-          "endTime": 1675036799,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033339213391284244033"
-        },
-        {
-          "startTime": 1675036800,
-          "endTime": 1675123199,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033345830958290199371"
-        },
-        {
-          "startTime": 1675123200,
-          "endTime": 1675202399,
-          "amount": "305551697502509",
-          "amountFiat": "0.00030561761328547686516"
-        }
-      ]
-    },
-    {
-      "id": "0xeb85888b31fadf79cb264d065edcb4a14551c28d-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x7d342726b69c28d942ad8bfe6ac81b972349d524-0.0-0.0",
-      "flowRate": "7716049382",
-      "startedAtTimestamp": "1649157821",
-      "startedAtBlockNumber": "5354235",
-      "stoppedAtTimestamp": null,
-      "stoppedAtBlockNumber": null,
-      "totalAmountStreamed": null,
-      "chainId": 10,
-      "token": {
-        "id": "0x7d342726b69c28d942ad8bfe6ac81b972349d524",
-        "symbol": "DAIx",
-        "name": "Super Dai Stablecoin",
-        "underlyingAddress": "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
-      },
-      "sender": "0xeb85888b31fadf79cb264d065edcb4a14551c28d",
-      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "startedAtEvent": "0xf85a5812e3ac6af52c9da09c324e9a77eaf845da567c79f0b38ef5bb858144c7",
-      "virtualPeriods": [
-        {
-          "startTime": 1672524000,
-          "endTime": 1672531199,
-          "amount": "55547839501018",
-          "amountFiat": "0.000055559940640375778936"
-        },
-        {
-          "startTime": 1672531200,
-          "endTime": 1672617599,
-          "amount": "666658950555418",
-          "amountFiat": "0.00066706536058249201726"
-        },
-        {
-          "startTime": 1672617600,
-          "endTime": 1672703999,
-          "amount": "666658950555418",
-          "amountFiat": "0.00066682260362623612563"
-        },
-        {
-          "startTime": 1672704000,
-          "endTime": 1672790399,
-          "amount": "666658950555418",
-          "amountFiat": "0.00066679413343112412872"
-        },
-        {
-          "startTime": 1672790400,
-          "endTime": 1672876799,
-          "amount": "666658950555418",
-          "amountFiat": "0.00066694502207679595099"
-        },
-        {
-          "startTime": 1672876800,
-          "endTime": 1672963199,
-          "amount": "666658950555418",
-          "amountFiat": "0.0006667947882884115468"
-        },
-        {
-          "startTime": 1672963200,
-          "endTime": 1673049599,
-          "amount": "666658950555418",
-          "amountFiat": "0.00066674385058942199879"
-        },
-        {
-          "startTime": 1673049600,
-          "endTime": 1673135999,
-          "amount": "666658950555418",
-          "amountFiat": "0.0006669910615196657889"
-        },
-        {
-          "startTime": 1673136000,
-          "endTime": 1673222399,
-          "amount": "666658950555418",
-          "amountFiat": "0.00066706068232348519439"
-        },
-        {
-          "startTime": 1673222400,
-          "endTime": 1673308799,
-          "amount": "666658950555418",
-          "amountFiat": "0.00066706849894158110503"
-        },
-        {
-          "startTime": 1673308800,
-          "endTime": 1673395199,
-          "amount": "666658950555418",
-          "amountFiat": "0.00066721057791420300012"
-        },
-        {
-          "startTime": 1673395200,
-          "endTime": 1673481599,
-          "amount": "666658950555418",
-          "amountFiat": "0.00066686607248870576775"
-        },
-        {
-          "startTime": 1673481600,
-          "endTime": 1673567999,
-          "amount": "666658950555418",
-          "amountFiat": "0.00066683459342801008627"
-        },
-        {
-          "startTime": 1673568000,
-          "endTime": 1673654399,
-          "amount": "666658950555418",
-          "amountFiat": "0.00066684530133210938291"
-        },
-        {
-          "startTime": 1673654400,
-          "endTime": 1673740799,
-          "amount": "666658950555418",
-          "amountFiat": "0.00066662701154699749186"
-        },
-        {
-          "startTime": 1673740800,
-          "endTime": 1673827199,
-          "amount": "666658950555418",
-          "amountFiat": "0.00066690052759227670035"
-        },
-        {
-          "startTime": 1673827200,
-          "endTime": 1673913599,
-          "amount": "666658950555418",
-          "amountFiat": "0.00066702668843344383764"
-        },
-        {
-          "startTime": 1673913600,
-          "endTime": 1673999999,
-          "amount": "666658950555418",
-          "amountFiat": "0.00066669435800239889015"
-        },
-        {
-          "startTime": 1674000000,
-          "endTime": 1674086399,
-          "amount": "666658950555418",
-          "amountFiat": "0.00066934106871407988758"
-        },
-        {
-          "startTime": 1674086400,
-          "endTime": 1674172799,
-          "amount": "666658950555418",
-          "amountFiat": "0.00066727758237554067391"
-        },
-        {
-          "startTime": 1674172800,
-          "endTime": 1674259199,
-          "amount": "666658950555418",
-          "amountFiat": "0.00066845958219928412594"
-        },
-        {
-          "startTime": 1674259200,
-          "endTime": 1674345599,
-          "amount": "666658950555418",
-          "amountFiat": "0.00066691116929730460495"
-        },
-        {
-          "startTime": 1674345600,
-          "endTime": 1674431999,
-          "amount": "666658950555418",
-          "amountFiat": "0.00066701728913882323456"
-        },
-        {
-          "startTime": 1674432000,
-          "endTime": 1674518399,
-          "amount": "666658950555418",
-          "amountFiat": "0.00066700571494580662647"
-        },
-        {
-          "startTime": 1674518400,
-          "endTime": 1674604799,
-          "amount": "666658950555418",
-          "amountFiat": "0.00066714755670481756992"
-        },
-        {
-          "startTime": 1674604800,
-          "endTime": 1674691199,
-          "amount": "666658950555418",
-          "amountFiat": "0.00066668021542578445981"
-        },
-        {
-          "startTime": 1674691200,
-          "endTime": 1674777599,
-          "amount": "666658950555418",
-          "amountFiat": "0.0006670459703374954128"
-        },
-        {
-          "startTime": 1674777600,
-          "endTime": 1674863999,
-          "amount": "666658950555418",
-          "amountFiat": "0.00066664897995472353195"
-        },
-        {
-          "startTime": 1674864000,
-          "endTime": 1674950399,
-          "amount": "666658950555418",
-          "amountFiat": "0.00066666319345647972003"
-        },
-        {
-          "startTime": 1674950400,
-          "endTime": 1675036799,
-          "amount": "666658950555418",
-          "amountFiat": "0.00066678426782568488067"
-        },
-        {
-          "startTime": 1675036800,
-          "endTime": 1675123199,
-          "amount": "666658950555418",
-          "amountFiat": "0.00066691661916580398743"
-        },
-        {
-          "startTime": 1675123200,
-          "endTime": 1675202399,
-          "amount": "611103395005018",
-          "amountFiat": "0.00061123522657095373031"
-        }
-      ]
-    },
-    {
-      "id": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40-0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d-1.0-2.0",
-      "flowRate": "38580",
-      "startedAtTimestamp": "1666786230",
-      "startedAtBlockNumber": "31667386",
-      "stoppedAtTimestamp": null,
-      "stoppedAtBlockNumber": null,
-      "totalAmountStreamed": null,
-      "chainId": 10,
-      "token": {
-        "id": "0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d",
-        "symbol": "ETHx",
-        "name": "Super ETH",
-        "underlyingAddress": "0x0000000000000000000000000000000000000000"
-      },
-      "sender": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "receiver": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
-      "startedAtEvent": "0xf1b69275bfc6f382668b05e1b1642310c2fa95b313e72edf30e918e3946a71a0",
-      "virtualPeriods": [
-        {
-          "startTime": 1672524000,
-          "endTime": 1672531199,
-          "amount": "-277737420",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1672531200,
-          "endTime": 1672617599,
-          "amount": "-3333273420",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1672617600,
-          "endTime": 1672703999,
-          "amount": "-3333273420",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1672704000,
-          "endTime": 1672790399,
-          "amount": "-3333273420",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1672790400,
-          "endTime": 1672876799,
-          "amount": "-3333273420",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1672876800,
-          "endTime": 1672963199,
-          "amount": "-3333273420",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1672963200,
-          "endTime": 1673049599,
-          "amount": "-3333273420",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1673049600,
-          "endTime": 1673135999,
-          "amount": "-3333273420",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1673136000,
-          "endTime": 1673222399,
-          "amount": "-3333273420",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1673222400,
-          "endTime": 1673308799,
-          "amount": "-3333273420",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1673308800,
-          "endTime": 1673395199,
-          "amount": "-3333273420",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1673395200,
-          "endTime": 1673481599,
-          "amount": "-3333273420",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1673481600,
-          "endTime": 1673567999,
-          "amount": "-3333273420",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1673568000,
-          "endTime": 1673654399,
-          "amount": "-3333273420",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1673654400,
-          "endTime": 1673740799,
-          "amount": "-3333273420",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1673740800,
-          "endTime": 1673827199,
-          "amount": "-3333273420",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1673827200,
-          "endTime": 1673913599,
-          "amount": "-3333273420",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1673913600,
-          "endTime": 1673999999,
-          "amount": "-3333273420",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1674000000,
-          "endTime": 1674086399,
-          "amount": "-3333273420",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1674086400,
-          "endTime": 1674172799,
-          "amount": "-3333273420",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1674172800,
-          "endTime": 1674259199,
-          "amount": "-3333273420",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1674259200,
-          "endTime": 1674345599,
-          "amount": "-3333273420",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1674345600,
-          "endTime": 1674431999,
-          "amount": "-3333273420",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1674432000,
-          "endTime": 1674518399,
-          "amount": "-3333273420",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1674518400,
-          "endTime": 1674604799,
-          "amount": "-3333273420",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1674604800,
-          "endTime": 1674691199,
-          "amount": "-3333273420",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1674691200,
-          "endTime": 1674777599,
-          "amount": "-3333273420",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1674777600,
-          "endTime": 1674863999,
-          "amount": "-3333273420",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1674864000,
-          "endTime": 1674950399,
-          "amount": "-3333273420",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1674950400,
-          "endTime": 1675036799,
-          "amount": "-3333273420",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1675036800,
-          "endTime": 1675123199,
-          "amount": "-3333273420",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1675123200,
-          "endTime": 1675202399,
-          "amount": "-3055497420",
-          "amountFiat": "0"
-        }
-      ]
-    },
-    {
       "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x521677a61d101a80ce0fb903b13cb485232774ee-0.0-0.0",
       "flowRate": "3858024691",
       "startedAtTimestamp": "1671024854",
@@ -3266,219 +3479,6 @@
           "amountFiat": "0.00030561761328547686516"
         }
       ]
-    },
-    {
-      "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x1e38baa2735128bcc23792ff9aae96ea7aa7ecd2-0.0-0.0",
-      "flowRate": "3858024691",
-      "startedAtTimestamp": "1671106984",
-      "startedAtBlockNumber": "23925296",
-      "stoppedAtTimestamp": null,
-      "stoppedAtBlockNumber": null,
-      "totalAmountStreamed": null,
-      "chainId": 56,
-      "token": {
-        "id": "0x1e38baa2735128bcc23792ff9aae96ea7aa7ecd2",
-        "symbol": "DAIx",
-        "name": "Super Binance-Peg DAI",
-        "underlyingAddress": "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3"
-      },
-      "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
-      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "startedAtEvent": "0x439d496a7bf74e157184e7a13d1600ba7f71c4cf91d1dc012c4a1bf7758e9682",
-      "virtualPeriods": [
-        {
-          "startTime": 1672524000,
-          "endTime": 1672531199,
-          "amount": "27773919750509",
-          "amountFiat": "0.000027779970320187889468"
-        },
-        {
-          "startTime": 1672531200,
-          "endTime": 1672617599,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033353268029124600863"
-        },
-        {
-          "startTime": 1672617600,
-          "endTime": 1672703999,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033341130181311806282"
-        },
-        {
-          "startTime": 1672704000,
-          "endTime": 1672790399,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033339706671556206436"
-        },
-        {
-          "startTime": 1672790400,
-          "endTime": 1672876799,
-          "amount": "333329475277709",
-          "amountFiat": "0.0003334725110383979755"
-        },
-        {
-          "startTime": 1672876800,
-          "endTime": 1672963199,
-          "amount": "333329475277709",
-          "amountFiat": "0.0003333973941442057734"
-        },
-        {
-          "startTime": 1672963200,
-          "endTime": 1673049599,
-          "amount": "333329475277709",
-          "amountFiat": "0.0003333719252947109994"
-        },
-        {
-          "startTime": 1673049600,
-          "endTime": 1673135999,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033349553075983289445"
-        },
-        {
-          "startTime": 1673136000,
-          "endTime": 1673222399,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033353034116174259719"
-        },
-        {
-          "startTime": 1673222400,
-          "endTime": 1673308799,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033353424947079055251"
-        },
-        {
-          "startTime": 1673308800,
-          "endTime": 1673395199,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033360528895710150006"
-        },
-        {
-          "startTime": 1673395200,
-          "endTime": 1673481599,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033343303624435288387"
-        },
-        {
-          "startTime": 1673481600,
-          "endTime": 1673567999,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033341729671400504314"
-        },
-        {
-          "startTime": 1673568000,
-          "endTime": 1673654399,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033342265066605469145"
-        },
-        {
-          "startTime": 1673654400,
-          "endTime": 1673740799,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033331350577349874593"
-        },
-        {
-          "startTime": 1673740800,
-          "endTime": 1673827199,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033345026379613835018"
-        },
-        {
-          "startTime": 1673827200,
-          "endTime": 1673913599,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033351334421672191882"
-        },
-        {
-          "startTime": 1673913600,
-          "endTime": 1673999999,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033334717900119944507"
-        },
-        {
-          "startTime": 1674000000,
-          "endTime": 1674086399,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033467053435703994379"
-        },
-        {
-          "startTime": 1674086400,
-          "endTime": 1674172799,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033363879118777033696"
-        },
-        {
-          "startTime": 1674172800,
-          "endTime": 1674259199,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033422979109964206297"
-        },
-        {
-          "startTime": 1674259200,
-          "endTime": 1674345599,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033345558464865230248"
-        },
-        {
-          "startTime": 1674345600,
-          "endTime": 1674431999,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033350864456941161728"
-        },
-        {
-          "startTime": 1674432000,
-          "endTime": 1674518399,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033350285747290331323"
-        },
-        {
-          "startTime": 1674518400,
-          "endTime": 1674604799,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033357377835240878496"
-        },
-        {
-          "startTime": 1674604800,
-          "endTime": 1674691199,
-          "amount": "333329475277709",
-          "amountFiat": "0.0003333401077128922299"
-        },
-        {
-          "startTime": 1674691200,
-          "endTime": 1674777599,
-          "amount": "333329475277709",
-          "amountFiat": "0.0003335229851687477064"
-        },
-        {
-          "startTime": 1674777600,
-          "endTime": 1674863999,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033332448997736176598"
-        },
-        {
-          "startTime": 1674864000,
-          "endTime": 1674950399,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033333159672823986001"
-        },
-        {
-          "startTime": 1674950400,
-          "endTime": 1675036799,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033339213391284244033"
-        },
-        {
-          "startTime": 1675036800,
-          "endTime": 1675123199,
-          "amount": "333329475277709",
-          "amountFiat": "0.00033345830958290199371"
-        },
-        {
-          "startTime": 1675123200,
-          "endTime": 1675202399,
-          "amount": "305551697502509",
-          "amountFiat": "0.00030561761328547686516"
-        }
-      ]
     }
   ],
   "Weekly": [
@@ -3500,6 +3500,234 @@
       "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
       "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
       "startedAtEvent": "0x2026840312d64277db37e453fcb40e7b0093a9015abc92f9de0542e572c36b1c",
+      "virtualPeriods": [
+        {
+          "startTime": 1672524000,
+          "endTime": 1672531199,
+          "amount": "27773919750509",
+          "amountFiat": "0.000027779970320187889468"
+        },
+        {
+          "startTime": 1672531200,
+          "endTime": 1673135999,
+          "amount": "2333329475092109",
+          "amountFiat": "0.002334102921897319212"
+        },
+        {
+          "startTime": 1673136000,
+          "endTime": 1673740799,
+          "amount": "2333329475092109",
+          "amountFiat": "0.0023342795265608238083"
+        },
+        {
+          "startTime": 1673740800,
+          "endTime": 1674345599,
+          "amount": "2333329475092109",
+          "amountFiat": "0.0023363286662092408868"
+        },
+        {
+          "startTime": 1674345600,
+          "endTime": 1674950399,
+          "amount": "2333329475092109",
+          "amountFiat": "0.0023341276160481894103"
+        },
+        {
+          "startTime": 1674950400,
+          "endTime": 1675202399,
+          "amount": "972218364107309",
+          "amountFiat": "0.00097247744188357717233"
+        }
+      ]
+    },
+    {
+      "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x7d342726b69c28d942ad8bfe6ac81b972349d524-0.0-0.0",
+      "flowRate": "3858024691",
+      "startedAtTimestamp": "1671019624",
+      "startedAtBlockNumber": "49488149",
+      "stoppedAtTimestamp": null,
+      "stoppedAtBlockNumber": null,
+      "totalAmountStreamed": null,
+      "chainId": 10,
+      "token": {
+        "id": "0x7d342726b69c28d942ad8bfe6ac81b972349d524",
+        "symbol": "DAIx",
+        "name": "Super Dai Stablecoin",
+        "underlyingAddress": "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
+      },
+      "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0xc4839d1078a09bb44b976eb0a481b7537195d0eef247eb75ceaaac9c715fa211",
+      "virtualPeriods": [
+        {
+          "startTime": 1672524000,
+          "endTime": 1672531199,
+          "amount": "27773919750509",
+          "amountFiat": "0.000027779970320187889468"
+        },
+        {
+          "startTime": 1672531200,
+          "endTime": 1673135999,
+          "amount": "2333329475092109",
+          "amountFiat": "0.002334102921897319212"
+        },
+        {
+          "startTime": 1673136000,
+          "endTime": 1673740799,
+          "amount": "2333329475092109",
+          "amountFiat": "0.0023342795265608238083"
+        },
+        {
+          "startTime": 1673740800,
+          "endTime": 1674345599,
+          "amount": "2333329475092109",
+          "amountFiat": "0.0023363286662092408868"
+        },
+        {
+          "startTime": 1674345600,
+          "endTime": 1674950399,
+          "amount": "2333329475092109",
+          "amountFiat": "0.0023341276160481894103"
+        },
+        {
+          "startTime": 1674950400,
+          "endTime": 1675202399,
+          "amount": "972218364107309",
+          "amountFiat": "0.00097247744188357717233"
+        }
+      ]
+    },
+    {
+      "id": "0xeb85888b31fadf79cb264d065edcb4a14551c28d-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x7d342726b69c28d942ad8bfe6ac81b972349d524-0.0-0.0",
+      "flowRate": "7716049382",
+      "startedAtTimestamp": "1649157821",
+      "startedAtBlockNumber": "5354235",
+      "stoppedAtTimestamp": null,
+      "stoppedAtBlockNumber": null,
+      "totalAmountStreamed": null,
+      "chainId": 10,
+      "token": {
+        "id": "0x7d342726b69c28d942ad8bfe6ac81b972349d524",
+        "symbol": "DAIx",
+        "name": "Super Dai Stablecoin",
+        "underlyingAddress": "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
+      },
+      "sender": "0xeb85888b31fadf79cb264d065edcb4a14551c28d",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0xf85a5812e3ac6af52c9da09c324e9a77eaf845da567c79f0b38ef5bb858144c7",
+      "virtualPeriods": [
+        {
+          "startTime": 1672524000,
+          "endTime": 1672531199,
+          "amount": "55547839501018",
+          "amountFiat": "0.000055559940640375778936"
+        },
+        {
+          "startTime": 1672531200,
+          "endTime": 1673135999,
+          "amount": "4666658950184218",
+          "amountFiat": "0.004668205843794638424"
+        },
+        {
+          "startTime": 1673136000,
+          "endTime": 1673740799,
+          "amount": "4666658950184218",
+          "amountFiat": "0.0046685590531216476166"
+        },
+        {
+          "startTime": 1673740800,
+          "endTime": 1674345599,
+          "amount": "4666658950184218",
+          "amountFiat": "0.0046726573324184817737"
+        },
+        {
+          "startTime": 1674345600,
+          "endTime": 1674950399,
+          "amount": "4666658950184218",
+          "amountFiat": "0.0046682552320963788206"
+        },
+        {
+          "startTime": 1674950400,
+          "endTime": 1675202399,
+          "amount": "1944436728214618",
+          "amountFiat": "0.0019449548837671543447"
+        }
+      ]
+    },
+    {
+      "id": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40-0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d-1.0-2.0",
+      "flowRate": "38580",
+      "startedAtTimestamp": "1666786230",
+      "startedAtBlockNumber": "31667386",
+      "stoppedAtTimestamp": null,
+      "stoppedAtBlockNumber": null,
+      "totalAmountStreamed": null,
+      "chainId": 10,
+      "token": {
+        "id": "0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d",
+        "symbol": "ETHx",
+        "name": "Super ETH",
+        "underlyingAddress": "0x0000000000000000000000000000000000000000"
+      },
+      "sender": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "receiver": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
+      "startedAtEvent": "0xf1b69275bfc6f382668b05e1b1642310c2fa95b313e72edf30e918e3946a71a0",
+      "virtualPeriods": [
+        {
+          "startTime": 1672524000,
+          "endTime": 1672531199,
+          "amount": "-277737420",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1672531200,
+          "endTime": 1673135999,
+          "amount": "-23333145420",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1673136000,
+          "endTime": 1673740799,
+          "amount": "-23333145420",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1673740800,
+          "endTime": 1674345599,
+          "amount": "-23333145420",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1674345600,
+          "endTime": 1674950399,
+          "amount": "-23333145420",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1674950400,
+          "endTime": 1675202399,
+          "amount": "-9722121420",
+          "amountFiat": "0"
+        }
+      ]
+    },
+    {
+      "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x1e38baa2735128bcc23792ff9aae96ea7aa7ecd2-0.0-0.0",
+      "flowRate": "3858024691",
+      "startedAtTimestamp": "1671106984",
+      "startedAtBlockNumber": "23925296",
+      "stoppedAtTimestamp": null,
+      "stoppedAtBlockNumber": null,
+      "totalAmountStreamed": null,
+      "chainId": 56,
+      "token": {
+        "id": "0x1e38baa2735128bcc23792ff9aae96ea7aa7ecd2",
+        "symbol": "DAIx",
+        "name": "Super Binance-Peg DAI",
+        "underlyingAddress": "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3"
+      },
+      "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0x439d496a7bf74e157184e7a13d1600ba7f71c4cf91d1dc012c4a1bf7758e9682",
       "virtualPeriods": [
         {
           "startTime": 1672524000,
@@ -3974,177 +4202,6 @@
       ]
     },
     {
-      "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x7d342726b69c28d942ad8bfe6ac81b972349d524-0.0-0.0",
-      "flowRate": "3858024691",
-      "startedAtTimestamp": "1671019624",
-      "startedAtBlockNumber": "49488149",
-      "stoppedAtTimestamp": null,
-      "stoppedAtBlockNumber": null,
-      "totalAmountStreamed": null,
-      "chainId": 10,
-      "token": {
-        "id": "0x7d342726b69c28d942ad8bfe6ac81b972349d524",
-        "symbol": "DAIx",
-        "name": "Super Dai Stablecoin",
-        "underlyingAddress": "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
-      },
-      "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
-      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "startedAtEvent": "0xc4839d1078a09bb44b976eb0a481b7537195d0eef247eb75ceaaac9c715fa211",
-      "virtualPeriods": [
-        {
-          "startTime": 1672524000,
-          "endTime": 1672531199,
-          "amount": "27773919750509",
-          "amountFiat": "0.000027779970320187889468"
-        },
-        {
-          "startTime": 1672531200,
-          "endTime": 1673135999,
-          "amount": "2333329475092109",
-          "amountFiat": "0.002334102921897319212"
-        },
-        {
-          "startTime": 1673136000,
-          "endTime": 1673740799,
-          "amount": "2333329475092109",
-          "amountFiat": "0.0023342795265608238083"
-        },
-        {
-          "startTime": 1673740800,
-          "endTime": 1674345599,
-          "amount": "2333329475092109",
-          "amountFiat": "0.0023363286662092408868"
-        },
-        {
-          "startTime": 1674345600,
-          "endTime": 1674950399,
-          "amount": "2333329475092109",
-          "amountFiat": "0.0023341276160481894103"
-        },
-        {
-          "startTime": 1674950400,
-          "endTime": 1675202399,
-          "amount": "972218364107309",
-          "amountFiat": "0.00097247744188357717233"
-        }
-      ]
-    },
-    {
-      "id": "0xeb85888b31fadf79cb264d065edcb4a14551c28d-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x7d342726b69c28d942ad8bfe6ac81b972349d524-0.0-0.0",
-      "flowRate": "7716049382",
-      "startedAtTimestamp": "1649157821",
-      "startedAtBlockNumber": "5354235",
-      "stoppedAtTimestamp": null,
-      "stoppedAtBlockNumber": null,
-      "totalAmountStreamed": null,
-      "chainId": 10,
-      "token": {
-        "id": "0x7d342726b69c28d942ad8bfe6ac81b972349d524",
-        "symbol": "DAIx",
-        "name": "Super Dai Stablecoin",
-        "underlyingAddress": "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
-      },
-      "sender": "0xeb85888b31fadf79cb264d065edcb4a14551c28d",
-      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "startedAtEvent": "0xf85a5812e3ac6af52c9da09c324e9a77eaf845da567c79f0b38ef5bb858144c7",
-      "virtualPeriods": [
-        {
-          "startTime": 1672524000,
-          "endTime": 1672531199,
-          "amount": "55547839501018",
-          "amountFiat": "0.000055559940640375778936"
-        },
-        {
-          "startTime": 1672531200,
-          "endTime": 1673135999,
-          "amount": "4666658950184218",
-          "amountFiat": "0.004668205843794638424"
-        },
-        {
-          "startTime": 1673136000,
-          "endTime": 1673740799,
-          "amount": "4666658950184218",
-          "amountFiat": "0.0046685590531216476166"
-        },
-        {
-          "startTime": 1673740800,
-          "endTime": 1674345599,
-          "amount": "4666658950184218",
-          "amountFiat": "0.0046726573324184817737"
-        },
-        {
-          "startTime": 1674345600,
-          "endTime": 1674950399,
-          "amount": "4666658950184218",
-          "amountFiat": "0.0046682552320963788206"
-        },
-        {
-          "startTime": 1674950400,
-          "endTime": 1675202399,
-          "amount": "1944436728214618",
-          "amountFiat": "0.0019449548837671543447"
-        }
-      ]
-    },
-    {
-      "id": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40-0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d-1.0-2.0",
-      "flowRate": "38580",
-      "startedAtTimestamp": "1666786230",
-      "startedAtBlockNumber": "31667386",
-      "stoppedAtTimestamp": null,
-      "stoppedAtBlockNumber": null,
-      "totalAmountStreamed": null,
-      "chainId": 10,
-      "token": {
-        "id": "0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d",
-        "symbol": "ETHx",
-        "name": "Super ETH",
-        "underlyingAddress": "0x0000000000000000000000000000000000000000"
-      },
-      "sender": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "receiver": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
-      "startedAtEvent": "0xf1b69275bfc6f382668b05e1b1642310c2fa95b313e72edf30e918e3946a71a0",
-      "virtualPeriods": [
-        {
-          "startTime": 1672524000,
-          "endTime": 1672531199,
-          "amount": "-277737420",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1672531200,
-          "endTime": 1673135999,
-          "amount": "-23333145420",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1673136000,
-          "endTime": 1673740799,
-          "amount": "-23333145420",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1673740800,
-          "endTime": 1674345599,
-          "amount": "-23333145420",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1674345600,
-          "endTime": 1674950399,
-          "amount": "-23333145420",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1674950400,
-          "endTime": 1675202399,
-          "amount": "-9722121420",
-          "amountFiat": "0"
-        }
-      ]
-    },
-    {
       "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x521677a61d101a80ce0fb903b13cb485232774ee-0.0-0.0",
       "flowRate": "3858024691",
       "startedAtTimestamp": "1671024854",
@@ -4314,63 +4371,6 @@
           "amountFiat": "0.00097247744188357717233"
         }
       ]
-    },
-    {
-      "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x1e38baa2735128bcc23792ff9aae96ea7aa7ecd2-0.0-0.0",
-      "flowRate": "3858024691",
-      "startedAtTimestamp": "1671106984",
-      "startedAtBlockNumber": "23925296",
-      "stoppedAtTimestamp": null,
-      "stoppedAtBlockNumber": null,
-      "totalAmountStreamed": null,
-      "chainId": 56,
-      "token": {
-        "id": "0x1e38baa2735128bcc23792ff9aae96ea7aa7ecd2",
-        "symbol": "DAIx",
-        "name": "Super Binance-Peg DAI",
-        "underlyingAddress": "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3"
-      },
-      "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
-      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "startedAtEvent": "0x439d496a7bf74e157184e7a13d1600ba7f71c4cf91d1dc012c4a1bf7758e9682",
-      "virtualPeriods": [
-        {
-          "startTime": 1672524000,
-          "endTime": 1672531199,
-          "amount": "27773919750509",
-          "amountFiat": "0.000027779970320187889468"
-        },
-        {
-          "startTime": 1672531200,
-          "endTime": 1673135999,
-          "amount": "2333329475092109",
-          "amountFiat": "0.002334102921897319212"
-        },
-        {
-          "startTime": 1673136000,
-          "endTime": 1673740799,
-          "amount": "2333329475092109",
-          "amountFiat": "0.0023342795265608238083"
-        },
-        {
-          "startTime": 1673740800,
-          "endTime": 1674345599,
-          "amount": "2333329475092109",
-          "amountFiat": "0.0023363286662092408868"
-        },
-        {
-          "startTime": 1674345600,
-          "endTime": 1674950399,
-          "amount": "2333329475092109",
-          "amountFiat": "0.0023341276160481894103"
-        },
-        {
-          "startTime": 1674950400,
-          "endTime": 1675202399,
-          "amount": "972218364107309",
-          "amountFiat": "0.00097247744188357717233"
-        }
-      ]
     }
   ],
   "Monthly": [
@@ -4392,6 +4392,138 @@
       "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
       "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
       "startedAtEvent": "0x2026840312d64277db37e453fcb40e7b0093a9015abc92f9de0542e572c36b1c",
+      "virtualPeriods": [
+        {
+          "startTime": 1672524000,
+          "endTime": 1672531199,
+          "amount": "27773919750509",
+          "amountFiat": "0.000027779970320187889468"
+        },
+        {
+          "startTime": 1672531200,
+          "endTime": 1675202399,
+          "amount": "10305551696574509",
+          "amountFiat": "0.010311324357936757742"
+        }
+      ]
+    },
+    {
+      "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x7d342726b69c28d942ad8bfe6ac81b972349d524-0.0-0.0",
+      "flowRate": "3858024691",
+      "startedAtTimestamp": "1671019624",
+      "startedAtBlockNumber": "49488149",
+      "stoppedAtTimestamp": null,
+      "stoppedAtBlockNumber": null,
+      "totalAmountStreamed": null,
+      "chainId": 10,
+      "token": {
+        "id": "0x7d342726b69c28d942ad8bfe6ac81b972349d524",
+        "symbol": "DAIx",
+        "name": "Super Dai Stablecoin",
+        "underlyingAddress": "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
+      },
+      "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0xc4839d1078a09bb44b976eb0a481b7537195d0eef247eb75ceaaac9c715fa211",
+      "virtualPeriods": [
+        {
+          "startTime": 1672524000,
+          "endTime": 1672531199,
+          "amount": "27773919750509",
+          "amountFiat": "0.000027779970320187889468"
+        },
+        {
+          "startTime": 1672531200,
+          "endTime": 1675202399,
+          "amount": "10305551696574509",
+          "amountFiat": "0.010311324357936757742"
+        }
+      ]
+    },
+    {
+      "id": "0xeb85888b31fadf79cb264d065edcb4a14551c28d-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x7d342726b69c28d942ad8bfe6ac81b972349d524-0.0-0.0",
+      "flowRate": "7716049382",
+      "startedAtTimestamp": "1649157821",
+      "startedAtBlockNumber": "5354235",
+      "stoppedAtTimestamp": null,
+      "stoppedAtBlockNumber": null,
+      "totalAmountStreamed": null,
+      "chainId": 10,
+      "token": {
+        "id": "0x7d342726b69c28d942ad8bfe6ac81b972349d524",
+        "symbol": "DAIx",
+        "name": "Super Dai Stablecoin",
+        "underlyingAddress": "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
+      },
+      "sender": "0xeb85888b31fadf79cb264d065edcb4a14551c28d",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0xf85a5812e3ac6af52c9da09c324e9a77eaf845da567c79f0b38ef5bb858144c7",
+      "virtualPeriods": [
+        {
+          "startTime": 1672524000,
+          "endTime": 1672531199,
+          "amount": "55547839501018",
+          "amountFiat": "0.000055559940640375778936"
+        },
+        {
+          "startTime": 1672531200,
+          "endTime": 1675202399,
+          "amount": "20611103393149018",
+          "amountFiat": "0.020622648715873515484"
+        }
+      ]
+    },
+    {
+      "id": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40-0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d-1.0-2.0",
+      "flowRate": "38580",
+      "startedAtTimestamp": "1666786230",
+      "startedAtBlockNumber": "31667386",
+      "stoppedAtTimestamp": null,
+      "stoppedAtBlockNumber": null,
+      "totalAmountStreamed": null,
+      "chainId": 10,
+      "token": {
+        "id": "0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d",
+        "symbol": "ETHx",
+        "name": "Super ETH",
+        "underlyingAddress": "0x0000000000000000000000000000000000000000"
+      },
+      "sender": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "receiver": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
+      "startedAtEvent": "0xf1b69275bfc6f382668b05e1b1642310c2fa95b313e72edf30e918e3946a71a0",
+      "virtualPeriods": [
+        {
+          "startTime": 1672524000,
+          "endTime": 1672531199,
+          "amount": "-277737420",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1672531200,
+          "endTime": 1675202399,
+          "amount": "-103054857420",
+          "amountFiat": "0"
+        }
+      ]
+    },
+    {
+      "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x1e38baa2735128bcc23792ff9aae96ea7aa7ecd2-0.0-0.0",
+      "flowRate": "3858024691",
+      "startedAtTimestamp": "1671106984",
+      "startedAtBlockNumber": "23925296",
+      "stoppedAtTimestamp": null,
+      "stoppedAtBlockNumber": null,
+      "totalAmountStreamed": null,
+      "chainId": 56,
+      "token": {
+        "id": "0x1e38baa2735128bcc23792ff9aae96ea7aa7ecd2",
+        "symbol": "DAIx",
+        "name": "Super Binance-Peg DAI",
+        "underlyingAddress": "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3"
+      },
+      "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0x439d496a7bf74e157184e7a13d1600ba7f71c4cf91d1dc012c4a1bf7758e9682",
       "virtualPeriods": [
         {
           "startTime": 1672524000,
@@ -4710,105 +4842,6 @@
       ]
     },
     {
-      "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x7d342726b69c28d942ad8bfe6ac81b972349d524-0.0-0.0",
-      "flowRate": "3858024691",
-      "startedAtTimestamp": "1671019624",
-      "startedAtBlockNumber": "49488149",
-      "stoppedAtTimestamp": null,
-      "stoppedAtBlockNumber": null,
-      "totalAmountStreamed": null,
-      "chainId": 10,
-      "token": {
-        "id": "0x7d342726b69c28d942ad8bfe6ac81b972349d524",
-        "symbol": "DAIx",
-        "name": "Super Dai Stablecoin",
-        "underlyingAddress": "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
-      },
-      "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
-      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "startedAtEvent": "0xc4839d1078a09bb44b976eb0a481b7537195d0eef247eb75ceaaac9c715fa211",
-      "virtualPeriods": [
-        {
-          "startTime": 1672524000,
-          "endTime": 1672531199,
-          "amount": "27773919750509",
-          "amountFiat": "0.000027779970320187889468"
-        },
-        {
-          "startTime": 1672531200,
-          "endTime": 1675202399,
-          "amount": "10305551696574509",
-          "amountFiat": "0.010311324357936757742"
-        }
-      ]
-    },
-    {
-      "id": "0xeb85888b31fadf79cb264d065edcb4a14551c28d-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x7d342726b69c28d942ad8bfe6ac81b972349d524-0.0-0.0",
-      "flowRate": "7716049382",
-      "startedAtTimestamp": "1649157821",
-      "startedAtBlockNumber": "5354235",
-      "stoppedAtTimestamp": null,
-      "stoppedAtBlockNumber": null,
-      "totalAmountStreamed": null,
-      "chainId": 10,
-      "token": {
-        "id": "0x7d342726b69c28d942ad8bfe6ac81b972349d524",
-        "symbol": "DAIx",
-        "name": "Super Dai Stablecoin",
-        "underlyingAddress": "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
-      },
-      "sender": "0xeb85888b31fadf79cb264d065edcb4a14551c28d",
-      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "startedAtEvent": "0xf85a5812e3ac6af52c9da09c324e9a77eaf845da567c79f0b38ef5bb858144c7",
-      "virtualPeriods": [
-        {
-          "startTime": 1672524000,
-          "endTime": 1672531199,
-          "amount": "55547839501018",
-          "amountFiat": "0.000055559940640375778936"
-        },
-        {
-          "startTime": 1672531200,
-          "endTime": 1675202399,
-          "amount": "20611103393149018",
-          "amountFiat": "0.020622648715873515484"
-        }
-      ]
-    },
-    {
-      "id": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40-0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d-1.0-2.0",
-      "flowRate": "38580",
-      "startedAtTimestamp": "1666786230",
-      "startedAtBlockNumber": "31667386",
-      "stoppedAtTimestamp": null,
-      "stoppedAtBlockNumber": null,
-      "totalAmountStreamed": null,
-      "chainId": 10,
-      "token": {
-        "id": "0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d",
-        "symbol": "ETHx",
-        "name": "Super ETH",
-        "underlyingAddress": "0x0000000000000000000000000000000000000000"
-      },
-      "sender": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "receiver": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
-      "startedAtEvent": "0xf1b69275bfc6f382668b05e1b1642310c2fa95b313e72edf30e918e3946a71a0",
-      "virtualPeriods": [
-        {
-          "startTime": 1672524000,
-          "endTime": 1672531199,
-          "amount": "-277737420",
-          "amountFiat": "0"
-        },
-        {
-          "startTime": 1672531200,
-          "endTime": 1675202399,
-          "amount": "-103054857420",
-          "amountFiat": "0"
-        }
-      ]
-    },
-    {
       "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x521677a61d101a80ce0fb903b13cb485232774ee-0.0-0.0",
       "flowRate": "3858024691",
       "startedAtTimestamp": "1671024854",
@@ -4906,39 +4939,6 @@
           "amountFiat": "0.010311324357936757742"
         }
       ]
-    },
-    {
-      "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x1e38baa2735128bcc23792ff9aae96ea7aa7ecd2-0.0-0.0",
-      "flowRate": "3858024691",
-      "startedAtTimestamp": "1671106984",
-      "startedAtBlockNumber": "23925296",
-      "stoppedAtTimestamp": null,
-      "stoppedAtBlockNumber": null,
-      "totalAmountStreamed": null,
-      "chainId": 56,
-      "token": {
-        "id": "0x1e38baa2735128bcc23792ff9aae96ea7aa7ecd2",
-        "symbol": "DAIx",
-        "name": "Super Binance-Peg DAI",
-        "underlyingAddress": "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3"
-      },
-      "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
-      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "startedAtEvent": "0x439d496a7bf74e157184e7a13d1600ba7f71c4cf91d1dc012c4a1bf7758e9682",
-      "virtualPeriods": [
-        {
-          "startTime": 1672524000,
-          "endTime": 1672531199,
-          "amount": "27773919750509",
-          "amountFiat": "0.000027779970320187889468"
-        },
-        {
-          "startTime": 1672531200,
-          "endTime": 1675202399,
-          "amount": "10305551696574509",
-          "amountFiat": "0.010311324357936757742"
-        }
-      ]
     }
   ],
   "multiple accounts": [
@@ -4960,6 +4960,141 @@
       "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
       "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
       "startedAtEvent": "0x2026840312d64277db37e453fcb40e7b0093a9015abc92f9de0542e572c36b1c",
+      "virtualPeriods": [
+        {
+          "startTime": 1672531200,
+          "endTime": 1675209599,
+          "amount": "10333329474349709",
+          "amountFiat": "0.01033901115075521634"
+        }
+      ]
+    },
+    {
+      "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x7d342726b69c28d942ad8bfe6ac81b972349d524-0.0-0.0",
+      "flowRate": "3858024691",
+      "startedAtTimestamp": "1671019624",
+      "startedAtBlockNumber": "49488149",
+      "stoppedAtTimestamp": null,
+      "stoppedAtBlockNumber": null,
+      "totalAmountStreamed": null,
+      "chainId": 10,
+      "token": {
+        "id": "0x7d342726b69c28d942ad8bfe6ac81b972349d524",
+        "symbol": "DAIx",
+        "name": "Super Dai Stablecoin",
+        "underlyingAddress": "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
+      },
+      "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0xc4839d1078a09bb44b976eb0a481b7537195d0eef247eb75ceaaac9c715fa211",
+      "virtualPeriods": [
+        {
+          "startTime": 1672531200,
+          "endTime": 1675209599,
+          "amount": "10333329474349709",
+          "amountFiat": "0.01033901115075521634"
+        }
+      ]
+    },
+    {
+      "id": "0xeb85888b31fadf79cb264d065edcb4a14551c28d-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x7d342726b69c28d942ad8bfe6ac81b972349d524-0.0-0.0",
+      "flowRate": "7716049382",
+      "startedAtTimestamp": "1649157821",
+      "startedAtBlockNumber": "5354235",
+      "stoppedAtTimestamp": null,
+      "stoppedAtBlockNumber": null,
+      "totalAmountStreamed": null,
+      "chainId": 10,
+      "token": {
+        "id": "0x7d342726b69c28d942ad8bfe6ac81b972349d524",
+        "symbol": "DAIx",
+        "name": "Super Dai Stablecoin",
+        "underlyingAddress": "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
+      },
+      "sender": "0xeb85888b31fadf79cb264d065edcb4a14551c28d",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0xf85a5812e3ac6af52c9da09c324e9a77eaf845da567c79f0b38ef5bb858144c7",
+      "virtualPeriods": [
+        {
+          "startTime": 1672531200,
+          "endTime": 1675209599,
+          "amount": "20666658948699418",
+          "amountFiat": "0.020678022301510432679"
+        }
+      ]
+    },
+    {
+      "id": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40-0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d-1.0-2.0",
+      "flowRate": "38580",
+      "startedAtTimestamp": "1666786230",
+      "startedAtBlockNumber": "31667386",
+      "stoppedAtTimestamp": null,
+      "stoppedAtBlockNumber": null,
+      "totalAmountStreamed": null,
+      "chainId": 10,
+      "token": {
+        "id": "0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d",
+        "symbol": "ETHx",
+        "name": "Super ETH",
+        "underlyingAddress": "0x0000000000000000000000000000000000000000"
+      },
+      "sender": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "receiver": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
+      "startedAtEvent": "0xf1b69275bfc6f382668b05e1b1642310c2fa95b313e72edf30e918e3946a71a0",
+      "virtualPeriods": [
+        {
+          "startTime": 1672531200,
+          "endTime": 1675209599,
+          "amount": "-103332633420",
+          "amountFiat": "0"
+        }
+      ]
+    },
+    {
+      "id": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40-0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d-1.0-2.0",
+      "flowRate": "38580",
+      "startedAtTimestamp": "1666786230",
+      "startedAtBlockNumber": "31667386",
+      "stoppedAtTimestamp": null,
+      "stoppedAtBlockNumber": null,
+      "totalAmountStreamed": null,
+      "chainId": 10,
+      "token": {
+        "id": "0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d",
+        "symbol": "ETHx",
+        "name": "Super ETH",
+        "underlyingAddress": "0x0000000000000000000000000000000000000000"
+      },
+      "sender": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "receiver": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
+      "startedAtEvent": "0xf1b69275bfc6f382668b05e1b1642310c2fa95b313e72edf30e918e3946a71a0",
+      "virtualPeriods": [
+        {
+          "startTime": 1672531200,
+          "endTime": 1675209599,
+          "amount": "-103332633420",
+          "amountFiat": "0"
+        }
+      ]
+    },
+    {
+      "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x1e38baa2735128bcc23792ff9aae96ea7aa7ecd2-0.0-0.0",
+      "flowRate": "3858024691",
+      "startedAtTimestamp": "1671106984",
+      "startedAtBlockNumber": "23925296",
+      "stoppedAtTimestamp": null,
+      "stoppedAtBlockNumber": null,
+      "totalAmountStreamed": null,
+      "chainId": 56,
+      "token": {
+        "id": "0x1e38baa2735128bcc23792ff9aae96ea7aa7ecd2",
+        "symbol": "DAIx",
+        "name": "Super Binance-Peg DAI",
+        "underlyingAddress": "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3"
+      },
+      "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0x439d496a7bf74e157184e7a13d1600ba7f71c4cf91d1dc012c4a1bf7758e9682",
       "virtualPeriods": [
         {
           "startTime": 1672531200,
@@ -5442,114 +5577,6 @@
       ]
     },
     {
-      "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x7d342726b69c28d942ad8bfe6ac81b972349d524-0.0-0.0",
-      "flowRate": "3858024691",
-      "startedAtTimestamp": "1671019624",
-      "startedAtBlockNumber": "49488149",
-      "stoppedAtTimestamp": null,
-      "stoppedAtBlockNumber": null,
-      "totalAmountStreamed": null,
-      "chainId": 10,
-      "token": {
-        "id": "0x7d342726b69c28d942ad8bfe6ac81b972349d524",
-        "symbol": "DAIx",
-        "name": "Super Dai Stablecoin",
-        "underlyingAddress": "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
-      },
-      "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
-      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "startedAtEvent": "0xc4839d1078a09bb44b976eb0a481b7537195d0eef247eb75ceaaac9c715fa211",
-      "virtualPeriods": [
-        {
-          "startTime": 1672531200,
-          "endTime": 1675209599,
-          "amount": "10333329474349709",
-          "amountFiat": "0.01033901115075521634"
-        }
-      ]
-    },
-    {
-      "id": "0xeb85888b31fadf79cb264d065edcb4a14551c28d-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x7d342726b69c28d942ad8bfe6ac81b972349d524-0.0-0.0",
-      "flowRate": "7716049382",
-      "startedAtTimestamp": "1649157821",
-      "startedAtBlockNumber": "5354235",
-      "stoppedAtTimestamp": null,
-      "stoppedAtBlockNumber": null,
-      "totalAmountStreamed": null,
-      "chainId": 10,
-      "token": {
-        "id": "0x7d342726b69c28d942ad8bfe6ac81b972349d524",
-        "symbol": "DAIx",
-        "name": "Super Dai Stablecoin",
-        "underlyingAddress": "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
-      },
-      "sender": "0xeb85888b31fadf79cb264d065edcb4a14551c28d",
-      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "startedAtEvent": "0xf85a5812e3ac6af52c9da09c324e9a77eaf845da567c79f0b38ef5bb858144c7",
-      "virtualPeriods": [
-        {
-          "startTime": 1672531200,
-          "endTime": 1675209599,
-          "amount": "20666658948699418",
-          "amountFiat": "0.020678022301510432679"
-        }
-      ]
-    },
-    {
-      "id": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40-0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d-1.0-2.0",
-      "flowRate": "38580",
-      "startedAtTimestamp": "1666786230",
-      "startedAtBlockNumber": "31667386",
-      "stoppedAtTimestamp": null,
-      "stoppedAtBlockNumber": null,
-      "totalAmountStreamed": null,
-      "chainId": 10,
-      "token": {
-        "id": "0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d",
-        "symbol": "ETHx",
-        "name": "Super ETH",
-        "underlyingAddress": "0x0000000000000000000000000000000000000000"
-      },
-      "sender": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "receiver": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
-      "startedAtEvent": "0xf1b69275bfc6f382668b05e1b1642310c2fa95b313e72edf30e918e3946a71a0",
-      "virtualPeriods": [
-        {
-          "startTime": 1672531200,
-          "endTime": 1675209599,
-          "amount": "-103332633420",
-          "amountFiat": "0"
-        }
-      ]
-    },
-    {
-      "id": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40-0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d-1.0-2.0",
-      "flowRate": "38580",
-      "startedAtTimestamp": "1666786230",
-      "startedAtBlockNumber": "31667386",
-      "stoppedAtTimestamp": null,
-      "stoppedAtBlockNumber": null,
-      "totalAmountStreamed": null,
-      "chainId": 10,
-      "token": {
-        "id": "0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d",
-        "symbol": "ETHx",
-        "name": "Super ETH",
-        "underlyingAddress": "0x0000000000000000000000000000000000000000"
-      },
-      "sender": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "receiver": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
-      "startedAtEvent": "0xf1b69275bfc6f382668b05e1b1642310c2fa95b313e72edf30e918e3946a71a0",
-      "virtualPeriods": [
-        {
-          "startTime": 1672531200,
-          "endTime": 1675209599,
-          "amount": "-103332633420",
-          "amountFiat": "0"
-        }
-      ]
-    },
-    {
       "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x521677a61d101a80ce0fb903b13cb485232774ee-0.0-0.0",
       "flowRate": "3858024691",
       "startedAtTimestamp": "1671024854",
@@ -5629,36 +5656,36 @@
           "amountFiat": "0.01033901115075521634"
         }
       ]
-    },
+    }
+  ],
+  "counterparty": [
     {
-      "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x1e38baa2735128bcc23792ff9aae96ea7aa7ecd2-0.0-0.0",
-      "flowRate": "3858024691",
-      "startedAtTimestamp": "1671106984",
-      "startedAtBlockNumber": "23925296",
+      "id": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40-0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d-1.0-2.0",
+      "flowRate": "38580",
+      "startedAtTimestamp": "1666786230",
+      "startedAtBlockNumber": "31667386",
       "stoppedAtTimestamp": null,
       "stoppedAtBlockNumber": null,
       "totalAmountStreamed": null,
-      "chainId": 56,
+      "chainId": 10,
       "token": {
-        "id": "0x1e38baa2735128bcc23792ff9aae96ea7aa7ecd2",
-        "symbol": "DAIx",
-        "name": "Super Binance-Peg DAI",
-        "underlyingAddress": "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3"
+        "id": "0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d",
+        "symbol": "ETHx",
+        "name": "Super ETH",
+        "underlyingAddress": "0x0000000000000000000000000000000000000000"
       },
-      "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
-      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "startedAtEvent": "0x439d496a7bf74e157184e7a13d1600ba7f71c4cf91d1dc012c4a1bf7758e9682",
+      "sender": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "receiver": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
+      "startedAtEvent": "0xf1b69275bfc6f382668b05e1b1642310c2fa95b313e72edf30e918e3946a71a0",
       "virtualPeriods": [
         {
           "startTime": 1672531200,
           "endTime": 1675209599,
-          "amount": "10333329474349709",
-          "amountFiat": "0.01033901115075521634"
+          "amount": "-103332633420",
+          "amountFiat": "0"
         }
       ]
-    }
-  ],
-  "counterparty": [
+    },
     {
       "id": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40-0x1305f6b6df9dc47159d12eb7ac2804d4a33173c2-2.0-3.0",
       "flowRate": "14880952380",
@@ -5795,33 +5822,6 @@
           "startTime": 1674746130,
           "endTime": 1675209599,
           "amount": "-6896860118606220",
-          "amountFiat": "0"
-        }
-      ]
-    },
-    {
-      "id": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40-0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d-1.0-2.0",
-      "flowRate": "38580",
-      "startedAtTimestamp": "1666786230",
-      "startedAtBlockNumber": "31667386",
-      "stoppedAtTimestamp": null,
-      "stoppedAtBlockNumber": null,
-      "totalAmountStreamed": null,
-      "chainId": 10,
-      "token": {
-        "id": "0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d",
-        "symbol": "ETHx",
-        "name": "Super ETH",
-        "underlyingAddress": "0x0000000000000000000000000000000000000000"
-      },
-      "sender": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "receiver": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
-      "startedAtEvent": "0xf1b69275bfc6f382668b05e1b1642310c2fa95b313e72edf30e918e3946a71a0",
-      "virtualPeriods": [
-        {
-          "startTime": 1672531200,
-          "endTime": 1675209599,
-          "amount": "-103332633420",
           "amountFiat": "0"
         }
       ]
@@ -6792,77 +6792,35 @@
     }
   ],
   "all columns": {
-    "date": [
-      "2023/01/31",
-      "2023/01/31",
-      "2023/01/31",
-      "2023/01/31",
-      "2023/01/31",
-      "2023/01/31",
-      "2023/01/31",
-      "2023/01/31"
-    ],
-    "startDate": [
-      "2023/01/01",
-      "2023/01/26",
-      "2023/01/26",
-      "2023/01/26",
-      "2023/01/01",
-      "2023/01/26",
-      "2023/01/01",
-      "2023/01/01"
-    ],
-    "amount": ["$0.02", "$0.01", "$0.01", "$0", "$0", "$0", "$0.01", "$0"],
-    "counterparty": [
-      "0xEb85888b31FADF79CB264d065EdcB4a14551c28d",
-      "elvijs.lens",
-      "elvijs.lens",
-      "elvijs.lens",
-      "elvijs.lens",
-      "elvijs.lens",
-      "0xEb85888b31FADF79CB264d065EdcB4a14551c28d",
-      "elvijs.lens"
-    ],
-    "counterpartyAddress": [
-      "0xeb85888b31fadf79cb264d065edcb4a14551c28d",
-      "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "0xeb85888b31fadf79cb264d065edcb4a14551c28d",
-      "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2"
-    ],
-    "tokenSymbol": [
-      "xDAIx",
-      "DAIx",
-      "MATICx",
-      "WBTCx",
+    "tokenName": [
+      "Super ETH",
+      "Super xDAI",
+      "Super DAI (PoS)",
+      "Super MATIC",
+      "Super WBTC (PoS)",
       "TDLx",
-      "StIbAlluoUSD",
-      "MATICx",
-      "ETHx"
+      "Streaming IbAlluo USD",
+      "Super MATIC"
     ],
-    "network": [
-      "Gnosis Chain",
-      "Polygon",
-      "Polygon",
-      "Polygon",
-      "Polygon",
-      "Polygon",
-      "Polygon",
-      "Optimism"
+    "tokenAddress": [
+      "0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d",
+      "0x59988e47a3503aafaa0368b9def095c818fdca01",
+      "0x1305f6b6df9dc47159d12eb7ac2804d4a33173c2",
+      "0x3ad736904e9e65189c3000c7dd2c8ac8bb7cd4e3",
+      "0x4086ebf75233e8492f1bcda41c7f2a8288c2fb92",
+      "0xa794221d92d77490ff319e95da1461bdf2bd3953",
+      "0xe9e759b969b991f2bfae84308385405b9ab01541",
+      "0x3ad736904e9e65189c3000c7dd2c8ac8bb7cd4e3"
     ],
-    "transaction": ["", "", "", "", "", "", "", ""],
-    "sender": [
-      "0xEb85...c28d",
-      "elvijs.lens",
-      "elvijs.lens",
-      "elvijs.lens",
-      "elvijs.lens",
-      "elvijs.lens",
-      "0xEb85...c28d",
-      "elvijs.lens"
+    "transactionHash": [
+      "0xf1b69275bfc6f382668b05e1b1642310c2fa95b313e72edf30e918e3946a71a0",
+      "0x6514b5a5fcfe16ad98cb65985119c187f1879302caf3234926fbde5caf7257b8",
+      "0x368c4aa1c439ffdf88c81ea461d23c21f4149d9fe4650385a192aff995eeb3a1",
+      "0x69e3b2dde3309bdcc43127186f272768af178be1d742bbcebd44f9bc11eb016e",
+      "0xcd9f151132326b678127f51ee0fcedca2654edc124844d95bcbb248edad6541d",
+      "0x322bfb7674108b1fca57d0ee1cb151c031fa03f24bebcf56ba478ddc21b4cab7",
+      "0xe6842d84c7a5357adabb192694b362f411d6d33f0b812fed17d97973a486ec2e",
+      "0xf8f290499086b9100688fa1fce2460c2ba5e8d52a0b4752c3f7cc614bf689af7"
     ],
     "receiver": [
       "0x618a...DE40",
@@ -6874,35 +6832,77 @@
       "0x618a...DE40",
       "0x618a...DE40"
     ],
-    "transactionHash": [
-      "0x6514b5a5fcfe16ad98cb65985119c187f1879302caf3234926fbde5caf7257b8",
-      "0x368c4aa1c439ffdf88c81ea461d23c21f4149d9fe4650385a192aff995eeb3a1",
-      "0x69e3b2dde3309bdcc43127186f272768af178be1d742bbcebd44f9bc11eb016e",
-      "0xcd9f151132326b678127f51ee0fcedca2654edc124844d95bcbb248edad6541d",
-      "0x322bfb7674108b1fca57d0ee1cb151c031fa03f24bebcf56ba478ddc21b4cab7",
-      "0xe6842d84c7a5357adabb192694b362f411d6d33f0b812fed17d97973a486ec2e",
-      "0xf8f290499086b9100688fa1fce2460c2ba5e8d52a0b4752c3f7cc614bf689af7",
-      "0xf1b69275bfc6f382668b05e1b1642310c2fa95b313e72edf30e918e3946a71a0"
+    "sender": [
+      "elvijs.lens",
+      "0xEb85...c28d",
+      "elvijs.lens",
+      "elvijs.lens",
+      "elvijs.lens",
+      "elvijs.lens",
+      "elvijs.lens",
+      "0xEb85...c28d"
     ],
-    "tokenAddress": [
-      "0x59988e47a3503aafaa0368b9def095c818fdca01",
-      "0x1305f6b6df9dc47159d12eb7ac2804d4a33173c2",
-      "0x3ad736904e9e65189c3000c7dd2c8ac8bb7cd4e3",
-      "0x4086ebf75233e8492f1bcda41c7f2a8288c2fb92",
-      "0xa794221d92d77490ff319e95da1461bdf2bd3953",
-      "0xe9e759b969b991f2bfae84308385405b9ab01541",
-      "0x3ad736904e9e65189c3000c7dd2c8ac8bb7cd4e3",
-      "0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d"
+    "transaction": ["", "", "", "", "", "", "", ""],
+    "network": [
+      "Optimism",
+      "Gnosis Chain",
+      "Polygon",
+      "Polygon",
+      "Polygon",
+      "Polygon",
+      "Polygon",
+      "Polygon"
     ],
-    "tokenName": [
-      "Super xDAI",
-      "Super DAI (PoS)",
-      "Super MATIC",
-      "Super WBTC (PoS)",
+    "tokenSymbol": [
+      "ETHx",
+      "xDAIx",
+      "DAIx",
+      "MATICx",
+      "WBTCx",
       "TDLx",
-      "Streaming IbAlluo USD",
-      "Super MATIC",
-      "Super ETH"
+      "StIbAlluoUSD",
+      "MATICx"
+    ],
+    "counterpartyAddress": [
+      "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "0xeb85888b31fadf79cb264d065edcb4a14551c28d",
+      "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "0xeb85888b31fadf79cb264d065edcb4a14551c28d"
+    ],
+    "counterparty": [
+      "elvijs.lens",
+      "0xEb85888b31FADF79CB264d065EdcB4a14551c28d",
+      "elvijs.lens",
+      "elvijs.lens",
+      "elvijs.lens",
+      "elvijs.lens",
+      "elvijs.lens",
+      "0xEb85888b31FADF79CB264d065EdcB4a14551c28d"
+    ],
+    "amount": ["$0", "$0.02", "$0.01", "$0.01", "$0", "$0", "$0", "$0.01"],
+    "startDate": [
+      "2023/01/01",
+      "2023/01/01",
+      "2023/01/26",
+      "2023/01/26",
+      "2023/01/26",
+      "2023/01/01",
+      "2023/01/26",
+      "2023/01/01"
+    ],
+    "date": [
+      "2023/01/31",
+      "2023/01/31",
+      "2023/01/31",
+      "2023/01/31",
+      "2023/01/31",
+      "2023/01/31",
+      "2023/01/31",
+      "2023/01/31"
     ]
   }
 }

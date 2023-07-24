@@ -58,6 +58,9 @@ export class WrapPage extends BasePage {
     this.isVisible(SELECT_TOKEN_BUTTON);
     this.isVisible(WRAP_PREVIEW);
     this.isVisible(TOKEN_PAIR);
+  }
+
+  static checkIfUpgradeButtonIsVisible() {
     this.isVisible(UPGRADE_BUTTON);
   }
 

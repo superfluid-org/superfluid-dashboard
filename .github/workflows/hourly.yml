@@ -33,38 +33,13 @@ jobs:
         env:
           CYPRESS_baseUrl: "https://app.superfluid.finance"
 
-  report:
-    needs: test-suite
-    if: failure()
-    runs-on: ubuntu-latest
-    steps:
+      - name: Send slack message
+        if: failure()
+        run: node tests/hourlySlackMessage.js tests/cypress/results/mochawesome.json
+        env: 
+          CI_SLACK_WEBHOOK: ${{ secrets.CI_SLACK_WEBHOOK }}
+          CI_ACTION_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          CI_RUN_NUMBER: ${{ github.run_number }}
 
-      - name: Send a slack message if a test run fails
-        run: |
-          curl -X POST -H 'Content-type: application/json' --data '
-            {
-             "blocks": [
-               {
-                 "type": "header",
-                 "text": {
-                   "type": "plain_text",
-                   "text": "Cypress hourly test run #${{ github.run_number }} has failed :warning:",
-                   "emoji": true
-                 }
-               },
-               {
-                 "type": "section",
-                 "text": {
-                   "type": "mrkdwn",
-                   "text": "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|See the Github Action here >"
-                 },
-                 "accessory": {
-                   "type": "image",
-                   "image_url": "https://tse3.mm.bing.net/th?id=OIP.w0TGv--KfEGI5uCOmwJdXQHaEy",
-                   "alt_text": "why u no work???"
-                 }
-               }
-             ]
-            }' ${{ secrets.CI_SLACK_WEBHOOK }}
 
 
