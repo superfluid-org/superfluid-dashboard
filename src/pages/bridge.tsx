@@ -17,7 +17,7 @@ import {
   walletClientToSigner,
   useEthersSigner,
 } from "../utils/wagmiEthersAdapters";
-import Link from "next/link";
+import Link from "../features/common/Link";
 
 const LiFiWidgetDynamic = dynamic(
   () => import("@lifi/widget").then((module) => module.LiFiWidget) as any,
