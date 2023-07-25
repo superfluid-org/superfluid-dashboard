@@ -713,16 +713,16 @@ export const networkDefinition = {
   polygonZkevmTestnet: {
     ...chain.polygonZkEvmTestnet,
     blockExplorers: ensureDefined(chain.polygonZkEvmTestnet.blockExplorers),
-    slugName: "polgyon-zktest",
-    v1ShortName: "polgyon-zktest",
+    slugName: "polygon-zkevm-testnet",
+    v1ShortName: "polygon-zkevm-testnet",
     bufferTimeInMinutes: 60,
     color: "#7c3fe4",
     rpcUrls: {
       ...chain.polygonZkEvmTestnet.rpcUrls,
-      superfluid: { http: [superfluidRpcUrls["polgyon-zktest"]] },
+      superfluid: { http: [superfluidRpcUrls["polygon-zkevm-testnet"]] },
     },
     fallbackSubgraphUrl:
-      "https://zkevm-testnet.subgraph.x.superfluid.dev",
+      "https://polygon-zkevm-testnet.subgraph.x.superfluid.dev",
     getLinkForTransaction: (txHash: string): string =>
       `https://testnet-zkevm.polygonscan.com/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
