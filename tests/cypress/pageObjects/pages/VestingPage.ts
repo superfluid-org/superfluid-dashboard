@@ -2,6 +2,7 @@ import { BasePage, wordTimeUnitMap } from "../BasePage";
 import { format } from "date-fns";
 import { SendPage } from "./SendPage";
 import { Common, CHANGE_NETWORK_BUTTON } from "./Common";
+import { networksBySlug } from "../../superData/networks";
 
 const NO_CREATED_TITLE = "[data-cy=no-created-schedules-title]";
 const NO_CREATED_DESC = "[data-cy=no-created-schedules-description]";
@@ -66,6 +67,13 @@ const TOPUP_WARNING_TITLE = "[data-cy=top-up-alert-title]";
 const TOPUP_WARNING_TEXT = "[data-cy=top-up-alert-text]";
 const ALLOWLIST_MESSAGE = "[data-cy=allowlist-message]";
 const ALLOWLIST_LINK = "[data-cy=allowlist-link]";
+const AUTO_WRAP_SWITCH_AND_TOOLTIP = "[data-cy=auto-wrap-switch-and-tooltip]"
+const AUTO_WRAP_SWITCH = "[data-cy=auto-wrap-switch]"
+const AUTO_WRAP_ENABLE_BUTTON = "[data-cy=enable-auto-wrap-button]"
+const AUTO_WRAP_ALLOWANCE_BUTTON = "[data-cy=auto-wrap-allowance-button]"
+const AUTO_WRAP_TOOLTIP = `${AUTO_WRAP_SWITCH_AND_TOOLTIP} svg`
+const AUTO_WRAP_TX_MESSAGE = "[data-cy=auto-wrap-tx-message]"
+const TX_MESSAGE_NETWORK = "[data-cy=tx-network]"
 
 //Strings
 const NO_CREATED_TITLE_STRING = "No Sent Vesting Schedules";
@@ -88,6 +96,22 @@ let endDate = new Date(
 );
 
 export class VestingPage extends BasePage {
+  static validateNoEnableAutoWrapButton() {
+    this.doesNotExist(AUTO_WRAP_ENABLE_BUTTON)
+  }
+  
+  static clickEnableAutoWrap() {
+    this.click(AUTO_WRAP_ENABLE_BUTTON)
+  }
+
+  static validateAutoWrapTxMessage(token:string,network:string) {
+    this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...");
+        this.hasText(
+      TX_MESSAGE_NETWORK,
+      `(${networksBySlug.get(network)?.name})`
+    );
+    this.hasText(AUTO_WRAP_TX_MESSAGE,`You are enabling Auto-Wrap to top up your ${token} tokens when balance reaches low.`)
+  }
   static validateFirstRowPendingStatus(status: string) {
     cy.get(VESTING_ROWS)
       .first()
@@ -692,5 +716,17 @@ export class VestingPage extends BasePage {
     nameOrAddress: string
   ) {
     this.hasText(`[data-cy=${senderOrReceiver}-address]`, nameOrAddress);
+  }
+
+  static validateAutoWrapSwitchDoesNotExist() {
+    this.doesNotExist(AUTO_WRAP_SWITCH_AND_TOOLTIP)
+  }
+
+  static validateNoTopUpWarningShown() {
+    this.doesNotExist(TOPUP_WARNING_TEXT)
+    this.doesNotExist(TOPUP_WARNING_TITLE)
+  }
+  static clickAutoWrapSwitch() {
+    this.click(AUTO_WRAP_SWITCH)
   }
 }

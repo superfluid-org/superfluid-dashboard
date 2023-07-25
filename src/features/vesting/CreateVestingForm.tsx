@@ -444,6 +444,7 @@ const CreateVestingForm: FC<{
       name="data.setupAutoWrap"
       render={({ field: { value, onChange, onBlur } }) => (
         <FormControlLabel
+          data-cy="auto-wrap-switch"
           label={VestingFormLabels.AutoWrap}
           control={
             <Switch checked={!!value} onChange={onChange} onBlur={onBlur} />
@@ -586,7 +587,7 @@ const CreateVestingForm: FC<{
         )}
 
         {isAutoWrapInputVisible && (
-          <Stack direction="row" alignItems="center">
+          <Stack data-cy="auto-wrap-switch-and-tooltip" direction="row" alignItems="center">
             {AutoWrapController}
             <TooltipWithIcon title={VestingTooltips.AutoWrap} />
           </Stack>

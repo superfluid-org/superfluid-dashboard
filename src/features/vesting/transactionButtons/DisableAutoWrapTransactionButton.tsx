@@ -67,6 +67,7 @@ const DisableAutoWrapTransactionButton: FC<{
       {({ network, setDialogLoadingInfo, txAnalytics }) =>
         isVisible && (
           <TransactionButton
+            dataCy="disable-auto-wrap-button"
             ConnectionBoundaryButtonProps={{
               impersonationTitle: "Stop viewing",
               changeNetworkTitle: "Change Network",

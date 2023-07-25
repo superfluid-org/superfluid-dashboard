@@ -199,3 +199,51 @@ Then(
     );
   }
 );
+Then(
+  /^Auto-wrap switch does not exist$/,
+  function () {
+    VestingPage.validateAutoWrapSwitchDoesNotExist();
+  }
+);
+
+Then(
+  /^User clicks on the auto-wrap switch$/,
+  function () {
+    VestingPage.clickAutoWrapSwitch();
+  }
+);
+
+Then(
+  /^Top up warning is not shown$/,
+  function () {
+    VestingPage.validateNoTopUpWarningShown();
+  }
+);
+
+Then(
+  /^User previews the vesting schedule$/,
+  function () {
+    VestingPage.clickPreviewButton();
+  }
+);
+
+Then(
+  /^User enables the auto-wrap$/,
+  function () {
+    VestingPage.clickEnableAutoWrap();
+  }
+);
+
+Then(
+  /^Auto-wrap transaction message is shown for "([^"]*)" on "([^"]*)"$/,
+  function (token:string,network:string) {
+    VestingPage.validateAutoWrapTxMessage(token,network);
+  }
+);
+
+Then(
+  /^Enable auto-wrap button does not exist$/,
+  function () {
+    VestingPage.validateNoEnableAutoWrapButton();
+  }
+);

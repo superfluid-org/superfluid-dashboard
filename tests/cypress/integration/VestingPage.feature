@@ -236,3 +236,91 @@ Feature: Vesting page test cases
         And User clicks on the "vesting" navigation button
         And User clicks on the create vesting schedule button
         Then Vesting allowlist message is shown
+
+    @only
+    Scenario: Setting up auto-wrap from the vesting form (rejected) 
+        Given HDWallet transactions are rejected
+        And Transactional account john is connected to the dashboard on goerli
+        And User clicks on the "vesting" navigation button
+        And User clicks on the create vesting schedule button
+        And User searches for "vijay.eth" as a receiver
+        And User selects the first ENS recipient result
+        And User selects "fDAIx" as the super token to use for the stream
+        And User inputs a date "1" "year" into the future into the vesting start date field
+        And User inputs "3" as the total vested amount
+        And User inputs "4" "year" as the total vesting period
+        And User clicks on the auto-wrap switch
+        And User previews the vesting schedule
+        And User enables the auto-wrap
+        And Auto-wrap transaction message is shown for "fDAIx" on "goerli"
+        Then Transaction rejected error is shown
+
+    
+    Scenario: Setting up auto-wrap for a user who has already given token allowance(rejected)
+    Given HDWallet transactions are rejected
+
+    Scenario: Setting up auto-wrap for a user who has already given ACL allowance(rejected)
+    Given HDWallet transactions are rejected
+
+    @only
+    Scenario: Auto-Wrap not available for native tokens in the vesting form
+        And Transactional account john is connected to the dashboard on goerli
+        And User clicks on the "vesting" navigation button
+        And User clicks on the create vesting schedule button
+        And User selects "ETHx" as the super token to use for the stream
+        #The UI showing the Enable auto-wrap switch is not instant, waiting just to be sure it is not getting shown
+        And User waits for 5 seconds
+        Then Auto-wrap switch does not exist
+
+    @only
+    Scenario: Auto-Wrap not available for pure tokens in the vesting form
+        And Transactional account john is connected to the dashboard on goerli
+        And User clicks on the "vesting" navigation button
+        And User clicks on the create vesting schedule button
+        And User selects "NTDL" as the super token to use for the stream
+        #The UI showing the Enable auto-wrap switch is not instant, waiting just to be sure it is not getting shown
+        And User waits for 5 seconds
+        Then Auto-wrap switch does not exist
+
+    @only
+    Scenario: Top up warning not shown if auto-wrap switch is enabled
+        And Transactional account john is connected to the dashboard on goerli
+        And User clicks on the "vesting" navigation button
+        And User clicks on the create vesting schedule button
+        And User selects "FUNDx" as the super token to use for the stream
+        And User clicks on the auto-wrap switch
+        Then Top up warning is not shown
+
+    @only
+    Scenario: Stop viewing address - Auto-wrap button
+        And Transactional account john is connected to the dashboard on goerli
+        And User clicks on the "vesting" navigation button
+        And User clicks on the create vesting schedule button
+        And User searches for "vijay.eth" as a receiver
+        And User selects the first ENS recipient result
+        And User selects "FUNDX" as the super token to use for the stream
+        And User inputs a date "1" "year" into the future into the vesting start date field
+        And User inputs "3" as the total vested amount
+        And User inputs "4" "year" as the total vesting period
+        And User clicks on the auto-wrap switch
+        And User previews the vesting schedule
+        Then The stop viewing as an address button is visible
+        And Enable auto-wrap button does not exist
+
+    
+    Scenario: Stop viewing address - Allowance button
+    Given "Dashboard page" is open using view mode to look at "john"
+        And User clicks on the "vesting" navigation button
+        And User clicks on the create vesting schedule button
+        And User searches for "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" as a receiver
+        And User selects "FUNDx" as the super token to use for the stream
+        And User inputs a date "1" "year" into the future into the vesting start date field
+        And User inputs "3" as the total vested amount
+        And User inputs "4" "year" as the total vesting period
+        And User previews the vesting schedule
+
+# Grey(Needs update) auto-wrap set up icon showing up and enable button showing by the auto-wrap for a super token if it is not set up and enable button asking for token allowance
+# Orange auto-wrap icon showing up if token allowance is set but user hasn't given ACL permissions and enable button not asking for token allowance
+# Orange auto-wrap icon showing up if there is no token allowance set but ACL permissions are set and enable button asking for token allowance
+# No auto-wrap icon showing and no enable/disable buttons showing for pure super tokens
+# No auto-wrap icon showing and no enable/disable buttons showing for native tokens

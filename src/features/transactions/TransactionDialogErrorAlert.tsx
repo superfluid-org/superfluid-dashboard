@@ -27,7 +27,9 @@ export default memo(function TransactionDialogErrorAlert({
       const errorMessageLowerCase = mutationError.message?.toLowerCase() ?? "";
       const didUserRejectTransaction =
         errorMessageLowerCase.includes("rejected") &&
-        errorMessageLowerCase.includes("transaction");
+        errorMessageLowerCase.includes("transaction") || 
+        //Auto-wrap permission + Cypress
+        errorMessageLowerCase.includes("denied transaction signature");
 
       // Old approach:
       // mutationError.message?.includes('4001') || // MetaMask error version

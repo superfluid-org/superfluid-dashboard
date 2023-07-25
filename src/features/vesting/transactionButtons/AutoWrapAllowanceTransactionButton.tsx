@@ -62,12 +62,13 @@ const AutoWrapAllowanceTransactionButton: FC<{
       {({ setDialogLoadingInfo, txAnalytics }) =>
         isVisible && (
           <TransactionButton
+            dataCy="auto-wrap-allowance-button"
             disabled={isButtonDisabled}
             onClick={async (signer) => {
               if (isButtonDisabled)
                 throw new Error("This should never happen!");
               setDialogLoadingInfo(
-                <Typography variant="h5" color="text.secondary" translate="yes">
+                <Typography data-cy="auto-wrap-allowance-tx-message" variant="h5" color="text.secondary" translate="yes">
                   You are approving Auto-Wrap token allowance for the underlying
                   token.
                 </Typography>
