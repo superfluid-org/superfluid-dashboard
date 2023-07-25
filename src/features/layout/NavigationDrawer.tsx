@@ -49,7 +49,7 @@ const NavigationItem: FC<NavigationItemProps> = ({
   onClick,
 }) => (
   <ListItemButton
-    component={Link}
+    LinkComponent={Link}
     href={href}
     sx={{ borderRadius: "10px" }}
     selected={active}
