@@ -714,7 +714,7 @@ export const networkDefinition = {
     ...chain.polygonZkEvmTestnet,
     blockExplorers: ensureDefined(chain.polygonZkEvmTestnet.blockExplorers),
     slugName: "polygon-zkevm-testnet",
-    v1ShortName: "polygon-zkevm-testnet",
+    v1ShortName: "pzkevmtest",
     bufferTimeInMinutes: 60,
     color: "#7c3fe4",
     rpcUrls: {
