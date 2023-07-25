@@ -41,6 +41,7 @@ export type Scalars = {
   BigDecimal: string;
   BigInt: string;
   Bytes: string;
+  Int8: any;
 };
 
 export type BlockChangedFilter = {
@@ -1951,6 +1952,7 @@ export type ResolversTypes = ResolversObject<{
   FlowScheduleDeletedEvent_orderBy: FlowScheduleDeletedEvent_OrderBy;
   ID: ResolverTypeWrapper<Scalars['ID']>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
+  Int8: ResolverTypeWrapper<Scalars['Int8']>;
   OrderDirection: OrderDirection;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']>;
@@ -1992,6 +1994,7 @@ export type ResolversParentTypes = ResolversObject<{
   FlowScheduleDeletedEvent_filter: FlowScheduleDeletedEvent_Filter;
   ID: Scalars['ID'];
   Int: Scalars['Int'];
+  Int8: Scalars['Int8'];
   Query: {};
   String: Scalars['String'];
   Subscription: {};
@@ -2153,6 +2156,10 @@ export type FlowScheduleDeletedEventResolvers<ContextType = MeshContext, ParentT
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export interface Int8ScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Int8'], any> {
+  name: 'Int8';
+}
+
 export type QueryResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   flowScheduleCreatedEvent?: Resolver<Maybe<ResolversTypes['FlowScheduleCreatedEvent']>, ParentType, ContextType, RequireFields<QueryFlowScheduleCreatedEventArgs, 'id' | 'subgraphError'>>;
   flowScheduleCreatedEvents?: Resolver<Array<ResolversTypes['FlowScheduleCreatedEvent']>, ParentType, ContextType, RequireFields<QueryFlowScheduleCreatedEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
@@ -2243,6 +2250,7 @@ export type Resolvers<ContextType = MeshContext> = ResolversObject<{
   Event?: EventResolvers<ContextType>;
   FlowScheduleCreatedEvent?: FlowScheduleCreatedEventResolvers<ContextType>;
   FlowScheduleDeletedEvent?: FlowScheduleDeletedEventResolvers<ContextType>;
+  Int8?: GraphQLScalarType;
   Query?: QueryResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   Task?: TaskResolvers<ContextType>;
