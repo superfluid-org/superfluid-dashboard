@@ -236,7 +236,10 @@ export const UpsertTokenAccessForm: FC<{
         />
       ) : (
         <Box>
-          <EditDialogTitle onClose={handleOnCloseBtnClick}>
+          <EditDialogTitle
+            dataCy={"upsert-approvals-form-close-button"}
+            onClose={handleOnCloseBtnClick}
+          >
             <Typography variant="h4">
               {isNewEntry ? "Add Permissions" : "Modify Permissions"}
             </Typography>
@@ -373,6 +376,7 @@ export const UpsertTokenAccessForm: FC<{
                   name="data.tokenAllowanceWei"
                   render={({ field: { onChange, onBlur } }) => (
                     <TextField
+                      data-cy={"approvals-modal-allowance-field"}
                       sx={{ marginTop: "1px" }}
                       value={tokenAllowanceEther}
                       onChange={(event) => {

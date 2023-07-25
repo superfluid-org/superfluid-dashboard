@@ -44,8 +44,9 @@ interface Props {
 }
 
 export const UpsertTokenAccessButton: FC<{
+  dataCy?: string;
   initialFormValues: UpsertTokenAccessFormProviderProps["initialFormData"];
-}> = ({ initialFormValues }) => {
+}> = ({ initialFormValues, dataCy }) => {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const isEditingExistingRecord = Object.keys(initialFormValues).length > 1;
@@ -53,6 +54,7 @@ export const UpsertTokenAccessButton: FC<{
   return (
     <>
       <Button
+        data-cy={`${isEditingExistingRecord ? "modify" : "add"}-${dataCy}`}
         size={"medium"}
         variant={isEditingExistingRecord ? "outlined" : "contained"}
         endIcon={isEditingExistingRecord ? null : <Add />}
@@ -68,7 +70,7 @@ export const UpsertTokenAccessButton: FC<{
         }}
         translate="yes"
       >
-        <Stack component={"form"}>
+        <Stack component={"form"} data-cy={"upsert-approvals-form"}>
           <UpsertTokenAccessFormProvider initialFormData={initialFormValues}>
             <UpsertTokenAccessForm
               initialFormValues={initialFormValues}
@@ -129,7 +131,7 @@ const TokenAccessRow: FC<Props> = ({
     return {
       network: network,
       token: tokenInfo
-        ? {
+        ? ({
             ...tokenInfo,
             type: getSuperTokenType({
               ...tokenInfo,
@@ -141,7 +143,7 @@ const TokenAccessRow: FC<Props> = ({
             symbol: tokenInfo.symbol,
             decimals: 18,
             isListed: tokenInfo.isListed,
-          } as AccessToken
+          } as AccessToken)
         : undefined,
       operatorAddress: address,
       flowOperatorPermissions: initialAccess.flowOperatorPermissions,
@@ -417,7 +419,7 @@ const TokenAccessRow: FC<Props> = ({
               p: 3,
             }}
           >
-            <UpsertTokenAccessButton initialFormValues={initialFormValues} />
+            <UpsertTokenAccessButton dataCy={"token-access-row-button"} initialFormValues={initialFormValues} />
           </TableCell>
         </TableRow>
       )}

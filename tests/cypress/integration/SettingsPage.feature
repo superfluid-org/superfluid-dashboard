@@ -19,3 +19,26 @@ Feature: Settings page test cases
     Scenario: Wallet Not connected screen in settings page
         Given "Settings page" is open without connecting a wallet
         Then Settings page wallet not connected screen is visible
+
+    Scenario: No permissions set screen showing up
+        Given "Settings Page" is open with "alice" connected on "polygon"
+        Then Settings page No Access Data screen screen is visible
+
+    Scenario: Open and close approvals Modal in settings page
+        Given "Settings Page" is open with "alice" connected on "polygon"
+        And User clicks on the add approval button
+        And User opens the add approval modal is visible
+        And User closes the add approval modal should be hidden
+
+    Scenario: Add a new permission
+        Given "Settings Page" is open with "john" connected on "polygon-mumbai"
+        And User clicks on the add approval button
+        And User opens the add approval modal is visible
+        And User selects "fDAIx" as the super token to use for the stream
+        And User searches for "0x9B6157d44134b21D934468B8bf709294cB298aa7" as a receiver
+        And User inputs a allowance "1.53" into the field
+        And User inputs a flow rate "12.17" into the field
+        And User toggle on a create permission
+        And User toggle on a update permission
+        And User toggle on a delete permission
+        And User toggle off a update permission

@@ -55,6 +55,7 @@ export const FlowOperatorPermissionSwitch: FC<{
   const renderSwitch = (permission: Permission) => (
     <Stack key={permission.name} direction="row" alignItems="center">
       <Switch
+        data-cy={`flow-acl-permission-${permission.name}-switch`}
         color="primary"
         checked={isPermissionActive(permission.value)}
         value={permission.value}

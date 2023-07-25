@@ -3,9 +3,10 @@ import { DialogTitle, IconButton, Stack } from "@mui/material";
 import { FC, PropsWithChildren } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 
-const EditDialogTitle: FC<PropsWithChildren & { onClose: () => void }> = ({
+const EditDialogTitle: FC<PropsWithChildren  & {dataCy?: string, onClose: () => void }> = ({
   children,
   onClose,
+  dataCy,
 }) => {
   const theme = useTheme();
   return (
@@ -16,6 +17,7 @@ const EditDialogTitle: FC<PropsWithChildren & { onClose: () => void }> = ({
     >
       {children}
       <IconButton
+        data-cy={dataCy}
         aria-label="close"
         onClick={onClose}
         sx={{

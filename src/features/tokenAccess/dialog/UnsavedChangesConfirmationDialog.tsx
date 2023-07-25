@@ -32,7 +32,7 @@ const UnsavedChangesConfirmationDialog: FC<{
 
   return (
     <>
-      <EditDialogTitle onClose={onClose}>
+      <EditDialogTitle onClose={onClose} dataCy={"upsert-approvals-unsaved-form-close-button"}>
         <Stack alignItems="center" direction="column" gap={1}>
           <EditIconWrapper>
             <ErrorRounded
