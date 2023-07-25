@@ -735,7 +735,7 @@ export const networkDefinition = {
       superToken: {
         type: TokenType.NativeAssetSuperToken,
         symbol: "ETHx",
-        address: "0x30a6933Ca9230361972E413a15dC8114c952414e",
+        address: "0x7fFCE315B2014546bA461d54eDed7AAc70DF4f53",
         name: "Super ETH",
         decimals: 18,
       },
