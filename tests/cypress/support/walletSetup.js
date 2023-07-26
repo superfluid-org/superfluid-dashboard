@@ -19,6 +19,7 @@ const networkGasTokenSymbols = {
   100: "xDAIx",
   137: "MATICx",
   420: "ETHx",
+  1442: "ETHx",
   42161: "ETHx",
   43113: "AVAXx",
   43114: "AVAXx",

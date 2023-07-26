@@ -77,6 +77,12 @@
         "underlyingBalance": "0",
         "superTokenBalance": "0"
       }
+    },
+    "polygon-zkevm-testnet": {
+      "ETH": {
+        "underlyingBalance": "0",
+        "superTokenBalance": "0"
+      }
     }
   }
 }
