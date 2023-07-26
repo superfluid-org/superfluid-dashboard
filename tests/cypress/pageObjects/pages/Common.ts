@@ -140,7 +140,6 @@ export class Common extends BasePage {
           chainId: chainId,
           pollingInterval: 1000,
         });
-        console.log(networkRpc);
         if (Cypress.env("rejected")) {
           // Make HDWallet automatically reject transaction.
           // Inspired by: https://github.com/MetaMask/web3-provider-engine/blob/e835b80bf09e76d92b785d797f89baa43ae3fd60/subproviders/hooked-wallet.js#L326
