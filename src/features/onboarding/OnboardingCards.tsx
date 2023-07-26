@@ -19,7 +19,7 @@ import { useAccount } from "wagmi";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import TokenIcon from "../token/TokenIcon";
 import { useConnectButton } from "../wallet/ConnectButtonProvider";
-import Link, { NextLinkComposed } from "../common/Link";
+import Link from "../common/Link";
 
 interface OnboardingItemProps {
   title: string;
@@ -44,37 +44,36 @@ const OnboardingItem: FC<PropsWithChildren<OnboardingItemProps>> = ({
   const onMouseLeave = () => setIsHovering(false);
 
   return (
-    <Card
-      component={Link}
-      href={href}
-      elevation={isHovering ? 3 : 1}
-      onClick={onClick}
-      sx={{
-        textDecoration: "none",
-        [theme.breakpoints.down("md")]: {
-          textAlign: "center",
-          scrollSnapAlign: "center",
-        },
-      }}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-    >
-      <CardHeader
-        title={title}
-        subheader={subheader}
-        sx={{ textAlign: "center" }}
-      />
-      <CardContent
-        component={Stack}
-        direction="row"
-        alignItems="center"
-        justifyContent="center"
-        gap={childrenGap}
-        sx={{ pointerEvents: "none" }}
+    <Link href={href} onClick={onClick}>
+      <Card
+        elevation={isHovering ? 3 : 1}
+        sx={{
+          textDecoration: "none",
+          [theme.breakpoints.down("md")]: {
+            textAlign: "center",
+            scrollSnapAlign: "center",
+          },
+        }}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
       >
-        {children}
-      </CardContent>
-    </Card>
+        <CardHeader
+          title={title}
+          subheader={subheader}
+          sx={{ textAlign: "center" }}
+        />
+        <CardContent
+          component={Stack}
+          direction="row"
+          alignItems="center"
+          justifyContent="center"
+          gap={childrenGap}
+          sx={{ pointerEvents: "none" }}
+        >
+          {children}
+        </CardContent>
+      </Card>
+    </Link>
   );
 };
 

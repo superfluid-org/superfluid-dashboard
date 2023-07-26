@@ -1,9 +1,9 @@
-import LIFI, { Token } from "@lifi/sdk";
+import { LiFi, Token } from "@lifi/sdk";
 import { useEffect, useState } from "react";
 import { useAvailableNetworks } from "../network/AvailableNetworksContext";
 import { subgraphApi } from "../redux/store";
 
-const useFeaturedTokens = (lifi: LIFI): Token[] => {
+const useFeaturedTokens = (lifi: LiFi): Token[] => {
   const { availableNetworks } = useAvailableNetworks();
   const [featuredTokens, setFeaturedTokens] = useState<Token[]>([]);
 

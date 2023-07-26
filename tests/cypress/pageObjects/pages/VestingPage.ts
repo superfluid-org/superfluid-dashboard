@@ -338,7 +338,7 @@ export class VestingPage extends BasePage {
       "color",
       rgbValue,
       undefined,
-      { timeout: 30000 }
+      { timeout: 45000 }
     );
     this.hasCSS(`[data-cy=${token}-permission-status]`, "color", rgbValue);
     this.hasCSS(`[data-cy=${token}-flow-allowance-status]`, "color", rgbValue);

@@ -487,7 +487,7 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
       },
       MuiDialogTitle: {
         defaultProps: {
-          component: "div",
+          component: "span",
           translate: "yes",
         },
       },

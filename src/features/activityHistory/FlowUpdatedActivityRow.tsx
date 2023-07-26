@@ -232,7 +232,7 @@ const FlowUpdatedActivityRow: FC<FlowUpdatedActivityRowProps> = ({
               <TxHashLink txHash={transactionHash} network={network} />
               {stream && (
                 <IconButton
-                  component={Link}
+                  LinkComponent={Link}
                   href={getStreamPagePath({
                     network: network.slugName,
                     stream: stream.id,

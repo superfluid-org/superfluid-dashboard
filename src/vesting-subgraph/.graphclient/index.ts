@@ -41,6 +41,7 @@ export type Scalars = {
   BigDecimal: string;
   BigInt: string;
   Bytes: string;
+  Int8: any;
 };
 
 export type BlockChangedFilter = {
@@ -2307,6 +2308,7 @@ export type ResolversTypes = ResolversObject<{
   Float: ResolverTypeWrapper<Scalars['Float']>;
   ID: ResolverTypeWrapper<Scalars['ID']>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
+  Int8: ResolverTypeWrapper<Scalars['Int8']>;
   OrderDirection: OrderDirection;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']>;
@@ -2357,6 +2359,7 @@ export type ResolversParentTypes = ResolversObject<{
   Float: Scalars['Float'];
   ID: Scalars['ID'];
   Int: Scalars['Int'];
+  Int8: Scalars['Int8'];
   Query: {};
   String: Scalars['String'];
   Subscription: {};
@@ -2422,6 +2425,10 @@ export type EventResolvers<ContextType = MeshContext, ParentType extends Resolve
   transactionHash?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   gasPrice?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
 }>;
+
+export interface Int8ScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Int8'], any> {
+  name: 'Int8';
+}
 
 export type QueryResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   vestingCliffAndFlowExecutedEvent?: Resolver<Maybe<ResolversTypes['VestingCliffAndFlowExecutedEvent']>, ParentType, ContextType, RequireFields<QueryVestingCliffAndFlowExecutedEventArgs, 'id' | 'subgraphError'>>;
@@ -2646,6 +2653,7 @@ export type Resolvers<ContextType = MeshContext> = ResolversObject<{
   BigInt?: GraphQLScalarType;
   Bytes?: GraphQLScalarType;
   Event?: EventResolvers<ContextType>;
+  Int8?: GraphQLScalarType;
   Query?: QueryResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   Task?: TaskResolvers<ContextType>;

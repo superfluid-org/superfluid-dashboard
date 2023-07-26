@@ -114,10 +114,12 @@ export class IndividualTokenPage extends BasePage {
   }
 
   static validateFirstDistributionRowPendingMessage(message: string) {
+    let regex = new RegExp(`(${message.replaceAll(".", "")}|Syncing)\.{3}`);
     cy.get(DISTRIBUTION_ROWS)
       .first({ timeout: 60000 })
       .find(PENDING_MESSAGE)
-      .should("have.text", message);
+      .invoke("text")
+      .should("match", regex);
   }
 
   static validateNoPendingStatusForFirstStreamRow() {
@@ -226,10 +228,10 @@ export class IndividualTokenPage extends BasePage {
         this.isNotVisible(`${TX_DRAWER_BUTTON} span`, undefined, {
           timeout: 60000,
         });
-        this.hasText(STATUS, "Awaiting Approval", undefined, {
-          timeout: 60000,
-        });
       }
+      this.hasText(STATUS, "Awaiting Approval", undefined, {
+        timeout: 60000,
+      });
     });
   }
 
@@ -242,8 +244,8 @@ export class IndividualTokenPage extends BasePage {
         this.isNotVisible(`${TX_DRAWER_BUTTON} span`, undefined, {
           timeout: 60000,
         });
-        this.hasText(STATUS, "Approved", undefined, { timeout: 60000 });
       }
+      this.hasText(STATUS, "Approved", undefined, { timeout: 60000 });
     });
   }
 

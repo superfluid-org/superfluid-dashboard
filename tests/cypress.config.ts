@@ -83,6 +83,12 @@ export default defineConfig({
     },
     projectId: "2aaadn",
     baseUrl: "http://localhost:3000",
+    reporter: "mochawesome",
+    reporterOptions: {
+      reportDir: "cypress/results",
+      html: false,
+      overwrite: false,
+    },
     excludeSpecPattern: "*.js",
     viewportHeight: 720,
     viewportWidth: 1450,

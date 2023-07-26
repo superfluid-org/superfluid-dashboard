@@ -5,7 +5,7 @@ Feature: Common element test cases
         And User clicks on the "dashboard" navigation button
         Then Dashboard page is open when wallet of the user is not connected
         And User clicks on the "wrap-unwrap" navigation button
-        Then Wrap/Unwrap page is open and the wrap container is visible
+        Then Wrap/Unwrap page is open and the wrap container is visible without a wallet connected
         And User clicks on the "send" navigation button
         Then Send page is open and the send container is visible
 
@@ -100,7 +100,7 @@ Feature: Common element test cases
         And User clicks the claim tokens button
         Then You have already claimed tokens message is shown
         And User clicks on the wrap into super tokens button
-        Then Wrap/Unwrap page is open and the wrap container is visible
+        Then Wrap/Unwrap page is open and the wrap container is visible with a wallet connected
         And User opens the navigation more menu
         And User opens the faucet view from the navigation menu
         Then The claim token is disabled and shows Tokens claimed message

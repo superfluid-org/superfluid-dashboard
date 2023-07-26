@@ -19,9 +19,21 @@ Then(
   }
 );
 
-Then(/^Wrap\/Unwrap page is open and the wrap container is visible$/, () => {
-  WrapPage.checkIfWrapContainerIsVisible();
-});
+Then(
+  /^Wrap\/Unwrap page is open and the wrap container is visible without a wallet connected$/,
+  () => {
+    WrapPage.checkIfWrapContainerIsVisible();
+    WrapPage.connectWalletButtonIsVisible();
+  }
+);
+
+Then(
+  /^Wrap\/Unwrap page is open and the wrap container is visible with a wallet connected$/,
+  () => {
+    WrapPage.checkIfWrapContainerIsVisible();
+    WrapPage.checkIfUpgradeButtonIsVisible();
+  }
+);
 
 Then(/^Send page is open and the send container is visible$/, () => {
   SendPage.checkIfSendContainerIsVisible();
