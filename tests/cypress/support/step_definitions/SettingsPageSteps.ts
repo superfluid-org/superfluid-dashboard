@@ -25,8 +25,12 @@ Then(/^User opens the add approval modal is visible$/, () => {
   SettingsPage.validateApprovalModalScreen();
 });
 
-Then(/^User closes the add approval modal should be hidden$/, () => {
+Then(/^User closes the add approval modal$/, () => {
   SettingsPage.clickOnCloseApprovalModalButton();
+});
+
+Then(/^Approval modal should not be visible$/, () => {
+  SettingsPage.approvalModalShouldNotBeVisible();
 });
 
 Then(
@@ -58,3 +62,17 @@ Then(/^User toggle on a delete permission$/, function () {
 Then(/^User toggle off a update permission$/, function () {
   SettingsPage.toggleOffUpdatePermission();
 });
+
+Then(/^Unsaved Changes modal should be visible$/, function () {
+  SettingsPage.unsavedConfirmationModalShouldBeVisible();
+});
+
+Then(/^User closes the unsaved changes modal$/, function () {
+  SettingsPage.userClosesUnsavedChangesModal();
+});
+
+Then(/^Unsaved Changes modal should not be visible$/, function () {
+  SettingsPage.unsavedConfirmationModalShouldNotBeVisible();
+});
+
+Then(/^User click on Add button$/, function () {});

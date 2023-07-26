@@ -28,9 +28,10 @@ Feature: Settings page test cases
         Given "Settings Page" is open with "alice" connected on "polygon"
         And User clicks on the add approval button
         And User opens the add approval modal is visible
-        And User closes the add approval modal should be hidden
+        And User closes the add approval modal
+        And Approval modal should not be visible
 
-    Scenario: Add a new permission
+    Scenario: Add a new permission and close approval modal
         Given "Settings Page" is open with "john" connected on "polygon-mumbai"
         And User clicks on the add approval button
         And User opens the add approval modal is visible
@@ -42,3 +43,23 @@ Feature: Settings page test cases
         And User toggle on a update permission
         And User toggle on a delete permission
         And User toggle off a update permission
+        And User closes the add approval modal
+        And Unsaved Changes modal should be visible
+        And User closes the unsaved changes modal
+        And Unsaved Changes modal should not be visible
+
+    Scenario: Add a new permission and click add button
+        Given "Settings Page" is open with "john" connected on "polygon-mumbai"
+        And User clicks on the add approval button
+        And User opens the add approval modal is visible
+        And User selects "fDAIx" as the super token to use for the stream
+        And User searches for "0x9B6157d44134b21D934468B8bf709294cB298aa7" as a receiver
+        And User inputs a allowance "1.53" into the field
+        And User inputs a flow rate "12.17" into the field
+        And User toggle on a create permission
+        And User toggle on a update permission
+        And User toggle on a delete permission
+        And User toggle off a update permission
+        And User closes the add approval modal
+        And Unsaved Changes modal should be visible
+        And User click on Add button

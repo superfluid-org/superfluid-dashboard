@@ -21,6 +21,11 @@ const APPROVAL_MODAL_DELETE_ACL_PERMISSION =
 const APPROVAL_MODAL_UPDATE_ACL_PERMISSION =
   "[data-cy=flow-acl-permission-Update-switch]";
 
+const UNSAVED_CONFIRMATION_MODAL =
+  "[data-cy=approvals-unsaved-confirmation-form]";
+
+const UNSAVED_CONFIRMATION_MODAL_CLOSE_ICON =
+  "[data-cy=upsert-approvals-unsaved-form-close-button]";
 export class SettingsPage extends BasePage {
   static validateVisibleAddress(address: string) {
     this.hasText(WALLET_ADDRESS, address);
@@ -57,7 +62,6 @@ export class SettingsPage extends BasePage {
 
   static clickOnCloseApprovalModalButton() {
     this.click(APPROVAL_MODAL_CLOSE_BUTTON);
-    this.doesNotExist(APPROVAL_MODAL);
   }
 
   static inputAllowanceInFormField(amount: string) {
@@ -83,4 +87,16 @@ export class SettingsPage extends BasePage {
   static toggleOffUpdatePermission() {
     this.click(APPROVAL_MODAL_UPDATE_ACL_PERMISSION);
   }
+
+  static approvalModalShouldNotBeVisible = () =>
+    this.isNotVisible(APPROVAL_MODAL);
+
+  static unsavedConfirmationModalShouldBeVisible = () =>
+    this.isVisible(UNSAVED_CONFIRMATION_MODAL);
+
+  static userClosesUnsavedChangesModal = () =>
+    this.click(UNSAVED_CONFIRMATION_MODAL_CLOSE_ICON);
+
+  static unsavedConfirmationModalShouldNotBeVisible = () =>
+    this.isNotVisible(UNSAVED_CONFIRMATION_MODAL);
 }
