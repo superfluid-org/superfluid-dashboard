@@ -52,6 +52,7 @@ export const superfluidRpcUrls = {
   "optimism-goerli": "https://rpc-endpoints.superfluid.dev/optimism-goerli",
   "arbitrum-goerli": "https://rpc-endpoints.superfluid.dev/arbitrum-goerli",
   sepolia: "https://rpc-endpoints.superfluid.dev/eth-sepolia",
+  "base-goerli": "https://rpc-endpoints.superfluid.dev/base-goerli",
 };
 
 export const networkDefinition: {
@@ -72,6 +73,7 @@ export const networkDefinition: {
   optimismGoerli: Network;
   arbitrumGoerli: Network;
   sepolia: Network;
+  baseGoerli: Network;
 } = {
   goerli: {
     ...chain.goerli,
@@ -469,6 +471,32 @@ export const networkDefinition: {
     },
     platformUrl: undefined,
   },
+  baseGoerli: {
+    ...chain.baseGoerli,
+    slugName: "bgoerli",
+    v1ShortName: "bgoerli",
+    bufferTimeInMinutes: 60,
+    color: "#68B1D5",
+    superfluidRpcUrl: superfluidRpcUrls["base-goerli"],
+    subgraphUrl: "https://base-goerli.subgraph.x.superfluid.dev/",
+    getLinkForTransaction: (txHash: string): string =>
+      `https://goerli.basescan.org/tx/${txHash}`,
+    getLinkForAddress: (address: string): string =>
+      `https://goerli.basescan.org/address/${address}`,
+    nativeCurrency: {
+      ...ensureDefined(chain.baseGoerli.nativeCurrency),
+      address: NATIVE_ASSET_ADDRESS,
+      type: TokenType.NativeAssetUnderlyingToken,
+      superToken: {
+        type: TokenType.NativeAssetSuperToken,
+        symbol: "ETHx",
+        address: "0x7fFCE315B2014546bA461d54eDed7AAc70DF4f53",
+        name: "Super ETH",
+        decimals: 18,
+      },
+    },
+    platformUrl: undefined,
+  },
 };
 
 export const networks: Network[] = [
@@ -486,6 +514,7 @@ export const networks: Network[] = [
   networkDefinition.optimismGoerli,
   networkDefinition.arbitrumGoerli,
   networkDefinition.sepolia,
+  networkDefinition.baseGoerli,
 ];
 
 export const getNetworkDefaultTokenPair = memoize(

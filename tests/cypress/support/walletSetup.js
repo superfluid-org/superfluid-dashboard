@@ -23,6 +23,7 @@ const networkGasTokenSymbols = {
   43113: "AVAXx",
   43114: "AVAXx",
   80001: "MATICx",
+  84531: "ETHx",
   421613: "ETHx",
   11155111: "ETHx",
 };

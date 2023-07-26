@@ -63,5 +63,10 @@
     "TokenOne": "fDAI",
     "TokenTwo": "fUSDC",
     "TokenGas": "SEP"
+  },
+  "bgoerli": {
+    "TokenOne": "fDAI",
+    "TokenTwo": "fUSDC",
+    "TokenGas": "ETH"
   }
 }
