@@ -1,7 +1,7 @@
 import type { LiFiWidget, WidgetConfig } from "@lifi/widget";
 import dynamic from "next/dynamic";
 
-import LIFI from "@lifi/sdk";
+import { LiFi } from "@lifi/sdk";
 import { Box, Container, Stack, Typography, useTheme } from "@mui/material";
 import { NextPage } from "next";
 import { useEffect, useMemo } from "react";
@@ -42,7 +42,9 @@ const Bridge: NextPage = () => {
   const { openConnectModal } = useConnectButton();
   const { availableNetworks } = useAvailableNetworks();
 
-  const lifi = useMemo(() => new LIFI(), []);
+  const lifi = useMemo(() => new LiFi({
+    integrator: "Superfluid"
+  }), []);
   const featuredTokens = useFeaturedTokens(lifi);
   const widgetConfig: WidgetConfig = useMemo(
     () => ({

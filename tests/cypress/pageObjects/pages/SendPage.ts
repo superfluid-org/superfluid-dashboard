@@ -151,6 +151,9 @@ export class SendPage extends BasePage {
   }
 
   static acceptRiskWarning() {
+    //I hate waits
+    //Please someone fix the checkbox status messing up when clicked too fast
+    cy.wait(3000);
     this.click(RISK_CHECKBOX);
   }
 

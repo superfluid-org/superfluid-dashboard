@@ -1140,7 +1140,7 @@ export default memo(function SendCard() {
               {isWrappableSuperToken && (
                 <Tooltip title="Wrap more">
                   <IconButton
-                    component={Link}
+                    LinkComponent={Link}
                     href={`/wrap?upgrade&token=${tokenAddress}&network=${network.slugName}`}
                     data-cy={"balance-wrap-button"}
                     color="primary"

@@ -40,6 +40,7 @@ const shouldInstrumentCode = "INSTRUMENT_CODE" in process.env;
 
 /** @type {import('next').NextConfig} */
 const moduleExports = {
+  output: "export",
   reactStrictMode: true,
   images: {
     loader: "custom",

@@ -1,6 +1,6 @@
 import memoize from "lodash/memoize";
-import * as chain from "@wagmi/chains";
-import { Chain } from "@wagmi/chains";
+import * as chain from "wagmi/chains";
+import { Chain } from "wagmi/chains";
 import {
   NATIVE_ASSET_ADDRESS,
   SuperTokenPair,
