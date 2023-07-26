@@ -13,7 +13,7 @@ const TxHashLink: FC<TxHashLinkProps> = ({ txHash, network }) => (
   <Tooltip title="View on blockchain explorer" arrow placement="top">
     <Box data-cy={"tx-hash-link"} component="span">
       <IconButton
-        component={Link}
+        LinkComponent={Link}
         href={network.getLinkForTransaction(txHash)}
         color="inherit"
         target="_blank"

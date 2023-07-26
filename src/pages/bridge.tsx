@@ -1,8 +1,8 @@
 import type { LiFiWidget, WidgetConfig } from "@lifi/widget";
 import dynamic from "next/dynamic";
 
-import LIFI from "@lifi/sdk";
-import { Container, useTheme } from "@mui/material";
+import { LiFi } from "@lifi/sdk";
+import { Box, Container, Stack, Typography, useTheme } from "@mui/material";
 import { NextPage } from "next";
 import { useEffect, useMemo } from "react";
 import { useDisconnect, useSwitchNetwork, useWalletClient } from "wagmi";
@@ -13,7 +13,11 @@ import withStaticSEO from "../components/SEO/withStaticSEO";
 import { useExpectedNetwork } from "../features/network/ExpectedNetworkContext";
 import { useAvailableNetworks } from "../features/network/AvailableNetworksContext";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
-import { walletClientToSigner, useEthersSigner } from "../utils/wagmiEthersAdapters";
+import {
+  walletClientToSigner,
+  useEthersSigner,
+} from "../utils/wagmiEthersAdapters";
+import Link from "../features/common/Link";
 
 const LiFiWidgetDynamic = dynamic(
   () => import("@lifi/widget").then((module) => module.LiFiWidget) as any,
@@ -38,7 +42,9 @@ const Bridge: NextPage = () => {
   const { openConnectModal } = useConnectButton();
   const { availableNetworks } = useAvailableNetworks();
 
-  const lifi = useMemo(() => new LIFI(), []);
+  const lifi = useMemo(() => new LiFi({
+    integrator: "Superfluid"
+  }), []);
   const featuredTokens = useFeaturedTokens(lifi);
   const widgetConfig: WidgetConfig = useMemo(
     () => ({
@@ -123,7 +129,26 @@ const Bridge: NextPage = () => {
         },
       }}
     >
-      <LiFiWidgetDynamic config={widgetConfig} />
+      <LiFiWidgetDynamic {...widgetConfig} />
+      <Stack pt={2} alignItems="center">
+        <Typography
+          sx={{
+            maxWidth: 524,
+            textAlign: "inherit",
+          }}
+          variant="h7"
+          component="p"
+          color="secondary"
+          textAlign="center"
+        >
+          The Bridge is operated by LI.FI, and we cannot take responsibility for
+          any issues. For support related to the bridge, please refer to the
+          LI.FI{" "}
+          <Link href="https://discord.com/invite/lifi" target="_blank">
+            Discord server
+          </Link>.
+        </Typography>
+      </Stack>
     </Container>
   );
 };

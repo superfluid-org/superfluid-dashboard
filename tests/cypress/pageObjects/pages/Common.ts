@@ -186,7 +186,7 @@ export class Common extends BasePage {
 
   static clickInjectedWallet() {
     this.isVisible(WAGMI_CONNECT_WALLET_TITLE);
-    cy.contains("Injected").click();
+    cy.contains("MetaMask").click();
   }
 
   static clickMockWallet() {

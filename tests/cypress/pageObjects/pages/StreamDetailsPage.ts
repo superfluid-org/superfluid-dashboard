@@ -58,11 +58,7 @@ export class StreamDetailsPage extends BasePage {
         BasePage.shortenHex(endedStream.sender),
         0
       );
-      this.hasText(
-        SENDER_AND_RECEIVER,
-        BasePage.shortenHex(endedStream.receiver),
-        -1
-      );
+      this.hasText(SENDER_AND_RECEIVER, "elvijs.lens", -1);
       this.hasText(BUFFER, endedStream.buffer);
       this.hasText(NETWORK_NAME, endedStream.networkName);
       this.hasText(TX_HASH, BasePage.shortenHex(endedStream.txHash));

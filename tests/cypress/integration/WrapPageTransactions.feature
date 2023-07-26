@@ -1,4 +1,5 @@
 @numTestsKeptInMemory(0)
+@retries(5)
 Feature: Wrapping and Unwrapping transactional test cases
 
     Scenario: Wrapping network native tokens
