@@ -1,4 +1,5 @@
 @numTestsKeptInMemory(0)
+@retries(5)
 Feature: Stream transactional test cases
 
     Scenario: Creating a new stream

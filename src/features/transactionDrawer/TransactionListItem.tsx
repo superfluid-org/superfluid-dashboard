@@ -154,7 +154,7 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
                 >
                   <span>
                     <IconButton
-                      component={Link}
+                      LinkComponent={Link}
                       href={network.getLinkForTransaction(transaction.hash)}
                       size="small"
                       target="_blank"

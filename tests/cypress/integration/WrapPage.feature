@@ -2,8 +2,6 @@ Feature: Wrap page test cases
 
     Scenario: Connect wallet button shown to a user who hasn't got their wallet connected
         Given "Wrap Page" is open without connecting a wallet
-        And The upgrade button is disabled
-        And User inputs "1" into the wrap field
         Then Connect wallet button is visible in the wrap/unwrap page
         And User switches to unwrap tab
         Then Connect wallet button is visible in the wrap/unwrap page

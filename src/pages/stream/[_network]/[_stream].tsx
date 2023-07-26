@@ -150,7 +150,7 @@ const StreamAccountCard: FC<StreamAccountCardProps> = ({
             <Tooltip title="View on blockchain explorer" arrow placement="top">
               <span>
                 <IconButton
-                  component={Link}
+                  LinkComponent={Link}
                   href={network.getLinkForAddress(addressChecksummed)}
                   target="_blank"
                   size="small"
@@ -890,7 +890,7 @@ const StreamPageContent: FC<{
                       >
                         <span>
                           <IconButton
-                            component={Link}
+                            LinkComponent={Link}
                             data-cy={"tx-hash-link"}
                             href={network.getLinkForTransaction(
                               streamCreationEvent.transactionHash

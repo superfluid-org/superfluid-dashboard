@@ -60,7 +60,7 @@ const ModifyStreamButton: FC<ModifyStreamButtonProps> = ({
       <span>
         <IconButton
           size={size}
-          component={Link}
+          LinkComponent={Link}
           href={modifyStreamUrl}
           color="primary"
           disabled={!isConnected}
