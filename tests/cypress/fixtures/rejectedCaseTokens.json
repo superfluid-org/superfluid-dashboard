@@ -67,6 +67,11 @@
   "polygon-zkevm-testnet": {
     "TokenOne": "fDAI",
     "TokenTwo": "fUSDC",
-    "TokenGas": "SEP"
+    "TokenGas": "ETH"
+  },
+  "bgoerli": {
+    "TokenOne": "fDAI",
+    "TokenTwo": "fUSDC",
+    "TokenGas": "ETH"
   }
 }

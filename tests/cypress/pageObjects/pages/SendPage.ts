@@ -683,6 +683,7 @@ export class SendPage extends BasePage {
         "avalanche-fuji",
         "sepolia",
         "polygon-zkevm-testnet",
+        "bgoerli",
       ].includes(Cypress.env("network")) &&
       Cypress.env("scheduling")
     ) {

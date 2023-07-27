@@ -130,7 +130,7 @@ const Bridge: NextPage = () => {
       }}
     >
       <LiFiWidgetDynamic {...widgetConfig} />
-      <Stack pt={2} alignItems="center">
+      <Stack pt={6} alignItems="center">
         <Typography
           sx={{
             maxWidth: 524,

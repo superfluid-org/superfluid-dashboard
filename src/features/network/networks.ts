@@ -710,6 +710,7 @@ export const networkDefinition = {
     autoWrapSubgraphUrl: undefined,
     platformUrl: undefined,
   } as const,
+
   polygonZkevmTestnet: {
     ...chain.polygonZkEvmTestnet,
     blockExplorers: ensureDefined(chain.polygonZkEvmTestnet.blockExplorers),
@@ -744,6 +745,41 @@ export const networkDefinition = {
     autoWrapSubgraphUrl: undefined,
     platformUrl: undefined,
   } as const,
+
+  baseGoerli : {
+    ...chain.baseGoerli,
+    blockExplorers: ensureDefined(chain.baseGoerli.blockExplorers),
+    slugName: "bgoerli",
+    v1ShortName: "bgoerli",
+    bufferTimeInMinutes: 60,
+    color: "#68B1D5",
+    rpcUrls: {
+      ...chain.baseGoerli.rpcUrls,
+      superfluid: { http: [superfluidRpcUrls["base-goerli"]] },
+    },
+    fallbackSubgraphUrl:
+      "https://base-goerli.subgraph.x.superfluid.dev/",
+    getLinkForTransaction: (txHash: string): string =>
+      `https://goerli.basescan.org/tx/${txHash}`,
+    getLinkForAddress: (address: string): string =>
+      `https://goerli.basescan.org/address/${address}`,
+    nativeCurrency: {
+      ...ensureDefined(chain.baseGoerli.nativeCurrency),
+      address: NATIVE_ASSET_ADDRESS,
+      type: TokenType.NativeAssetUnderlyingToken,
+      superToken: {
+        type: TokenType.NativeAssetSuperToken,
+        symbol: "ETHx",
+        address: "0x7fFCE315B2014546bA461d54eDed7AAc70DF4f53",
+        name: "Super ETH",
+        decimals: 18,
+      },
+    },
+    vestingContractAddress: undefined,
+    vestingSubgraphUrl: undefined,
+    autoWrapSubgraphUrl: undefined,
+    platformUrl: undefined,
+  } as const,
 };
 
 export const allNetworks: Network[] = orderBy(
@@ -764,6 +800,7 @@ export const allNetworks: Network[] = orderBy(
       networkDefinition.arbitrumGoerli,
       networkDefinition.sepolia,
       networkDefinition.polygonZkevmTestnet,
+      networkDefinition.baseGoerli,
     ],
     (x) => x.id // Put lower ids first (Ethereum mainnet will be first)
   ),
