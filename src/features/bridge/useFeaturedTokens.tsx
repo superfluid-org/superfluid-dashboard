@@ -4,7 +4,7 @@ import { useAvailableNetworks } from "../network/AvailableNetworksContext";
 import { subgraphApi } from "../redux/store";
 
 const useFeaturedTokens = (lifi: LiFi): Token[] => {
-  const { availableNetworks } = useAvailableNetworks();
+  const { availableMainNetworks } = useAvailableNetworks();
   const [featuredTokens, setFeaturedTokens] = useState<Token[]>([]);
 
   const [tokenQueryTrigger] = subgraphApi.useLazyTokensQuery();
@@ -12,7 +12,7 @@ const useFeaturedTokens = (lifi: LiFi): Token[] => {
   useEffect(() => {
     if (!lifi) return;
     setFeaturedTokens([]);
-    const availableChainIds = availableNetworks.map((x) => x.id);
+    const availableChainIds = availableMainNetworks.map((x) => x.id); // Note that if the chain ID is not supported by Li.Fi then the request will return 400 (Bad Request).
 
     lifi.getTokens({ chains: availableChainIds }).then((lifiTokensResponse) => {
       Promise.all(
@@ -57,7 +57,7 @@ const useFeaturedTokens = (lifi: LiFi): Token[] => {
         );
       });
     });
-  }, [lifi, tokenQueryTrigger, availableNetworks]);
+  }, [lifi, tokenQueryTrigger, availableMainNetworks]);
 
   return featuredTokens;
 };
