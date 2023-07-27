@@ -9,6 +9,9 @@ const NO_APPROVAL_TITLE = "[data-cy=no-access-data-title]";
 const NO_APPROVAL_BODY = "[data-cy=no-access-data-description]";
 const ADD_APPROVAL_GLOBAL_BUTTON = "[data-cy=add-token-access-global-button]";
 const APPROVAL_MODAL = "[data-cy=upsert-approvals-form]";
+
+const OTHER_CLOSE_TX_BUTTON = "[data-testid=CloseIcon]";
+
 const APPROVAL_MODAL_CLOSE_BUTTON =
   "[data-cy=upsert-approvals-form-close-button]";
 const APPROVAL_MODAL_ALLOWANCE_FIELD =
@@ -20,6 +23,8 @@ const APPROVAL_MODAL_DELETE_ACL_PERMISSION =
   "[data-cy=flow-acl-permission-Delete-switch]";
 const APPROVAL_MODAL_UPDATE_ACL_PERMISSION =
   "[data-cy=flow-acl-permission-Update-switch]";
+
+const APPROVAL_MODAL_ADD_BUTTON = "[data-cy=approvals-save-button]";
 
 const UNSAVED_CONFIRMATION_MODAL =
   "[data-cy=approvals-unsaved-confirmation-form]";
@@ -99,4 +104,10 @@ export class SettingsPage extends BasePage {
 
   static unsavedConfirmationModalShouldNotBeVisible = () =>
     this.isNotVisible(UNSAVED_CONFIRMATION_MODAL);
+
+  static userClickOnApprovalsAddButton = () =>
+    this.click(APPROVAL_MODAL_ADD_BUTTON);
+
+  static userCloseTxDialog = () =>
+    this.clickFirstVisible(OTHER_CLOSE_TX_BUTTON);
 }

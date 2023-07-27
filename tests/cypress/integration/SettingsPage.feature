@@ -49,6 +49,8 @@ Feature: Settings page test cases
         And Unsaved Changes modal should not be visible
 
     Scenario: Add a new permission and click add button
+        Given HDWallet transactions are rejected
+
         Given "Settings Page" is open with "john" connected on "polygon-mumbai"
         And User clicks on the add approval button
         And User opens the add approval modal is visible
@@ -62,4 +64,7 @@ Feature: Settings page test cases
         And User toggle off a update permission
         And User closes the add approval modal
         And Unsaved Changes modal should be visible
-        And User click on Add button
+        And User click on approvals add button
+        And Transaction rejected error is shown
+        And User closes tx the dialog
+        And User closes the unsaved changes modal

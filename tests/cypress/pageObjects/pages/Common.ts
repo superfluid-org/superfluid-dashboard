@@ -140,7 +140,6 @@ export class Common extends BasePage {
           chainId: chainId,
           pollingInterval: 1000,
         });
-
         if (Cypress.env("rejected")) {
           // Make HDWallet automatically reject transaction.
           // Inspired by: https://github.com/MetaMask/web3-provider-engine/blob/e835b80bf09e76d92b785d797f89baa43ae3fd60/subproviders/hooked-wallet.js#L326
@@ -186,7 +185,7 @@ export class Common extends BasePage {
 
   static clickInjectedWallet() {
     this.isVisible(WAGMI_CONNECT_WALLET_TITLE);
-    cy.contains("Injected").click();
+    cy.contains("MetaMask").click();
   }
 
   static clickMockWallet() {

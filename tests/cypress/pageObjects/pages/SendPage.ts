@@ -151,6 +151,9 @@ export class SendPage extends BasePage {
   }
 
   static acceptRiskWarning() {
+    //I hate waits
+    //Please someone fix the checkbox status messing up when clicked too fast
+    cy.wait(3000);
     this.click(RISK_CHECKBOX);
   }
 
@@ -679,6 +682,8 @@ export class SendPage extends BasePage {
         "optimism-goerli",
         "avalanche-fuji",
         "sepolia",
+        "polygon-zkevm-testnet",
+        "bgoerli",
       ].includes(Cypress.env("network")) &&
       Cypress.env("scheduling")
     ) {

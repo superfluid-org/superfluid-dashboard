@@ -131,7 +131,7 @@ export const TokenListItem: FC<TokenListItemProps> = ({
         {showUpgrade && isWrappableSuperToken && (
           <Tooltip title="Wrap">
             <IconButton
-              component={Link}
+              LinkComponent={Link}
               href={`/wrap?upgrade&token=${token.address}&network=${network.slugName}`}
               data-cy={"wrap-button"}
             >

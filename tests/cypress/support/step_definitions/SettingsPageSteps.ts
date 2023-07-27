@@ -75,4 +75,10 @@ Then(/^Unsaved Changes modal should not be visible$/, function () {
   SettingsPage.unsavedConfirmationModalShouldNotBeVisible();
 });
 
-Then(/^User click on Add button$/, function () {});
+Then(/^User click on approvals add button$/, function () {
+  SettingsPage.userClickOnApprovalsAddButton();
+});
+
+Then(/^User closes tx the dialog$/, function () {
+  SettingsPage.userCloseTxDialog();
+});

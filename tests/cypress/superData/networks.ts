@@ -1,6 +1,6 @@
 import memoize from "lodash/memoize";
-import * as chain from "@wagmi/chains";
-import { Chain } from "@wagmi/chains";
+import * as chain from "wagmi/chains";
+import { Chain } from "wagmi/chains";
 import {
   NATIVE_ASSET_ADDRESS,
   SuperTokenPair,
@@ -52,6 +52,9 @@ export const superfluidRpcUrls = {
   "optimism-goerli": "https://rpc-endpoints.superfluid.dev/optimism-goerli",
   "arbitrum-goerli": "https://rpc-endpoints.superfluid.dev/arbitrum-goerli",
   sepolia: "https://rpc-endpoints.superfluid.dev/eth-sepolia",
+  //Issues with cypress + superfluid rpc , using a public one for now
+  "polygon-zkevm-testnet": "https://rpc.public.zkevm-test.net",
+  "base-goerli": "https://rpc-endpoints.superfluid.dev/base-goerli",
 };
 
 export const networkDefinition: {
@@ -72,6 +75,8 @@ export const networkDefinition: {
   optimismGoerli: Network;
   arbitrumGoerli: Network;
   sepolia: Network;
+  polygonZkevmTestnet: Network;
+  baseGoerli: Network;
 } = {
   goerli: {
     ...chain.goerli,
@@ -469,6 +474,58 @@ export const networkDefinition: {
     },
     platformUrl: undefined,
   },
+  polygonZkevmTestnet: {
+    ...chain.polygonZkEvmTestnet,
+    slugName: "polygon-zkevm-testnet",
+    v1ShortName: "pzkevmtest",
+    bufferTimeInMinutes: 60,
+    color: "#7c3fe4",
+    superfluidRpcUrl: superfluidRpcUrls["polygon-zkevm-testnet"],
+    subgraphUrl: "https://polygon-zkevm-testnet.subgraph.x.superfluid.dev",
+    getLinkForTransaction: (txHash: string): string =>
+      `https://testnet-zkevm.polygonscan.com/tx/${txHash}`,
+    getLinkForAddress: (address: string): string =>
+      `https://testnet-zkevm.polygonscan.com/address/${address}`,
+    nativeCurrency: {
+      ...ensureDefined(chain.polygonZkEvmTestnet.nativeCurrency),
+      address: NATIVE_ASSET_ADDRESS,
+      type: TokenType.NativeAssetUnderlyingToken,
+      superToken: {
+        type: TokenType.NativeAssetSuperToken,
+        symbol: "ETHx",
+        address: "0x6345Aa6cec42a85160CF436810F97661e28c1876",
+        name: "Super ETH",
+        decimals: 18,
+      },
+    },
+    platformUrl: undefined,
+  },
+  baseGoerli: {
+    ...chain.baseGoerli,
+    slugName: "bgoerli",
+    v1ShortName: "bgoerli",
+    bufferTimeInMinutes: 60,
+    color: "#68B1D5",
+    superfluidRpcUrl: superfluidRpcUrls["base-goerli"],
+    subgraphUrl: "https://base-goerli.subgraph.x.superfluid.dev/",
+    getLinkForTransaction: (txHash: string): string =>
+      `https://goerli.basescan.org/tx/${txHash}`,
+    getLinkForAddress: (address: string): string =>
+      `https://goerli.basescan.org/address/${address}`,
+    nativeCurrency: {
+      ...ensureDefined(chain.baseGoerli.nativeCurrency),
+      address: NATIVE_ASSET_ADDRESS,
+      type: TokenType.NativeAssetUnderlyingToken,
+      superToken: {
+        type: TokenType.NativeAssetSuperToken,
+        symbol: "ETHx",
+        address: "0x7fFCE315B2014546bA461d54eDed7AAc70DF4f53",
+        name: "Super ETH",
+        decimals: 18,
+      },
+    },
+    platformUrl: undefined,
+  },
 };
 
 export const networks: Network[] = [
@@ -486,6 +543,8 @@ export const networks: Network[] = [
   networkDefinition.optimismGoerli,
   networkDefinition.arbitrumGoerli,
   networkDefinition.sepolia,
+  networkDefinition.polygonZkevmTestnet,
+  networkDefinition.baseGoerli,
 ];
 
 export const getNetworkDefaultTokenPair = memoize(
