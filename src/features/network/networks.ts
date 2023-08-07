@@ -745,7 +745,6 @@ export const networkDefinition = {
     autoWrapSubgraphUrl: undefined,
     platformUrl: undefined,
   } as const,
-
   baseGoerli : {
     ...chain.baseGoerli,
     blockExplorers: ensureDefined(chain.baseGoerli.blockExplorers),
@@ -780,6 +779,41 @@ export const networkDefinition = {
     autoWrapSubgraphUrl: undefined,
     platformUrl: undefined,
   } as const,
+  base : {
+    ...chain.base,
+    blockExplorers: ensureDefined(chain.base.blockExplorers),
+    slugName: "base",
+    v1ShortName: "base",
+    bufferTimeInMinutes: 60,
+    color: "#68B1D5",
+    icon: "/icons/network/base.svg",
+    rpcUrls: {
+      ...chain.base.rpcUrls,
+      superfluid: { http: [superfluidRpcUrls["base"]] },
+    },
+    fallbackSubgraphUrl:
+      "https://base-mainnet.subgraph.x.superfluid.dev/",
+    getLinkForTransaction: (txHash: string): string =>
+      `https://basescan.org/tx/${txHash}`,
+    getLinkForAddress: (address: string): string =>
+      `https://basescan.org/address/${address}`,
+    nativeCurrency: {
+      ...ensureDefined(chain.base.nativeCurrency),
+      address: NATIVE_ASSET_ADDRESS,
+      type: TokenType.NativeAssetUnderlyingToken,
+      superToken: {
+        type: TokenType.NativeAssetSuperToken,
+        symbol: "ETHx",
+        address: "0x46fd5cfB4c12D87acD3a13e92BAa53240C661D93",
+        name: "Super ETH",
+        decimals: 18,
+      },
+    },
+    vestingContractAddress: undefined,
+    vestingSubgraphUrl: undefined,
+    autoWrapSubgraphUrl: undefined,
+    platformUrl: undefined,
+  } as const,
 };
 
 export const allNetworks: Network[] = orderBy(
@@ -801,6 +835,7 @@ export const allNetworks: Network[] = orderBy(
       networkDefinition.sepolia,
       networkDefinition.polygonZkevmTestnet,
       networkDefinition.baseGoerli,
+      networkDefinition.base,
     ],
     (x) => x.id // Put lower ids first (Ethereum mainnet will be first)
   ),

@@ -3994,7 +3994,7 @@
 
 "@superfluid-finance/metadata@git+https://github.com/superfluid-finance/metadata.git":
   version "1.1.7"
-  resolved "git+https://github.com/superfluid-finance/metadata.git#ffb77dee8bb8cb5ce4bed56287e2fc5fe4e56f01"
+  resolved "git+https://github.com/superfluid-finance/metadata.git#bdcccf7d484e09efc1ac17adf4bdf2068404103d"
 
 "@superfluid-finance/sdk-core@^0.6.8":
   version "0.6.8"
@@ -4092,10 +4092,10 @@
   resolved "https://registry.yarnpkg.com/@tanstack/virtual-core/-/virtual-core-3.0.0-beta.54.tgz#12259d007911ad9fce1388385c54a9141f4ecdc4"
   integrity sha512-jtkwqdP2rY2iCCDVAFuaNBH3fiEi29aTn2RhtIoky8DTTiCdc48plpHHreLwmv1PICJ4AJUUESaq3xa8fZH8+g==
 
-"@truffle/abi-utils@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@truffle/abi-utils/-/abi-utils-1.0.1.tgz#bf72d595f2eb03905429210b394f416fb774a61e"
-  integrity sha512-ZQUY3XUxEPdqxNaoXsOqF0spTtb6f5RNlnN4MUrVsJ64sOh0FJsY7rxZiUI3khfePmNh4i2qcJrQlKT36YcWUA==
+"@truffle/abi-utils@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@truffle/abi-utils/-/abi-utils-1.0.2.tgz#41210b234912051433960382af009f339f8a9642"
+  integrity sha512-MefEcxsBlprKIpfW7eh2I5zJqlWM18xk3duL7SW4VhIs6kNEec//hCpEDoE6P0m7GjqY3vk8X4vnf4aLlZkRcA==
   dependencies:
     change-case "3.0.2"
     fast-check "3.1.1"
@@ -4106,13 +4106,13 @@
   resolved "https://registry.yarnpkg.com/@truffle/blockchain-utils/-/blockchain-utils-0.1.8.tgz#0c1a369aa72f51df5af095678803242ea0a0d6ae"
   integrity sha512-ZskpYDNHkXD3ota4iU3pZz6kLth87RC+wDn66Rp2Or+DqqJCKdnmS9GDctBi1EcMPDEi0BqpkdrfBuzA9uIkGg==
 
-"@truffle/codec@^0.17.1":
-  version "0.17.1"
-  resolved "https://registry.yarnpkg.com/@truffle/codec/-/codec-0.17.1.tgz#08673f3a5a89cf2835d7e816e63fee234d6ff56d"
-  integrity sha512-f45cuhg92vM2N+ah3Bvm+uxiw/wc6a9o5gKJNqb8oMPCLYRGV4sQXTnNaAlFP1BBxFriciH3kwYt5xPrL39SgA==
+"@truffle/codec@^0.17.2":
+  version "0.17.2"
+  resolved "https://registry.yarnpkg.com/@truffle/codec/-/codec-0.17.2.tgz#52a3604f73b89964373eec945f20d5cd0f4244d4"
+  integrity sha512-n9HX8R5a5+/j6Y0+lqSzIyU1cUxTRYn/xEWp0Qc1b0Vtltad7wvVh+KLGvbm/KQEX3o1RK1xRIUN2E0QlDeQnA==
   dependencies:
-    "@truffle/abi-utils" "^1.0.1"
-    "@truffle/compile-common" "^0.9.6"
+    "@truffle/abi-utils" "^1.0.2"
+    "@truffle/compile-common" "^0.9.7"
     big.js "^6.0.3"
     bn.js "^5.1.3"
     cbor "^5.2.0"
@@ -4122,18 +4122,18 @@
     utf8 "^3.0.0"
     web3-utils "1.10.0"
 
-"@truffle/compile-common@^0.9.6":
-  version "0.9.6"
-  resolved "https://registry.yarnpkg.com/@truffle/compile-common/-/compile-common-0.9.6.tgz#037d74bc00ded33b9212d886531c2cee998662da"
-  integrity sha512-TCcmr1E0GqMZJ2tOaCRNEllxTBJ/g7TuD6jDJpw5Gt9Bw0YO3Cmp6yPQRynRSO4xMJbHUgiEsSfRgIhswut5UA==
+"@truffle/compile-common@^0.9.7":
+  version "0.9.7"
+  resolved "https://registry.yarnpkg.com/@truffle/compile-common/-/compile-common-0.9.7.tgz#e8ba6cd49c4d4e7ae4684ba453fb9b2dcd09b347"
+  integrity sha512-TXuVLc5yJ/A0bSWw5OWIdXmcyaPpj3TJQ60ki7w9cIuW65Bazw7P4FRPaVNjR9YGe1FLYJ36GSdd9V3egPbzCg==
   dependencies:
     "@truffle/error" "^0.2.1"
     colors "1.4.0"
 
 "@truffle/contract-schema@^3.4.13", "@truffle/contract-schema@^3.4.9":
-  version "3.4.14"
-  resolved "https://registry.yarnpkg.com/@truffle/contract-schema/-/contract-schema-3.4.14.tgz#ded13d54daa7621dc9894fa7bf813f557e025b58"
-  integrity sha512-IwVQZG9RVNwTdn321+jbFIcky3/kZLkCtq8tqil4jZwivvmZQg8rIVC8GJ7Lkrmixl9/yTyQNL6GtIUUvkZxyA==
+  version "3.4.15"
+  resolved "https://registry.yarnpkg.com/@truffle/contract-schema/-/contract-schema-3.4.15.tgz#199789b3f0a61b0e564ee8d62d7a7e5a8e6b749f"
+  integrity sha512-m13e1VlXEdxiXiqv/SmPlqbdtcuhjwIGTICm+JCEO8nt0NYBbdMC2paNkpUvGz9lK139JxIupMHctEV4vgkldw==
   dependencies:
     ajv "^6.10.0"
     debug "^4.3.1"
@@ -4179,11 +4179,11 @@
     web3-utils "1.8.2"
 
 "@truffle/debug-utils@^6.0.33", "@truffle/debug-utils@^6.0.47":
-  version "6.0.55"
-  resolved "https://registry.yarnpkg.com/@truffle/debug-utils/-/debug-utils-6.0.55.tgz#fea70dc9dcdf8676cd6b343730f9852febb41b24"
-  integrity sha512-53zbPdPCMFx/M4dYWnpzIsY3ndFv3X7BhgB9QIquazmAupwaZpkUJXWmXOPqoB7u6bQXnXYjTuE1V1WmFi/ozw==
+  version "6.0.56"
+  resolved "https://registry.yarnpkg.com/@truffle/debug-utils/-/debug-utils-6.0.56.tgz#7727891580c52cc9acfbe46d43ca4ef9aa338713"
+  integrity sha512-tCB0nKZirWlQp+0JqqaBxZk7CIwDBIHl8Q9CyGJZA4pdAwKHHMI3FoPAXzubP7X0YuICeQsAmpOAXzOHGYGkjg==
   dependencies:
-    "@truffle/codec" "^0.17.1"
+    "@truffle/codec" "^0.17.2"
     "@trufflesuite/chromafi" "^3.0.0"
     bn.js "^5.1.3"
     chalk "^2.4.2"
@@ -9512,6 +9512,13 @@ is-core-module@^2.11.0, is-core-module@^2.5.0, is-core-module@^2.9.0:
   dependencies:
     has "^1.0.3"
 
+is-core-module@^2.13.0:
+  version "2.13.0"
+  resolved "https://registry.yarnpkg.com/is-core-module/-/is-core-module-2.13.0.tgz#bb52aa6e2cbd49a30c2ba68c42bf3435ba6072db"
+  integrity sha512-Z7dk6Qo8pOCp3l4tsX2C5ZVas4V+UxwQodwZhLopL91TX8UyyHEXafPcyoeeWuLrwzHcr3igO78wNLwHJHsMCQ==
+  dependencies:
+    has "^1.0.3"
+
 is-date-object@^1.0.1:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/is-date-object/-/is-date-object-1.0.5.tgz#0841d5536e724c25597bf6ea62e1bd38298df31f"
@@ -12346,7 +12353,16 @@ resolve-pkg-maps@^1.0.0:
   resolved "https://registry.yarnpkg.com/resolve-pkg-maps/-/resolve-pkg-maps-1.0.0.tgz#616b3dc2c57056b5588c31cdf4b3d64db133720f"
   integrity sha512-seS2Tj26TBVOC2NIc2rOe2y2ZO7efxITtLZcGSOnHHNOQ7CkiUBfw0Iw2ck6xkIhPwLhKNLS8BO+hEpngQlqzw==
 
-resolve@^1.1.4, resolve@^1.1.7, resolve@^1.10.0, resolve@^1.17.0, resolve@^1.19.0, resolve@^1.22.1, resolve@^1.4.0:
+resolve@^1.1.4, resolve@^1.17.0, resolve@^1.4.0:
+  version "1.22.4"
+  resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.22.4.tgz#1dc40df46554cdaf8948a486a10f6ba1e2026c34"
+  integrity sha512-PXNdCiPqDqeUou+w1C2eTQbNfxKSuMxqTCuvlmmMsk1NWHL5fRrhY6Pl0qEYYc6+QqGClco1Qj8XnjPego4wfg==
+  dependencies:
+    is-core-module "^2.13.0"
+    path-parse "^1.0.7"
+    supports-preserve-symlinks-flag "^1.0.0"
+
+resolve@^1.1.7, resolve@^1.10.0, resolve@^1.19.0, resolve@^1.22.1:
   version "1.22.2"
   resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.22.2.tgz#0ed0943d4e301867955766c9f3e1ae6d01c6845f"
   integrity sha512-Sb+mjNHOULsBv818T40qSPeRiuWLyaGMa5ewydRLFimneixmVy2zdivRl+AF6jaYPC8ERxGDmFSiqui6SfPd+g==
