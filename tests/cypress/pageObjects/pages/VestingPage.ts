@@ -96,12 +96,62 @@ let endDate = new Date(
 );
 
 export class VestingPage extends BasePage {
+  static validateAutoWrapSwitchNetworkButtonForToken(token: string) {
+    throw new Error("Method not implemented.");
+  }
+  static validateAutoWrapDialogShowingTokenAllowanceButton() {
+    throw new Error("Method not implemented.");
+  }
+  static clickDisableAutoWrapInPermissionsTable() {
+    throw new Error("Method not implemented.");
+  }
+  static validateFixPermissionSwitchNetworkButton() {
+    throw new Error("Method not implemented.");
+  }
+  static validateStopViewingPermissionsTableAutoWrapButton(token:string) {
+    throw new Error("Method not implemented.");
+  }
+  static validateNotConnectedScreen() {
+    throw new Error("Method not implemented.");
+  }
+  static validateDisableAutoWrapButtonDoesNotExist() {
+    throw new Error("Method not implemented.");
+  }
+  static clickFixPermissionsButton() {
+    throw new Error("Method not implemented.");
+  }
+  static validateAutoWrapDialogShowingACLAllowanceButton() {
+    throw new Error("Method not implemented.");
+  }
+  static validatePermissionTableAutoWrapIcon(token: string, colorOrExisting: string) {
+    throw new Error("Method not implemented.");
+  }
+  static clickAutoWrapAllowanceButton() {
+    this.click(AUTO_WRAP_ALLOWANCE_BUTTON)
+  }
+  static validateNoAllowanceAutoWrapButton() {
+    this.doesNotExist(AUTO_WRAP_ALLOWANCE_BUTTON)
+  }
+
+  static validateAutoWrapSwitchIsVisible() {
+    this.isVisible(AUTO_WRAP_SWITCH_AND_TOOLTIP)
+  }
+
   static validateNoEnableAutoWrapButton() {
     this.doesNotExist(AUTO_WRAP_ENABLE_BUTTON)
   }
   
   static clickEnableAutoWrap() {
     this.click(AUTO_WRAP_ENABLE_BUTTON)
+  }
+
+  static validateAutoWrapAllowanceTxMessage(network:string) {
+    this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...");
+        this.hasText(
+      TX_MESSAGE_NETWORK,
+      `(${networksBySlug.get(network)?.name})`
+    );
+    this.hasText(AUTO_WRAP_TX_MESSAGE,`You are approving Auto-Wrap token allowance for the underlying token.`)
   }
 
   static validateAutoWrapTxMessage(token:string,network:string) {
@@ -112,6 +162,8 @@ export class VestingPage extends BasePage {
     );
     this.hasText(AUTO_WRAP_TX_MESSAGE,`You are enabling Auto-Wrap to top up your ${token} tokens when balance reaches low.`)
   }
+
+
   static validateFirstRowPendingStatus(status: string) {
     cy.get(VESTING_ROWS)
       .first()

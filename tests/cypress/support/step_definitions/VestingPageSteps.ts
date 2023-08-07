@@ -228,7 +228,7 @@ Then(
 );
 
 Then(
-  /^User enables the auto-wrap$/,
+  /^User clicks on the enable auto-wrap transaction button$/,
   function () {
     VestingPage.clickEnableAutoWrap();
   }
@@ -242,8 +242,101 @@ Then(
 );
 
 Then(
+  /^Auto-wrap allowance transaction message is shown on "([^"]*)"$/,
+  function (network:string) {
+    VestingPage.validateAutoWrapAllowanceTxMessage(network);
+  }
+);
+
+Then(
   /^Enable auto-wrap button does not exist$/,
   function () {
     VestingPage.validateNoEnableAutoWrapButton();
   }
 );
+
+Then(
+  /^Auto-wrap switch is visible$/,
+  function () {
+    VestingPage.validateAutoWrapSwitchIsVisible();
+  }
+);
+
+Then(
+  /^Give allowance button does not exist$/,
+  function () {
+    VestingPage.validateNoAllowanceAutoWrapButton();
+  }
+);
+
+Then(
+  /^User clicks the Allowance button for the auto-wrap$/,
+  function () {
+    VestingPage.clickAutoWrapAllowanceButton();
+  }
+);
+
+
+Then(
+  /^Auto-wrap icon for "([^"]*)" is "([^"]*)"$/,
+  function (token: string, colorOrExisting: string) {
+    VestingPage.validatePermissionTableAutoWrapIcon(
+      token,
+      colorOrExisting
+    );
+  }
+);
+
+Then(
+  /^User clicks on the enable auto-wrap transaction button in the permissions table$/,
+  function () {
+    VestingPage.clickAutoWrapAllowanceButton();
+  }
+);
+
+Then(
+  /^Auto-wrap dialog is showing ACL allowance button$/,
+  function () {
+    VestingPage.validateAutoWrapDialogShowingACLAllowanceButton();
+  }
+);
+
+Then(
+  /^Auto-wrap dialog is showing token allowance button$/,
+  function () {
+    VestingPage.validateAutoWrapDialogShowingTokenAllowanceButton();
+  }
+);
+
+Then(
+  /^User clicks the disable auto-wrap button in the permissions table$/,
+  function () {
+    VestingPage.clickDisableAutoWrapInPermissionsTable();
+  }
+);
+
+Then(
+  /^Switch network button is visible in the "([^"]*)" permission row$/,
+  function (token: string) {
+    VestingPage.validateAutoWrapSwitchNetworkButtonForToken(token);
+  }
+);
+
+Then(
+  /^Switch network button is shown instead of fix permissions button$/,
+  function () {
+    VestingPage.validateFixPermissionSwitchNetworkButton();
+  }
+);
+Then(/^Stop viewing button is visible in the "([^"]*)" permission row$/, function (token:string) {
+  VestingPage.validateStopViewingPermissionsTableAutoWrapButton(token)
+});
+Then(/^Vesting page while a wallet is not connected screen is shown$/, function () {
+  VestingPage.validateNotConnectedScreen()
+});
+Then(/^Disable auto\-wrap button does not exist$/, function () {
+  VestingPage.validateDisableAutoWrapButtonDoesNotExist()
+});
+Then(/^User clicks on the Fix permissions button$/, function () {
+  VestingPage.clickFixPermissionsButton()
+});
