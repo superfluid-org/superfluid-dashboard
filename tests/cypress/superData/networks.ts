@@ -55,6 +55,7 @@ export const superfluidRpcUrls = {
   //Issues with cypress + superfluid rpc , using a public one for now
   "polygon-zkevm-testnet": "https://rpc.public.zkevm-test.net",
   "base-goerli": "https://rpc-endpoints.superfluid.dev/base-goerli",
+  base: "https://rpc-endpoints.superfluid.dev/base-mainnet",
 };
 
 export const networkDefinition: {
@@ -77,6 +78,7 @@ export const networkDefinition: {
   sepolia: Network;
   polygonZkevmTestnet: Network;
   baseGoerli: Network;
+  base: Network;
 } = {
   goerli: {
     ...chain.goerli,
@@ -526,6 +528,32 @@ export const networkDefinition: {
     },
     platformUrl: undefined,
   },
+  base: {
+    ...chain.base,
+    slugName: "base",
+    v1ShortName: "base",
+    bufferTimeInMinutes: 60,
+    color: "#68B1D5",
+    superfluidRpcUrl: superfluidRpcUrls["base"],
+    subgraphUrl: "https://base-mainnet.subgraph.x.superfluid.dev/",
+    getLinkForTransaction: (txHash: string): string =>
+      `https://basescan.org/tx/${txHash}`,
+    getLinkForAddress: (address: string): string =>
+      `https://basescan.org/address/${address}`,
+    nativeCurrency: {
+      ...ensureDefined(chain.base.nativeCurrency),
+      address: NATIVE_ASSET_ADDRESS,
+      type: TokenType.NativeAssetUnderlyingToken,
+      superToken: {
+        type: TokenType.NativeAssetSuperToken,
+        symbol: "ETHx",
+        address: "0x46fd5cfB4c12D87acD3a13e92BAa53240C661D93",
+        name: "Super ETH",
+        decimals: 18,
+      },
+    },
+    platformUrl: undefined,
+  },
 };
 
 export const networks: Network[] = [
@@ -545,6 +573,7 @@ export const networks: Network[] = [
   networkDefinition.sepolia,
   networkDefinition.polygonZkevmTestnet,
   networkDefinition.baseGoerli,
+  networkDefinition.base,
 ];
 
 export const getNetworkDefaultTokenPair = memoize(

@@ -89,6 +89,12 @@
         "underlyingBalance": "0",
         "superTokenBalance": "0"
       }
+    },
+    "base": {
+      "ETH": {
+        "underlyingBalance": "0",
+        "superTokenBalance": "0"
+      }
     }
   }
 }

@@ -73,5 +73,10 @@
     "TokenOne": "fDAI",
     "TokenTwo": "fUSDC",
     "TokenGas": "ETH"
+  },
+  "base": {
+    "TokenOne": "changeThisWhenTokensListed",
+    "TokenTwo": "changeThisWhenTokensListed",
+    "TokenGas": "ETH"
   }
 }

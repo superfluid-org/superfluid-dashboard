@@ -26,6 +26,7 @@ Feature: Test cases that run indefinitely on all supported networks
             | sepolia               | SEP   |
             | polygon-zkevm-testnet | ETH   |
             | bgoerli               | ETH   |
+            | base                  | ETH   |
 
     Scenario Outline: Superfluid RPCS are not behind on <network>
         Given Superfluid RPCs are not more then 10 minutes behind on <network>
@@ -46,6 +47,7 @@ Feature: Test cases that run indefinitely on all supported networks
             | optimism-goerli |
             | sepolia         |
             | bgoerli         |
+            | base            |
 
     # Add back once cypress uses superfluid rpc
     #| polygon-zkevm-testnet |
@@ -69,6 +71,7 @@ Feature: Test cases that run indefinitely on all supported networks
             | sepolia               |
             | polygon-zkevm-testnet |
             | bgoerli               |
+            | base                  |
 
     Scenario: Testnet faucet fund check
         Given The faucet contract has got enough funds to send to people
