@@ -11,8 +11,6 @@ const readOnlyFrameworks = allNetworks.map((network) => {
   );
 
   const subgraphEndpoint =
-    networkFromMetadata?.subgraphV1?.satsumaEndpoint ??
-    networkFromMetadata?.subgraphV1?.hostedEndpoint ??
     network.fallbackSubgraphUrl;
 
   return {
