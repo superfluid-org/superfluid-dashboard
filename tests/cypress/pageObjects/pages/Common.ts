@@ -303,7 +303,7 @@ export class Common extends BasePage {
   }
 
   static mockQueryToEmptyState(operationName: string) {
-    cy.intercept("POST", "**protocol-v1**", (req) => {
+    cy.intercept("POST", "**protocol-dev**", (req) => {
       const { body } = req;
       if (
         body.hasOwnProperty("operationName") &&
