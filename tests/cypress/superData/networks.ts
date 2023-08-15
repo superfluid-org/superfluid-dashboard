@@ -7,8 +7,35 @@ import {
   TokenMinimal,
   TokenType,
 } from "./tokenTypes";
-import { BasePage } from "../pageObjects/BasePage";
+import { BigNumber, BigNumberish } from "ethers";
+import { BasePage, UnitOfTime } from "../pageObjects/BasePage";
 import ensureDefined from "../../../src/utils/ensureDefined";
+
+export const autoWrapManagerAddresses = {
+  [chain.polygon.id]: "0x2581c27E7f6D6AF452E63fCe884EDE3EDd716b32",
+  [chain.bsc.id]: "0x2AcdD61ac1EFFe1535109449c31889bdE8d7f325",
+  [chain.goerli.id]: "0x0B82D14E9616ca4d260E77454834AdCf5887595F",
+  [chain.polygonMumbai.id]: "0x3eAB3c6207F488E475b7955B631B564F0E6317B9",
+  [chain.avalancheFuji.id]: "0x30aE282CF477E2eF28B14d0125aCEAd57Fe1d7a1",
+  [chain.avalanche.id]: "0x8082e58681350876aFe8f52d3Bf8672034A03Db0",
+  [chain.optimism.id]: "0x1fA76f2Cd0C3fe6c399A80111408d9C42C0CAC23",
+  [chain.arbitrum.id]: "0xf01825eAFAe5CD1Dab5593EFAF218efC8968D272",
+  [chain.mainnet.id]: "0x30aE282CF477E2eF28B14d0125aCEAd57Fe1d7a1",
+  [chain.gnosis.id]: "0x8082e58681350876aFe8f52d3Bf8672034A03Db0",
+} as const;
+
+export const autoWrapStrategyAddresses = {
+  [chain.polygon.id]: "0xb4afa36BAd8c76976Dc77a21c9Ad711EF720eE4b",
+  [chain.bsc.id]: "0x9e308cb079ae130790F604b1030cDf386670f199",
+  [chain.goerli.id]: "0xea49af829d3e28d3ec49e0e0a0ba1e7860a56f60",
+  [chain.polygonMumbai.id]: "0x544728AFDBeEafBeC9e1329031788edb53017bC4",
+  [chain.avalancheFuji.id]: "0x1D65c6d3AD39d454Ea8F682c49aE7744706eA96d",
+  [chain.avalanche.id]: "0x51FBAbD31A615E14b1bC12E9d887f60997264a4E",
+  [chain.optimism.id]: "0x0Cf060a501c0040e9CCC708eFE94079F501c6Bb4",
+  [chain.arbitrum.id]: "0x342076aA957B0ec8bC1d3893af719b288eA31e61",
+  [chain.mainnet.id]: "0x1D65c6d3AD39d454Ea8F682c49aE7744706eA96d",
+  [chain.gnosis.id]: "0x51FBAbD31A615E14b1bC12E9d887f60997264a4E",
+} as const;
 
 // id == chainId
 // name == displayName
@@ -32,6 +59,12 @@ export type Network = {
     superToken: {
       type: TokenType.NativeAssetSuperToken;
     } & TokenMinimal;
+  };
+  autoWrap?: {
+    managerContractAddress: `0x${string}`;
+    strategyContractAddress: `0x${string}`;
+    lowerLimit: BigNumberish;
+    upperLimit: BigNumberish;
   };
   flowSchedulerContractAddress?: `0x${string}`;
   platformUrl?: string;
@@ -98,6 +131,12 @@ export const networkDefinition: {
         decimals: 18,
       },
     },
+    autoWrap: {
+      managerContractAddress: autoWrapManagerAddresses[chain.goerli.id],
+      strategyContractAddress: autoWrapStrategyAddresses[chain.goerli.id],
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 14),
+    },
     flowSchedulerContractAddress: "0x5b2D8d18FE90D840cbc012a8a06C3EeAA5cBe1a6",
     platformUrl: "https://prod-goerli-platform-service.dev.superfluid.dev",
   },
@@ -132,6 +171,12 @@ export const networkDefinition: {
         decimals: 18,
       },
     },
+    autoWrap: {
+      managerContractAddress: autoWrapManagerAddresses[chain.gnosis.id],
+      strategyContractAddress: autoWrapStrategyAddresses[chain.gnosis.id],
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 14),
+    },
   },
   polygon: {
     ...chain.polygon,
@@ -159,6 +204,12 @@ export const networkDefinition: {
         decimals: 18,
       },
     },
+    autoWrap: {
+      managerContractAddress: autoWrapManagerAddresses[chain.polygon.id],
+      strategyContractAddress: autoWrapStrategyAddresses[chain.polygon.id],
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 14),
+    },
   },
   polygonMumbai: {
     ...chain.polygonMumbai,
@@ -184,6 +235,13 @@ export const networkDefinition: {
         name: "Super MATIC",
         decimals: 18,
       },
+    },
+    autoWrap: {
+      managerContractAddress: autoWrapManagerAddresses[chain.polygonMumbai.id],
+      strategyContractAddress:
+        autoWrapStrategyAddresses[chain.polygonMumbai.id],
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 14),
     },
   },
   avalancheFuji: {
@@ -216,6 +274,13 @@ export const networkDefinition: {
         decimals: 18,
       },
     },
+    autoWrap: {
+      managerContractAddress: autoWrapManagerAddresses[chain.avalancheFuji.id],
+      strategyContractAddress:
+        autoWrapStrategyAddresses[chain.avalancheFuji.id],
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 14),
+    },
   },
   optimism: {
     ...chain.optimism,
@@ -243,6 +308,12 @@ export const networkDefinition: {
         decimals: 18,
       },
     },
+    autoWrap: {
+      managerContractAddress: autoWrapManagerAddresses[chain.optimism.id],
+      strategyContractAddress: autoWrapStrategyAddresses[chain.optimism.id],
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 14),
+    },
   },
   arbitrum: {
     ...chain.arbitrum,
@@ -269,6 +340,12 @@ export const networkDefinition: {
         name: "Super ETH",
         decimals: 18,
       },
+    },
+    autoWrap: {
+      managerContractAddress: autoWrapManagerAddresses[chain.arbitrum.id],
+      strategyContractAddress: autoWrapStrategyAddresses[chain.arbitrum.id],
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 14),
     },
   },
   avalancheC: {
@@ -302,6 +379,12 @@ export const networkDefinition: {
         decimals: 18,
       },
     },
+    autoWrap: {
+      managerContractAddress: autoWrapManagerAddresses[chain.avalanche.id],
+      strategyContractAddress: autoWrapStrategyAddresses[chain.avalanche.id],
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 14),
+    },
   },
   ethereum: {
     ...chain.mainnet,
@@ -327,6 +410,12 @@ export const networkDefinition: {
         name: "Super ETH",
         decimals: 18,
       },
+    },
+    autoWrap: {
+      managerContractAddress: autoWrapManagerAddresses[chain.mainnet.id],
+      strategyContractAddress: autoWrapStrategyAddresses[chain.mainnet.id],
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 28),
     },
   },
   bsc: {
@@ -359,6 +448,12 @@ export const networkDefinition: {
         name: "Super BNB",
         decimals: 18,
       },
+    },
+    autoWrap: {
+      managerContractAddress: autoWrapManagerAddresses[chain.bsc.id],
+      strategyContractAddress: autoWrapStrategyAddresses[chain.bsc.id],
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 14),
     },
   },
   celoMainnet: {

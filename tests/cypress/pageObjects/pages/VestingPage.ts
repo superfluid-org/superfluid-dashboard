@@ -1,7 +1,12 @@
 import { BasePage, wordTimeUnitMap } from "../BasePage";
 import { format } from "date-fns";
 import { SendPage } from "./SendPage";
-import { Common, CHANGE_NETWORK_BUTTON } from "./Common";
+import {
+  Common,
+  CHANGE_NETWORK_BUTTON,
+  CONNECT_WALLET_BUTTON,
+  STOP_VIEWING_BUTTON,
+} from "./Common";
 import { networksBySlug } from "../../superData/networks";
 
 const NO_CREATED_TITLE = "[data-cy=no-created-schedules-title]";
@@ -67,13 +72,19 @@ const TOPUP_WARNING_TITLE = "[data-cy=top-up-alert-title]";
 const TOPUP_WARNING_TEXT = "[data-cy=top-up-alert-text]";
 const ALLOWLIST_MESSAGE = "[data-cy=allowlist-message]";
 const ALLOWLIST_LINK = "[data-cy=allowlist-link]";
-const AUTO_WRAP_SWITCH_AND_TOOLTIP = "[data-cy=auto-wrap-switch-and-tooltip]"
-const AUTO_WRAP_SWITCH = "[data-cy=auto-wrap-switch]"
-const AUTO_WRAP_ENABLE_BUTTON = "[data-cy=enable-auto-wrap-button]"
-const AUTO_WRAP_ALLOWANCE_BUTTON = "[data-cy=auto-wrap-allowance-button]"
-const AUTO_WRAP_TOOLTIP = `${AUTO_WRAP_SWITCH_AND_TOOLTIP} svg`
-const AUTO_WRAP_TX_MESSAGE = "[data-cy=auto-wrap-tx-message]"
-const TX_MESSAGE_NETWORK = "[data-cy=tx-network]"
+const AUTO_WRAP_SWITCH_AND_TOOLTIP = "[data-cy=auto-wrap-switch-and-tooltip]";
+const AUTO_WRAP_SWITCH = "[data-cy=auto-wrap-switch]";
+const AUTO_WRAP_ENABLE_BUTTON = "[data-cy=enable-auto-wrap-button]";
+const AUTO_WRAP_ALLOWANCE_BUTTON = "[data-cy=auto-wrap-allowance-button]";
+const AUTO_WRAP_TOOLTIP = `${AUTO_WRAP_SWITCH_AND_TOOLTIP} svg`;
+const AUTO_WRAP_TX_MESSAGE = "[data-cy=auto-wrap-tx-message]";
+const TX_MESSAGE_NETWORK = "[data-cy=tx-network]";
+const AUTO_WRAP_DIALOG = "[data-cy=auto-wrap-enable-dialog]";
+const DISABLE_AUTO_WRAP_BUTTON = "[data-cy=disable-auto-wrap-button]";
+const FIX_PERMISSIONS_BUTTON = "[data-cy=fix-permissions-button]";
+const VIEW_DASHBOARD_AS_ANY_ADDRESS_BUTTON =
+  "[data-cy=view-mode-inputs] button";
+const VESTING_FORM_LINK = "[data-cy=vesting-form-link]";
 
 //Strings
 const NO_CREATED_TITLE_STRING = "No Sent Vesting Schedules";
@@ -96,73 +107,122 @@ let endDate = new Date(
 );
 
 export class VestingPage extends BasePage {
+  static validateNoFixPermissionsButtonExists() {
+    this.doesNotExist(FIX_PERMISSIONS_BUTTON);
+  }
+  static validateNoDisableAutoWrapButtonVisible() {
+    this.isNotVisible(DISABLE_AUTO_WRAP_BUTTON);
+  }
+  static clickEnableAutoWrapButtonInAutoWrapDialog() {
+    this.clickFirstVisible(`${AUTO_WRAP_DIALOG} ${AUTO_WRAP_ENABLE_BUTTON}`);
+  }
+  static clickPermissionsTableAutoWrapEnableButton() {
+    this.clickFirstVisible(AUTO_WRAP_ENABLE_BUTTON);
+  }
+
   static validateAutoWrapSwitchNetworkButtonForToken(token: string) {
-    throw new Error("Method not implemented.");
+    this.isVisible(
+      `[data-cy=${token}-row] + .MuiTableRow-root ${CHANGE_NETWORK_BUTTON}`
+    );
   }
   static validateAutoWrapDialogShowingTokenAllowanceButton() {
-    throw new Error("Method not implemented.");
+    this.isVisible(AUTO_WRAP_ALLOWANCE_BUTTON);
+    this.isNotVisible(`${AUTO_WRAP_DIALOG} ${AUTO_WRAP_ENABLE_BUTTON}`);
   }
   static clickDisableAutoWrapInPermissionsTable() {
-    throw new Error("Method not implemented.");
+    this.click(DISABLE_AUTO_WRAP_BUTTON);
   }
   static validateFixPermissionSwitchNetworkButton() {
-    throw new Error("Method not implemented.");
+    this.doesNotExist(FIX_PERMISSIONS_BUTTON);
+    this.isVisible(CHANGE_NETWORK_BUTTON);
   }
-  static validateStopViewingPermissionsTableAutoWrapButton(token:string) {
-    throw new Error("Method not implemented.");
+
+  static validateStopViewingPermissionsTableAutoWrapButton(token: string) {
+    this.isVisible(`[data-cy=${token}-row] + * ${STOP_VIEWING_BUTTON}`);
   }
   static validateNotConnectedScreen() {
-    throw new Error("Method not implemented.");
+    this.isVisible(CONNECT_WALLET_BUTTON);
+    this.isVisible(VIEW_DASHBOARD_AS_ANY_ADDRESS_BUTTON);
+    cy.contains("No Vesting Schedules Available").should("be.visible");
+    cy.contains("Received and Sent Vesting Schedules will appear here.").should(
+      "be.visible"
+    );
+    this.isVisible(VESTING_FORM_LINK);
   }
   static validateDisableAutoWrapButtonDoesNotExist() {
-    throw new Error("Method not implemented.");
+    this.doesNotExist(DISABLE_AUTO_WRAP_BUTTON);
   }
   static clickFixPermissionsButton() {
-    throw new Error("Method not implemented.");
+    this.click(FIX_PERMISSIONS_BUTTON);
   }
   static validateAutoWrapDialogShowingACLAllowanceButton() {
-    throw new Error("Method not implemented.");
+    this.isVisible(`${AUTO_WRAP_DIALOG} ${AUTO_WRAP_ENABLE_BUTTON}`);
   }
-  static validatePermissionTableAutoWrapIcon(token: string, colorOrExisting: string) {
-    throw new Error("Method not implemented.");
+
+  static validatePermissionTableAutoWrapIcon(
+    token: string,
+    colorOrExisting: string
+  ) {
+    switch (colorOrExisting) {
+      case "not existing":
+        this.doesNotExist(`[data-cy=${token}-auto-wrap-status]`);
+        break;
+      case "grey":
+        this.hasCSS(
+          `[data-cy=${token}-auto-wrap-status]`,
+          "color",
+          "rgba(130, 146, 173, 0.26)",
+          undefined,
+          { timeout: 30000 }
+        );
+        break;
+      case "green":
+        this.hasCSS(
+          `[data-cy=${token}-auto-wrap-status]`,
+          "color",
+          "rgb(16, 187, 53)",
+          undefined,
+          { timeout: 30000 }
+        );
+    }
   }
+
   static clickAutoWrapAllowanceButton() {
-    this.click(AUTO_WRAP_ALLOWANCE_BUTTON)
+    this.clickFirstVisible(AUTO_WRAP_ALLOWANCE_BUTTON);
   }
   static validateNoAllowanceAutoWrapButton() {
-    this.doesNotExist(AUTO_WRAP_ALLOWANCE_BUTTON)
+    this.doesNotExist(AUTO_WRAP_ALLOWANCE_BUTTON);
   }
 
   static validateAutoWrapSwitchIsVisible() {
-    this.isVisible(AUTO_WRAP_SWITCH_AND_TOOLTIP)
+    this.isVisible(AUTO_WRAP_SWITCH_AND_TOOLTIP);
   }
 
-  static validateNoEnableAutoWrapButton() {
-    this.doesNotExist(AUTO_WRAP_ENABLE_BUTTON)
+  static validateNoEnableAutoWrapButtonVisible() {
+    this.isNotVisible(AUTO_WRAP_ENABLE_BUTTON);
   }
-  
+
   static clickEnableAutoWrap() {
-    this.click(AUTO_WRAP_ENABLE_BUTTON)
+    this.clickFirstVisible(AUTO_WRAP_ENABLE_BUTTON);
   }
 
-  static validateAutoWrapAllowanceTxMessage(network:string) {
+  static validateAutoWrapAllowanceTxMessage(network: string) {
     this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...");
-        this.hasText(
-      TX_MESSAGE_NETWORK,
-      `(${networksBySlug.get(network)?.name})`
+    this.hasText(TX_MESSAGE_NETWORK, `(${networksBySlug.get(network)?.name})`);
+    this.hasText(
+      AUTO_WRAP_TX_MESSAGE,
+      `You are approving Auto-Wrap token allowance for the underlying token.`
     );
-    this.hasText(AUTO_WRAP_TX_MESSAGE,`You are approving Auto-Wrap token allowance for the underlying token.`)
   }
 
-  static validateAutoWrapTxMessage(token:string,network:string) {
+  static validateAutoWrapTxMessage(token: string, network: string) {
     this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...");
-        this.hasText(
-      TX_MESSAGE_NETWORK,
-      `(${networksBySlug.get(network)?.name})`
+    this.hasText(TX_MESSAGE_NETWORK, `(${networksBySlug.get(network)?.name})`);
+    this.hasText(
+      AUTO_WRAP_TX_MESSAGE,
+      `You are enabling Auto-Wrap to top up your ${token} tokens when balance reaches low.`
     );
-    this.hasText(AUTO_WRAP_TX_MESSAGE,`You are enabling Auto-Wrap to top up your ${token} tokens when balance reaches low.`)
   }
-
 
   static validateFirstRowPendingStatus(status: string) {
     cy.get(VESTING_ROWS)
@@ -421,7 +481,11 @@ export class VestingPage extends BasePage {
   }
 
   static openTokenPermissionRow(token: string) {
-    this.click(`[data-cy=${token}-row] [data-testid=ExpandMoreRoundedIcon]`);
+    this.click(
+      `[data-cy=${token}-row] [data-testid=ExpandMoreRoundedIcon]`,
+      undefined,
+      { timeout: 30000 }
+    );
   }
 
   static validateTokenPermissionsData(token: string) {
@@ -771,14 +835,14 @@ export class VestingPage extends BasePage {
   }
 
   static validateAutoWrapSwitchDoesNotExist() {
-    this.doesNotExist(AUTO_WRAP_SWITCH_AND_TOOLTIP)
+    this.doesNotExist(AUTO_WRAP_SWITCH_AND_TOOLTIP);
   }
 
   static validateNoTopUpWarningShown() {
-    this.doesNotExist(TOPUP_WARNING_TEXT)
-    this.doesNotExist(TOPUP_WARNING_TITLE)
+    this.doesNotExist(TOPUP_WARNING_TEXT);
+    this.doesNotExist(TOPUP_WARNING_TITLE);
   }
   static clickAutoWrapSwitch() {
-    this.click(AUTO_WRAP_SWITCH)
+    this.click(AUTO_WRAP_SWITCH);
   }
 }

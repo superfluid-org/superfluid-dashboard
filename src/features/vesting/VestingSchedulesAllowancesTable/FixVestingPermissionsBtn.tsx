@@ -78,6 +78,7 @@ const FixVestingPermissionsBtn: FC<FixVestingPermissionsBtnProps> = ({
     <TransactionBoundary mutationResult={fixAccessResult}>
       {({ setDialogLoadingInfo }) => (
         <TransactionButton
+          dataCy="fix-permissions-button"
           ButtonProps={{
             size: "medium",
             fullWidth: false,

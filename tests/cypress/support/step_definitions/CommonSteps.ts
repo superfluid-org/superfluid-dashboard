@@ -212,6 +212,11 @@ Then(
 Given(/^User opens the faucet view from the navigation menu$/, function () {
   Common.openFaucetMenu();
 });
+
+Given(/^User opens the auto-wrap page from the navigation menu$/, function () {
+  Common.openAutoWrapPage();
+});
+
 Then(/^Connect wallet button is visible in the faucet menu$/, function () {
   Common.validateConnectWalletButtonInFaucetMenu();
 });
@@ -359,4 +364,7 @@ Then(
 );
 Then(/^User clears the receiver input field$/, function () {
   Common.clearReceiverField();
+});
+Then(/^No loading skeletons are visible in the page$/, function () {
+  Common.waitForSpookySkeletonsToDisapear();
 });

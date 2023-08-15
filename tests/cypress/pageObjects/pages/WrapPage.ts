@@ -6,6 +6,7 @@ import {
   CHANGE_NETWORK_BUTTON,
   TOKEN_ANIMATION,
   TOKEN_BALANCE,
+  STOP_VIEWING_BUTTON,
 } from "./Common";
 
 const WRAP_TAB = "[data-cy=wrap-toggle]";
@@ -19,7 +20,6 @@ const UNWRAP_PREVIEW = "[data-cy=unwrap-amount-preview] input";
 const TOKEN_PAIR = "[data-cy=token-pair]";
 const UPGRADE_BUTTON = "[data-cy=upgrade-button]";
 const DOWNGRADE_BUTTON = "[data-cy=downgrade-button]";
-const STOP_VIEWING_BUTTON = "[data-cy=view-mode-button]";
 const UNDERLYING_BALANCE = "[data-cy=underlying-balance]";
 const SUPER_TOKEN_BALANCE = "[data-cy=balance]";
 const TOKEN_SELECT_NAME = "[data-cy=token-symbol-and-name] p";
@@ -117,7 +117,7 @@ export class WrapPage extends BasePage {
   }
 
   static clickStopViewingButton() {
-    this.click(STOP_VIEWING_BUTTON);
+    this.clickFirstVisible(STOP_VIEWING_BUTTON);
   }
 
   static connectWalletButtonIsVisible() {

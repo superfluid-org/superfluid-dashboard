@@ -55,24 +55,25 @@ const TokenLimitComponent: FC<{
   limit: number;
   netFlowRate: string | undefined;
   tokenSymbol: string | undefined;
-}> = ({ limit, netFlowRate, tokenSymbol = "" }) => {
+  dataCy? :string 
+}> = ({ limit, netFlowRate, tokenSymbol = "" ,dataCy}) => {
   if (!netFlowRate || BigNumber.from(netFlowRate).gte(0)) {
     return (
-      <>
+      <span data-cy={`${tokenSymbol}-${dataCy}`}>
         {secondsToWeeks(limit)} Weeks (0 {tokenSymbol})
-      </>
+      </span>
     );
   }
 
   return (
-    <>
+    <span data-cy={`${tokenSymbol}-${dataCy}`}>
       {secondsToWeeks(limit)} Weeks (
       <Amount
         decimalPlaces={2}
         wei={calculateTokenAmount(limit, netFlowRate)}
       />{" "}
       {tokenSymbol})
-    </>
+    </span>
   );
 };
 
@@ -180,7 +181,7 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
             >
               <Typography variant="h7">Asset</Typography>
               <Stack
-                data-cy={"token-header"}
+                data-cy={"auto-wrap-token"}
                 direction="row"
                 alignItems="center"
                 gap={2}
@@ -250,6 +251,7 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
                 limit={schedule.lowerLimit}
                 netFlowRate={accountTokenSnapshot?.totalNetFlowRate}
                 tokenSymbol={superTokenQueryData?.symbol}
+                dataCy="lower-limit"
               />
             </Stack>
           </Box>
@@ -277,6 +279,7 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
                   limit={schedule.upperLimit}
                   netFlowRate={accountTokenSnapshot?.totalNetFlowRate}
                   tokenSymbol={superTokenQueryData?.symbol}
+                  dataCy="upper-limit"
                 />
               </Typography>
             </Stack>
@@ -347,10 +350,10 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
           </Box>
         </Stack>
       ) : (
-        <TableRow>
+        <TableRow data-cy={`${superTokenQueryData?.symbol}-row`}>
           <TableCell align="left">
             <Stack
-              data-cy={"token-header"}
+              data-cy={"auto-wrap-token"}
               direction="row"
               alignItems="center"
               gap={2}
@@ -366,7 +369,7 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
             </Stack>
           </TableCell>
           <TableCell>
-            <Typography variant="h6">
+            <Typography data-cy="underlying-token-allowance" variant="h6">
               {isUnderlyingTokenAllowanceLoading ? (
                 <Skeleton width={80} />
               ) : isCloseToUnlimitedTokenAllowance(
@@ -387,6 +390,7 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
                 limit={schedule.lowerLimit}
                 netFlowRate={accountTokenSnapshot?.totalNetFlowRate}
                 tokenSymbol={superTokenQueryData?.symbol}
+                dataCy="lower-limit"
               />
             </Typography>
           </TableCell>
@@ -396,6 +400,7 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
                 limit={schedule.upperLimit}
                 netFlowRate={accountTokenSnapshot?.totalNetFlowRate}
                 tokenSymbol={superTokenQueryData?.symbol}
+                dataCy="upper-limit"
               />
             </Typography>
           </TableCell>

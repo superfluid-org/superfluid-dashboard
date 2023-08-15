@@ -62,8 +62,7 @@ export default memo<AmountProps>(function Amount({
 
   return (
     <>
-      {formattedAmount}
-      {children}
+      <span data-cy="token-amount">{formattedAmount}{children}</span>
     </>
   );
 });

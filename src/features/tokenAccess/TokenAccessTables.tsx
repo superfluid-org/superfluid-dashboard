@@ -23,7 +23,7 @@ interface NetworkFetchingStatuses {
 
 const EmptyCard: FC<{}> = ({}) => (
   <NoContentPaper
-    dataCy={"no-scheduled-wrap-message"}
+    dataCy={"no-access-data"}
     title="No Access Data"
     description="You currently don’t have any Super Token permissions and allowance set."
   />
@@ -89,6 +89,7 @@ const TokenAccessTables: FC<{}> = () => {
           </Typography>
         </Stack>
         <UpsertTokenAccessButton
+          dataCy={"token-access-global-button"}
           initialFormValues={{
             network: expectedNetwork,
           }}

@@ -89,7 +89,7 @@ const AutoWrapAddTokenForm: FC<{
 
   return (
     <>
-      <Stack component={DialogTitle} sx={{ p: 3 }}>
+      <Stack data-cy="add-token-dialog" component={DialogTitle} sx={{ p: 3 }}>
         <Typography variant="h4">Add Token</Typography>
         <IconButton
           aria-label="close"

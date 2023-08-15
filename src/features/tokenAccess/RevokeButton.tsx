@@ -34,6 +34,7 @@ const RevokeButton: FC<RevokeButtonProps> = ({
     <TransactionBoundary mutationResult={revokeResult}>
       {({ setDialogLoadingInfo }) => (
         <TransactionButton
+          dataCy="revoke-button"
           ConnectionBoundaryButtonProps={{
             impersonationTitle: "Stop viewing",
             changeNetworkTitle: "Change Network",

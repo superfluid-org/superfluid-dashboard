@@ -292,7 +292,7 @@ export class BasePage {
 
   static containsText(
     selector: string,
-    text: string,
+    text: JQuery<HTMLElement> | string | string[] | number,
     index?: number,
     options?: Partial<
       Cypress.Loggable &

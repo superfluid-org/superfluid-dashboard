@@ -1,4 +1,4 @@
-@numTestsKeptInMemory(0)
+@numTestsKeptInMemory(10)
 Feature: Vesting page test cases
 
     Scenario: No vesting schedule messages
@@ -237,7 +237,7 @@ Feature: Vesting page test cases
         And User clicks on the create vesting schedule button
         Then Vesting allowlist message is shown
 
-    Scenario: Setting up auto-wrap from the vesting form (rejected) 
+    Scenario: Setting up auto-wrap from the vesting form (rejected)
         Given HDWallet transactions are rejected
         And Transactional account john is connected to the dashboard on goerli
         And User clicks on the "vesting" navigation button
@@ -280,7 +280,8 @@ Feature: Vesting page test cases
         And User clicks on the auto-wrap switch
         Then Top up warning is not shown
 
-    @skip @bug
+    @skip
+    @bug
     Scenario: Stop viewing address - Auto-wrap button
         Given "Dashboard page" is open using view mode to look at "john"
         And User clicks on the "vesting" navigation button
@@ -309,7 +310,8 @@ Feature: Vesting page test cases
         And User clicks on the create vesting schedule button
         And User selects "USDCx" as the super token to use for the stream
 
-    @only @skip @bug
+    @skip
+    @bug
     Scenario: Stop viewing address - Allowance button
         Given "Dashboard page" is open using view mode to look at "john"
         And User clicks on the "vesting" navigation button
@@ -324,7 +326,8 @@ Feature: Vesting page test cases
         And Give allowance button does not exist
         Then The stop viewing as an address button is visible
 
-    @bug @skip
+    @bug
+    @skip
     Scenario: Setting up auto-wrap for a user who has already given ACL allowance(rejected)
         Given HDWallet transactions are rejected
         And Transactional account john is connected to the dashboard on goerli
@@ -356,7 +359,7 @@ Feature: Vesting page test cases
         And User waits for 5 seconds
         Then Auto-wrap switch does not exist
 
-Scenario: Auto-wrap in the permissions table for a user who has not set it up
+    Scenario: Auto-wrap in the permissions table for a user who has not set it up
         Given HDWallet transactions are rejected
         And Transactional account john is connected to the dashboard on goerli
         And User clicks on the "vesting" navigation button
@@ -364,6 +367,7 @@ Scenario: Auto-wrap in the permissions table for a user who has not set it up
         Then Auto-wrap icon for "fDAIx" is "grey"
         And User clicks on the enable auto-wrap transaction button in the permissions table
         Then Auto-wrap dialog is showing ACL allowance button
+        And User clicks on the enable auto-wrap transaction button in the auto-wrap dialog
         Then Transaction rejected error is shown
 
     Scenario: Auto-wrap in the permissions table for a user who has already given ACL permissions
@@ -378,75 +382,77 @@ Scenario: Auto-wrap in the permissions table for a user who has not set it up
         And User clicks the Allowance button for the auto-wrap
         Then Transaction rejected error is shown
 
-Scenario: No auto-wrap icon showing and no enable/disable buttons showing for pure super tokens
+    Scenario: No auto-wrap icon showing showing for pure super tokens
         Given "Dashboard page" is open using view mode to look at "accountWithLotsOfData"
         And User changes their network to "polygon"
         And User clicks on the "vesting" navigation button
+        And User opens "NTDL" permission table row
         Then Auto-wrap icon for "NTDL" is "not existing"
 
-
-Scenario: No auto-wrap icon showing and no enable/disable buttons showing for native tokens
+    Scenario: No auto-wrap icon showing showing for native tokens
         Given "Dashboard page" is open using view mode to look at "accountWithLotsOfData"
         And User changes their network to "polygon"
         And User clicks on the "vesting" navigation button
+        And User opens "MATICx" permission table row
         Then Auto-wrap icon for "MATICx" is "not existing"
 
-Scenario: Disabling auto-wrap from the permissions table
+    Scenario: Disabling auto-wrap from the permissions table
         Given HDWallet transactions are rejected
         And Transactional account john is connected to the dashboard on goerli
         And User clicks on the "vesting" navigation button
         Then Auto-wrap icon for "fUSDCx" is "green"
-        Then User opens "fTUSDx" permission table row
+        Then User opens "fUSDCx" permission table row
         And User clicks the disable auto-wrap button in the permissions table
         Then Transaction rejected error is shown
 
-
-Scenario: Permissions table - Change network button - enabling auto-wrap
-        Given Dashboard is open with a mocked connection to "staticBalanceAccount" on "polygon-mumbai"
+    Scenario: Permissions table - Change network button - enabling auto-wrap
+        Given Dashboard is open with a mocked connection to "john" on "polygon-mumbai"
+        And User connects their wallet to the dashboard
         And User clicks on the "vesting" navigation button
         And User changes their network to "goerli"
-        And User clicks on the "vesting" navigation button
         Then User opens "fTUSDx" permission table row
-        Then Enable auto-wrap button does not exist
+        Then Enable auto-wrap button is not visible
         And Switch network button is visible in the "fTUSDx" permission row
 
     Scenario: Permissions table - Change network button - disabling auto-wrap
-        Given Dashboard is open with a mocked connection to "staticBalanceAccount" on "polygon-mumbai"
+        Given Dashboard is open with a mocked connection to "john" on "polygon-mumbai"
+        And User connects their wallet to the dashboard
         And User clicks on the "vesting" navigation button
         And User changes their network to "goerli"
         Then User opens "fUSDCx" permission table row
-        Then Enable auto-wrap button does not exist
+        Then Disable auto-wrap button does not exist
         And Switch network button is visible in the "fUSDCx" permission row
 
     Scenario: Permissions table - Change network button - Fixing vesting permissions
-        Given Dashboard is open with a mocked connection to "staticBalanceAccount" on "polygon-mumbai"
+        Given Dashboard is open with a mocked connection to "john" on "polygon-mumbai"
+        And User connects their wallet to the dashboard
         And User clicks on the "vesting" navigation button
         And User changes their network to "goerli"
         Then User opens "fUSDCx" permission table row
-        Then Enable auto-wrap button does not exist
+        Then Fix permissions button does not exist
         And Switch network button is shown instead of fix permissions button
 
     Scenario: Permissions table - Stop viewing button - enabling auto-wrap
         Given "Dashboard page" is open using view mode to look at "john"
+        And User changes their network to "goerli"
         And User clicks on the "vesting" navigation button
         Then User opens "fTUSDx" permission table row
-        Then Enable auto-wrap button does not exist
-        And Stop viewing button is visible in the "fUSDCx" permission row
+        Then Enable auto-wrap button is not visible
+        And Stop viewing button is visible in the "fTUSDx" permission row
         And User clicks on the stop viewing as an address button
         Then Vesting page while a wallet is not connected screen is shown
 
     Scenario: Permissions table - Stop viewing button - disabling auto-wrap
         Given "Dashboard page" is open using view mode to look at "john"
-        And User clicks on the "vesting" navigation button
-        Given "Dashboard page" is open using view mode to look at "john"
+        And User changes their network to "goerli"
         And User clicks on the "vesting" navigation button
         Then User opens "fTUSDx" permission table row
         Then Disable auto-wrap button does not exist
-        And Stop viewing button is visible in the "fUSDCx" permission row
+        And Stop viewing button is visible in the "fTUSDx" permission row
         And User clicks on the stop viewing as an address button
         Then Vesting page while a wallet is not connected screen is shown
 
-Scenario: Fix permissions button in the vesting page table (rejected)
+    Scenario: Fix permissions button in the vesting page table (rejected)
         Given HDWallet transactions are rejected
         And Transactional account john is connected to the dashboard on goerli
         And User clicks on the "vesting" navigation button

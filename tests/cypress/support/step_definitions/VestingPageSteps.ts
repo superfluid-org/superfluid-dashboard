@@ -199,114 +199,85 @@ Then(
     );
   }
 );
-Then(
-  /^Auto-wrap switch does not exist$/,
-  function () {
-    VestingPage.validateAutoWrapSwitchDoesNotExist();
-  }
-);
+Then(/^Auto-wrap switch does not exist$/, function () {
+  VestingPage.validateAutoWrapSwitchDoesNotExist();
+});
 
-Then(
-  /^User clicks on the auto-wrap switch$/,
-  function () {
-    VestingPage.clickAutoWrapSwitch();
-  }
-);
+Then(/^User clicks on the auto-wrap switch$/, function () {
+  VestingPage.clickAutoWrapSwitch();
+});
 
-Then(
-  /^Top up warning is not shown$/,
-  function () {
-    VestingPage.validateNoTopUpWarningShown();
-  }
-);
+Then(/^Top up warning is not shown$/, function () {
+  VestingPage.validateNoTopUpWarningShown();
+});
 
-Then(
-  /^User previews the vesting schedule$/,
-  function () {
-    VestingPage.clickPreviewButton();
-  }
-);
+Then(/^User previews the vesting schedule$/, function () {
+  VestingPage.clickPreviewButton();
+});
 
-Then(
-  /^User clicks on the enable auto-wrap transaction button$/,
-  function () {
-    VestingPage.clickEnableAutoWrap();
-  }
-);
+Then(/^User clicks on the enable auto-wrap transaction button$/, function () {
+  VestingPage.clickEnableAutoWrap();
+});
 
 Then(
   /^Auto-wrap transaction message is shown for "([^"]*)" on "([^"]*)"$/,
-  function (token:string,network:string) {
-    VestingPage.validateAutoWrapTxMessage(token,network);
+  function (token: string, network: string) {
+    VestingPage.validateAutoWrapTxMessage(token, network);
   }
 );
 
 Then(
   /^Auto-wrap allowance transaction message is shown on "([^"]*)"$/,
-  function (network:string) {
+  function (network: string) {
     VestingPage.validateAutoWrapAllowanceTxMessage(network);
   }
 );
 
-Then(
-  /^Enable auto-wrap button does not exist$/,
-  function () {
-    VestingPage.validateNoEnableAutoWrapButton();
-  }
-);
+Then(/^Enable auto-wrap button is not visible$/, function () {
+  VestingPage.validateNoEnableAutoWrapButtonVisible();
+});
 
-Then(
-  /^Auto-wrap switch is visible$/,
-  function () {
-    VestingPage.validateAutoWrapSwitchIsVisible();
-  }
-);
+Then(/^Disable auto-wrap button is not visible$/, function () {
+  VestingPage.validateNoDisableAutoWrapButtonVisible();
+});
 
-Then(
-  /^Give allowance button does not exist$/,
-  function () {
-    VestingPage.validateNoAllowanceAutoWrapButton();
-  }
-);
+Then(/^Fix permissions button does not exist$/, function () {
+  VestingPage.validateNoFixPermissionsButtonExists();
+});
 
-Then(
-  /^User clicks the Allowance button for the auto-wrap$/,
-  function () {
-    VestingPage.clickAutoWrapAllowanceButton();
-  }
-);
+Then(/^Auto-wrap switch is visible$/, function () {
+  VestingPage.validateAutoWrapSwitchIsVisible();
+});
 
+Then(/^Give allowance button does not exist$/, function () {
+  VestingPage.validateNoAllowanceAutoWrapButton();
+});
+
+Then(/^User clicks the Allowance button for the auto-wrap$/, function () {
+  VestingPage.clickAutoWrapAllowanceButton();
+});
 
 Then(
   /^Auto-wrap icon for "([^"]*)" is "([^"]*)"$/,
   function (token: string, colorOrExisting: string) {
-    VestingPage.validatePermissionTableAutoWrapIcon(
-      token,
-      colorOrExisting
-    );
+    VestingPage.validatePermissionTableAutoWrapIcon(token, colorOrExisting);
   }
 );
 
 Then(
   /^User clicks on the enable auto-wrap transaction button in the permissions table$/,
   function () {
-    VestingPage.clickAutoWrapAllowanceButton();
+    VestingPage.clickPermissionsTableAutoWrapEnableButton();
   }
 );
 
-Then(
-  /^Auto-wrap dialog is showing ACL allowance button$/,
-  function () {
-    VestingPage.validateAutoWrapDialogShowingACLAllowanceButton();
-  }
-);
+Then(/^Auto-wrap dialog is showing ACL allowance button$/, function () {
+  VestingPage.validateAutoWrapDialogShowingACLAllowanceButton();
+});
 
-Then(
-  /^Auto-wrap dialog is showing token allowance button$/,
-  function () {
-    VestingPage.validateAutoWrapDialogShowingTokenAllowanceButton();
-  }
-);
+Then(/^Auto-wrap dialog is showing token allowance button$/, function () {
+  VestingPage.validateAutoWrapDialogShowingTokenAllowanceButton();
+});
 
 Then(
   /^User clicks the disable auto-wrap button in the permissions table$/,
@@ -328,15 +299,28 @@ Then(
     VestingPage.validateFixPermissionSwitchNetworkButton();
   }
 );
-Then(/^Stop viewing button is visible in the "([^"]*)" permission row$/, function (token:string) {
-  VestingPage.validateStopViewingPermissionsTableAutoWrapButton(token)
-});
-Then(/^Vesting page while a wallet is not connected screen is shown$/, function () {
-  VestingPage.validateNotConnectedScreen()
-});
+Then(
+  /^Stop viewing button is visible in the "([^"]*)" permission row$/,
+  function (token: string) {
+    VestingPage.validateStopViewingPermissionsTableAutoWrapButton(token);
+  }
+);
+Then(
+  /^Vesting page while a wallet is not connected screen is shown$/,
+  function () {
+    VestingPage.validateNotConnectedScreen();
+  }
+);
 Then(/^Disable auto\-wrap button does not exist$/, function () {
-  VestingPage.validateDisableAutoWrapButtonDoesNotExist()
+  VestingPage.validateDisableAutoWrapButtonDoesNotExist();
 });
 Then(/^User clicks on the Fix permissions button$/, function () {
-  VestingPage.clickFixPermissionsButton()
+  VestingPage.clickFixPermissionsButton();
 });
+
+Then(
+  /^User clicks on the enable auto-wrap transaction button in the auto-wrap dialog$/,
+  function () {
+    VestingPage.clickEnableAutoWrapButtonInAutoWrapDialog();
+  }
+);
