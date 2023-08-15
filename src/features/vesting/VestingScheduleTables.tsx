@@ -56,7 +56,7 @@ export const AutoWrapContractInfo: FC<{ network: Network }> = ({ network }) => {
           />
           <Tooltip arrow title="View on blockchain explorer" placement="top">
             <IconButton
-              component={Link}
+              LinkComponent={Link}
               href={network.getLinkForAddress(
                 network.autoWrap.managerContractAddress
               )}
@@ -156,7 +156,7 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
                   placement="top"
                 >
                   <IconButton
-                    component={Link}
+                    LinkComponent={Link}
                     href={network.getLinkForAddress(
                       network.vestingContractAddress
                     )}

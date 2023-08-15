@@ -77,6 +77,24 @@
         "underlyingBalance": "0",
         "superTokenBalance": "0"
       }
+    },
+    "polygon-zkevm-testnet": {
+      "ETH": {
+        "underlyingBalance": "0",
+        "superTokenBalance": "0"
+      }
+    },
+    "bgoerli": {
+      "ETH": {
+        "underlyingBalance": "0",
+        "superTokenBalance": "0"
+      }
+    },
+    "base": {
+      "ETH": {
+        "underlyingBalance": "0",
+        "superTokenBalance": "0"
+      }
     }
   }
 }

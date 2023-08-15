@@ -42,7 +42,7 @@ const NotificationHeader: FC<NotificationHeaderProps> = ({
         >
           <Typography variant="h5">Notifications</Typography>
           <Tooltip title="Open Settings">
-            <IconButton component={Link} href="/settings" size="medium">
+            <IconButton LinkComponent={Link} href="/settings" size="medium">
               <SettingsIcon sx={{ ycolor: "GrayText" }} />
             </IconButton>
           </Tooltip>

@@ -48,7 +48,7 @@ export const HumaFinanceLink: FC<{ width?: number; height?: number }> = ({
   return (
     <Tooltip title="This stream is eligible for income-based borrowing. Visit Huma to learn more.">
       <IconButton
-        component={Link} // Link is not at network level, so we can use it as hard-coded.
+        LinkComponent={Link} // Link is not at network level, so we can use it as hard-coded.
         href="https://app.huma.finance/#/borrow/stream?poolName=Superfluid"
         target="_blank"
       >
