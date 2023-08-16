@@ -278,7 +278,7 @@ export const networkDefinition = {
       upperLimit: BigNumber.from(UnitOfTime.Day * 14),
     },
     humaFinance: {
-      nftAddress: "0x3ad49C053DCDF96788c0e40c1771d41422ddBb6A",
+      nftAddress: "0xAEA5908A082F5667aEA425AEACE8dF6aEDb03694",
     },
   } as const,
   avalancheFuji: {
