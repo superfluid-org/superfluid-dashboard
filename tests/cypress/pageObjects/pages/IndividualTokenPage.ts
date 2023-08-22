@@ -170,8 +170,7 @@ export class IndividualTokenPage extends BasePage {
   }
 
   static validateApprovalTransactionDialog(network: string) {
-    let selectedNetwork =
-      network === "selected network" ? Cypress.env("network") : network;
+    let selectedNetwork = this.getSelectedNetwork(network);
     this.doesNotExist(APPROVE_BUTTON);
     this.isVisible(LOADING_SPINNER);
     this.exists(`${DISTRIBUTION_ROWS} ${LOADING_SPINNER}`);
@@ -195,8 +194,7 @@ export class IndividualTokenPage extends BasePage {
   }
 
   static validateRevokeTransactionDialog(network: string) {
-    let selectedNetwork =
-      network === "selected network" ? Cypress.env("network") : network;
+    let selectedNetwork = this.getSelectedNetwork(network);
     this.doesNotExist(REVOKE_BUTTON);
     this.isVisible(LOADING_SPINNER);
     this.exists(`${DISTRIBUTION_ROWS} ${LOADING_SPINNER}`);

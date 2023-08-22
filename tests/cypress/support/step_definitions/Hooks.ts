@@ -16,6 +16,6 @@ Before({ tags: "@rejected" }, function () {
   Cypress.env("rejected", true);
 });
 
-Before({ tags: "@scheduling" }, () => {
-  Cypress.env("scheduling", true);
+Before({ tags: "@platformNeeded" }, () => {
+  Cypress.env("platformNeeded", true);
 });

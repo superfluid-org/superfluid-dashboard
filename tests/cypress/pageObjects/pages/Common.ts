@@ -122,8 +122,7 @@ export class Common extends BasePage {
   ) {
     let usedAccountPrivateKey;
     let personas = ["alice", "bob", "dan", "john"];
-    let selectedNetwork =
-      network === "selected network" ? Cypress.env("network") : network;
+    let selectedNetwork = this.getSelectedNetwork(network);
     if (personas.includes(persona)) {
       let chosenPersona = personas.findIndex((el) => el === persona) + 1;
       usedAccountPrivateKey = Cypress.env(

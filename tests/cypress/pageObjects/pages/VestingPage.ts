@@ -163,28 +163,30 @@ export class VestingPage extends BasePage {
     token: string,
     colorOrExisting: string
   ) {
-    switch (colorOrExisting) {
-      case "not existing":
-        this.doesNotExist(`[data-cy=${token}-auto-wrap-status]`);
-        break;
-      case "grey":
-        this.hasCSS(
-          `[data-cy=${token}-auto-wrap-status]`,
-          "color",
-          "rgba(130, 146, 173, 0.26)",
-          undefined,
-          { timeout: 30000 }
-        );
-        break;
-      case "green":
-        this.hasCSS(
-          `[data-cy=${token}-auto-wrap-status]`,
-          "color",
-          "rgb(16, 187, 53)",
-          undefined,
-          { timeout: 30000 }
-        );
-    }
+    this.getSelectedToken(token).then((selectedToken) => {
+      switch (colorOrExisting) {
+        case "not existing":
+          this.doesNotExist(`[data-cy=${selectedToken}-auto-wrap-status]`);
+          break;
+        case "grey":
+          this.hasCSS(
+            `[data-cy=${selectedToken}-auto-wrap-status]`,
+            "color",
+            "rgba(130, 146, 173, 0.26)",
+            undefined,
+            { timeout: 30000 }
+          );
+          break;
+        case "green":
+          this.hasCSS(
+            `[data-cy=${selectedToken}-auto-wrap-status]`,
+            "color",
+            "rgb(16, 187, 53)",
+            undefined,
+            { timeout: 30000 }
+          );
+      }
+    });
   }
 
   static clickAutoWrapAllowanceButton() {
@@ -481,11 +483,13 @@ export class VestingPage extends BasePage {
   }
 
   static openTokenPermissionRow(token: string) {
-    this.click(
-      `[data-cy=${token}-row] [data-testid=ExpandMoreRoundedIcon]`,
-      undefined,
-      { timeout: 30000 }
-    );
+    this.getSelectedToken(token).then((selectedToken) => {
+      this.click(
+        `[data-cy=${selectedToken}-row] [data-testid=ExpandMoreRoundedIcon]`,
+        undefined,
+        { timeout: 30000 }
+      );
+    });
   }
 
   static validateTokenPermissionsData(token: string) {

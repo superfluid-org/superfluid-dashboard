@@ -263,7 +263,9 @@ export class SendPage extends BasePage {
 
   static selectTokenForStreaming(token: string) {
     this.click(SELECT_TOKEN_BUTTON);
-    this.click(`[data-cy=${token}-list-item]`);
+    this.getSelectedToken(token).then((selectedToken) => {
+      this.click(`[data-cy=${selectedToken}-list-item]`);
+    });
   }
 
   static nativeTokenDoesNotHaveWrapButtons(token: string) {
@@ -328,15 +330,7 @@ export class SendPage extends BasePage {
     timeUnit: any,
     address: string
   ) {
-    cy.fixture("rejectedCaseTokens").then((tokens) => {
-      let selectedToken;
-      if (token.startsWith("Token")) {
-        selectedToken = token.endsWith("x")
-          ? `${tokens[Cypress.env("network")][token.slice(0, -1)]}x`
-          : tokens[Cypress.env("network")][token];
-      } else {
-        selectedToken = token;
-      }
+    this.getSelectedToken(token).then((selectedToken) => {
       this.click(RECEIVER_BUTTON);
       this.isVisible(RECENT_ENTRIES, undefined, { timeout: 30000 });
       this.type(ADDRESS_DIALOG_INPUT, address);
@@ -519,8 +513,7 @@ export class SendPage extends BasePage {
   }
 
   static startOrModifyStreamAndValidateTxApprovalDialog(network: string) {
-    let selectedNetwork =
-      network === "selected network" ? Cypress.env("network") : network;
+    let selectedNetwork = this.getSelectedNetwork(network);
     this.overrideNextGasPrice();
     this.isVisible(PREVIEW_UPFRONT_BUFFER);
     this.clickSendButton();
@@ -567,8 +560,7 @@ export class SendPage extends BasePage {
   }
 
   static cancelStreamAndVerifyApprovalDialogs(network: string) {
-    let selectedNetwork =
-      network === "selected network" ? Cypress.env("network") : network;
+    let selectedNetwork = this.getSelectedNetwork(network);
     this.overrideNextGasPrice();
     this.isNotDisabled(CANCEL_STREAM_BUTTON, undefined, { timeout: 30000 });
     this.click(CANCEL_STREAM_BUTTON);
@@ -675,7 +667,7 @@ export class SendPage extends BasePage {
     this.hasValue(`${END_DATE} input`, date);
   }
 
-  static isSchedulingSupported(fn: () => void) {
+  static isPlatformDeployedOnNetwork(fn: () => void) {
     if (
       [
         "arbitrum-goerli",
@@ -686,7 +678,7 @@ export class SendPage extends BasePage {
         "bgoerli",
         "base",
       ].includes(Cypress.env("network")) &&
-      Cypress.env("scheduling")
+      Cypress.env("platformNeeded")
     ) {
       cy.log(
         `Skipping the step because ${Cypress.env("network")} is not supported`

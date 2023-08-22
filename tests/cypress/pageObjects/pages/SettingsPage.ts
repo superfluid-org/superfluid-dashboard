@@ -159,21 +159,24 @@ export class SettingsPage extends BasePage {
     this.click(APPROVAL_MODAL_CREATE_ACL_PERMISSION);
   }
   static openFirstModifyFormOnNetwork(network: string) {
+    let selectedNetwork = this.getSelectedNetwork(network);
     cy.get(
-      `[data-cy=${network}-permission-and-allowances-table] ${ASSETS_IN_TABLE}`
+      `[data-cy=${selectedNetwork}-permission-and-allowances-table] ${ASSETS_IN_TABLE}`
     )
       .first()
       .invoke("text")
       .as("selectedPermissionToken");
     cy.get(
-      `[data-cy=${network}-permission-and-allowances-table] ${OPERATOR_ADDRESSES}`
+      `[data-cy=${selectedNetwork}-permission-and-allowances-table] ${OPERATOR_ADDRESSES}`
     )
       .first()
       .invoke("text")
       .as("selectedPermissionOperator");
-    cy.wrap(networksBySlug.get(network).name).as("selectedPermissionNetwork");
+    cy.wrap(networksBySlug.get(selectedNetwork).name).as(
+      "selectedPermissionNetwork"
+    );
     this.clickFirstVisible(
-      `[data-cy=${network}-permission-and-allowances-table] ${MODIFY_BUTTONS}`
+      `[data-cy=${selectedNetwork}-permission-and-allowances-table] ${MODIFY_BUTTONS}`
     );
   }
   static validateVisibleAddress(address: string) {

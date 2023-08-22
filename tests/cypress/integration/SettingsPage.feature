@@ -48,56 +48,6 @@ Feature: Settings page test cases
         And User closes the unsaved changes modal
         And Unsaved Changes modal should not exist
 
-    Scenario: Add a new permission and click add button
-        Given HDWallet transactions are rejected
-
-        Given "Settings Page" is open with "john" connected on "polygon-mumbai"
-        And User clicks on the add approval button
-        And User opens the add approval modal is visible
-        And User selects "fDAIx" as the super token to use for the stream
-        And User searches for "0x9B6157d44134b21D934468B8bf709294cB298aa7" as a receiver
-        And User inputs a allowance "1.53" into the field
-        And User inputs a flow rate "12.17" into the field
-        And User toggle on a create permission
-        And User toggle on a update permission
-        And User toggle on a delete permission
-        And User toggle off a update permission
-        And User closes the add approval modal
-        And Unsaved Changes modal should be visible
-        And User click on approvals add button
-        And Transaction rejected error is shown
-        And User closes tx the dialog
-        And User closes the unsaved changes modal
-
-    Scenario: Changing ACL permissions ( rejected )
-        Given HDWallet transactions are rejected
-
-        Given "Settings Page" is open with "john" connected on "goerli"
-        And User opens the first modify permissions form on "goerli"
-        And User clicks the create permission toggle
-        And User clicks the update permission toggle
-        And User clicks the delete permission toggle
-        And User click on approvals add button
-        And Transaction rejected error is shown
-
-    Scenario: Changing Token allowance ( rejected )
-        Given HDWallet transactions are rejected
-
-        Given "Settings Page" is open with "john" connected on "goerli"
-        And User opens the first modify permissions form on "goerli"
-        And User inputs a allowance "42069" into the field
-        And User click on approvals add button
-        And Transaction rejected error is shown
-
-    Scenario: Changing flow rate allowance ( rejected )
-        Given HDWallet transactions are rejected
-
-        Given "Settings Page" is open with "john" connected on "goerli"
-        And User opens the first modify permissions form on "goerli"
-        And User inputs a flow rate "42069" into the field
-        And User click on approvals add button
-        And Transaction rejected error is shown
-
     Scenario: Address book names showing up in the ACL table
         Given Address book test data is set up
 
@@ -119,37 +69,12 @@ Feature: Settings page test cases
         And No loading skeletons are visible in the page
         Then Permission row for "vijay.eth" to use "ETHx" on "goerli" does not exist
 
-    Scenario: Revoking a permission ( rejected )
-        Given HDWallet transactions are rejected
-
-        Given "Settings Page" is open with "john" connected on "goerli"
-        And User opens the first modify permissions form on "goerli"
-        And User clicks on the revoke button in the permissions form
-        Then Transaction rejected error is shown
-
     Scenario: Vesting form being auto-completed for existing permissions
         Given HDWallet transactions are rejected
 
         Given "Settings Page" is open with "john" connected on "goerli"
         And User opens the first modify permissions form on "goerli"
         Then The selected row token , network and operator are auto-filled in the modify form
-
-    Scenario: Save changes screen - save changes ( rejected )
-        Given "Settings Page" is open with "john" connected on "polygon-mumbai"
-        And User clicks on the add approval button
-        And User opens the add approval modal is visible
-        And User selects "fDAIx" as the super token to use for the stream
-        And User searches for "0x9B6157d44134b21D934468B8bf709294cB298aa7" as a receiver
-        And User inputs a allowance "1.53" into the field
-        And User inputs a flow rate "12.17" into the field
-        And User toggle on a create permission
-        And User toggle on a update permission
-        And User toggle on a delete permission
-        And User toggle off a update permission
-        And User closes the add approval modal
-        And Unsaved Changes modal should be visible
-        And User clicks on the save changes button
-        Then Transaction rejected error is shown
 
     @bug
     @skip

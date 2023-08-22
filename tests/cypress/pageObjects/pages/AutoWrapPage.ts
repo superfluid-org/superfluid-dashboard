@@ -111,18 +111,26 @@ export class AutoWrapPage extends BasePage {
     this.click(ADD_TOKEN_BUTTON);
   }
   static selectNetworkForAutoWrap(network: string) {
+    let selectedNetwork = this.getSelectedNetwork(network);
     this.click(TOP_BAR_NETWORK_BUTTON, -1);
-    this.click(`[data-cy=${network}-button`);
+    this.click(`[data-cy=${selectedNetwork}-button`);
   }
+
   static clickEnableButtonForTokenOnNetwork(token: string, network: string) {
-    this.click(
-      `[data-cy=${network}-token-snapshot-table] [data-cy=${token}-row] ${ENABLE_BUTTONS}`
-    );
+    let selectedNetwork = this.getSelectedNetwork(network);
+    this.getSelectedToken(token).then((selectedToken) => {
+      this.click(
+        `[data-cy=${selectedNetwork}-token-snapshot-table] [data-cy=${selectedToken}-row] ${ENABLE_BUTTONS}`
+      );
+    });
   }
   static clickDisableButtonForTokenOnNetwork(token: any, network: any) {
-    this.click(
-      `[data-cy=${network}-token-snapshot-table] [data-cy=${token}-row] ${DISABLE_BUTTONS}`
-    );
+    let selectedNetwork = this.getSelectedNetwork(network);
+    this.getSelectedToken(token).then((selectedToken) => {
+      this.click(
+        `[data-cy=${selectedNetwork}-token-snapshot-table] [data-cy=${selectedToken}-row] ${DISABLE_BUTTONS}`
+      );
+    });
   }
   static clickAutoWrapCloseTxButton() {
     this.hasText(`${ADD_TOKEN_DIALOG} ${ENABLE_BUTTONS}`, "Close").click();

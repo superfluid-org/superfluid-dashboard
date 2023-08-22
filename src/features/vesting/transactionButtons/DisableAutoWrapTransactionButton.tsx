@@ -46,7 +46,7 @@ const DisableAutoWrapTransactionButton: FC<{
           chainId: network.id,
           args: [primaryArgs.spender, primaryArgs.amount],
           walletClient,
-          ...overrides,
+          ...overrides
         }
       : undefined
   );
