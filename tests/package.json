@@ -2,6 +2,7 @@
   "name": "cypress-with-superfluid",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "dependencies": {
     "@babel/core": "^7.22.9",
     "@babel/preset-env": "^7.22.9",
