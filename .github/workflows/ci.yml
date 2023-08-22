@@ -65,6 +65,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        container: [1,2]
         network: ["goerli","gnosis","polygon-mumbai","polygon","optimism","arbitrum-one","avalanche","avalanche-fuji","bsc","ethereum","arbitrum-goerli","optimism-goerli","sepolia","polygon-zkevm-testnet","bgoerli"]
     steps:
       - uses: actions/checkout@v2

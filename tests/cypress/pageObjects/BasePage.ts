@@ -33,6 +33,9 @@ export class BasePage {
         selectedToken = token.endsWith("x")
           ? `${tokens[Cypress.env("network")][token.slice(0, -1)]}x`
           : tokens[Cypress.env("network")][token];
+        if (selectedToken === "WORKx") {
+          selectedToken = "WORK";
+        }
       } else {
         selectedToken = token;
       }

@@ -112,6 +112,15 @@ Then(
 );
 
 Then(
+  /^User selects "([^"]*)" as the super token to use for auto-wrap or vesting$/,
+  (token: string) => {
+    SendPage.isPlatformDeployedOnNetwork(() => {
+      SendPage.selectTokenForStreaming(token);
+    });
+  }
+);
+
+Then(
   /^Token balance is shown correctly in the send stream page with a wrap button next to it$/,
   () => {
     SendPage.validateSendPagePreviewBalance();

@@ -133,6 +133,15 @@ Given(/^User waits for (\d+) seconds$/, function (seconds: number) {
 Then(/^Transaction rejected error is shown$/, function () {
   Common.transactionRejectedErrorIsShown();
 });
+Then(
+  /^Transaction rejected error is shown for auto-wrap or vesting transaction$/,
+  function () {
+    SendPage.isPlatformDeployedOnNetwork(() => {
+      Common.transactionRejectedErrorIsShown();
+    });
+  }
+);
+
 Given(/^Stream table requests are mocked to an empty state$/, function () {
   Common.mockQueryToEmptyState("streams");
 });

@@ -1,5 +1,6 @@
 import { Given, Then } from "@badeball/cypress-cucumber-preprocessor";
 import { VestingPage } from "../../pageObjects/pages/VestingPage";
+import { SendPage } from "../../pageObjects/pages/SendPage";
 
 Then(/^No received vesting schedules message is shown$/, function () {
   VestingPage.validateNoReceivedVestingScheduleMessage();
@@ -125,7 +126,9 @@ Given(
   }
 );
 Given(/^User opens "([^"]*)" permission table row$/, function (token: string) {
-  VestingPage.openTokenPermissionRow(token);
+  SendPage.isPlatformDeployedOnNetwork(() => {
+    VestingPage.openTokenPermissionRow(token);
+  });
 });
 Then(
   /^All current and recommended permissions are correctly showed for "([^"]*)"$/,
@@ -254,35 +257,47 @@ Then(/^Give allowance button does not exist$/, function () {
 });
 
 Then(/^User clicks the Allowance button for the auto-wrap$/, function () {
-  VestingPage.clickAutoWrapAllowanceButton();
+  SendPage.isPlatformDeployedOnNetwork(() => {
+    VestingPage.clickAutoWrapAllowanceButton();
+  });
 });
 
 Then(
   /^Auto-wrap icon for "([^"]*)" is "([^"]*)"$/,
   function (token: string, colorOrExisting: string) {
-    VestingPage.validatePermissionTableAutoWrapIcon(token, colorOrExisting);
+    SendPage.isPlatformDeployedOnNetwork(() => {
+      VestingPage.validatePermissionTableAutoWrapIcon(token, colorOrExisting);
+    });
   }
 );
 
 Then(
   /^User clicks on the enable auto-wrap transaction button in the permissions table$/,
   function () {
-    VestingPage.clickPermissionsTableAutoWrapEnableButton();
+    SendPage.isPlatformDeployedOnNetwork(() => {
+      VestingPage.clickPermissionsTableAutoWrapEnableButton();
+    });
   }
 );
 
 Then(/^Auto-wrap dialog is showing ACL allowance button$/, function () {
-  VestingPage.validateAutoWrapDialogShowingACLAllowanceButton();
+  SendPage.isPlatformDeployedOnNetwork(() => {
+    VestingPage.validateAutoWrapDialogShowingACLAllowanceButton();
+  });
 });
 
 Then(/^Auto-wrap dialog is showing token allowance button$/, function () {
-  VestingPage.validateAutoWrapDialogShowingTokenAllowanceButton();
+  SendPage.isPlatformDeployedOnNetwork(() => {
+    VestingPage.validateAutoWrapDialogShowingTokenAllowanceButton();
+  });
 });
 
 Then(
   /^User clicks the disable auto-wrap button in the permissions table$/,
   function () {
-    VestingPage.clickDisableAutoWrapInPermissionsTable();
+    SendPage.isPlatformDeployedOnNetwork(() => {
+      VestingPage.clickDisableAutoWrapInPermissionsTable();
+    });
   }
 );
 
@@ -315,12 +330,16 @@ Then(/^Disable auto\-wrap button does not exist$/, function () {
   VestingPage.validateDisableAutoWrapButtonDoesNotExist();
 });
 Then(/^User clicks on the Fix permissions button$/, function () {
-  VestingPage.clickFixPermissionsButton();
+  SendPage.isPlatformDeployedOnNetwork(() => {
+    VestingPage.clickFixPermissionsButton();
+  });
 });
 
 Then(
   /^User clicks on the enable auto-wrap transaction button in the auto-wrap dialog$/,
   function () {
-    VestingPage.clickEnableAutoWrapButtonInAutoWrapDialog();
+    SendPage.isPlatformDeployedOnNetwork(() => {
+      VestingPage.clickEnableAutoWrapButtonInAutoWrapDialog();
+    });
   }
 );
