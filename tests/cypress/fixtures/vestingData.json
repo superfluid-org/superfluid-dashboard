@@ -1,5 +1,28 @@
 {
   "goerli": {
+    "fTUSDx": {
+      "schedule": {
+        "id": "0x6d4450ba833cefc9b4e1480851517048fc2f5042a05fd6abd6112aeff08b3918-2218",
+        "superToken": "0x95697ec24439e3eb7ba588c7b279b9b369236941",
+        "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
+        "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+        "flowRate": "570776255707",
+        "createdAt": "1690894596",
+        "deletedAt": null,
+        "startDate": "1722506340",
+        "cliffDate": "1880186340",
+        "cliffAndFlowExecutedAt": null,
+        "cliffAndFlowExpirationAt": "1880188140",
+        "cliffAndFlowDate": "1880186340",
+        "cliffAmount": "10000000000000000000",
+        "endDate": "2037866340",
+        "endDateValidAt": "2037864540",
+        "endExecutedAt": null,
+        "failedAt": null,
+        "didEarlyEndCompensationFail": null,
+        "earlyEndCompensation": null
+      }
+    },
     "fUSDCx": {
       "schedule": {
         "id": "0xf577b41da56b80f55bf29432e0dd50040012ab81391e2e78f6ccbbcec006cc4d-29",

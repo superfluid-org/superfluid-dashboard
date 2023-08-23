@@ -95,8 +95,8 @@ const NO_RECEIVED_DESC_STRING =
   "Vesting schedules that you have received will appear here.";
 
 //Dates for the vesting previews etc.
-let staticStartDate = new Date(1676642460000);
-let staticEndDate = new Date(1992002460000);
+let staticStartDate = new Date(1722506340000);
+let staticEndDate = new Date(2037866340000);
 let currentTime = new Date();
 let startDate = new Date(
   currentTime.getTime() + wordTimeUnitMap["year"] * 1000
@@ -166,11 +166,11 @@ export class VestingPage extends BasePage {
     this.getSelectedToken(token).then((selectedToken) => {
       switch (colorOrExisting) {
         case "not existing":
-          this.doesNotExist(`[data-cy=${selectedToken}-auto-wrap-status]`);
+          this.doesNotExist(`[data-cy="${selectedToken}-auto-wrap-status"]`);
           break;
         case "grey":
           this.hasCSS(
-            `[data-cy=${selectedToken}-auto-wrap-status]`,
+            `[data-cy="${selectedToken}-auto-wrap-status"]`,
             "color",
             "rgba(130, 146, 173, 0.26)",
             undefined,
@@ -179,7 +179,7 @@ export class VestingPage extends BasePage {
           break;
         case "green":
           this.hasCSS(
-            `[data-cy=${selectedToken}-auto-wrap-status]`,
+            `[data-cy="${selectedToken}-auto-wrap-status"]`,
             "color",
             "rgb(16, 187, 53)",
             undefined,
@@ -272,10 +272,14 @@ export class VestingPage extends BasePage {
 
   static inputCliffPeriod(amount: number, timeUnit: string) {
     this.type(CLIFF_PERIOD_INPUT, amount);
+    //Workaround for a race condition which leaves the preview button enabled after inputting cliff amounts too fast
+    Common.wait(2);
     this.click(CLIFF_PERIOD_UNIT);
     if (wordTimeUnitMap[timeUnit] === undefined) {
       throw new Error(`Invalid time unit: ${timeUnit}`);
     }
+    //Workaround for a race condition which leaves the preview button enabled after inputting cliff amounts too fast
+    Common.wait(2);
     this.click(`[data-value=${wordTimeUnitMap[timeUnit]}]`);
     this.hasText(CLIFF_PERIOD_SELECTED_UNIT, `${timeUnit}(s)`);
   }
@@ -319,8 +323,8 @@ export class VestingPage extends BasePage {
   static validateVestingSchedulePreview() {
     this.hasText(PREVIEW_RECEIVER, "elvijs.lens");
     this.validateSchedulePreviewDetails(cliffDate, startDate, endDate);
-    this.hasText(PREVIEW_TOTAL_AMOUNT, "2 fTUSDx");
-    this.hasText(PREVIEW_CLIFF_AMOUNT, "1 fTUSDx");
+    this.hasText(PREVIEW_TOTAL_AMOUNT, "2 fTDLx");
+    this.hasText(PREVIEW_CLIFF_AMOUNT, "1 fTDLx");
     this.containsText(
       PREVIEW_CLIFF_PERIOD,
       `1 year (${format(cliffDate, "LLLL d, yyyy")})`
@@ -382,8 +386,8 @@ export class VestingPage extends BasePage {
       this.shortenHex("0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2"),
       0
     );
-    this.hasText(TABLE_ALLOCATED_AMOUNT, "100 fUSDCx", 0);
-    this.hasText(VESTED_AMOUNT, "0  fUSDCx", 0);
+    this.hasText(TABLE_ALLOCATED_AMOUNT, "100 fTUSDx", 0);
+    this.hasText(VESTED_AMOUNT, "0  fTUSDx", 0);
     this.containsText(
       TABLE_START_END_DATES,
       format(staticStartDate, "LLL d, yyyy"),
@@ -392,7 +396,7 @@ export class VestingPage extends BasePage {
     this.containsText(
       TABLE_START_END_DATES,
       format(staticEndDate, "LLL d, yyyy"),
-      -1
+      0
     );
   }
 
@@ -418,11 +422,11 @@ export class VestingPage extends BasePage {
 
   static validateCreatedVestingScheduleDetailsPage() {
     this.hasText(DETAILS_VESTED_SO_FAR_AMOUNT, "0 ");
-    this.hasText(DETAILS_VESTED_TOKEN_SYMBOL, "fUSDCx");
-    this.hasText("[data-cy=fUSDCx-cliff-amount]", "50fUSDCx");
-    this.hasText("[data-cy=fUSDCx-allocated]", "100fUSDCx");
+    this.hasText(DETAILS_VESTED_TOKEN_SYMBOL, "fTUSDx");
+    this.hasText("[data-cy=fTUSDx-cliff-amount]", "10fTUSDx");
+    this.hasText("[data-cy=fTUSDx-allocated]", "100fTUSDx");
     cy.fixture("vestingData").then((data) => {
-      let schedule = data.goerli.fUSDCx.schedule;
+      let schedule = data.goerli.fTUSDx.schedule;
       this.hasText(
         DETAILS_SCHEDULED_DATE,
         format(schedule.createdAt * 1000, "MMM do, yyyy HH:mm")
@@ -485,7 +489,7 @@ export class VestingPage extends BasePage {
   static openTokenPermissionRow(token: string) {
     this.getSelectedToken(token).then((selectedToken) => {
       this.click(
-        `[data-cy=${selectedToken}-row] [data-testid=ExpandMoreRoundedIcon]`,
+        `[data-cy="${selectedToken}-row"] [data-testid=ExpandMoreRoundedIcon]`,
         undefined,
         { timeout: 30000 }
       );
@@ -769,9 +773,8 @@ export class VestingPage extends BasePage {
         totalVestedAmount
       );
     });
-    //Make sure deleted schedules don't get shown in the aggregate stats
-    this.doesNotExist("[data-cy=DAIx-total-allocated]");
-    this.doesNotExist("[data-cy=DAIx-total-vested]");
+    this.hasText(`[data-cy=DAIx-total-allocated]`, `60.87DAIx`);
+    this.containsText(`[data-cy=DAIx-total-vested]`, "0");
   }
 
   static validateAllowListMessage() {

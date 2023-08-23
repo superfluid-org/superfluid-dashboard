@@ -1,4 +1,4 @@
-@numTestsKeptInMemory(0)
+@numTestsKeptInMemory(2)
 Feature: Vesting page test cases
 
     Scenario: No vesting schedule messages
@@ -112,7 +112,7 @@ Feature: Vesting page test cases
         #And User deletes the vesting schedule if necessary
         And User clicks on the create vesting schedule button
         And User searches for "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" as a receiver
-        And User selects "fTUSDx" as the super token to use for the stream
+        And User selects "TDLx" as the super token to use for the stream
         And User inputs valid vesting schedule details in the form and proceeds to the preview
         And Preview of the vesting schedule is shown correctly
         And User creates the vesting schedule
@@ -142,7 +142,7 @@ Feature: Vesting page test cases
         And User clicks on the change to goerli button
         And Delete vesting schedule button is visible
 
-    Scenario: Sent vesting schedules details with code input
+    Scenario: Sent vesting schedules details
         Given Transactional account john is connected to the dashboard on goerli
         And User clicks on the "vesting" navigation button
         And The created vesting schedule is shown correctly in the table

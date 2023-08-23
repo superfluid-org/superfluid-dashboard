@@ -1283,7 +1283,6 @@ async function main() {
     if (balanceValues.some((x) => x / 1e18 < 0.02)) {
       //TODO go over all balances , check the wrapped ones also , and downgrade if neccessary to save some tokens
       // when running the script on used wallets , not needed atm
-      console.log(underlyingBalances);
       new Error(
         "Amigo, you need to add some balances to the wallet, this is not enough"
       );

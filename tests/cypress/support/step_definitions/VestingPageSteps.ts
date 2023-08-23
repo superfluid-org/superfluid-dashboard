@@ -45,11 +45,11 @@ Given(
   /^User inputs valid vesting schedule details in the form and proceeds to the preview$/,
   function () {
     VestingPage.inputFutureDateInVestingStartDateField(1, "year");
+    VestingPage.inputTotalVestedAmount(2);
+    VestingPage.inputTotalVestingPeriod(2, "year");
     VestingPage.clickCliffToggle();
     VestingPage.inputCliffAmount(1);
     VestingPage.inputCliffPeriod(1, "year");
-    VestingPage.inputTotalVestedAmount(2);
-    VestingPage.inputTotalVestingPeriod(2, "year");
     VestingPage.clickPreviewButton();
   }
 );

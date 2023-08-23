@@ -77,7 +77,7 @@ Feature: ACL and Auto-Wrap related rejected test cases
     Scenario: Vesting page: Fixing permissions button in the vesting page table
         And Transactional account john is connected to the dashboard on selected network
         And User clicks on the "vesting" navigation button
-        Then User opens "tokenOne" permission table row
+        Then User opens "TokenOnex" permission table row
         And User clicks on the Fix permissions button
         Then Transaction rejected error is shown for auto-wrap or vesting transaction
 

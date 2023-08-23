@@ -32,7 +32,8 @@ const PREVIEW_FLOW_RATE = "[data-cy=preview-flow-rate]";
 const PREVIEW_RECEIVER = "[data-cy=preview-receiver]";
 const PREVIEW_ENDS_ON = "[data-cy=preview-ends-on]";
 const PREVIEW_UPFRONT_BUFFER = "[data-cy=preview-upfront-buffer]";
-const BUFFER_WARNING_AMOUNT = "[data-cy=buffer-warning] span";
+const BUFFER_WARNING_AMOUNT =
+  "[data-cy=buffer-warning] span [data-cy=token-amount]";
 const PROTECT_YOUR_BUFFER_ERROR = "[data-cy=protect-your-buffer-error]";
 const RISK_CHECKBOX = "[data-cy=risk-checkbox]";
 const ADDRESS_BUTTON_TEXT = "[data-cy=address-button]";
@@ -264,7 +265,7 @@ export class SendPage extends BasePage {
   static selectTokenForStreaming(token: string) {
     this.click(SELECT_TOKEN_BUTTON);
     this.getSelectedToken(token).then((selectedToken) => {
-      this.click(`[data-cy=${selectedToken}-list-item]`);
+      this.click(`[data-cy="${selectedToken}-list-item"]`);
     });
   }
 

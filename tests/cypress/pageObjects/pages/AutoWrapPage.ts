@@ -53,7 +53,10 @@ export class AutoWrapPage extends BasePage {
     cy.get(`[data-cy=${network}-token-snapshot-table] [data-cy*=-row]`)
       .its("length")
       .then((length) => {
-        this.hasLength(CHANGE_NETWORK_BUTTON, length);
+        this.hasLength(
+          `[data-cy=${network}-token-snapshot-table] ${CHANGE_NETWORK_BUTTON}`,
+          length
+        );
       });
   }
   static validateNetworkAutoWrapData(network: string) {
@@ -120,7 +123,7 @@ export class AutoWrapPage extends BasePage {
     let selectedNetwork = this.getSelectedNetwork(network);
     this.getSelectedToken(token).then((selectedToken) => {
       this.click(
-        `[data-cy=${selectedNetwork}-token-snapshot-table] [data-cy=${selectedToken}-row] ${ENABLE_BUTTONS}`
+        `[data-cy=${selectedNetwork}-token-snapshot-table] [data-cy="${selectedToken}-row"] ${ENABLE_BUTTONS}`
       );
     });
   }
@@ -128,7 +131,7 @@ export class AutoWrapPage extends BasePage {
     let selectedNetwork = this.getSelectedNetwork(network);
     this.getSelectedToken(token).then((selectedToken) => {
       this.click(
-        `[data-cy=${selectedNetwork}-token-snapshot-table] [data-cy=${selectedToken}-row] ${DISABLE_BUTTONS}`
+        `[data-cy=${selectedNetwork}-token-snapshot-table] [data-cy="${selectedToken}-row"] ${DISABLE_BUTTONS}`
       );
     });
   }
