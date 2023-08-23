@@ -16,6 +16,9 @@
 for = "/*"
   [headers.values]
   Access-Control-Allow-Origin = "https://app.safe.global"
+  Access-Control-Allow-Origin = "https://beta.coinshift.xyz"
+  Access-Control-Allow-Origin = "https://app.coinshift.xyz"
+  Access-Control-Allow-Origin = "https://app.decentra.so"
 
 [[redirects]]
   from = "/streams/*"
