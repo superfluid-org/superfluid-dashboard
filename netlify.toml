@@ -15,10 +15,7 @@
 [[headers]]
 for = "/*"
   [headers.values]
-  Access-Control-Allow-Origin = "https://app.safe.global"
-  Access-Control-Allow-Origin = "https://beta.coinshift.xyz"
-  Access-Control-Allow-Origin = "https://app.coinshift.xyz"
-  Access-Control-Allow-Origin = "https://app.decentra.so"
+  Access-Control-Allow-Origin = "https://app.safe.global,https://beta.coinshift.xyz,https://app.coinshift.xyz,https://app.decentra.so"
 
 [[redirects]]
   from = "/streams/*"
