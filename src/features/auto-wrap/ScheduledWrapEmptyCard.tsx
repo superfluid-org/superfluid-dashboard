@@ -17,6 +17,7 @@ const ScheduledWrapEmptyCard: FC<{
 
   return (
     <Stack
+      data-cy="empty-permissions-screen"
       gap={1}
       component={Paper}
       alignItems={"center"}

@@ -44,8 +44,9 @@ interface Props {
 }
 
 export const UpsertTokenAccessButton: FC<{
+  dataCy?: string;
   initialFormValues: UpsertTokenAccessFormProviderProps["initialFormData"];
-}> = ({ initialFormValues }) => {
+}> = ({ initialFormValues, dataCy }) => {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const isEditingExistingRecord = Object.keys(initialFormValues).length > 1;
@@ -53,6 +54,7 @@ export const UpsertTokenAccessButton: FC<{
   return (
     <>
       <Button
+        data-cy={`${isEditingExistingRecord ? "modify" : "add"}-${dataCy}`}
         size={"medium"}
         variant={isEditingExistingRecord ? "outlined" : "contained"}
         endIcon={isEditingExistingRecord ? null : <Add />}
@@ -68,7 +70,7 @@ export const UpsertTokenAccessButton: FC<{
         }}
         translate="yes"
       >
-        <Stack component={"form"}>
+        <Stack component={"form"}  data-cy={"upsert-approvals-form"}>
           <UpsertTokenAccessFormProvider initialFormData={initialFormValues}>
             <UpsertTokenAccessForm
               initialFormValues={initialFormValues}
@@ -129,7 +131,7 @@ const TokenAccessRow: FC<Props> = ({
     return {
       network: network,
       token: tokenInfo
-        ? {
+        ? ({
             ...tokenInfo,
             type: getSuperTokenType({
               ...tokenInfo,
@@ -141,7 +143,7 @@ const TokenAccessRow: FC<Props> = ({
             symbol: tokenInfo.symbol,
             decimals: 18,
             isListed: tokenInfo.isListed,
-          } as AccessToken
+          } as AccessToken)
         : undefined,
       operatorAddress: address,
       flowOperatorPermissions: initialAccess.flowOperatorPermissions,
@@ -153,7 +155,7 @@ const TokenAccessRow: FC<Props> = ({
   return (
     <>
       {isBelowMd ? (
-        <TableRow>
+        <TableRow data-cy={`${tokenInfo?.symbol}-${address}-row`}>
           <TableCell>
             <Stack gap={2} sx={{ px: 2, py: 2 }}>
               <Stack
@@ -233,7 +235,7 @@ const TokenAccessRow: FC<Props> = ({
                 </Stack>
                 {tokenInfo && (
                   <Stack direction="row" alignItems="center" gap={0.5}>
-                    <Typography variant="h6">
+                    <Typography data-cy="token-allowance" variant="h6">
                       {isCloseToUnlimitedTokenAllowance(
                         initialAccess.tokenAllowanceWei
                       ) ? (
@@ -270,7 +272,7 @@ const TokenAccessRow: FC<Props> = ({
                   />
                 </Stack>
 
-                <Typography variant="h6">
+                <Typography data-cy="operator-permissions" variant="h6">
                   {flowOperatorPermissionsToString(
                     initialAccess.flowOperatorPermissions
                   )}
@@ -296,7 +298,7 @@ const TokenAccessRow: FC<Props> = ({
 
                 {tokenInfo && (
                   <Stack direction="row" alignItems="center" gap={0.5}>
-                    <Typography variant="h6">
+                    <Typography data-cy="flow-rate-allowance" variant="h6">
                       {isCloseToUnlimitedFlowRateAllowance(
                         initialAccess.flowRateAllowance.amountWei
                       ) ? (
@@ -319,14 +321,15 @@ const TokenAccessRow: FC<Props> = ({
               </Stack>
               <Stack gap={2} direction="column">
                 <UpsertTokenAccessButton
+                  dataCy={"token-access-row-button"}
                   initialFormValues={initialFormValues}
                 />
-              </Stack>
+              </Stack> 
             </Stack>
           </TableCell>
         </TableRow>
       ) : (
-        <TableRow>
+        <TableRow data-cy={`${tokenInfo?.symbol}-${address}-row`}>
           <TableCell align="left">
             <Stack
               data-cy={"token-header"}
@@ -363,7 +366,7 @@ const TokenAccessRow: FC<Props> = ({
           <TableCell sx={{ overflowWrap: "anywhere" }} align="left">
             {tokenInfo && (
               <Stack direction="row" alignItems="center" gap={0.5}>
-                <Typography variant="h6">
+                <Typography variant="h6" data-cy="token-allowance">
                   {isCloseToUnlimitedTokenAllowance(
                     initialAccess.tokenAllowanceWei
                   ) ? (
@@ -381,7 +384,7 @@ const TokenAccessRow: FC<Props> = ({
             )}
           </TableCell>
           <TableCell align="left">
-            <Typography variant="h6">
+            <Typography data-cy="operator-permissions" variant="h6">
               {flowOperatorPermissionsToString(
                 initialAccess.flowOperatorPermissions
               )}
@@ -390,7 +393,7 @@ const TokenAccessRow: FC<Props> = ({
           <TableCell align="left" sx={{ overflowWrap: "anywhere" }}>
             {tokenInfo && (
               <Stack direction="row" alignItems="center" gap={0.5}>
-                <Typography variant="h6">
+                <Typography variant="h6" data-cy="flow-rate-allowance">
                   {isCloseToUnlimitedFlowRateAllowance(
                     initialAccess.flowRateAllowance.amountWei
                   ) ? (
@@ -417,7 +420,7 @@ const TokenAccessRow: FC<Props> = ({
               p: 3,
             }}
           >
-            <UpsertTokenAccessButton initialFormValues={initialFormValues} />
+            <UpsertTokenAccessButton dataCy={"token-access-row-button"} initialFormValues={initialFormValues} />
           </TableCell>
         </TableRow>
       )}

@@ -22,6 +22,26 @@ export const wordTimeUnitMap: Record<string, UnitOfTime> = {
 };
 
 export class BasePage {
+  static getSelectedNetwork(network: string) {
+    return network === "selected network" ? Cypress.env("network") : network;
+  }
+  static getSelectedToken(token: string) {
+    return cy.fixture("rejectedCaseTokens").then((tokens) => {
+      let selectedToken: string;
+
+      if (token.startsWith("Token")) {
+        selectedToken = token.endsWith("x")
+          ? `${tokens[Cypress.env("network")][token.slice(0, -1)]}x`
+          : tokens[Cypress.env("network")][token];
+        if (selectedToken === "WORKx") {
+          selectedToken = "WORK";
+        }
+      } else {
+        selectedToken = token;
+      }
+      return selectedToken;
+    });
+  }
   static ensureDefined<T>(value: T | undefined | null): T {
     if (!value) throw Error("Value has to be defined.");
     return value;
@@ -292,7 +312,7 @@ export class BasePage {
 
   static containsText(
     selector: string,
-    text: string,
+    text: JQuery<HTMLElement> | string | string[] | number,
     index?: number,
     options?: Partial<
       Cypress.Loggable &

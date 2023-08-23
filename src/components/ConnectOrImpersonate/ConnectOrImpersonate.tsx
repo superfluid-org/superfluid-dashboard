@@ -42,7 +42,7 @@ const ConnectOrImpersonate: FC<ConnectOrImpersonateProps> = ({}) => {
       </Typography>
 
       <Box>
-        <Stack direction="row" justifyContent="center" gap={2.5}>
+        <Stack data-cy="view-mode-inputs" direction="row" justifyContent="center" gap={2.5}>
           <Button
             fullWidth
             variant="outlined"

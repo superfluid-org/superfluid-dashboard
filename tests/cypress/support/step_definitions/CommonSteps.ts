@@ -133,6 +133,15 @@ Given(/^User waits for (\d+) seconds$/, function (seconds: number) {
 Then(/^Transaction rejected error is shown$/, function () {
   Common.transactionRejectedErrorIsShown();
 });
+Then(
+  /^Transaction rejected error is shown for auto-wrap or vesting transaction$/,
+  function () {
+    SendPage.isPlatformDeployedOnNetwork(() => {
+      Common.transactionRejectedErrorIsShown();
+    });
+  }
+);
+
 Given(/^Stream table requests are mocked to an empty state$/, function () {
   Common.mockQueryToEmptyState("streams");
 });
@@ -212,6 +221,11 @@ Then(
 Given(/^User opens the faucet view from the navigation menu$/, function () {
   Common.openFaucetMenu();
 });
+
+Given(/^User opens the auto-wrap page from the navigation menu$/, function () {
+  Common.openAutoWrapPage();
+});
+
 Then(/^Connect wallet button is visible in the faucet menu$/, function () {
   Common.validateConnectWalletButtonInFaucetMenu();
 });
@@ -359,4 +373,7 @@ Then(
 );
 Then(/^User clears the receiver input field$/, function () {
   Common.clearReceiverField();
+});
+Then(/^No loading skeletons are visible in the page$/, function () {
+  Common.waitForSpookySkeletonsToDisapear();
 });

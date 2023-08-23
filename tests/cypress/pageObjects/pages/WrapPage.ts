@@ -6,6 +6,7 @@ import {
   CHANGE_NETWORK_BUTTON,
   TOKEN_ANIMATION,
   TOKEN_BALANCE,
+  STOP_VIEWING_BUTTON,
 } from "./Common";
 
 const WRAP_TAB = "[data-cy=wrap-toggle]";
@@ -19,7 +20,6 @@ const UNWRAP_PREVIEW = "[data-cy=unwrap-amount-preview] input";
 const TOKEN_PAIR = "[data-cy=token-pair]";
 const UPGRADE_BUTTON = "[data-cy=upgrade-button]";
 const DOWNGRADE_BUTTON = "[data-cy=downgrade-button]";
-const STOP_VIEWING_BUTTON = "[data-cy=view-mode-button]";
 const UNDERLYING_BALANCE = "[data-cy=underlying-balance]";
 const SUPER_TOKEN_BALANCE = "[data-cy=balance]";
 const TOKEN_SELECT_NAME = "[data-cy=token-symbol-and-name] p";
@@ -117,7 +117,7 @@ export class WrapPage extends BasePage {
   }
 
   static clickStopViewingButton() {
-    this.click(STOP_VIEWING_BUTTON);
+    this.clickFirstVisible(STOP_VIEWING_BUTTON);
   }
 
   static connectWalletButtonIsVisible() {
@@ -187,15 +187,7 @@ export class WrapPage extends BasePage {
   }
 
   static chooseTokenToWrap(token: string) {
-    cy.fixture("rejectedCaseTokens").then((tokens) => {
-      let selectedToken;
-      if (token.startsWith("Token")) {
-        selectedToken = token.endsWith("x")
-          ? `${tokens[Cypress.env("network")][token.slice(0, -1)]}x`
-          : tokens[Cypress.env("network")][token];
-      } else {
-        selectedToken = token;
-      }
+    this.getSelectedToken(token).then((selectedToken) => {
       this.click(`[data-cy="${selectedToken}-list-item"]`, undefined, {
         timeout: 60000,
       });
@@ -278,17 +270,8 @@ export class WrapPage extends BasePage {
     amount: string,
     token: string
   ) {
-    cy.fixture("rejectedCaseTokens").then((tokens) => {
-      let selectedToken;
-      if (token.startsWith("Token")) {
-        selectedToken = token.endsWith("x")
-          ? `${tokens[Cypress.env("network")][token.slice(0, -1)]}x`
-          : tokens[Cypress.env("network")][token];
-      } else {
-        selectedToken = token;
-      }
-      let selectedNetwork =
-        network === "selected network" ? Cypress.env("network") : network;
+    this.getSelectedToken(token).then((selectedToken) => {
+      let selectedNetwork = this.getSelectedNetwork(network);
       this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...");
       this.hasText(
         TX_NETWORK,
@@ -468,8 +451,7 @@ export class WrapPage extends BasePage {
   ) {
     // Sometimes the tx gets broadcasted too fast and this check adds some flakiness so disabling it for now
     // this.hasText(UNWRAP_MESSAGE, `You are unwrapping  ${amount} ${token}x to the underlying token ${token}.`)
-    let selectedNetwork =
-      network === "selected network" ? Cypress.env("network") : network;
+    let selectedNetwork = this.getSelectedNetwork(network);
     this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...");
     this.hasText(TX_NETWORK, `(${networksBySlug.get(selectedNetwork)?.name})`);
     this.isDisabled(DOWNGRADE_BUTTON);
@@ -537,8 +519,7 @@ export class WrapPage extends BasePage {
       let selectedToken = token.startsWith("Token")
         ? tokens[Cypress.env("network")][token]
         : token;
-      let selectedNetwork =
-        network === "selected network" ? Cypress.env("network") : network;
+      let selectedNetwork = this.getSelectedNetwork(network);
       this.hasText(
         APPROVE_ALLOWANCE_MESSAGE,
         `You are approving additional allowance of ${amount} ${selectedToken} for Superfluid Protocol to use.`

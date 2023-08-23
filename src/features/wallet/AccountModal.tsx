@@ -150,6 +150,7 @@ const AccountModal: FC<AccountModalProps> = ({ open, onClose }) => {
               </Typography>
 
               <Stack
+                data-cy="view-mode-inputs"
                 direction="row"
                 alignItems="center"
                 gap={1.25}

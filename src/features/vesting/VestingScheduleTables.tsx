@@ -44,7 +44,7 @@ export const AutoWrapContractInfo: FC<{ network: Network }> = ({ network }) => {
           Auto-Wrap Manager Smart Contract
         </Typography>
         <Stack
-          data-cy="auto-wrap-manager-contract-buttons"
+          data-cy={`${network.slugName}-auto-wrap-manager-contract-buttons`}
           direction="row"
           alignItems="center"
         >
@@ -73,7 +73,7 @@ export const AutoWrapContractInfo: FC<{ network: Network }> = ({ network }) => {
           Auto-Wrap Strategy Smart Contract
         </Typography>
         <Stack
-          data-cy="auto-wrap-strategy-contract-buttons"
+          data-cy={`${network.slugName}-auto-wrap-strategy-contract-buttons`}
           direction="row"
           alignItems="center"
         >

@@ -37,6 +37,7 @@ const SaveButton: FC<SaveButtonProps> = ({
     <TransactionBoundary mutationResult={updateAccessResult}>
       {({ setDialogLoadingInfo, getOverrides, txAnalytics }) => (
         <TransactionButton
+          dataCy={"approvals-save-button"}
           disabled={isDisabled}
           ConnectionBoundaryButtonProps={{
             impersonationTitle: "Stop viewing",

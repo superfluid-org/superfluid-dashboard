@@ -14,9 +14,9 @@ const NETWORK_SELECTION_TOGGLE_APPENDIX = "-toggle]";
 const NO_BALANCE_WRAP_BUTTON = "[data-cy=no-balance-wrap-button]";
 const NO_BALANCE_MESSAGE = "[data-cy=no-balance-message]";
 const LOADING_SKELETONS = "[data-cy=loading-skeletons]";
-const NET_FLOW_VALUES = "[data-cy=net-flow-value] span:first-child";
+const NET_FLOW_VALUES = "[data-cy=net-flow-value] [data-cy=token-amount]";
 const NO_NET_FLOW_VALUE = "[data-cy=net-flow-value]";
-const NET_FLOW_FIAT = "[data-cy=net-flow-value] span:last-child";
+const NET_FLOW_FIAT = "[data-cy=net-flow-value] [data-cy=token-amount]";
 const INFLOW_VALUES = "[data-cy=inflow]";
 const OUTFLOW_VALUES = "[data-cy=outflow]";
 const CANCEL_BUTTONS = "[data-cy=cancel-button]";
@@ -235,17 +235,8 @@ export class DashboardPage extends BasePage {
   }
 
   static openIndividualTokenPage(network: string, token: string) {
-    cy.fixture("rejectedCaseTokens").then((tokens) => {
-      let selectedToken;
-      if (token.startsWith("Token")) {
-        selectedToken = token.endsWith("x")
-          ? `${tokens[Cypress.env("network")][token.slice(0, -1)]}x`
-          : tokens[Cypress.env("network")][token];
-      } else {
-        selectedToken = token;
-      }
-      let selectedNetwork =
-        network === "selected network" ? Cypress.env("network") : network;
+    this.getSelectedToken(token).then((selectedToken) => {
+      let selectedNetwork = this.getSelectedNetwork(network);
       this.isVisible(
         `[data-cy=${selectedNetwork}${NETWORK_SNAPSHOT_TABLE_APPENDIX}`,
         undefined,

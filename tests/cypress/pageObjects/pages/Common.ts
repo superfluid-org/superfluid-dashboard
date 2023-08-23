@@ -19,6 +19,9 @@ export const TOKEN_BALANCE = "[data-cy=token-balance]";
 export const CHANGE_NETWORK_BUTTON = "[data-cy=change-network-button]";
 export const DROPDOWN_BACKDROP = "[role=presentation]";
 export const LIQUIDATED_OR_CANCEL_ICON = "[data-testid=CancelIcon]";
+export const SELECT_TOKEN_BUTTON = "[data-cy=select-token-button]";
+export const ADDRESS_BUTTON = "[data-cy=address-button]";
+export const STOP_VIEWING_BUTTON = "[data-cy=view-mode-button]";
 const VESTING_CODE_BUTTON = "[data-cy=vesting-code-button]";
 const NAVIGATION_BUTTON_PREFIX = "[data-cy=nav-";
 const NAVIGATION_DRAWER = "[data-cy=navigation-drawer]";
@@ -52,6 +55,7 @@ const VESTING_ACCESS_CODE_BUTTON = "[data-cy=more-vesting-code-btn]";
 const STREAM_ROWS = "[data-cy=stream-row]";
 const TIMER_ICONS = "[data-testid=TimerOutlinedIcon]";
 const FAUCET_BUTTON = "[data-cy=more-faucet-btn]";
+const AUTO_WRAP_NAVIGATION_BUTTON = "[data-cy=wrap-utility-btn]";
 const CLAIM_TOKENS_BUTTON = "[data-cy=claim-button]";
 const FAUCET_SUCCESS_MESSAGE = "[data-cy=faucet-success]";
 const FAUCET_ERROR_MESSAGE = "[data-cy=faucet-error]";
@@ -77,6 +81,7 @@ const TOAST_MESSAGE = "[data-cy=toast-notification-message]";
 const TOAST_TITLE = "[data-cy=toast-notification-title]";
 const TOAST_CLOSE_BUTTON = "button[aria-label=close]";
 const NOTIF_WRAP_TOKEN_BUTTON = "[data-cy=wrap-tokens-button]";
+const LOADING_SKELETONS = ".MuiSkeleton-root";
 
 const NEW_NOTIF_DATE = new Date(Date.now());
 const NEW_NOTIF_STRING_DATE =
@@ -85,6 +90,9 @@ const OLD_NOTIF_DATE = new Date(1000 * BasePage.getDayTimestamp(-30));
 const OLD_DATE_STRING = BasePage.getNotificationDateString(OLD_NOTIF_DATE);
 
 export class Common extends BasePage {
+  static waitForSpookySkeletonsToDisapear() {
+    this.doesNotExist(LOADING_SKELETONS, undefined, { timeout: 60000 });
+  }
   static clickNavBarButton(button: string) {
     this.click(`${NAVIGATION_BUTTON_PREFIX + button}]`);
   }
@@ -114,8 +122,7 @@ export class Common extends BasePage {
   ) {
     let usedAccountPrivateKey;
     let personas = ["alice", "bob", "dan", "john"];
-    let selectedNetwork =
-      network === "selected network" ? Cypress.env("network") : network;
+    let selectedNetwork = this.getSelectedNetwork(network);
     if (personas.includes(persona)) {
       let chosenPersona = personas.findIndex((el) => el === persona) + 1;
       usedAccountPrivateKey = Cypress.env(
@@ -194,7 +201,7 @@ export class Common extends BasePage {
   }
 
   static changeNetwork(network: string) {
-    this.click(TOP_BAR_NETWORK_BUTTON);
+    this.click(TOP_BAR_NETWORK_BUTTON, 0);
     this.click(MAINNETS_BUTTON);
     cy.wait(1000);
     if (networksBySlug.get(network)?.testnet) {
@@ -504,6 +511,10 @@ export class Common extends BasePage {
 
   static openFaucetMenu() {
     this.click(FAUCET_BUTTON);
+  }
+
+  static openAutoWrapPage() {
+    this.click(AUTO_WRAP_NAVIGATION_BUTTON);
   }
 
   static validateConnectWalletButtonInFaucetMenu() {
@@ -1023,6 +1034,7 @@ export class Common extends BasePage {
           "settings page": "/settings",
           "vesting page": "/vesting",
           "accounting export page": "/accounting",
+          "auto-wrap page": "/auto-wrap",
           "invalid stream details page":
             "/stream/polygon/testing-testing-testing",
           "ended stream details page":

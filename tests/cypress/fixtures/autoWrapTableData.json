@@ -1,0 +1,16 @@
+{
+  "goerli": [
+    {
+      "asset": "fUSDCx",
+      "underlyingAllowance": "Unlimited",
+      "lowerLimit": "1 Weeks (0 fUSDCx)",
+      "upperLimit": "2 Weeks (0 fUSDCx)"
+    },
+    {
+      "asset": "fTUSDx",
+      "underlyingAllowance": "0 fTUSD",
+      "lowerLimit": "1 Weeks (0 fTUSDx)",
+      "upperLimit": "2 Weeks (0 fTUSDx)"
+    }
+  ]
+}

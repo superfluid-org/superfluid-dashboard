@@ -46,7 +46,7 @@ const DisableAutoWrapTransactionButton: FC<{
           chainId: network.id,
           args: [primaryArgs.spender, primaryArgs.amount],
           walletClient,
-          ...overrides,
+          ...overrides
         }
       : undefined
   );
@@ -67,6 +67,7 @@ const DisableAutoWrapTransactionButton: FC<{
       {({ network, setDialogLoadingInfo, txAnalytics }) =>
         isVisible && (
           <TransactionButton
+            dataCy="disable-auto-wrap-button"
             ConnectionBoundaryButtonProps={{
               impersonationTitle: "Stop viewing",
               changeNetworkTitle: "Change Network",

@@ -1,7 +1,13 @@
 import { BasePage, wordTimeUnitMap } from "../BasePage";
 import { format } from "date-fns";
 import { SendPage } from "./SendPage";
-import { Common, CHANGE_NETWORK_BUTTON } from "./Common";
+import {
+  Common,
+  CHANGE_NETWORK_BUTTON,
+  CONNECT_WALLET_BUTTON,
+  STOP_VIEWING_BUTTON,
+} from "./Common";
+import { networksBySlug } from "../../superData/networks";
 
 const NO_CREATED_TITLE = "[data-cy=no-created-schedules-title]";
 const NO_CREATED_DESC = "[data-cy=no-created-schedules-description]";
@@ -66,6 +72,19 @@ const TOPUP_WARNING_TITLE = "[data-cy=top-up-alert-title]";
 const TOPUP_WARNING_TEXT = "[data-cy=top-up-alert-text]";
 const ALLOWLIST_MESSAGE = "[data-cy=allowlist-message]";
 const ALLOWLIST_LINK = "[data-cy=allowlist-link]";
+const AUTO_WRAP_SWITCH_AND_TOOLTIP = "[data-cy=auto-wrap-switch-and-tooltip]";
+const AUTO_WRAP_SWITCH = "[data-cy=auto-wrap-switch]";
+const AUTO_WRAP_ENABLE_BUTTON = "[data-cy=enable-auto-wrap-button]";
+const AUTO_WRAP_ALLOWANCE_BUTTON = "[data-cy=auto-wrap-allowance-button]";
+const AUTO_WRAP_TOOLTIP = `${AUTO_WRAP_SWITCH_AND_TOOLTIP} svg`;
+const AUTO_WRAP_TX_MESSAGE = "[data-cy=auto-wrap-tx-message]";
+const TX_MESSAGE_NETWORK = "[data-cy=tx-network]";
+const AUTO_WRAP_DIALOG = "[data-cy=auto-wrap-enable-dialog]";
+const DISABLE_AUTO_WRAP_BUTTON = "[data-cy=disable-auto-wrap-button]";
+const FIX_PERMISSIONS_BUTTON = "[data-cy=fix-permissions-button]";
+const VIEW_DASHBOARD_AS_ANY_ADDRESS_BUTTON =
+  "[data-cy=view-mode-inputs] button";
+const VESTING_FORM_LINK = "[data-cy=vesting-form-link]";
 
 //Strings
 const NO_CREATED_TITLE_STRING = "No Sent Vesting Schedules";
@@ -76,8 +95,8 @@ const NO_RECEIVED_DESC_STRING =
   "Vesting schedules that you have received will appear here.";
 
 //Dates for the vesting previews etc.
-let staticStartDate = new Date(1676642460000);
-let staticEndDate = new Date(1992002460000);
+let staticStartDate = new Date(1722506340000);
+let staticEndDate = new Date(2037866340000);
 let currentTime = new Date();
 let startDate = new Date(
   currentTime.getTime() + wordTimeUnitMap["year"] * 1000
@@ -88,6 +107,125 @@ let endDate = new Date(
 );
 
 export class VestingPage extends BasePage {
+  static validateNoFixPermissionsButtonExists() {
+    this.doesNotExist(FIX_PERMISSIONS_BUTTON);
+  }
+  static validateNoDisableAutoWrapButtonVisible() {
+    this.isNotVisible(DISABLE_AUTO_WRAP_BUTTON);
+  }
+  static clickEnableAutoWrapButtonInAutoWrapDialog() {
+    this.clickFirstVisible(`${AUTO_WRAP_DIALOG} ${AUTO_WRAP_ENABLE_BUTTON}`);
+  }
+  static clickPermissionsTableAutoWrapEnableButton() {
+    this.clickFirstVisible(AUTO_WRAP_ENABLE_BUTTON);
+  }
+
+  static validateAutoWrapSwitchNetworkButtonForToken(token: string) {
+    this.isVisible(
+      `[data-cy=${token}-row] + .MuiTableRow-root ${CHANGE_NETWORK_BUTTON}`
+    );
+  }
+  static validateAutoWrapDialogShowingTokenAllowanceButton() {
+    this.isVisible(AUTO_WRAP_ALLOWANCE_BUTTON);
+    this.isNotVisible(`${AUTO_WRAP_DIALOG} ${AUTO_WRAP_ENABLE_BUTTON}`);
+  }
+  static clickDisableAutoWrapInPermissionsTable() {
+    this.click(DISABLE_AUTO_WRAP_BUTTON);
+  }
+  static validateFixPermissionSwitchNetworkButton() {
+    this.doesNotExist(FIX_PERMISSIONS_BUTTON);
+    this.isVisible(CHANGE_NETWORK_BUTTON);
+  }
+
+  static validateStopViewingPermissionsTableAutoWrapButton(token: string) {
+    this.isVisible(`[data-cy=${token}-row] + * ${STOP_VIEWING_BUTTON}`);
+  }
+  static validateNotConnectedScreen() {
+    this.isVisible(CONNECT_WALLET_BUTTON);
+    this.isVisible(VIEW_DASHBOARD_AS_ANY_ADDRESS_BUTTON);
+    cy.contains("No Vesting Schedules Available").should("be.visible");
+    cy.contains("Received and Sent Vesting Schedules will appear here.").should(
+      "be.visible"
+    );
+    this.isVisible(VESTING_FORM_LINK);
+  }
+  static validateDisableAutoWrapButtonDoesNotExist() {
+    this.doesNotExist(DISABLE_AUTO_WRAP_BUTTON);
+  }
+  static clickFixPermissionsButton() {
+    this.click(FIX_PERMISSIONS_BUTTON);
+  }
+  static validateAutoWrapDialogShowingACLAllowanceButton() {
+    this.isVisible(`${AUTO_WRAP_DIALOG} ${AUTO_WRAP_ENABLE_BUTTON}`);
+  }
+
+  static validatePermissionTableAutoWrapIcon(
+    token: string,
+    colorOrExisting: string
+  ) {
+    this.getSelectedToken(token).then((selectedToken) => {
+      switch (colorOrExisting) {
+        case "not existing":
+          this.doesNotExist(`[data-cy="${selectedToken}-auto-wrap-status"]`);
+          break;
+        case "grey":
+          this.hasCSS(
+            `[data-cy="${selectedToken}-auto-wrap-status"]`,
+            "color",
+            "rgba(130, 146, 173, 0.26)",
+            undefined,
+            { timeout: 30000 }
+          );
+          break;
+        case "green":
+          this.hasCSS(
+            `[data-cy="${selectedToken}-auto-wrap-status"]`,
+            "color",
+            "rgb(16, 187, 53)",
+            undefined,
+            { timeout: 30000 }
+          );
+      }
+    });
+  }
+
+  static clickAutoWrapAllowanceButton() {
+    this.clickFirstVisible(AUTO_WRAP_ALLOWANCE_BUTTON);
+  }
+  static validateNoAllowanceAutoWrapButton() {
+    this.doesNotExist(AUTO_WRAP_ALLOWANCE_BUTTON);
+  }
+
+  static validateAutoWrapSwitchIsVisible() {
+    this.isVisible(AUTO_WRAP_SWITCH_AND_TOOLTIP);
+  }
+
+  static validateNoEnableAutoWrapButtonVisible() {
+    this.isNotVisible(AUTO_WRAP_ENABLE_BUTTON);
+  }
+
+  static clickEnableAutoWrap() {
+    this.clickFirstVisible(AUTO_WRAP_ENABLE_BUTTON);
+  }
+
+  static validateAutoWrapAllowanceTxMessage(network: string) {
+    this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...");
+    this.hasText(TX_MESSAGE_NETWORK, `(${networksBySlug.get(network)?.name})`);
+    this.hasText(
+      AUTO_WRAP_TX_MESSAGE,
+      `You are approving Auto-Wrap token allowance for the underlying token.`
+    );
+  }
+
+  static validateAutoWrapTxMessage(token: string, network: string) {
+    this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...");
+    this.hasText(TX_MESSAGE_NETWORK, `(${networksBySlug.get(network)?.name})`);
+    this.hasText(
+      AUTO_WRAP_TX_MESSAGE,
+      `You are enabling Auto-Wrap to top up your ${token} tokens when balance reaches low.`
+    );
+  }
+
   static validateFirstRowPendingStatus(status: string) {
     cy.get(VESTING_ROWS)
       .first()
@@ -134,10 +272,14 @@ export class VestingPage extends BasePage {
 
   static inputCliffPeriod(amount: number, timeUnit: string) {
     this.type(CLIFF_PERIOD_INPUT, amount);
+    //Workaround for a race condition which leaves the preview button enabled after inputting cliff amounts too fast
+    Common.wait(2);
     this.click(CLIFF_PERIOD_UNIT);
     if (wordTimeUnitMap[timeUnit] === undefined) {
       throw new Error(`Invalid time unit: ${timeUnit}`);
     }
+    //Workaround for a race condition which leaves the preview button enabled after inputting cliff amounts too fast
+    Common.wait(2);
     this.click(`[data-value=${wordTimeUnitMap[timeUnit]}]`);
     this.hasText(CLIFF_PERIOD_SELECTED_UNIT, `${timeUnit}(s)`);
   }
@@ -181,8 +323,8 @@ export class VestingPage extends BasePage {
   static validateVestingSchedulePreview() {
     this.hasText(PREVIEW_RECEIVER, "elvijs.lens");
     this.validateSchedulePreviewDetails(cliffDate, startDate, endDate);
-    this.hasText(PREVIEW_TOTAL_AMOUNT, "2 fTUSDx");
-    this.hasText(PREVIEW_CLIFF_AMOUNT, "1 fTUSDx");
+    this.hasText(PREVIEW_TOTAL_AMOUNT, "2 fTDLx");
+    this.hasText(PREVIEW_CLIFF_AMOUNT, "1 fTDLx");
     this.containsText(
       PREVIEW_CLIFF_PERIOD,
       `1 year (${format(cliffDate, "LLLL d, yyyy")})`
@@ -244,8 +386,8 @@ export class VestingPage extends BasePage {
       this.shortenHex("0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2"),
       0
     );
-    this.hasText(TABLE_ALLOCATED_AMOUNT, "100 fUSDCx", 0);
-    this.hasText(VESTED_AMOUNT, "0  fUSDCx", 0);
+    this.hasText(TABLE_ALLOCATED_AMOUNT, "100 fTUSDx", 0);
+    this.hasText(VESTED_AMOUNT, "0  fTUSDx", 0);
     this.containsText(
       TABLE_START_END_DATES,
       format(staticStartDate, "LLL d, yyyy"),
@@ -254,7 +396,7 @@ export class VestingPage extends BasePage {
     this.containsText(
       TABLE_START_END_DATES,
       format(staticEndDate, "LLL d, yyyy"),
-      -1
+      0
     );
   }
 
@@ -280,11 +422,11 @@ export class VestingPage extends BasePage {
 
   static validateCreatedVestingScheduleDetailsPage() {
     this.hasText(DETAILS_VESTED_SO_FAR_AMOUNT, "0 ");
-    this.hasText(DETAILS_VESTED_TOKEN_SYMBOL, "fUSDCx");
-    this.hasText("[data-cy=fUSDCx-cliff-amount]", "50fUSDCx");
-    this.hasText("[data-cy=fUSDCx-allocated]", "100fUSDCx");
+    this.hasText(DETAILS_VESTED_TOKEN_SYMBOL, "fTUSDx");
+    this.hasText("[data-cy=fTUSDx-cliff-amount]", "10fTUSDx");
+    this.hasText("[data-cy=fTUSDx-allocated]", "100fTUSDx");
     cy.fixture("vestingData").then((data) => {
-      let schedule = data.goerli.fUSDCx.schedule;
+      let schedule = data.goerli.fTUSDx.schedule;
       this.hasText(
         DETAILS_SCHEDULED_DATE,
         format(schedule.createdAt * 1000, "MMM do, yyyy HH:mm")
@@ -345,7 +487,13 @@ export class VestingPage extends BasePage {
   }
 
   static openTokenPermissionRow(token: string) {
-    this.click(`[data-cy=${token}-row] [data-testid=ExpandMoreRoundedIcon]`);
+    this.getSelectedToken(token).then((selectedToken) => {
+      this.click(
+        `[data-cy="${selectedToken}-row"] [data-testid=ExpandMoreRoundedIcon]`,
+        undefined,
+        { timeout: 30000 }
+      );
+    });
   }
 
   static validateTokenPermissionsData(token: string) {
@@ -625,9 +773,8 @@ export class VestingPage extends BasePage {
         totalVestedAmount
       );
     });
-    //Make sure deleted schedules don't get shown in the aggregate stats
-    this.doesNotExist("[data-cy=DAIx-total-allocated]");
-    this.doesNotExist("[data-cy=DAIx-total-vested]");
+    this.hasText(`[data-cy=DAIx-total-allocated]`, `60.87DAIx`);
+    this.containsText(`[data-cy=DAIx-total-vested]`, "0");
   }
 
   static validateAllowListMessage() {
@@ -692,5 +839,17 @@ export class VestingPage extends BasePage {
     nameOrAddress: string
   ) {
     this.hasText(`[data-cy=${senderOrReceiver}-address]`, nameOrAddress);
+  }
+
+  static validateAutoWrapSwitchDoesNotExist() {
+    this.doesNotExist(AUTO_WRAP_SWITCH_AND_TOOLTIP);
+  }
+
+  static validateNoTopUpWarningShown() {
+    this.doesNotExist(TOPUP_WARNING_TEXT);
+    this.doesNotExist(TOPUP_WARNING_TITLE);
+  }
+  static clickAutoWrapSwitch() {
+    this.click(AUTO_WRAP_SWITCH);
   }
 }

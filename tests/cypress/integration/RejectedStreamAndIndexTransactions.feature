@@ -86,7 +86,7 @@ Feature: Transactional rejected test cases
         And Distribution revoking dialog on "selected network" shows up
         And Transaction rejected error is shown
 
-    @scheduling
+    @platformNeeded
     Scenario: Creating a stream with just start date
         Given Transactional account john is connected to the dashboard on selected network
         And User clicks on the "send" navigation button
@@ -98,7 +98,7 @@ Feature: Transactional rejected test cases
         And Scheduled stream transaction dialogs are shown
         And Transaction rejected error is shown
 
-    @scheduling
+    @platformNeeded
     Scenario: Creating a stream with just end date
         Given Transactional account john is connected to the dashboard on selected network
         And User clicks on the "send" navigation button
@@ -110,7 +110,7 @@ Feature: Transactional rejected test cases
         And Scheduled stream transaction dialogs are shown
         And Transaction rejected error is shown
 
-    @scheduling
+    @platformNeeded
     Scenario: Creating a stream with start and end date
         Given Transactional account john is connected to the dashboard on selected network
         And User clicks on the "send" navigation button
@@ -123,7 +123,7 @@ Feature: Transactional rejected test cases
         And Scheduled stream transaction dialogs are shown
         And Transaction rejected error is shown
 
-    @scheduling
+    @platformNeeded
     Scenario: Adding end date to an ongoing stream
         Given Transactional account john is connected to the dashboard on selected network
         And User clicks on the "send" navigation button

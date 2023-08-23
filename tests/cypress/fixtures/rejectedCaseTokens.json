@@ -2,36 +2,43 @@
   "goerli": {
     "TokenOne": "fDAI",
     "TokenTwo": "fUSDC",
+    "TokenThree": "fTUSD",
     "TokenGas": "ETH"
   },
   "gnosis": {
     "TokenOne": "TDL",
     "TokenTwo": "USDC",
+    "TokenThree": "WORK",
     "TokenGas": "xDAI"
   },
   "polygon-mumbai": {
     "TokenOne": "fDAI",
     "TokenTwo": "fUSDC",
-    "TokenGas": "BNB"
+    "TokenThree": "fTUSD",
+    "TokenGas": "MATIC"
   },
   "polygon": {
     "TokenOne": "DAI",
     "TokenTwo": "USDC",
+    "TokenThree": "TDL",
     "TokenGas": "MATIC"
   },
   "optimism": {
     "TokenOne": "DAI",
     "TokenTwo": "USDC",
-    "TokenGas": "ETH"
+    "TokenGas": "ETH",
+    "TokenThree": "OP"
   },
   "arbitrum-one": {
     "TokenOne": "DAI",
     "TokenTwo": "USDC",
+    "TokenThree": "RPL",
     "TokenGas": "ETH"
   },
   "avalanche": {
     "TokenOne": "DAI.e",
     "TokenTwo": "USDC",
+    "TokenThree": "EUROe",
     "TokenGas": "AVAX"
   },
   "avalanche-fuji": {
@@ -42,11 +49,13 @@
   "bsc": {
     "TokenOne": "DAI",
     "TokenTwo": "USDC",
+    "TokenThree": "RB",
     "TokenGas": "BNB"
   },
   "ethereum": {
     "TokenOne": "DAI",
     "TokenTwo": "USDC",
+    "TokenThree": "REVV",
     "TokenGas": "ETH"
   },
   "optimism-goerli": {
