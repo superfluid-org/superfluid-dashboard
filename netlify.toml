@@ -13,7 +13,7 @@
   package = "@netlify/plugin-nextjs"
 
 [[headers]]
-for = "/*"
+for = "/manifest.json"
   [headers.values]
   Access-Control-Allow-Origin = "*"
 
