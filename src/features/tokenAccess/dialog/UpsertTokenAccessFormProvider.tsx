@@ -91,9 +91,9 @@ const UpsertTokenAccessFormProvider: FC<
     },
   };
 
-  const formMethods = useForm<PartialUpsertTokenAccessForm>({
+  const formMethods = useForm<PartialUpsertTokenAccessForm, undefined, ValidUpsertTokenAccessForm>({
     defaultValues,
-    resolver: yupResolver(formSchema),
+    resolver: yupResolver(formSchema as ObjectSchema<PartialUpsertTokenAccessForm>),
     mode: "onChange",
   });
 

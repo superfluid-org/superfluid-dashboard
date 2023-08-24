@@ -236,9 +236,9 @@ const StreamingFormProvider: FC<
     [network, visibleAddress, calculateBufferInfo]
   );
 
-  const formMethods = useForm<PartialStreamingForm>({
+  const formMethods = useForm<PartialStreamingForm, undefined, ValidStreamingForm>({
     defaultValues: defaultFormValues,
-    resolver: yupResolver(formSchema),
+    resolver: yupResolver(formSchema as ObjectSchema<PartialStreamingForm>),
     mode: "onChange",
   });
 
