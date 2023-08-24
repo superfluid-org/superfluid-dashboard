@@ -236,7 +236,7 @@ The chain ID was: ${network.id}`);
   );
 
   const networkDefaultTokenPair = getNetworkDefaultTokenPair(network);
-  const formMethods = useForm<WrappingForm>({
+  const formMethods = useForm<WrappingForm, undefined, ValidWrappingForm>({
     defaultValues: {
       data: {
         tokenPair: {
@@ -248,7 +248,7 @@ The chain ID was: ${network.id}`);
       },
     },
     mode: "onChange",
-    resolver: yupResolver(formSchema),
+    resolver: yupResolver(formSchema as ObjectSchema<WrappingForm>),
   });
 
   const { formState, setValue, trigger, clearErrors, setError, watch } =

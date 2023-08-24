@@ -57,9 +57,9 @@ const AddTokenWrapFormProvider: FC<
     },
   };
 
-  const formMethods = useForm<PartialAddTokenWrapForm>({
+  const formMethods = useForm<PartialAddTokenWrapForm, undefined, ValidAddTokenWrapForm>({
     defaultValues,
-    resolver: yupResolver(formSchema),
+    resolver: yupResolver(formSchema as ObjectSchema<PartialAddTokenWrapForm>),
     mode: "onChange",
   });
 

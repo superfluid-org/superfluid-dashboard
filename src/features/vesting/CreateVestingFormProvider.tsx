@@ -272,7 +272,7 @@ const CreateVestingFormProvider: FC<{
     ]
   );
 
-  const formMethods = useForm<PartialVestingForm>({
+  const formMethods = useForm<PartialVestingForm, undefined, ValidVestingForm>({
     defaultValues: {
       data: {
         superTokenAddress: null,
@@ -292,7 +292,7 @@ const CreateVestingFormProvider: FC<{
         setupAutoWrap: false,
       },
     },
-    resolver: yupResolver(formSchema),
+    resolver: yupResolver(formSchema as ObjectSchema<PartialVestingForm>),
     mode: "onChange",
   });
 

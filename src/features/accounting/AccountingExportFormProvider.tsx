@@ -85,9 +85,9 @@ const AccountingExportFormProvider: FC<
     [network, visibleAddress]
   );
 
-  const formMethods = useForm<PartialAccountingExportForm>({
+  const formMethods = useForm<PartialAccountingExportForm, undefined, ValidAccountingExportForm>({
     defaultValues: defaultFormValues,
-    resolver: yupResolver(formSchema),
+    resolver: yupResolver(formSchema as ObjectSchema<PartialAccountingExportForm>),
     mode: "onChange",
   });
 
