@@ -1,3 +1,4 @@
+#Just testing if stuff works
 Feature: Activity History Page tests
 
     Scenario: Activity history page entries shown for all networks in the correct order
