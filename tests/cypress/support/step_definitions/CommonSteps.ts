@@ -78,6 +78,45 @@ Given(/^User uses view mode to look at "([^"]*)"$/, (account: string) => {
   Common.viewAccount(account);
 });
 
+Given(/^User clicks on the dark mode button$/, () => {
+  Common.clickDarkModeButton();
+});
+
+Given(/^The dashboard theme is set to dark mode$/, () => {
+  Common.validateDashboardIsInDarkMode();
+});
+
+Given(/^User clicks on the light mode button$/, () => {
+  Common.clickLightModeButton();
+});
+
+Given(/^The dashboard theme is set to light mode$/, () => {
+  Common.validateDashboardIsInLightMode();
+});
+
+Given(/^A lens entry for "([^"]*)" is visible$/, (account: string) => {
+  Common.validateLensEntryIsVisible(account);
+});
+Given(/^The avatar image for "([^"]*)" is shown loaded$/, (account: string) => {
+  Common.validateLensImageIsLoaded(account);
+});
+Given(/^User chooses the first lens entry from the list$/, () => {
+  Common.clickOnFirstLensEntry();
+});
+                
+Given(/^User opens the connected account modal$/, () => {
+  Common.clickOnConnectedWalletModal();
+});
+Given(/^User clicks on the copy address button in the account modal$/, () => {
+  Common.clickOnAddressModalCopyButton();
+});
+Given(/^The address is copied and the buttons text in the address modal changes to "Copied!" with a checkmark icon$/, () => {
+  Common.validateCopiedAddressInAddressModal();
+});
+Given(/^User clicks on the disconnect button$/, () => {
+  Common.clickDisconnectButton();
+});
+
 Then(/^The stop viewing as an address button is visible$/, () => {
   WrapPage.isStopViewingButtonVisible();
 });
@@ -114,6 +153,15 @@ Then(/^User chooses the first address book result$/, () => {
 });
 Then(/^View mode chip shows "([^"]*)"$/, (message: string) => {
   Common.validateViewModeChipMessage(message);
+});
+Then(/^View mode dialog does not exist$/, () => {
+  Common.validateNoViewModeDialogExists();
+});
+Then(/^"([^"]*)" ENS entry in the address search results is shown$/, (ensName: string) => {
+  SendPage.validateEnsEntry(ensName);
+});
+Then(/^Connected account dialog does not exist$/, () => {
+  Common.validateNoConnectedAccountDialogExists();
 });
 Then(/^404 page is shown$/, () => {
   Common.errorPageIsVisible();
@@ -377,3 +425,4 @@ Then(/^User clears the receiver input field$/, function () {
 Then(/^No loading skeletons are visible in the page$/, function () {
   Common.waitForSpookySkeletonsToDisapear();
 });
+

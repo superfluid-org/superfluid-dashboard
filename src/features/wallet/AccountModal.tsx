@@ -80,6 +80,7 @@ const AccountModal: FC<AccountModalProps> = ({ open, onClose }) => {
 
   return (
     <ResponsiveDialog
+      data-cy="account-modal"
       open={open}
       onClose={handleClose}
       PaperProps={{ sx: { width: 500 } }}
@@ -140,6 +141,7 @@ const AccountModal: FC<AccountModalProps> = ({ open, onClose }) => {
                   endIcon={<LogoutRoundedIcon />}
                   sx={{ flex: 1 }}
                   onClick={onDisconnect}
+                  data-cy="disconnect-button"
                 >
                   Disconnect
                 </Button>

@@ -29,7 +29,7 @@ Given(/^User opens activity filter$/, () => {
 Given(
   /^User clicks on the "([^"]*)" toggle in the activity filter$/,
   (toggle: string) => {
-    ActivityPage.clickFilterToogle(toggle);
+    ActivityPage.clickFilterCheckbox(toggle);
   }
 );
 Then(

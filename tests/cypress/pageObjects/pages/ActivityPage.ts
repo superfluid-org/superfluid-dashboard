@@ -14,6 +14,7 @@ const ACTIVITY_TYPE = "[data-cy=activity]";
 const ACTIVITY_NAME = `${ACTIVITY_TYPE} h6`;
 const ACTIVITY_TIME = `${ACTIVITY_TYPE} span`;
 const ACTIVITY_AMOUNT = "[data-cy=amount]";
+const FIAT_AMOUNTS = "[data-cy=fiat-amount]"
 const AMOUNT_TO_FROM = "[data-cy=amountToFrom]";
 const ALL_ROWS = "[data-cy*=-row]";
 const DATE_PICKER_BUTTON = "[data-cy=date-picker-button]";
@@ -180,18 +181,18 @@ export class ActivityPage extends BasePage {
     this.click(ACTIVITY_FILTER);
   }
 
-  static clickFilterToogle(toggle: string) {
-    this.click(`[data-cy="${toggle}-toggle"]`);
+  static clickFilterCheckbox(toggle: string) {
+    this.click(`[data-cy="${toggle}-row"]`);
   }
 
   static validateNoActivityByTypeShown(type: string) {
-    cy.get(ACTIVITY_TYPE).each((el) => {
-      cy.wrap(el).find("span").first().should("not.have.text", type);
+    cy.get(ACTIVITY_NAME).each((el) => {
+      cy.wrap(el).should("not.have.text", type);
     });
   }
 
   static validateActivityVisibleByType(type: string) {
-    cy.get(`${ACTIVITY_TYPE} span`).contains(type).should("be.visible");
+    cy.get(`${ACTIVITY_NAME}`).contains(type).should("be.visible");
   }
 
   static validateActivityVisibleByAddress(address: string) {
@@ -254,7 +255,7 @@ export class ActivityPage extends BasePage {
   }
 
   static validateMockedActivityHistoryEntry(activity: string, network: string) {
-    this.hasText(ACTIVITY_NAME, activity, -1);
+    this.hasText(ACTIVITY_NAME, activity.split("/")[0], -1 , {timeout:30000});
     this.isVisible(`[data-cy=${networksBySlug.get(network).id}-icon]`);
     this.isVisible(TX_HASH_LINKS);
     this.hasAttributeWithValue(
@@ -263,9 +264,10 @@ export class ActivityPage extends BasePage {
       networksBySlug.get(network).getLinkForTransaction("testTransactionHash")
     );
     this.containsText(ACTIVITY_TIME, format(NOW_TIMESTAMP * 1000, "HH:mm"));
-    switch (activity) {
+    switch (activity.split("/")[0]) {
       case "Liquidated":
         this.isVisible(LIQUIDATED_ICON);
+        if(activity.split("/")[1] === "v2") {
         this.hasText(ACTIVITY_NAME, "Send Transfer", 0);
         this.hasText(ACTIVITY_AMOUNT, "1 TDLx", 0);
         this.hasText(
@@ -273,10 +275,12 @@ export class ActivityPage extends BasePage {
           `To${this.shortenHex("0x2597c6abba5724fb99f343abddd4569ee4223179")}`,
           0
         );
+        }
+        let toFrom = activity.split("/")[1] === "sender" ? "From" : "To"
         this.hasText(ACTIVITY_AMOUNT, "-", -1);
         this.hasText(
           AMOUNT_TO_FROM,
-          `To${this.shortenHex("0x9Be85A79D847dFa90584F3FD40cC1f6D4026E2B9")}`,
+          `${toFrom}${this.shortenHex("0x9Be85A79D847dFa90584F3FD40cC1f6D4026E2B9")}`,
           -1
         );
         break;
@@ -294,9 +298,14 @@ export class ActivityPage extends BasePage {
         );
         break;
       case "Unwrap":
+        let tokenUsed = activity.split("/")[1] === "wrapper" ? "TDL" : "MATIC"
         this.isVisible(WRAP_UNWRAP_ICON);
-        this.hasText(ACTIVITY_AMOUNT, "-1 TDLx");
-        this.hasText(AMOUNT_TO_FROM, "+1 TDL");
+        this.containsText(ACTIVITY_AMOUNT, `-1 ${tokenUsed}x`);
+        this.containsText(AMOUNT_TO_FROM, `+1 ${tokenUsed}`);
+        if(tokenUsed === "MATIC") {
+          this.isVisible(FIAT_AMOUNTS)
+          this.hasLength(FIAT_AMOUNTS,2)
+        }
         break;
       case "Receive Transfer":
         this.hasText(ACTIVITY_AMOUNT, "1 TDLx");
@@ -334,7 +343,7 @@ export class ActivityPage extends BasePage {
         this.hasText(ACTIVITY_AMOUNT, " TDLx");
         this.hasText(
           AMOUNT_TO_FROM,
-          `Publisher${this.shortenHex(
+          `${activity.split("/")[1]}${this.shortenHex(
             "0x9Be85A79D847dFa90584F3FD40cC1f6D4026E2B9"
           )}`
         );
@@ -344,7 +353,7 @@ export class ActivityPage extends BasePage {
         this.hasText(ACTIVITY_AMOUNT, "+100 units");
         this.hasText(
           AMOUNT_TO_FROM,
-          `Publisher${this.shortenHex(
+          `${activity.split("/")[1]}${this.shortenHex(
             "0x9Be85A79D847dFa90584F3FD40cC1f6D4026E2B9"
           )}`
         );
@@ -354,7 +363,7 @@ export class ActivityPage extends BasePage {
         this.hasText(ACTIVITY_AMOUNT, "TDLx");
         this.hasText(
           AMOUNT_TO_FROM,
-          `Publisher${this.shortenHex(
+          `${activity.split("/")[1]}${this.shortenHex(
             "0x9Be85A79D847dFa90584F3FD40cC1f6D4026E2B9"
           )}`
         );
@@ -382,7 +391,7 @@ export class ActivityPage extends BasePage {
         this.hasText(ACTIVITY_AMOUNT, "+1 TDLx");
         this.hasText(
           AMOUNT_TO_FROM,
-          `Publisher${this.shortenHex(
+          `${activity.split("/")[1]}${this.shortenHex(
             "0x9Be85A79D847dFa90584F3FD40cC1f6D4026E2B9"
           )}`
         );

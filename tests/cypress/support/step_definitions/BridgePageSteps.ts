@@ -15,7 +15,12 @@ Given(/^Connect wallet button is visible$/, () => {
 Given(/^User inputs "([^"]*)" into the swap amount$/, (amount: string) => {
   BridgePage.inputSwapAmount(amount);
 });
-
+Given(/^User selects "([^"]*)" as the network for the first token bridging$/, (network: string) => {
+  BridgePage.selectBridgeNetwork(network);
+});
+Given(/^Featured super tokens on "([^"]*)" are visible$/, (network: string) => {
+  BridgePage.validateFeaturedTokensAreShownOn(network);
+});
 Given(/^Token swapping route for is correctly shown$/, () => {
   BridgePage.validateSwapRoute();
 });

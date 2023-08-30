@@ -168,3 +168,72 @@ Feature: Common element test cases
         Then No "new" notifications message is shown
         And User switches to the "archive" notification tab
         And Archived "Old notification" notification is shown
+
+Scenario: Using view mode from the Connect or Impersonate screen
+        Given "Vesting page" is open without connecting a wallet
+        And User uses view mode to look at "john"
+        Then View mode chip shows "0x9Be8...E2B9"
+        
+    Scenario: Close view mode from the Connect or Impersonate screen
+        Given "Vesting page" is open without connecting a wallet
+        And User clicks on the view mode button
+        And User closes the dialog
+        Then View mode dialog does not exist
+
+    Scenario: Using view mode from the account modal
+        Given "Address book page" is open with "alice" connected on "polygon"
+        And User opens the connected account modal
+        And User uses view mode to look at "john"
+        Then View mode chip shows "0x9Be8...E2B9"
+
+    Scenario: Close view mode from the account modal
+        Given "Address book page" is open with "alice" connected on "polygon"
+        And User opens the connected account modal
+        And User clicks on the view mode button
+        And User closes the dialog
+        Then View mode dialog does not exist
+
+    Scenario: Closing the account modal
+        Given "Address book page" is open with "alice" connected on "polygon"
+        And User opens the connected account modal
+        And User closes the dialog
+        Then Connected account dialog does not exist
+
+    Scenario: Disconnecting the users wallet from the account modal
+        Given "Dashboard page" is open with "alice" connected on "polygon"
+        And User disconnects their wallet from the dashboard
+        Then Connected account dialog does not exist
+        Then Dashboard page is open when wallet of the user is not connected
+
+    Scenario: Copying wallet address from the account modal
+        Given "Address book page" is open with "alice" connected on "polygon"
+        And User opens the connected account modal
+        And User clicks on the copy address button in the account modal
+        Then The address is copied and the buttons text in the address modal changes to "Copied!" with a checkmark icon
+
+    Scenario: Searching for an lens address
+        Given "Vesting page" is open without connecting a wallet
+        And User clicks on the view mode button
+        And User types "elvijs.lens" into the address input
+        Then A lens entry for "elvijs.lens" is visible
+        And The avatar image for "elvijs.lens" is shown loaded
+        And User chooses the first lens entry from the list
+        Then View mode chip shows "elvijs.lens"
+
+    Scenario: Searching for an ens address and validating the image
+        Given "Vesting page" is open without connecting a wallet
+        And User clicks on the view mode button
+        And User types "vijay.eth" into the address input
+        And "vijay.eth" ENS entry in the address search results is shown
+        And The avatar image for "vijay.eth" is shown loaded
+        And User selects the first ENS recipient result
+        Then View mode chip shows "vijay.eth"
+
+
+    Scenario: Turning dark mode on
+        Given "Vesting page" is open without connecting a wallet
+        And User clicks on the dark mode button
+        Then The dashboard theme is set to dark mode
+        And User clicks on the light mode button
+        Then The dashboard theme is set to light mode
+

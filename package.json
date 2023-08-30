@@ -8,6 +8,7 @@
     "start": "npx serve@latest out",
     "lint": "next lint",
     "coverage:build": "rm -rf tests/coverage tests/.nyc_output && INSTRUMENT_CODE=1 yarn build && yarn start",
+    "coverage:dev": "rm -rf tests/coverage tests/.nyc_output && INSTRUMENT_CODE=1 yarn dev",
     "coverage:test": "cd tests && yarn cypress run --env network=polygon-mumbai,dev=false,coverage=true",
     "post-update": "echo \"codesandbox preview only, need an update\" && yarn upgrade --latest",
     "generate": "npm-run-all -s generate:*",
