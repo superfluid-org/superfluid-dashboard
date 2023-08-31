@@ -419,3 +419,7 @@ Feature: Vesting page test cases
         And Stop viewing button is visible in the "fTUSDx" permission row
         And User clicks on the stop viewing as an address button
         Then Vesting page while a wallet is not connected screen is shown
+
+    Scenario: Invalid vesting page leading to a 404 page
+        Given "404 Vesting Page" is open without connecting a wallet
+        Then 404 page is shown

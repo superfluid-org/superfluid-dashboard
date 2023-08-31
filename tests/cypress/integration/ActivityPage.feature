@@ -5,22 +5,30 @@ Feature: Activity History Page tests
 
         Given "Activity History Page" is open using view mode to look at "staticBalanceAccount"
         Then Mocked activity history entries are visible in this order
-            | Distribution Claimed  |
-            | Send Distribution     |
-            | Unwrap                |
-            | Send Transfer         |
-            | Liquidated            |
-            | Subscription Updated  |
-            | Stream Cancelled      |
-            | Stream Updated        |
-            | Receive Stream        |
-            | Receive Transfer      |
-            | Send Stream           |
-            | Send Transfer         |
-            | Wrap                  |
-            | Subscription Rejected |
-            | Index Created         |
-            | Subscription Approved |
+            | Subscription Approved/Publisher  |
+            | Subscription Approved/Subscriber |
+            | Index Created                    |
+            | Subscription Rejected/Publisher  |
+            | Subscription Rejected/Subscriber |
+            | Wrap                             |
+            | Wrap                             |
+            | Send Transfer                    |
+            | Send Stream                      |
+            | Receive Transfer                 |
+            | Receive Stream                   |
+            | Stream Updated                   |
+            | Stream Cancelled                 |
+            | Subscription Updated/Publisher   |
+            | Subscription Updated/Subscriber  |
+            | Liquidated/v2                    |
+            | Liquidated/v1                    |
+            | Liquidated/sender                |
+            | Unwrap/native                    |
+            | Unwrap/wrapper                   |
+            | Send Distribution/Publisher      |
+            | Send Distribution/Subscriber     |
+            | Distribution Claimed/Publisher   |
+            | Distribution Claimed/Subscriber  |
 
     Scenario: No activity history message shown
         Given "Activity history page" is open without connecting a wallet
@@ -59,7 +67,17 @@ Feature: Activity History Page tests
         And User clicks on the "arbitrum-one" toggle
         Then Activity rows for "arbitrum-one" are visible
 
-    @mocked @only
+    Scenario: Copying address from the activity history
+        Given Activity history request is mocked to "Receive Stream" on "polygon"
+
+        Given "Activity History Page" is open using view mode to look at "staticBalanceAccount"
+        Then Mocked "Receive Stream" entry on "polygon" is shown in the activity history
+        And User hover on the first address element in the activity history table
+        Then The copy tooltip shows "0x9Be85A79D847dFa90584F3FD40cC1f6D4026E2B9"
+        And User clicks on the shown tooltip
+        Then The copy tooltip shows "Copied to clipboard!"
+
+    @mocked
     Scenario Outline: <activity> shown in the activity history page
         Given Activity history request is mocked to "<activity>" on "polygon"
 
@@ -67,30 +85,27 @@ Feature: Activity History Page tests
         Then Mocked "<activity>" entry on "polygon" is shown in the activity history
 
         Examples:
-            | activity              |
-#             | Liquidated/v1            |
-#             | Liquidated/v2 |
-# | Liquidated/sender |
-            # | Receive Stream        |
-            # | Stream Cancelled      |
-            # | Send Stream           |
-            # | Wrap                  |
-            # | Unwrap/wrapper                |
-            # | Unwrap/native |
-            # | Receive Transfer      |
-            # | Send Transfer         |
-            # | Stream Updated        |
-            # | Subscription Approved/Publisher |
-            # | Subscription Approved/Subscriber |
-            # | Subscription Updated/Publisher  |
-            # | Subscription Updated/Subscriber |
-            # | Subscription Rejected/Publisher |
-            # | Subscription Rejected/Subscriber |
-            # | Index Created         |
+            | activity                         |
+            | Liquidated/v1                    |
+            | Liquidated/v2                    |
+            | Liquidated/sender                |
+            | Receive Stream                   |
+            | Stream Cancelled                 |
+            | Send Stream                      |
+            | Wrap                             |
+            | Unwrap/wrapper                   |
+            | Unwrap/native                    |
+            | Receive Transfer                 |
+            | Send Transfer                    |
+            | Stream Updated                   |
+            | Subscription Approved/Publisher  |
+            | Subscription Approved/Subscriber |
+            | Subscription Updated/Publisher   |
+            | Subscription Updated/Subscriber  |
+            | Subscription Rejected/Publisher  |
+            | Subscription Rejected/Subscriber |
+            | Index Created                    |
             | Send Distribution/Subscriber     |
-            | Send Distribution/Publisher |
-            | Distribution Claimed/Publisher  |
-            | Distribution Claimed/Subscriber |
-            | Subscription Approved/new query |
-
-
+            | Send Distribution/Publisher      |
+            | Distribution Claimed/Publisher   |
+            | Distribution Claimed/Subscriber  |

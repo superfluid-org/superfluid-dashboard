@@ -81,22 +81,30 @@ const TOAST_TITLE = "[data-cy=toast-notification-title]";
 const TOAST_CLOSE_BUTTON = "button[aria-label=close]";
 const NOTIF_WRAP_TOKEN_BUTTON = "[data-cy=wrap-tokens-button]";
 const LOADING_SKELETONS = ".MuiSkeleton-root";
-const ADDRESS_SEARCH_DIALOG = "[data-cy=receiver-dialog]"
-const CONNECTED_WALLET_BUTTON = "[data-cy=connected-wallet-button]"
-const CONNECTED_WALLET_DIALOG = "[data-cy=account-modal]"
-const DISCONNECT_BUTTON = "[data-cy=disconnect-button]"
-const ADDRESS_MODAL_COPY_BUTTON = "[data-cy=address-modal-copy-button]"
-const COPY_ICON = "[data-testid=ContentCopyRoundedIcon]"
-const CHECKMARK_ICON = "[data-testid=CheckOutlinedIcon]"
-const LENS_ENTRIES = "[data-cy=lens-entry]"
-const LENS_NAMES = `${LENS_ENTRIES} h6`
-const LENS_ENTRY_ADDRESSES = `${LENS_ENTRIES} p`
-const ADDRESS_SEARCH_AVATAR_IMAGES = "[role=dialog] [class*=MuiListItemAvatar] img"
-const DARK_MODE_BUTTON = "[data-cy=dark-mode-button]"
-const LIGHT_MODE_BUTTON = "[data-cy=light-mode-button]"
-const DARK_MODE_ICON = "[data-testid=DarkModeOutlinedIcon]"
-const LIGHT_MODE_ICON = "[data-testid=LightModeOutlinedIcon]"
-
+const ADDRESS_SEARCH_DIALOG = "[data-cy=receiver-dialog]";
+const CONNECTED_WALLET_BUTTON = "[data-cy=connected-wallet-button]";
+const CONNECTED_WALLET_DIALOG = "[data-cy=account-modal]";
+const DISCONNECT_BUTTON = "[data-cy=disconnect-button]";
+const ADDRESS_MODAL_COPY_BUTTON = "[data-cy=address-modal-copy-button]";
+const COPY_ICON = "[data-testid=ContentCopyRoundedIcon]";
+const CHECKMARK_ICON = "[data-testid=CheckOutlinedIcon]";
+const LENS_ENTRIES = "[data-cy=lens-entry]";
+const LENS_NAMES = `${LENS_ENTRIES} h6`;
+const LENS_ENTRY_ADDRESSES = `${LENS_ENTRIES} p`;
+const ADDRESS_SEARCH_AVATAR_IMAGES =
+  "[role=dialog] [class*=MuiListItemAvatar] img";
+const DARK_MODE_BUTTON = "[data-cy=dark-mode-button]";
+const LIGHT_MODE_BUTTON = "[data-cy=light-mode-button]";
+const DARK_MODE_ICON = "[data-testid=DarkModeOutlinedIcon]";
+const LIGHT_MODE_ICON = "[data-testid=LightModeOutlinedIcon]";
+const GET_SUPER_TOKENS_ONBOARDING_CARD = "[data-cy=get-tokens-onboarding-card]";
+const SEND_STREAM_ONBOARDING_CARD = "[data-cy=send-stream-onboarding-card]";
+const MODIFY_OR_CANCEL_STREAM_ONBOARDING_CARD =
+  "[data-cy=modify-or-cancel-streams-onboarding-card]";
+const TRY_SUPERFLUID_ONBOARDING_CARD =
+  "[data-cy=try-out-superfluid-onboarding-card]";
+const MINIGAME_WARNING = "[data-cy=superfluid-runner-game-alert-text]";
+const MINIGAME_COMPONENT = "[data-cy=minigame-component]";
 const NEW_NOTIF_DATE = new Date(Date.now());
 const NEW_NOTIF_STRING_DATE =
   BasePage.getNotificationDateString(NEW_NOTIF_DATE);
@@ -104,67 +112,126 @@ const OLD_NOTIF_DATE = new Date(1000 * BasePage.getDayTimestamp(-30));
 const OLD_DATE_STRING = BasePage.getNotificationDateString(OLD_NOTIF_DATE);
 
 export class Common extends BasePage {
+  static validateMiniGameContainerWithoutWalletConnected() {
+    //Locally it just loads to an 403 :/
+    this.hasAttributeWithValue(
+      MINIGAME_COMPONENT,
+      "src",
+      "https://astrobunny.superfluid.finance/?level=1"
+    );
+  }
+  static validateMiniGameCosmeticsWarningIsVisible() {
+    this.isVisible(MINIGAME_WARNING);
+    this.hasText(
+      MINIGAME_WARNING,
+      "To access and unlock in-game cosmetics, please connect your wallet before beginning the game."
+    );
+  }
+  static validateMiniGameCosmeticsWarningDoesNotExist() {
+    this.doesNotExist(MINIGAME_WARNING);
+  }
+  static validateMiniGameContainerWithWalletConnected() {
+    //Locally it just loads to an 403 :/
+    cy.fixture("commonData").then((addresses) => {
+      this.hasAttributeWithValue(
+        MINIGAME_COMPONENT,
+        "src",
+        `https://astrobunny.superfluid.finance/?level=1&address=${addresses["john"]}`
+      );
+    });
+  }
+  static clickMoreMenuButton(button: string) {
+    this.click(`[data-cy=more-${button}-btn]`);
+  }
+  static hoverOnModifyStreamsOnboardingCard() {
+    this.isVisible(MODIFY_OR_CANCEL_STREAM_ONBOARDING_CARD);
+    cy.get(MODIFY_OR_CANCEL_STREAM_ONBOARDING_CARD)
+      .parent()
+      .trigger("mouseover");
+    cy.get(MODIFY_OR_CANCEL_STREAM_ONBOARDING_CARD)
+      .parent()
+      .trigger("mouseout");
+  }
+  static clickModifyStreamsOnboardingCard() {
+    this.click(MODIFY_OR_CANCEL_STREAM_ONBOARDING_CARD);
+  }
+  static validateWalletConnectionModalIsShown() {
+    this.isVisible(WAGMI_CONNECT_WALLET_TITLE);
+  }
+  static blockLensAndENSApiRequests() {
+    cy.intercept("POST", "https://rpc-endpoints.superfluid.dev/eth-mainnet", {
+      forceNetworkError: true,
+    });
+    cy.intercept("POST", "https://api.lens.dev/", { forceNetworkError: true });
+  }
+
+  static validateErrorShownInRecepientList(lensOrEns: string) {
+    this.isVisible(`[data-cy=${lensOrEns.toLowerCase()}-error]`);
+  }
+
   static clickDarkModeButton() {
-    this.click(DARK_MODE_BUTTON)
+    this.click(DARK_MODE_BUTTON);
   }
   static validateDashboardIsInDarkMode() {
-    this.hasAttributeWithValue("html" , "data-theme" , "dark")
-    this.hasCSS("html","color-scheme","dark")
-    this.isVisible(LIGHT_MODE_BUTTON)
-        this.isVisible(LIGHT_MODE_ICON)
+    this.hasAttributeWithValue("html", "data-theme", "dark");
+    this.hasCSS("html", "color-scheme", "dark");
+    this.isVisible(LIGHT_MODE_BUTTON);
+    this.isVisible(LIGHT_MODE_ICON);
 
-        this.doesNotExist(DARK_MODE_BUTTON)
-                this.doesNotExist(DARK_MODE_ICON)
-
-
+    this.doesNotExist(DARK_MODE_BUTTON);
+    this.doesNotExist(DARK_MODE_ICON);
   }
   static clickLightModeButton() {
-    this.click(LIGHT_MODE_BUTTON)
+    this.click(LIGHT_MODE_BUTTON);
   }
   static validateDashboardIsInLightMode() {
-    this.hasAttributeWithValue("html" , "data-theme" , "light")
-    this.hasCSS("html","color-scheme","light")
-    this.isVisible(DARK_MODE_BUTTON)
-        this.isVisible(DARK_MODE_ICON)
+    this.hasAttributeWithValue("html", "data-theme", "light");
+    this.hasCSS("html", "color-scheme", "light");
+    this.isVisible(DARK_MODE_BUTTON);
+    this.isVisible(DARK_MODE_ICON);
 
-        this.doesNotExist(LIGHT_MODE_ICON)
-                this.doesNotExist(LIGHT_MODE_BUTTON)
+    this.doesNotExist(LIGHT_MODE_ICON);
+    this.doesNotExist(LIGHT_MODE_BUTTON);
   }
 
   static validateLensEntryIsVisible(account: string) {
-    cy.get(LENS_NAMES).contains(account).should("be.visible")
+    cy.get(LENS_NAMES).contains(account).should("be.visible");
   }
   static validateLensImageIsLoaded(account: string) {
-    cy.fixture("ensAndLensAvatarUrls").then(urls => {
-        this.hasAttributeWithValue(ADDRESS_SEARCH_AVATAR_IMAGES , "src" , urls[account]).should("be.visible")
-    })
+    cy.fixture("ensAndLensAvatarUrls").then((urls) => {
+      this.hasAttributeWithValue(
+        ADDRESS_SEARCH_AVATAR_IMAGES,
+        "src",
+        urls[account]
+      ).should("be.visible");
+    });
   }
   static clickOnFirstLensEntry() {
-    this.click(LENS_ENTRIES,0)
+    this.click(LENS_ENTRIES, 0);
   }
   static clickOnAddressModalCopyButton() {
-    this.isVisible(COPY_ICON)
-    this.hasText(ADDRESS_MODAL_COPY_BUTTON , "Copy Address").click()
+    this.isVisible(COPY_ICON);
+    this.hasText(ADDRESS_MODAL_COPY_BUTTON, "Copy Address").click();
   }
   static validateCopiedAddressInAddressModal() {
-    this.isVisible(CHECKMARK_ICON)
-    this.hasText(ADDRESS_MODAL_COPY_BUTTON , "Copied!")
-    this.isVisible(COPY_ICON)
-    this.hasText(ADDRESS_MODAL_COPY_BUTTON , "Copy Address")
+    this.isVisible(CHECKMARK_ICON);
+    this.hasText(ADDRESS_MODAL_COPY_BUTTON, "Copied!");
+    this.isVisible(COPY_ICON);
+    this.hasText(ADDRESS_MODAL_COPY_BUTTON, "Copy Address");
   }
   static clickDisconnectButton() {
-    this.click(DISCONNECT_BUTTON)
+    this.click(DISCONNECT_BUTTON);
   }
   static validateNoConnectedAccountDialogExists() {
-    this.doesNotExist(CONNECTED_WALLET_DIALOG)
+    this.doesNotExist(CONNECTED_WALLET_DIALOG);
   }
   static clickOnConnectedWalletModal() {
-    this.click(CONNECTED_WALLET_BUTTON)
+    this.click(CONNECTED_WALLET_BUTTON);
   }
 
   static validateNoViewModeDialogExists() {
-    this.doesNotExist(ADDRESS_DIALOG_INPUT)
-    this.doesNotExist(ADDRESS_SEARCH_DIALOG)
+    this.doesNotExist(ADDRESS_DIALOG_INPUT);
+    this.doesNotExist(ADDRESS_SEARCH_DIALOG);
   }
   static waitForSpookySkeletonsToDisapear() {
     this.doesNotExist(LOADING_SKELETONS, undefined, { timeout: 60000 });
@@ -187,7 +254,8 @@ export class Common extends BasePage {
     if (account && network) {
       this.openDashboardWithConnectedTxAccount(page, account, network);
     } else {
-      cy.visit(page);
+      //Just to test 404 pages
+      cy.visit(page, { failOnStatusCode: false });
     }
   }
 
@@ -300,7 +368,9 @@ export class Common extends BasePage {
 
   static viewAccount(account: string) {
     cy.fixture("commonData").then((commonData) => {
-      let addressToLookFor = commonData[account] ? commonData[account] : account
+      let addressToLookFor = commonData[account]
+        ? commonData[account]
+        : account;
       this.click(VIEW_MODE_INPUT);
       this.type(ADDRESS_DIALOG_INPUT, addressToLookFor);
     });
@@ -1124,6 +1194,9 @@ export class Common extends BasePage {
             streamData["accountWithLotsOfData"]["polygon"][0].v2Link,
           "vesting details page": `/vesting/goerli/${vestingData.goerli.fUSDCx.schedule.id}`,
           "vesting stream details page": `/stream/polygon/${vestingData.polygon.USDCx.vestingStream.id}`,
+          "404 token page": "/token/polygon/Testing420HaveANiceDay",
+          "404 vesting page": "/vesting/polygon/Testing",
+          "minigame page": "/superfluid-runner",
         };
         if (pagesAliases[name] === undefined) {
           throw new Error(`Hmm, you haven't set up the link for : ${name}`);

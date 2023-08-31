@@ -1,9 +1,7 @@
 Feature: Export Stream Data page test cases
 
-    Background:
-        Given "Accounting Export page" is open without connecting a wallet
-
     Scenario: Selecting and removing an address from the list
+        Given "Accounting Export page" is open without connecting a wallet
         And User searches for "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40" as the accountable account
         And User selects "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40" from the search section
         And Selected sections shows "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40"
@@ -19,6 +17,7 @@ Feature: Export Stream Data page test cases
         And And address search box shows that "0" address is selected
 
     Scenario Outline: Changing price granularity and accounting periods
+        Given "Accounting Export page" is open without connecting a wallet
         And User selects "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" for the accounting export
         And User changes the price granularity to "<period>"
         And User changes the accounting period to "<period>"
@@ -32,6 +31,7 @@ Feature: Export Stream Data page test cases
             | Yearly  |
 
     Scenario: Selecting multiple addresses and exporting the data
+        Given "Accounting Export page" is open without connecting a wallet
         And User searches for "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40" as the accountable account
         And User selects "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40" from the search section
         And User searches for "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" as an extra accountable account
@@ -42,6 +42,7 @@ Feature: Export Stream Data page test cases
         Then Exported data for "multiple accounts" is fetched and shown correctly
 
     Scenario: Selecting a counterparty and exporting the data
+        Given "Accounting Export page" is open without connecting a wallet
         And User searches for "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" as the accountable account
         And User selects "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" from the search section
         And User clicks the OK button
@@ -53,6 +54,7 @@ Feature: Export Stream Data page test cases
         Then Exported data for "counterparty" is fetched and shown correctly
 
     Scenario: Date range of the reports
+        Given "Accounting Export page" is open without connecting a wallet
         And User searches for "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40" as the accountable account
         And User selects "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40" from the search section
         And User clicks the OK button
@@ -61,6 +63,7 @@ Feature: Export Stream Data page test cases
         Then Exported data for "custom dates" is fetched and shown correctly
 
     Scenario: Export preview - enabling and disabling columns
+        Given "Accounting Export page" is open without connecting a wallet
         And User searches for "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40" as the accountable account
         And User selects "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40" from the search section
         And User clicks the OK button
@@ -73,6 +76,7 @@ Feature: Export Stream Data page test cases
         Then No data is shown in the export preview
 
     Scenario: Export preview - Sorting by ascending/descending
+        Given "Accounting Export page" is open without connecting a wallet
         And User searches for "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40" as the accountable account
         And User selects "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40" from the search section
         And User clicks the OK button
@@ -83,6 +87,7 @@ Feature: Export Stream Data page test cases
         Then The "amount" column is sorted in "descending" order
 
     Scenario: Export preview - Custom filters
+        Given "Accounting Export page" is open without connecting a wallet
         And User searches for "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40" as the accountable account
         And User selects "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40" from the search section
         And User clicks the OK button
@@ -91,6 +96,7 @@ Feature: Export Stream Data page test cases
         Then The export preview table only shows "tokenSymbol" rows with "DAIx"
 
     Scenario: Exporting and validating CSV
+        Given "Accounting Export page" is open without connecting a wallet
         And User searches for "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40" as the accountable account
         And User selects "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40" from the search section
         And User clicks the OK button
@@ -99,3 +105,11 @@ Feature: Export Stream Data page test cases
         And User clicks on the export preview button
         And User exports the CSV
         Then CSV contains the correct data
+
+    Scenario: Users address auto-filled if wallet is connected
+        Given "Dashboard Page" is open with "john" connected on "goerli"
+        And User opens the navigation more menu
+        And User clicks on the "export" button in the more menu
+        And User waits for 30 seconds
+        #John address
+        And "0x9Be85A79D847dFa90584F3FD40cC1f6D4026E2B9" is selected for the export

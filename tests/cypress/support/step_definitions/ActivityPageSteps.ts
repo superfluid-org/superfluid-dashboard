@@ -84,3 +84,17 @@ Then(
     ActivityPage.validateAddressBookNameInActivityRow(name);
   }
 );
+
+Given(
+  /^User hover on the first address element in the activity history table$/,
+  () => {
+    ActivityPage.hoverOnFirstAddress();
+  }
+);
+
+Given(/^User clicks on the shown tooltip$/, () => {
+  ActivityPage.clickOnCopyTooltip();
+});
+Then(/^The copy tooltip shows "([^"]*)"$/, function (text: string) {
+  ActivityPage.validateCopyTooltipText(text);
+});

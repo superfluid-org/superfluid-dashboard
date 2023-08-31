@@ -41,8 +41,25 @@ const ADDRESS_FILTER_BUTTON = "[data-cy=address-filter]";
 const ADDRESS_FILTER_NAMES = "[data-cy=address]";
 const ADDRESS_FILTER_CLEAR_ALL = "[data-cy=clear-all-chip]";
 const ADDRESS_FILTER_NAME_CHIPS = "[data-cy=address-chip]";
+const COPY_BUTTONS = "[data-testid=ContentCopyRoundedIcon]";
+const COPY_TOOLTIPS = "[role=tooltip] .MuiTooltip-tooltip";
 
 export class AddressBookPage extends BasePage {
+  static clickFirstCopyButton() {
+    this.click(COPY_BUTTONS, 0);
+  }
+  static stopHoveringOnFirstAddress() {
+    this.trigger(ACTUAL_ADDRESSES, "mouseout", 0);
+  }
+  static validateTooltipText(text: string) {
+    this.hasText(COPY_TOOLTIPS, text);
+  }
+  static hoverOnFirstAddress() {
+    this.trigger(ACTUAL_ADDRESSES, "mouseover", 0);
+  }
+  static hoverOnFirstAddressCopyButton() {
+    this.trigger(COPY_BUTTONS, "mouseover", 0);
+  }
   static searchForAddressBookReceiverAndSelectIt(name: string) {
     SendPage.searchForReceiver(name);
     this.clickFirstVisible(ADDRESS_BOOK_ENTRIES);

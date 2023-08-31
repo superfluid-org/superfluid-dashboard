@@ -103,16 +103,19 @@ Given(/^The avatar image for "([^"]*)" is shown loaded$/, (account: string) => {
 Given(/^User chooses the first lens entry from the list$/, () => {
   Common.clickOnFirstLensEntry();
 });
-                
+
 Given(/^User opens the connected account modal$/, () => {
   Common.clickOnConnectedWalletModal();
 });
 Given(/^User clicks on the copy address button in the account modal$/, () => {
   Common.clickOnAddressModalCopyButton();
 });
-Given(/^The address is copied and the buttons text in the address modal changes to "Copied!" with a checkmark icon$/, () => {
-  Common.validateCopiedAddressInAddressModal();
-});
+Given(
+  /^The address is copied and the buttons text in the address modal changes to "Copied!" with a checkmark icon$/,
+  () => {
+    Common.validateCopiedAddressInAddressModal();
+  }
+);
 Given(/^User clicks on the disconnect button$/, () => {
   Common.clickDisconnectButton();
 });
@@ -136,9 +139,46 @@ Given(/^User closes the dropdown$/, () => {
 Then(/^User clicks on the view mode button$/, () => {
   Common.clickOnViewModeButton();
 });
-
+Then(/^Lens and ENS api requests are blocked$/, () => {
+  Common.blockLensAndENSApiRequests();
+});
+Then(
+  /^An error is shown in the "([^"]*)" receiver list$/,
+  (lensOrEns: string) => {
+    Common.validateErrorShownInRecepientList(lensOrEns);
+  }
+);
 Then(/^User types "([^"]*)" into the address input$/, (input: string) => {
   Common.typeIntoAddressInput(input);
+});
+Then(/^User hovers on the modify streams onboarding card$/, () => {
+  Common.hoverOnModifyStreamsOnboardingCard();
+});
+Then(/^User clicks on the modify streams onboarding card$/, () => {
+  Common.clickModifyStreamsOnboardingCard();
+});
+Then(
+  /^The minigame container iframe is visible without a wallet connected$/,
+  () => {
+    Common.validateMiniGameContainerWithoutWalletConnected();
+  }
+);
+Then(/^In-game cosmetics warning is shown$/, () => {
+  Common.validateMiniGameCosmeticsWarningIsVisible();
+});
+
+Then(/^In-game cosmetics warning does not exist$/, () => {
+  Common.validateMiniGameCosmeticsWarningDoesNotExist();
+});
+Then(
+  /^The minigame container iframe is visible with a wallet connected$/,
+  () => {
+    Common.validateMiniGameContainerWithWalletConnected();
+  }
+);
+
+Then(/^Wallet connection modal is shown$/, () => {
+  Common.validateWalletConnectionModalIsShown();
 });
 
 Then(
@@ -157,9 +197,12 @@ Then(/^View mode chip shows "([^"]*)"$/, (message: string) => {
 Then(/^View mode dialog does not exist$/, () => {
   Common.validateNoViewModeDialogExists();
 });
-Then(/^"([^"]*)" ENS entry in the address search results is shown$/, (ensName: string) => {
-  SendPage.validateEnsEntry(ensName);
-});
+Then(
+  /^"([^"]*)" ENS entry in the address search results is shown$/,
+  (ensName: string) => {
+    SendPage.validateEnsEntry(ensName);
+  }
+);
 Then(/^Connected account dialog does not exist$/, () => {
   Common.validateNoConnectedAccountDialogExists();
 });
@@ -215,6 +258,13 @@ Then(/^User opens the navigation more menu$/, function () {
 Then(/^User opens the access code menu$/, function () {
   Common.openAccessCodeMenu();
 });
+Then(
+  /^User clicks on the "([^"]*)" button in the more menu$/,
+  function (button: string) {
+    Common.clickMoreMenuButton(button);
+  }
+);
+
 Then(/^User types "([^"]*)" in the access code menu$/, function (code: string) {
   Common.inputAccessCode(code);
 });
@@ -425,4 +475,3 @@ Then(/^User clears the receiver input field$/, function () {
 Then(/^No loading skeletons are visible in the page$/, function () {
   Common.waitForSpookySkeletonsToDisapear();
 });
-
