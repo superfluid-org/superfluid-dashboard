@@ -18,7 +18,7 @@ Feature: Send Page test cases
         Then And user selects the first recent receiver
         Then The receiver address is shown as the chosen receiver in the send stream page
         And User searches for "vijay.eth" as a receiver
-        Then "0x7BDa037dFdf9CD9Ad261D27f489924aebbcE71Ac" is visible in the ENS recipient results
+        Then "0x1dDc50A8b8ef07c654B4ace65070B0E7acfF622B" is visible in the ENS recipient results
         And User selects the first ENS recipient result
         Then Chosen wallet address shows up as vijay.eth
         And User clears the receiver field with the close button

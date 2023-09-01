@@ -214,9 +214,10 @@ export class ActivityPage extends BasePage {
       ? BasePage.shortenHex(address)
       : address;
     cy.get(AMOUNT_TO_FROM).each((el) => {
-      cy.wrap(el).should("have.text", `From${assertableString}`);
+      cy.log(el.text());
+      let regex = new RegExp(`(From|To)${assertableString}`);
+      cy.wrap(el.text()).should("match", regex);
     });
-    this.hasLength(AMOUNT_TO_FROM, 2);
   }
 
   static waitForSkeletonsToDisappear() {

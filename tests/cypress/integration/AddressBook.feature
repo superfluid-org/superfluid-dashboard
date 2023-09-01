@@ -21,7 +21,7 @@ Feature: Address Book test cases
         Given "Address book Page" is open without connecting a wallet
         And User adds "vijay.eth" as "-" on "-" to their address book
         Then The last address book entry name is "vijay.eth"
-        And The last saved address is "0x7BDa037dFdf9CD9Ad261D27f489924aebbcE71Ac"
+        And The last saved address is "0x1dDc50A8b8ef07c654B4ace65070B0E7acfF622B"
         And ENS name "vijay.eth" is shown by the last saved address book entry
 
     Scenario: Adding a new contract address to the address book

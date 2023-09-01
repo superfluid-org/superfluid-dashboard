@@ -5,30 +5,30 @@ Feature: Activity History Page tests
 
         Given "Activity History Page" is open using view mode to look at "staticBalanceAccount"
         Then Mocked activity history entries are visible in this order
-            | Subscription Approved/Publisher  |
-            | Subscription Approved/Subscriber |
-            | Index Created                    |
-            | Subscription Rejected/Publisher  |
-            | Subscription Rejected/Subscriber |
-            | Wrap                             |
-            | Wrap                             |
-            | Send Transfer                    |
-            | Send Stream                      |
-            | Receive Transfer                 |
-            | Receive Stream                   |
-            | Stream Updated                   |
-            | Stream Cancelled                 |
-            | Subscription Updated/Publisher   |
-            | Subscription Updated/Subscriber  |
-            | Liquidated/v2                    |
-            | Liquidated/v1                    |
-            | Liquidated/sender                |
-            | Unwrap/native                    |
-            | Unwrap/wrapper                   |
-            | Send Distribution/Publisher      |
-            | Send Distribution/Subscriber     |
-            | Distribution Claimed/Publisher   |
-            | Distribution Claimed/Subscriber  |
+            | Distribution Claimed  |
+            | Distribution Claimed  |
+            | Send Distribution     |
+            | Send Distribution     |
+            | Unwrap                |
+            | Unwrap                |
+            | Liquidated            |
+            | Liquidated            |
+            | Send Transfer         |
+            | Liquidated            |
+            | Subscription Updated  |
+            | Subscription Updated  |
+            | Stream Cancelled      |
+            | Stream Updated        |
+            | Receive Stream        |
+            | Receive Transfer      |
+            | Send Stream           |
+            | Send Transfer         |
+            | Wrap                  |
+            | Subscription Rejected |
+            | Subscription Rejected |
+            | Index Created         |
+            | Subscription Approved |
+            | Subscription Approved |
 
     Scenario: No activity history message shown
         Given "Activity history page" is open without connecting a wallet
@@ -50,7 +50,7 @@ Feature: Activity History Page tests
 
     Scenario: Filtering entries by address
         Given "Activity History Page" is open using view mode to look at "staticBalanceAccount"
-        And User changes the activity history filter to 25 months before
+        And User changes the activity history filter to 24 months before
         And User closes the dropdown
         And User searches for "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" as a receiver
         And User waits for the activity history to load
