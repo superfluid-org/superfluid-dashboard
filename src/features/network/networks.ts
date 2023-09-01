@@ -234,6 +234,9 @@ export const networkDefinition = {
       lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
       upperLimit: BigNumber.from(UnitOfTime.Day * 14),
     },
+    humaFinance: {
+      nftAddress: "0xa8B0362cfE0c8e4fd1D74c3512348d6f48d71080",
+    },
   } as const,
   polygonMumbai: {
     ...chain.polygonMumbai,
