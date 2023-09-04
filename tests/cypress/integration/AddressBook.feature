@@ -143,19 +143,19 @@ Feature: Address Book test cases
         Then The activity rows address shows up as "john"
 
         Examples:
-            | activity              |
-            | Distribution Claimed  |
-            | Send Transfer         |
-            | Liquidated            |
-            | Subscription Updated  |
-            | Stream Cancelled      |
-            | Stream Updated        |
-            | Receive Stream        |
-            | Receive Transfer      |
-            | Send Stream           |
-            | Send Transfer         |
-            | Subscription Rejected |
-            | Subscription Approved |
+            | activity                         |
+            | Distribution Claimed/Subscriber  |
+            | Send Transfer                    |
+            | Liquidated/v2                    |
+            | Subscription Updated/Subscriber  |
+            | Stream Cancelled                 |
+            | Stream Updated                   |
+            | Receive Stream                   |
+            | Receive Transfer                 |
+            | Send Stream                      |
+            | Send Transfer                    |
+            | Subscription Rejected/Subscriber |
+            | Subscription Approved/Subscriber |
 
     Scenario: Address book name filter
         Given Address book test data is set up

@@ -46,7 +46,7 @@ const COPY_TOOLTIPS = "[role=tooltip] .MuiTooltip-tooltip";
 
 export class AddressBookPage extends BasePage {
   static clickFirstCopyButton() {
-    cy.get(COPY_BUTTONS).eq(0).realClick();
+    cy.get(COPY_BUTTONS).first().scrollIntoView().click();
   }
   static stopHoveringOnFirstAddress() {
     this.trigger(ACTUAL_ADDRESSES, "mouseout", 0);

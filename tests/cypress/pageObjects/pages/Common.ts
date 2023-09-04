@@ -285,32 +285,36 @@ export class Common extends BasePage {
     let networkRpc = networksBySlug.get(selectedNetwork)?.superfluidRpcUrl;
     cy.visit(page, {
       onBeforeLoad: (win: any) => {
-        const hdwallet = new HDWalletProvider({
-          privateKeys: [usedAccountPrivateKey],
-          url: networkRpc,
-          chainId: chainId,
-          pollingInterval: 1000,
-        });
-        if (Cypress.env("rejected")) {
-          // Make HDWallet automatically reject transaction.
-          // Inspired by: https://github.com/MetaMask/web3-provider-engine/blob/e835b80bf09e76d92b785d797f89baa43ae3fd60/subproviders/hooked-wallet.js#L326
-          for (const provider of hdwallet.engine["_providers"]) {
-            if (provider.checkApproval) {
-              provider.checkApproval = function (type, didApprove, cb) {
-                cb(new Error(`User denied ${type} signature.`));
-              };
+        try {
+          const hdwallet = new HDWalletProvider({
+            privateKeys: [usedAccountPrivateKey],
+            url: networkRpc,
+            chainId: chainId,
+            pollingInterval: 1000,
+          });
+          if (Cypress.env("rejected")) {
+            // Make HDWallet automatically reject transaction.
+            // Inspired by: https://github.com/MetaMask/web3-provider-engine/blob/e835b80bf09e76d92b785d797f89baa43ae3fd60/subproviders/hooked-wallet.js#L326
+            for (const provider of hdwallet.engine["_providers"]) {
+              if (provider.checkApproval) {
+                provider.checkApproval = function (type, didApprove, cb) {
+                  cb(new Error(`User denied ${type} signature.`));
+                };
+              }
             }
           }
+
+          const mockProvider = new ethers.providers.Web3Provider(hdwallet);
+          const mockSigner = mockProvider.getSigner();
+
+          win.mockBridge = new ProviderAdapter(hdwallet);
+
+          // @ts-ignore
+          win.mockSigner = mockSigner;
+          win.mockWallet = hdwallet;
+        } catch (e) {
+          console.log("Error during wallet provider setup: ", e);
         }
-
-        const mockProvider = new ethers.providers.Web3Provider(hdwallet);
-        const mockSigner = mockProvider.getSigner();
-
-        win.mockBridge = new ProviderAdapter(hdwallet);
-
-        // @ts-ignore
-        win.mockSigner = mockSigner;
-        win.mockWallet = hdwallet;
       },
     });
     if (Cypress.env("dev")) {
@@ -1192,7 +1196,7 @@ export class Common extends BasePage {
             streamData["staticBalanceAccount"]["polygon"][0].v1Link,
           "close-ended stream details page":
             streamData["accountWithLotsOfData"]["polygon"][0].v2Link,
-          "vesting details page": `/vesting/goerli/${vestingData.goerli.fUSDCx.schedule.id}`,
+          "vesting details page": `/vesting/goerli/${vestingData.goerli.fTUSDx.schedule.id}`,
           "vesting stream details page": `/stream/polygon/${vestingData.polygon.USDCx.vestingStream.id}`,
           "404 token page": "/token/polygon/Testing420HaveANiceDay",
           "404 vesting page": "/vesting/polygon/Testing",
