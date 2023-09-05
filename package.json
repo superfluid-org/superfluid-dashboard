@@ -24,6 +24,7 @@
     "@emotion/react": "^11.11.1",
     "@emotion/server": "^11.11.0",
     "@emotion/styled": "^11.11.0",
+    "@ensdomains/ens-avatar": "^0.3.3",
     "@hookform/error-message": "^2.0.1",
     "@hookform/resolvers": "3.3.0",
     "@lifi/sdk": "^2.3.0",

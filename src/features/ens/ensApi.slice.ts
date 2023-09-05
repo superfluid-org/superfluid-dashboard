@@ -1,6 +1,7 @@
 import { fakeBaseQuery } from "@reduxjs/toolkit/dist/query";
 import { createApi } from "@reduxjs/toolkit/dist/query/react";
 import { ethers } from "ethers";
+import { AvatarResolver } from "@ensdomains/ens-avatar";
 
 export interface ResolveNameResult {
   address: string;
@@ -53,7 +54,21 @@ export const ensApi = createApi({
       }),
       getAvatar: builder.query<any, string>({
         queryFn: async (address) => {
-          const avatarUrl = await mainnetProvider.getAvatar(address);
+          const avt = new AvatarResolver(mainnetProvider, {
+            apiKey: {
+              opensea: process.env.NEXT_PUBLIC_OPENSEA_API_KEY ?? "",
+            },
+          });
+          const name = await mainnetProvider.lookupAddress(address);
+
+          if (name === null) {
+            return {
+              data: null,
+            };
+          }
+
+          const avatarUrl = avt.getAvatar(name, {});
+
           return {
             data: avatarUrl,
           };
