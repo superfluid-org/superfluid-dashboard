@@ -67,7 +67,7 @@ export const ensApi = createApi({
             };
           }
 
-          const avatarUrl = avt.getAvatar(name, {});
+          const avatarUrl = await avt.getAvatar(name, {});
 
           return {
             data: avatarUrl,
