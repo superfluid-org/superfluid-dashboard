@@ -18,6 +18,13 @@ export const ensApi = createApi({
       "https://rpc-endpoints.superfluid.dev/eth-mainnet",
       "mainnet"
     );
+
+    const avatarResolver = new AvatarResolver(mainnetProvider, {
+      apiKey: {
+        opensea: process.env.NEXT_PUBLIC_OPENSEA_API_KEY ?? "",
+      },
+    });
+
     return {
       resolveName: builder.query<ResolveNameResult | null, string>({
         queryFn: async (name) => {
@@ -54,11 +61,6 @@ export const ensApi = createApi({
       }),
       getAvatar: builder.query<any, string>({
         queryFn: async (address) => {
-          const avt = new AvatarResolver(mainnetProvider, {
-            apiKey: {
-              opensea: process.env.NEXT_PUBLIC_OPENSEA_API_KEY ?? "",
-            },
-          });
           const name = await mainnetProvider.lookupAddress(address);
 
           if (name === null) {
@@ -67,7 +69,7 @@ export const ensApi = createApi({
             };
           }
 
-          const avatarUrl = await avt.getAvatar(name, {});
+          const avatarUrl = await avatarResolver.getAvatar(name, {});
 
           return {
             data: avatarUrl,
