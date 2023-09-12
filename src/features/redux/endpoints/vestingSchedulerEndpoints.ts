@@ -99,9 +99,9 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
       ]);
 
       const existingPermissions = Number(flowOperatorData.permissions);
-      const permisionsDelta = ACL_CREATE_PERMISSION | ACL_DELETE_PERMISSION
+      const permissionsDelta = ACL_CREATE_PERMISSION | ACL_DELETE_PERMISSION
       const newPermissions =
-        existingPermissions | permisionsDelta;
+        existingPermissions | permissionsDelta;
 
       const flowRateBigNumber = BigNumber.from(arg.flowRateWei);
       const existingFlowRateAllowance = BigNumber.from(
@@ -123,7 +123,7 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
           operation: await superToken.increaseFlowRateAllowanceWithPermissions({
             flowOperator: vestingScheduler.address,
             flowRateAllowanceDelta: flowRateAllowanceDelta.toString(),
-            permissionsDelta: permisionsDelta,
+            permissionsDelta: permissionsDelta,
             overrides: arg.overrides,
           }),
           title: "Approve Vesting Scheduler",
