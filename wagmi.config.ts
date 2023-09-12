@@ -2,10 +2,10 @@ import { defineConfig } from "@wagmi/cli";
 import { etherscan, react } from "@wagmi/cli/plugins";
 import { erc20ABI } from "wagmi";
 import { autoWrapManagerAddresses } from "./src/features/network/networkConstants";
-import nativeAssetSuperTokenJSON from "@superfluid-finance/ethereum-contracts/artifacts/contracts/tokens/SETH.sol/SETHProxy.json" assert { type: "json" };
-import pureSuperTokenJSON from "@superfluid-finance/ethereum-contracts/artifacts/contracts/tokens/PureSuperToken.sol/PureSuperToken.json" assert { type: "json" };
-import superTokenJSON from "@superfluid-finance/ethereum-contracts/artifacts/contracts/superfluid/SuperToken.sol/SuperToken.json" assert { type: "json" };
-import ConstantFlowAgreementV1JSON from "@superfluid-finance/ethereum-contracts/artifacts/contracts/agreements/ConstantFlowAgreementV1.sol/ConstantFlowAgreementV1.json" assert { type: "json" };
+import nativeAssetSuperTokenJSON from "@superfluid-finance/ethereum-contracts/build/truffle/SETHProxy.json" assert { type: "json" };
+import pureSuperTokenJSON from "@superfluid-finance/ethereum-contracts/build/truffle/PureSuperToken.json" assert { type: "json" };
+import superTokenJSON from "@superfluid-finance/ethereum-contracts/build/truffle/SuperToken.json" assert { type: "json" };
+import ConstantFlowAgreementV1JSON from "@superfluid-finance/ethereum-contracts/build/truffle/ConstantFlowAgreementV1.json" assert { type: "json" };
 import { Abi, Address } from "viem";
 import superfluidMetadata from "@superfluid-finance/metadata";
 
