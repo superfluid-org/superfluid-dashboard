@@ -148,7 +148,7 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
         const approveAllowancePromise =
           superTokenContract.populateTransaction.increaseAllowance(
             vestingScheduler.address,
-            newTokenAllowance
+            tokenAllowanceDelta
           );
         subOperations.push({
           operation: new Operation(approveAllowancePromise, "ERC20_INCREASE_ALLOWANCE"),
