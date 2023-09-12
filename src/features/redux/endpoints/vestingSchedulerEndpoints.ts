@@ -139,15 +139,14 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
       const tokenAllowanceDelta = isCloseToUnlimitedTokenAllowance(existingTokenAllowance)
         ? BigNumber.from("0")
         : maximumNeededTokenAllowance;
-
       const newTokenAllowance = existingTokenAllowance.add(tokenAllowanceDelta)
 
       const hasEnoughTokenAllowance =
         existingTokenAllowance.eq(newTokenAllowance);
-        
+
       if (!hasEnoughTokenAllowance) {
         const approveAllowancePromise =
-          superTokenContract.populateTransaction.approve(
+          superTokenContract.populateTransaction.increaseAllowance(
             vestingScheduler.address,
             newTokenAllowance
           );

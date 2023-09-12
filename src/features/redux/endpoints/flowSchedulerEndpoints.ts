@@ -178,7 +178,6 @@ export const flowSchedulerEndpoints = {
             const flowRateAllowanceDelta = doesNeedAllowance
               ? BigNumber.from(arg.flowRateWei)
               : BigNumber.from("0");
-
             const newFlowRateAllowance = isCloseToUnlimitedFlowRateAllowance(
               existingFlowRateAllowance
             )
