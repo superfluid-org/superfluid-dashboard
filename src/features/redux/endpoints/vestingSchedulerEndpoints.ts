@@ -99,28 +99,31 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
       ]);
 
       const existingPermissions = Number(flowOperatorData.permissions);
+      const permisionsDelta = ACL_CREATE_PERMISSION | ACL_DELETE_PERMISSION
       const newPermissions =
-        existingPermissions | ACL_CREATE_PERMISSION | ACL_DELETE_PERMISSION;
+        existingPermissions | permisionsDelta;
 
       const flowRateBigNumber = BigNumber.from(arg.flowRateWei);
       const existingFlowRateAllowance = BigNumber.from(
         flowOperatorData.flowRateAllowance
       );
-      const newFlowRateAllowance = isCloseToUnlimitedFlowRateAllowance(
+      const flowRateAllowanceDelta = isCloseToUnlimitedFlowRateAllowance(
         existingFlowRateAllowance
       )
-        ? existingFlowRateAllowance
+        ? BigNumber.from("0")
         : existingFlowRateAllowance.add(flowRateBigNumber);
+      const newFlowRateAllowance = existingFlowRateAllowance.add(flowRateAllowanceDelta);
 
       const hasEnoughSuperTokenAccess =
         existingPermissions === newPermissions &&
         existingFlowRateAllowance.eq(newFlowRateAllowance);
+
       if (!hasEnoughSuperTokenAccess) {
         subOperations.push({
-          operation: await superToken.updateFlowOperatorPermissions({
+          operation: await superToken.increaseFlowRateAllowanceWithPermissions({
             flowOperator: vestingScheduler.address,
-            flowRateAllowance: newFlowRateAllowance.toString(),
-            permissions: newPermissions,
+            flowRateAllowanceDelta: flowRateAllowanceDelta.toString(),
+            permissionsDelta: permisionsDelta,
             overrides: arg.overrides,
           }),
           title: "Approve Vesting Scheduler",
@@ -133,21 +136,23 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
         .add(flowRateBigNumber.mul(START_DATE_VALID_AFTER_IN_SECONDS))
         .add(flowRateBigNumber.mul(END_DATE_VALID_BEFORE_IN_SECONDS));
 
-      const newTokenAllowance = isCloseToUnlimitedTokenAllowance(existingTokenAllowance)
-        ? existingTokenAllowance
-        : existingTokenAllowance.add(maximumNeededTokenAllowance);
+      const tokenAllowanceDelta = isCloseToUnlimitedTokenAllowance(existingTokenAllowance)
+        ? BigNumber.from("0")
+        : maximumNeededTokenAllowance;
+
+      const newTokenAllowance = existingTokenAllowance.add(tokenAllowanceDelta)
 
       const hasEnoughTokenAllowance =
         existingTokenAllowance.eq(newTokenAllowance);
+        
       if (!hasEnoughTokenAllowance) {
         const approveAllowancePromise =
           superTokenContract.populateTransaction.approve(
             vestingScheduler.address,
             newTokenAllowance
           );
-
         subOperations.push({
-          operation: new Operation(approveAllowancePromise, "ERC20_APPROVE"),
+          operation: new Operation(approveAllowancePromise, "ERC20_INCREASE_ALLOWANCE"),
           title: "Approve Allowance",
         });
       }
