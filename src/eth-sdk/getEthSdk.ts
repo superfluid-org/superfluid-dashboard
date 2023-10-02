@@ -1,7 +1,11 @@
 import { providers, Signer } from "ethers";
 import { allNetworks, findNetworkOrThrow } from "../features/network/networks";
 import { FlowScheduler__factory } from "./client/esm/types/factories/goerli";
-import { AutoWrapManager__factory, AutoWrapStrategy__factory, VestingScheduler__factory } from "./client/esm/types/factories/mainnet";
+import {
+  AutoWrapManager__factory,
+  AutoWrapStrategy__factory,
+  VestingScheduler__factory,
+} from "./client/esm/types/factories/mainnet";
 import { AutoWrapManager, AutoWrapStrategy } from "./client/esm/types";
 
 export const getFlowScheduler = (
