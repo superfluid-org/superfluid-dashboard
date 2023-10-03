@@ -15,7 +15,7 @@ const NO_BALANCE_WRAP_BUTTON = "[data-cy=no-balance-wrap-button]";
 const NO_BALANCE_MESSAGE = "[data-cy=no-balance-message]";
 const LOADING_SKELETONS = "[data-cy=loading-skeletons]";
 const NET_FLOW_VALUES = "[data-cy=net-flow-value]";
-const NO_NET_FLOW_VALUE = "[data-cy=net-flow-value]";
+const NO_NET_FLOW_VALUE = "[data-cy=net-flow-value] > span:nth-child(1)";
 const NET_FLOW_FIAT = "[data-cy=net-flow-value] [data-cy=token-amount]";
 const INFLOW_VALUES = "[data-cy=inflow]";
 const OUTFLOW_VALUES = "[data-cy=outflow]";
