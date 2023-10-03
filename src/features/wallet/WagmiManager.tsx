@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren } from "react";
+import { FC, PropsWithChildren, useMemo } from "react";
 import {
   RainbowKitProvider,
   darkTheme,
@@ -76,10 +76,11 @@ export const RainbowKitManager: FC<PropsWithChildren> = ({ children }) => {
   const muiTheme = useTheme();
   const { network, isAutoSwitchStopped } = useExpectedNetwork();
 
-  const selectableChains = [
+  const selectableChains = useMemo(() => [
     ...wagmiChains.filter((x) => x.id === network.id), // Filter the expected network to be the first chain. RainbowKit emphasizes the first chain...
     ...wagmiChains.filter((x) => x.id !== network.id),
-  ];
+  ], [wagmiChains, network.id]);
+
   const initialChainId = isAutoSwitchStopped ? network.id : undefined; // RainbowKit either uses the wallet's chain if it's supported by our app OR switches to the first support chain.
 
   return (
@@ -91,13 +92,13 @@ export const RainbowKitManager: FC<PropsWithChildren> = ({ children }) => {
       theme={
         muiTheme.palette.mode === "dark"
           ? darkTheme({
-              accentColor: muiTheme.palette.primary.main,
-              borderRadius: "medium",
-            })
+            accentColor: muiTheme.palette.primary.main,
+            borderRadius: "medium",
+          })
           : lightTheme({
-              accentColor: muiTheme.palette.primary.main,
-              borderRadius: "medium",
-            })
+            accentColor: muiTheme.palette.primary.main,
+            borderRadius: "medium",
+          })
       }
     >
       {children}
