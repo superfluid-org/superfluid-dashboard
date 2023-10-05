@@ -20,6 +20,7 @@ const gnosisSafe = ({ chains }: GnosisSafeOptions): Wallet => {
             /gnosis-safe.io$/,
             /app.safe.global$/,
             /^https:\/\/(?:[^\/]+\.)?coinshift\.xyz$/,
+            /^http:\/\/(localhost|127\.0\.0\.1):(\d+)$/,
           ],
           debug: false,
         },
