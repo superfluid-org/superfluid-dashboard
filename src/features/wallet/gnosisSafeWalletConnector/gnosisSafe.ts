@@ -1,5 +1,5 @@
 import { Chain, Wallet } from "@rainbow-me/rainbowkit";
-import { SafeConnector } from 'wagmi/connectors/safe'
+import { SafeConnector } from "wagmi/connectors/safe";
 
 export interface GnosisSafeOptions {
   chains: Chain[];
@@ -16,7 +16,11 @@ const gnosisSafe = ({ chains }: GnosisSafeOptions): Wallet => {
       connector: new SafeConnector({
         chains,
         options: {
-          allowedDomains: [/gnosis-safe.io$/, /app.safe.global$/],
+          allowedDomains: [
+            /gnosis-safe.io$/,
+            /app.safe.global$/,
+            /^https:\/\/(?:[^\/]+\.)?coinshift\.xyz$/,
+          ],
           debug: false,
         },
       }),
