@@ -510,7 +510,7 @@ export const autoWrapManagerConfig = {
  * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0x6946c5B38Ffea373b0a2340b4AEf0De8F6782e58)
  * - [__View Contract on Polygon Mumbai Polygon Scan__](https://mumbai.polygonscan.com/address/0x49e565Ed1bdc17F3d220f72DF0857C26FA83F873)
  * - [__View Contract on Base Goerli Basescan__](https://goerli.basescan.org/address/0x4C476F2Fb27272680F2f6f2592E94d9e704691bC)
- * - [__View Contract on Arbitrum Goerli Arbiscan__](https://goerli.arbiscan.io//address/0xff48668fa670A85e55A7a822b352d5ccF3E7b18C)
+ * - [__View Contract on Arbitrum Goerli Arbiscan__](https://goerli.arbiscan.io/address/0xff48668fa670A85e55A7a822b352d5ccF3E7b18C)
  * - [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x6836F23d6171D74Ef62FcF776655aBcD2bcd62Ef)
  */
 export const constantFlowAgreementV1ABI = [
@@ -1193,7 +1193,7 @@ export const constantFlowAgreementV1ABI = [
  * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0x6946c5B38Ffea373b0a2340b4AEf0De8F6782e58)
  * - [__View Contract on Polygon Mumbai Polygon Scan__](https://mumbai.polygonscan.com/address/0x49e565Ed1bdc17F3d220f72DF0857C26FA83F873)
  * - [__View Contract on Base Goerli Basescan__](https://goerli.basescan.org/address/0x4C476F2Fb27272680F2f6f2592E94d9e704691bC)
- * - [__View Contract on Arbitrum Goerli Arbiscan__](https://goerli.arbiscan.io//address/0xff48668fa670A85e55A7a822b352d5ccF3E7b18C)
+ * - [__View Contract on Arbitrum Goerli Arbiscan__](https://goerli.arbiscan.io/address/0xff48668fa670A85e55A7a822b352d5ccF3E7b18C)
  * - [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x6836F23d6171D74Ef62FcF776655aBcD2bcd62Ef)
  */
 export const constantFlowAgreementV1Address = {
@@ -1232,7 +1232,7 @@ export const constantFlowAgreementV1Address = {
  * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0x6946c5B38Ffea373b0a2340b4AEf0De8F6782e58)
  * - [__View Contract on Polygon Mumbai Polygon Scan__](https://mumbai.polygonscan.com/address/0x49e565Ed1bdc17F3d220f72DF0857C26FA83F873)
  * - [__View Contract on Base Goerli Basescan__](https://goerli.basescan.org/address/0x4C476F2Fb27272680F2f6f2592E94d9e704691bC)
- * - [__View Contract on Arbitrum Goerli Arbiscan__](https://goerli.arbiscan.io//address/0xff48668fa670A85e55A7a822b352d5ccF3E7b18C)
+ * - [__View Contract on Arbitrum Goerli Arbiscan__](https://goerli.arbiscan.io/address/0xff48668fa670A85e55A7a822b352d5ccF3E7b18C)
  * - [__View Contract on Sepolia Etherscan__](https://sepolia.etherscan.io/address/0x6836F23d6171D74Ef62FcF776655aBcD2bcd62Ef)
  */
 export const constantFlowAgreementV1Config = {
