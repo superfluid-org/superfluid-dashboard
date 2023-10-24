@@ -4184,10 +4184,10 @@
   resolved "https://registry.yarnpkg.com/@superfluid-finance/metadata/-/metadata-1.1.18.tgz#baab1c02581c3c77f2d51a685e423f6aee8468a0"
   integrity sha512-9AyKSLjOmdhfg90TjEi+dv4FkMW1tEibMqlE1xLgHabuhHYARivBHgvZAX9psERQuld/8iYnSCMscSE+Vhn3KA==
 
-"@superfluid-finance/sdk-core@^0.6.10":
-  version "0.6.11"
-  resolved "https://registry.yarnpkg.com/@superfluid-finance/sdk-core/-/sdk-core-0.6.11.tgz#b8770e7cfb92087800c1734762b2641e5f1a5f4e"
-  integrity sha512-jJYphmIJkSM5s9d0WoslA3YvUXU8rLtIhzyCFziI2stQa8uUAKtmR7sRNFuj/p76DbF59I079BabyPqFbaBOTg==
+"@superfluid-finance/sdk-core@^0.6.12":
+  version "0.6.12"
+  resolved "https://registry.yarnpkg.com/@superfluid-finance/sdk-core/-/sdk-core-0.6.12.tgz#e439e56ec5d0b775fbb4b5144fe1c4f3936f4ca9"
+  integrity sha512-y81ohCIkjWg0vKJ6XlLMnyzrFtJbeRe1o1XKbQEXUB8GBjYLMMsMHMOAwc5DraaWvR1ca6gZqJEcvuRNYpFNpg==
   dependencies:
     "@superfluid-finance/ethereum-contracts" "1.8.1"
     "@superfluid-finance/metadata" "1.1.18"
