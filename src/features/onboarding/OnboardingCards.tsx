@@ -22,6 +22,7 @@ import { useConnectButton } from "../wallet/ConnectButtonProvider";
 import Link from "../common/Link";
 
 interface OnboardingItemProps {
+  dataCy?: string;
   title: string;
   subheader: string;
   href: string;
@@ -30,6 +31,7 @@ interface OnboardingItemProps {
 }
 
 const OnboardingItem: FC<PropsWithChildren<OnboardingItemProps>> = ({
+  dataCy,
   title,
   subheader,
   childrenGap = 1.5,
@@ -46,6 +48,7 @@ const OnboardingItem: FC<PropsWithChildren<OnboardingItemProps>> = ({
   return (
     <Link href={href} onClick={onClick}>
       <Card
+        data-cy={dataCy}
         elevation={isHovering ? 3 : 1}
         sx={{
           textDecoration: "none",
@@ -142,6 +145,7 @@ const OnboardingCards: FC<OnboardingCardsProps> = ({
       translate="yes"
     >
       <OnboardingItem
+        dataCy="get-tokens-onboarding-card"
         title="Get Super Tokens"
         subheader="Wrap any token in your wallet"
         href="/wrap?upgrade"
@@ -153,6 +157,7 @@ const OnboardingCards: FC<OnboardingCardsProps> = ({
       </OnboardingItem>
 
       <OnboardingItem
+        dataCy="send-stream-onboarding-card"
         title="Send a Stream"
         subheader="Pick a recipient, token and network"
         href="/send"
@@ -173,6 +178,7 @@ const OnboardingCards: FC<OnboardingCardsProps> = ({
         <StreamItem address="0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" />
       </OnboardingItem>
       <OnboardingItem
+        dataCy="modify-or-cancel-streams-onboarding-card"
         title="Modify and Cancel Streams"
         subheader="Don't let your balance hit zero!"
         onClick={() => {
@@ -189,6 +195,7 @@ const OnboardingCards: FC<OnboardingCardsProps> = ({
         </IconButton>
       </OnboardingItem>
       <OnboardingItem
+        dataCy="try-out-superfluid-onboarding-card"
         title="Try out Superfluid"
         subheader="Start on a Testnet"
         onClick={onClick}

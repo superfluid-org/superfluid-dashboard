@@ -6,7 +6,7 @@ import {
 } from "../../superData/networks";
 import { Common } from "./Common";
 import { format } from "date-fns";
-import { DataTable } from "@badeball/cypress-cucumber-preprocessor";
+import { DataTable, Then } from "@badeball/cypress-cucumber-preprocessor";
 import superfluidMetadata from "@superfluid-finance/metadata";
 import { ethers } from "ethers";
 
@@ -14,6 +14,7 @@ const ACTIVITY_TYPE = "[data-cy=activity]";
 const ACTIVITY_NAME = `${ACTIVITY_TYPE} h6`;
 const ACTIVITY_TIME = `${ACTIVITY_TYPE} span`;
 const ACTIVITY_AMOUNT = "[data-cy=amount]";
+const FIAT_AMOUNTS = "[data-cy=fiat-amount]";
 const AMOUNT_TO_FROM = "[data-cy=amountToFrom]";
 const ALL_ROWS = "[data-cy*=-row]";
 const DATE_PICKER_BUTTON = "[data-cy=date-picker-button]";
@@ -39,6 +40,8 @@ const RECEIVE_ICON = "[data-testid=ArrowBackRoundedIcon]";
 const SEND_ICON = "[data-testid=ArrowForwardRoundedIcon]";
 const WRAP_UNWRAP_ICON = "[data-testid=SwapVertIcon]";
 const LIQUIDATED_ICON = "[data-testid=PriorityHighIcon]";
+const ADDRESS_COMPONENTS = "[data-cy=address-to-copy]";
+const COPY_TOOLTIPS = ".MuiTypography-tooltip";
 const NOW_TIMESTAMP = Date.now();
 
 type ActivityData = {
@@ -50,6 +53,18 @@ type ActivityData = {
 };
 
 export class ActivityPage extends BasePage {
+  static hoverOnFirstAddress() {
+    this.trigger(ADDRESS_COMPONENTS, "mouseover");
+  }
+
+  static clickOnCopyTooltip() {
+    //https://github.com/cypress-io/cypress/issues/18198
+    cy.get(COPY_TOOLTIPS).realClick();
+  }
+
+  static validateCopyTooltipText(text: string) {
+    this.hasText(COPY_TOOLTIPS, text);
+  }
   static saveActivityHistoryData() {
     let activityHistoryData: any = { account: {} };
     Common.closeDropdown();
@@ -180,18 +195,18 @@ export class ActivityPage extends BasePage {
     this.click(ACTIVITY_FILTER);
   }
 
-  static clickFilterToogle(toggle: string) {
-    this.click(`[data-cy="${toggle}-toggle"]`);
+  static clickFilterCheckbox(toggle: string) {
+    this.click(`[data-cy="${toggle}-row"]`);
   }
 
   static validateNoActivityByTypeShown(type: string) {
-    cy.get(ACTIVITY_TYPE).each((el) => {
-      cy.wrap(el).find("span").first().should("not.have.text", type);
+    cy.get(ACTIVITY_NAME).each((el) => {
+      cy.wrap(el).should("not.have.text", type);
     });
   }
 
   static validateActivityVisibleByType(type: string) {
-    cy.get(`${ACTIVITY_TYPE} span`).contains(type).should("be.visible");
+    cy.get(`${ACTIVITY_NAME}`).contains(type).should("be.visible");
   }
 
   static validateActivityVisibleByAddress(address: string) {
@@ -199,9 +214,10 @@ export class ActivityPage extends BasePage {
       ? BasePage.shortenHex(address)
       : address;
     cy.get(AMOUNT_TO_FROM).each((el) => {
-      cy.wrap(el).should("have.text", `From${assertableString}`);
+      cy.log(el.text());
+      let regex = new RegExp(`(From|To)${assertableString}`);
+      cy.wrap(el.text()).should("match", regex);
     });
-    this.hasLength(AMOUNT_TO_FROM, 2);
   }
 
   static waitForSkeletonsToDisappear() {
@@ -254,7 +270,7 @@ export class ActivityPage extends BasePage {
   }
 
   static validateMockedActivityHistoryEntry(activity: string, network: string) {
-    this.hasText(ACTIVITY_NAME, activity, -1);
+    this.hasText(ACTIVITY_NAME, activity.split("/")[0], -1, { timeout: 30000 });
     this.isVisible(`[data-cy=${networksBySlug.get(network).id}-icon]`);
     this.isVisible(TX_HASH_LINKS);
     this.hasAttributeWithValue(
@@ -263,20 +279,27 @@ export class ActivityPage extends BasePage {
       networksBySlug.get(network).getLinkForTransaction("testTransactionHash")
     );
     this.containsText(ACTIVITY_TIME, format(NOW_TIMESTAMP * 1000, "HH:mm"));
-    switch (activity) {
+    switch (activity.split("/")[0]) {
       case "Liquidated":
         this.isVisible(LIQUIDATED_ICON);
-        this.hasText(ACTIVITY_NAME, "Send Transfer", 0);
-        this.hasText(ACTIVITY_AMOUNT, "1 TDLx", 0);
-        this.hasText(
-          AMOUNT_TO_FROM,
-          `To${this.shortenHex("0x2597c6abba5724fb99f343abddd4569ee4223179")}`,
-          0
-        );
+        if (activity.split("/")[1] === "v2") {
+          this.hasText(ACTIVITY_NAME, "Send Transfer", 0);
+          this.hasText(ACTIVITY_AMOUNT, "1 TDLx", 0);
+          this.hasText(
+            AMOUNT_TO_FROM,
+            `To${this.shortenHex(
+              "0x2597c6abba5724fb99f343abddd4569ee4223179"
+            )}`,
+            0
+          );
+        }
+        let toFrom = activity.split("/")[1] === "sender" ? "From" : "To";
         this.hasText(ACTIVITY_AMOUNT, "-", -1);
         this.hasText(
           AMOUNT_TO_FROM,
-          `To${this.shortenHex("0x9Be85A79D847dFa90584F3FD40cC1f6D4026E2B9")}`,
+          `${toFrom}${this.shortenHex(
+            "0x9Be85A79D847dFa90584F3FD40cC1f6D4026E2B9"
+          )}`,
           -1
         );
         break;
@@ -294,9 +317,14 @@ export class ActivityPage extends BasePage {
         );
         break;
       case "Unwrap":
+        let tokenUsed = activity.split("/")[1] === "wrapper" ? "TDL" : "MATIC";
         this.isVisible(WRAP_UNWRAP_ICON);
-        this.hasText(ACTIVITY_AMOUNT, "-1 TDLx");
-        this.hasText(AMOUNT_TO_FROM, "+1 TDL");
+        this.containsText(ACTIVITY_AMOUNT, `-1 ${tokenUsed}x`);
+        this.containsText(AMOUNT_TO_FROM, `+1 ${tokenUsed}`);
+        if (tokenUsed === "MATIC") {
+          this.isVisible(FIAT_AMOUNTS);
+          this.hasLength(FIAT_AMOUNTS, 2);
+        }
         break;
       case "Receive Transfer":
         this.hasText(ACTIVITY_AMOUNT, "1 TDLx");
@@ -334,7 +362,7 @@ export class ActivityPage extends BasePage {
         this.hasText(ACTIVITY_AMOUNT, " TDLx");
         this.hasText(
           AMOUNT_TO_FROM,
-          `Publisher${this.shortenHex(
+          `${activity.split("/")[1]}${this.shortenHex(
             "0x9Be85A79D847dFa90584F3FD40cC1f6D4026E2B9"
           )}`
         );
@@ -344,7 +372,7 @@ export class ActivityPage extends BasePage {
         this.hasText(ACTIVITY_AMOUNT, "+100 units");
         this.hasText(
           AMOUNT_TO_FROM,
-          `Publisher${this.shortenHex(
+          `${activity.split("/")[1]}${this.shortenHex(
             "0x9Be85A79D847dFa90584F3FD40cC1f6D4026E2B9"
           )}`
         );
@@ -354,7 +382,7 @@ export class ActivityPage extends BasePage {
         this.hasText(ACTIVITY_AMOUNT, "TDLx");
         this.hasText(
           AMOUNT_TO_FROM,
-          `Publisher${this.shortenHex(
+          `${activity.split("/")[1]}${this.shortenHex(
             "0x9Be85A79D847dFa90584F3FD40cC1f6D4026E2B9"
           )}`
         );
@@ -382,7 +410,7 @@ export class ActivityPage extends BasePage {
         this.hasText(ACTIVITY_AMOUNT, "+1 TDLx");
         this.hasText(
           AMOUNT_TO_FROM,
-          `Publisher${this.shortenHex(
+          `${activity.split("/")[1]}${this.shortenHex(
             "0x9Be85A79D847dFa90584F3FD40cC1f6D4026E2B9"
           )}`
         );

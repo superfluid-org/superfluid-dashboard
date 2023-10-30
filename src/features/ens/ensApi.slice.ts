@@ -1,6 +1,7 @@
 import { fakeBaseQuery } from "@reduxjs/toolkit/dist/query";
 import { createApi } from "@reduxjs/toolkit/dist/query/react";
 import { ethers } from "ethers";
+import { AvatarResolver } from "@ensdomains/ens-avatar";
 
 export interface ResolveNameResult {
   address: string;
@@ -17,6 +18,13 @@ export const ensApi = createApi({
       "https://rpc-endpoints.superfluid.dev/eth-mainnet",
       "mainnet"
     );
+
+    const avatarResolver = new AvatarResolver(mainnetProvider, {
+      apiKey: {
+        opensea: process.env.NEXT_PUBLIC_OPENSEA_API_KEY ?? "",
+      },
+    });
+
     return {
       resolveName: builder.query<ResolveNameResult | null, string>({
         queryFn: async (name) => {
@@ -53,7 +61,16 @@ export const ensApi = createApi({
       }),
       getAvatar: builder.query<any, string>({
         queryFn: async (address) => {
-          const avatarUrl = await mainnetProvider.getAvatar(address);
+          const name = await mainnetProvider.lookupAddress(address);
+
+          if (name === null) {
+            return {
+              data: null,
+            };
+          }
+
+          const avatarUrl = await avatarResolver.getAvatar(name, {});
+
           return {
             data: avatarUrl,
           };

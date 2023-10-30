@@ -37,7 +37,7 @@ const AccountInfo: FC<AccountInfoProps> = ({
   onClick,
   stopImpersonation,
 }) => (
-  <ListItem sx={{ px: 2, py: 0, cursor: "pointer" }} onClick={onClick}>
+  <ListItem data-cy={"connected-wallet-button"} sx={{ px: 2, py: 0, cursor: "pointer" }} onClick={onClick}>
     <ListItemAvatar sx={{ mr: 2 }}>
       <AddressAvatar address={address} />
     </ListItemAvatar>

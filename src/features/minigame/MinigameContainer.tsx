@@ -9,6 +9,7 @@ export default forwardRef<HTMLIFrameElement>(function MinigameContainer(
   const { getUrl } = useMinigame();
   return (
     <Container
+      data-cy="minigame-component"
       {...props}
       component="iframe"
       ref={ref}

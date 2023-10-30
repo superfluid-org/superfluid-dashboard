@@ -78,6 +78,48 @@ Given(/^User uses view mode to look at "([^"]*)"$/, (account: string) => {
   Common.viewAccount(account);
 });
 
+Given(/^User clicks on the dark mode button$/, () => {
+  Common.clickDarkModeButton();
+});
+
+Given(/^The dashboard theme is set to dark mode$/, () => {
+  Common.validateDashboardIsInDarkMode();
+});
+
+Given(/^User clicks on the light mode button$/, () => {
+  Common.clickLightModeButton();
+});
+
+Given(/^The dashboard theme is set to light mode$/, () => {
+  Common.validateDashboardIsInLightMode();
+});
+
+Given(/^A lens entry for "([^"]*)" is visible$/, (account: string) => {
+  Common.validateLensEntryIsVisible(account);
+});
+Given(/^The avatar image for "([^"]*)" is shown loaded$/, (account: string) => {
+  Common.validateLensImageIsLoaded(account);
+});
+Given(/^User chooses the first lens entry from the list$/, () => {
+  Common.clickOnFirstLensEntry();
+});
+
+Given(/^User opens the connected account modal$/, () => {
+  Common.clickOnConnectedWalletModal();
+});
+Given(/^User clicks on the copy address button in the account modal$/, () => {
+  Common.clickOnAddressModalCopyButton();
+});
+Given(
+  /^The address is copied and the buttons text in the address modal changes to "Copied!" with a checkmark icon$/,
+  () => {
+    Common.validateCopiedAddressInAddressModal();
+  }
+);
+Given(/^User clicks on the disconnect button$/, () => {
+  Common.clickDisconnectButton();
+});
+
 Then(/^The stop viewing as an address button is visible$/, () => {
   WrapPage.isStopViewingButtonVisible();
 });
@@ -97,9 +139,46 @@ Given(/^User closes the dropdown$/, () => {
 Then(/^User clicks on the view mode button$/, () => {
   Common.clickOnViewModeButton();
 });
-
+Then(/^Lens and ENS api requests are blocked$/, () => {
+  Common.blockLensAndENSApiRequests();
+});
+Then(
+  /^An error is shown in the "([^"]*)" receiver list$/,
+  (lensOrEns: string) => {
+    Common.validateErrorShownInRecepientList(lensOrEns);
+  }
+);
 Then(/^User types "([^"]*)" into the address input$/, (input: string) => {
   Common.typeIntoAddressInput(input);
+});
+Then(/^User hovers on the modify streams onboarding card$/, () => {
+  Common.hoverOnModifyStreamsOnboardingCard();
+});
+Then(/^User clicks on the modify streams onboarding card$/, () => {
+  Common.clickModifyStreamsOnboardingCard();
+});
+Then(
+  /^The minigame container iframe is visible without a wallet connected$/,
+  () => {
+    Common.validateMiniGameContainerWithoutWalletConnected();
+  }
+);
+Then(/^In-game cosmetics warning is shown$/, () => {
+  Common.validateMiniGameCosmeticsWarningIsVisible();
+});
+
+Then(/^In-game cosmetics warning does not exist$/, () => {
+  Common.validateMiniGameCosmeticsWarningDoesNotExist();
+});
+Then(
+  /^The minigame container iframe is visible with a wallet connected$/,
+  () => {
+    Common.validateMiniGameContainerWithWalletConnected();
+  }
+);
+
+Then(/^Wallet connection modal is shown$/, () => {
+  Common.validateWalletConnectionModalIsShown();
 });
 
 Then(
@@ -114,6 +193,18 @@ Then(/^User chooses the first address book result$/, () => {
 });
 Then(/^View mode chip shows "([^"]*)"$/, (message: string) => {
   Common.validateViewModeChipMessage(message);
+});
+Then(/^View mode dialog does not exist$/, () => {
+  Common.validateNoViewModeDialogExists();
+});
+Then(
+  /^"([^"]*)" ENS entry in the address search results is shown$/,
+  (ensName: string) => {
+    SendPage.validateEnsEntry(ensName);
+  }
+);
+Then(/^Connected account dialog does not exist$/, () => {
+  Common.validateNoConnectedAccountDialogExists();
 });
 Then(/^404 page is shown$/, () => {
   Common.errorPageIsVisible();
@@ -167,6 +258,13 @@ Then(/^User opens the navigation more menu$/, function () {
 Then(/^User opens the access code menu$/, function () {
   Common.openAccessCodeMenu();
 });
+Then(
+  /^User clicks on the "([^"]*)" button in the more menu$/,
+  function (button: string) {
+    Common.clickMoreMenuButton(button);
+  }
+);
+
 Then(/^User types "([^"]*)" in the access code menu$/, function (code: string) {
   Common.inputAccessCode(code);
 });

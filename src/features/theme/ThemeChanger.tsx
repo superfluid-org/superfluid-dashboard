@@ -19,7 +19,7 @@ export default function ThemeChanger() {
   const toggleTheme = () => setTheme(isDarkTheme ? "light" : "dark");
 
   return (
-    <ListItemButton sx={{ borderRadius: "10px" }} onClick={toggleTheme}>
+    <ListItemButton data-cy={isDarkTheme ? "light-mode-button" : "dark-mode-button"} sx={{ borderRadius: "10px" }} onClick={toggleTheme}>
       <ListItemIcon sx={{ ml: 0.25, mr: 2.25 }}>
         {isDarkTheme ? (
           <LightModeOutlinedIcon fontSize="small" />

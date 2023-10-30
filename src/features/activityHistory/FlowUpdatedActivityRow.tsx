@@ -211,6 +211,7 @@ const FlowUpdatedActivityRow: FC<FlowUpdatedActivityRowProps> = ({
                 secondary={
                   <AddressCopyTooltip address={isOutgoing ? receiver : sender}>
                     <Typography
+                      data-cy="address-to-copy"
                       variant="h6"
                       color="text.primary"
                       component="span"

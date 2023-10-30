@@ -14,6 +14,7 @@ import {
   autoWrapManagerAddresses,
   autoWrapStrategyAddresses,
   autoWrapSubgraphUrls,
+  chainIds,
   flowSchedulerContractAddresses,
   flowSchedulerSubgraphUrls,
   superfluidPlatformUrls,
@@ -100,6 +101,7 @@ const blockExplorers = {
 export const networkDefinition = {
   goerli: {
     ...chain.goerli,
+    id: chainIds.goerli,
     blockExplorers: ensureDefined(chain.goerli.blockExplorers),
     slugName: "goerli",
     v1ShortName: "goerli",
@@ -142,6 +144,7 @@ export const networkDefinition = {
   } as const,
   gnosis: {
     name: "Gnosis Chain",
+    id: chainIds.gnosis,
     blockExplorers: {
       etherscan: undefined!,
       default: blockExplorers.blockscout.gnosis,
@@ -149,7 +152,6 @@ export const networkDefinition = {
     slugName: "gnosis",
     v1ShortName: "xdai",
     network: "xdai",
-    id: 100,
     testnet: false,
     bufferTimeInMinutes: 240,
     icon: "/icons/network/gnosis.svg",
@@ -194,6 +196,7 @@ export const networkDefinition = {
   } as const,
   polygon: {
     ...chain.polygon,
+    id: chainIds.polygon,
     blockExplorers: ensureDefined(chain.polygon.blockExplorers),
     slugName: "polygon",
     v1ShortName: "matic",
@@ -240,6 +243,7 @@ export const networkDefinition = {
   } as const,
   polygonMumbai: {
     ...chain.polygonMumbai,
+    id: chainIds.polygonMumbai,
     blockExplorers: ensureDefined(chain.polygonMumbai.blockExplorers),
     slugName: "polygon-mumbai",
     v1ShortName: "mumbai",
@@ -286,10 +290,10 @@ export const networkDefinition = {
   } as const,
   avalancheFuji: {
     name: "Fuji (C-Chain)",
+    id: chainIds.avalancheFuji,
     slugName: "avalanche-fuji",
     v1ShortName: "avalanche-fuji",
     network: "avalanche-fuji",
-    id: 43113,
     testnet: true,
     bufferTimeInMinutes: 60,
     color: "#2b374b",
@@ -339,6 +343,7 @@ export const networkDefinition = {
   } as const,
   optimism: {
     ...chain.optimism,
+    id: chainIds.optimism,
     blockExplorers: ensureDefined(chain.optimism.blockExplorers),
     slugName: "optimism",
     v1ShortName: "optimism-mainnet",
@@ -382,6 +387,7 @@ export const networkDefinition = {
   } as const,
   arbitrum: {
     ...chain.arbitrum,
+    id: chainIds.arbitrum,
     blockExplorers: ensureDefined(chain.arbitrum.blockExplorers),
     slugName: "arbitrum-one",
     v1ShortName: "arbitrum-one",
@@ -425,10 +431,10 @@ export const networkDefinition = {
   } as const,
   avalancheC: {
     name: "Avalanche C",
+    id: chainIds.avalanche,
     slugName: "avalanche",
     v1ShortName: "avalanche-c",
     network: "avalanche-c",
-    id: 43114,
     testnet: false,
     bufferTimeInMinutes: 240,
     icon: "/icons/network/avalanche.svg",
@@ -479,6 +485,7 @@ export const networkDefinition = {
   } as const,
   bsc: {
     ...chain.bsc,
+    id: chainIds.bsc,
     name: "BNB Smart Chain",
     slugName: "bsc",
     v1ShortName: "bsc-mainnet",
@@ -530,6 +537,7 @@ export const networkDefinition = {
   } as const,
   ethereum: {
     ...chain.mainnet,
+    id: chainIds.mainnet,
     blockExplorers: ensureDefined(chain.mainnet.blockExplorers),
     slugName: "ethereum",
     v1ShortName: "eth",
@@ -573,6 +581,7 @@ export const networkDefinition = {
   } as const,
   celoMainnet: {
     ...chain.celo,
+    id: chainIds.celo,
     blockExplorers: {
       celoscan: blockExplorers.celoscan.mainnet,
       default: blockExplorers.celoscan.mainnet,
@@ -611,6 +620,7 @@ export const networkDefinition = {
   } as const,
   optimismGoerli: {
     ...chain.optimismGoerli,
+    id: chainIds.optimismGoerli,
     blockExplorers: ensureDefined(chain.optimismGoerli.blockExplorers),
     slugName: "optimism-goerli",
     v1ShortName: "optimism goerli",
@@ -646,6 +656,7 @@ export const networkDefinition = {
   } as const,
   arbitrumGoerli: {
     ...chain.arbitrumGoerli,
+    id: chainIds.arbitrumGoerli,
     blockExplorers: ensureDefined(chain.arbitrumGoerli.blockExplorers),
     slugName: "arbitrum-goerli",
     v1ShortName: "arbitrum goerli",
@@ -681,6 +692,7 @@ export const networkDefinition = {
   } as const,
   sepolia: {
     ...chain.sepolia,
+    id: chainIds.sepolia,
     blockExplorers: ensureDefined(chain.sepolia.blockExplorers),
     slugName: "sepolia",
     v1ShortName: "sepolia",
@@ -716,6 +728,7 @@ export const networkDefinition = {
 
   polygonZkevmTestnet: {
     ...chain.polygonZkEvmTestnet,
+    id: chainIds.polygonZkevmTestnet,
     blockExplorers: ensureDefined(chain.polygonZkEvmTestnet.blockExplorers),
     slugName: "polygon-zkevm-testnet",
     v1ShortName: "pzkevmtest",
@@ -748,8 +761,9 @@ export const networkDefinition = {
     autoWrapSubgraphUrl: undefined,
     platformUrl: undefined,
   } as const,
-  baseGoerli : {
+  baseGoerli: {
     ...chain.baseGoerli,
+    id: chainIds.baseGoerli,
     blockExplorers: ensureDefined(chain.baseGoerli.blockExplorers),
     slugName: "bgoerli",
     v1ShortName: "bgoerli",
@@ -759,8 +773,7 @@ export const networkDefinition = {
       ...chain.baseGoerli.rpcUrls,
       superfluid: { http: [superfluidRpcUrls["base-goerli"]] },
     },
-    fallbackSubgraphUrl:
-      "https://base-goerli.subgraph.x.superfluid.dev/",
+    fallbackSubgraphUrl: "https://base-goerli.subgraph.x.superfluid.dev/",
     getLinkForTransaction: (txHash: string): string =>
       `https://goerli.basescan.org/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
@@ -782,8 +795,9 @@ export const networkDefinition = {
     autoWrapSubgraphUrl: undefined,
     platformUrl: undefined,
   } as const,
-  base : {
+  base: {
     ...chain.base,
+    id: chainIds.base,
     blockExplorers: ensureDefined(chain.base.blockExplorers),
     slugName: "base",
     v1ShortName: "base",
@@ -794,8 +808,7 @@ export const networkDefinition = {
       ...chain.base.rpcUrls,
       superfluid: { http: [superfluidRpcUrls["base"]] },
     },
-    fallbackSubgraphUrl:
-      "https://base-mainnet.subgraph.x.superfluid.dev/",
+    fallbackSubgraphUrl: "https://base-mainnet.subgraph.x.superfluid.dev/",
     getLinkForTransaction: (txHash: string): string =>
       `https://basescan.org/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>

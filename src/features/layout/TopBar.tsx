@@ -72,15 +72,17 @@ export default memo(function TopBar() {
   const theme = useTheme();
   const isBelowLg = useMediaQuery(theme.breakpoints.down("lg"));
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
-  const { address: accountAddress } = useAccount();
+  const { address: accountAddress, isConnected } = useAccount();
   const { switchNetwork } = useSwitchNetwork();
-  const { network: selectedNetwork, setExpectedNetwork: setSelectedNetwork } =
+  const { network: selectedNetwork, setExpectedNetwork: setSelectedNetwork, stopAutoSwitchToWalletNetwork } =
     useExpectedNetwork();
 
   const { isImpersonated } = useImpersonation();
 
   const onNetworkChange = (network: Network) => {
     setSelectedNetwork(network.id);
+    stopAutoSwitchToWalletNetwork(); // If user explicitly chooses a network from the drop-down, we'll respect that decision and not switch to the wallet's network automatically.
+
     if (accountAddress && switchNetwork) {
       switchNetwork(network.id);
     }

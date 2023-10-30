@@ -20,10 +20,10 @@ const FiatAmount: FC<PropsWithChildren<FiatAmountProps>> = ({
   const decimal = new Decimal(utils.formatUnits(wei, decimals)).mul(price);
 
   return (
-    <>
+    <span data-cy="fiat-amount">
       {currency.format(decimal.toFixed(2))}
       {children}
-    </>
+    </span>
   );
 };
 

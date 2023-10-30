@@ -158,77 +158,48 @@ export const flowSchedulerEndpoints = {
           } = existingFlowSchedule || {};
 
           if (shouldSchedule) {
-            const getIsEOA = dispatch(
-              rpcApi.endpoints.isEOA.initiate(
-                {
-                  chainId,
-                  accountAddress: arg.senderAddress,
-                },
-                {
-                  subscribe: true,
-                }
-              )
-            );
-
-            const [flowOperatorData, isEOA] = await Promise.all([
-              superToken.getFlowOperatorData({
-                flowOperator: network.flowSchedulerContractAddress,
-                sender: arg.senderAddress,
-                providerOrSigner: arg.signer,
-              }),
-              getIsEOA.unwrap().finally(() => getIsEOA.unsubscribe()),
-            ]);
+            const flowOperatorData = await superToken.getFlowOperatorData({
+              flowOperator: network.flowSchedulerContractAddress,
+              sender: arg.senderAddress,
+              providerOrSigner: arg.signer,
+            })
 
             const existingFlowRateAllowance = BigNumber.from(
               flowOperatorData.flowRateAllowance
             );
             const existingPermissions = Number(flowOperatorData.permissions);
 
-            const newPermissions =
-              existingPermissions |
+            const permissionsDelta =
               (shouldScheduleStart ? ACL_CREATE_PERMISSION : 0) |
               (shouldScheduledEnd ? ACL_DELETE_PERMISSION : 0);
+            const newPermissions = existingPermissions | permissionsDelta;
 
             const doesNeedAllowance = !activeExistingFlow && arg.startTimestamp;
-            const additionalAllowance = doesNeedAllowance
+            const flowRateAllowanceDelta = doesNeedAllowance
               ? BigNumber.from(arg.flowRateWei)
               : BigNumber.from("0");
-
             const newFlowRateAllowance = isCloseToUnlimitedFlowRateAllowance(
               existingFlowRateAllowance
             )
               ? existingFlowRateAllowance
-              : existingFlowRateAllowance.add(additionalAllowance);
+              : existingFlowRateAllowance.add(flowRateAllowanceDelta);
 
             const hasEnoughSuperTokenAccess =
               existingPermissions === newPermissions &&
               existingFlowRateAllowance.eq(newFlowRateAllowance);
 
             if (!hasEnoughSuperTokenAccess) {
-              if (isEOA) {
-                subOperations.push({
-                  operation: await superToken.updateFlowOperatorPermissions({
+              subOperations.push({
+                operation:
+                  await superToken.increaseFlowRateAllowanceWithPermissions({
                     flowOperator: network.flowSchedulerContractAddress,
-                    flowRateAllowance: newFlowRateAllowance.toString(),
-                    permissions: newPermissions,
+                    flowRateAllowanceDelta: flowRateAllowanceDelta.toString(),
+                    permissionsDelta: permissionsDelta,
                     userData: userData,
                     overrides: arg.overrides,
                   }),
-                  title: "Approve Stream Scheduler",
-                });
-              } else {
-                // For smart contracts wallets, we're concerned about the transactions being queued up and executed together which would break our permissions/allowance calculation logic which is based on current on-chain data.
-                // When transactions are queued up then data about them will reach on-chain later.
-                subOperations.push({
-                  operation:
-                    await superToken.authorizeFlowOperatorWithFullControl({
-                      flowOperator: network.flowSchedulerContractAddress,
-                      userData: userData,
-                      overrides: arg.overrides,
-                    }),
-                  title: "Approve Stream Scheduler",
-                });
-              }
+                title: "Approve Stream Scheduler",
+              });
             }
 
             if (

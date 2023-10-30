@@ -1,29 +1,47 @@
-import * as chain from "@wagmi/chains";
+export const chainIds = {
+  mainnet: 1,
+  goerli: 5,
+  gnosis: 100,
+  polygon: 137,
+  polygonMumbai: 80001,
+  avalancheFuji: 43113,
+  avalanche: 43114,
+  bsc: 56,
+  celo: 42220,
+  optimism: 10,
+  arbitrum: 42161,
+  sepolia: 11155111,
+  optimismGoerli: 420,
+  arbitrumGoerli: 421613,
+  polygonZkevmTestnet: 1442,
+  baseGoerli: 84531,
+  base: 8453,
+} as const;
 
 export const autoWrapManagerAddresses = {
-  [chain.polygon.id]: "0x2581c27E7f6D6AF452E63fCe884EDE3EDd716b32",
-  [chain.bsc.id]: "0x2AcdD61ac1EFFe1535109449c31889bdE8d7f325",
-  [chain.goerli.id]: "0x0B82D14E9616ca4d260E77454834AdCf5887595F",
-  [chain.polygonMumbai.id]: "0x3eAB3c6207F488E475b7955B631B564F0E6317B9",
-  [chain.avalancheFuji.id]: "0x30aE282CF477E2eF28B14d0125aCEAd57Fe1d7a1",
-  [chain.avalanche.id]: "0x8082e58681350876aFe8f52d3Bf8672034A03Db0",
-  [chain.optimism.id]: "0x1fA76f2Cd0C3fe6c399A80111408d9C42C0CAC23",
-  [chain.arbitrum.id]: "0xf01825eAFAe5CD1Dab5593EFAF218efC8968D272",
-  [chain.mainnet.id]: "0x30aE282CF477E2eF28B14d0125aCEAd57Fe1d7a1",
-  [chain.gnosis.id]: "0x8082e58681350876aFe8f52d3Bf8672034A03Db0",
+  [chainIds.polygon]: "0x2581c27E7f6D6AF452E63fCe884EDE3EDd716b32",
+  [chainIds.bsc]: "0x2AcdD61ac1EFFe1535109449c31889bdE8d7f325",
+  [chainIds.goerli]: "0x0B82D14E9616ca4d260E77454834AdCf5887595F",
+  [chainIds.polygonMumbai]: "0x3eAB3c6207F488E475b7955B631B564F0E6317B9",
+  [chainIds.avalancheFuji]: "0x30aE282CF477E2eF28B14d0125aCEAd57Fe1d7a1",
+  [chainIds.avalanche]: "0x8082e58681350876aFe8f52d3Bf8672034A03Db0",
+  [chainIds.optimism]: "0x1fA76f2Cd0C3fe6c399A80111408d9C42C0CAC23",
+  [chainIds.arbitrum]: "0xf01825eAFAe5CD1Dab5593EFAF218efC8968D272",
+  [chainIds.mainnet]: "0x30aE282CF477E2eF28B14d0125aCEAd57Fe1d7a1",
+  [chainIds.gnosis]: "0x8082e58681350876aFe8f52d3Bf8672034A03Db0",
 } as const;
 
 export const autoWrapStrategyAddresses = {
-  [chain.polygon.id]: "0xb4afa36BAd8c76976Dc77a21c9Ad711EF720eE4b",
-  [chain.bsc.id]: "0x9e308cb079ae130790F604b1030cDf386670f199",
-  [chain.goerli.id]: "0xea49af829d3e28d3ec49e0e0a0ba1e7860a56f60",
-  [chain.polygonMumbai.id]: "0x544728AFDBeEafBeC9e1329031788edb53017bC4",
-  [chain.avalancheFuji.id]: "0x1D65c6d3AD39d454Ea8F682c49aE7744706eA96d",
-  [chain.avalanche.id]: "0x51FBAbD31A615E14b1bC12E9d887f60997264a4E",
-  [chain.optimism.id]: "0x0Cf060a501c0040e9CCC708eFE94079F501c6Bb4",
-  [chain.arbitrum.id]: "0x342076aA957B0ec8bC1d3893af719b288eA31e61",
-  [chain.mainnet.id]: "0x1D65c6d3AD39d454Ea8F682c49aE7744706eA96d",
-  [chain.gnosis.id]: "0x51FBAbD31A615E14b1bC12E9d887f60997264a4E",
+  [chainIds.polygon]: "0xb4afa36BAd8c76976Dc77a21c9Ad711EF720eE4b",
+  [chainIds.bsc]: "0x9e308cb079ae130790F604b1030cDf386670f199",
+  [chainIds.goerli]: "0xea49af829d3e28d3ec49e0e0a0ba1e7860a56f60",
+  [chainIds.polygonMumbai]: "0x544728AFDBeEafBeC9e1329031788edb53017bC4",
+  [chainIds.avalancheFuji]: "0x1D65c6d3AD39d454Ea8F682c49aE7744706eA96d",
+  [chainIds.avalanche]: "0x51FBAbD31A615E14b1bC12E9d887f60997264a4E",
+  [chainIds.optimism]: "0x0Cf060a501c0040e9CCC708eFE94079F501c6Bb4",
+  [chainIds.arbitrum]: "0x342076aA957B0ec8bC1d3893af719b288eA31e61",
+  [chainIds.mainnet]: "0x1D65c6d3AD39d454Ea8F682c49aE7744706eA96d",
+  [chainIds.gnosis]: "0x51FBAbD31A615E14b1bC12E9d887f60997264a4E",
 } as const;
 
 export const flowSchedulerContractAddresses = {
@@ -113,7 +131,6 @@ export const autoWrapSubgraphUrls = {
     "https://api.thegraph.com/subgraphs/name/superfluid-finance/auto-wrap-v1-xdai-mainnet",
 } as const;
 
-
 export const superfluidRpcUrls = {
   goerli: "https://rpc-endpoints.superfluid.dev/eth-goerli",
   gnosis: "https://rpc-endpoints.superfluid.dev/xdai-mainnet",
@@ -128,10 +145,11 @@ export const superfluidRpcUrls = {
   "celo-mainnet": "https://rpc-endpoints.superfluid.dev/celo-mainnet",
   "optimism-goerli": "https://rpc-endpoints.superfluid.dev/optimism-goerli",
   "arbitrum-goerli": "https://rpc-endpoints.superfluid.dev/arbitrum-goerli",
-  "sepolia": "https://rpc-endpoints.superfluid.dev/eth-sepolia",
-  "polygon-zkevm-testnet": "https://rpc-endpoints.superfluid.dev/polygon-zkevm-testnet",
-  "base-goerli":"https://rpc-endpoints.superfluid.dev/base-goerli",
-  "base":"https://rpc-endpoints.superfluid.dev/base-mainnet"
+  sepolia: "https://rpc-endpoints.superfluid.dev/eth-sepolia",
+  "polygon-zkevm-testnet":
+    "https://rpc-endpoints.superfluid.dev/polygon-zkevm-testnet",
+  "base-goerli": "https://rpc-endpoints.superfluid.dev/base-goerli",
+  base: "https://rpc-endpoints.superfluid.dev/base-mainnet",
 } as const;
 
 export const superfluidPlatformUrls = {

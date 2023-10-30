@@ -337,7 +337,7 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
                 )}
                 {ensQuery.isError && (
                   <ListItem sx={LIST_ITEM_STYLE}>
-                    <ListItemText translate="yes" primary="Error" />
+                    <ListItemText data-cy="ens-error" translate="yes" primary="Error" />
                   </ListItem>
                 )}
                 {!ensQuery.isLoading &&
@@ -371,7 +371,7 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
                 )}
                 {lensQuery.isError && (
                   <ListItem sx={LIST_ITEM_STYLE}>
-                    <ListItemText translate="yes" primary="Error" />
+                    <ListItemText data-cy="lens-error" translate="yes" primary="Error" />
                   </ListItem>
                 )}
                 {!lensQuery.isLoading &&

@@ -74,6 +74,30 @@ Then(
 Given(/^Address book test data is set up$/, function () {
   AddressBookPage.setupAddressBook();
 });
+Given(/^User hovers on the first address in the address book$/, function () {
+  AddressBookPage.hoverOnFirstAddress();
+});
+Given(
+  /^User hovers on the first address copy button in the address book$/,
+  function () {
+    AddressBookPage.hoverOnFirstAddressCopyButton();
+  }
+);
+Given(
+  /^User stops hovering on the first address in the address book$/,
+  function () {
+    AddressBookPage.stopHoveringOnFirstAddress();
+  }
+);
+Then(/^User clicks on the first copy button$/, function () {
+  AddressBookPage.clickFirstCopyButton();
+});
+Then(
+  /^The copy tooltip in address book page shows "([^"]*)"$/,
+  function (text: string) {
+    AddressBookPage.validateTooltipText(text);
+  }
+);
 Given(
   /^User searches for "([^"]*)" as a receiver and selects it$/,
   function (name: string) {

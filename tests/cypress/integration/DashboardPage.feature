@@ -73,3 +73,12 @@ Feature: Dashboard Page test cases
     Scenario: Testnet faucet message not shown for users with tokens
         Given "Dashboard Page" is open with "john" connected on "polygon-mumbai"
         Then Dashboard page faucet message does not exist
+
+    Scenario: Cancelling a stream from the streams table
+        Given HDWallet transactions are rejected
+
+        Given "Dashboard Page" is open with "john" connected on "goerli"
+        And User clicks on "goerli" "fDAIx" row
+        And Cancel and Edit buttons are visible
+        And User clicks on the first visible cancel button
+        Then Transaction rejected error is shown

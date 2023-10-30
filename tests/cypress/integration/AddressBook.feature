@@ -21,13 +21,24 @@ Feature: Address Book test cases
         Given "Address book Page" is open without connecting a wallet
         And User adds "vijay.eth" as "-" on "-" to their address book
         Then The last address book entry name is "vijay.eth"
-        And The last saved address is "0x7BDa037dFdf9CD9Ad261D27f489924aebbcE71Ac"
+        And The last saved address is "0x1dDc50A8b8ef07c654B4ace65070B0E7acfF622B"
         And ENS name "vijay.eth" is shown by the last saved address book entry
 
     Scenario: Adding a new contract address to the address book
         And "Address book Page" is open without connecting a wallet
         And User adds "0xF9240F930d847F70ad900aBEE8949F25649Bf24a" as "Testing" on "-" to their address book
         Then A contract address "0xF9240F930d847F70ad900aBEE8949F25649Bf24a" on "goerli" is saved as "Testing"
+
+    Scenario: Copying an address from the address book
+        Given Address book test data is set up
+        And "Address book Page" is open without connecting a wallet
+        And User hovers on the first address in the address book
+        Then The copy tooltip in address book page shows "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40"
+        And User stops hovering on the first address in the address book
+        And User hovers on the first address copy button in the address book
+        Then The copy tooltip in address book page shows "Copy to clipboard"
+        And User clicks on the first copy button
+        Then The copy tooltip in address book page shows "Copied!"
 
     Scenario: Importing address book csv
         Given "Address book Page" is open without connecting a wallet
@@ -132,19 +143,19 @@ Feature: Address Book test cases
         Then The activity rows address shows up as "john"
 
         Examples:
-            | activity              |
-            | Distribution Claimed  |
-            | Send Transfer         |
-            | Liquidated            |
-            | Subscription Updated  |
-            | Stream Cancelled      |
-            | Stream Updated        |
-            | Receive Stream        |
-            | Receive Transfer      |
-            | Send Stream           |
-            | Send Transfer         |
-            | Subscription Rejected |
-            | Subscription Approved |
+            | activity                         |
+            | Distribution Claimed/Subscriber  |
+            | Send Transfer                    |
+            | Liquidated/v2                    |
+            | Subscription Updated/Subscriber  |
+            | Stream Cancelled                 |
+            | Stream Updated                   |
+            | Receive Stream                   |
+            | Receive Transfer                 |
+            | Send Stream                      |
+            | Send Transfer                    |
+            | Subscription Rejected/Subscriber |
+            | Subscription Approved/Subscriber |
 
     Scenario: Address book name filter
         Given Address book test data is set up
