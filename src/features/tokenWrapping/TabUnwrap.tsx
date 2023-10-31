@@ -10,9 +10,8 @@ import {
   parseAmountOrZero,
 } from "../../utils/tokenUtils";
 import { useAnalytics } from "../analytics/useAnalytics";
-import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
-import { rpcApi, subgraphApi } from "../redux/store";
+import { rpcApi } from "../redux/store";
 import TokenIcon from "../token/TokenIcon";
 import FiatAmount from "../tokenPrice/FiatAmount";
 import useTokenPrice from "../tokenPrice/useTokenPrice";
@@ -32,6 +31,7 @@ import { useTokenPairQuery } from "./useTokenPairQuery";
 import { WrapInputCard } from "./WrapInputCard";
 import { ValidWrappingForm, WrappingForm } from "./WrappingFormProvider";
 import { BigNumber } from "ethers";
+import { useTokenPairsQuery } from "./useTokenPairsQuery";
 
 interface TabUnwrapProps {
   onSwitchMode: () => void;
@@ -65,12 +65,9 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
 
   const [tokenPair, amount] = watch(["data.tokenPair", "data.amountDecimal"]);
 
-  const networkCustomTokens = useNetworkCustomTokens(network.id);
-
-  const tokenPairsQuery = subgraphApi.useTokenUpgradeDowngradePairsQuery({
-    chainId: network.id,
-    unlistedTokenIDs: networkCustomTokens,
-  });
+  const tokenPairsQuery = useTokenPairsQuery({
+    network
+  })
 
   const { superToken, underlyingToken } = useTokenPairQuery({
     network,
@@ -96,10 +93,10 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
     rpcApi.useRealtimeBalanceQuery(
       tokenPair && visibleAddress
         ? {
-            chainId: network.id,
-            accountAddress: visibleAddress,
-            tokenAddress: tokenPair.superTokenAddress,
-          }
+          chainId: network.id,
+          accountAddress: visibleAddress,
+          tokenAddress: tokenPair.superTokenAddress,
+        }
         : skipToken
     );
   const realtimeBalance = realtimeBalanceQuery.currentData;
