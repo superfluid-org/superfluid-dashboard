@@ -160,7 +160,7 @@ export class Common extends BasePage {
     this.isVisible(WAGMI_CONNECT_WALLET_TITLE);
   }
   static blockLensAndENSApiRequests() {
-    cy.intercept("POST", "https://rpc-endpoints.superfluid.dev/eth-mainnet", {
+    cy.intercept("POST", "https://eth-mainnet.subgraph.x.superfluid.dev", {
       forceNetworkError: true,
     });
     cy.intercept("POST", "https://api.lens.dev/", { forceNetworkError: true });
@@ -463,7 +463,7 @@ export class Common extends BasePage {
   }
 
   static mockQueryToEmptyState(operationName: string) {
-    cy.intercept("POST", "**protocol-v1**", (req) => {
+    cy.intercept("POST", "**subgraph.x.superfluid.dev**", (req) => {
       const { body } = req;
       if (
         body.hasOwnProperty("operationName") &&

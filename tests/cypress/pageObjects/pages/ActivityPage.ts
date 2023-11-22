@@ -238,9 +238,9 @@ export class ActivityPage extends BasePage {
       const networkFromMetadata = superfluidMetadata.getNetworkByChainId(
         networksBySlug.get(network).id
       );
-      const subgraphEndpoint =
-        networkFromMetadata?.subgraphV1?.satsumaEndpoint ??
-        networkFromMetadata?.subgraphV1?.hostedEndpoint;
+      const subgraphEndpoint = networkFromMetadata
+        ? `https://${networkFromMetadata.name}.subgraph.x.superfluid.dev`
+        : undefined;
 
       cy.intercept("POST", subgraphEndpoint, (req) => {
         if (req.body.operationName === "events") {
