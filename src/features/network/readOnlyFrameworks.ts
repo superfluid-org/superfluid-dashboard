@@ -9,12 +9,7 @@ const readOnlyFrameworks = allNetworks.map((network) => {
   const networkFromMetadata = superfluidMetadata.getNetworkByChainId(
     network.id
   );
-
-  const subgraphEndpoint =
-    networkFromMetadata?.subgraphV1?.satsumaEndpoint ??
-    networkFromMetadata?.subgraphV1?.hostedEndpoint ??
-    network.fallbackSubgraphUrl;
-
+  const subgraphEndpoint = networkFromMetadata ? `https://${networkFromMetadata.name}.subgraph.x.superfluid.dev` : undefined;
   return {
     chainId: network.id,
     frameworkGetter: () =>
