@@ -41,6 +41,8 @@ Cypress.on("fail", (err, runneable) => {
     err.name.includes("PollingBlockTracker")
   ) {
     return false;
+  } else {
+    throw err;
   }
 });
 
