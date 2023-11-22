@@ -18,7 +18,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Wait for Netlify
-        uses: probablyup/wait-for-netlify-action@3.2.0 # Check the source code before updating version because it uses personal Netlify access token which does not have granular access control.
+        uses: quantizor/wait-for-netlify-action@3.2.0 # Check the source code before updating version because it uses personal Netlify access token which does not have granular access control.
         id: waitForDeployment
         with:
           site_id: "aa82cf1e-ce5d-432f-99bf-77a0b8c13277"
