@@ -326,7 +326,7 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({}) => {
         loading={
           streamPeriodsResponse.isLoading || streamPeriodsResponse.isFetching
         }
-        rowsPerPageOptions={[10, 25, 50]}
+        rowsPerPageOptions={[10, 25, 50, { value: -1, label: 'All' }]}
         onPageSizeChange={onPageSizeChange}
         components={{
           Toolbar: CustomToolbar,

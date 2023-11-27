@@ -598,7 +598,7 @@ const AddressBook: NextPage = () => {
                 </TableBody>
               </Table>
               <TablePagination
-                rowsPerPageOptions={[5, 10, 25]}
+                rowsPerPageOptions={[5, 10, 25, { value: -1, label: 'All' }]}
                 component="div"
                 count={filteredAddresses.length}
                 rowsPerPage={rowsPerPage.wallet}
@@ -682,7 +682,7 @@ const AddressBook: NextPage = () => {
                 </TableBody>
               </Table>
               <TablePagination
-                rowsPerPageOptions={[5, 10, 25]}
+                rowsPerPageOptions={[5, 10, 25, { value: -1, label: 'All' }]}
                 component="div"
                 count={filteredContracts.length}
                 rowsPerPage={rowsPerPage.contract}
