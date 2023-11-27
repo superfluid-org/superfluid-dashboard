@@ -251,7 +251,7 @@ const VestingScheduleTable: FC<VestingScheduleTableProps> = ({
       {(filteredVestingSchedules.length > 5 ||
         (!isBelowMd && filteredVestingSchedules.length <= 5)) && (
           <TablePagination
-            rowsPerPageOptions={[5, 25, 100, { value: -1, label: 'All' }]}
+            rowsPerPageOptions={[5, 10, 25, { value: -1, label: 'All' }]}
             component="div"
             count={filteredVestingSchedules.length}
             rowsPerPage={rowsPerPage}
