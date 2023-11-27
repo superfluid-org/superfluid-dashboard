@@ -250,22 +250,22 @@ const VestingScheduleTable: FC<VestingScheduleTableProps> = ({
       </Table>
       {(filteredVestingSchedules.length > 5 ||
         (!isBelowMd && filteredVestingSchedules.length <= 5)) && (
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={filteredVestingSchedules.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-          sx={{
-            "> *": {
-              visibility:
-                filteredVestingSchedules.length <= 5 ? "hidden" : "visible",
-            },
-          }}
-        />
-      )}
+          <TablePagination
+            rowsPerPageOptions={[5, 25, 100, { value: -1, label: 'All' }]}
+            component="div"
+            count={filteredVestingSchedules.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+            sx={{
+              "> *": {
+                visibility:
+                  filteredVestingSchedules.length <= 5 ? "hidden" : "visible",
+              },
+            }}
+          />
+        )}
     </TableContainer>
   );
 };
