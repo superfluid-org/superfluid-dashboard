@@ -81,10 +81,10 @@ const StreamsTable: FC<StreamsTableProps> = ({
     subgraphApi.useFindStreamIdsWhereHumaIsOperatorQuery(
       network.humaFinance && visibleAddress
         ? {
-            chainId: network.id,
-            flowOperatorAddress: network.humaFinance.nftAddress,
-            receiverAddress: visibleAddress,
-          }
+          chainId: network.id,
+          flowOperatorAddress: network.humaFinance.nftAddress,
+          receiverAddress: visibleAddress,
+        }
         : skipToken
     );
 
@@ -133,26 +133,26 @@ const StreamsTable: FC<StreamsTableProps> = ({
   const { activeTasks } = schedulingSubgraphApi.useGetTasksQuery(
     visibleAddress && network.flowSchedulerSubgraphUrl
       ? {
-          chainId: network.id,
-          orderBy: "executionAt",
-          orderDirection: "asc",
-          where: {
-            or: [
-              {
-                superToken: tokenAddress.toLowerCase(),
-                sender: visibleAddress.toLowerCase(),
-                cancelledAt: null,
-                executedAt: null,
-              },
-              {
-                superToken: tokenAddress.toLowerCase(),
-                receiver: visibleAddress.toLowerCase(),
-                cancelledAt: null,
-                executedAt: null,
-              },
-            ],
-          },
-        }
+        chainId: network.id,
+        orderBy: "executionAt",
+        orderDirection: "asc",
+        where: {
+          or: [
+            {
+              superToken: tokenAddress.toLowerCase(),
+              sender: visibleAddress.toLowerCase(),
+              cancelledAt: null,
+              executedAt: null,
+            },
+            {
+              superToken: tokenAddress.toLowerCase(),
+              receiver: visibleAddress.toLowerCase(),
+              cancelledAt: null,
+              executedAt: null,
+            },
+          ],
+        },
+      }
       : skipToken,
     {
       refetchOnFocus: true,
@@ -190,11 +190,11 @@ const StreamsTable: FC<StreamsTableProps> = ({
           !pendingOutgoingStreams.some(
             (pendingOutgoingStream) =>
               pendingOutgoingStream.sender.toLowerCase() ===
-                pendingTask.sender.toLowerCase() &&
+              pendingTask.sender.toLowerCase() &&
               pendingOutgoingStream.receiver.toLowerCase() ===
-                pendingTask.receiver.toLowerCase() &&
+              pendingTask.receiver.toLowerCase() &&
               pendingOutgoingStream.token.toLowerCase() ===
-                pendingTask.superToken.toLowerCase()
+              pendingTask.superToken.toLowerCase()
           )
       ),
     ],
@@ -255,11 +255,11 @@ const StreamsTable: FC<StreamsTableProps> = ({
 
         const relevantTasks = isActive
           ? allTasks.filter(
-              (task) =>
-                task.sender.toLowerCase() === stream.sender.toLowerCase() &&
-                task.receiver.toLowerCase() === stream.receiver.toLowerCase() &&
-                task.superToken.toLowerCase() === stream.token.toLowerCase()
-            )
+            (task) =>
+              task.sender.toLowerCase() === stream.sender.toLowerCase() &&
+              task.receiver.toLowerCase() === stream.receiver.toLowerCase() &&
+              task.superToken.toLowerCase() === stream.token.toLowerCase()
+          )
           : [];
 
         const createTask = relevantTasks.find(
@@ -314,7 +314,8 @@ const StreamsTable: FC<StreamsTableProps> = ({
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
+    const newRowsPerPage = rowsPerPage === -1 ? filteredStreams.length : parseInt(event.target.value, 10);
+    setRowsPerPage(newRowsPerPage);
     setPage(0);
   };
 
@@ -339,32 +340,32 @@ const StreamsTable: FC<StreamsTableProps> = ({
       sx={
         subTable
           ? {
-              borderRadius: lastElement ? "0 0 20px 20px" : 0,
-              borderTop: "none",
-              borderLeft: "none",
-              borderRight: "none",
-              boxShadow: "none",
-              ...(lastElement && { borderBottom: "none" }),
-              ".MuiTablePagination-root": {
-                background:
-                  theme.palette.mode === "light"
-                    ? "transparent"
-                    : alpha(theme.palette.action.hover, 0.08),
-              },
-              [theme.breakpoints.down("md")]: {
-                borderRadius: 0,
-              },
-            }
+            borderRadius: lastElement ? "0 0 20px 20px" : 0,
+            borderTop: "none",
+            borderLeft: "none",
+            borderRight: "none",
+            boxShadow: "none",
+            ...(lastElement && { borderBottom: "none" }),
+            ".MuiTablePagination-root": {
+              background:
+                theme.palette.mode === "light"
+                  ? "transparent"
+                  : alpha(theme.palette.action.hover, 0.08),
+            },
+            [theme.breakpoints.down("md")]: {
+              borderRadius: 0,
+            },
+          }
           : {
-              [theme.breakpoints.down("md")]: {
-                mx: -2,
-                width: "auto",
-                borderRadius: 0,
-                border: "none",
-                borderBottom: `1px solid ${theme.palette.divider}`,
-                boxShadow: "none",
-              },
-            }
+            [theme.breakpoints.down("md")]: {
+              mx: -2,
+              width: "auto",
+              borderRadius: 0,
+              border: "none",
+              borderBottom: `1px solid ${theme.palette.divider}`,
+              boxShadow: "none",
+            },
+          }
       }
     >
       <Table
@@ -375,10 +376,10 @@ const StreamsTable: FC<StreamsTableProps> = ({
           }),
           ...(subTable &&
             !isBelowMd && {
-              ".MuiTableHead-root .MuiTableCell-root:first-of-type": {
-                pl: 8.5,
-              },
-            }),
+            ".MuiTableHead-root .MuiTableCell-root:first-of-type": {
+              pl: 8.5,
+            },
+          }),
         }}
       >
         <TableHead translate="yes">
@@ -446,7 +447,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
             <EmptyRow span={5} />
           ) : (
             filteredStreams
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .slice(page * rowsPerPage, (page + 1) * rowsPerPage)
               .map((stream) => (
                 <StreamRow
                   key={stream.id}
@@ -462,22 +463,22 @@ const StreamsTable: FC<StreamsTableProps> = ({
       </Table>
       {(filteredStreams.length > 5 ||
         (!isBelowMd && filteredStreams.length <= 5)) && (
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25, { value: -1, label: 'All' }]}
-          component="div"
-          count={filteredStreams.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-          sx={{
-            ...(subTable ? { background: "transparent" } : {}),
-            "> *": {
-              visibility: filteredStreams.length <= 5 ? "hidden" : "visible",
-            },
-          }}
-        />
-      )}
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25, { value: filteredStreams.length, label: 'All' }]}
+            component="div"
+            count={filteredStreams.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+            sx={{
+              ...(subTable ? { background: "transparent" } : {}),
+              "> *": {
+                visibility: filteredStreams.length <= 5 ? "hidden" : "visible",
+              },
+            }}
+          />
+        )}
     </TableContainer>
   );
 };

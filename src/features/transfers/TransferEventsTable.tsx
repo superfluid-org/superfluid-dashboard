@@ -72,8 +72,9 @@ const TransferEventsTable: FC<TransferEventsTableProps> = ({
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
+    const newRowsPerPage = rowsPerPage === -1 ? filteredTransferEvents.length : parseInt(event.target.value, 10);
+    setRowsPerPage(newRowsPerPage);
     setPage(0);
-    setRowsPerPage(parseInt(event.target.value, 10));
   };
 
   const changeTypeFilter = (typeFilter: TransferTypeFilter) => () => {
@@ -184,7 +185,7 @@ const TransferEventsTable: FC<TransferEventsTableProps> = ({
             <EmptyRow span={3} />
           ) : (
             filteredTransferEvents
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .slice(page * rowsPerPage, (page + 1) * rowsPerPage)
               .map((transferEvent) => (
                 <TransferEventRow
                   key={transferEvent.id}
@@ -197,7 +198,7 @@ const TransferEventsTable: FC<TransferEventsTableProps> = ({
       </Table>
       {filteredTransferEvents.length > 5 && (
         <TablePagination
-          rowsPerPageOptions={[5, 10, 25, { value: -1, label: 'All' }]}
+          rowsPerPageOptions={[5, 10, 25, { value: filteredTransferEvents.length, label: 'All' }]}
           component="div"
           count={filteredTransferEvents.length}
           rowsPerPage={rowsPerPage}

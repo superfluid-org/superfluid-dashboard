@@ -74,40 +74,40 @@ const AddressBook: NextPage = () => {
   const incomingStreamsQuery = subgraphApi.useStreamsQuery(
     visibleAddress
       ? {
-          chainId: network.id,
-          filter: {
-            sender: visibleAddress.toLowerCase(),
-            currentFlowRate_gt: "0",
-          },
-          pagination: {
-            take: Infinity,
-            skip: 0,
-          },
-          order: {
-            orderBy: "updatedAtTimestamp",
-            orderDirection: "desc",
-          },
-        }
+        chainId: network.id,
+        filter: {
+          sender: visibleAddress.toLowerCase(),
+          currentFlowRate_gt: "0",
+        },
+        pagination: {
+          take: Infinity,
+          skip: 0,
+        },
+        order: {
+          orderBy: "updatedAtTimestamp",
+          orderDirection: "desc",
+        },
+      }
       : skipToken
   );
 
   const outgoingStreamsQuery = subgraphApi.useStreamsQuery(
     visibleAddress
       ? {
-          chainId: network.id,
-          filter: {
-            receiver: visibleAddress.toLowerCase(),
-            currentFlowRate_gt: "0",
-          },
-          pagination: {
-            take: Infinity,
-            skip: 0,
-          },
-          order: {
-            orderBy: "updatedAtTimestamp",
-            orderDirection: "desc",
-          },
-        }
+        chainId: network.id,
+        filter: {
+          receiver: visibleAddress.toLowerCase(),
+          currentFlowRate_gt: "0",
+        },
+        pagination: {
+          take: Infinity,
+          skip: 0,
+        },
+        order: {
+          orderBy: "updatedAtTimestamp",
+          orderDirection: "desc",
+        },
+      }
       : skipToken
   );
 
@@ -148,13 +148,16 @@ const AddressBook: NextPage = () => {
 
   const handleChangeRowsPerPage =
     (table: "wallet" | "contract") =>
-    (event: ChangeEvent<HTMLInputElement>) => {
-      setRowsPerPage((rowsPerPage) => ({
-        ...rowsPerPage,
-        [table]: parseInt(event.target.value, 10),
-      }));
-      setPage((page) => ({ ...page, address: 0 }));
-    };
+      (event: ChangeEvent<HTMLInputElement>) => {
+        setRowsPerPage((rowsPerPage) => {
+          const newRowsPerPage = parseInt(event.target.value, 10);
+          return ({
+            ...rowsPerPage,
+            [table]: newRowsPerPage,
+          });
+        });
+        setPage((page) => ({ ...page, [table]: 0 }));
+      };
 
   // Importing address book
 
@@ -343,7 +346,7 @@ const AddressBook: NextPage = () => {
     if (
       page.wallet > 0 &&
       Math.ceil(filteredEntries.length / rowsPerPage.wallet) - 1 ===
-        page.wallet &&
+      page.wallet &&
       selectedAddresses.length === paginatedAddresses.length
     ) {
       setPage((page) => ({ ...page, address: page.wallet - 1 }));
@@ -598,7 +601,7 @@ const AddressBook: NextPage = () => {
                 </TableBody>
               </Table>
               <TablePagination
-                rowsPerPageOptions={[5, 10, 25, { value: -1, label: 'All' }]}
+                rowsPerPageOptions={[5, 10, 25, { value: filteredAddresses.length, label: 'All' }]}
                 component="div"
                 count={filteredAddresses.length}
                 rowsPerPage={rowsPerPage.wallet}
@@ -682,7 +685,7 @@ const AddressBook: NextPage = () => {
                 </TableBody>
               </Table>
               <TablePagination
-                rowsPerPageOptions={[5, 10, 25, { value: -1, label: 'All' }]}
+                rowsPerPageOptions={[5, 10, 25, 100]}
                 component="div"
                 count={filteredContracts.length}
                 rowsPerPage={rowsPerPage.contract}

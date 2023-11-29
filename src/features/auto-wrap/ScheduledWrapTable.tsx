@@ -53,11 +53,11 @@ const ScheduledWrapTable: FC<TokenSnapshotTableProps> = ({
     autoWrapSubgraphApi.useGetWrapSchedulesQuery(
       address
         ? {
-            chainId: network.id,
-            where: { account: address.toLowerCase(), isActive: true },
-            orderBy: "createdAt",
-            orderDirection: "desc",
-          }
+          chainId: network.id,
+          where: { account: address.toLowerCase(), isActive: true },
+          orderBy: "createdAt",
+          orderDirection: "desc",
+        }
         : skipToken,
       {
         selectFromResult: (result) => ({
@@ -77,10 +77,10 @@ const ScheduledWrapTable: FC<TokenSnapshotTableProps> = ({
     platformApi.useIsAccountWhitelistedQuery(
       address && network?.platformUrl
         ? {
-            chainId: network.id,
-            baseUrl: network.platformUrl,
-            account: address?.toLowerCase(),
-          }
+          chainId: network.id,
+          baseUrl: network.platformUrl,
+          account: address?.toLowerCase(),
+        }
         : skipToken,
       {
         selectFromResult: (queryResult) => ({
@@ -104,14 +104,15 @@ const ScheduledWrapTable: FC<TokenSnapshotTableProps> = ({
     });
   }, [isWhitelistLoading, isPlatformWhitelisted, whitelistedCallback]);
 
-  const handleChangePage = () => (_e: unknown, newPage: number) => {
+  const handleChangePage = (_e: unknown, newPage: number) => {
     setPage(newPage);
   };
 
   const handleChangeRowsPerPage =
-    () => (event: ChangeEvent<HTMLInputElement>) => {
-      setRowsPerPage(parseInt(event.target.value, 10));
-      setPage(page);
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const newRowsPerPage = rowsPerPage === -1 ? wrapSchedules.length : parseInt(event.target.value, 10);
+      setRowsPerPage(newRowsPerPage);
+      setPage(0);
     };
 
   if (isLoading) return <ScheduledWrapLoadingTable />;
@@ -202,13 +203,13 @@ const ScheduledWrapTable: FC<TokenSnapshotTableProps> = ({
           </TableBody>
         </Table>
         <TablePagination
-          rowsPerPageOptions={[5, 10, 25, { value: -1, label: 'All' }]}
+          rowsPerPageOptions={[5, 10, 25, { value: wrapSchedules.length, label: 'All' }]}
           component="div"
           count={wrapSchedules.length}
           rowsPerPage={rowsPerPage}
           page={page}
-          onPageChange={handleChangePage()}
-          onRowsPerPageChange={handleChangeRowsPerPage()}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
           sx={{
             "> *": {
               visibility:

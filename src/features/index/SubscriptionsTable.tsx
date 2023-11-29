@@ -87,7 +87,8 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
+    const newRowsPerPage = rowsPerPage === -1 ? filteredIndexSubscriptions.length : parseInt(event.target.value, 10);
+    setRowsPerPage(newRowsPerPage);
     setPage(0);
   };
 
@@ -176,7 +177,7 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
             <EmptyRow span={5} />
           ) : (
             filteredIndexSubscriptions
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .slice(page * rowsPerPage, (page + 1) * rowsPerPage)
               .map((subscription) => (
                 <SubscriptionRow
                   key={subscription.id}
@@ -189,7 +190,7 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
       </Table>
       {filteredIndexSubscriptions.length > 5 && (
         <TablePagination
-          rowsPerPageOptions={[5, 10, 25, { value: -1, label: 'All' }]}
+          rowsPerPageOptions={[5, 10, 25, { value: filteredIndexSubscriptions.length, label: 'All' }]}
           component="div"
           count={filteredIndexSubscriptions.length}
           rowsPerPage={rowsPerPage}
