@@ -190,12 +190,15 @@ const AddressBook: NextPage = () => {
               isContract: false,
             };
 
-            const provider = publicClientToProvider(
-              resolvedPublicClients[chainIds[0]]
-            );
+            const firstChainId = chainIds[0];
+            if (firstChainId) {
+              const provider = publicClientToProvider(
+                resolvedPublicClients[firstChainId]
+              );
 
-            if ((await provider.getCode(parsedItem.address)) !== "0x") {
-              parsedItem.isContract = true;
+              if ((await provider.getCode(parsedItem.address)) !== "0x") {
+                parsedItem.isContract = true;
+              }
             }
 
             return [...result, parsedItem];
