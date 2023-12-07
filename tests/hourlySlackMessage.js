@@ -99,12 +99,20 @@ async function parseTestResultsAndSendMessage(json) {
       finalRPCMessage += `*${behindInMinutes}*\n ${lastBlockMessage}\n\n`;
     }
     if (element.title.includes("The graph is not behind")) {
-      const behindInMinutes = element.err.message
-        .split("AssertionError: ")[1]
-        .split("\n")[0];
-      const lastBlockRegex = /Last synced block number: \d+/;
-      const lastBlockMessage = element.err.message.match(lastBlockRegex)[0];
-      finalGraphMessage += `*${behindInMinutes}*\n ${lastBlockMessage}\n\n`;
+      if (
+        element.err.message.includes(
+          "Cannot read properties of undefined (reading '_meta')"
+        )
+      ) {
+        finalGraphMessage += `*There was an issue getting the graphs metadata of ${network} network*\n\n Please have a look at this ASAP\n\n`;
+      } else {
+        const behindInMinutes = element.err.message
+          .split("AssertionError: ")[1]
+          .split("\n")[0];
+        const lastBlockRegex = /Last synced block number: \d+/;
+        const lastBlockMessage = element.err.message.match(lastBlockRegex)[0];
+        finalGraphMessage += `*${behindInMinutes}*\n ${lastBlockMessage}\n\n`;
+      }
     }
     if (element.title.includes("Testnet faucet fund check")) {
       faucetMessage +=
