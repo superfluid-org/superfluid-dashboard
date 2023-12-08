@@ -1,5 +1,6 @@
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import {
+  Button,
   Chip,
   IconButton,
   Stack,
@@ -19,6 +20,7 @@ import TokenIcon from "../token/TokenIcon";
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import { DeleteVestingTransactionButton } from "./transactionButtons/DeleteVestingTransactionButton";
 import { VestingSchedule } from "./types";
+import Link from "next/link";
 
 interface CounterpartyAddressProps {
   title: string;
@@ -46,7 +48,11 @@ const CounterpartyAddress: FC<CounterpartyAddressProps> = ({
         {title}
       </Typography>
       <Stack direction="row" alignItems="center">
-        <Typography data-cy={`${title.replace(":","")}-address`} variant={isBelowMd ? "h7" : "h6"} color="text.secondary">
+        <Typography
+          data-cy={`${title.replace(":", "")}-address`}
+          variant={isBelowMd ? "h7" : "h6"}
+          color="text.secondary"
+        >
           <AddressName address={address} />
         </Typography>
         <CopyIconBtn
@@ -84,6 +90,9 @@ const VestingDetailsHeader: FC<VestingDetailsHeaderProps> = ({
     vestingSchedule;
 
   const canDelete = !!accountAddress && !deletedAt && !endExecutedAt;
+
+  const isIncoming = true;
+  // accountAddress?.toLowerCase() === receiver.toLowerCase();
 
   return (
     <>
@@ -144,8 +153,8 @@ const VestingDetailsHeader: FC<VestingDetailsHeaderProps> = ({
         <CounterpartyAddress title="Sender:" address={sender} />
         <CounterpartyAddress title="Receiver:" address={receiver} />
 
-        {canDelete && isBelowMd && (
-          <Stack direction="row" justifyContent="end" flex={1}>
+        <Stack direction="row" justifyContent="end" flex={1}>
+          {canDelete && isBelowMd && (
             <ConnectionBoundary expectedNetwork={network}>
               <DeleteVestingTransactionButton
                 superTokenAddress={superToken}
@@ -154,8 +163,17 @@ const VestingDetailsHeader: FC<VestingDetailsHeaderProps> = ({
                 TransactionButtonProps={{ ButtonProps: { size: "small" } }}
               />
             </ConnectionBoundary>
-          </Stack>
-        )}
+          )}
+          {isIncoming && (
+            <Link
+              href={`/wrap?downgrade&token=${superToken}&network=${network.slugName}`}
+            >
+              <Button variant="contained" color="primary">
+                Unwrap
+              </Button>
+            </Link>
+          )}
+        </Stack>
       </Stack>
     </>
   );

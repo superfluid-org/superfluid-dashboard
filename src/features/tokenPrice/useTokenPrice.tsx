@@ -11,9 +11,20 @@ const useTokenPrice = (chainId: number, token?: Address) => {
   const exchangeRatesResponse = tokenPriceApi.useGetUSDExchangeRateQuery();
   const supportedNetworksQuery = tokenPriceApi.useGetSupportedChainIdsQuery();
 
-  const isChainSupported = (supportedNetworksQuery.data || []).includes(chainId);
+  const isChainSupported = (supportedNetworksQuery.data || []).includes(
+    chainId
+  );
+
+  // TODO: Contact Vijay if you want to remove this.
+  const shouldBeDisabledTokenOnOP = useMemo(
+    () =>
+      chainId === 10 &&
+      token?.toLowerCase() === "0x1828bff08bd244f7990eddcd9b19cc654b33cdb4",
+    [chainId, token]
+  );
+
   const tokenPriceResponse = tokenPriceApi.useGetTokenDataQuery(
-    isChainSupported && token
+    isChainSupported && !shouldBeDisabledTokenOnOP && token
       ? {
           token,
           chainId,

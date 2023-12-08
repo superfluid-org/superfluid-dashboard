@@ -1,4 +1,5 @@
 import {
+  Button,
   ListItemText,
   Stack,
   TableCell,
@@ -24,6 +25,7 @@ import { VestingSchedule } from "./types";
 import { useVestingToken } from "./useVestingToken";
 import VestedBalance from "./VestedBalance";
 import VestingStatus from "./VestingStatus";
+import Link from "next/link";
 
 interface VestingRowProps {
   network: Network;
@@ -168,6 +170,22 @@ const VestingRow: FC<VestingRowProps> = ({
               <VestingStatus vestingSchedule={vestingSchedule} />
             )}
           </TableCell>
+          {!isOutgoing && (
+            <TableCell
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+            >
+              <Link
+                href={`/wrap?downgrade&token=${superToken}&network=${network.slugName}`}
+              >
+                <Button variant="contained" color="primary" size="small">
+                  Unwrap
+                </Button>
+              </Link>
+            </TableCell>
+          )}
         </>
       ) : (
         <TableCell align="right">
