@@ -1,15 +1,13 @@
 import { Typography } from "@mui/material";
 import { TransactionTitle } from "@superfluid-finance/sdk-redux";
-import { BigNumber } from "ethers";
+import { BigNumber , Contract } from "ethers";
 import { FC, memo } from "react";
-import { usePrepareContractWrite, useQuery, useWalletClient } from "wagmi";
+import { usePrepareContractWrite, useQuery, useWalletClient  } from "wagmi";
 import { autoWrapManagerABI, autoWrapManagerAddress } from "../../../generated";
 import { rpcApi } from "../../redux/store";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
 import { VestingToken } from "../CreateVestingSection";
-import useGetTransactionOverrides from "../../../hooks/useGetTransactionOverrides";
-import { convertOverridesForWagmi } from "../../../utils/convertOverridesForWagmi";
 import { Network } from "../../network/networks";
 
 const TX_TITLE: TransactionTitle = "Enable Auto-Wrap";
@@ -21,12 +19,6 @@ const AutoWrapStrategyTransactionButton: FC<{
   network: Network;
 }> = ({ token, isVisible, network, ...props }) => {
   const { data: walletClient } = useWalletClient();
-
-  const getGasOverrides = useGetTransactionOverrides();
-  const { data: overrides } = useQuery(
-    ["gasOverrides", TX_TITLE, network.id],
-    async () => convertOverridesForWagmi(await getGasOverrides(network))
-  );
 
   const primaryArgs = {
     superToken: token.id as `0x${string}`,
@@ -53,7 +45,6 @@ const AutoWrapStrategyTransactionButton: FC<{
             primaryArgs.upperLimit,
           ],
           chainId: network.id as keyof typeof autoWrapManagerAddress,
-          ...overrides,
         }
       : undefined
   );

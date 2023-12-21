@@ -21,11 +21,6 @@ const AutoWrapAllowanceTransactionButton: FC<{
   network: Network;
 }> = ({ token, isVisible, network, ...props }) => {
   const { data: walletClient } = useWalletClient();
-  const getGasOverrides = useGetTransactionOverrides();
-  const { data: overrides } = useQuery(
-    ["gasOverrides", TX_TITLE, network.id],
-    async () => convertOverridesForWagmi(await getGasOverrides(network))
-  );
 
   const primaryArgs = {
     spender: network.autoWrap!.strategyContractAddress,
@@ -41,7 +36,6 @@ const AutoWrapAllowanceTransactionButton: FC<{
           address: token.underlyingAddress as `0x${string}`,
           chainId: network.id,
           args: [primaryArgs.spender, primaryArgs.amount],
-          ...overrides,
         }
       : undefined
   );
