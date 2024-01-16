@@ -224,8 +224,8 @@ export function vestingScheduleToTokenBalance(
   if (failedAt) return null;
 
   const effectiveEndAt = endExecutedAt || deletedAt;
-  if (effectiveEndAt) {
-    const secondsStreamed = Number(Math.max(effectiveEndAt)) - cliffAndFlowDate;
+  if (effectiveEndAt && effectiveEndAt > cliffAndFlowDate) {
+    const secondsStreamed = effectiveEndAt - cliffAndFlowDate;
     const balance = BigNumber.from(secondsStreamed)
       .mul(flowRate)
       .add(cliffAmount)
