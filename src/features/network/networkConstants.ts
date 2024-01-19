@@ -11,8 +11,6 @@ export const chainIds = {
   optimism: 10,
   arbitrum: 42161,
   sepolia: 11155111,
-  optimismGoerli: 420,
-  arbitrumGoerli: 421613,
   polygonZkevmTestnet: 1442,
   baseGoerli: 84531,
   base: 8453,
@@ -143,8 +141,6 @@ export const superfluidRpcUrls = {
   bnbSmartChain: "https://rpc-endpoints.superfluid.dev/bsc-mainnet",
   ethereum: "https://rpc-endpoints.superfluid.dev/eth-mainnet",
   "celo-mainnet": "https://rpc-endpoints.superfluid.dev/celo-mainnet",
-  "optimism-goerli": "https://rpc-endpoints.superfluid.dev/optimism-goerli",
-  "arbitrum-goerli": "https://rpc-endpoints.superfluid.dev/arbitrum-goerli",
   sepolia: "https://rpc-endpoints.superfluid.dev/eth-sepolia",
   "polygon-zkevm-testnet":
     "https://rpc-endpoints.superfluid.dev/polygon-zkevm-testnet",

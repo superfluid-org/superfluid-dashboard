@@ -21,8 +21,6 @@ Feature: Test cases that run indefinitely on all supported networks
             | avalanche             | AVAX  |
             | bsc                   | BNB   |
             | celo                  | CELO  |
-            | arbitrum-goerli       | ETH   |
-            | optimism-goerli       | ETH   |
             | sepolia               | SEP   |
             | polygon-zkevm-testnet | ETH   |
             | bgoerli               | ETH   |
@@ -43,8 +41,6 @@ Feature: Test cases that run indefinitely on all supported networks
             | avalanche       |
             | bsc             |
             | celo            |
-            | arbitrum-goerli |
-            | optimism-goerli |
             | sepolia         |
             | bgoerli         |
             | base            |
@@ -66,8 +62,6 @@ Feature: Test cases that run indefinitely on all supported networks
             | avalanche             |
             | bsc                   |
             | celo                  |
-            | arbitrum-goerli       |
-            | optimism-goerli       |
             | sepolia               |
             | polygon-zkevm-testnet |
             | bgoerli               |

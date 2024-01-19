@@ -618,78 +618,6 @@ export const networkDefinition = {
     autoWrapSubgraphUrl: undefined,
     platformUrl: undefined,
   } as const,
-  optimismGoerli: {
-    ...chain.optimismGoerli,
-    id: chainIds.optimismGoerli,
-    blockExplorers: ensureDefined(chain.optimismGoerli.blockExplorers),
-    slugName: "optimism-goerli",
-    v1ShortName: "optimism goerli",
-    bufferTimeInMinutes: 240,
-    icon: "/icons/network/optimism.svg",
-    color: "#ff0320",
-    rpcUrls: {
-      ...chain.optimismGoerli.rpcUrls,
-      superfluid: { http: [superfluidRpcUrls["optimism-goerli"]] },
-    },
-    fallbackSubgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-optimism-goerli",
-    getLinkForTransaction: (txHash: string): string =>
-      `https://goerli-optimism.etherscan.io/tx/${txHash}`,
-    getLinkForAddress: (address: string): string =>
-      `https://goerli-optimism.etherscan.io/address/${address}`,
-    nativeCurrency: {
-      ...ensureDefined(chain.optimismGoerli.nativeCurrency),
-      address: NATIVE_ASSET_ADDRESS,
-      type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: "ETHx",
-        address: "0xE01F8743677Da897F4e7De9073b57Bf034FC2433",
-        name: "Super ETH",
-        decimals: 18,
-      },
-    },
-    vestingContractAddress: undefined,
-    vestingSubgraphUrl: undefined,
-    autoWrapSubgraphUrl: undefined,
-    platformUrl: undefined,
-  } as const,
-  arbitrumGoerli: {
-    ...chain.arbitrumGoerli,
-    id: chainIds.arbitrumGoerli,
-    blockExplorers: ensureDefined(chain.arbitrumGoerli.blockExplorers),
-    slugName: "arbitrum-goerli",
-    v1ShortName: "arbitrum goerli",
-    bufferTimeInMinutes: 240,
-    icon: "/icons/network/arbitrum.svg",
-    color: "#2b374b",
-    rpcUrls: {
-      ...chain.arbitrumGoerli.rpcUrls,
-      superfluid: { http: [superfluidRpcUrls["arbitrum-goerli"]] },
-    },
-    fallbackSubgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-arbitrum-goerli",
-    getLinkForTransaction: (txHash: string): string =>
-      `https://goerli.arbiscan.io/tx/${txHash}`,
-    getLinkForAddress: (address: string): string =>
-      `https://goerli.arbiscan.io/address/${address}`,
-    nativeCurrency: {
-      ...ensureDefined(chain.arbitrumGoerli.nativeCurrency),
-      address: NATIVE_ASSET_ADDRESS,
-      type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: "ETHx",
-        address: "0xE01F8743677Da897F4e7De9073b57Bf034FC2433",
-        name: "Super ETH",
-        decimals: 18,
-      },
-    },
-    vestingContractAddress: undefined,
-    vestingSubgraphUrl: undefined,
-    autoWrapSubgraphUrl: undefined,
-    platformUrl: undefined,
-  } as const,
   sepolia: {
     ...chain.sepolia,
     id: chainIds.sepolia,
@@ -846,8 +774,6 @@ export const allNetworks: Network[] = orderBy(
       networkDefinition.avalancheC,
       networkDefinition.bsc,
       networkDefinition.celoMainnet,
-      networkDefinition.optimismGoerli,
-      networkDefinition.arbitrumGoerli,
       networkDefinition.sepolia,
       networkDefinition.polygonZkevmTestnet,
       networkDefinition.baseGoerli,

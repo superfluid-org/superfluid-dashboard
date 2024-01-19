@@ -58,16 +58,6 @@
     "TokenThree": "REVV",
     "TokenGas": "ETH"
   },
-  "optimism-goerli": {
-    "TokenOne": "fDAI",
-    "TokenTwo": "fUSDC",
-    "TokenGas": "ETH"
-  },
-  "arbitrum-goerli": {
-    "TokenOne": "fDAI",
-    "TokenTwo": "fUSDC",
-    "TokenGas": "ETH"
-  },
   "sepolia": {
     "TokenOne": "fDAI",
     "TokenTwo": "fUSDC",

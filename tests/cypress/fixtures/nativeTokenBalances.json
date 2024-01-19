@@ -60,18 +60,6 @@
         "superTokenBalance": "0"
       }
     },
-    "arbitrum-goerli": {
-      "ETH": {
-        "underlyingBalance": "0",
-        "superTokenBalance": "0"
-      }
-    },
-    "optimism-goerli": {
-      "ETH": {
-        "underlyingBalance": "0",
-        "superTokenBalance": "0"
-      }
-    },
     "sepolia": {
       "SEP": {
         "underlyingBalance": "0",

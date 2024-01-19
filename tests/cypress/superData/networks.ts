@@ -106,8 +106,6 @@ export const superfluidRpcUrls = {
   ethereum: "https://rpc-endpoints.superfluid.dev/eth-mainnet",
   bsc: "https://rpc-endpoints.superfluid.dev/bsc-mainnet",
   "celo-mainnet": "https://rpc-endpoints.superfluid.dev/celo-mainnet",
-  "optimism-goerli": "https://rpc-endpoints.superfluid.dev/optimism-goerli",
-  "arbitrum-goerli": "https://rpc-endpoints.superfluid.dev/arbitrum-goerli",
   sepolia: "https://rpc-endpoints.superfluid.dev/eth-sepolia",
   //Issues with cypress + superfluid rpc , using a public one for now
   "polygon-zkevm-testnet": "https://rpc.public.zkevm-test.net",
@@ -130,8 +128,6 @@ export const networkDefinition: {
   bsc: Network;
   ethereum: Network;
   celoMainnet: Network;
-  optimismGoerli: Network;
-  arbitrumGoerli: Network;
   sepolia: Network;
   polygonZkevmTestnet: Network;
   baseGoerli: Network;
@@ -514,60 +510,6 @@ export const networkDefinition: {
       },
     },
   },
-  optimismGoerli: {
-    ...chain.optimismGoerli,
-    slugName: "optimism-goerli",
-    v1ShortName: "optimism goerli",
-    bufferTimeInMinutes: 240,
-    icon: "/icons/network/optimism.svg",
-    color: "#ff0320",
-    superfluidRpcUrl: superfluidRpcUrls["optimism-goerli"],
-    subgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-optimism-goerli",
-    getLinkForTransaction: (txHash: string): string =>
-      `https://goerli-optimism.etherscan.io/tx/${txHash}`,
-    getLinkForAddress: (address: string): string =>
-      `https://goerli-optimism.etherscan.io/address/${address}`,
-    nativeCurrency: {
-      ...ensureDefined(chain.optimismGoerli.nativeCurrency),
-      address: NATIVE_ASSET_ADDRESS,
-      type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: "ETHx",
-        address: "0xE01F8743677Da897F4e7De9073b57Bf034FC2433",
-        name: "Super ETH",
-        decimals: 18,
-      },
-    },
-  },
-  arbitrumGoerli: {
-    ...chain.arbitrumGoerli,
-    slugName: "arbitrum-goerli",
-    v1ShortName: "arbitrum goerli",
-    bufferTimeInMinutes: 240,
-    icon: "/icons/network/arbitrum.svg",
-    color: "#2b374b",
-    superfluidRpcUrl: superfluidRpcUrls["arbitrum-goerli"],
-    subgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-arbitrum-goerli",
-    getLinkForTransaction: (txHash: string): string =>
-      `https://goerli.arbiscan.io/tx/${txHash}`,
-    getLinkForAddress: (address: string): string =>
-      `https://goerli.arbiscan.io/address/${address}`,
-    nativeCurrency: {
-      ...ensureDefined(chain.arbitrumGoerli.nativeCurrency),
-      address: NATIVE_ASSET_ADDRESS,
-      type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: "ETHx",
-        address: "0xE01F8743677Da897F4e7De9073b57Bf034FC2433",
-        name: "Super ETH",
-        decimals: 18,
-      },
-    },
-  },
   sepolia: {
     ...chain.sepolia,
     slugName: "sepolia",
@@ -687,8 +629,6 @@ export const networks: Network[] = [
   networkDefinition.bsc,
   networkDefinition.ethereum,
   networkDefinition.celoMainnet,
-  networkDefinition.optimismGoerli,
-  networkDefinition.arbitrumGoerli,
   networkDefinition.sepolia,
   networkDefinition.polygonZkevmTestnet,
   networkDefinition.baseGoerli,

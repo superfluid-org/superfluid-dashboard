@@ -678,8 +678,6 @@ export class SendPage extends BasePage {
   static isPlatformDeployedOnNetwork(fn: () => void) {
     if (
       [
-        "arbitrum-goerli",
-        "optimism-goerli",
         "avalanche-fuji",
         "sepolia",
         "polygon-zkevm-testnet",
