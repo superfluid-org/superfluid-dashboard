@@ -14,6 +14,7 @@ export const chainIds = {
   polygonZkevmTestnet: 1442,
   baseGoerli: 84531,
   base: 8453,
+  scroll: 534352,
 } as const;
 
 export const autoWrapManagerAddresses = {
@@ -146,6 +147,7 @@ export const superfluidRpcUrls = {
     "https://rpc-endpoints.superfluid.dev/polygon-zkevm-testnet",
   "base-goerli": "https://rpc-endpoints.superfluid.dev/base-goerli",
   base: "https://rpc-endpoints.superfluid.dev/base-mainnet",
+  scroll: "https://rpc-endpoints.superfluid.dev/scroll-mainnet",
 } as const;
 
 export const superfluidPlatformUrls = {
