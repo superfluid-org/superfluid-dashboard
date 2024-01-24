@@ -15,6 +15,8 @@ export const chainIds = {
   baseGoerli: 84531,
   base: 8453,
   scroll: 534352,
+  scrollSepolia: 534351,
+  optimismSepolia: 11155420,
 } as const;
 
 export const autoWrapManagerAddresses = {
@@ -148,6 +150,8 @@ export const superfluidRpcUrls = {
   "base-goerli": "https://rpc-endpoints.superfluid.dev/base-goerli",
   base: "https://rpc-endpoints.superfluid.dev/base-mainnet",
   scroll: "https://rpc-endpoints.superfluid.dev/scroll-mainnet",
+  scrollSepolia: "https://rpc-endpoints.superfluid.dev/scroll-sepolia",
+  optimismSepolia: "https://rpc-endpoints.superfluid.dev/optimism-sepolia",
 } as const;
 
 export const superfluidPlatformUrls = {
