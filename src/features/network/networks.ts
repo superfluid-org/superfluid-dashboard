@@ -653,7 +653,6 @@ export const networkDefinition = {
     autoWrapSubgraphUrl: undefined,
     platformUrl: undefined,
   } as const,
-
   polygonZkevmTestnet: {
     ...chain.polygonZkEvmTestnet,
     id: chainIds.polygonZkevmTestnet,
@@ -758,6 +757,41 @@ export const networkDefinition = {
     autoWrapSubgraphUrl: undefined,
     platformUrl: undefined,
   } as const,
+    scroll: {
+    ...chain.scroll,
+    id: chainIds.scroll,
+    blockExplorers: ensureDefined(chain.scroll.blockExplorers),
+    slugName: "scroll",
+    v1ShortName: "scroll",
+    bufferTimeInMinutes: 60,
+    color: "#68B1D5",
+    icon: "/icons/network/scroll.svg",
+    rpcUrls: {
+      ...chain.scroll.rpcUrls,
+      superfluid: { http: [superfluidRpcUrls["scroll"]] },
+    },
+    fallbackSubgraphUrl: "https://scroll-mainnet.subgraph.x.superfluid.dev/",
+    getLinkForTransaction: (txHash: string): string =>
+      `https://scrollscan.com/tx/${txHash}`,
+    getLinkForAddress: (address: string): string =>
+      `https://scrollscan.com/address/${address}`,
+    nativeCurrency: {
+      ...ensureDefined(chain.scroll.nativeCurrency),
+      address: NATIVE_ASSET_ADDRESS,
+      type: TokenType.NativeAssetUnderlyingToken,
+      superToken: {
+        type: TokenType.NativeAssetSuperToken,
+        symbol: "ETHx",
+        address: "0x483C1716b6133cdA01237ebBF19c5a92898204B7",
+        name: "Super ETH",
+        decimals: 18,
+      },
+    },
+    vestingContractAddress: undefined,
+    vestingSubgraphUrl: undefined,
+    autoWrapSubgraphUrl: undefined,
+    platformUrl: undefined,
+  } as const,
 };
 
 export const allNetworks: Network[] = orderBy(
@@ -778,6 +812,7 @@ export const allNetworks: Network[] = orderBy(
       networkDefinition.polygonZkevmTestnet,
       networkDefinition.baseGoerli,
       networkDefinition.base,
+      networkDefinition.scroll,
     ],
     (x) => x.id // Put lower ids first (Ethereum mainnet will be first)
   ),
