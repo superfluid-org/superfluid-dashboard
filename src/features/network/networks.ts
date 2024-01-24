@@ -764,7 +764,7 @@ export const networkDefinition = {
     slugName: "scroll",
     v1ShortName: "scroll",
     bufferTimeInMinutes: 240,
-    color: "#68B1D5",
+    color: "#FFDBB0",
     icon: "/icons/network/scroll.svg",
     rpcUrls: {
       ...chain.scroll.rpcUrls,
@@ -799,7 +799,7 @@ export const networkDefinition = {
     slugName: "scrsepolia",
     v1ShortName: "scrsepolia",
     bufferTimeInMinutes: 60,
-    color: "#68B1D5",
+    color: "#FFDBB0",
     rpcUrls: {
       ...chain.scrollSepolia.rpcUrls,
       superfluid: { http: [superfluidRpcUrls["scroll-sepolia"]] },
@@ -833,7 +833,7 @@ export const networkDefinition = {
     slugName: "opsepolia",
     v1ShortName: "opsepolia",
     bufferTimeInMinutes: 60,
-    color: "#68B1D5",
+    color: "#FF0320",
     rpcUrls: {
       ...chain.optimismSepolia.rpcUrls,
       superfluid: { http: [superfluidRpcUrls["optimism-sepolia"]] },
