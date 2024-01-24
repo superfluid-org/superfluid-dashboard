@@ -150,8 +150,8 @@ export const superfluidRpcUrls = {
   "base-goerli": "https://rpc-endpoints.superfluid.dev/base-goerli",
   base: "https://rpc-endpoints.superfluid.dev/base-mainnet",
   scroll: "https://rpc-endpoints.superfluid.dev/scroll-mainnet",
-  scrollSepolia: "https://rpc-endpoints.superfluid.dev/scroll-sepolia",
-  optimismSepolia: "https://rpc-endpoints.superfluid.dev/optimism-sepolia",
+  "scroll-sepolia": "https://rpc-endpoints.superfluid.dev/scroll-sepolia",
+  "optimism-sepolia": "https://rpc-endpoints.superfluid.dev/optimism-sepolia",
 } as const;
 
 export const superfluidPlatformUrls = {
