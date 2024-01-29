@@ -764,7 +764,7 @@ export const networkDefinition = {
     slugName: "scroll",
     v1ShortName: "scroll",
     bufferTimeInMinutes: 240,
-    color: "#FFDBB0",
+    color: "#fdf1e6",
     icon: "/icons/network/scroll.svg",
     rpcUrls: {
       ...chain.scroll.rpcUrls,
@@ -799,7 +799,7 @@ export const networkDefinition = {
     slugName: "scrsepolia",
     v1ShortName: "scrsepolia",
     bufferTimeInMinutes: 60,
-    color: "#FFDBB0",
+    color: "#fdf1e6",
     rpcUrls: {
       ...chain.scrollSepolia.rpcUrls,
       superfluid: { http: [superfluidRpcUrls["scroll-sepolia"]] },
