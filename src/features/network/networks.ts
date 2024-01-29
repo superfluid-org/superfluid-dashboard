@@ -25,6 +25,8 @@ import {
 import { BigNumber, BigNumberish } from "ethers";
 import { UnitOfTime } from "../send/FlowRateInput";
 
+type NetworkMetadata = (typeof sfMeta.networks)[number];
+
 // id == chainId
 // name == displayName
 export type Network = Chain & {
@@ -59,6 +61,7 @@ export type Network = Chain & {
   humaFinance?: {
     nftAddress: `0x${string}`;
   };
+  metadata: NetworkMetadata;
 };
 
 const blockExplorers = {
@@ -102,6 +105,7 @@ export const networkDefinition = {
   goerli: {
     ...chain.goerli,
     id: chainIds.goerli,
+    metadata: ensureDefined(sfMeta.getNetworkByChainId(chainIds.goerli)),
     blockExplorers: ensureDefined(chain.goerli.blockExplorers),
     slugName: "goerli",
     v1ShortName: "goerli",
@@ -145,6 +149,7 @@ export const networkDefinition = {
   gnosis: {
     name: "Gnosis Chain",
     id: chainIds.gnosis,
+    metadata: ensureDefined(sfMeta.getNetworkByChainId(chainIds.gnosis)),
     blockExplorers: {
       etherscan: undefined!,
       default: blockExplorers.blockscout.gnosis,
@@ -197,6 +202,7 @@ export const networkDefinition = {
   polygon: {
     ...chain.polygon,
     id: chainIds.polygon,
+    metadata: ensureDefined(sfMeta.getNetworkByChainId(chainIds.polygon)),
     blockExplorers: ensureDefined(chain.polygon.blockExplorers),
     slugName: "polygon",
     v1ShortName: "matic",
@@ -244,6 +250,7 @@ export const networkDefinition = {
   polygonMumbai: {
     ...chain.polygonMumbai,
     id: chainIds.polygonMumbai,
+    metadata: ensureDefined(sfMeta.getNetworkByChainId(chainIds.polygonMumbai)),
     blockExplorers: ensureDefined(chain.polygonMumbai.blockExplorers),
     slugName: "polygon-mumbai",
     v1ShortName: "mumbai",
@@ -291,6 +298,7 @@ export const networkDefinition = {
   avalancheFuji: {
     name: "Fuji (C-Chain)",
     id: chainIds.avalancheFuji,
+    metadata: ensureDefined(sfMeta.getNetworkByChainId(chainIds.avalancheFuji)),
     slugName: "avalanche-fuji",
     v1ShortName: "avalanche-fuji",
     network: "avalanche-fuji",
@@ -344,6 +352,7 @@ export const networkDefinition = {
   optimism: {
     ...chain.optimism,
     id: chainIds.optimism,
+    metadata: ensureDefined(sfMeta.getNetworkByChainId(chainIds.optimism)),
     blockExplorers: ensureDefined(chain.optimism.blockExplorers),
     slugName: "optimism",
     v1ShortName: "optimism-mainnet",
@@ -388,6 +397,7 @@ export const networkDefinition = {
   arbitrum: {
     ...chain.arbitrum,
     id: chainIds.arbitrum,
+    metadata: ensureDefined(sfMeta.getNetworkByChainId(chainIds.arbitrum)),
     blockExplorers: ensureDefined(chain.arbitrum.blockExplorers),
     slugName: "arbitrum-one",
     v1ShortName: "arbitrum-one",
@@ -432,6 +442,7 @@ export const networkDefinition = {
   avalancheC: {
     name: "Avalanche C",
     id: chainIds.avalanche,
+    metadata: ensureDefined(sfMeta.getNetworkByChainId(chainIds.avalanche)),
     slugName: "avalanche",
     v1ShortName: "avalanche-c",
     network: "avalanche-c",
@@ -486,6 +497,7 @@ export const networkDefinition = {
   bsc: {
     ...chain.bsc,
     id: chainIds.bsc,
+    metadata: ensureDefined(sfMeta.getNetworkByChainId(chainIds.bsc)),
     name: "BNB Smart Chain",
     slugName: "bsc",
     v1ShortName: "bsc-mainnet",
@@ -538,6 +550,7 @@ export const networkDefinition = {
   ethereum: {
     ...chain.mainnet,
     id: chainIds.mainnet,
+    metadata: ensureDefined(sfMeta.getNetworkByChainId(chainIds.mainnet)),
     blockExplorers: ensureDefined(chain.mainnet.blockExplorers),
     slugName: "ethereum",
     v1ShortName: "eth",
@@ -582,6 +595,7 @@ export const networkDefinition = {
   celoMainnet: {
     ...chain.celo,
     id: chainIds.celo,
+    metadata: ensureDefined(sfMeta.getNetworkByChainId(chainIds.celo)),
     blockExplorers: {
       celoscan: blockExplorers.celoscan.mainnet,
       default: blockExplorers.celoscan.mainnet,
@@ -621,6 +635,7 @@ export const networkDefinition = {
   sepolia: {
     ...chain.sepolia,
     id: chainIds.sepolia,
+    metadata: ensureDefined(sfMeta.getNetworkByChainId(chainIds.sepolia)),
     blockExplorers: ensureDefined(chain.sepolia.blockExplorers),
     slugName: "sepolia",
     v1ShortName: "sepolia",
@@ -657,6 +672,9 @@ export const networkDefinition = {
   polygonZkevmTestnet: {
     ...chain.polygonZkEvmTestnet,
     id: chainIds.polygonZkevmTestnet,
+    metadata: ensureDefined(
+      sfMeta.getNetworkByChainId(chainIds.polygonZkevmTestnet)
+    ),
     blockExplorers: ensureDefined(chain.polygonZkEvmTestnet.blockExplorers),
     slugName: "polygon-zkevm-testnet",
     v1ShortName: "pzkevmtest",
@@ -692,6 +710,7 @@ export const networkDefinition = {
   baseGoerli: {
     ...chain.baseGoerli,
     id: chainIds.baseGoerli,
+    metadata: ensureDefined(sfMeta.getNetworkByChainId(chainIds.baseGoerli)),
     blockExplorers: ensureDefined(chain.baseGoerli.blockExplorers),
     slugName: "bgoerli",
     v1ShortName: "bgoerli",
@@ -726,6 +745,7 @@ export const networkDefinition = {
   base: {
     ...chain.base,
     id: chainIds.base,
+    metadata: ensureDefined(sfMeta.getNetworkByChainId(chainIds.base)),
     blockExplorers: ensureDefined(chain.base.blockExplorers),
     slugName: "base",
     v1ShortName: "base",

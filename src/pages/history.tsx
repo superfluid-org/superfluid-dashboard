@@ -75,9 +75,9 @@ const History: NextPage = () => {
               filter: {
                 addresses_contains: searchedAddress
                   ? [
-                      visibleAddress.toLowerCase(),
-                      searchedAddress.toLowerCase(),
-                    ]
+                    visibleAddress.toLowerCase(),
+                    searchedAddress.toLowerCase(),
+                  ]
                   : [visibleAddress.toLowerCase()],
                 timestamp_gte: Math.floor(
                   startOfDay(startDate).getTime() / 1000
