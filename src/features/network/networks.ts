@@ -757,7 +757,7 @@ export const networkDefinition = {
     autoWrapSubgraphUrl: undefined,
     platformUrl: undefined,
   } as const,
-    scroll: {
+  scroll: {
     ...chain.scroll,
     id: chainIds.scroll,
     blockExplorers: ensureDefined(chain.scroll.blockExplorers),
@@ -792,7 +792,7 @@ export const networkDefinition = {
     autoWrapSubgraphUrl: undefined,
     platformUrl: undefined,
   } as const,
-    scrollSepolia: {
+  scrollSepolia: {
     ...chain.scrollSepolia,
     id: chainIds.scrollSepolia,
     blockExplorers: ensureDefined(chain.scrollSepolia.blockExplorers),
@@ -826,7 +826,7 @@ export const networkDefinition = {
     autoWrapSubgraphUrl: undefined,
     platformUrl: undefined,
   } as const,
-    optimismSepolia: {
+  optimismSepolia: {
     ...chain.optimismSepolia,
     id: chainIds.optimismSepolia,
     blockExplorers: ensureDefined(chain.optimismSepolia.blockExplorers),
@@ -882,7 +882,7 @@ export const allNetworks: Network[] = orderBy(
       networkDefinition.baseGoerli,
       networkDefinition.base,
       networkDefinition.scroll,
-      networkDefinition.scrollSepolia
+      // networkDefinition.scrollSepolia,
     ],
     (x) => x.id // Put lower ids first (Ethereum mainnet will be first)
   ),
