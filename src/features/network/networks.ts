@@ -958,8 +958,8 @@ export const allNetworks: Network[] = orderBy(
       networkDefinition.polygonZkevmTestnet,
       networkDefinition.baseGoerli,
       networkDefinition.base,
-      // networkDefinition.scroll,
-      // networkDefinition.scrollSepolia,
+      networkDefinition.scroll,
+      networkDefinition.scrollSepolia,
     ],
     (x) => x.id // Put lower ids first (Ethereum mainnet will be first)
   ),
