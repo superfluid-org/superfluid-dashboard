@@ -11,7 +11,7 @@ import {
 } from "react";
 import { useNetwork } from "wagmi";
 import { useAvailableNetworks } from "./AvailableNetworksContext";
-import { findNetworkOrThrow, Network, tryFindNetwork } from "./networks";
+import { findNetworkOrThrow, Network, networkDefinition, tryFindNetwork } from "./networks";
 
 /**
  * "Expected" points to expected wallet network.
@@ -39,7 +39,7 @@ export const ExpectedNetworkProvider: FC<PropsWithChildren> = ({
   const { availableNetworks } = useAvailableNetworks();
 
   const [network, setNetwork] = useState<Network>(
-    findNetworkOrThrow(availableNetworks, 137)
+    findNetworkOrThrow(availableNetworks, networkDefinition.optimism.id)
   );
   const [autoSwitchStop, setAutoSwitchStop] = useState(false);
 
