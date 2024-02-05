@@ -25,25 +25,31 @@ Feature: Test cases that run indefinitely on all supported networks
             | polygon-zkevm-testnet | ETH   |
             | bgoerli               | ETH   |
             | base                  | ETH   |
+            | scroll                | ETH   |
+            | scrsepolia            | ETH   |
+            | opsepolia             | ETH   |
 
     Scenario Outline: Superfluid RPCS are not behind on <network>
         Given Superfluid RPCs are not more then 10 minutes behind on <network>
 
         Examples:
-            | network         |
-            | goerli          |
-            | polygon-mumbai  |
-            | avalanche-fuji  |
-            | gnosis          |
-            | polygon         |
-            | optimism        |
-            | arbitrum-one    |
-            | avalanche       |
-            | bsc             |
-            | celo            |
-            | sepolia         |
-            | bgoerli         |
-            | base            |
+            | network        |
+            | goerli         |
+            | polygon-mumbai |
+            | avalanche-fuji |
+            | gnosis         |
+            | polygon        |
+            | optimism       |
+            | arbitrum-one   |
+            | avalanche      |
+            | bsc            |
+            | celo           |
+            | sepolia        |
+            | bgoerli        |
+            | base           |
+            | scroll         |
+            | scrsepolia     |
+            | opsepolia      |
 
     # Add back once cypress uses superfluid rpc
     #| polygon-zkevm-testnet |
@@ -66,6 +72,9 @@ Feature: Test cases that run indefinitely on all supported networks
             | polygon-zkevm-testnet |
             | bgoerli               |
             | base                  |
+            | scroll                |
+            | scrsepolia            |
+            | opsepolia             |
 
     Scenario: Testnet faucet fund check
         Given The faucet contract has got enough funds to send to people

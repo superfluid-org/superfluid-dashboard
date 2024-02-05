@@ -683,6 +683,9 @@ export class SendPage extends BasePage {
         "polygon-zkevm-testnet",
         "bgoerli",
         "base",
+        "scroll",
+        "scrsepolia",
+        "opsepolia",
       ].includes(Cypress.env("network")) &&
       Cypress.env("platformNeeded")
     ) {
