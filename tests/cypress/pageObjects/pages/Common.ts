@@ -113,6 +113,15 @@ const OLD_NOTIF_DATE = new Date(1000 * BasePage.getDayTimestamp(-30));
 const OLD_DATE_STRING = BasePage.getNotificationDateString(OLD_NOTIF_DATE);
 
 export class Common extends BasePage {
+  static validateEcosystemNavigationButtonHref() {
+    cy.get("[data-cy=nav-ecosystem")
+      .parent()
+      .should("have.attr", "href", "https://www.superfluid.finance/ecosystem");
+    cy.get("[data-cy=nav-ecosystem")
+      .parent()
+      .should("have.attr", "target", "_blank");
+  }
+
   static validateMiniGameContainerWithoutWalletConnected() {
     //Locally it just loads to an 403 :/
     this.hasAttributeWithValue(
