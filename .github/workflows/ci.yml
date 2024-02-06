@@ -48,9 +48,6 @@ jobs:
           node-version: 18.x
           cache: "yarn"
 
-      - name: Install Cypress with specific binary
-        run: CYPRESS_DOWNLOAD_MIRROR=https://cy-cdn.currents.dev yarn add cypress@12.17.4 --force
-
       - name: Cypress tests
         uses: cypress-io/github-action@v4
         with:
@@ -58,7 +55,7 @@ jobs:
           working-directory: tests
         env:
           CYPRESS_baseUrl: ${{ needs.test_setup.outputs.netlify_url }}
-
+          CYPRESS_DOWNLOAD_MIRROR: https://cy-cdn.currents.dev
 
   rejected-tests:
     timeout-minutes: 30
@@ -81,9 +78,6 @@ jobs:
           node-version: 18.x
           cache: "yarn"
 
-      - name: Install Cypress with specific binary
-        run: CYPRESS_DOWNLOAD_MIRROR=https://cy-cdn.currents.dev yarn add cypress@12.17.4 --force
-
       - name: Cypress tests
         uses: cypress-io/github-action@v4
         with:
@@ -91,6 +85,7 @@ jobs:
           working-directory: tests
         env:
           CYPRESS_baseUrl: ${{ needs.test_setup.outputs.netlify_url }}
+          CYPRESS_DOWNLOAD_MIRROR: https://cy-cdn.currents.dev
 
   gnosis-safe-tests:
     timeout-minutes: 30
@@ -113,9 +108,6 @@ jobs:
           node-version: 18.x
           cache: "yarn"
 
-      - name: Install Cypress with specific binary
-        run: CYPRESS_DOWNLOAD_MIRROR=https://cy-cdn.currents.dev yarn add cypress@12.17.4 --force
-
       - name: Cypress tests
         uses: cypress-io/github-action@v4
         with:
@@ -123,3 +115,4 @@ jobs:
           command: yarn cypress-cloud run --browser chrome --config chromeWebSecurity=false --record --parallel --key ${{ secrets.V2_CYPRESS_RECORD_KEY }} --group Gnosis --ci-build-id ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt}} --env TAGS=@Gnosis
         env:
           CYPRESS_baseUrl: ${{ needs.test_setup.outputs.netlify_url }}
+          CYPRESS_DOWNLOAD_MIRROR: https://cy-cdn.currents.dev
