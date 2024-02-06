@@ -100,10 +100,10 @@ jobs:
             "sepolia",
             "polygon-zkevm-testnet",
             "bgoerli",
-            opsepolia,
-            scrsepolia,
-            scroll,
-            base,
+            "opsepolia",
+            "scrsepolia",
+            "base",
+            #scroll - add once more tokens are deployed and the test wallet can be set up
           ]
     steps:
       - uses: actions/checkout@v2
