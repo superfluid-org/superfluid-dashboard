@@ -203,16 +203,6 @@ export default memo(function NavigationDrawer() {
         />
 
         <NavigationItem
-          id="nav-ecosystem"
-          title="Ecosystem"
-          href="https://www.superfluid.finance/ecosystem"
-          onClick={closeNavigationDrawer}
-          active={false}
-          icon={AppsRoundedIcon}
-          isExternal
-        />
-
-        <NavigationItem
           id="nav-vesting"
           title="Vesting"
           href="/vesting"
@@ -224,6 +214,7 @@ export default memo(function NavigationDrawer() {
           )}
           icon={LockClockRoundedIcon}
         />
+
         <NavigationItem
           id="nav-settings"
           title="Settings"
@@ -232,6 +223,17 @@ export default memo(function NavigationDrawer() {
           active={isActiveRoute("/settings")}
           icon={SettingsIcon}
         />
+
+        <NavigationItem
+          id="nav-ecosystem"
+          title="Ecosystem"
+          href="https://www.superfluid.finance/ecosystem"
+          onClick={closeNavigationDrawer}
+          active={false}
+          icon={AppsRoundedIcon}
+          isExternal
+        />
+
       </Stack>
 
       <Stack justifyContent="flex-end" sx={{ flex: 1 }}>
