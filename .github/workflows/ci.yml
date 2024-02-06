@@ -48,6 +48,9 @@ jobs:
           node-version: 18.x
           cache: "yarn"
 
+      - name: Install Cypress with specific binary
+        run: CYPRESS_DOWNLOAD_MIRROR=https://cy-cdn.currents.dev yarn add cypress --force
+
       - name: Cypress tests
         uses: cypress-io/github-action@v4
         with:
@@ -78,6 +81,9 @@ jobs:
           node-version: 18.x
           cache: "yarn"
 
+      - name: Install Cypress with specific binary
+        run: CYPRESS_DOWNLOAD_MIRROR=https://cy-cdn.currents.dev yarn add cypress --force
+
       - name: Cypress tests
         uses: cypress-io/github-action@v4
         with:
@@ -106,6 +112,9 @@ jobs:
         with:
           node-version: 18.x
           cache: "yarn"
+
+      - name: Install Cypress with specific binary
+        run: CYPRESS_DOWNLOAD_MIRROR=https://cy-cdn.currents.dev yarn add cypress --force
 
       - name: Cypress tests
         uses: cypress-io/github-action@v4
