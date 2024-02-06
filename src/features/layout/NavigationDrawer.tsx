@@ -7,6 +7,7 @@ import HistoryRoundedIcon from "@mui/icons-material/HistoryRounded";
 import LockClockRoundedIcon from "@mui/icons-material/LockClockRounded";
 import LooksRoundedIcon from "@mui/icons-material/LooksRounded";
 import SettingsIcon from "@mui/icons-material/Settings";
+import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
 import {
   Box,
   List,
@@ -37,6 +38,7 @@ interface NavigationItemProps {
   href: string;
   active: boolean;
   icon: typeof SvgIcon;
+  isExternal?: true;
   onClick?: () => void;
 }
 
@@ -46,6 +48,7 @@ const NavigationItem: FC<NavigationItemProps> = ({
   href,
   active,
   icon: Icon,
+  isExternal,
   onClick,
 }) => (
   <ListItemButton
@@ -54,12 +57,13 @@ const NavigationItem: FC<NavigationItemProps> = ({
     sx={{ borderRadius: "10px" }}
     selected={active}
     onClick={onClick}
+    {...(isExternal && { target: "_blank" })}
   >
     <ListItemIcon>
       <Icon />
     </ListItemIcon>
-    <ListItemText data-cy={id} primary={title} />
-  </ListItemButton>
+    <ListItemText data-cy={id} primary={<>{title} {isExternal && <OpenInNewRoundedIcon fontSize="inherit" />}</>} />
+  </ListItemButton >
 );
 
 export default memo(function NavigationDrawer() {
@@ -201,10 +205,11 @@ export default memo(function NavigationDrawer() {
         <NavigationItem
           id="nav-ecosystem"
           title="Ecosystem"
-          href="/ecosystem"
+          href="https://www.superfluid.finance/ecosystem"
           onClick={closeNavigationDrawer}
-          active={isActiveRoute("/ecosystem")}
+          active={false}
           icon={AppsRoundedIcon}
+          isExternal
         />
 
         <NavigationItem
