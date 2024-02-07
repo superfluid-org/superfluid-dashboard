@@ -30,7 +30,7 @@ import Decimal from "decimal.js";
 import { BigNumber, BigNumberish } from "ethers";
 import { formatEther, parseEther } from "ethers/lib/utils";
 import NextLink from "next/link";
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { FC, PropsWithChildren, memo, useCallback, useEffect, useMemo, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import {
   mapCreateTaskToScheduledStream,
@@ -87,6 +87,25 @@ import {
   PartialStreamingForm,
   ValidStreamingForm,
 } from "./StreamingFormProvider";
+
+const TabButton: FC<{
+  text: string;
+  isActive: boolean;
+  dataCy: string;
+}> = ({ text, isActive, dataCy }) => {
+  return (
+    <Button
+      data-cy={dataCy}
+      color={isActive ? "primary" : "secondary"}
+      variant="textContained"
+      size="large"
+      sx={{ pointerEvents: "none" }}
+    >
+      {text}
+    </Button>
+  )
+}
+
 
 // Minimum start and end date difference in seconds.
 export const SCHEDULE_START_END_MIN_DIFF_S = 15 * UnitOfTime.Minute;
@@ -236,11 +255,11 @@ export default memo(function SendCard() {
   } = rpcApi.useGetActiveFlowQuery(
     shouldSearchForActiveFlow
       ? {
-          chainId: network.id,
-          tokenAddress: tokenAddress,
-          senderAddress: visibleAddress,
-          receiverAddress: receiverAddress,
-        }
+        chainId: network.id,
+        tokenAddress: tokenAddress,
+        senderAddress: visibleAddress,
+        receiverAddress: receiverAddress,
+      }
       : skipToken
   );
 
@@ -263,22 +282,22 @@ export default memo(function SendCard() {
   const { token } = subgraphApi.useTokenQuery(
     tokenAddress
       ? {
-          chainId: network.id,
-          id: tokenAddress,
-        }
+        chainId: network.id,
+        id: tokenAddress,
+      }
       : skipToken,
     {
       selectFromResult: (result) => ({
         token: result.currentData
           ? ({
-              ...result.currentData,
+            ...result.currentData,
+            address: result.currentData.id,
+            type: getSuperTokenType({
+              network,
               address: result.currentData.id,
-              type: getSuperTokenType({
-                network,
-                address: result.currentData.id,
-                underlyingAddress: result.currentData.underlyingAddress,
-              }),
-            } as Token & SuperTokenMinimal)
+              underlyingAddress: result.currentData.underlyingAddress,
+            }),
+          } as Token & SuperTokenMinimal)
           : undefined,
       }),
     }
@@ -298,13 +317,13 @@ export default memo(function SendCard() {
   const customSuperTokensQuery = subgraphApi.useTokensQuery(
     networkCustomTokens.length > 0
       ? {
-          chainId: network.id,
-          filter: {
-            isSuperToken: true,
-            isListed: false,
-            id_in: networkCustomTokens,
-          },
-        }
+        chainId: network.id,
+        filter: {
+          isSuperToken: true,
+          isListed: false,
+          id_in: networkCustomTokens,
+        },
+      }
       : skipToken
   );
 
@@ -397,11 +416,11 @@ export default memo(function SendCard() {
   } = rpcApi.useGetFlowScheduleQuery(
     shouldSearchForActiveFlow && network.flowSchedulerContractAddress
       ? {
-          chainId: network.id,
-          receiverAddress: receiverAddress,
-          senderAddress: visibleAddress,
-          superTokenAddress: tokenAddress,
-        }
+        chainId: network.id,
+        receiverAddress: receiverAddress,
+        senderAddress: visibleAddress,
+        superTokenAddress: tokenAddress,
+      }
       : skipToken,
     {
       selectFromResult: (result) => {
@@ -413,17 +432,17 @@ export default memo(function SendCard() {
           existingFlowRate: flowRate,
           scheduledStream: startDate
             ? mapStreamScheduling(
-                mapCreateTaskToScheduledStream({
-                  id: `${visibleAddress}-${receiverAddress}-${tokenAddress}-scheduled-stream`,
-                  executionAt: startDate!.toString(),
-                  flowRate: flowRate!,
-                  receiver: receiverAddress!,
-                  sender: visibleAddress!,
-                  superToken: tokenAddress!,
-                } as CreateTask),
-                startDate,
-                endDate
-              )
+              mapCreateTaskToScheduledStream({
+                id: `${visibleAddress}-${receiverAddress}-${tokenAddress}-scheduled-stream`,
+                executionAt: startDate!.toString(),
+                flowRate: flowRate!,
+                receiver: receiverAddress!,
+                sender: visibleAddress!,
+                superToken: tokenAddress!,
+              } as CreateTask),
+              startDate,
+              endDate
+            )
             : undefined,
         };
       },
@@ -935,10 +954,10 @@ export default memo(function SendCard() {
   const { isPlatformWhitelisted } = platformApi.useIsAccountWhitelistedQuery(
     visibleAddress && network?.platformUrl
       ? {
-          chainId: network.id,
-          baseUrl: network.platformUrl,
-          account: visibleAddress?.toLowerCase(),
-        }
+        chainId: network.id,
+        baseUrl: network.platformUrl,
+        account: visibleAddress?.toLowerCase(),
+      }
       : skipToken,
     {
       selectFromResult: (queryResult) => ({
@@ -965,15 +984,11 @@ export default memo(function SendCard() {
         },
       }}
     >
-      <Button
-        data-cy={"send-or-modify-stream"}
-        color="primary"
-        variant="textContained"
-        size="large"
-        sx={{ alignSelf: "flex-start", pointerEvents: "none", mb: 4 }}
-      >
-        {activeFlow || scheduledStream ? "Modify Stream" : "Send Stream"}
-      </Button>
+
+      <Stack direction="row" spacing={2} sx={{ mb: 4 }} >
+        <TabButton text="Stream" isActive={true} dataCy="send-or-modify-stream" />
+        <TabButton text="Transfer" isActive={false} dataCy="send-or-modify-stream" />
+      </Stack>
 
       <NetworkBadge
         network={network}

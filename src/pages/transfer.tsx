@@ -13,86 +13,43 @@ import {
   wordTimeUnitMap,
 } from "../features/send/FlowRateInput";
 import SendCard from "../features/send/SendCard";
-import StreamingFormProvider, {
-  StreamingFormProviderProps,
-} from "../features/send/StreamingFormProvider";
 import { useTransactionRestorationContext } from "../features/transactionRestoration/TransactionRestorationContext";
 import { RestorationType } from "../features/transactionRestoration/transactionRestorations";
-import { tryParseUnits } from "../utils/tokenUtils";
+import { parseEtherOrZero, tryParseUnits } from "../utils/tokenUtils";
 import { buildQueryString } from "../utils/URLUtils";
+import TransferFormProvider, { TransferFormProviderProps } from "../features/send/TransferFormProvider";
 
-interface SendPageQuery {
+interface TransferPageQuery {
   token?: string;
   receiver?: string;
-  flowRate?: { amountEther: string; unitOfTime: UnitOfTime };
   network?: string;
+  amountEther?: string;
 }
 
-export const getSendPagePath = (query: SendPageQuery) => {
-  const { flowRate, ...rest } = query;
-
-  const serializedFlowRate = flowRate
-    ? `${flowRate.amountEther}/${timeUnitWordMap[flowRate.unitOfTime]}`
-    : undefined;
+export const getTransferPagePath = (query: TransferPageQuery) => {
+  const { amountEther, ...rest } = query;
 
   const queryString = buildQueryString({
     ...rest,
-    "flow-rate": serializedFlowRate,
+    "amount": amountEther,
   });
 
-  return `/send${queryString ? `?${queryString}` : ""}`;
+  return `/transfer${queryString ? `?${queryString}` : ""}`;
 };
 
-const tryParseFlowRate = (
-  value: string
-):
-  | {
-    amountEther: string;
-    unitOfTime: UnitOfTime;
-  }
-  | undefined => {
-  const [amountEther, unitOfTime] = value.split("/");
-
-  const isUnitOfTime = Object.keys(wordTimeUnitMap).includes(
-    (unitOfTime ?? "").toLowerCase()
-  );
-  const isEtherAmount = !!tryParseUnits(amountEther);
-
-  if (isUnitOfTime && isEtherAmount) {
-    return {
-      amountEther,
-      unitOfTime: wordTimeUnitMap[unitOfTime],
-    };
-  } else {
-    return undefined;
-  }
-};
-
-const Send: NextPage = () => {
+const Transfer: NextPage = () => {
   const theme = useTheme();
   const router = useRouter();
   const { network } = useExpectedNetwork();
   const { restoration, onRestored } = useTransactionRestorationContext();
   const [initialFormValues, setInitialFormValues] = useState<
-    StreamingFormProviderProps["initialFormValues"] | undefined
+    TransferFormProviderProps["initialFormValues"] | undefined
   >();
 
   useEffect(() => {
     if (router.isReady) {
       if (restoration) {
         switch (restoration.type) {
-          case RestorationType.SendStream:
-          case RestorationType.ModifyStream:
-            setInitialFormValues({
-              flowRate: {
-                amountEther: formatEther(restoration.flowRate.amountWei),
-                unitOfTime: restoration.flowRate.unitOfTime,
-              },
-              receiverAddress: restoration.receiverAddress,
-              tokenAddress: restoration.tokenAddress,
-              endTimestamp: restoration.endTimestamp,
-            });
-            break;
           default:
             setInitialFormValues({});
         }
@@ -101,17 +58,14 @@ const Send: NextPage = () => {
         const {
           token: maybeTokenAddress,
           receiver: maybeReceiverAddress,
-          "flow-rate": maybeFlowRate,
-          "end-date": maybeEndTimestamp,
+          "amount": maybeAmountEther,
           ...remainingQuery
         } = router.query;
 
-        const flowRate = !!(maybeFlowRate && isString(maybeFlowRate))
-          ? tryParseFlowRate(maybeFlowRate)
-          : undefined;
+        const amountEther = formatEther(parseEtherOrZero(isString(maybeAmountEther) ? maybeAmountEther : "0"));
 
         setInitialFormValues({
-          flowRate,
+          amountEther,
           tokenAddress:
             maybeTokenAddress && isString(maybeTokenAddress)
               ? maybeTokenAddress
@@ -119,11 +73,7 @@ const Send: NextPage = () => {
           receiverAddress:
             maybeReceiverAddress && isString(maybeReceiverAddress)
               ? maybeReceiverAddress
-              : undefined,
-          endTimestamp:
-            maybeEndTimestamp && isString(maybeEndTimestamp)
-              ? Number(maybeEndTimestamp)
-              : undefined,
+              : undefined
         });
 
         router.replace(
@@ -153,13 +103,13 @@ const Send: NextPage = () => {
         }}
       >
         {initialFormValues && (
-          <StreamingFormProvider initialFormValues={initialFormValues}>
+          <TransferFormProvider initialFormValues={initialFormValues}>
             <SendCard />
-          </StreamingFormProvider>
+          </TransferFormProvider>
         )}
       </Box>
     </Container>
   );
 };
 
-export default withStaticSEO({ title: "Send Stream | Superfluid" }, Send);
+export default withStaticSEO({ title: "Transfer | Superfluid" }, Transfer);
