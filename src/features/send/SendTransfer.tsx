@@ -29,6 +29,7 @@ import AddressSearch from "./AddressSearch";
 import { PartialTransferForm } from "./TransferFormProvider";
 import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../transactionBoundary/TransactionButton";
+import { parseEtherOrZero } from "../../utils/tokenUtils";
 
 export default memo(function SendTransfer() {
   const theme = useTheme();
@@ -60,9 +61,6 @@ export default memo(function SendTransfer() {
     "data.tokenAddress",
     "data.amountEther",
   ]);
-
-  const shouldSearchForActiveFlow =
-    !!visibleAddress && !!receiverAddress && !!tokenAddress;
 
   const ReceiverAddressController = (
     <Controller
@@ -168,18 +166,36 @@ export default memo(function SendTransfer() {
     />
   )
 
-  const [upsertFlow, upsertFlowResult] =
-    rpcApi.useUpsertFlowWithSchedulingMutation();
+  const AmountController = (
+    <Controller
+      control={control}
+      name="data.amountEther"
+      render={({ field: { value, onChange, onBlur } }) => (
+        <TextField
+          data-cy={"amount-input"}
+          value={value}
+          onChange={onChange}
+          onBlur={onBlur}
+          InputProps={{
+            endAdornment: (
+              <Typography component="span" color={"text.secondary"}>
+                {token?.symbol ?? ""}
+              </Typography>
+            ),
+          }}
+        />
+      )}
+    />
+  );
+
+  const [transfer, transferResult] =
+    rpcApi.useTransferMutation();
 
   const SendTransactionBoundary = (
-    <TransactionBoundary mutationResult={upsertFlowResult}>
+    <TransactionBoundary mutationResult={transferResult}>
       {({ setDialogLoadingInfo }) =>
       (<TransactionButton
-        dataCy={"cancel-stream-button"}
-        ButtonProps={{
-          variant: "outlined",
-          color: "error",
-        }}
+        dataCy={"transfer-button"}
         onClick={async (signer) => {
           const superTokenAddress = tokenAddress;
           const senderAddress = visibleAddress;
@@ -189,27 +205,29 @@ export default memo(function SendTransfer() {
 
           setDialogLoadingInfo(
             <Typography variant="h5" color="text.secondary" translate="yes">
-              You are canceling a stream.
+              You are sending tokens.
             </Typography>
           );
 
+          // TODO
+
           const primaryArgs = {
             chainId: network.id,
-            superTokenAddress,
+            tokenAddress,
             senderAddress,
             receiverAddress,
-            userDataBytes: undefined,
+            amountWei: parseEtherOrZero(amountEther).toString()
           };
 
-          // upsertFlow({
-          //   ...primaryArgs,
-          //   signer,
-          //   overrides: await getTransactionOverrides(network),
-          // })
-          //   .unwrap()
-          //   .then(...txAnalytics("Send Transfer", primaryArgs))
-          //   .then(() => resetForm())
-          //   .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
+          transfer({
+            ...primaryArgs,
+            signer,
+            overrides: await getTransactionOverrides(network),
+          })
+            .unwrap()
+            .then(...txAnalytics("Send Transfer", primaryArgs))
+            .then(() => resetForm())
+            .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
         }}
       >
         Send Transfer
@@ -261,7 +279,7 @@ export default memo(function SendTransfer() {
         </Stack>
         <Stack justifyContent="stretch">
           <FormLabel>Amount</FormLabel>
-          <TextField value={""} />
+          {AmountController}
         </Stack>
       </Box>
 
