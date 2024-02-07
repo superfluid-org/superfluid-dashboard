@@ -5,19 +5,13 @@ import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import withStaticSEO from "../components/SEO/withStaticSEO";
-import { useAnalytics } from "../features/analytics/useAnalytics";
 import { useExpectedNetwork } from "../features/network/ExpectedNetworkContext";
-import {
-  timeUnitWordMap,
-  UnitOfTime,
-  wordTimeUnitMap,
-} from "../features/send/FlowRateInput";
-import SendCard from "../features/send/SendCard";
+import SendCardContainer from "../features/send/SendCardContainer";
 import { useTransactionRestorationContext } from "../features/transactionRestoration/TransactionRestorationContext";
-import { RestorationType } from "../features/transactionRestoration/transactionRestorations";
-import { parseEtherOrZero, tryParseUnits } from "../utils/tokenUtils";
+import { parseEtherOrZero } from "../utils/tokenUtils";
 import { buildQueryString } from "../utils/URLUtils";
 import TransferFormProvider, { TransferFormProviderProps } from "../features/send/TransferFormProvider";
+import SendTransfer from "../features/send/SendTransfer";
 
 interface TransferPageQuery {
   token?: string;
@@ -102,11 +96,13 @@ const Transfer: NextPage = () => {
           },
         }}
       >
-        {initialFormValues && (
-          <TransferFormProvider initialFormValues={initialFormValues}>
-            <SendCard />
-          </TransferFormProvider>
-        )}
+        <SendCardContainer>
+          {initialFormValues && (
+            <TransferFormProvider initialFormValues={initialFormValues}>
+              <SendTransfer />
+            </TransferFormProvider>
+          )}
+        </SendCardContainer>
       </Box>
     </Container>
   );

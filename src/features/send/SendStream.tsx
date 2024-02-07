@@ -88,25 +88,6 @@ import {
   ValidStreamingForm,
 } from "./StreamingFormProvider";
 
-const TabButton: FC<{
-  text: string;
-  isActive: boolean;
-  dataCy: string;
-}> = ({ text, isActive, dataCy }) => {
-  return (
-    <Button
-      data-cy={dataCy}
-      color={isActive ? "primary" : "secondary"}
-      variant="textContained"
-      size="large"
-      sx={{ pointerEvents: "none" }}
-    >
-      {text}
-    </Button>
-  )
-}
-
-
 // Minimum start and end date difference in seconds.
 export const SCHEDULE_START_END_MIN_DIFF_S = 15 * UnitOfTime.Minute;
 
@@ -196,7 +177,7 @@ const WhitelistTransparentBox = () => (
   </Stack>
 );
 
-export default memo(function SendCard() {
+export default memo(function SendStream() {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { network } = useExpectedNetwork();
@@ -968,51 +949,46 @@ export default memo(function SendCard() {
   );
 
   return (
-    <Card
-      data-cy={"send-card"}
-      elevation={1}
-      sx={{
-        maxWidth: "600px",
-        width: "100%",
-        position: "relative",
-        [theme.breakpoints.down("md")]: {
-          boxShadow: "none",
-          backgroundImage: "none",
-          borderRadius: 0,
-          border: 0,
-          p: 0,
-        },
-      }}
-    >
-
-      <Stack direction="row" spacing={2} sx={{ mb: 4 }} >
-        <TabButton text="Stream" isActive={true} dataCy="send-or-modify-stream" />
-        <TabButton text="Transfer" isActive={false} dataCy="send-or-modify-stream" />
-      </Stack>
-
-      <NetworkBadge
-        network={network}
-        sx={{ position: "absolute", top: 0, right: theme.spacing(3.5) }}
-        NetworkIconProps={{
-          size: 32,
-          fontSize: 18,
-          sx: { [theme.breakpoints.down("md")]: { borderRadius: 1 } },
-        }}
+    <Stack spacing={2.5}>
+      <ErrorMessage
+        name="data"
+        // ErrorMessage has a bug and current solution is to pass in errors via props.
+        // TODO: keep eye on this issue: https://github.com/react-hook-form/error-message/issues/91
+        errors={formState.errors}
+        render={({ message }) =>
+          !!message && (
+            <Alert severity="error" sx={{ mb: 1 }}>
+              {message}
+            </Alert>
+          )
+        }
       />
-      <Stack spacing={2.5}>
-        <ErrorMessage
-          name="data"
-          // ErrorMessage has a bug and current solution is to pass in errors via props.
-          // TODO: keep eye on this issue: https://github.com/react-hook-form/error-message/issues/91
-          errors={formState.errors}
-          render={({ message }) =>
-            !!message && (
-              <Alert severity="error" sx={{ mb: 1 }}>
-                {message}
-              </Alert>
-            )
-          }
-        />
+      <Box>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          sx={{ mr: 0.75 }}
+        >
+          <FormLabel>Receiver Wallet Address</FormLabel>
+          <TooltipWithIcon title="Must not be an exchange address" />
+        </Stack>
+        {ReceiverAddressController}
+      </Box>
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: "1fr 2fr",
+          gap: 2.5,
+          [theme.breakpoints.down("md")]: {
+            gridTemplateColumns: "1fr",
+          },
+        }}
+      >
+        <Stack justifyContent="stretch">
+          <FormLabel>Super Token</FormLabel>
+          {TokenController}
+        </Stack>
         <Box>
           <Stack
             direction="row"
@@ -1020,99 +996,41 @@ export default memo(function SendCard() {
             justifyContent="space-between"
             sx={{ mr: 0.75 }}
           >
-            <FormLabel>Receiver Wallet Address</FormLabel>
-            <TooltipWithIcon title="Must not be an exchange address" />
+            <FormLabel>Flow Rate</FormLabel>
+            <TooltipWithIcon title="Flow rate is the velocity of tokens being streamed." />
           </Stack>
-          {ReceiverAddressController}
+          {FlowRateController}
         </Box>
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: "1fr 2fr",
-            gap: 2.5,
-            [theme.breakpoints.down("md")]: {
-              gridTemplateColumns: "1fr",
-            },
-          }}
-        >
-          <Stack justifyContent="stretch">
-            <FormLabel>Super Token</FormLabel>
-            {TokenController}
-          </Stack>
-          <Box>
-            <Stack
-              direction="row"
-              alignItems="center"
-              justifyContent="space-between"
-              sx={{ mr: 0.75 }}
-            >
-              <FormLabel>Flow Rate</FormLabel>
-              <TooltipWithIcon title="Flow rate is the velocity of tokens being streamed." />
-            </Stack>
-            {FlowRateController}
-          </Box>
-        </Box>
-        {!!network.flowSchedulerContractAddress && (
-          <>
-            <FormControlLabel
-              data-cy={"scheduling-tooltip"}
-              control={StreamSchedulingController}
-              label={
-                <Stack direction="row" alignItems="center" gap={0.75}>
-                  Stream Scheduling
-                  <TooltipWithIcon title="Schedule start and end dates for future or fixed-duration streams" />
-                </Stack>
-              }
-            />
-            <Collapse
-              data-cy={"scheduling-collapse"}
-              in={streamScheduling}
-              mountOnEnter
-              unmountOnExit
-              sx={{ mx: -0.5, marginTop: "0 !important", overflow: "hidden" }}
-            >
-              <Stack gap={2.5} sx={{ position: "relative", p: 0.5, pt: 3 }}>
-                <Stack
-                  sx={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr 1fr",
-                    ...(!isPlatformWhitelisted ? { opacity: 0.5 } : {}),
-                  }}
-                  gap={2.5}
-                >
-                  <Stack>
-                    <Stack
-                      direction="row"
-                      alignItems="center"
-                      justifyContent="space-between"
-                      sx={{ mr: 0.75 }}
-                      flex={1}
-                    >
-                      <FormLabel>Start Date</FormLabel>
-                      <TooltipWithIcon title="The date when stream scheduler tries to start the stream." />
-                    </Stack>
-                    {StartDateController}
-                  </Stack>
-                  <Stack>
-                    <Stack
-                      direction="row"
-                      alignItems="center"
-                      justifyContent="space-between"
-                      sx={{ mr: 0.75 }}
-                      flex={1}
-                    >
-                      <FormLabel>End Date</FormLabel>
-                      <TooltipWithIcon title="The date when stream scheduler tries to cancel the stream." />
-                    </Stack>
-                    {EndDateController}
-                  </Stack>
-                </Stack>
-
-                <Stack
-                  sx={{
-                    ...(!isPlatformWhitelisted ? { opacity: 0.5 } : {}),
-                  }}
-                >
+      </Box>
+      {!!network.flowSchedulerContractAddress && (
+        <>
+          <FormControlLabel
+            data-cy={"scheduling-tooltip"}
+            control={StreamSchedulingController}
+            label={
+              <Stack direction="row" alignItems="center" gap={0.75}>
+                Stream Scheduling
+                <TooltipWithIcon title="Schedule start and end dates for future or fixed-duration streams" />
+              </Stack>
+            }
+          />
+          <Collapse
+            data-cy={"scheduling-collapse"}
+            in={streamScheduling}
+            mountOnEnter
+            unmountOnExit
+            sx={{ mx: -0.5, marginTop: "0 !important", overflow: "hidden" }}
+          >
+            <Stack gap={2.5} sx={{ position: "relative", p: 0.5, pt: 3 }}>
+              <Stack
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  ...(!isPlatformWhitelisted ? { opacity: 0.5 } : {}),
+                }}
+                gap={2.5}
+              >
+                <Stack>
                   <Stack
                     direction="row"
                     alignItems="center"
@@ -1120,84 +1038,115 @@ export default memo(function SendCard() {
                     sx={{ mr: 0.75 }}
                     flex={1}
                   >
-                    <FormLabel>Total Stream</FormLabel>
-                    <TooltipWithIcon title="The approximate amount that will be streamed until the scheduler cancels the stream." />
+                    <FormLabel>Start Date</FormLabel>
+                    <TooltipWithIcon title="The date when stream scheduler tries to start the stream." />
                   </Stack>
-                  {TotalStreamedController}
+                  {StartDateController}
                 </Stack>
-
-                {!isPlatformWhitelisted && <WhitelistTransparentBox />}
-              </Stack>
-            </Collapse>
-          </>
-        )}
-
-        {tokenAddress && visibleAddress && (
-          <>
-            <Stack
-              direction="row"
-              alignItems="center"
-              justifyContent="center"
-              gap={1}
-            >
-              <Stack direction="row" alignItems="center" gap={0.5}>
-                <BalanceSuperToken
-                  showFiat
-                  data-cy={"balance"}
-                  chainId={network.id}
-                  accountAddress={visibleAddress}
-                  tokenAddress={tokenAddress}
-                  symbol={token?.symbol}
-                  TypographyProps={{ variant: "h7mono" }}
-                  SymbolTypographyProps={{ variant: "h7" }}
-                />
-              </Stack>
-              {isWrappableSuperToken && (
-                <Tooltip title="Wrap more">
-                  <IconButton
-                    LinkComponent={Link}
-                    href={`/wrap?upgrade&token=${tokenAddress}&network=${network.slugName}`}
-                    data-cy={"balance-wrap-button"}
-                    color="primary"
-                    size="small"
+                <Stack>
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    sx={{ mr: 0.75 }}
+                    flex={1}
                   >
-                    <AddRounded />
-                  </IconButton>
-                </Tooltip>
-              )}
+                    <FormLabel>End Date</FormLabel>
+                    <TooltipWithIcon title="The date when stream scheduler tries to cancel the stream." />
+                  </Stack>
+                  {EndDateController}
+                </Stack>
+              </Stack>
+
+              <Stack
+                sx={{
+                  ...(!isPlatformWhitelisted ? { opacity: 0.5 } : {}),
+                }}
+              >
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  sx={{ mr: 0.75 }}
+                  flex={1}
+                >
+                  <FormLabel>Total Stream</FormLabel>
+                  <TooltipWithIcon title="The approximate amount that will be streamed until the scheduler cancels the stream." />
+                </Stack>
+                {TotalStreamedController}
+              </Stack>
+
+              {!isPlatformWhitelisted && <WhitelistTransparentBox />}
             </Stack>
-            <Divider />
-          </>
-        )}
-        {!!(receiverAddress && token) && (
-          <StreamingPreview
-            receiver={receiverAddress}
-            token={token}
-            existingFlowRate={existingScheduledFlowRate}
-            flowRateEther={{
-              ...flowRateEther,
-              startTimestamp: startTimestamp ?? undefined,
-            }}
-            newEndDate={endDate}
-            oldEndDate={existingEndDate}
-          />
-        )}
-        {showBufferAlert && BufferAlert}
-        <ConnectionBoundary>
-          <ConnectionBoundaryButton
-            ButtonProps={{
-              fullWidth: true,
-              variant: "contained",
-              size: "xl",
-            }}
+          </Collapse>
+        </>
+      )}
+
+      {tokenAddress && visibleAddress && (
+        <>
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="center"
+            gap={1}
           >
-            <Stack gap={1}>
-              {SendTransactionBoundary}
-              {DeleteFlowBoundary}
+            <Stack direction="row" alignItems="center" gap={0.5}>
+              <BalanceSuperToken
+                showFiat
+                data-cy={"balance"}
+                chainId={network.id}
+                accountAddress={visibleAddress}
+                tokenAddress={tokenAddress}
+                symbol={token?.symbol}
+                TypographyProps={{ variant: "h7mono" }}
+                SymbolTypographyProps={{ variant: "h7" }}
+              />
             </Stack>
-          </ConnectionBoundaryButton>
-        </ConnectionBoundary>
-      </Stack>
-    </Card>
+            {isWrappableSuperToken && (
+              <Tooltip title="Wrap more">
+                <IconButton
+                  LinkComponent={Link}
+                  href={`/wrap?upgrade&token=${tokenAddress}&network=${network.slugName}`}
+                  data-cy={"balance-wrap-button"}
+                  color="primary"
+                  size="small"
+                >
+                  <AddRounded />
+                </IconButton>
+              </Tooltip>
+            )}
+          </Stack>
+          <Divider />
+        </>
+      )}
+      {!!(receiverAddress && token) && (
+        <StreamingPreview
+          receiver={receiverAddress}
+          token={token}
+          existingFlowRate={existingScheduledFlowRate}
+          flowRateEther={{
+            ...flowRateEther,
+            startTimestamp: startTimestamp ?? undefined,
+          }}
+          newEndDate={endDate}
+          oldEndDate={existingEndDate}
+        />
+      )}
+      {showBufferAlert && BufferAlert}
+      <ConnectionBoundary>
+        <ConnectionBoundaryButton
+          ButtonProps={{
+            fullWidth: true,
+            variant: "contained",
+            size: "xl",
+          }}
+        >
+          <Stack gap={1}>
+            {SendTransactionBoundary}
+            {DeleteFlowBoundary}
+          </Stack>
+        </ConnectionBoundaryButton>
+      </ConnectionBoundary>
+    </Stack>
   );
 });

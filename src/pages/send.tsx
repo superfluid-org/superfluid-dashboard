@@ -5,14 +5,13 @@ import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import withStaticSEO from "../components/SEO/withStaticSEO";
-import { useAnalytics } from "../features/analytics/useAnalytics";
 import { useExpectedNetwork } from "../features/network/ExpectedNetworkContext";
 import {
   timeUnitWordMap,
   UnitOfTime,
   wordTimeUnitMap,
 } from "../features/send/FlowRateInput";
-import SendCard from "../features/send/SendCard";
+import SendCard from "../features/send/SendStream";
 import StreamingFormProvider, {
   StreamingFormProviderProps,
 } from "../features/send/StreamingFormProvider";
@@ -20,6 +19,8 @@ import { useTransactionRestorationContext } from "../features/transactionRestora
 import { RestorationType } from "../features/transactionRestoration/transactionRestorations";
 import { tryParseUnits } from "../utils/tokenUtils";
 import { buildQueryString } from "../utils/URLUtils";
+import SendCardContainer from "../features/send/SendCardContainer";
+import SendStream from "../features/send/SendStream";
 
 interface SendPageQuery {
   token?: string;
@@ -152,11 +153,13 @@ const Send: NextPage = () => {
           },
         }}
       >
-        {initialFormValues && (
-          <StreamingFormProvider initialFormValues={initialFormValues}>
-            <SendCard />
-          </StreamingFormProvider>
-        )}
+        <SendCardContainer>
+          {initialFormValues && (
+            <StreamingFormProvider initialFormValues={initialFormValues}>
+              <SendStream />
+            </StreamingFormProvider>
+          )}
+        </SendCardContainer>
       </Box>
     </Container>
   );

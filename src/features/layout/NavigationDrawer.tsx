@@ -162,7 +162,7 @@ export default memo(function NavigationDrawer() {
           title="Send"
           href="/send"
           onClick={closeNavigationDrawer}
-          active={isActiveRoute("/send")}
+          active={isActiveRoute("/send", "/transfer")}
           icon={ArrowRightAltRoundedIcon}
         />
 

@@ -10,7 +10,7 @@ import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { rpcApi } from "../redux/store";
 import { formRestorationOptions } from "../transactionRestoration/transactionRestorations";
 import { calculateTotalAmountWei, UnitOfTime } from "./FlowRateInput";
-import { SCHEDULE_START_END_MIN_DIFF_S } from "./SendCard";
+import { SCHEDULE_START_END_MIN_DIFF_S } from "./SendStream";
 import useCalculateBufferInfo from "./useCalculateBufferInfo";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { CommonFormEffects } from "../common/CommonFormEffects";
