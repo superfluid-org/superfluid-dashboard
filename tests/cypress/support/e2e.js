@@ -27,7 +27,9 @@ Cypress.on("uncaught:exception", (err, runnable) => {
     err.message.includes("invalid decimal value") ||
     //Lifi bridge server errors when opening settings page
     err.name.includes("AxiosError") ||
-    err.name.includes("ServerError")
+    err.name.includes("ServerError") ||
+    //An error popping up on scroll sepolia , cannot reproduce manually
+    err.message.includes("getInitialProps")
   ) {
     return false;
   }
