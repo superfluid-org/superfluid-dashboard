@@ -652,7 +652,9 @@ export const networkDefinition: {
     },
   },
   scrollSepolia: {
-    ...chain.scrollTestnet,
+    id: 534351,
+    name: "Scroll Sepolia",
+    network: "scroll-sepolia",
     slugName: "scrsepolia",
     v1ShortName: "scrsepolia",
     testnet: true,
@@ -678,7 +680,7 @@ export const networkDefinition: {
     },
   },
   optimismSepolia: {
-    id: 534352,
+    id: 11155420,
     name: "Optimism Sepolia",
     network: "optimism-sepolia",
     testnet: true,

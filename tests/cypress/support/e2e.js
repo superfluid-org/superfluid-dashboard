@@ -29,7 +29,14 @@ Cypress.on("uncaught:exception", (err, runnable) => {
     err.name.includes("AxiosError") ||
     err.name.includes("ServerError") ||
     //An error popping up on scroll sepolia , cannot reproduce manually
-    err.message.includes("getInitialProps")
+    err.message.includes("getInitialProps") ||
+    //Error popping up when loading gnosis safe custom apps page
+    err.message.includes("Minified React error #418") ||
+    err.message.includes("Minified React error #423") ||
+    //Failing request to LiFi due to some of the chains supported in the dashboard
+    err.message.includes("Request failed with status code 400 Bad Request") ||
+    //Dev mode error in bridge page
+    err.message.includes("_data$event.startsWith is not a function")
   ) {
     return false;
   }

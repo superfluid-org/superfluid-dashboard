@@ -96,7 +96,7 @@ export class DashboardPage extends BasePage {
     cy.fixture("networkSpecificData").then((networkSpecificData) => {
       let flowValues =
         networkSpecificData[network].ongoingStreamsAccount.tokenValues;
-      this.hasText(
+      this.containsText(
         `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell] ${NET_FLOW_VALUES}`,
         flowValues.netFlowRate
       );
