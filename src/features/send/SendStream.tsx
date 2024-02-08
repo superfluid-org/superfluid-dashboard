@@ -3,8 +3,6 @@ import AddRounded from "@mui/icons-material/AddRounded";
 import {
   Alert,
   Box,
-  Button,
-  Card,
   Checkbox,
   Collapse,
   Divider,
@@ -24,13 +22,12 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
-import { Token } from "@superfluid-finance/sdk-core";
 import { add, fromUnixTime, getUnixTime, sub } from "date-fns";
 import Decimal from "decimal.js";
 import { BigNumber, BigNumberish } from "ethers";
 import { formatEther, parseEther } from "ethers/lib/utils";
 import NextLink from "next/link";
-import { FC, PropsWithChildren, memo, useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import {
   mapCreateTaskToScheduledStream,
@@ -49,15 +46,11 @@ import {
 import { useAnalytics } from "../analytics/useAnalytics";
 import Link from "../common/Link";
 import TooltipWithIcon from "../common/TooltipWithIcon";
-import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
-import NetworkBadge from "../network/NetworkBadge";
 import { networkDefinition } from "../network/networks";
 import NetworkSwitchLink from "../network/NetworkSwitchLink";
-import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
-import { isWrappable, SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
 import { platformApi } from "../redux/platformApi/platformApi";
-import { rpcApi, subgraphApi } from "../redux/store";
+import { rpcApi } from "../redux/store";
 import Amount from "../token/Amount";
 import TokenIcon from "../token/TokenIcon";
 import { BalanceSuperToken } from "../tokenWrapping/BalanceSuperToken";
@@ -87,6 +80,8 @@ import {
   PartialStreamingForm,
   ValidStreamingForm,
 } from "./StreamingFormProvider";
+import { useSuperTokens } from "../../hooks/useSuperTokens";
+import { useSuperToken } from "../../hooks/useSuperToken";
 
 // Minimum start and end date difference in seconds.
 export const SCHEDULE_START_END_MIN_DIFF_S = 15 * UnitOfTime.Minute;
@@ -260,68 +255,8 @@ export default memo(function SendStream() {
     />
   );
 
-  const { token } = subgraphApi.useTokenQuery(
-    tokenAddress
-      ? {
-        chainId: network.id,
-        id: tokenAddress,
-      }
-      : skipToken,
-    {
-      selectFromResult: (result) => ({
-        token: result.currentData
-          ? ({
-            ...result.currentData,
-            address: result.currentData.id,
-            type: getSuperTokenType({
-              network,
-              address: result.currentData.id,
-              underlyingAddress: result.currentData.underlyingAddress,
-            }),
-          } as Token & SuperTokenMinimal)
-          : undefined,
-      }),
-    }
-  );
-
-  const isWrappableSuperToken = token ? isWrappable(token) : false;
-  const networkCustomTokens = useNetworkCustomTokens(network.id);
-
-  const listedSuperTokensQuery = subgraphApi.useTokensQuery({
-    chainId: network.id,
-    filter: {
-      isSuperToken: true,
-      isListed: true,
-    },
-  });
-
-  const customSuperTokensQuery = subgraphApi.useTokensQuery(
-    networkCustomTokens.length > 0
-      ? {
-        chainId: network.id,
-        filter: {
-          isSuperToken: true,
-          isListed: false,
-          id_in: networkCustomTokens,
-        },
-      }
-      : skipToken
-  );
-
-  const superTokens = useMemo(
-    () =>
-      (listedSuperTokensQuery.data?.items || [])
-        .concat(customSuperTokensQuery.data?.items || [])
-        .map((x) => ({
-          type: getSuperTokenType({ ...x, network, address: x.id }),
-          address: x.id,
-          name: x.name,
-          symbol: x.symbol,
-          decimals: 18,
-          isListed: x.isListed,
-        })),
-    [network, listedSuperTokensQuery.data, customSuperTokensQuery.data]
-  );
+  const { token, isWrappableSuperToken } = useSuperToken({ network, tokenAddress });
+  const { listedSuperTokensQuery, customSuperTokensQuery, superTokens } = useSuperTokens({ network });
 
   const TokenController = (
     <Controller

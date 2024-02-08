@@ -9,18 +9,13 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { skipToken } from "@reduxjs/toolkit/dist/query";
-import { Token } from "@superfluid-finance/sdk-core";
-import { memo, useCallback, useMemo } from "react";
+import { memo, useCallback } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { useAnalytics } from "../analytics/useAnalytics";
 import TooltipWithIcon from "../common/TooltipWithIcon";
-import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
-import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
-import { isWrappable, SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
-import { rpcApi, subgraphApi } from "../redux/store";
+import { rpcApi } from "../redux/store";
 import { TokenDialogButton } from "../tokenWrapping/TokenDialogButton";
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import ConnectionBoundaryButton from "../transactionBoundary/ConnectionBoundaryButton";
@@ -30,6 +25,8 @@ import { PartialTransferForm } from "./TransferFormProvider";
 import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../transactionBoundary/TransactionButton";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
+import { useSuperTokens } from "../../hooks/useSuperTokens";
+import { useSuperToken } from "../../hooks/useSuperToken";
 
 export default memo(function SendTransfer() {
   const theme = useTheme();
@@ -78,68 +75,8 @@ export default memo(function SendTransfer() {
     />
   );
 
-  const { token } = subgraphApi.useTokenQuery(
-    tokenAddress
-      ? {
-        chainId: network.id,
-        id: tokenAddress,
-      }
-      : skipToken,
-    {
-      selectFromResult: (result) => ({
-        token: result.currentData
-          ? ({
-            ...result.currentData,
-            address: result.currentData.id,
-            type: getSuperTokenType({
-              network,
-              address: result.currentData.id,
-              underlyingAddress: result.currentData.underlyingAddress,
-            }),
-          } as Token & SuperTokenMinimal)
-          : undefined,
-      }),
-    }
-  );
-
-  const isWrappableSuperToken = token ? isWrappable(token) : false;
-  const networkCustomTokens = useNetworkCustomTokens(network.id);
-
-  const listedSuperTokensQuery = subgraphApi.useTokensQuery({
-    chainId: network.id,
-    filter: {
-      isSuperToken: true,
-      isListed: true,
-    },
-  });
-
-  const customSuperTokensQuery = subgraphApi.useTokensQuery(
-    networkCustomTokens.length > 0
-      ? {
-        chainId: network.id,
-        filter: {
-          isSuperToken: true,
-          isListed: false,
-          id_in: networkCustomTokens,
-        },
-      }
-      : skipToken
-  );
-
-  const superTokens = useMemo(
-    () =>
-      (listedSuperTokensQuery.data?.items || [])
-        .concat(customSuperTokensQuery.data?.items || [])
-        .map((x) => ({
-          type: getSuperTokenType({ ...x, network, address: x.id }),
-          address: x.id,
-          name: x.name,
-          symbol: x.symbol,
-          decimals: 18,
-          isListed: x.isListed,
-        })),
-    [network, listedSuperTokensQuery.data, customSuperTokensQuery.data]
-  );
+  const { token } = useSuperToken({ network, tokenAddress });
+  const { listedSuperTokensQuery, customSuperTokensQuery, superTokens } = useSuperTokens({ network });
 
   const TokenController = (
     <Controller
