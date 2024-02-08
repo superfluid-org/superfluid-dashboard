@@ -65,6 +65,7 @@ const StreamingFormProvider: FC<
 > = ({ children, initialFormValues }) => {
   const { visibleAddress } = useVisibleAddress();
   const { network, stopAutoSwitchToWalletNetwork } = useExpectedNetwork();
+  
   const [queryRealtimeBalance] = rpcApi.useLazyRealtimeBalanceQuery();
   const [queryActiveFlow] = rpcApi.useLazyGetActiveFlowQuery();
   const calculateBufferInfo = useCalculateBufferInfo();

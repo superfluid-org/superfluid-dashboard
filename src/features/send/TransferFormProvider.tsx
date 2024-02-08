@@ -7,6 +7,9 @@ import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { formRestorationOptions } from "../transactionRestoration/transactionRestorations";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { CommonFormEffects } from "../common/CommonFormEffects";
+import { rpcApi } from "../redux/store";
+import { BigNumber } from "ethers";
+import { parseEther } from "ethers/lib/utils";
 
 export type ValidTransferForm = {
   data: {
@@ -52,19 +55,62 @@ const TransferFormProvider: FC<
   const { visibleAddress } = useVisibleAddress();
   const { network, stopAutoSwitchToWalletNetwork } = useExpectedNetwork();
 
+  const [queryRealtimeBalance] = rpcApi.useLazyRealtimeBalanceQuery();
+
   const formSchema = useMemo(
     () =>
       object().test(async (values, context) => {
-        clearErrors("data");
 
+        clearErrors("data");
         await primarySchema.validate(values);
         const validForm = values as ValidTransferForm;
 
-        // TODO(KK): Do I need higher order validation here?
+        // # Higher order validation
+        const handleHigherOrderValidationError = ({
+          message,
+        }: {
+          message: string;
+        }) => {
+          setError("data", {
+            message: message,
+          });
+          throw context.createError({
+            path: "data",
+            message: message,
+          });
+        };
+
+        const { tokenAddress, receiverAddress } =
+          validForm.data;
+
+        if (!visibleAddress)
+          return false;
+
+        if (visibleAddress.toLowerCase() === receiverAddress.toLowerCase()) {
+          handleHigherOrderValidationError({
+            message: `You can't send to yourself.`,
+          });
+        }
+
+        const { balance } = await queryRealtimeBalance(
+          {
+            accountAddress: visibleAddress,
+            chainId: network.id,
+            tokenAddress: tokenAddress,
+          },
+          true
+        ).unwrap()
+        if (BigNumber.from(balance) < parseEther(amountEther)) {
+          // Note: nit-pick but we're not accounting for flowing here
+
+          handleHigherOrderValidationError({
+            message: `You don't have enough balance for the transfer.`,
+          });
+        }
 
         return true;
       }),
-    []
+    [network, visibleAddress]
   );
 
   const formMethods = useForm<PartialTransferForm, undefined, ValidTransferForm>({
