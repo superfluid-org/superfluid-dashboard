@@ -11,8 +11,6 @@ export const chainIds = {
   optimism: 10,
   arbitrum: 42161,
   sepolia: 11155111,
-  polygonZkevmTestnet: 1442,
-  baseGoerli: 84531,
   base: 8453,
   scroll: 534352,
   scrollSepolia: 534351,
@@ -145,9 +143,6 @@ export const superfluidRpcUrls = {
   ethereum: "https://rpc-endpoints.superfluid.dev/eth-mainnet",
   "celo-mainnet": "https://rpc-endpoints.superfluid.dev/celo-mainnet",
   sepolia: "https://rpc-endpoints.superfluid.dev/eth-sepolia",
-  "polygon-zkevm-testnet":
-    "https://rpc-endpoints.superfluid.dev/polygon-zkevm-testnet",
-  "base-goerli": "https://rpc-endpoints.superfluid.dev/base-goerli",
   base: "https://rpc-endpoints.superfluid.dev/base-mainnet",
   scroll: "https://rpc-endpoints.superfluid.dev/scroll-mainnet",
   "scroll-sepolia": "https://rpc-endpoints.superfluid.dev/scroll-sepolia",

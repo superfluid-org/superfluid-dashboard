@@ -10,40 +10,37 @@ Feature: Test cases that run indefinitely on all supported networks
         Then The native token "<token>" balance for "staticBalanceAccount" on "<network>" in the token list
 
         Examples:
-            | network               | token |
-            | goerli                | ETH   |
-            | polygon-mumbai        | MATIC |
-            | avalanche-fuji        | AVAX  |
-            | gnosis                | XDAI  |
-            | polygon               | MATIC |
-            | optimism              | ETH   |
-            | arbitrum-one          | ETH   |
-            | avalanche             | AVAX  |
-            | bsc                   | BNB   |
-            | celo                  | CELO  |
-            | sepolia               | SEP   |
-            | polygon-zkevm-testnet | ETH   |
-            | bgoerli               | ETH   |
-            | base                  | ETH   |
+            | network        | token |
+            | goerli         | ETH   |
+            | polygon-mumbai | MATIC |
+            | avalanche-fuji | AVAX  |
+            | gnosis         | XDAI  |
+            | polygon        | MATIC |
+            | optimism       | ETH   |
+            | arbitrum-one   | ETH   |
+            | avalanche      | AVAX  |
+            | bsc            | BNB   |
+            | celo           | CELO  |
+            | sepolia        | SEP   |
+            | base           | ETH   |
 
     Scenario Outline: Superfluid RPCS are not behind on <network>
         Given Superfluid RPCs are not more then 10 minutes behind on <network>
 
         Examples:
-            | network         |
-            | goerli          |
-            | polygon-mumbai  |
-            | avalanche-fuji  |
-            | gnosis          |
-            | polygon         |
-            | optimism        |
-            | arbitrum-one    |
-            | avalanche       |
-            | bsc             |
-            | celo            |
-            | sepolia         |
-            | bgoerli         |
-            | base            |
+            | network        |
+            | goerli         |
+            | polygon-mumbai |
+            | avalanche-fuji |
+            | gnosis         |
+            | polygon        |
+            | optimism       |
+            | arbitrum-one   |
+            | avalanche      |
+            | bsc            |
+            | celo           |
+            | sepolia        |
+            | base           |
 
     # Add back once cypress uses superfluid rpc
     #| polygon-zkevm-testnet |
@@ -51,21 +48,19 @@ Feature: Test cases that run indefinitely on all supported networks
         Given The graph is not more then 10 minutes behind on <network>
 
         Examples:
-            | network               |
-            | goerli                |
-            | polygon-mumbai        |
-            | avalanche-fuji        |
-            | gnosis                |
-            | polygon               |
-            | optimism              |
-            | arbitrum-one          |
-            | avalanche             |
-            | bsc                   |
-            | celo                  |
-            | sepolia               |
-            | polygon-zkevm-testnet |
-            | bgoerli               |
-            | base                  |
+            | network        |
+            | goerli         |
+            | polygon-mumbai |
+            | avalanche-fuji |
+            | gnosis         |
+            | polygon        |
+            | optimism       |
+            | arbitrum-one   |
+            | avalanche      |
+            | bsc            |
+            | celo           |
+            | sepolia        |
+            | base           |
 
     Scenario: Testnet faucet fund check
         Given The faucet contract has got enough funds to send to people

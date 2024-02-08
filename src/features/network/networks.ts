@@ -706,83 +706,6 @@ export const networkDefinition = {
     autoWrapSubgraphUrl: undefined,
     platformUrl: undefined,
   },
-  polygonZkevmTestnet: {
-    ...chain.polygonZkEvmTestnet,
-    id: chainIds.polygonZkevmTestnet,
-    metadata: ensureDefined(
-      sfMeta.getNetworkByChainId(chainIds.polygonZkevmTestnet),
-      chainIds.polygonZkevmTestnet
-    ),
-    blockExplorers: ensureDefined(chain.polygonZkEvmTestnet.blockExplorers),
-    slugName: "polygon-zkevm-testnet",
-    v1ShortName: "pzkevmtest",
-    bufferTimeInMinutes: 60,
-    color: "#7c3fe4",
-    rpcUrls: {
-      ...chain.polygonZkEvmTestnet.rpcUrls,
-      superfluid: { http: [superfluidRpcUrls["polygon-zkevm-testnet"]] },
-    },
-    fallbackSubgraphUrl:
-      "https://polygon-zkevm-testnet.subgraph.x.superfluid.dev",
-    getLinkForTransaction: (txHash: string): string =>
-      `https://testnet-zkevm.polygonscan.com/tx/${txHash}`,
-    getLinkForAddress: (address: string): string =>
-      `https://testnet-zkevm.polygonscan.com/address/${address}`,
-    nativeCurrency: {
-      ...ensureDefined(chain.polygonZkEvmTestnet.nativeCurrency),
-      address: NATIVE_ASSET_ADDRESS,
-      type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: "ETHx",
-        address: "0x6345Aa6cec42a85160CF436810F97661e28c1876",
-        name: "Super ETH",
-        decimals: 18,
-      },
-    },
-    vestingContractAddress: undefined,
-    vestingSubgraphUrl: undefined,
-    autoWrapSubgraphUrl: undefined,
-    platformUrl: undefined,
-  },
-  baseGoerli: {
-    ...chain.baseGoerli,
-    id: chainIds.baseGoerli,
-    metadata: ensureDefined(
-      sfMeta.getNetworkByChainId(chainIds.baseGoerli),
-      chainIds.baseGoerli
-    ),
-    blockExplorers: ensureDefined(chain.baseGoerli.blockExplorers),
-    slugName: "bgoerli",
-    v1ShortName: "bgoerli",
-    bufferTimeInMinutes: 60,
-    color: "#68B1D5",
-    rpcUrls: {
-      ...chain.baseGoerli.rpcUrls,
-      superfluid: { http: [superfluidRpcUrls["base-goerli"]] },
-    },
-    fallbackSubgraphUrl: "https://base-goerli.subgraph.x.superfluid.dev/",
-    getLinkForTransaction: (txHash: string): string =>
-      `https://goerli.basescan.org/tx/${txHash}`,
-    getLinkForAddress: (address: string): string =>
-      `https://goerli.basescan.org/address/${address}`,
-    nativeCurrency: {
-      ...ensureDefined(chain.baseGoerli.nativeCurrency),
-      address: NATIVE_ASSET_ADDRESS,
-      type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: "ETHx",
-        address: "0x7fFCE315B2014546bA461d54eDed7AAc70DF4f53",
-        name: "Super ETH",
-        decimals: 18,
-      },
-    },
-    vestingContractAddress: undefined,
-    vestingSubgraphUrl: undefined,
-    autoWrapSubgraphUrl: undefined,
-    platformUrl: undefined,
-  },
   base: {
     ...chain.base,
     id: chainIds.base,
@@ -955,8 +878,6 @@ export const allNetworks: Network[] = orderBy(
       networkDefinition.bsc,
       networkDefinition.celoMainnet,
       networkDefinition.sepolia,
-      networkDefinition.polygonZkevmTestnet,
-      networkDefinition.baseGoerli,
       networkDefinition.base,
       // networkDefinition.scroll,
       // networkDefinition.scrollSepolia,
