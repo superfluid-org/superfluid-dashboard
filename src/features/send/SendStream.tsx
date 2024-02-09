@@ -27,7 +27,7 @@ import Decimal from "decimal.js";
 import { BigNumber, BigNumberish } from "ethers";
 import { formatEther, parseEther } from "ethers/lib/utils";
 import NextLink from "next/link";
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { FC, memo, useCallback, useEffect, useMemo, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import {
   mapCreateTaskToScheduledStream,
@@ -47,7 +47,7 @@ import { useAnalytics } from "../analytics/useAnalytics";
 import Link from "../common/Link";
 import TooltipWithIcon from "../common/TooltipWithIcon";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
-import { networkDefinition } from "../network/networks";
+import { Network, networkDefinition } from "../network/networks";
 import NetworkSwitchLink from "../network/NetworkSwitchLink";
 import { platformApi } from "../redux/platformApi/platformApi";
 import { rpcApi } from "../redux/store";
@@ -82,6 +82,54 @@ import {
 } from "./StreamingFormProvider";
 import { useSuperTokens } from "../../hooks/useSuperTokens";
 import { useSuperToken } from "../../hooks/useSuperToken";
+import { SuperTokenMinimal, isWrappable } from "../redux/endpoints/tokenTypes";
+
+export const SendBalance: FC<{
+  network: Network;
+  visibleAddress: string | undefined;
+  token: (SuperTokenMinimal) | undefined
+}> = ({ network, visibleAddress, token }) => {
+  if (!visibleAddress || !token) {
+    return null;
+  }
+
+  const isWrappableSuperToken = token ? isWrappable(token) : false;
+
+  return (
+    <Stack
+      direction="row"
+      alignItems="center"
+      justifyContent="center"
+      gap={1}
+    >
+      <Stack direction="row" alignItems="center" gap={0.5}>
+        <BalanceSuperToken
+          showFiat
+          data-cy={"balance"}
+          chainId={network.id}
+          accountAddress={visibleAddress}
+          tokenAddress={token.address}
+          symbol={token.symbol}
+          TypographyProps={{ variant: "h7mono" }}
+          SymbolTypographyProps={{ variant: "h7" }}
+        />
+      </Stack>
+      {isWrappableSuperToken && (
+        <Tooltip title="Wrap more">
+          <IconButton
+            LinkComponent={Link}
+            href={`/wrap?upgrade&token=${token.address}&network=${network.slugName}`}
+            data-cy={"balance-wrap-button"}
+            color="primary"
+            size="small"
+          >
+            <AddRounded />
+          </IconButton>
+        </Tooltip>
+      )}
+    </Stack>
+  )
+}
 
 // Minimum start and end date difference in seconds.
 export const SCHEDULE_START_END_MIN_DIFF_S = 15 * UnitOfTime.Minute;
@@ -1017,43 +1065,10 @@ export default memo(function SendStream() {
         </>
       )}
 
-      {tokenAddress && visibleAddress && (
-        <>
-          <Stack
-            direction="row"
-            alignItems="center"
-            justifyContent="center"
-            gap={1}
-          >
-            <Stack direction="row" alignItems="center" gap={0.5}>
-              <BalanceSuperToken
-                showFiat
-                data-cy={"balance"}
-                chainId={network.id}
-                accountAddress={visibleAddress}
-                tokenAddress={tokenAddress}
-                symbol={token?.symbol}
-                TypographyProps={{ variant: "h7mono" }}
-                SymbolTypographyProps={{ variant: "h7" }}
-              />
-            </Stack>
-            {isWrappableSuperToken && (
-              <Tooltip title="Wrap more">
-                <IconButton
-                  LinkComponent={Link}
-                  href={`/wrap?upgrade&token=${tokenAddress}&network=${network.slugName}`}
-                  data-cy={"balance-wrap-button"}
-                  color="primary"
-                  size="small"
-                >
-                  <AddRounded />
-                </IconButton>
-              </Tooltip>
-            )}
-          </Stack>
-          <Divider />
-        </>
-      )}
+      <SendBalance network={network} visibleAddress={visibleAddress} token={token} />
+
+      {(token) && <Divider />}
+
       {!!(receiverAddress && token) && (
         <StreamingPreview
           receiver={receiverAddress}
@@ -1067,7 +1082,9 @@ export default memo(function SendStream() {
           oldEndDate={existingEndDate}
         />
       )}
+
       {showBufferAlert && BufferAlert}
+
       <ConnectionBoundary>
         <ConnectionBoundaryButton
           ButtonProps={{

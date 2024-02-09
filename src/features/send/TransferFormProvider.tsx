@@ -21,7 +21,7 @@ export type ValidTransferForm = {
 
 const defaultFormValues = {
   data: {
-    amountEther: "0",
+    amountEther: "",
     receiverAddress: null,
     tokenAddress: null
   },

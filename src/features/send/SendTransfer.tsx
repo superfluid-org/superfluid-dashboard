@@ -2,6 +2,7 @@ import { ErrorMessage } from "@hookform/error-message";
 import {
   Alert,
   Box,
+  Divider,
   FormLabel,
   Stack,
   TextField,
@@ -27,6 +28,7 @@ import { TransactionButton } from "../transactionBoundary/TransactionButton";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
 import { useSuperTokens } from "../../hooks/useSuperTokens";
 import { useSuperToken } from "../../hooks/useSuperToken";
+import { SendBalance } from "./SendStream";
 
 export default memo(function SendTransfer() {
   const theme = useTheme();
@@ -219,6 +221,10 @@ export default memo(function SendTransfer() {
           {AmountController}
         </Stack>
       </Box>
+
+      <SendBalance network={network} visibleAddress={visibleAddress} token={token} />
+
+      {(token) && <Divider />}
 
       <ConnectionBoundary>
         <ConnectionBoundaryButton
