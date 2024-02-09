@@ -16,7 +16,7 @@ export default memo(function AddressSearch({
   placeholder = "Public Address, ENS or Lens",
   addressLength = "long",
   ButtonProps = {},
-  onBlur = () => {},
+  onBlur = () => { },
   AddressSearchDialogProps = {},
 }: {
   address: string | null;
