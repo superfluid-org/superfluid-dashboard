@@ -1,4 +1,4 @@
-import { FC, memo, useMemo } from "react";
+import { FC, memo } from "react";
 import ResponsiveDialog from "../../common/ResponsiveDialog";
 import {
   DialogContent,
@@ -25,10 +25,7 @@ import { PlatformWhitelistedStatuses } from "../ScheduledWrapTables";
 import SelectNetwork from "../../network/SelectNetwork";
 import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
 import { TokenDialogButton } from "../../tokenWrapping/TokenDialogButton";
-import { subgraphApi } from "../../redux/store";
-import { useNetworkCustomTokens } from "../../customTokens/customTokens.slice";
-import { skipToken } from "@reduxjs/toolkit/dist/query";
-import { getSuperTokenType } from "../../redux/endpoints/adHocSubgraphEndpoints";
+import { useSuperTokens } from "../../../hooks/useSuperTokens";
 
 const AutoWrapAddTokenForm: FC<{
   closeEnableAutoWrapDialog: () => void;
@@ -38,54 +35,12 @@ const AutoWrapAddTokenForm: FC<{
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { control, watch, setValue } =
     useFormContext<PartialAddTokenWrapForm>();
-  const [network, token] = watch(["data.network", "data.token"]);
 
-  const networkCustomTokens = useNetworkCustomTokens(network?.id!);
+  const [formNetwork, token] = watch(["data.network", "data.token"]);
+  const { network: userNetwork } = useExpectedNetwork();
+  const network = formNetwork ?? userNetwork;
 
-  const listedSuperTokensQuery = subgraphApi.useTokensQuery({
-    chainId: network?.id!,
-    filter: {
-      isSuperToken: true,
-      isListed: true,
-      underlyingAddress_not: "0x0000000000000000000000000000000000000000",
-    },
-  });
-
-  const customSuperTokensQuery = subgraphApi.useTokensQuery(
-    networkCustomTokens.length > 0
-      ? {
-          chainId: network?.id!,
-          filter: {
-            isSuperToken: true,
-            isListed: false,
-            id_in: networkCustomTokens,
-            underlyingAddress_not: "0x0000000000000000000000000000000000000000",
-          },
-        }
-      : skipToken
-  );
-
-  const superTokens = useMemo(
-    () =>
-      (listedSuperTokensQuery.data?.items || [])
-        .concat(customSuperTokensQuery.data?.items || [])
-        .map((x) => ({
-          ...x,
-          type: getSuperTokenType({ ...x, network: network!, address: x.id }),
-          address: x.id,
-          name: x.name,
-          symbol: x.symbol,
-          decimals: 18,
-          isListed: x.isListed,
-        })),
-    [
-      network,
-      listedSuperTokensQuery.isLoading,
-      listedSuperTokensQuery.data,
-      customSuperTokensQuery.isLoading,
-      customSuperTokensQuery.data,
-    ]
-  );
+  const { listedSuperTokensQuery, customSuperTokensQuery, superTokens } = useSuperTokens({ network, onlyWrappable: true });
 
   return (
     <>
@@ -134,7 +89,7 @@ const AutoWrapAddTokenForm: FC<{
                           ?.isWhitelisted,
                     ]}
                     ButtonProps={{
-                      disabled: !network,
+                      disabled: !formNetwork,
                       variant: "outlined",
                       color: "secondary",
                       size: "large",
@@ -161,7 +116,7 @@ const AutoWrapAddTokenForm: FC<{
                 render={({ field: { onChange, onBlur } }) => (
                   <TokenDialogButton
                     token={token}
-                    network={network!}
+                    network={network}
                     tokenSelection={{
                       showUpgrade: true,
                       tokenPairsQuery: {
@@ -174,7 +129,7 @@ const AutoWrapAddTokenForm: FC<{
                     onTokenSelect={onChange}
                     onBlur={onBlur}
                     ButtonProps={{
-                      disabled: !network,
+                      disabled: !formNetwork,
                       variant: "outlined",
                       color: "secondary",
                       size: "large",
@@ -193,7 +148,7 @@ const AutoWrapAddTokenForm: FC<{
             </FormGroup>
           </Grid>
         </Grid>
-        {token && network ? (
+        {token ? (
           <ConnectionBoundary expectedNetwork={network}>
             <AutoWrapEnableDialogContentSection
               closeEnableAutoWrapDialog={closeEnableAutoWrapDialog}
@@ -226,27 +181,27 @@ const AutoWrapAddTokenDialogSection: FC<{
   isEnableAutoWrapDialogOpen,
   platformWhitelistedStatuses,
 }) => {
-  const { network: expectedNetwork } = useExpectedNetwork();
-  return (
-    <ResponsiveDialog
-      data-cy={"auto-wrap-add-token-dialog-section"}
-      open={isEnableAutoWrapDialogOpen}
-      onClose={closeEnableAutoWrapDialog}
-      PaperProps={{ sx: { borderRadius: "20px", maxWidth: 479 } }}
-      keepMounted={true}
-    >
-      <AddTokenWrapFormProvider
-        initialFormValues={{
-          network: expectedNetwork,
-        }}
+    const { network: expectedNetwork } = useExpectedNetwork();
+    return (
+      <ResponsiveDialog
+        data-cy={"auto-wrap-add-token-dialog-section"}
+        open={isEnableAutoWrapDialogOpen}
+        onClose={closeEnableAutoWrapDialog}
+        PaperProps={{ sx: { borderRadius: "20px", maxWidth: 479 } }}
+        keepMounted={true}
       >
-        <AutoWrapAddTokenForm
-          closeEnableAutoWrapDialog={closeEnableAutoWrapDialog}
-          platformWhitelistedStatuses={platformWhitelistedStatuses}
-        />
-      </AddTokenWrapFormProvider>
-    </ResponsiveDialog>
-  );
-};
+        <AddTokenWrapFormProvider
+          initialFormValues={{
+            network: expectedNetwork,
+          }}
+        >
+          <AutoWrapAddTokenForm
+            closeEnableAutoWrapDialog={closeEnableAutoWrapDialog}
+            platformWhitelistedStatuses={platformWhitelistedStatuses}
+          />
+        </AddTokenWrapFormProvider>
+      </ResponsiveDialog>
+    );
+  };
 
 export default memo(AutoWrapAddTokenDialogSection);

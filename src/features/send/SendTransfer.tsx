@@ -136,17 +136,17 @@ export default memo(function SendTransfer() {
         onClick={async (signer) => {
           const superTokenAddress = tokenAddress;
           const senderAddress = visibleAddress;
+
+          // todo: refactor into isButtonDisabled type of a thing?
           if (!receiverAddress || !superTokenAddress || !senderAddress) {
             throw Error("This should never happen.");
           }
 
           setDialogLoadingInfo(
             <Typography variant="h5" color="text.secondary" translate="yes">
-              You are sending tokens.
+              You are sending {amountEther} {token?.symbol} to {receiverAddress}.
             </Typography>
           );
-
-          // TODO
 
           const primaryArgs = {
             chainId: network.id,

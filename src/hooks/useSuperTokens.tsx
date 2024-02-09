@@ -5,7 +5,7 @@ import { subgraphApi } from "../features/redux/store";
 import { useMemo } from "react";
 import { getSuperTokenType } from "../features/redux/endpoints/adHocSubgraphEndpoints";
 
-export const useSuperTokens = ({ network }: { network: Network }) => {
+export const useSuperTokens = ({ network, onlyWrappable }: { network: Network, onlyWrappable?: boolean }) => {
     const networkCustomTokens = useNetworkCustomTokens(network.id);
 
     const listedSuperTokensQuery = subgraphApi.useTokensQuery({
@@ -13,6 +13,7 @@ export const useSuperTokens = ({ network }: { network: Network }) => {
         filter: {
             isSuperToken: true,
             isListed: true,
+            ...(onlyWrappable ? { underlyingAddress_not: "0x0000000000000000000000000000000000000000" } : {})
         },
     });
 
@@ -24,6 +25,7 @@ export const useSuperTokens = ({ network }: { network: Network }) => {
                     isSuperToken: true,
                     isListed: false,
                     id_in: networkCustomTokens,
+                    ...(onlyWrappable ? { underlyingAddress_not: "0x0000000000000000000000000000000000000000" } : {})
                 },
             }
             : skipToken
