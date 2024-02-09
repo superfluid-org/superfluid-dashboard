@@ -9,6 +9,10 @@ Feature: Common element test cases
         And User clicks on the "send" navigation button
         Then Send page is open and the send container is visible
 
+    Scenario: Making sure the ecosystem page href is correctly set for the navigation button
+        Given "Dashboard page" is open without connecting a wallet
+        Then Ecosystem page navigation button leads to an external site
+
     Scenario: Wallet connection status in the navigation drawer
         Given Dashboard is open with a mocked connection to "ongoingStreamAccount" on "polygon"
         And User connects their wallet to the dashboard

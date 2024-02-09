@@ -10,24 +10,22 @@ Feature: Test cases that run indefinitely on all supported networks
         Then The native token "<token>" balance for "staticBalanceAccount" on "<network>" in the token list
 
         Examples:
-            | network               | token |
-            | goerli                | ETH   |
-            | polygon-mumbai        | MATIC |
-            | avalanche-fuji        | AVAX  |
-            | gnosis                | XDAI  |
-            | polygon               | MATIC |
-            | optimism              | ETH   |
-            | arbitrum-one          | ETH   |
-            | avalanche             | AVAX  |
-            | bsc                   | BNB   |
-            | celo                  | CELO  |
-            | sepolia               | SEP   |
-            | polygon-zkevm-testnet | ETH   |
-            | bgoerli               | ETH   |
-            | base                  | ETH   |
-            | scroll                | ETH   |
-            | scrsepolia            | ETH   |
-            | opsepolia             | ETH   |
+            | network        | token |
+            | goerli         | ETH   |
+            | polygon-mumbai | MATIC |
+            | avalanche-fuji | AVAX  |
+            | gnosis         | XDAI  |
+            | polygon        | MATIC |
+            | optimism       | ETH   |
+            | arbitrum-one   | ETH   |
+            | avalanche      | AVAX  |
+            | bsc            | BNB   |
+            | celo           | CELO  |
+            | sepolia        | SEP   |
+            | base           | ETH   |
+            | scroll         | ETH   |
+            | scrsepolia     | ETH   |
+            | opsepolia      | ETH   |
 
     Scenario Outline: Superfluid RPCS are not behind on <network>
         Given Superfluid RPCs are not more then 10 minutes behind on <network>
@@ -45,7 +43,6 @@ Feature: Test cases that run indefinitely on all supported networks
             | bsc            |
             | celo           |
             | sepolia        |
-            | bgoerli        |
             | base           |
             | scroll         |
             | scrsepolia     |
@@ -69,8 +66,6 @@ Feature: Test cases that run indefinitely on all supported networks
             | bsc                   |
             | celo                  |
             | sepolia               |
-            | polygon-zkevm-testnet |
-            | bgoerli               |
             | base                  |
             | scroll                |
             | scrsepolia            |

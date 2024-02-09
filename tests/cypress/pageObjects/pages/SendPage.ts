@@ -680,8 +680,6 @@ export class SendPage extends BasePage {
       [
         "avalanche-fuji",
         "sepolia",
-        "polygon-zkevm-testnet",
-        "bgoerli",
         "base",
         "scroll",
         "scrsepolia",
