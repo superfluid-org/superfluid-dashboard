@@ -107,10 +107,10 @@ export const superfluidRpcUrls = {
   bsc: "https://rpc-endpoints.superfluid.dev/bsc-mainnet",
   "celo-mainnet": "https://rpc-endpoints.superfluid.dev/celo-mainnet",
   sepolia: "https://rpc-endpoints.superfluid.dev/eth-sepolia",
-  //Issues with cypress + superfluid rpc , using a public one for now
-  "polygon-zkevm-testnet": "https://rpc.public.zkevm-test.net",
-  "base-goerli": "https://rpc-endpoints.superfluid.dev/base-goerli",
   base: "https://rpc-endpoints.superfluid.dev/base-mainnet",
+  scroll: "https://rpc-endpoints.superfluid.dev/scroll-mainnet",
+  "scroll-sepolia": "https://rpc-endpoints.superfluid.dev/scroll-sepolia",
+  "optimism-sepolia": "https://rpc-endpoints.superfluid.dev/optimism-sepolia",
 };
 
 export const networkDefinition: {
@@ -129,9 +129,10 @@ export const networkDefinition: {
   ethereum: Network;
   celoMainnet: Network;
   sepolia: Network;
-  polygonZkevmTestnet: Network;
-  baseGoerli: Network;
   base: Network;
+  scroll: Network;
+  scrollSepolia: Network;
+  optimismSepolia: Network;
 } = {
   goerli: {
     ...chain.goerli,
@@ -537,58 +538,6 @@ export const networkDefinition: {
     },
     platformUrl: undefined,
   },
-  polygonZkevmTestnet: {
-    ...chain.polygonZkEvmTestnet,
-    slugName: "polygon-zkevm-testnet",
-    v1ShortName: "pzkevmtest",
-    bufferTimeInMinutes: 60,
-    color: "#7c3fe4",
-    superfluidRpcUrl: superfluidRpcUrls["polygon-zkevm-testnet"],
-    subgraphUrl: "https://polygon-zkevm-testnet.subgraph.x.superfluid.dev",
-    getLinkForTransaction: (txHash: string): string =>
-      `https://testnet-zkevm.polygonscan.com/tx/${txHash}`,
-    getLinkForAddress: (address: string): string =>
-      `https://testnet-zkevm.polygonscan.com/address/${address}`,
-    nativeCurrency: {
-      ...ensureDefined(chain.polygonZkEvmTestnet.nativeCurrency),
-      address: NATIVE_ASSET_ADDRESS,
-      type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: "ETHx",
-        address: "0x6345Aa6cec42a85160CF436810F97661e28c1876",
-        name: "Super ETH",
-        decimals: 18,
-      },
-    },
-    platformUrl: undefined,
-  },
-  baseGoerli: {
-    ...chain.baseGoerli,
-    slugName: "bgoerli",
-    v1ShortName: "bgoerli",
-    bufferTimeInMinutes: 60,
-    color: "#68B1D5",
-    superfluidRpcUrl: superfluidRpcUrls["base-goerli"],
-    subgraphUrl: "https://base-goerli.subgraph.x.superfluid.dev/",
-    getLinkForTransaction: (txHash: string): string =>
-      `https://goerli.basescan.org/tx/${txHash}`,
-    getLinkForAddress: (address: string): string =>
-      `https://goerli.basescan.org/address/${address}`,
-    nativeCurrency: {
-      ...ensureDefined(chain.baseGoerli.nativeCurrency),
-      address: NATIVE_ASSET_ADDRESS,
-      type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: "ETHx",
-        address: "0x7fFCE315B2014546bA461d54eDed7AAc70DF4f53",
-        name: "Super ETH",
-        decimals: 18,
-      },
-    },
-    platformUrl: undefined,
-  },
   base: {
     ...chain.base,
     slugName: "base",
@@ -615,6 +564,94 @@ export const networkDefinition: {
     },
     platformUrl: undefined,
   },
+  scroll: {
+    id: 534352,
+    name: "Scroll Mainnet",
+    network: "scroll-mainnet",
+    testnet: false,
+    slugName: "scroll",
+    v1ShortName: "scroll",
+    bufferTimeInMinutes: 240,
+    color: "#FFDBB0",
+    superfluidRpcUrl: superfluidRpcUrls.scroll,
+    subgraphUrl: "https://scroll-mainnet.subgraph.x.superfluid.dev/",
+    getLinkForTransaction: (txHash: string): string =>
+      `https://scrollscan.com/tx/${txHash}`,
+    getLinkForAddress: (address: string): string =>
+      `https://scrollscan.com/tx/address/${address}`,
+    nativeCurrency: {
+      name: "Ether",
+      symbol: "ETH",
+      decimals: 18,
+      address: NATIVE_ASSET_ADDRESS,
+      type: TokenType.NativeAssetUnderlyingToken,
+      superToken: {
+        type: TokenType.NativeAssetSuperToken,
+        symbol: "ETHx",
+        address: "0x483C1716b6133cdA01237ebBF19c5a92898204B7",
+        name: "Super ETH",
+        decimals: 18,
+      },
+    },
+  },
+  scrollSepolia: {
+    id: 534351,
+    name: "Scroll Sepolia",
+    network: "scroll-sepolia",
+    slugName: "scrsepolia",
+    v1ShortName: "scrsepolia",
+    testnet: true,
+    bufferTimeInMinutes: 60,
+    color: "#FFDBB0",
+    superfluidRpcUrl: superfluidRpcUrls["scroll-sepolia"],
+    subgraphUrl: "https://scroll-sepolia.subgraph.x.superfluid.dev/",
+    getLinkForTransaction: (txHash: string): string =>
+      `https://sepolia.scrollscan.com/tx/${txHash}`,
+    getLinkForAddress: (address: string): string =>
+      `https://sepolia.scrollscan.com/tx/address/${address}`,
+    nativeCurrency: {
+      ...ensureDefined(chain.scrollTestnet.nativeCurrency),
+      address: NATIVE_ASSET_ADDRESS,
+      type: TokenType.NativeAssetUnderlyingToken,
+      superToken: {
+        type: TokenType.NativeAssetSuperToken,
+        symbol: "ETHx",
+        address: "0x58f0A7c6c143074f5D824c2f27a85f6dA311A6FB",
+        name: "Super ETH",
+        decimals: 18,
+      },
+    },
+  },
+  optimismSepolia: {
+    id: 11155420,
+    name: "Optimism Sepolia",
+    network: "optimism-sepolia",
+    testnet: true,
+    slugName: "opsepolia",
+    v1ShortName: "opsepolia",
+    bufferTimeInMinutes: 60,
+    color: "#FF0320",
+    superfluidRpcUrl: superfluidRpcUrls["optimism-sepolia"],
+    subgraphUrl: "https://optimism-sepolia.subgraph.x.superfluid.dev/",
+    getLinkForTransaction: (txHash: string): string =>
+      `https://sepolia-optimism.etherscan.io/tx/${txHash}`,
+    getLinkForAddress: (address: string): string =>
+      `https://sepolia-optimism.etherscan.io/address/${address}`,
+    nativeCurrency: {
+      name: "Ether",
+      symbol: "ETH",
+      decimals: 18,
+      address: NATIVE_ASSET_ADDRESS,
+      type: TokenType.NativeAssetUnderlyingToken,
+      superToken: {
+        type: TokenType.NativeAssetSuperToken,
+        symbol: "ETHx",
+        address: "0x0043d7c85C8b96a49A72A92C0B48CdC4720437d7",
+        name: "Super ETH",
+        decimals: 18,
+      },
+    },
+  },
 };
 
 export const networks: Network[] = [
@@ -630,9 +667,10 @@ export const networks: Network[] = [
   networkDefinition.ethereum,
   networkDefinition.celoMainnet,
   networkDefinition.sepolia,
-  networkDefinition.polygonZkevmTestnet,
-  networkDefinition.baseGoerli,
   networkDefinition.base,
+  networkDefinition.scroll,
+  networkDefinition.scrollSepolia,
+  networkDefinition.optimismSepolia,
 ];
 
 export const getNetworkDefaultTokenPair = memoize(

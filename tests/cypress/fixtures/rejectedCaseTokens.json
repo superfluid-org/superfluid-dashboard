@@ -74,8 +74,23 @@
     "TokenGas": "ETH"
   },
   "base": {
+    "TokenOne": "DAI",
+    "TokenTwo": "USDC",
+    "TokenGas": "ETH"
+  },
+  "scroll": {
     "TokenOne": "changeThisWhenTokensListed",
     "TokenTwo": "changeThisWhenTokensListed",
+    "TokenGas": "ETH"
+  },
+  "scrsepolia": {
+    "TokenOne": "fDAI",
+    "TokenTwo": "fUSDC",
+    "TokenGas": "ETH"
+  },
+  "opsepolia": {
+    "TokenOne": "fDAI",
+    "TokenTwo": "fUSDC",
     "TokenGas": "ETH"
   }
 }

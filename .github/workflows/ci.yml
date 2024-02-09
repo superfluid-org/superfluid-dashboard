@@ -2,7 +2,7 @@ name: Dev CI/CD
 
 on:
   pull_request:
-    types: [ opened, reopened, ready_for_review, synchronize ]
+    types: [opened, reopened, ready_for_review, synchronize]
 
 jobs:
   test_setup:
@@ -33,7 +33,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        container: [1,2,3,4,5,6,7,8,9,10,11,12,13]
+        container: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -48,25 +48,44 @@ jobs:
           node-version: 18.x
           cache: "yarn"
 
+      #A workaround for Cypress to work with Currents https://github.com/currents-dev/gh-actions-example/blob/main/.github/workflows/currents.yml
+      # Install Currents
+      - name: Install dependencies
+        run: |
+          yarn install
+
+      - name: Unblock Cypress
+        working-directory: "tests"
+        run: |
+          echo 🕊️ Download Free Cypress
+          CYPRESS_DOWNLOAD_MIRROR=https://cy-cdn.currents.dev yarn add cypress@12.17.4 --force
+
+          echo ✅ Verify Cypress
+          npx cypress verify
+
+          echo 👀 Cypress Cache
+          npx cypress cache list
+          npx cypress cache path
+
       - name: Cypress tests
-        uses: cypress-io/github-action@v4
+        uses: cypress-io/github-action@v6
         with:
+          install: false
           command: yarn cypress-cloud run --record --parallel --key ${{ secrets.V2_CYPRESS_RECORD_KEY }} --group UI --ci-build-id ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt}} --env TAGS="not @ignoreDuringUI",STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }},TX_ACCOUNT_PRIVATE_KEY1=${{ secrets.TX_ACCOUNT_PRIVATE_KEY1 }},TX_ACCOUNT_PRIVATE_KEY2=${{ secrets.TX_ACCOUNT_PRIVATE_KEY2 }},TX_ACCOUNT_PRIVATE_KEY3=${{ secrets.TX_ACCOUNT_PRIVATE_KEY3 }},TX_ACCOUNT_PRIVATE_KEY4=${{ secrets.TX_ACCOUNT_PRIVATE_KEY4 }}
           working-directory: tests
         env:
           CYPRESS_baseUrl: ${{ needs.test_setup.outputs.netlify_url }}
 
-
   rejected-tests:
     timeout-minutes: 30
-    needs: [ "test_setup" ]
+    needs: ["test_setup"]
     if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         container: [1,2]
-        network: ["goerli","gnosis","polygon-mumbai","polygon","optimism","arbitrum-one","avalanche","avalanche-fuji","bsc","ethereum","sepolia","polygon-zkevm-testnet","bgoerli"]
+        network: ["goerli","gnosis","polygon-mumbai","polygon","optimism","arbitrum-one","avalanche","avalanche-fuji","bsc","ethereum","sepolia","opsepolia","scrsepolia","base"]
     steps:
       - uses: actions/checkout@v2
         with:
@@ -78,9 +97,29 @@ jobs:
           node-version: 18.x
           cache: "yarn"
 
+      #A workaround for Cypress to work with Currents https://github.com/currents-dev/gh-actions-example/blob/main/.github/workflows/currents.yml
+      # Install Currents
+      - name: Install dependencies
+        run: |
+          yarn install
+
+      - name: Unblock Cypress
+        working-directory: "tests"
+        run: |
+          echo 🕊️ Download Free Cypress
+          CYPRESS_DOWNLOAD_MIRROR=https://cy-cdn.currents.dev yarn add cypress@12.17.4 --force
+
+          echo ✅ Verify Cypress
+          npx cypress verify
+
+          echo 👀 Cypress Cache
+          npx cypress cache list
+          npx cypress cache path
+
       - name: Cypress tests
-        uses: cypress-io/github-action@v4
+        uses: cypress-io/github-action@v6
         with:
+          install: false
           command: yarn cypress-cloud run --record --parallel --key ${{ secrets.V2_CYPRESS_RECORD_KEY }} --group rejected-${{ matrix.network }} --ci-build-id ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt}} --env network=${{ matrix.network }},TAGS=@rejected,STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }},TX_ACCOUNT_PRIVATE_KEY1=${{ secrets.TX_ACCOUNT_PRIVATE_KEY1 }},TX_ACCOUNT_PRIVATE_KEY2=${{ secrets.TX_ACCOUNT_PRIVATE_KEY2 }},TX_ACCOUNT_PRIVATE_KEY3=${{ secrets.TX_ACCOUNT_PRIVATE_KEY3 }},TX_ACCOUNT_PRIVATE_KEY4=${{ secrets.TX_ACCOUNT_PRIVATE_KEY4 }}
           working-directory: tests
         env:
@@ -88,7 +127,7 @@ jobs:
 
   gnosis-safe-tests:
     timeout-minutes: 30
-    needs: [ "test_setup" ]
+    needs: ["test_setup"]
     if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     strategy:
@@ -107,9 +146,29 @@ jobs:
           node-version: 18.x
           cache: "yarn"
 
+      #A workaround for Cypress to work with Currents https://github.com/currents-dev/gh-actions-example/blob/main/.github/workflows/currents.yml
+      # Install Currents
+      - name: Install dependencies
+        run: |
+          yarn install
+
+      - name: Unblock Cypress
+        working-directory: "tests"
+        run: |
+          echo 🕊️ Download Free Cypress
+          CYPRESS_DOWNLOAD_MIRROR=https://cy-cdn.currents.dev yarn add cypress@12.17.4 --force
+
+          echo ✅ Verify Cypress
+          npx cypress verify
+
+          echo 👀 Cypress Cache
+          npx cypress cache list
+          npx cypress cache path
+
       - name: Cypress tests
-        uses: cypress-io/github-action@v4
+        uses: cypress-io/github-action@v6
         with:
+          install: false
           working-directory: tests
           command: yarn cypress-cloud run --browser chrome --config chromeWebSecurity=false --record --parallel --key ${{ secrets.V2_CYPRESS_RECORD_KEY }} --group Gnosis --ci-build-id ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt}} --env TAGS=@Gnosis
         env:

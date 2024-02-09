@@ -169,7 +169,7 @@ export class Common extends BasePage {
     this.isVisible(WAGMI_CONNECT_WALLET_TITLE);
   }
   static blockLensAndENSApiRequests() {
-    cy.intercept("POST", "https://eth-mainnet.subgraph.x.superfluid.dev", {
+    cy.intercept("POST", "https://rpc-endpoints.superfluid.dev/eth-mainnet", {
       forceNetworkError: true,
     });
     cy.intercept("POST", "https://api.lens.dev/", { forceNetworkError: true });
@@ -212,7 +212,9 @@ export class Common extends BasePage {
       this.hasAttributeWithValue(
         ADDRESS_SEARCH_AVATAR_IMAGES,
         "src",
-        urls[account]
+        urls[account],
+        0,
+        { timeout: 30000 }
       ).should("be.visible");
     });
   }

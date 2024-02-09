@@ -83,6 +83,24 @@
         "underlyingBalance": "0",
         "superTokenBalance": "0"
       }
+    },
+    "scrsepolia": {
+      "ETH": {
+        "underlyingBalance": "0",
+        "superTokenBalance": "0"
+      }
+    },
+    "scroll": {
+      "ETH": {
+        "underlyingBalance": "0",
+        "superTokenBalance": "0"
+      }
+    },
+    "opsepolia": {
+      "ETH": {
+        "underlyingBalance": "0",
+        "superTokenBalance": "0"
+      }
     }
   }
 }
