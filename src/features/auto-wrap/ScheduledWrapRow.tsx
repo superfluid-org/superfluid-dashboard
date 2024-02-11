@@ -55,8 +55,8 @@ const TokenLimitComponent: FC<{
   limit: number;
   netFlowRate: string | undefined;
   tokenSymbol: string | undefined;
-  dataCy? :string 
-}> = ({ limit, netFlowRate, tokenSymbol = "" ,dataCy}) => {
+  dataCy?: string
+}> = ({ limit, netFlowRate, tokenSymbol = "", dataCy }) => {
   if (!netFlowRate || BigNumber.from(netFlowRate).gte(0)) {
     return (
       <span data-cy={`${tokenSymbol}-${dataCy}`}>
@@ -117,11 +117,11 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
     schedule.superToken?.toLowerCase();
 
   const underlyingTokenQuery = subgraphApi.useTokenQuery(
-    !isNativeAssetSuperToken && superTokenQueryData
+    !isNativeAssetSuperToken
       ? {
-          chainId: network.id,
-          id: superTokenQueryData.underlyingAddress,
-        }
+        chainId: network.id,
+        id: schedule.liquidityToken,
+      }
       : skipToken
   );
 
@@ -157,11 +157,11 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
   } = useActiveAutoWrap(
     isAutoWrappable
       ? {
-          chainId: network.id,
-          accountAddress: account,
-          superTokenAddress: superTokenQueryData.id,
-          underlyingTokenAddress: superTokenQueryData.underlyingAddress,
-        }
+        chainId: network.id,
+        accountAddress: account,
+        superTokenAddress: superTokenQueryData.id,
+        underlyingTokenAddress: superTokenQueryData.underlyingAddress,
+      }
       : "skip"
   );
 
@@ -215,15 +215,15 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
                   }}
                 />
               </Stack>
-              {isUnderlyingTokenAllowanceLoading ? (
+              {(isUnderlyingTokenAllowanceLoading || !underlyingToken) ? (
                 <Skeleton width={80} />
               ) : isCloseToUnlimitedTokenAllowance(
-                  underlyingTokenAllowance || 0
-                ) ? (
+                underlyingTokenAllowance || 0
+              ) ? (
                 <span>Unlimited</span>
               ) : (
                 <>
-                  <Amount wei={underlyingTokenAllowance || 0} />{" "}
+                  <Amount wei={underlyingTokenAllowance || 0} decimals={underlyingToken.decimals} />{" "}
                   {underlyingToken?.symbol}
                 </>
               )}
@@ -301,7 +301,7 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
                       size: "small",
                       color: "primary",
                       variant: "textContained",
-                      sx:{
+                      sx: {
                         fontWeight: "500"
                       }
                     }}
@@ -370,15 +370,15 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
           </TableCell>
           <TableCell>
             <Typography data-cy="underlying-token-allowance" variant="h6">
-              {isUnderlyingTokenAllowanceLoading ? (
+              {(isUnderlyingTokenAllowanceLoading || !underlyingToken) ? (
                 <Skeleton width={80} />
               ) : isCloseToUnlimitedTokenAllowance(
-                  underlyingTokenAllowance || 0
-                ) ? (
+                underlyingTokenAllowance || 0
+              ) ? (
                 <span>Unlimited</span>
               ) : (
                 <>
-                  <Amount wei={underlyingTokenAllowance || 0} />{" "}
+                  <Amount wei={underlyingTokenAllowance || 0} decimals={underlyingToken.decimals} />{" "}
                   {underlyingToken?.symbol}
                 </>
               )}
@@ -420,7 +420,7 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
                       size: "small",
                       color: "primary",
                       variant: "textContained",
-                      sx:{
+                      sx: {
                         fontWeight: "500"
                       }
                     }}

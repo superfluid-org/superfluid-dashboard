@@ -64,7 +64,7 @@ Feature: Address Book test cases
     Scenario: Address book name showing up in - Wallet connection container
         Given Address book test data is set up
 
-        Given "Ecosystem Page" is open with "alice" connected on "polygon-mumbai"
+        Given "Accounting export page" is open with "alice" connected on "polygon-mumbai"
         Then Wallet connection status "alice" as the connected address
 
     Scenario: Address book name showing up in - View mode chip

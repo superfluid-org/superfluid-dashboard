@@ -678,13 +678,12 @@ export class SendPage extends BasePage {
   static isPlatformDeployedOnNetwork(fn: () => void) {
     if (
       [
-        "arbitrum-goerli",
-        "optimism-goerli",
         "avalanche-fuji",
         "sepolia",
-        "polygon-zkevm-testnet",
-        "bgoerli",
         "base",
+        "scroll",
+        "scrsepolia",
+        "opsepolia",
       ].includes(Cypress.env("network")) &&
       Cypress.env("platformNeeded")
     ) {

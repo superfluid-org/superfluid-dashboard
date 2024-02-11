@@ -89,20 +89,6 @@ const MoreNavigationItem: FC = () => {
         </NextLink>
 
         <NextLink
-          href="https://v1.superfluid.finance"
-          target="_blank"
-          passHref
-          legacyBehavior
-        >
-          <ListItemButton data-cy={"more-v1-btn"} href="" target="_blank">
-            <ListItemIcon>
-              <GridViewRoundedIcon sx={{ color: theme.palette.text.primary }} />
-            </ListItemIcon>
-            <ListItemText>Dashboard V1</ListItemText>
-          </ListItemButton>
-        </NextLink>
-
-        <NextLink
           href="https://discord.gg/XsK7nahanQ"
           target="_blank"
           passHref
@@ -140,9 +126,9 @@ const MoreNavigationItem: FC = () => {
         </NextLink>
         <NextLink href="/auto-wrap" legacyBehavior>
           <ListItemButton
-              data-cy={"wrap-utility-btn"}
-              href=""
-              onClick={closeMoreMenu}
+            data-cy={"wrap-utility-btn"}
+            href=""
+            onClick={closeMoreMenu}
           >
             <ListItemIcon>
               <AutoModeOutlined sx={{ color: theme.palette.text.primary }} />

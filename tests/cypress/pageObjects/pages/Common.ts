@@ -113,6 +113,15 @@ const OLD_NOTIF_DATE = new Date(1000 * BasePage.getDayTimestamp(-30));
 const OLD_DATE_STRING = BasePage.getNotificationDateString(OLD_NOTIF_DATE);
 
 export class Common extends BasePage {
+  static validateEcosystemNavigationButtonHref() {
+    cy.get("[data-cy=nav-ecosystem")
+      .parent()
+      .should("have.attr", "href", "https://www.superfluid.finance/ecosystem");
+    cy.get("[data-cy=nav-ecosystem")
+      .parent()
+      .should("have.attr", "target", "_blank");
+  }
+
   static validateMiniGameContainerWithoutWalletConnected() {
     //Locally it just loads to an 403 :/
     this.hasAttributeWithValue(
@@ -160,7 +169,7 @@ export class Common extends BasePage {
     this.isVisible(WAGMI_CONNECT_WALLET_TITLE);
   }
   static blockLensAndENSApiRequests() {
-    cy.intercept("POST", "https://eth-mainnet.subgraph.x.superfluid.dev", {
+    cy.intercept("POST", "https://rpc-endpoints.superfluid.dev/eth-mainnet", {
       forceNetworkError: true,
     });
     cy.intercept("POST", "https://api.lens.dev/", { forceNetworkError: true });
@@ -203,7 +212,9 @@ export class Common extends BasePage {
       this.hasAttributeWithValue(
         ADDRESS_SEARCH_AVATAR_IMAGES,
         "src",
-        urls[account]
+        urls[account],
+        0,
+        { timeout: 30000 }
       ).should("be.visible");
     });
   }

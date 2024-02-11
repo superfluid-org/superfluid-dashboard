@@ -475,3 +475,10 @@ Then(/^User clears the receiver input field$/, function () {
 Then(/^No loading skeletons are visible in the page$/, function () {
   Common.waitForSpookySkeletonsToDisapear();
 });
+
+Then(
+  /^Ecosystem page navigation button leads to an external site$/,
+  function () {
+    Common.validateEcosystemNavigationButtonHref();
+  }
+);

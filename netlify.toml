@@ -100,3 +100,9 @@ for = "/manifest.json"
   to = "/superfluid-runner"
   status = 301
   force = false
+
+[[redirects]]
+  from = "/ecosystem"
+  to = "https://www.superfluid.finance/ecosystem"
+  status = 301
+  force = false

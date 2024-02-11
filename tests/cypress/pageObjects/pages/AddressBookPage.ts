@@ -106,7 +106,7 @@ export class AddressBookPage extends BasePage {
       this.click(`[data-value=${network}]`);
       this.click(DROPDOWN_BACKDROP, -1);
     }
-    this.click(SAVE_BUTTON);
+    this.click(SAVE_BUTTON, 0, { timeout: 30000 });
   }
 
   static validateAddressBookNetwork(networks: string, index = 0) {

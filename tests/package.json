@@ -11,7 +11,7 @@
     "@cypress/code-coverage": "^3.11.0",
     "@cypress/webpack-preprocessor": "^5.17.1",
     "@rsksmart/mock-web3-provider": "1.0.2-beta1",
-    "@superfluid-finance/sdk-core": "0.6.8",
+    "@superfluid-finance/sdk-core": "^0.6.14-dev.977e20d.0",
     "@truffle/encoder": "^1.0.23",
     "@truffle/hdwallet-provider": "^2.1.13",
     "babel-loader": "^9.1.3",

@@ -10,7 +10,10 @@ import {
   PollQuery,
   PollQueryVariables,
 } from "./.graphclient";
-import { mapSubgraphWrapSchedule, WrapSchedule } from "../features/auto-wrap/types";
+import {
+  mapSubgraphWrapSchedule,
+  WrapSchedule,
+} from "../features/auto-wrap/types";
 
 const tryGetBuiltGraphSdkForNetwork = (chainId: number) => {
   const network = tryFindNetwork(allNetworks, chainId);
@@ -65,9 +68,7 @@ export const autoWrapSubgraphApi = createApi({
           : [];
         return {
           data: {
-            wrapSchedules: subgraphWrapSchedules.map(
-              mapSubgraphWrapSchedule
-            ),
+            wrapSchedules: subgraphWrapSchedules.map(mapSubgraphWrapSchedule),
           },
         };
       },

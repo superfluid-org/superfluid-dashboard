@@ -24,6 +24,9 @@ import {
 } from "./networkConstants";
 import { BigNumber, BigNumberish } from "ethers";
 import { UnitOfTime } from "../send/FlowRateInput";
+import { ChainBlockExplorer } from "viem/_types/types/chain";
+
+type NetworkMetadata = (typeof sfMeta.networks)[number];
 
 // id == chainId
 // name == displayName
@@ -59,6 +62,8 @@ export type Network = Chain & {
   humaFinance?: {
     nftAddress: `0x${string}`;
   };
+  metadata: NetworkMetadata;
+  blockExplorers: Chain["blockExplorers"] & Record<string, ChainBlockExplorer>;
 };
 
 const blockExplorers = {
@@ -102,6 +107,10 @@ export const networkDefinition = {
   goerli: {
     ...chain.goerli,
     id: chainIds.goerli,
+    metadata: ensureDefined(
+      sfMeta.getNetworkByChainId(chainIds.goerli),
+      chainIds.goerli
+    ),
     blockExplorers: ensureDefined(chain.goerli.blockExplorers),
     slugName: "goerli",
     v1ShortName: "goerli",
@@ -141,10 +150,14 @@ export const networkDefinition = {
       lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
       upperLimit: BigNumber.from(UnitOfTime.Day * 14),
     },
-  } as const,
+  },
   gnosis: {
     name: "Gnosis Chain",
     id: chainIds.gnosis,
+    metadata: ensureDefined(
+      sfMeta.getNetworkByChainId(chainIds.gnosis),
+      chainIds.gnosis
+    ),
     blockExplorers: {
       etherscan: undefined!,
       default: blockExplorers.blockscout.gnosis,
@@ -193,10 +206,14 @@ export const networkDefinition = {
       lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
       upperLimit: BigNumber.from(UnitOfTime.Day * 14),
     },
-  } as const,
+  },
   polygon: {
     ...chain.polygon,
     id: chainIds.polygon,
+    metadata: ensureDefined(
+      sfMeta.getNetworkByChainId(chainIds.polygon),
+      chainIds.polygon
+    ),
     blockExplorers: ensureDefined(chain.polygon.blockExplorers),
     slugName: "polygon",
     v1ShortName: "matic",
@@ -240,10 +257,14 @@ export const networkDefinition = {
     humaFinance: {
       nftAddress: "0xa8B0362cfE0c8e4fd1D74c3512348d6f48d71080",
     },
-  } as const,
+  },
   polygonMumbai: {
     ...chain.polygonMumbai,
     id: chainIds.polygonMumbai,
+    metadata: ensureDefined(
+      sfMeta.getNetworkByChainId(chainIds.polygonMumbai),
+      chainIds.polygonMumbai
+    ),
     blockExplorers: ensureDefined(chain.polygonMumbai.blockExplorers),
     slugName: "polygon-mumbai",
     v1ShortName: "mumbai",
@@ -287,10 +308,14 @@ export const networkDefinition = {
     humaFinance: {
       nftAddress: "0xAEA5908A082F5667aEA425AEACE8dF6aEDb03694",
     },
-  } as const,
+  },
   avalancheFuji: {
     name: "Fuji (C-Chain)",
     id: chainIds.avalancheFuji,
+    metadata: ensureDefined(
+      sfMeta.getNetworkByChainId(chainIds.avalancheFuji),
+      chainIds.avalancheFuji
+    ),
     slugName: "avalanche-fuji",
     v1ShortName: "avalanche-fuji",
     network: "avalanche-fuji",
@@ -340,10 +365,14 @@ export const networkDefinition = {
       lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
       upperLimit: BigNumber.from(UnitOfTime.Day * 14),
     },
-  } as const,
+  },
   optimism: {
     ...chain.optimism,
     id: chainIds.optimism,
+    metadata: ensureDefined(
+      sfMeta.getNetworkByChainId(chainIds.optimism),
+      chainIds.optimism
+    ),
     blockExplorers: ensureDefined(chain.optimism.blockExplorers),
     slugName: "optimism",
     v1ShortName: "optimism-mainnet",
@@ -384,10 +413,14 @@ export const networkDefinition = {
       lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
       upperLimit: BigNumber.from(UnitOfTime.Day * 14),
     },
-  } as const,
+  },
   arbitrum: {
     ...chain.arbitrum,
     id: chainIds.arbitrum,
+    metadata: ensureDefined(
+      sfMeta.getNetworkByChainId(chainIds.arbitrum),
+      chainIds.arbitrum
+    ),
     blockExplorers: ensureDefined(chain.arbitrum.blockExplorers),
     slugName: "arbitrum-one",
     v1ShortName: "arbitrum-one",
@@ -428,10 +461,14 @@ export const networkDefinition = {
       lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
       upperLimit: BigNumber.from(UnitOfTime.Day * 14),
     },
-  } as const,
+  },
   avalancheC: {
     name: "Avalanche C",
     id: chainIds.avalanche,
+    metadata: ensureDefined(
+      sfMeta.getNetworkByChainId(chainIds.avalanche),
+      chainIds.avalanche
+    ),
     slugName: "avalanche",
     v1ShortName: "avalanche-c",
     network: "avalanche-c",
@@ -482,10 +519,14 @@ export const networkDefinition = {
       lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
       upperLimit: BigNumber.from(UnitOfTime.Day * 14),
     },
-  } as const,
+  },
   bsc: {
     ...chain.bsc,
     id: chainIds.bsc,
+    metadata: ensureDefined(
+      sfMeta.getNetworkByChainId(chainIds.bsc),
+      chainIds.bsc
+    ),
     name: "BNB Smart Chain",
     slugName: "bsc",
     v1ShortName: "bsc-mainnet",
@@ -534,10 +575,14 @@ export const networkDefinition = {
       lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
       upperLimit: BigNumber.from(UnitOfTime.Day * 14),
     },
-  } as const,
+  },
   ethereum: {
     ...chain.mainnet,
     id: chainIds.mainnet,
+    metadata: ensureDefined(
+      sfMeta.getNetworkByChainId(chainIds.mainnet),
+      chainIds.mainnet
+    ),
     blockExplorers: ensureDefined(chain.mainnet.blockExplorers),
     slugName: "ethereum",
     v1ShortName: "eth",
@@ -578,10 +623,14 @@ export const networkDefinition = {
       lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
       upperLimit: BigNumber.from(UnitOfTime.Day * 28),
     },
-  } as const,
+  },
   celoMainnet: {
     ...chain.celo,
     id: chainIds.celo,
+    metadata: ensureDefined(
+      sfMeta.getNetworkByChainId(chainIds.celo),
+      chainIds.celo
+    ),
     blockExplorers: {
       celoscan: blockExplorers.celoscan.mainnet,
       default: blockExplorers.celoscan.mainnet,
@@ -617,82 +666,14 @@ export const networkDefinition = {
     vestingSubgraphUrl: undefined,
     autoWrapSubgraphUrl: undefined,
     platformUrl: undefined,
-  } as const,
-  optimismGoerli: {
-    ...chain.optimismGoerli,
-    id: chainIds.optimismGoerli,
-    blockExplorers: ensureDefined(chain.optimismGoerli.blockExplorers),
-    slugName: "optimism-goerli",
-    v1ShortName: "optimism goerli",
-    bufferTimeInMinutes: 240,
-    icon: "/icons/network/optimism.svg",
-    color: "#ff0320",
-    rpcUrls: {
-      ...chain.optimismGoerli.rpcUrls,
-      superfluid: { http: [superfluidRpcUrls["optimism-goerli"]] },
-    },
-    fallbackSubgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-optimism-goerli",
-    getLinkForTransaction: (txHash: string): string =>
-      `https://goerli-optimism.etherscan.io/tx/${txHash}`,
-    getLinkForAddress: (address: string): string =>
-      `https://goerli-optimism.etherscan.io/address/${address}`,
-    nativeCurrency: {
-      ...ensureDefined(chain.optimismGoerli.nativeCurrency),
-      address: NATIVE_ASSET_ADDRESS,
-      type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: "ETHx",
-        address: "0xE01F8743677Da897F4e7De9073b57Bf034FC2433",
-        name: "Super ETH",
-        decimals: 18,
-      },
-    },
-    vestingContractAddress: undefined,
-    vestingSubgraphUrl: undefined,
-    autoWrapSubgraphUrl: undefined,
-    platformUrl: undefined,
-  } as const,
-  arbitrumGoerli: {
-    ...chain.arbitrumGoerli,
-    id: chainIds.arbitrumGoerli,
-    blockExplorers: ensureDefined(chain.arbitrumGoerli.blockExplorers),
-    slugName: "arbitrum-goerli",
-    v1ShortName: "arbitrum goerli",
-    bufferTimeInMinutes: 240,
-    icon: "/icons/network/arbitrum.svg",
-    color: "#2b374b",
-    rpcUrls: {
-      ...chain.arbitrumGoerli.rpcUrls,
-      superfluid: { http: [superfluidRpcUrls["arbitrum-goerli"]] },
-    },
-    fallbackSubgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-arbitrum-goerli",
-    getLinkForTransaction: (txHash: string): string =>
-      `https://goerli.arbiscan.io/tx/${txHash}`,
-    getLinkForAddress: (address: string): string =>
-      `https://goerli.arbiscan.io/address/${address}`,
-    nativeCurrency: {
-      ...ensureDefined(chain.arbitrumGoerli.nativeCurrency),
-      address: NATIVE_ASSET_ADDRESS,
-      type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: "ETHx",
-        address: "0xE01F8743677Da897F4e7De9073b57Bf034FC2433",
-        name: "Super ETH",
-        decimals: 18,
-      },
-    },
-    vestingContractAddress: undefined,
-    vestingSubgraphUrl: undefined,
-    autoWrapSubgraphUrl: undefined,
-    platformUrl: undefined,
-  } as const,
+  },
   sepolia: {
     ...chain.sepolia,
     id: chainIds.sepolia,
+    metadata: ensureDefined(
+      sfMeta.getNetworkByChainId(chainIds.sepolia),
+      chainIds.sepolia
+    ),
     blockExplorers: ensureDefined(chain.sepolia.blockExplorers),
     slugName: "sepolia",
     v1ShortName: "sepolia",
@@ -724,84 +705,18 @@ export const networkDefinition = {
     vestingSubgraphUrl: undefined,
     autoWrapSubgraphUrl: undefined,
     platformUrl: undefined,
-  } as const,
-
-  polygonZkevmTestnet: {
-    ...chain.polygonZkEvmTestnet,
-    id: chainIds.polygonZkevmTestnet,
-    blockExplorers: ensureDefined(chain.polygonZkEvmTestnet.blockExplorers),
-    slugName: "polygon-zkevm-testnet",
-    v1ShortName: "pzkevmtest",
-    bufferTimeInMinutes: 60,
-    color: "#7c3fe4",
-    rpcUrls: {
-      ...chain.polygonZkEvmTestnet.rpcUrls,
-      superfluid: { http: [superfluidRpcUrls["polygon-zkevm-testnet"]] },
-    },
-    fallbackSubgraphUrl:
-      "https://polygon-zkevm-testnet.subgraph.x.superfluid.dev",
-    getLinkForTransaction: (txHash: string): string =>
-      `https://testnet-zkevm.polygonscan.com/tx/${txHash}`,
-    getLinkForAddress: (address: string): string =>
-      `https://testnet-zkevm.polygonscan.com/address/${address}`,
-    nativeCurrency: {
-      ...ensureDefined(chain.polygonZkEvmTestnet.nativeCurrency),
-      address: NATIVE_ASSET_ADDRESS,
-      type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: "ETHx",
-        address: "0x6345Aa6cec42a85160CF436810F97661e28c1876",
-        name: "Super ETH",
-        decimals: 18,
-      },
-    },
-    vestingContractAddress: undefined,
-    vestingSubgraphUrl: undefined,
-    autoWrapSubgraphUrl: undefined,
-    platformUrl: undefined,
-  } as const,
-  baseGoerli: {
-    ...chain.baseGoerli,
-    id: chainIds.baseGoerli,
-    blockExplorers: ensureDefined(chain.baseGoerli.blockExplorers),
-    slugName: "bgoerli",
-    v1ShortName: "bgoerli",
-    bufferTimeInMinutes: 60,
-    color: "#68B1D5",
-    rpcUrls: {
-      ...chain.baseGoerli.rpcUrls,
-      superfluid: { http: [superfluidRpcUrls["base-goerli"]] },
-    },
-    fallbackSubgraphUrl: "https://base-goerli.subgraph.x.superfluid.dev/",
-    getLinkForTransaction: (txHash: string): string =>
-      `https://goerli.basescan.org/tx/${txHash}`,
-    getLinkForAddress: (address: string): string =>
-      `https://goerli.basescan.org/address/${address}`,
-    nativeCurrency: {
-      ...ensureDefined(chain.baseGoerli.nativeCurrency),
-      address: NATIVE_ASSET_ADDRESS,
-      type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: "ETHx",
-        address: "0x7fFCE315B2014546bA461d54eDed7AAc70DF4f53",
-        name: "Super ETH",
-        decimals: 18,
-      },
-    },
-    vestingContractAddress: undefined,
-    vestingSubgraphUrl: undefined,
-    autoWrapSubgraphUrl: undefined,
-    platformUrl: undefined,
-  } as const,
+  },
   base: {
     ...chain.base,
     id: chainIds.base,
+    metadata: ensureDefined(
+      sfMeta.getNetworkByChainId(chainIds.base),
+      chainIds.base
+    ),
     blockExplorers: ensureDefined(chain.base.blockExplorers),
     slugName: "base",
     v1ShortName: "base",
-    bufferTimeInMinutes: 60,
+    bufferTimeInMinutes: 240,
     color: "#68B1D5",
     icon: "/icons/network/base.svg",
     rpcUrls: {
@@ -829,8 +744,123 @@ export const networkDefinition = {
     vestingSubgraphUrl: undefined,
     autoWrapSubgraphUrl: undefined,
     platformUrl: undefined,
-  } as const,
-};
+  },
+  scroll: {
+    ...chain.scroll,
+    id: chainIds.scroll,
+    metadata: ensureDefined(
+      sfMeta.getNetworkByChainId(chainIds.scroll),
+      chainIds.scroll
+    ),
+    blockExplorers: ensureDefined(chain.scroll.blockExplorers),
+    slugName: "scroll",
+    v1ShortName: "scroll",
+    bufferTimeInMinutes: 240,
+    color: "#fdf1e6",
+    icon: "/icons/network/scroll.svg",
+    rpcUrls: {
+      ...chain.scroll.rpcUrls,
+      superfluid: { http: [superfluidRpcUrls["scroll"]] },
+    },
+    fallbackSubgraphUrl: "https://scroll-mainnet.subgraph.x.superfluid.dev/",
+    getLinkForTransaction: (txHash: string): string =>
+      `https://scrollscan.com/tx/${txHash}`,
+    getLinkForAddress: (address: string): string =>
+      `https://scrollscan.com/address/${address}`,
+    nativeCurrency: {
+      ...ensureDefined(chain.scroll.nativeCurrency),
+      address: NATIVE_ASSET_ADDRESS,
+      type: TokenType.NativeAssetUnderlyingToken,
+      superToken: {
+        type: TokenType.NativeAssetSuperToken,
+        symbol: "ETHx",
+        address: "0x483C1716b6133cdA01237ebBF19c5a92898204B7",
+        name: "Super ETH",
+        decimals: 18,
+      },
+    },
+    vestingContractAddress: undefined,
+    vestingSubgraphUrl: undefined,
+    autoWrapSubgraphUrl: undefined,
+    platformUrl: undefined,
+  },
+  scrollSepolia: {
+    ...chain.scrollSepolia,
+    id: chainIds.scrollSepolia,
+    metadata: ensureDefined(
+      sfMeta.getNetworkByChainId(chainIds.scrollSepolia),
+      chainIds.scrollSepolia
+    ),
+    blockExplorers: ensureDefined(chain.scrollSepolia.blockExplorers),
+    slugName: "scrsepolia",
+    v1ShortName: "scrsepolia",
+    bufferTimeInMinutes: 60,
+    color: "#fdf1e6",
+    rpcUrls: {
+      ...chain.scrollSepolia.rpcUrls,
+      superfluid: { http: [superfluidRpcUrls["scroll-sepolia"]] },
+    },
+    fallbackSubgraphUrl: "https://scroll-sepolia.subgraph.x.superfluid.dev/",
+    getLinkForTransaction: (txHash: string): string =>
+      `https://sepolia.scrollscan.com/tx/${txHash}`,
+    getLinkForAddress: (address: string): string =>
+      `https://sepolia.scrollscan.com/address/${address}`,
+    nativeCurrency: {
+      ...ensureDefined(chain.scrollSepolia.nativeCurrency),
+      address: NATIVE_ASSET_ADDRESS,
+      type: TokenType.NativeAssetUnderlyingToken,
+      superToken: {
+        type: TokenType.NativeAssetSuperToken,
+        symbol: "ETHx",
+        address: "0x58f0A7c6c143074f5D824c2f27a85f6dA311A6FB",
+        name: "Super ETH",
+        decimals: 18,
+      },
+    },
+    vestingContractAddress: undefined,
+    vestingSubgraphUrl: undefined,
+    autoWrapSubgraphUrl: undefined,
+    platformUrl: undefined,
+  },
+  optimismSepolia: {
+    ...chain.optimismSepolia,
+    id: chainIds.optimismSepolia,
+    metadata: ensureDefined(
+      sfMeta.getNetworkByChainId(chainIds.optimismSepolia),
+      chainIds.optimismSepolia
+    ),
+    blockExplorers: ensureDefined(chain.optimismSepolia.blockExplorers),
+    slugName: "opsepolia",
+    v1ShortName: "opsepolia",
+    bufferTimeInMinutes: 60,
+    color: "#FF0320",
+    rpcUrls: {
+      ...chain.optimismSepolia.rpcUrls,
+      superfluid: { http: [superfluidRpcUrls["optimism-sepolia"]] },
+    },
+    fallbackSubgraphUrl: "https://optimism-sepolia.subgraph.x.superfluid.dev/",
+    getLinkForTransaction: (txHash: string): string =>
+      `https://sepolia-optimism.etherscan.io/tx/${txHash}`,
+    getLinkForAddress: (address: string): string =>
+      `https://sepolia-optimism.etherscan.io/address/${address}`,
+    nativeCurrency: {
+      ...ensureDefined(chain.optimismSepolia.nativeCurrency),
+      address: NATIVE_ASSET_ADDRESS,
+      type: TokenType.NativeAssetUnderlyingToken,
+      superToken: {
+        type: TokenType.NativeAssetSuperToken,
+        symbol: "ETHx",
+        address: "0x0043d7c85C8b96a49A72A92C0B48CdC4720437d7",
+        name: "Super ETH",
+        decimals: 18,
+      },
+    },
+    vestingContractAddress: undefined,
+    vestingSubgraphUrl: undefined,
+    autoWrapSubgraphUrl: undefined,
+    platformUrl: undefined,
+  },
+} as const satisfies Record<string, Network>;
 
 export const allNetworks: Network[] = orderBy(
   orderBy(
@@ -842,16 +872,15 @@ export const allNetworks: Network[] = orderBy(
       networkDefinition.polygonMumbai,
       networkDefinition.avalancheFuji,
       networkDefinition.optimism,
+      networkDefinition.optimismSepolia,
       networkDefinition.arbitrum,
       networkDefinition.avalancheC,
       networkDefinition.bsc,
       networkDefinition.celoMainnet,
-      networkDefinition.optimismGoerli,
-      networkDefinition.arbitrumGoerli,
       networkDefinition.sepolia,
-      networkDefinition.polygonZkevmTestnet,
-      networkDefinition.baseGoerli,
       networkDefinition.base,
+      networkDefinition.scroll,
+      networkDefinition.scrollSepolia,
     ],
     (x) => x.id // Put lower ids first (Ethereum mainnet will be first)
   ),
@@ -862,7 +891,7 @@ export const mainNetworks = allNetworks.filter((x) => !x.testnet);
 export const testNetworks = allNetworks.filter((x) => x.testnet);
 
 export const tryFindNetwork = (
-  networks: Network[],
+  networks: ReadonlyArray<Network>,
   value: unknown
 ): Network | undefined => {
   const asNumber = Number(value);
@@ -897,7 +926,7 @@ export const tryFindNetwork = (
 };
 
 export const findNetworkOrThrow = (
-  networks: Network[],
+  networks: ReadonlyArray<Network>,
   value: unknown
 ): Network => {
   const network = tryFindNetwork(networks, value);

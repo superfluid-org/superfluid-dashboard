@@ -70,7 +70,9 @@ export const mapActivitiesFromEvents = (
   events: Array<AllEvents>,
   network: Network
 ) =>
-  Object.values(groupBy(x => x.transactionHash, events)).reduce<Array<Activities>>(
+  Object.values(groupBy((x) => x.transactionHash, events)).reduce<
+    Array<Activities>
+  >(
     (mappedActivities, activities) =>
       mappedActivities.concat(
         mapTransactionActivityRecursive(activities.reverse(), network)
@@ -280,7 +282,25 @@ const mapTransactionActivityRecursive = (
         ])
       );
 
-    case "Transfer":
+    case "Transfer": {
+      const tokenAddressLowerCased = keyEvent.token.toLowerCase();
+      const isNFTTransfer = // this is also mapped to subgraph but currently not mapped in the SDK
+        tokenAddressLowerCased ===
+          network.metadata.contractsV1.constantInflowNFT?.toLowerCase() ||
+        tokenAddressLowerCased ===
+          network.metadata.contractsV1.constantOutflowNFT?.toLowerCase();
+
+      if (isNFTTransfer) {
+        // skip NFT events
+        return mapTransactionActivityRecursive(
+          transactionEvents,
+          network,
+          activities
+        );
+      }
+
+      // fall to next case
+    }
     case "FlowUpdated":
     case "IndexCreated":
       return mapTransactionActivityRecursive(

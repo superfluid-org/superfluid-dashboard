@@ -78,11 +78,11 @@ export default defineConfig({
       vesting: "",
       TAGS: "not @ignore",
       codeCoverage: {
-        url: "http://localhost:3001/__coverage__",
+        url: "http://localhost:3000/__coverage__",
       },
     },
     projectId: "2aaadn",
-    baseUrl: "http://localhost:3001",
+    baseUrl: "http://localhost:3000",
     reporter: "mochawesome",
     reporterOptions: {
       reportDir: "cypress/results",

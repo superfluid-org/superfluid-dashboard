@@ -41,4 +41,4 @@ This repository implements the Superfluid Dashboard v2 as a Next.js web app buil
 
 ### `window.superfluid_dashboard.advanced.nextGasOverrides`
 
-`ethers` `Overrides` to override gas settings for only the next transaction attempt. 
+`ethers` `Overrides` to override gas settings for only the next transaction attempt.

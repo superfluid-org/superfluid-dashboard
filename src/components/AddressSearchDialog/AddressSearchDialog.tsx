@@ -300,8 +300,8 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
                   selectedNetworks={
                     contractData?.isContract
                       ? contractData?.associatedNetworks.map((id) =>
-                          findNetworkOrThrow(allNetworks, id)
-                        )
+                        findNetworkOrThrow(allNetworks, id)
+                      )
                       : selectedNetworks
                   }
                   onSelect={setSelectedNetworks}

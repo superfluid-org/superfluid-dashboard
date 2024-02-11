@@ -218,12 +218,14 @@ export function vestingScheduleToTokenBalance(
     didEarlyEndCompensationFail,
     earlyEndCompensation,
     failedAt,
+    deletedAt,
   } = vestingSchedule;
 
   if (failedAt) return null;
 
-  if (endExecutedAt) {
-    const secondsStreamed = Number(Math.max(endExecutedAt)) - cliffAndFlowDate;
+  const effectiveEndAt = endExecutedAt || deletedAt;
+  if (effectiveEndAt && effectiveEndAt > cliffAndFlowDate) {
+    const secondsStreamed = effectiveEndAt - cliffAndFlowDate;
     const balance = BigNumber.from(secondsStreamed)
       .mul(flowRate)
       .add(cliffAmount)
@@ -233,7 +235,7 @@ export function vestingScheduleToTokenBalance(
     return {
       balance,
       totalNetFlowRate: "0",
-      timestamp: endExecutedAt,
+      timestamp: effectiveEndAt,
     };
   } else if (cliffAndFlowExecutedAt) {
     return {

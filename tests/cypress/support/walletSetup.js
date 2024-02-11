@@ -1004,6 +1004,9 @@ const networkGasTokenSymbols = {
   84531: "ETHx",
   421613: "ETHx",
   11155111: "ETHx",
+  11155420: "ETHx",
+  534351: "ETHx",
+  8453: "ETHx",
 };
 
 const receiverAddress = args.receiver
@@ -1015,33 +1018,34 @@ const provider = args.rpc
 const wallet = new ethers.Wallet(args.privateKey, provider);
 const nativeTokenSymbol = networkGasTokenSymbols[args.chainId];
 
-const vestingContract = new ethers.Contract(
-  vestingContractAddresses[args.chainId],
-  vestingSchedulerAbi,
-  provider
-);
-const autoWrapManagerContract = new ethers.Contract(
-  autoWrapManagerAddresses[args.chainId],
-  autoWrapManagerAbi,
-  provider
-);
+let vestingContract;
+let autoWrapManagerContract;
+if (
+  autoWrapManagerAddresses[args.chainId] &&
+  vestingContractAddresses[args.chainId]
+) {
+  vestingContract = new ethers.Contract(
+    vestingContractAddresses[args.chainId],
+    vestingSchedulerAbi,
+    provider
+  );
+  autoWrapManagerContract = new ethers.Contract(
+    autoWrapManagerAddresses[args.chainId],
+    autoWrapManagerAbi,
+    provider
+  );
+}
 
 function checkArgs() {
-  if (
-    !args.tokenOne ||
-    !args.tokenTwo ||
-    !args.tokenThree ||
-    !args.privateKey ||
-    !args.chainId
-  ) {
+  if (!args.tokenOne || !args.tokenTwo || !args.privateKey || !args.chainId) {
     throw new Error(
       "You forgot an argument to the script , it requires:\n" +
         "--t1 or --tokenOne : Resolver name or address of the token\n" +
         "--t2 or --tokenTwo : Resolver name or address of the token\n" +
-        "--t3 or --tokenThree : Resolver name or address of the token\n" +
         "--pk or --privateKey : The private key of the wallet you want to set up\n" +
         "--chainId : The chainId of the network you want to set the wallet on to\n" +
         "Optional:\n" +
+        "--t3 or --tokenThree : Resolver name or address of the token , needed if platform services are deployed on the network\n" +
         "--receiver : change the wallet who receives flows from the wallet\n" +
         "--rpc : in case the network is not supported by the free ethers InfuraProviders you can provide your own RPC\n" +
         "--amount : override the default 0.01 token upgrade amount"
@@ -1239,7 +1243,11 @@ async function main() {
     providerOrSigner: signer,
   });
 
-  const tokenThree = await sf.loadSuperToken(args.tokenThree);
+  let tokenThree =
+    autoWrapManagerAddresses[args.chainId] &&
+    vestingContractAddresses[args.chainId]
+      ? await sf.loadSuperToken(args.tokenThree)
+      : undefined;
 
   try {
     const nativeBalance = (
@@ -1491,89 +1499,92 @@ async function main() {
     } else {
       console.log(`${args.tokenTwo} index already approved`);
     }
+    if (
+      vestingContractAddresses[args.chainId] &&
+      autoWrapStrategyAddresses[args.chainId]
+    ) {
+      await checkAndGiveAllowanceIfNecessary(
+        tokenTwo,
+        vestingContract.address,
+        signer,
+        args.tokenTwo,
+        "vesting contract"
+      );
 
-    await checkAndGiveAllowanceIfNecessary(
-      tokenTwo,
-      vestingContract.address,
-      signer,
-      args.tokenTwo,
-      "vesting contract"
-    );
+      await checkAndGiveAllowanceIfNecessary(
+        tokenThree,
+        vestingContract.address,
+        signer,
+        args.tokenThree,
+        "vesting contract"
+      );
 
-    await checkAndGiveAllowanceIfNecessary(
-      tokenThree,
-      vestingContract.address,
-      signer,
-      args.tokenThree,
-      "vesting contract"
-    );
+      await checkAndGivePermissionsIfNecessary(
+        tokenTwo,
+        vestingContract.address,
+        signer,
+        args.tokenTwo,
+        "vesting contract"
+      );
 
-    await checkAndGivePermissionsIfNecessary(
-      tokenTwo,
-      vestingContract.address,
-      signer,
-      args.tokenTwo,
-      "vesting contract"
-    );
+      await checkAndGivePermissionsIfNecessary(
+        tokenThree,
+        vestingContract.address,
+        signer,
+        args.tokenThree,
+        "vesting contract"
+      );
 
-    await checkAndGivePermissionsIfNecessary(
-      tokenThree,
-      vestingContract.address,
-      signer,
-      args.tokenThree,
-      "vesting contract"
-    );
+      await checkAndGiveAllowanceIfNecessary(
+        tokenTwo.underlyingToken,
+        autoWrapStrategyAddresses[args.chainId],
+        signer,
+        args.tokenTwo,
+        "auto-wrap strategy contract"
+      );
 
-    await checkAndGiveAllowanceIfNecessary(
-      tokenTwo.underlyingToken,
-      autoWrapStrategyAddresses[args.chainId],
-      signer,
-      args.tokenTwo,
-      "auto-wrap strategy contract"
-    );
-
-    await checkAndGivePermissionsIfNecessary(
-      tokenTwo,
-      autoWrapStrategyAddresses[args.chainId],
-      signer,
-      args.tokenTwo,
-      "auto-wrap strategy contract"
-    );
-    await checkAndGivePermissionsIfNecessary(
-      tokenThree,
-      autoWrapStrategyAddresses[args.chainId],
-      signer,
-      args.tokenThree,
-      "auto-wrap strategy contract"
-    );
-    await checkAndCreateVestingScheduleIfNecessary(
-      tokenOne,
-      signer,
-      args.tokenOne
-    );
-    await checkAndCreateVestingScheduleIfNecessary(
-      tokenTwo,
-      signer,
-      args.tokenTwo
-    );
-    await checkAndCreateVestingScheduleIfNecessary(
-      tokenThree,
-      signer,
-      args.tokenThree
-    );
-    await checkAndCreateAutoWrapScheduleIfNecessary(
-      tokenTwo,
-      autoWrapStrategyAddresses[args.chainId],
-      signer,
-      args.tokenTwo
-    );
-    await checkAndCreateAutoWrapScheduleIfNecessary(
-      tokenThree,
-      autoWrapStrategyAddresses[args.chainId],
-      signer,
-      args.tokenThree
-    );
-
+      await checkAndGivePermissionsIfNecessary(
+        tokenTwo,
+        autoWrapStrategyAddresses[args.chainId],
+        signer,
+        args.tokenTwo,
+        "auto-wrap strategy contract"
+      );
+      await checkAndGivePermissionsIfNecessary(
+        tokenThree,
+        autoWrapStrategyAddresses[args.chainId],
+        signer,
+        args.tokenThree,
+        "auto-wrap strategy contract"
+      );
+      await checkAndCreateVestingScheduleIfNecessary(
+        tokenOne,
+        signer,
+        args.tokenOne
+      );
+      await checkAndCreateVestingScheduleIfNecessary(
+        tokenTwo,
+        signer,
+        args.tokenTwo
+      );
+      await checkAndCreateVestingScheduleIfNecessary(
+        tokenThree,
+        signer,
+        args.tokenThree
+      );
+      await checkAndCreateAutoWrapScheduleIfNecessary(
+        tokenTwo,
+        autoWrapStrategyAddresses[args.chainId],
+        signer,
+        args.tokenTwo
+      );
+      await checkAndCreateAutoWrapScheduleIfNecessary(
+        tokenThree,
+        autoWrapStrategyAddresses[args.chainId],
+        signer,
+        args.tokenThree
+      );
+    }
     console.log(
       `${wallet.address} was successfully set up for being used with rejected tx test cases on chain: ${args.chainId}`
     );
