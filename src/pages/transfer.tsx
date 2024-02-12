@@ -10,8 +10,8 @@ import SendCardContainer from "../features/send/SendCardContainer";
 import { useTransactionRestorationContext } from "../features/transactionRestoration/TransactionRestorationContext";
 import { parseEtherOrZero } from "../utils/tokenUtils";
 import { buildQueryString } from "../utils/URLUtils";
-import TransferFormProvider, { TransferFormProviderProps } from "../features/send/TransferFormProvider";
-import SendTransfer from "../features/send/SendTransfer";
+import TransferFormProvider, { TransferFormProviderProps } from "../features/send/transfer/TransferFormProvider";
+import SendTransfer from "../features/send/transfer/SendTransfer";
 
 interface TransferPageQuery {
   token?: string;

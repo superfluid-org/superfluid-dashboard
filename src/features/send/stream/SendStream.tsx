@@ -32,57 +32,57 @@ import { Controller, useFormContext } from "react-hook-form";
 import {
   mapCreateTaskToScheduledStream,
   mapStreamScheduling,
-} from "../../hooks/streamSchedulingHooks";
-import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
-import { getTokenPagePath } from "../../pages/token/[_network]/[_token]";
-import { CreateTask } from "../../scheduling-subgraph/.graphclient";
-import { dateNowSeconds, getTimeInSeconds } from "../../utils/dateUtils";
-import { getDecimalPlacesToRoundTo } from "../../utils/DecimalUtils";
+} from "../../../hooks/streamSchedulingHooks";
+import useGetTransactionOverrides from "../../../hooks/useGetTransactionOverrides";
+import { getTokenPagePath } from "../../../pages/token/[_network]/[_token]";
+import { CreateTask } from "../../../scheduling-subgraph/.graphclient";
+import { dateNowSeconds, getTimeInSeconds } from "../../../utils/dateUtils";
+import { getDecimalPlacesToRoundTo } from "../../../utils/DecimalUtils";
 import {
   calculateBufferAmount,
   getPrettyEtherFlowRate,
   parseEtherOrZero,
-} from "../../utils/tokenUtils";
-import { useAnalytics } from "../analytics/useAnalytics";
-import Link from "../common/Link";
-import TooltipWithIcon from "../common/TooltipWithIcon";
-import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
-import { Network, networkDefinition } from "../network/networks";
-import NetworkSwitchLink from "../network/NetworkSwitchLink";
-import { platformApi } from "../redux/platformApi/platformApi";
-import { rpcApi } from "../redux/store";
-import Amount from "../token/Amount";
-import TokenIcon from "../token/TokenIcon";
-import { BalanceSuperToken } from "../tokenWrapping/BalanceSuperToken";
-import { TokenDialogButton } from "../tokenWrapping/TokenDialogButton";
-import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
-import ConnectionBoundaryButton from "../transactionBoundary/ConnectionBoundaryButton";
-import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
-import { TransactionButton } from "../transactionBoundary/TransactionButton";
+} from "../../../utils/tokenUtils";
+import { useAnalytics } from "../../analytics/useAnalytics";
+import Link from "../../common/Link";
+import TooltipWithIcon from "../../common/TooltipWithIcon";
+import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
+import { Network, networkDefinition } from "../../network/networks";
+import NetworkSwitchLink from "../../network/NetworkSwitchLink";
+import { platformApi } from "../../redux/platformApi/platformApi";
+import { rpcApi } from "../../redux/store";
+import Amount from "../../token/Amount";
+import TokenIcon from "../../token/TokenIcon";
+import { BalanceSuperToken } from "../../tokenWrapping/BalanceSuperToken";
+import { TokenDialogButton } from "../../tokenWrapping/TokenDialogButton";
+import ConnectionBoundary from "../../transactionBoundary/ConnectionBoundary";
+import ConnectionBoundaryButton from "../../transactionBoundary/ConnectionBoundaryButton";
+import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
+import { TransactionButton } from "../../transactionBoundary/TransactionButton";
 import {
   TransactionDialogActions,
   TransactionDialogButton,
-} from "../transactionBoundary/TransactionDialog";
+} from "../../transactionBoundary/TransactionDialog";
 import {
   ModifyStreamRestoration,
   RestorationType,
   SendStreamRestoration,
-} from "../transactionRestoration/transactionRestorations";
-import { useVisibleAddress } from "../wallet/VisibleAddressContext";
-import AddressSearch from "./AddressSearch";
+} from "../../transactionRestoration/transactionRestorations";
+import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
+import AddressSearch from "../AddressSearch";
 import {
   calculateTotalAmountWei,
   FlowRateInput,
   UnitOfTime,
-} from "./FlowRateInput";
+} from "../FlowRateInput";
 import { StreamingPreview } from "./SendStreamPreview";
 import {
   PartialStreamingForm,
   ValidStreamingForm,
 } from "./StreamingFormProvider";
-import { useSuperTokens } from "../../hooks/useSuperTokens";
-import { useSuperToken } from "../../hooks/useSuperToken";
-import { SuperTokenMinimal, isWrappable } from "../redux/endpoints/tokenTypes";
+import { useSuperTokens } from "../../../hooks/useSuperTokens";
+import { useSuperToken } from "../../../hooks/useSuperToken";
+import { SuperTokenMinimal, isWrappable } from "../../redux/endpoints/tokenTypes";
 
 export const SendBalance: FC<{
   network: Network;

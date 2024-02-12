@@ -18,18 +18,18 @@ import {
   ReactNode,
   useMemo,
 } from "react";
-import shortenHex from "../../utils/shortenHex";
+import shortenHex from "../../../utils/shortenHex";
 import {
   getPrettyEtherFlowRate,
   parseEtherOrZero,
-} from "../../utils/tokenUtils";
-import TooltipWithIcon from "../common/TooltipWithIcon";
-import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
-import { SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
-import { rpcApi } from "../redux/store";
-import Amount from "../token/Amount";
-import FlowingBalance from "../token/FlowingBalance";
-import { useVisibleAddress } from "../wallet/VisibleAddressContext";
+} from "../../../utils/tokenUtils";
+import TooltipWithIcon from "../../common/TooltipWithIcon";
+import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
+import { SuperTokenMinimal } from "../../redux/endpoints/tokenTypes";
+import { rpcApi } from "../../redux/store";
+import Amount from "../../token/Amount";
+import FlowingBalance from "../../token/FlowingBalance";
+import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
 import {
   calculateTotalAmountWei,
   FlowRateEther,
@@ -39,16 +39,16 @@ import {
   ScheduledFlowRate,
   ScheduledFlowRateEther,
   UnitOfTime,
-} from "./FlowRateInput";
-import useCalculateBufferInfo from "./useCalculateBufferInfo";
+} from "../FlowRateInput";
+import useCalculateBufferInfo from "../useCalculateBufferInfo";
 import AllInclusiveIcon from "@mui/icons-material/AllInclusive";
 import TimerOutlined from "@mui/icons-material/TimerOutlined";
-import { ScheduledStream } from "../../hooks/streamSchedulingHooks";
-import { Web3FlowInfo } from "../redux/endpoints/adHocRpcEndpoints";
+import { ScheduledStream } from "../../../hooks/streamSchedulingHooks";
+import { Web3FlowInfo } from "../../redux/endpoints/adHocRpcEndpoints";
 import {
   ActiveStreamIcon,
   ScheduledStreamIcon,
-} from "../streamsTable/StreamIcons";
+} from "../../streamsTable/StreamIcons";
 
 interface PreviewItemProps {
   label: string | ReactNode;

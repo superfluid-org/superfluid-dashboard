@@ -2,12 +2,12 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { FC, PropsWithChildren, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { object, ObjectSchema, string } from "yup";
-import { testAddress, testEtherAmount } from "../../utils/yupUtils";
-import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
-import { formRestorationOptions } from "../transactionRestoration/transactionRestorations";
-import { useVisibleAddress } from "../wallet/VisibleAddressContext";
-import { CommonFormEffects } from "../common/CommonFormEffects";
-import { rpcApi } from "../redux/store";
+import { testAddress, testEtherAmount } from "../../../utils/yupUtils";
+import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
+import { formRestorationOptions } from "../../transactionRestoration/transactionRestorations";
+import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
+import { CommonFormEffects } from "../../common/CommonFormEffects";
+import { rpcApi } from "../../redux/store";
 import { BigNumber } from "ethers";
 import { parseEther } from "ethers/lib/utils";
 
