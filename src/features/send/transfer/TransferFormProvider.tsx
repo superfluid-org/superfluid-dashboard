@@ -9,7 +9,7 @@ import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
 import { CommonFormEffects } from "../../common/CommonFormEffects";
 import { rpcApi } from "../../redux/store";
 import { BigNumber } from "ethers";
-import { parseEther } from "ethers/lib/utils";
+import { formatEther, parseEther } from "ethers/lib/utils";
 
 export type ValidTransferForm = {
   data: {
@@ -100,7 +100,11 @@ const TransferFormProvider: FC<
           },
           true
         ).unwrap()
-        if (BigNumber.from(balance) < parseEther(amountEther)) {
+
+        const amountWei = parseEther(amountEther);
+        const balanceWei = BigNumber.from(balance);
+
+        if (amountWei.gt(balanceWei)) {
           // Note: nit-pick but we're not accounting for flowing here
 
           handleHigherOrderValidationError({
