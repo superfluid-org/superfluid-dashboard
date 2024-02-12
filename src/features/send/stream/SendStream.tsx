@@ -1067,7 +1067,7 @@ export default memo(function SendStream() {
 
       <SendBalance network={network} visibleAddress={visibleAddress} token={token} />
 
-      {(token) && <Divider />}
+      {(token && visibleAddress) && <Divider />}
 
       {!!(receiverAddress && token) && (
         <StreamingPreview

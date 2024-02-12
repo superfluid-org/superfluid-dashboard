@@ -119,7 +119,7 @@ const TransferFormProvider: FC<
     mode: "onChange",
   });
 
-  const { formState, setValue, trigger, clearErrors, setError, watch } =
+  const { setValue, clearErrors, setError } =
     formMethods;
 
   const [isInitialized, setIsInitialized] = useState(!initialFormValues);

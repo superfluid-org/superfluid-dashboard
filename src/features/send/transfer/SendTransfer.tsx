@@ -252,7 +252,7 @@ export default memo(function SendTransfer() {
 
       <SendBalance network={network} visibleAddress={visibleAddress} token={token} />
 
-      {(token) && <Divider />}
+      {(token && visibleAddress) && <Divider />}
 
       <ConnectionBoundary>
         <ConnectionBoundaryButton
