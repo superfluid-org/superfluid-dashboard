@@ -31,6 +31,7 @@ import { useSuperToken } from "../../../hooks/useSuperToken";
 import { SendBalance } from "../stream/SendStream";
 import { inputPropsForEtherAmount } from "../../../utils/inputPropsForEtherAmount";
 import { Address } from "@superfluid-finance/sdk-core";
+import { RestorationType, SendTransferRestoration } from "../../transactionRestoration/transactionRestorations";
 
 export default memo(function SendTransfer() {
   const theme = useTheme();
@@ -165,6 +166,15 @@ export default memo(function SendTransfer() {
           const { data: formData } = getValues() as ValidTransferForm;
 
           const senderAddress = await signer.getAddress() as Address
+
+          const transactionRestoration: SendTransferRestoration = {
+            type: RestorationType.SendTransfer,
+            chainId: network.id,
+            tokenAddress: formData.tokenAddress,
+            receiverAddress: formData.receiverAddress,
+            amountEther: formData.amountEther
+          };
+
           const primaryArgs = {
             chainId: network.id,
             tokenAddress: formData.tokenAddress,
@@ -177,6 +187,9 @@ export default memo(function SendTransfer() {
             ...primaryArgs,
             signer,
             overrides: await getTransactionOverrides(network),
+            transactionExtraData: {
+              restoration: transactionRestoration,
+            }
           })
             .unwrap()
             .then(...txAnalytics("Send Transfer", primaryArgs))
