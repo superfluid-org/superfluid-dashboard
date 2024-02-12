@@ -56,10 +56,11 @@ const Transfer: NextPage = () => {
           ...remainingQuery
         } = router.query;
 
-        const amountEther = formatEther(parseEtherOrZero(isString(maybeAmountEther) ? maybeAmountEther : "0"));
+        const amountWei = parseEtherOrZero(isString(maybeAmountEther) ? maybeAmountEther : "0");
+        const amountEther = amountWei.isZero() ? "" : formatEther(amountWei);
 
         setInitialFormValues({
-          amountEther,
+          amountEther: amountEther,
           tokenAddress:
             maybeTokenAddress && isString(maybeTokenAddress)
               ? maybeTokenAddress

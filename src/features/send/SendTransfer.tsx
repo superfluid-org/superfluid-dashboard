@@ -22,13 +22,15 @@ import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import ConnectionBoundaryButton from "../transactionBoundary/ConnectionBoundaryButton";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import AddressSearch from "./AddressSearch";
-import { PartialTransferForm } from "./TransferFormProvider";
+import { PartialTransferForm, ValidTransferForm } from "./TransferFormProvider";
 import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../transactionBoundary/TransactionButton";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
 import { useSuperTokens } from "../../hooks/useSuperTokens";
 import { useSuperToken } from "../../hooks/useSuperToken";
 import { SendBalance } from "./SendStream";
+import { inputPropsForEtherAmount } from "../../utils/inputPropsForEtherAmount";
+import { Address } from "@superfluid-finance/sdk-core";
 
 export default memo(function SendTransfer() {
   const theme = useTheme();
@@ -122,6 +124,9 @@ export default memo(function SendTransfer() {
               </Typography>
             ),
           }}
+          inputProps={{
+            ...inputPropsForEtherAmount,
+          }}
         />
       )}
     />
@@ -130,18 +135,25 @@ export default memo(function SendTransfer() {
   const [transfer, transferResult] =
     rpcApi.useTransferMutation();
 
+  const isSendDisabled =
+    formState.isValidating ||
+    !formState.isValid;
+
   const SendTransactionBoundary = (
     <TransactionBoundary mutationResult={transferResult}>
       {({ setDialogLoadingInfo }) =>
       (<TransactionButton
+        disabled={isSendDisabled}
         dataCy={"transfer-button"}
         onClick={async (signer) => {
-          const superTokenAddress = tokenAddress;
-          const senderAddress = visibleAddress;
-
-          // todo: refactor into isButtonDisabled type of a thing?
-          if (!receiverAddress || !superTokenAddress || !senderAddress) {
-            throw Error("This should never happen.");
+          if (isSendDisabled) {
+            throw Error(
+              `This should never happen. Form state: ${JSON.stringify(
+                formState,
+                null,
+                2
+              )}`
+            );
           }
 
           setDialogLoadingInfo(
@@ -150,12 +162,15 @@ export default memo(function SendTransfer() {
             </Typography>
           );
 
+          const { data: formData } = getValues() as ValidTransferForm;
+
+          const senderAddress = await signer.getAddress() as Address
           const primaryArgs = {
             chainId: network.id,
-            tokenAddress,
+            tokenAddress: formData.tokenAddress,
             senderAddress,
-            receiverAddress,
-            amountWei: parseEtherOrZero(amountEther).toString()
+            receiverAddress: formData.receiverAddress,
+            amountWei: parseEtherOrZero(formData.amountEther).toString()
           };
 
           transfer({
