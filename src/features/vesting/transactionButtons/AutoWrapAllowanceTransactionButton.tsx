@@ -31,12 +31,12 @@ const AutoWrapAllowanceTransactionButton: FC<{
   const { config } = usePrepareContractWrite(
     prepare
       ? {
-          abi: erc20ABI,
-          functionName: "approve",
-          address: token.underlyingAddress as `0x${string}`,
-          chainId: network.id,
-          args: [primaryArgs.spender, primaryArgs.amount],
-        }
+        abi: erc20ABI,
+        functionName: "approve",
+        address: token.underlyingAddress as `0x${string}`,
+        chainId: network.id,
+        args: [primaryArgs.spender, primaryArgs.amount],
+      }
       : undefined
   );
 

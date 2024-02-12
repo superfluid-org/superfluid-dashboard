@@ -2,8 +2,7 @@ import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { Network } from "../features/network/networks";
 import { subgraphApi } from "../features/redux/store";
 import { getSuperTokenType } from "../features/redux/endpoints/adHocSubgraphEndpoints";
-import { Token } from "@superfluid-finance/sdk-core";
-import { SuperTokenMinimal, isWrappable } from "../features/redux/endpoints/tokenTypes";
+import { SuperTokenType, isWrappable } from "../features/redux/endpoints/tokenTypes";
 
 export const useSuperToken = ({ network, tokenAddress }: { network: Network, tokenAddress: string | undefined | null }) => {
     const { token } = subgraphApi.useTokenQuery(
@@ -23,8 +22,8 @@ export const useSuperToken = ({ network, tokenAddress }: { network: Network, tok
                             network,
                             address: result.currentData.id,
                             underlyingAddress: result.currentData.underlyingAddress,
-                        }),
-                    } as Token & SuperTokenMinimal)
+                        }) as SuperTokenType,
+                    })
                     : undefined,
             }),
         }

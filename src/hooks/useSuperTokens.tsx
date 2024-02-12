@@ -4,6 +4,7 @@ import { Network } from "../features/network/networks";
 import { subgraphApi } from "../features/redux/store";
 import { useMemo } from "react";
 import { getSuperTokenType } from "../features/redux/endpoints/adHocSubgraphEndpoints";
+import { SuperTokenType } from "../features/redux/endpoints/tokenTypes";
 
 export const useSuperTokens = ({ network, onlyWrappable }: { network: Network, onlyWrappable?: boolean }) => {
     const networkCustomTokens = useNetworkCustomTokens(network.id);
@@ -36,12 +37,10 @@ export const useSuperTokens = ({ network, onlyWrappable }: { network: Network, o
             (listedSuperTokensQuery.data?.items || [])
                 .concat(customSuperTokensQuery.data?.items || [])
                 .map((x) => ({
-                    type: getSuperTokenType({ ...x, network, address: x.id }),
+                    ...x,
                     address: x.id,
-                    name: x.name,
-                    symbol: x.symbol,
+                    type: getSuperTokenType({ ...x, network, address: x.id }) as SuperTokenType,
                     decimals: 18,
-                    isListed: x.isListed,
                 })),
         [network, listedSuperTokensQuery.data, customSuperTokensQuery.data]
     );

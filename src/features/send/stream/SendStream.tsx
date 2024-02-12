@@ -398,11 +398,11 @@ export default memo(function SendStream() {
             ? mapStreamScheduling(
               mapCreateTaskToScheduledStream({
                 id: `${visibleAddress}-${receiverAddress}-${tokenAddress}-scheduled-stream`,
-                executionAt: startDate!.toString(),
-                flowRate: flowRate!,
-                receiver: receiverAddress!,
-                sender: visibleAddress!,
-                superToken: tokenAddress!,
+                executionAt: startDate.toString(),
+                flowRate: flowRate,
+                receiver: receiverAddress,
+                sender: visibleAddress,
+                superToken: tokenAddress,
               } as CreateTask),
               startDate,
               endDate

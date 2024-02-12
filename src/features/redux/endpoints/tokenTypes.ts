@@ -16,7 +16,7 @@ export type SuperTokenType =
   | TokenType.PureSuperToken;
 
 export type TokenMinimal = {
-  type: UnderlyingTokenType | SuperTokenType;
+  type: TokenType;
   address: string;
   name: string;
   symbol: string;

@@ -30,13 +30,13 @@ const AutoWrapEnableDialogContentSection: FC<{
     activeAutoWrapSchedule: isActiveAutoWrapSchedule,
     isAutoWrapAllowanceSufficient,
   } = useActiveAutoWrap(
-    isAutoWrappable
+    isAutoWrappable && visibleAddress
       ? {
-          chainId: network.id,
-          accountAddress: visibleAddress!,
-          superTokenAddress: token.id,
-          underlyingTokenAddress: token.underlyingAddress,
-        }
+        chainId: network.id,
+        accountAddress: visibleAddress,
+        superTokenAddress: token.id,
+        underlyingTokenAddress: token.underlyingAddress,
+      }
       : "skip"
   );
 
