@@ -1,4 +1,4 @@
-import { Box, Container, useTheme } from "@mui/material";
+import { useTheme } from "@mui/material";
 import { formatEther } from "ethers/lib/utils";
 import { isString } from "lodash";
 import { NextPage } from "next";
@@ -6,12 +6,13 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import withStaticSEO from "../components/SEO/withStaticSEO";
 import { useExpectedNetwork } from "../features/network/ExpectedNetworkContext";
-import SendCardContainer from "../features/send/SendCardContainer";
 import { useTransactionRestorationContext } from "../features/transactionRestoration/TransactionRestorationContext";
 import { parseEtherOrZero } from "../utils/tokenUtils";
 import { buildQueryString } from "../utils/URLUtils";
 import TransferFormProvider, { TransferFormProviderProps } from "../features/send/transfer/TransferFormProvider";
 import SendTransfer from "../features/send/transfer/SendTransfer";
+import { RestorationType } from "../features/transactionRestoration/transactionRestorations";
+import SendPageLayout from "../features/send/SendPageLayout";
 
 interface TransferPageQuery {
   token?: string;
@@ -44,6 +45,13 @@ const Transfer: NextPage = () => {
     if (router.isReady) {
       if (restoration) {
         switch (restoration.type) {
+          case RestorationType.SendTransfer:
+            setInitialFormValues({
+              receiverAddress: restoration.receiverAddress,
+              tokenAddress: restoration.tokenAddress,
+              amountEther: restoration.amountEther,
+            });
+            break;
           default:
             setInitialFormValues({});
         }
@@ -85,27 +93,13 @@ const Transfer: NextPage = () => {
   }, [router.isReady]);
 
   return (
-    <Container key={`${network.slugName}`} maxWidth="lg">
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          [theme.breakpoints.up("md")]: {
-            my: 4,
-          },
-        }}
-      >
-        <SendCardContainer>
-          {initialFormValues && (
-            <TransferFormProvider initialFormValues={initialFormValues}>
-              <SendTransfer />
-            </TransferFormProvider>
-          )}
-        </SendCardContainer>
-      </Box>
-    </Container>
+    <SendPageLayout key={`${network.slugName}`}>
+      {initialFormValues && (
+        <TransferFormProvider initialFormValues={initialFormValues}>
+          <SendTransfer />
+        </TransferFormProvider>
+      )}
+    </SendPageLayout>
   );
 };
 

@@ -100,12 +100,10 @@ export const flowRateEtherToString = (
   tokenSymbol?: string
 ) =>
   tokenSymbol
-    ? `${flowRateEther.amountEther} ${tokenSymbol}/${
-        timeUnitWordMap[flowRateEther.unitOfTime]
-      }`
-    : `${flowRateEther.amountEther}/${
-        timeUnitWordMap[flowRateEther.unitOfTime]
-      }`;
+    ? `${flowRateEther.amountEther} ${tokenSymbol}/${timeUnitWordMap[flowRateEther.unitOfTime]
+    }`
+    : `${flowRateEther.amountEther}/${timeUnitWordMap[flowRateEther.unitOfTime]
+    }`;
 
 export const calculateTotalAmountWei = (
   flowRate: FlowRateWei | FlowRateEther
@@ -113,8 +111,8 @@ export const calculateTotalAmountWei = (
   isFlowRateWei(flowRate)
     ? BigNumber.from(flowRate.amountWei).div(flowRate.unitOfTime)
     : parseEtherOrZero(flowRate.amountEther).isZero()
-    ? BigNumber.from("0")
-    : parseEther(flowRate.amountEther).div(flowRate.unitOfTime);
+      ? BigNumber.from("0")
+      : parseEther(flowRate.amountEther).div(flowRate.unitOfTime);
 
 const isFlowRateWei = (
   flowRate: FlowRateWei | FlowRateEther
@@ -169,16 +167,16 @@ export const FlowRateInput: FC<{
           // TODO: This should have easier solution. Only with css would be perfect.
           ...(flowRateFocused
             ? {
-                "& + .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline": {
-                  borderLeftColor: "primary.main",
-                },
-              }
+              "& + .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline": {
+                borderLeftColor: "primary.main",
+              },
+            }
             : {
-                "&:hover + .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline":
-                  {
-                    borderLeftColor: "text.primary",
-                  },
-              }),
+              "&:hover + .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline":
+              {
+                borderLeftColor: "text.primary",
+              },
+            }),
         }}
       />
       <Select

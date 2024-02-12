@@ -118,6 +118,9 @@ export default memo(function SendTransfer() {
           value={value}
           onChange={onChange}
           onBlur={onBlur}
+          autoComplete="off"
+          autoCorrect="off"
+          placeholder="0.0"
           InputProps={{
             endAdornment: (
               <Typography component="span" color={"text.secondary"}>
