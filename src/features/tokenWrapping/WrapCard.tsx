@@ -1,12 +1,13 @@
 import { ErrorMessage } from "@hookform/error-message";
 
-import { Alert, Button, Card, Stack, useTheme } from "@mui/material";
+import { Alert, Card, Stack, useTheme } from "@mui/material";
 import { useRouter } from "next/router";
 import { memo } from "react";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import NetworkBadge from "../network/NetworkBadge";
 import { TabUnwrap } from "./TabUnwrap";
 import { TabWrap } from "./TabWrap";
+import { CardTabButton } from "../../components/CardTabButton/CardTabButton";
 
 type WrapTab = "upgrade" | "downgrade";
 
@@ -50,24 +51,10 @@ export default memo(function WrapCard({ tabValue }: { tabValue: WrapTab }) {
         }}
       />
       <Stack direction="row" gap={1} sx={{ mb: 4 }}>
-        <Button
-          data-cy="wrap-toggle"
-          color={tabValue === "upgrade" ? "primary" : "secondary"}
-          variant="textContained"
-          size="large"
-          onClick={handleTabChange("upgrade")}
-        >
-          Wrap
-        </Button>
-        <Button
-          data-cy="unwrap-toggle"
-          color={tabValue === "downgrade" ? "primary" : "secondary"}
-          variant="textContained"
-          size="large"
-          onClick={handleTabChange("downgrade")}
-        >
-          Unwrap
-        </Button>
+
+        <CardTabButton dataCy="wrap-toggle" isActive={tabValue === "upgrade"} onClick={handleTabChange("upgrade")} >Wrap</CardTabButton>
+        <CardTabButton dataCy="unwrap-toggle" isActive={tabValue === "downgrade"} onClick={handleTabChange("downgrade")} >Unwrap</CardTabButton>
+
       </Stack>
       <ErrorMessage
         name="data"

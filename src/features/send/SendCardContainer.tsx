@@ -1,35 +1,13 @@
 import {
-  Button,
   Card,
   Stack,
   useTheme,
 } from "@mui/material";
-import { FC, PropsWithChildren, memo } from "react";
+import { PropsWithChildren, memo } from "react";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import NetworkBadge from "../network/NetworkBadge";
 import { useRouter } from "next/router";
-import Link from "../common/Link";
-
-const TabButton: FC<{
-  text: string;
-  isActive: boolean;
-  dataCy: string;
-  href: string;
-}> = ({ text, isActive, dataCy, href }) => {
-  return (
-    <Button
-      data-cy={dataCy}
-      color={isActive ? "primary" : "secondary"}
-      variant="textContained"
-      size="large"
-      // sx={{ pointerEvents: "none" }}
-      href={href}
-      LinkComponent={Link}
-    >
-      {text}
-    </Button>
-  )
-}
+import { CardTabButton } from "../../components/CardTabButton/CardTabButton";
 
 export default memo(function SendCardContainer({ children }: { children: PropsWithChildren["children"] }) {
   const theme = useTheme();
@@ -58,8 +36,8 @@ export default memo(function SendCardContainer({ children }: { children: PropsWi
     >
 
       <Stack direction="row" spacing={2} sx={{ mb: 4 }} >
-        <TabButton text="Stream" href={"/send"} isActive={isActiveRoute("/send")} dataCy="send-or-modify-stream" />
-        <TabButton text="Transfer" href={"/transfer"} isActive={isActiveRoute("/transfer")} dataCy="transfer" />
+        <CardTabButton dataCy="send-or-modify-stream" href={"/send"} isActive={isActiveRoute("/send")}>Stream</CardTabButton>
+        <CardTabButton dataCy="transfer" href={"/transfer"} isActive={isActiveRoute("/transfer")}>Transfer</CardTabButton>
       </Stack>
 
       <NetworkBadge
