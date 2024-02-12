@@ -80,7 +80,7 @@ const TransferFormProvider: FC<
           });
         };
 
-        const { tokenAddress, receiverAddress } =
+        const { tokenAddress, receiverAddress, amountEther } =
           validForm.data;
 
         if (!visibleAddress)
@@ -121,16 +121,6 @@ const TransferFormProvider: FC<
 
   const { formState, setValue, trigger, clearErrors, setError, watch } =
     formMethods;
-
-  const [
-    receiverAddress,
-    tokenAddress,
-    amountEther
-  ] = watch([
-    "data.receiverAddress",
-    "data.tokenAddress",
-    "data.amountEther"
-  ]);
 
   const [isInitialized, setIsInitialized] = useState(!initialFormValues);
 
