@@ -462,7 +462,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
       {(filteredStreams.length > 5 ||
         (!isBelowMd && filteredStreams.length <= 5)) && (
           <TablePagination
-            rowsPerPageOptions={[5, 10, 25, { value: filteredStreams.length, label: 'All' }]}
+            rowsPerPageOptions={[5, 10, 25, 100]}
             component="div"
             count={filteredStreams.length}
             rowsPerPage={rowsPerPage}
