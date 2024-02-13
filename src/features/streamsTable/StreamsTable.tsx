@@ -16,7 +16,7 @@ import {
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { Address, Stream } from "@superfluid-finance/sdk-core";
 import { getUnixTime } from "date-fns";
-import { FC, memo, useCallback, useMemo, useState } from "react";
+import { FC, memo, useCallback, useEffect, useMemo, useState } from "react";
 import {
   mapCreateTaskToScheduledStream,
   mapStreamScheduling,
@@ -77,6 +77,8 @@ const StreamsTable: FC<StreamsTableProps> = ({
     type: StreamTypeFilter.All,
   });
 
+  const [refetchOnFocus, setRefetchOnFocus] = useState(true);
+
   const humaFinanceOperatedStreamsQuery =
     subgraphApi.useFindStreamIdsWhereHumaIsOperatorQuery(
       network.humaFinance && visibleAddress
@@ -98,13 +100,9 @@ const StreamsTable: FC<StreamsTableProps> = ({
       pagination: {
         take: Infinity
       },
-      order: {
-        orderBy: "updatedAtTimestamp",
-        orderDirection: "desc",
-      },
     },
     {
-      refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
+      refetchOnFocus: refetchOnFocus, // Re-fetch list view more often where there might be something incoming.
     }
   );
 
@@ -117,14 +115,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
       },
       pagination: {
         take: Infinity
-      },
-      order: {
-        orderBy: "updatedAtTimestamp",
-        orderDirection: "desc",
-      },
-    },
-    {
-      refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
+      }
     }
   );
 
@@ -287,6 +278,13 @@ const StreamsTable: FC<StreamsTableProps> = ({
         return 0;
       });
   }, [incomingStreams, outgoingStreams, allTasks]);
+
+  useEffect(() => {
+    // don't refetch when there's a bunch of streams
+    if (streams.length > 500 && refetchOnFocus) {
+      setRefetchOnFocus(false);
+    }
+  }, [streams]);
 
   const filteredStreams = useMemo(() => {
     switch (streamsFilter.type) {
