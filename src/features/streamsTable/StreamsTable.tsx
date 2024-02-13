@@ -96,8 +96,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
         token: tokenAddress,
       },
       pagination: {
-        take: Infinity,
-        skip: 0,
+        take: Infinity
       },
       order: {
         orderBy: "updatedAtTimestamp",
@@ -117,8 +116,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
         token: tokenAddress,
       },
       pagination: {
-        take: Infinity,
-        skip: 0,
+        take: Infinity
       },
       order: {
         orderBy: "updatedAtTimestamp",

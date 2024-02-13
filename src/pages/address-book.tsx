@@ -80,8 +80,7 @@ const AddressBook: NextPage = () => {
           currentFlowRate_gt: "0",
         },
         pagination: {
-          take: Infinity,
-          skip: 0,
+          take: Infinity
         },
         order: {
           orderBy: "updatedAtTimestamp",
@@ -100,8 +99,7 @@ const AddressBook: NextPage = () => {
           currentFlowRate_gt: "0",
         },
         pagination: {
-          take: Infinity,
-          skip: 0,
+          take: Infinity
         },
         order: {
           orderBy: "updatedAtTimestamp",
