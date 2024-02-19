@@ -105,7 +105,7 @@ const getUnderlyingTokenAllowanceEndpoint = (builder: RpcEndpointBuilder) =>
   >({
     queryFn: async (arg) => {
       const framework = await getFramework(arg.chainId);
-      const tokenContract = ERC20__factory.connect(
+      const token = ERC20__factory.connect(
         arg.underlyingTokenAddress,
         framework.settings.provider
       );
@@ -115,7 +115,7 @@ const getUnderlyingTokenAllowanceEndpoint = (builder: RpcEndpointBuilder) =>
         framework.settings.provider
       );
 
-      const allowance = await tokenContract.allowance(
+      const allowance = await token.allowance(
         arg.accountAddress,
         strategy.address
       );

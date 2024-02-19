@@ -129,10 +129,10 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
     rpcApi.useSuperTokenUpgradeAllowanceQuery(
       tokenPair && !isUnderlyingBlockchainNativeAsset && visibleAddress
         ? {
-            chainId: network.id,
-            accountAddress: visibleAddress,
-            superTokenAddress: tokenPair.superTokenAddress,
-          }
+          chainId: network.id,
+          accountAddress: visibleAddress,
+          superTokenAddress: tokenPair.superTokenAddress,
+        }
         : skipToken
     );
 
@@ -203,10 +203,10 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
   const { underlyingBalance } = rpcApi.useUnderlyingBalanceQuery(
     tokenPair && visibleAddress
       ? {
-          chainId: network.id,
-          accountAddress: visibleAddress,
-          tokenAddress: tokenPair.underlyingTokenAddress,
-        }
+        chainId: network.id,
+        accountAddress: visibleAddress,
+        tokenAddress: tokenPair.underlyingTokenAddress,
+      }
       : skipToken,
     {
       selectFromResult: (result) => ({
@@ -308,7 +308,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                 />
               )}
             </Typography>
-            <Stack direction="row">
+            <Stack direction="row" spacing={0.5}>
               <BalanceUnderlyingToken
                 chainId={network.id}
                 accountAddress={visibleAddress}

@@ -3,17 +3,17 @@ import { add, getUnixTime } from "date-fns";
 import { FC, PropsWithChildren, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { bool, mixed, number, object, ObjectSchema, string } from "yup";
-import { dateNowSeconds } from "../../utils/dateUtils";
-import { getMinimumStreamTimeInMinutes } from "../../utils/tokenUtils";
-import { testAddress, testEtherAmount } from "../../utils/yupUtils";
-import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
-import { rpcApi } from "../redux/store";
-import { formRestorationOptions } from "../transactionRestoration/transactionRestorations";
-import { calculateTotalAmountWei, UnitOfTime } from "./FlowRateInput";
-import { SCHEDULE_START_END_MIN_DIFF_S } from "./SendCard";
-import useCalculateBufferInfo from "./useCalculateBufferInfo";
-import { useVisibleAddress } from "../wallet/VisibleAddressContext";
-import { CommonFormEffects } from "../common/CommonFormEffects";
+import { dateNowSeconds } from "../../../utils/dateUtils";
+import { getMinimumStreamTimeInMinutes } from "../../../utils/tokenUtils";
+import { testAddress, testEtherAmount } from "../../../utils/yupUtils";
+import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
+import { rpcApi } from "../../redux/store";
+import { formRestorationOptions } from "../../transactionRestoration/transactionRestorations";
+import { calculateTotalAmountWei, UnitOfTime } from "../FlowRateInput";
+import { SCHEDULE_START_END_MIN_DIFF_S } from "../stream/SendStream";
+import useCalculateBufferInfo from "../useCalculateBufferInfo";
+import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
+import { CommonFormEffects } from "../../common/CommonFormEffects";
 
 export type ValidStreamingForm = {
   data: {
@@ -65,6 +65,7 @@ const StreamingFormProvider: FC<
 > = ({ children, initialFormValues }) => {
   const { visibleAddress } = useVisibleAddress();
   const { network, stopAutoSwitchToWalletNetwork } = useExpectedNetwork();
+  
   const [queryRealtimeBalance] = rpcApi.useLazyRealtimeBalanceQuery();
   const [queryActiveFlow] = rpcApi.useLazyGetActiveFlowQuery();
   const calculateBufferInfo = useCalculateBufferInfo();

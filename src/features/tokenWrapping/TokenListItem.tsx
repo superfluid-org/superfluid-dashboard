@@ -57,10 +57,10 @@ export const TokenListItem: FC<TokenListItemProps> = ({
     rpcApi.useUnderlyingBalanceQuery(
       chainId && accountAddress && isUnderlyingToken
         ? {
-            chainId,
-            accountAddress,
-            tokenAddress: token.address,
-          }
+          chainId,
+          accountAddress,
+          tokenAddress: token.address,
+        }
         : skipToken
     );
 
@@ -68,10 +68,10 @@ export const TokenListItem: FC<TokenListItemProps> = ({
     rpcApi.useRealtimeBalanceQuery(
       chainId && accountAddress && isSuperToken
         ? {
-            chainId,
-            accountAddress,
-            tokenAddress: token.address,
-          }
+          chainId,
+          accountAddress,
+          tokenAddress: token.address,
+        }
         : skipToken
     );
 
@@ -128,7 +128,7 @@ export const TokenListItem: FC<TokenListItemProps> = ({
               roundingIndicator="~"
             />
           ))}
-        {showUpgrade && isWrappableSuperToken && (
+        {(showUpgrade && isWrappableSuperToken) ? (
           <Tooltip title="Wrap">
             <IconButton
               LinkComponent={Link}
@@ -138,7 +138,7 @@ export const TokenListItem: FC<TokenListItemProps> = ({
               <AddCircleOutline />
             </IconButton>
           </Tooltip>
-        )}
+        ) : <IconButton sx={{ visibility: "hidden" }}><AddCircleOutline /></IconButton>}
       </Typography>
     </ListItemButton>
   );

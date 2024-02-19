@@ -44,8 +44,7 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
       subscriber: visibleAddress.toLowerCase(),
     },
     pagination: {
-      take: Infinity,
-      skip: 0,
+      take: Infinity
     },
     order: {
       orderBy: "updatedAtTimestamp",

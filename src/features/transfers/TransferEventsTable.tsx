@@ -58,8 +58,7 @@ const TransferEventsTable: FC<TransferEventsTableProps> = ({
       token: tokenAddress,
     },
     pagination: {
-      take: Infinity,
-      skip: 0,
+      take: Infinity
     },
     order: {
       orderBy: "timestamp",

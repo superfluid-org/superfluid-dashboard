@@ -56,8 +56,7 @@ const TokenAccessTable: FC<Props> = ({
           ],
         },
         pagination: {
-          take: Infinity,
-          skip: 0,
+          take: Infinity
         },
       },
       {

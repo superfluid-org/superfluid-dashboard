@@ -3,6 +3,7 @@ export type AnalyticsTransactionNames =
   | "Unwrap"
   | "Approve Allowance"
   | "Send Stream"
+  | "Send Transfer"
   | "Modify Stream"
   | "Cancel Stream"
   | "Approve IDA Subscription"

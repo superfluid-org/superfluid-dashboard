@@ -28,8 +28,7 @@ const useFeaturedTokens = (lifi: LiFi): Token[] => {
                   isSuperToken: true,
                 },
                 pagination: {
-                  take: Infinity,
-                  skip: 0,
+                  take: Infinity
                 },
               },
               true

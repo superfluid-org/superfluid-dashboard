@@ -1,25 +1,24 @@
-import { Box, Container, useTheme } from "@mui/material";
 import { formatEther } from "ethers/lib/utils";
 import { isString } from "lodash";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import withStaticSEO from "../components/SEO/withStaticSEO";
-import { useAnalytics } from "../features/analytics/useAnalytics";
 import { useExpectedNetwork } from "../features/network/ExpectedNetworkContext";
 import {
   timeUnitWordMap,
   UnitOfTime,
   wordTimeUnitMap,
 } from "../features/send/FlowRateInput";
-import SendCard from "../features/send/SendCard";
 import StreamingFormProvider, {
   StreamingFormProviderProps,
-} from "../features/send/StreamingFormProvider";
+} from "../features/send/stream/StreamingFormProvider";
 import { useTransactionRestorationContext } from "../features/transactionRestoration/TransactionRestorationContext";
 import { RestorationType } from "../features/transactionRestoration/transactionRestorations";
 import { tryParseUnits } from "../utils/tokenUtils";
 import { buildQueryString } from "../utils/URLUtils";
+import SendStream from "../features/send/stream/SendStream";
+import SendPageLayout from "../features/send/SendPageLayout";
 
 interface SendPageQuery {
   token?: string;
@@ -47,9 +46,9 @@ const tryParseFlowRate = (
   value: string
 ):
   | {
-      amountEther: string;
-      unitOfTime: UnitOfTime;
-    }
+    amountEther: string;
+    unitOfTime: UnitOfTime;
+  }
   | undefined => {
   const [amountEther, unitOfTime] = value.split("/");
 
@@ -69,7 +68,6 @@ const tryParseFlowRate = (
 };
 
 const Send: NextPage = () => {
-  const theme = useTheme();
   const router = useRouter();
   const { network } = useExpectedNetwork();
   const { restoration, onRestored } = useTransactionRestorationContext();
@@ -140,25 +138,13 @@ const Send: NextPage = () => {
   }, [router.isReady]);
 
   return (
-    <Container key={`${network.slugName}`} maxWidth="lg">
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          [theme.breakpoints.up("md")]: {
-            my: 4,
-          },
-        }}
-      >
-        {initialFormValues && (
-          <StreamingFormProvider initialFormValues={initialFormValues}>
-            <SendCard />
-          </StreamingFormProvider>
-        )}
-      </Box>
-    </Container>
+    <SendPageLayout key={`${network.slugName}`}>
+      {initialFormValues && (
+        <StreamingFormProvider initialFormValues={initialFormValues}>
+          <SendStream />
+        </StreamingFormProvider>
+      )}
+    </SendPageLayout>
   );
 };
 

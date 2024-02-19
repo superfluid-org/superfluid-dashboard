@@ -1,7 +1,7 @@
 import { AccountTokenSnapshot } from "@superfluid-finance/sdk-core";
 import Decimal from "decimal.js";
 import { BigNumber, BigNumberish } from "ethers";
-import { formatUnits, parseEther, parseUnits } from "ethers/lib/utils";
+import { formatUnits, parseUnits } from "ethers/lib/utils";
 import minBy from "lodash/fp/minBy";
 import { Network } from "../features/network/networks";
 import {
@@ -54,11 +54,7 @@ export const tryParseUnits = (
 };
 
 export const parseEtherOrZero = (etherString: string): BigNumber => {
-  try {
-    return parseEther(etherString);
-  } catch (error) {
-    return BigNumber.from("0");
-  }
+  return parseAmountOrZero({ value: etherString, decimals: 18 });
 };
 
 export const parseAmountOrZero = (amount?: {

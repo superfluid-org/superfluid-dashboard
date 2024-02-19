@@ -16,7 +16,7 @@ import {
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { Address, Stream } from "@superfluid-finance/sdk-core";
 import { getUnixTime } from "date-fns";
-import { FC, memo, useCallback, useMemo, useState } from "react";
+import { FC, memo, useCallback, useEffect, useMemo, useState } from "react";
 import {
   mapCreateTaskToScheduledStream,
   mapStreamScheduling,
@@ -77,6 +77,8 @@ const StreamsTable: FC<StreamsTableProps> = ({
     type: StreamTypeFilter.All,
   });
 
+  const [refetchOnFocus, setRefetchOnFocus] = useState(true);
+
   const humaFinanceOperatedStreamsQuery =
     subgraphApi.useFindStreamIdsWhereHumaIsOperatorQuery(
       network.humaFinance && visibleAddress
@@ -96,16 +98,11 @@ const StreamsTable: FC<StreamsTableProps> = ({
         token: tokenAddress,
       },
       pagination: {
-        take: Infinity,
-        skip: 0,
-      },
-      order: {
-        orderBy: "updatedAtTimestamp",
-        orderDirection: "desc",
+        take: Infinity
       },
     },
     {
-      refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
+      refetchOnFocus: refetchOnFocus, // Re-fetch list view more often where there might be something incoming.
     }
   );
 
@@ -117,16 +114,8 @@ const StreamsTable: FC<StreamsTableProps> = ({
         token: tokenAddress,
       },
       pagination: {
-        take: Infinity,
-        skip: 0,
-      },
-      order: {
-        orderBy: "updatedAtTimestamp",
-        orderDirection: "desc",
-      },
-    },
-    {
-      refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
+        take: Infinity
+      }
     }
   );
 
@@ -289,6 +278,13 @@ const StreamsTable: FC<StreamsTableProps> = ({
         return 0;
       });
   }, [incomingStreams, outgoingStreams, allTasks]);
+
+  useEffect(() => {
+    // don't refetch when there's a bunch of streams
+    if (streams.length > 500 && refetchOnFocus) {
+      setRefetchOnFocus(false);
+    }
+  }, [streams]);
 
   const filteredStreams = useMemo(() => {
     switch (streamsFilter.type) {
@@ -464,7 +460,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
       {(filteredStreams.length > 5 ||
         (!isBelowMd && filteredStreams.length <= 5)) && (
           <TablePagination
-            rowsPerPageOptions={[5, 10, 25, { value: filteredStreams.length, label: 'All' }]}
+            rowsPerPageOptions={[5, 10, 25, 100]}
             component="div"
             count={filteredStreams.length}
             rowsPerPage={rowsPerPage}

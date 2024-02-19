@@ -41,6 +41,7 @@ export const TransactionListItemRestoreButton: FC<{
     case RestorationType.Unwrap:
     case RestorationType.ModifyStream:
     case RestorationType.SendStream:
+    case RestorationType.SendTransfer:
     case RestorationType.Wrap:
       return (
         <Tooltip title="Restore">

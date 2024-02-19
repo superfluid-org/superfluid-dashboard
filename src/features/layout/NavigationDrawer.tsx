@@ -68,7 +68,6 @@ const NavigationItem: FC<NavigationItemProps> = ({
 
 export default memo(function NavigationDrawer() {
   const theme = useTheme();
-  const router = useRouter();
   const isBelowLg = useMediaQuery(theme.breakpoints.down("lg"));
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { navigationDrawerOpen, setNavigationDrawerOpen } = useLayoutContext();
@@ -81,6 +80,7 @@ export default memo(function NavigationDrawer() {
     if (isBelowLg) setNavigationDrawerOpen(true);
   }, [isBelowLg, setNavigationDrawerOpen]);
 
+  const router = useRouter();
   const isActiveRoute = (...routes: Array<string>) =>
     routes.includes(router.route);
 
@@ -159,10 +159,10 @@ export default memo(function NavigationDrawer() {
 
         <NavigationItem
           id="nav-send"
-          title="Send Stream"
+          title="Send"
           href="/send"
           onClick={closeNavigationDrawer}
-          active={isActiveRoute("/send")}
+          active={isActiveRoute("/send", "/transfer")}
           icon={ArrowRightAltRoundedIcon}
         />
 

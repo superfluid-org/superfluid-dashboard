@@ -44,8 +44,7 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
         },
       },
       pagination: {
-        take: Infinity,
-        skip: 0,
+        take: Infinity
       },
     },
     {
@@ -74,8 +73,7 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
           },
         },
         pagination: {
-          take: Infinity,
-          skip: 0,
+          take: Infinity
         },
       },
       {

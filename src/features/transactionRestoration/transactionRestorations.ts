@@ -6,6 +6,7 @@ export enum RestorationType {
   Approve = 3,
   SendStream = 4,
   ModifyStream = 5,
+  SendTransfer = 6,
 }
 
 export const formRestorationOptions = {
@@ -62,9 +63,18 @@ export interface ModifyStreamRestoration extends UpsertStreamRestoration {
   type: RestorationType.ModifyStream;
 }
 
+export interface SendTransferRestoration extends TransactionRestorationBase {
+  type: RestorationType.SendTransfer;
+  chainId: number;
+  tokenAddress: string;
+  receiverAddress: string;
+  amountEther: string;
+}
+
 export type TransactionRestorations =
   | ApproveAllowanceRestoration
   | SuperTokenDowngradeRestoration
   | SuperTokenUpgradeRestoration
   | SendStreamRestoration
-  | ModifyStreamRestoration;
+  | ModifyStreamRestoration
+  | SendTransferRestoration;

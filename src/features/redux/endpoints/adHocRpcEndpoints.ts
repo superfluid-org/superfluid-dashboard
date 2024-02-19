@@ -1,4 +1,8 @@
-import { ERC20Token, WrapperSuperToken } from "@superfluid-finance/sdk-core";
+import {
+  ERC20Token,
+  ERC20__factory,
+  WrapperSuperToken,
+} from "@superfluid-finance/sdk-core";
 import {
   getFramework,
   registerNewTransactionAndReturnQueryFnResult,
@@ -6,7 +10,7 @@ import {
   TransactionInfo,
   TransactionTitle,
 } from "@superfluid-finance/sdk-redux";
-import { WriteContractPreparedArgs, writeContract } from "@wagmi/core";
+import { writeContract } from "@wagmi/core";
 import { Overrides, Signer } from "ethers";
 import {
   balanceFetcher,
@@ -15,8 +19,7 @@ import {
   UnderlyingBalance,
 } from "./balanceFetcher";
 import { NATIVE_ASSET_ADDRESS } from "./tokenTypes";
-import { WalletClient } from "wagmi";
-import { ContractFunctionConfig, createPublicClient } from "viem";
+import { ContractFunctionConfig } from "viem";
 import { uniq } from "lodash";
 
 declare module "@superfluid-finance/sdk-redux" {
@@ -24,6 +27,7 @@ declare module "@superfluid-finance/sdk-redux" {
     "Approve Allowance": true;
     "Claim Tokens": true;
     "Modify Stream": true;
+    "Send Transfer": true;
     "Fix Access for Vesting": true;
     // Vesting scheduler
     "Approve Vesting Scheduler": true; // Give Stream Scheduler contract delete & update permission, flow rate allowance, token allowance.
@@ -279,6 +283,40 @@ export const adHocRpcEndpoints = {
           signerAddress: await arg.signer.getAddress(),
           dispatch: queryApi.dispatch,
           title: "Approve Allowance",
+          extraData: arg.transactionExtraData,
+        });
+      },
+    }),
+    transfer: builder.mutation<
+      TransactionInfo,
+      {
+        chainId: number;
+        tokenAddress: string;
+        senderAddress: string;
+        receiverAddress: string;
+        amountWei: string;
+        transactionExtraData?: Record<string, unknown>;
+        signer: Signer;
+        overrides: Overrides;
+      }
+    >({
+      queryFn: async (arg, queryApi) => {
+        const token = ERC20__factory.connect(arg.tokenAddress, arg.signer);
+
+        // todo: validate signer and sender
+
+        const transactionResponse = await token.transfer(
+          arg.receiverAddress,
+          arg.amountWei,
+          arg.overrides
+        );
+
+        return await registerNewTransactionAndReturnQueryFnResult({
+          transactionResponse,
+          chainId: arg.chainId,
+          signerAddress: await arg.signer.getAddress(),
+          dispatch: queryApi.dispatch,
+          title: "Send Transfer",
           extraData: arg.transactionExtraData,
         });
       },
