@@ -1,5 +1,4 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import add from "date-fns/fp/add";
 import { FC, ReactNode, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import {
@@ -25,6 +24,7 @@ import { UnitOfTime } from "../send/FlowRateInput";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { DevTool } from "@hookform/devtools";
 import { CreateVestingFormEffects } from "./CreateVestingFormEffects";
+import { add } from "date-fns";
 
 export type ValidVestingForm = {
   data: {
@@ -168,17 +168,17 @@ const CreateVestingFormProvider: FC<{
         })) as ValidVestingForm;
 
         const cliffAndFlowDate = add(
+          startDate,
           {
             seconds: (cliffPeriod.numerator || 0) * cliffPeriod.denominator,
           },
-          startDate
         );
 
         const endDate = add(
+          startDate,
           {
             seconds: vestingPeriod.numerator * vestingPeriod.denominator,
           },
-          startDate
         );
 
         if (!vestingSchedulerConstants) {

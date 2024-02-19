@@ -1,6 +1,4 @@
 import { Box, Stack, Typography } from "@mui/material";
-import add from "date-fns/fp/add";
-import format from "date-fns/fp/format";
 import { FC, memo } from "react";
 import { useFormContext } from "react-hook-form";
 import AddressName from "../../components/AddressName/AddressName";
@@ -14,8 +12,9 @@ import { VestingFormLabels } from "./CreateVestingForm";
 import { ValidVestingForm } from "./CreateVestingFormProvider";
 import { VestingScheduleGraph } from "./VestingScheduleGraph";
 import { VestingTransactionButtonSection, VestingTransactionSectionProps } from "./transactionButtons/VestingTransactionButtonSection";
+import { add, format } from "date-fns";
 
-interface CreateVestingPreviewProps extends VestingTransactionSectionProps {}
+interface CreateVestingPreviewProps extends VestingTransactionSectionProps { }
 
 const CreateVestingPreview: FC<CreateVestingPreviewProps> = ({
   token,
@@ -47,18 +46,18 @@ const CreateVestingPreview: FC<CreateVestingPreviewProps> = ({
 
   const cliffDate = cliffEnabled
     ? add(
-        {
-          seconds: cliffNumerator * cliffDenominator,
-        },
-        startDate
-      )
+      startDate,
+      {
+        seconds: cliffNumerator * cliffDenominator,
+      },
+    )
     : undefined;
 
   const endDate = add(
+    startDate,
     {
       seconds: vestingPeriod.numerator * vestingPeriod.denominator,
     },
-    startDate
   );
 
   return (
@@ -73,7 +72,7 @@ const CreateVestingPreview: FC<CreateVestingPreviewProps> = ({
         />
       </Box>
 
-      <Stack gap={2} sx={{ mb: 2}}>
+      <Stack gap={2} sx={{ mb: 2 }}>
         <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
           <Stack>
             <Typography color="text.secondary">
@@ -122,7 +121,7 @@ const CreateVestingPreview: FC<CreateVestingPreviewProps> = ({
               {VestingFormLabels.VestingStartDate}
             </Typography>
             <Typography data-cy="preview-start-date" color="text.primary">
-              {format("LLLL d, yyyy", startDate)}
+              {format(startDate, "LLLL d, yyyy")}
             </Typography>
           </Stack>
         </Box>
@@ -143,7 +142,7 @@ const CreateVestingPreview: FC<CreateVestingPreviewProps> = ({
             <Typography data-cy="preview-total-period" color="text.primary">
               {vestingPeriod.numerator}{" "}
               {timeUnitWordMap[vestingPeriod.denominator]} (
-              {format("LLLL d, yyyy", endDate)})
+              {format(endDate, "LLLL d, yyyy")})
             </Typography>
           </Stack>
         </Box>
@@ -166,13 +165,13 @@ const CreateVestingPreview: FC<CreateVestingPreviewProps> = ({
               <Typography data-cy="preview-cliff-period" color="text.primary">
                 {cliffPeriod.numerator}{" "}
                 {timeUnitWordMap[cliffPeriod.denominator]} (
-                {format("LLLL d, yyyy", cliffDate)})
+                {format(cliffDate, "LLLL d, yyyy")})
               </Typography>
             </Stack>
           </Box>
         )}
       </Stack>
-      <VestingTransactionButtonSection network={network} token={token} setView={setView}  />
+      <VestingTransactionButtonSection network={network} token={token} setView={setView} />
     </Stack>
   );
 };

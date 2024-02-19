@@ -1,21 +1,20 @@
 import { MessageData } from "../hooks/useNotificationChannels";
-import capitalize from "lodash/capitalize";
-import format from "date-fns/format";
 
 import WaringIcon from "@mui/icons-material/Error";
 import { colors } from "@mui/material";
 import ErrorIcon from "@mui/icons-material/Cancel";
 import InfoIcon from "@mui/icons-material/Info";
+import { capitalize } from "lodash";
+import { format } from "date-fns";
 
 export const createLiquidationRiskMessage = ({
   symbol,
   network,
   liquidation,
 }: MessageData) =>
-  `Your ${symbol} on ${capitalize(network)} is about to be liquidated${
-    liquidation
-      ? " at " + format(Number(liquidation) * 1000, "yyyy/MM/dd HH:mm")
-      : ""
+  `Your ${symbol} on ${capitalize(network)} is about to be liquidated${liquidation
+    ? " at " + format(Number(liquidation) * 1000, "yyyy/MM/dd HH:mm")
+    : ""
   }.`;
 
 export const createLiquidatedMessage = ({
@@ -23,10 +22,9 @@ export const createLiquidatedMessage = ({
   symbol,
   liquidation,
 }: MessageData) =>
-  `Your ${symbol} on ${capitalize(network)} was liquidated${
-    liquidation
-      ? " at " + format(Number(liquidation) * 1000, "yyyy/MM/dd HH:mm")
-      : ""
+  `Your ${symbol} on ${capitalize(network)} was liquidated${liquidation
+    ? " at " + format(Number(liquidation) * 1000, "yyyy/MM/dd HH:mm")
+    : ""
   }.`;
 
 export const createMessage = ({

@@ -1,6 +1,4 @@
-import { isAfter } from "date-fns";
-import addDays from "date-fns/addDays";
-import differenceInDays from "date-fns/differenceInDays";
+import { addDays, differenceInDays, isAfter } from "date-fns";
 import { useMemo } from "react";
 import { useArchivedNotifications } from "../features/notifications/notificationHooks";
 import { parseNotificationBody } from "../utils/notification";
