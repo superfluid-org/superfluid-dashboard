@@ -203,11 +203,10 @@ const CreateVestingFormProvider: FC<{
           MIN_VESTING_DURATION_IN_SECONDS
         ) {
           handleHigherOrderValidationError({
-            message: `The vesting end date has to be at least ${
-              network.testnet
-                ? `${MIN_VESTING_DURATION_IN_MINUTES} minutes`
-                : `${MIN_VESTING_DURATION_IN_DAYS} days`
-            } from the start or the cliff.`,
+            message: `The vesting end date has to be at least ${network.testnet
+              ? `${MIN_VESTING_DURATION_IN_MINUTES} minutes`
+              : `${MIN_VESTING_DURATION_IN_DAYS} days`
+              } from the start or the cliff.`,
           });
         }
 
@@ -304,7 +303,7 @@ const CreateVestingFormProvider: FC<{
 
   return (
     <FormProvider {...formMethods}>
-      <DevTool control={control} />
+      {/* <DevTool control={control as any} /> */}
       {children(isInitialized)}
       <CreateVestingFormEffects />
     </FormProvider>

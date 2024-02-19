@@ -70,7 +70,9 @@ export const lensApi = createApi({
             return { data: null };
           }
 
-          const lensResponse = await request(LENS_API_URL, LensAddressQuery, {
+          const lensResponse = await request<{
+            profile?: { ownedBy?: string };
+          }>(LENS_API_URL, LensAddressQuery, {
             handle: name,
           });
 
@@ -87,11 +89,13 @@ export const lensApi = createApi({
         },
       }),
       lookupAddress: builder.query<
-        { address: string; name: string; avatarUrl: string } | null,
+        { address: string; name: string; avatarUrl?: string } | null,
         string
       >({
         queryFn: async (address) => {
-          const lensResponse = await request(LENS_API_URL, LensHandlesQuery, {
+          const lensResponse = await request<{
+            profiles: { items: LensProfile[] };
+          }>(LENS_API_URL, LensHandlesQuery, {
             ownedBy: [address],
           });
 
