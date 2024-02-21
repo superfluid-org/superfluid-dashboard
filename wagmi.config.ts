@@ -6,6 +6,7 @@ import nativeAssetSuperTokenJSON from "@superfluid-finance/ethereum-contracts/bu
 import pureSuperTokenJSON from "@superfluid-finance/ethereum-contracts/build/truffle/PureSuperToken.json" assert { type: "json" };
 import superTokenJSON from "@superfluid-finance/ethereum-contracts/build/truffle/SuperToken.json" assert { type: "json" };
 import ConstantFlowAgreementV1JSON from "@superfluid-finance/ethereum-contracts/build/truffle/ConstantFlowAgreementV1.json" assert { type: "json" };
+import GeneralDistributionAgreementV1JSON from "@superfluid-finance/ethereum-contracts/build/truffle/GeneralDistributionAgreementV1.json" assert { type: "json" };
 import { Abi, Address } from "viem";
 import superfluidMetadata from "@superfluid-finance/metadata";
 
@@ -34,6 +35,17 @@ export default defineConfig({
       abi: ConstantFlowAgreementV1JSON.abi as Abi,
       address: superfluidMetadata.networks.reduce((acc, current) => {
         acc[current.chainId] = current.contractsV1.cfaV1 as Address;
+        return acc;
+      }, {} as Record<number, Address>),
+    },
+    {
+      name: "GeneralDistributionAgreementV1",
+      abi: GeneralDistributionAgreementV1JSON.abi as Abi,
+      address: superfluidMetadata.networks.reduce((acc, current) => {
+        const address = current.contractsV1.gdaV1 as Address;
+        if (address) {
+          acc[current.chainId] = address;
+        }
         return acc;
       }, {} as Record<number, Address>),
     },

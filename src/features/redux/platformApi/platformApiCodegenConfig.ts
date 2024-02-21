@@ -1,7 +1,7 @@
 import type { ConfigFile } from '@rtk-query/codegen-openapi'
 
 const config: ConfigFile = {
-  schemaFile: 'https://prod-goerli-platform-service.dev.superfluid.dev/schema.json',
+  schemaFile: 'https://prod-optimism-mainnet-platform-service.prod.superfluid.dev/schema.json',
   apiFile: './platformApiTemplateEmpty.ts',
   apiImport: 'platformApiTemplateEmpty',
   outputFile: './platformApiTemplate.ts',

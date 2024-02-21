@@ -26,6 +26,19 @@ import { BigNumber, BigNumberish } from "ethers";
 import { UnitOfTime } from "../send/FlowRateInput";
 import { ChainBlockExplorer } from "viem/_types/types/chain";
 
+const getMetadata = memoize((chainId: number) => {
+  const metadata = sfMeta.getNetworkByChainId(chainId)
+  if (!metadata) {
+    throw new Error(`No metadata for chainId ${chainId}`)
+  }
+  return metadata
+})
+
+const getSupportsGDA = (chainId: number) => {
+  const metadata = getMetadata(chainId)
+  return Boolean(metadata.contractsV1.gdaV1)
+}
+
 type NetworkMetadata = (typeof sfMeta.networks)[number];
 
 // id == chainId
@@ -47,6 +60,7 @@ export type Network = Chain & {
       type: TokenType.NativeAssetSuperToken;
     } & TokenMinimal;
   };
+  supportsGDA: boolean;
   flowSchedulerContractAddress?: `0x${string}`;
   flowSchedulerSubgraphUrl?: `https://${string}` | undefined;
   vestingContractAddress: `0x${string}` | undefined;
@@ -107,6 +121,7 @@ export const networkDefinition = {
   goerli: {
     ...chain.goerli,
     id: chainIds.goerli,
+    supportsGDA: getSupportsGDA(chainIds.goerli),
     metadata: ensureDefined(
       sfMeta.getNetworkByChainId(chainIds.goerli),
       chainIds.goerli
@@ -154,6 +169,7 @@ export const networkDefinition = {
   gnosis: {
     name: "Gnosis Chain",
     id: chainIds.gnosis,
+    supportsGDA: getSupportsGDA(chainIds.gnosis),
     metadata: ensureDefined(
       sfMeta.getNetworkByChainId(chainIds.gnosis),
       chainIds.gnosis
@@ -210,6 +226,7 @@ export const networkDefinition = {
   polygon: {
     ...chain.polygon,
     id: chainIds.polygon,
+    supportsGDA: getSupportsGDA(chainIds.polygon),
     metadata: ensureDefined(
       sfMeta.getNetworkByChainId(chainIds.polygon),
       chainIds.polygon
@@ -261,6 +278,7 @@ export const networkDefinition = {
   polygonMumbai: {
     ...chain.polygonMumbai,
     id: chainIds.polygonMumbai,
+    supportsGDA: getSupportsGDA(chainIds.polygonMumbai),
     metadata: ensureDefined(
       sfMeta.getNetworkByChainId(chainIds.polygonMumbai),
       chainIds.polygonMumbai
@@ -312,6 +330,7 @@ export const networkDefinition = {
   avalancheFuji: {
     name: "Fuji (C-Chain)",
     id: chainIds.avalancheFuji,
+    supportsGDA: getSupportsGDA(chainIds.avalancheFuji),
     metadata: ensureDefined(
       sfMeta.getNetworkByChainId(chainIds.avalancheFuji),
       chainIds.avalancheFuji
@@ -369,6 +388,7 @@ export const networkDefinition = {
   optimism: {
     ...chain.optimism,
     id: chainIds.optimism,
+    supportsGDA: getSupportsGDA(chainIds.optimism),
     metadata: ensureDefined(
       sfMeta.getNetworkByChainId(chainIds.optimism),
       chainIds.optimism
@@ -417,6 +437,7 @@ export const networkDefinition = {
   arbitrum: {
     ...chain.arbitrum,
     id: chainIds.arbitrum,
+    supportsGDA: getSupportsGDA(chainIds.arbitrum),
     metadata: ensureDefined(
       sfMeta.getNetworkByChainId(chainIds.arbitrum),
       chainIds.arbitrum
@@ -465,6 +486,7 @@ export const networkDefinition = {
   avalancheC: {
     name: "Avalanche C",
     id: chainIds.avalanche,
+    supportsGDA: getSupportsGDA(chainIds.avalanche),
     metadata: ensureDefined(
       sfMeta.getNetworkByChainId(chainIds.avalanche),
       chainIds.avalanche
@@ -523,6 +545,7 @@ export const networkDefinition = {
   bsc: {
     ...chain.bsc,
     id: chainIds.bsc,
+    supportsGDA: getSupportsGDA(chainIds.bsc),
     metadata: ensureDefined(
       sfMeta.getNetworkByChainId(chainIds.bsc),
       chainIds.bsc
@@ -579,6 +602,7 @@ export const networkDefinition = {
   ethereum: {
     ...chain.mainnet,
     id: chainIds.mainnet,
+    supportsGDA: getSupportsGDA(chainIds.mainnet),
     metadata: ensureDefined(
       sfMeta.getNetworkByChainId(chainIds.mainnet),
       chainIds.mainnet
@@ -627,6 +651,7 @@ export const networkDefinition = {
   celoMainnet: {
     ...chain.celo,
     id: chainIds.celo,
+    supportsGDA: getSupportsGDA(chainIds.celo),
     metadata: ensureDefined(
       sfMeta.getNetworkByChainId(chainIds.celo),
       chainIds.celo
@@ -670,6 +695,7 @@ export const networkDefinition = {
   sepolia: {
     ...chain.sepolia,
     id: chainIds.sepolia,
+    supportsGDA: getSupportsGDA(chainIds.sepolia),
     metadata: ensureDefined(
       sfMeta.getNetworkByChainId(chainIds.sepolia),
       chainIds.sepolia
@@ -709,6 +735,7 @@ export const networkDefinition = {
   base: {
     ...chain.base,
     id: chainIds.base,
+    supportsGDA: getSupportsGDA(chainIds.base),
     metadata: ensureDefined(
       sfMeta.getNetworkByChainId(chainIds.base),
       chainIds.base
@@ -748,6 +775,7 @@ export const networkDefinition = {
   scroll: {
     ...chain.scroll,
     id: chainIds.scroll,
+    supportsGDA: getSupportsGDA(chainIds.scroll),
     metadata: ensureDefined(
       sfMeta.getNetworkByChainId(chainIds.scroll),
       chainIds.scroll
@@ -787,6 +815,7 @@ export const networkDefinition = {
   scrollSepolia: {
     ...chain.scrollSepolia,
     id: chainIds.scrollSepolia,
+    supportsGDA: getSupportsGDA(chainIds.scrollSepolia),
     metadata: ensureDefined(
       sfMeta.getNetworkByChainId(chainIds.scrollSepolia),
       chainIds.scrollSepolia
@@ -825,6 +854,7 @@ export const networkDefinition = {
   optimismSepolia: {
     ...chain.optimismSepolia,
     id: chainIds.optimismSepolia,
+    supportsGDA: getSupportsGDA(chainIds.optimismSepolia),
     metadata: ensureDefined(
       sfMeta.getNetworkByChainId(chainIds.optimismSepolia),
       chainIds.optimismSepolia

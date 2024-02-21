@@ -137,7 +137,7 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
                 onChange={onChange}
                 disabledAddresses={counterparties || []}
               />
-            )}
+           )}
           />
         </Stack>
 

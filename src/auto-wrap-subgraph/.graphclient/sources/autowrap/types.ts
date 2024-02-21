@@ -152,6 +152,10 @@ export type AddedApprovedStrategyEvent_orderBy =
   | 'gasPrice'
   | 'strategy';
 
+export type Aggregation_interval =
+  | 'hour'
+  | 'day';
+
 export type BlockChangedFilter = {
   number_gte: Scalars['Int'];
 };

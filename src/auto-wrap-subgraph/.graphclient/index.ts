@@ -174,6 +174,10 @@ export type AddedApprovedStrategyEvent_OrderBy =
   | 'gasPrice'
   | 'strategy';
 
+export type Aggregation_Interval =
+  | 'hour'
+  | 'day';
+
 export type BlockChangedFilter = {
   number_gte: Scalars['Int'];
 };
@@ -1912,6 +1916,7 @@ export type ResolversTypes = ResolversObject<{
   AddedApprovedStrategyEvent: ResolverTypeWrapper<AddedApprovedStrategyEvent>;
   AddedApprovedStrategyEvent_filter: AddedApprovedStrategyEvent_Filter;
   AddedApprovedStrategyEvent_orderBy: AddedApprovedStrategyEvent_OrderBy;
+  Aggregation_interval: Aggregation_Interval;
   BigDecimal: ResolverTypeWrapper<Scalars['BigDecimal']>;
   BigInt: ResolverTypeWrapper<Scalars['BigInt']>;
   BlockChangedFilter: BlockChangedFilter;
