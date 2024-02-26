@@ -1,11 +1,5 @@
 {
   "staticBalanceAccount": {
-    "goerli": {
-      "ETH": {
-        "underlyingBalance": "0.1553",
-        "superTokenBalance": "0"
-      }
-    },
     "polygon-mumbai": {
       "MATIC": {
         "underlyingBalance": "0.002891",
@@ -67,12 +61,6 @@
       }
     },
     "polygon-zkevm-testnet": {
-      "ETH": {
-        "underlyingBalance": "0",
-        "superTokenBalance": "0"
-      }
-    },
-    "bgoerli": {
       "ETH": {
         "underlyingBalance": "0",
         "superTokenBalance": "0"

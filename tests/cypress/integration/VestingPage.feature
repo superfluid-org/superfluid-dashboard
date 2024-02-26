@@ -2,13 +2,13 @@
 Feature: Vesting page test cases
 
     Scenario: No vesting schedule messages
-        Given Transactional account bob is connected to the dashboard on goerli
+        Given Transactional account bob is connected to the dashboard on polygon-mumbai
         And User clicks on the "vesting" navigation button
         Then No received vesting schedules message is shown
         And No created vesting schedules message is shown
 
     Scenario: Vesting only available on supported networks
-        Given Transactional account bob is connected to the dashboard on goerli
+        Given Transactional account bob is connected to the dashboard on polygon-mumbai
         And User clicks on the "vesting" navigation button
         And User clicks on the create vesting schedule button
         And Vesting creation form is visible
@@ -16,7 +16,7 @@ Feature: Vesting page test cases
         Then User sees network not supported screen in the vesting page
 
     Scenario: Creation form - Cannot vest to yourself
-        Given Transactional account bob is connected to the dashboard on goerli
+        Given Transactional account bob is connected to the dashboard on polygon-mumbai
         And User clicks on the "vesting" navigation button
         And User clicks on the create vesting schedule button
         And User searches for "0x9B6157d44134b21D934468B8bf709294cB298aa7" as a receiver
@@ -30,7 +30,7 @@ Feature: Vesting page test cases
         Then "You can’t vest to yourself. Choose a different wallet." error is shown in the form
 
     Scenario: Creation form - Cliff amount has to be less than total amount
-        Given Transactional account bob is connected to the dashboard on goerli
+        Given Transactional account bob is connected to the dashboard on polygon-mumbai
         And User clicks on the "vesting" navigation button
         And User clicks on the create vesting schedule button
         And User searches for "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" as a receiver
@@ -44,7 +44,7 @@ Feature: Vesting page test cases
         Then "Cliff amount has to be less than total amount." error is shown in the form
 
     Scenario: Creation form - Top-up warning message
-        Given Transactional account bob is connected to the dashboard on goerli
+        Given Transactional account bob is connected to the dashboard on polygon-mumbai
         And User clicks on the "vesting" navigation button
         And User clicks on the create vesting schedule button
         Then The top-up warning message without cliff is shown
@@ -52,7 +52,7 @@ Feature: Vesting page test cases
         Then The top-up warning message when cliff is enabled is shown
 
     Scenario: Creation form - Cliff amount period has to be before total vesting period
-        Given Transactional account bob is connected to the dashboard on goerli
+        Given Transactional account bob is connected to the dashboard on polygon-mumbai
         And User clicks on the "vesting" navigation button
         And User clicks on the create vesting schedule button
         And User searches for "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" as a receiver
@@ -66,7 +66,7 @@ Feature: Vesting page test cases
         Then "The vesting end date has to be at least 120 minutes from the start or the cliff." error is shown in the form
 
     Scenario: Creation form - Total vesting period has to be atleast 120 minutes after start
-        Given Transactional account bob is connected to the dashboard on goerli
+        Given Transactional account bob is connected to the dashboard on polygon-mumbai
         And User clicks on the "vesting" navigation button
         And User clicks on the create vesting schedule button
         And User searches for "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" as a receiver
@@ -80,7 +80,7 @@ Feature: Vesting page test cases
         Then "The vesting end date has to be at least 120 minutes from the start or the cliff." error is shown in the form
 
     Scenario: Creation form - Vesting period less than 10 years
-        Given Transactional account bob is connected to the dashboard on goerli
+        Given Transactional account bob is connected to the dashboard on polygon-mumbai
         And User clicks on the "vesting" navigation button
         And User clicks on the create vesting schedule button
         And User searches for "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" as a receiver
@@ -91,7 +91,7 @@ Feature: Vesting page test cases
         Then "The vesting period has to be less than 10 years." error is shown in the form
 
     Scenario: Creation form - Existing schedule
-        Given Transactional account john is connected to the dashboard on goerli
+        Given Transactional account john is connected to the dashboard on polygon-mumbai
         And User clicks on the "vesting" navigation button
         And User clicks on the create vesting schedule button
         And User searches for "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" as a receiver
@@ -106,7 +106,7 @@ Feature: Vesting page test cases
 
     Scenario: Creating a vesting schedule with a cliff
         Given HDWallet transactions are rejected
-        And Transactional account john is connected to the dashboard on goerli
+        And Transactional account john is connected to the dashboard on polygon-mumbai
         And User clicks on the "vesting" navigation button
         Then No received vesting schedules message is shown
         #And User deletes the vesting schedule if necessary
@@ -125,31 +125,31 @@ Feature: Vesting page test cases
     Scenario: Deleting a vesting schedule
         Given HDWallet transactions are rejected
 
-        Given Transactional account john is connected to the dashboard on goerli
+        Given Transactional account john is connected to the dashboard on polygon-mumbai
         And User clicks on the "vesting" navigation button
         And User opens the last vesting schedule they have created
         And User deletes the vesting schedule
         And Transaction rejected error is shown
 
-    Scenario: Change network button showing up if user is not on goerli
-        Given Transactional account john is connected to the dashboard on goerli
+    Scenario: Change network button showing up if user is not on polygon-mumbai
+        Given Transactional account john is connected to the dashboard on polygon-mumbai
         And User clicks on the "vesting" navigation button
         And User opens the last vesting schedule they have created
         And Delete vesting schedule button is visible
         And User changes their network to "polygon"
         And Delete vesting schedule button is not visible
-        And Change to goerli button is visible in the vesting preview
-        And User clicks on the change to goerli button
+        And Change network button is visible in the vesting preview
+        And User clicks on the change network button
         And Delete vesting schedule button is visible
 
     Scenario: Sent vesting schedules details
-        Given Transactional account john is connected to the dashboard on goerli
+        Given Transactional account john is connected to the dashboard on polygon-mumbai
         And User clicks on the "vesting" navigation button
         And The created vesting schedule is shown correctly in the table
         And User opens the last vesting schedule they have created
         And Vesting details page is shown correctly for the created schedule
 
-    #  Scenario: Vesting schedules only available on Mainnet,Polygon,BNB and Goerli
+    #  Scenario: Vesting schedules only available on Mainnet,Polygon,BNB and polygon-mumbai
     #    Given Transactional account john is connected to the dashboard on polygon-mumbai
     #    Then User sees network not supported screen in the vesting page
     #    And Mainnet network link is disabled
@@ -159,7 +159,7 @@ Feature: Vesting page test cases
         Then User sees network not supported screen in the vesting page
 
     Scenario: Allowance table statuses
-        Given Transactional account john is connected to the dashboard on goerli
+        Given Transactional account john is connected to the dashboard on polygon-mumbai
         And User clicks on the "vesting" navigation button
         And "fUSDCx" permissions icons are all "green"
         And User opens "fUSDCx" permission table row
@@ -172,7 +172,7 @@ Feature: Vesting page test cases
     Scenario Outline: Vesting schedule statuses - <status>
         Given Vesting schedule status is mocked to <status>
 
-        Given Transactional account john is connected to the dashboard on goerli
+        Given Transactional account john is connected to the dashboard on polygon-mumbai
         And User clicks on the "vesting" navigation button
         Then The first vesting row in the table shows <status>
 
@@ -192,7 +192,7 @@ Feature: Vesting page test cases
     Scenario Outline: Schedule progress bar showing correctly for a scheduled vesting
         Given Vesting schedule progress is mocked to <state>
 
-        Given Transactional account john is connected to the dashboard on goerli
+        Given Transactional account john is connected to the dashboard on polygon-mumbai
         And User clicks on the "vesting" navigation button
         And User opens the last vesting schedule they have created
         Then The schedule bar is correctly shown when it is in <state>
@@ -239,7 +239,7 @@ Feature: Vesting page test cases
 
     Scenario: Setting up auto-wrap from the vesting form (rejected)
         Given HDWallet transactions are rejected
-        And Transactional account john is connected to the dashboard on goerli
+        And Transactional account john is connected to the dashboard on polygon-mumbai
         And User clicks on the "vesting" navigation button
         And User clicks on the create vesting schedule button
         And User searches for "vijay.eth" as a receiver
@@ -251,11 +251,11 @@ Feature: Vesting page test cases
         And User clicks on the auto-wrap switch
         And User previews the vesting schedule
         And User clicks on the enable auto-wrap transaction button
-        And Auto-wrap transaction message is shown for "fDAIx" on "goerli"
+        And Auto-wrap transaction message is shown for "fDAIx" on "polygon-mumbai"
         Then Transaction rejected error is shown
 
     Scenario: Auto-Wrap not available for native tokens in the vesting form
-        And Transactional account john is connected to the dashboard on goerli
+        And Transactional account john is connected to the dashboard on polygon-mumbai
         And User clicks on the "vesting" navigation button
         And User clicks on the create vesting schedule button
         And User selects "ETHx" as the super token to use for the stream
@@ -264,7 +264,7 @@ Feature: Vesting page test cases
         Then Auto-wrap switch does not exist
 
     Scenario: Auto-Wrap not available for pure tokens in the vesting form
-        And Transactional account john is connected to the dashboard on goerli
+        And Transactional account john is connected to the dashboard on polygon-mumbai
         And User clicks on the "vesting" navigation button
         And User clicks on the create vesting schedule button
         And User selects "NTDL" as the super token to use for the stream
@@ -273,7 +273,7 @@ Feature: Vesting page test cases
         Then Auto-wrap switch does not exist
 
     Scenario: Top up warning not shown if auto-wrap switch is enabled
-        And Transactional account john is connected to the dashboard on goerli
+        And Transactional account john is connected to the dashboard on polygon-mumbai
         And User clicks on the "vesting" navigation button
         And User clicks on the create vesting schedule button
         And User selects "FUNDx" as the super token to use for the stream
@@ -297,8 +297,8 @@ Feature: Vesting page test cases
         Then The stop viewing as an address button is visible
         And Enable auto-wrap button does not exist
 
-    Scenario: Auto-wrap available to everyone on Goerli
-        And Transactional account bob is connected to the dashboard on goerli
+    Scenario: Auto-wrap available to everyone on polygon-mumbai
+        And Transactional account bob is connected to the dashboard on polygon-mumbai
         And User clicks on the "vesting" navigation button
         And User clicks on the create vesting schedule button
         And User selects "TDLx" as the super token to use for the stream
@@ -330,7 +330,7 @@ Feature: Vesting page test cases
     @skip
     Scenario: Setting up auto-wrap for a user who has already given ACL allowance(rejected)
         Given HDWallet transactions are rejected
-        And Transactional account john is connected to the dashboard on goerli
+        And Transactional account john is connected to the dashboard on polygon-mumbai
         And User clicks on the "vesting" navigation button
         And User clicks on the create vesting schedule button
         And User searches for "vijay.eth" as a receiver
@@ -342,12 +342,12 @@ Feature: Vesting page test cases
         And User clicks on the auto-wrap switch
         And User previews the vesting schedule
         And User clicks the Allowance button for the auto-wrap
-        And Auto-wrap allowance transaction message is shown on "goerli"
+        And Auto-wrap allowance transaction message is shown on "polygon-mumbai"
         Then Transaction rejected error is shown
 
     Scenario: Auto-wrap switch not showing up for a user who already has auto-wrap set up
         Given HDWallet transactions are rejected
-        And Transactional account john is connected to the dashboard on goerli
+        And Transactional account john is connected to the dashboard on polygon-mumbai
         And User clicks on the "vesting" navigation button
         And User clicks on the create vesting schedule button
         And User searches for "vijay.eth" as a receiver
@@ -377,7 +377,7 @@ Feature: Vesting page test cases
         Given Dashboard is open with a mocked connection to "john" on "polygon-mumbai"
         And User connects their wallet to the dashboard
         And User clicks on the "vesting" navigation button
-        And User changes their network to "goerli"
+        And User changes their network to "polygon-mumbai"
         Then User opens "fTUSDx" permission table row
         Then Enable auto-wrap button is not visible
         And Switch network button is visible in the "fTUSDx" permission row
@@ -386,7 +386,7 @@ Feature: Vesting page test cases
         Given Dashboard is open with a mocked connection to "john" on "polygon-mumbai"
         And User connects their wallet to the dashboard
         And User clicks on the "vesting" navigation button
-        And User changes their network to "goerli"
+        And User changes their network to "polygon-mumbai"
         Then User opens "fUSDCx" permission table row
         Then Disable auto-wrap button does not exist
         And Switch network button is visible in the "fUSDCx" permission row
@@ -395,14 +395,14 @@ Feature: Vesting page test cases
         Given Dashboard is open with a mocked connection to "john" on "polygon-mumbai"
         And User connects their wallet to the dashboard
         And User clicks on the "vesting" navigation button
-        And User changes their network to "goerli"
+        And User changes their network to "polygon-mumbai"
         Then User opens "fUSDCx" permission table row
         Then Fix permissions button does not exist
         And Switch network button is shown instead of fix permissions button
 
     Scenario: Permissions table - Stop viewing button - enabling auto-wrap
         Given "Dashboard page" is open using view mode to look at "john"
-        And User changes their network to "goerli"
+        And User changes their network to "polygon-mumbai"
         And User clicks on the "vesting" navigation button
         Then User opens "fTUSDx" permission table row
         Then Enable auto-wrap button is not visible
@@ -412,7 +412,7 @@ Feature: Vesting page test cases
 
     Scenario: Permissions table - Stop viewing button - disabling auto-wrap
         Given "Dashboard page" is open using view mode to look at "john"
-        And User changes their network to "goerli"
+        And User changes their network to "polygon-mumbai"
         And User clicks on the "vesting" navigation button
         Then User opens "fTUSDx" permission table row
         Then Disable auto-wrap button does not exist

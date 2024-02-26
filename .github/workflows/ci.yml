@@ -85,7 +85,7 @@ jobs:
       fail-fast: false
       matrix:
         container: [1,2]
-        network: ["goerli","gnosis","polygon-mumbai","polygon","optimism","arbitrum-one","avalanche","avalanche-fuji","bsc","ethereum","sepolia","opsepolia","scrsepolia","base"]
+        network: ["gnosis","polygon-mumbai","polygon","optimism","arbitrum-one","avalanche","avalanche-fuji","bsc","ethereum","sepolia","opsepolia","scrsepolia","base"]
     steps:
       - uses: actions/checkout@v2
         with:

@@ -51,29 +51,29 @@ Feature: Settings page test cases
     Scenario: Address book names showing up in the ACL table
         Given Address book test data is set up
 
-        Given "Settings Page" is open with "dan" connected on "goerli"
-        Then "TDLx" permission row with "john" as an operator on "goerli" is visible
+        Given "Settings Page" is open with "dan" connected on "polygon-mumbai"
+        Then "TDLx" permission row with "john" as an operator on "polygon-mumbai" is visible
 
     Scenario: ENS names showing up in the ACL table
-        Given "Settings Page" is open with "dan" connected on "goerli"
-        Then "TDLx" permission row with "vijay.eth" as an operator on "goerli" is visible
+        Given "Settings Page" is open with "dan" connected on "polygon-mumbai"
+        Then "TDLx" permission row with "vijay.eth" as an operator on "polygon-mumbai" is visible
 
     Scenario: Lens names showing up in the ACL table
-        Given "Settings Page" is open with "dan" connected on "goerli"
-        Then "TDLx" permission row with "elvijs.lens" as an operator on "goerli" is visible
+        Given "Settings Page" is open with "dan" connected on "polygon-mumbai"
+        Then "TDLx" permission row with "elvijs.lens" as an operator on "polygon-mumbai" is visible
 
     Scenario: Revoked Allowances and Permissions not showing up in the table
         Given HDWallet transactions are rejected
 
-        Given "Settings Page" is open with "dan" connected on "goerli"
+        Given "Settings Page" is open with "dan" connected on "polygon-mumbai"
         And No loading skeletons are visible in the page
-        Then Permission row for "vijay.eth" to use "ETHx" on "goerli" does not exist
+        Then Permission row for "vijay.eth" to use "ETHx" on "polygon-mumbai" does not exist
 
     Scenario: Vesting form being auto-completed for existing permissions
         Given HDWallet transactions are rejected
 
-        Given "Settings Page" is open with "john" connected on "goerli"
-        And User opens the first modify permissions form on "goerli"
+        Given "Settings Page" is open with "john" connected on "polygon-mumbai"
+        And User opens the first modify permissions form on "polygon-mumbai"
         Then The selected row token , network and operator are auto-filled in the modify form
 
     @bug
@@ -83,8 +83,8 @@ Feature: Settings page test cases
 
         Given "Auto-wrap page" is open using view mode to look at "john"
         And No loading skeletons are visible in the page
-        And User changes their network to "goerli"
-        And User opens the first modify permissions form on "goerli"
+        And User changes their network to "polygon-mumbai"
+        And User opens the first modify permissions form on "polygon-mumbai"
         Then One stop viewing button is visible in the permissions form
         And User clicks the create permission toggle
         Then One stop viewing button is visible in the permissions form
@@ -95,7 +95,7 @@ Feature: Settings page test cases
         Given Dashboard is open with a mocked connection to "john" on "polygon-mumbai"
         And User connects their wallet to the dashboard
         And User clicks on the "settings" navigation button
-        And User opens the first modify permissions form on "goerli"
+        And User opens the first modify permissions form on "polygon-mumbai"
         Then One change network is visible in the permissions form
         And User clicks the create permission toggle
         Then One change network is visible in the permissions form
@@ -103,6 +103,6 @@ Feature: Settings page test cases
     Scenario: Token and flow allowance showing "Unlimited"
         Given HDWallet transactions are rejected
 
-        Given "Settings Page" is open with "dan" connected on "goerli"
-        Then "TDLx" permission row with "vijay.eth" as an operator has "Unlimited" token allowance on "goerli"
-        Then "TDLx" permission row with "vijay.eth" as an operator has "Unlimited" stream allowance on "goerli"
+        Given "Settings Page" is open with "dan" connected on "polygon-mumbai"
+        Then "TDLx" permission row with "vijay.eth" as an operator has "Unlimited" token allowance on "polygon-mumbai"
+        Then "TDLx" permission row with "vijay.eth" as an operator has "Unlimited" stream allowance on "polygon-mumbai"

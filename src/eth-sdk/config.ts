@@ -8,8 +8,8 @@ import {
 
 const ethSdkConfig = defineConfig({
   contracts: {
-    goerli: {
-      flowScheduler: flowSchedulerContractAddresses.goerli, // Goerli used as source of truth for the ABI of Flow Scheduler.
+    polygonMumbai: {
+      flowScheduler: flowSchedulerContractAddresses.mumbai, // Polygon Mumbai used as source of truth for the ABI of Flow Scheduler.
     },
     mainnet: {
       vestingScheduler: vestingContractAddresses.ethereum, // Mainnet used as source of truth for the ABI of Vesting Scheduler.

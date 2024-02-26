@@ -352,7 +352,7 @@ export class SendPage extends BasePage {
       this.clear(`${FLOW_RATE_INPUT} input`);
       this.type(FLOW_RATE_INPUT, amount);
       this.click(SELECT_TOKEN_BUTTON);
-      this.click(`[data-cy="${selectedToken}-list-item"]`, undefined, {
+      this.click(`[data-cy="${selectedToken}-list-item"]`, 0, {
         timeout: 60000,
       });
       this.click(TIME_UNIT_SELECTION_BUTTON);

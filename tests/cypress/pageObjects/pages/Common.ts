@@ -205,17 +205,15 @@ export class Common extends BasePage {
   }
 
   static validateLensEntryIsVisible(account: string) {
-    cy.get(LENS_NAMES).contains(account).should("be.visible");
+    cy.get(LENS_NAMES, { timeout: 30000 })
+      .contains(account)
+      .should("be.visible");
   }
   static validateLensImageIsLoaded(account: string) {
     cy.fixture("ensAndLensAvatarUrls").then((urls) => {
-      this.hasAttributeWithValue(
-        ADDRESS_SEARCH_AVATAR_IMAGES,
-        "src",
-        urls[account],
-        0,
-        { timeout: 30000 }
-      ).should("be.visible");
+      cy.get(ADDRESS_SEARCH_AVATAR_IMAGES, { timeout: 30000 })
+        .should("have.attr", "src", urls[account])
+        .and("be.visible");
     });
   }
   static clickOnFirstLensEntry() {
@@ -337,7 +335,9 @@ export class Common extends BasePage {
 
     this.changeNetwork(selectedNetwork);
     let workaroundNetwork =
-      selectedNetwork === "goerli" ? "avalanche-fuji" : "goerli";
+      selectedNetwork === "polygon-mumbai"
+        ? "avalanche-fuji"
+        : "polygon-mumbai";
     this.changeNetwork(workaroundNetwork);
     this.changeNetwork(selectedNetwork);
   }
@@ -399,7 +399,13 @@ export class Common extends BasePage {
   }
 
   static typeIntoAddressInput(address: string) {
-    this.type(ADDRESS_DIALOG_INPUT, address);
+    if (address.includes(".lens")) {
+      cy.intercept("**api.lens.dev**").as("lensQuery");
+      this.type(ADDRESS_DIALOG_INPUT, address);
+      cy.wait("@lensQuery", { timeout: 30000 });
+    } else {
+      this.type(ADDRESS_DIALOG_INPUT, address);
+    }
   }
 
   static clickOnViewModeButton() {
@@ -1209,7 +1215,7 @@ export class Common extends BasePage {
             streamData["staticBalanceAccount"]["polygon"][0].v1Link,
           "close-ended stream details page":
             streamData["accountWithLotsOfData"]["polygon"][0].v2Link,
-          "vesting details page": `/vesting/goerli/${vestingData.goerli.fTUSDx.schedule.id}`,
+          "vesting details page": `/vesting/polygon-mumbai/${vestingData["polygon-mumbai"].fTUSDx.schedule.id}`,
           "vesting stream details page": `/stream/polygon/${vestingData.polygon.USDCx.vestingStream.id}`,
           "404 token page": "/token/polygon/Testing420HaveANiceDay",
           "404 vesting page": "/vesting/polygon/Testing",

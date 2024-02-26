@@ -77,8 +77,8 @@ Feature: Dashboard Page test cases
     Scenario: Cancelling a stream from the streams table
         Given HDWallet transactions are rejected
 
-        Given "Dashboard Page" is open with "john" connected on "goerli"
-        And User clicks on "goerli" "fDAIx" row
+        Given "Dashboard Page" is open with "john" connected on "polygon-mumbai"
+        And User clicks on "polygon-mumbai" "fDAIx" row
         And Cancel and Edit buttons are visible
         And User clicks on the first visible cancel button
         Then Transaction rejected error is shown

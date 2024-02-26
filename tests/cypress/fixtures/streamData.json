@@ -60,11 +60,11 @@
     ]
   },
   "john": {
-    "goerli": [
+    "polygon-mumbai": [
       {
         "flowRate": 385802469135,
         "startedAtUnix": 1679387652000,
-        "sender": "0x9Be85A79D847dFa90584F3FD40cC1f6D4026E2B9",
+        "sender": "Change this to mumbai stuff",
         "receiver": "0x9B6157d44134b21D934468B8bf709294cB298aa7",
         "scheduledAmount": "22.72",
         "startDate": "21 Mar. 2023 8:34",

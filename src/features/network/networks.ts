@@ -118,54 +118,6 @@ const blockExplorers = {
 } as const;
 
 export const networkDefinition = {
-  goerli: {
-    ...chain.goerli,
-    id: chainIds.goerli,
-    supportsGDA: getSupportsGDA(chainIds.goerli),
-    metadata: ensureDefined(
-      sfMeta.getNetworkByChainId(chainIds.goerli),
-      chainIds.goerli
-    ),
-    blockExplorers: ensureDefined(chain.goerli.blockExplorers),
-    slugName: "goerli",
-    v1ShortName: "goerli",
-    bufferTimeInMinutes: 60,
-    color: "#9064ff",
-    rpcUrls: {
-      ...chain.goerli.rpcUrls,
-      superfluid: { http: [superfluidRpcUrls.goerli] },
-    },
-    fallbackSubgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-goerli",
-    getLinkForTransaction: (txHash: string): string =>
-      `https://goerli.etherscan.io/tx/${txHash}`,
-    getLinkForAddress: (address: string): string =>
-      `https://goerli.etherscan.io/address/${address}`,
-    nativeCurrency: {
-      ...ensureDefined(chain.goerli.nativeCurrency),
-      address: NATIVE_ASSET_ADDRESS,
-      type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: "ETHx",
-        address: "0x5943f705abb6834cad767e6e4bb258bc48d9c947",
-        name: "Super ETH",
-        decimals: 18,
-      },
-    },
-    flowSchedulerContractAddress: flowSchedulerContractAddresses.goerli,
-    flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.goerli,
-    vestingContractAddress: vestingContractAddresses.goerli,
-    vestingSubgraphUrl: vestingSubgraphUrls.goerli,
-    autoWrapSubgraphUrl: autoWrapSubgraphUrls.goerli,
-    platformUrl: superfluidPlatformUrls.goerli,
-    autoWrap: {
-      managerContractAddress: autoWrapManagerAddresses[chain.goerli.id],
-      strategyContractAddress: autoWrapStrategyAddresses[chain.goerli.id],
-      lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
-      upperLimit: BigNumber.from(UnitOfTime.Day * 14),
-    },
-  },
   gnosis: {
     name: "Gnosis Chain",
     id: chainIds.gnosis,
@@ -896,7 +848,6 @@ export const allNetworks: Network[] = orderBy(
   orderBy(
     [
       networkDefinition.ethereum,
-      networkDefinition.goerli,
       networkDefinition.gnosis,
       networkDefinition.polygon,
       networkDefinition.polygonMumbai,

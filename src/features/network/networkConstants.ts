@@ -1,6 +1,5 @@
 export const chainIds = {
   mainnet: 1,
-  goerli: 5,
   gnosis: 100,
   polygon: 137,
   polygonMumbai: 80001,
@@ -20,7 +19,6 @@ export const chainIds = {
 export const autoWrapManagerAddresses = {
   [chainIds.polygon]: "0x2581c27E7f6D6AF452E63fCe884EDE3EDd716b32",
   [chainIds.bsc]: "0x2AcdD61ac1EFFe1535109449c31889bdE8d7f325",
-  [chainIds.goerli]: "0x0B82D14E9616ca4d260E77454834AdCf5887595F",
   [chainIds.polygonMumbai]: "0x3eAB3c6207F488E475b7955B631B564F0E6317B9",
   [chainIds.avalancheFuji]: "0x30aE282CF477E2eF28B14d0125aCEAd57Fe1d7a1",
   [chainIds.avalanche]: "0x8082e58681350876aFe8f52d3Bf8672034A03Db0",
@@ -33,7 +31,6 @@ export const autoWrapManagerAddresses = {
 export const autoWrapStrategyAddresses = {
   [chainIds.polygon]: "0xb4afa36BAd8c76976Dc77a21c9Ad711EF720eE4b",
   [chainIds.bsc]: "0x9e308cb079ae130790F604b1030cDf386670f199",
-  [chainIds.goerli]: "0xea49af829d3e28d3ec49e0e0a0ba1e7860a56f60",
   [chainIds.polygonMumbai]: "0x544728AFDBeEafBeC9e1329031788edb53017bC4",
   [chainIds.avalancheFuji]: "0x1D65c6d3AD39d454Ea8F682c49aE7744706eA96d",
   [chainIds.avalanche]: "0x51FBAbD31A615E14b1bC12E9d887f60997264a4E",
@@ -44,7 +41,6 @@ export const autoWrapStrategyAddresses = {
 } as const;
 
 export const flowSchedulerContractAddresses = {
-  goerli: "0xf428308b426D7cD7Ad8eBE549d750f31C8E060Ca",
   arbitrum: "0x3fA8B653F9abf91428800C0ba0F8D145a71F97A1",
   avalancheC: "0xF7AfF590E9DE493D7ACb421Fca7f1E35C1ad4Ce5",
   bnbSmartChain: "0x2f9e2A2A59405682d4F86779275CF5525AD7eC2B",
@@ -57,7 +53,6 @@ export const flowSchedulerContractAddresses = {
 
 export const vestingContractAddresses = {
   gnosis: "0x0170FFCC75d178d426EBad5b1a31451d00Ddbd0D",
-  goerli: "0xF9240F930d847F70ad900aBEE8949F25649Bf24a",
   polygon: "0xcFE6382B33F2AdaFbE46e6A26A88E0182ae32b0c",
   mumbai: "0x3962EE56c9f7176215D149938BA685F91aBB633B",
   arbitrum: "0x55c8fc400833eEa791087cF343Ff2409A39DeBcC",
@@ -70,8 +65,6 @@ export const vestingContractAddresses = {
 export const vestingSubgraphUrls = {
   gnosis:
     "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-xdai-mainnet",
-  goerli:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-eth-goerli",
   polygon:
     "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-polygon-mainnet",
   mumbai:
@@ -89,8 +82,6 @@ export const vestingSubgraphUrls = {
 } as const;
 
 export const flowSchedulerSubgraphUrls = {
-  goerli:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/scheduling-v1-eth-goerli",
   arbitrum:
     "https://api.thegraph.com/subgraphs/name/superfluid-finance/scheduling-v1-arbitrum-one",
   avalancheC:
@@ -112,8 +103,6 @@ export const flowSchedulerSubgraphUrls = {
 export const autoWrapSubgraphUrls = {
   mumbai:
     "https://api.thegraph.com/subgraphs/name/superfluid-finance/auto-wrap-v1-polygon-mumbai",
-  goerli:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/auto-wrap-v1-eth-goerli",
   arbitrum:
     "https://api.thegraph.com/subgraphs/name/superfluid-finance/auto-wrap-v1-arbitrum-one",
   avalancheC:
@@ -131,7 +120,6 @@ export const autoWrapSubgraphUrls = {
 } as const;
 
 export const superfluidRpcUrls = {
-  goerli: "https://rpc-endpoints.superfluid.dev/eth-goerli",
   gnosis: "https://rpc-endpoints.superfluid.dev/xdai-mainnet",
   polygon: "https://rpc-endpoints.superfluid.dev/polygon-mainnet",
   polygonMumbai: "https://rpc-endpoints.superfluid.dev/polygon-mumbai",
@@ -150,7 +138,6 @@ export const superfluidRpcUrls = {
 } as const;
 
 export const superfluidPlatformUrls = {
-  goerli: "https://prod-goerli-platform-service.dev.superfluid.dev",
   gnosis: "https://prod-xdai-mainnet-platform-service.prod.superfluid.dev",
   polygon: "https://prod-polygon-mainnet-platform-service.prod.superfluid.dev",
   mumbai: "https://prod-polygon-mumbai-platform-service.dev.superfluid.dev",

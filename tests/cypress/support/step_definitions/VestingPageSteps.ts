@@ -83,13 +83,10 @@ Given(/^User deletes the vesting schedule$/, function () {
 Given(/^Delete vesting schedule button is not visible$/, function () {
   VestingPage.deleteVestingButtonDoesNotExist();
 });
-Given(
-  /^Change to goerli button is visible in the vesting preview$/,
-  function () {
-    VestingPage.changeNetworkButtonIsVisible();
-  }
-);
-Given(/^User clicks on the change to goerli button$/, function () {
+Given(/^Change network button is visible in the vesting preview$/, function () {
+  VestingPage.changeNetworkButtonIsVisible();
+});
+Given(/^User clicks on the change network button$/, function () {
   VestingPage.clickChangeNetworkButton();
 });
 Given(/^Delete vesting schedule button is visible$/, function () {

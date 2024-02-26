@@ -1,8 +1,8 @@
 {
-  "goerli": {
+  "polygon-mumbai": {
     "fTUSDx": {
       "schedule": {
-        "id": "0x6d4450ba833cefc9b4e1480851517048fc2f5042a05fd6abd6112aeff08b3918-2218",
+        "id": "change this to mumbai stuff-2218",
         "superToken": "0x95697ec24439e3eb7ba588c7b279b9b369236941",
         "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
         "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",

@@ -63,7 +63,7 @@ Feature: Common element test cases
         Then Connect wallet button is visible in the faucet menu
 
     Scenario: Change network to Mumbai button in faucet view
-        Given "Dashboard Page" is open with "john" connected on "goerli"
+        Given "Dashboard Page" is open with "john" connected on "sepolia"
         And User opens the navigation more menu
         And User opens the faucet view from the navigation menu
         Then Switch to Mumbai button is visible in the faucet menu
@@ -167,7 +167,7 @@ Feature: Common element test cases
     Scenario: Notifications automatically archived if older than a month
         Given Notifications requests are mocked to "Old notification"
 
-        Given "Settings Page" is open with "dan" connected on "goerli"
+        Given "Settings Page" is open with "dan" connected on "polygon-mumbai"
         And User opens the notifications modal
         Then No "new" notifications message is shown
         And User switches to the "archive" notification tab

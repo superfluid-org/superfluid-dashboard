@@ -26,8 +26,8 @@ Feature: Address Book test cases
 
     Scenario: Adding a new contract address to the address book
         And "Address book Page" is open without connecting a wallet
-        And User adds "0xF9240F930d847F70ad900aBEE8949F25649Bf24a" as "Testing" on "-" to their address book
-        Then A contract address "0xF9240F930d847F70ad900aBEE8949F25649Bf24a" on "goerli" is saved as "Testing"
+        And User adds "0x3962EE56c9f7176215D149938BA685F91aBB633B" as "Testing" on "-" to their address book
+        Then A contract address "0x3962EE56c9f7176215D149938BA685F91aBB633B" on "polygon-mumbai" is saved as "Testing"
 
     Scenario: Copying an address from the address book
         Given Address book test data is set up
@@ -95,7 +95,7 @@ Feature: Address Book test cases
     Scenario: Address book name showing up in - Vesting page
         Given Address book test data is set up
 
-        Given "Vesting Page" is open with "john" connected on "goerli"
+        Given "Vesting Page" is open with "john" connected on "polygon-mumbai"
         Then The receivers shown in the vesting page are named "Multiple networks test"
 
     Scenario: Address book name showing up in - Vesting details page
@@ -116,10 +116,10 @@ Feature: Address Book test cases
     Scenario: Address book name showing up in - Dashboard page and token page tables
         Given Address book test data is set up
 
-        Given "Dashboard Page" is open with "john" connected on "goerli"
-        And User clicks on "goerli" "TDLx" row
+        Given "Dashboard Page" is open with "john" connected on "polygon-mumbai"
+        And User clicks on "polygon-mumbai" "TDLx" row
         Then "alice,dan,bob" are visible in the table as the receivers or senders of streams
-        And User opens "goerli" "TDLx" individual token page
+        And User opens "polygon-mumbai" "TDLx" individual token page
         Then "alice,dan,bob" are visible in the table as the receivers or senders of streams
 
     Scenario: Address book name showing up in - Stream details page

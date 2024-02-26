@@ -2316,7 +2316,7 @@ const schedulingTransforms = [];
 const additionalTypeDefs = [] as any[];
 const schedulingHandler = new GraphqlHandler({
               name: "scheduling",
-              config: {"endpoint":"{context.url:https://api.thegraph.com/subgraphs/name/superfluid-finance/scheduling-v1-eth-goerli}","retry":5},
+              config: {"endpoint":"{context.url:https://api.thegraph.com/subgraphs/name/superfluid-finance/scheduling-v1-polygon-mumbai}","retry":5},
               baseDir,
               cache,
               pubsub,

@@ -1,10 +1,4 @@
 {
-  "goerli": {
-    "TokenOne": "fDAI",
-    "TokenTwo": "fUSDC",
-    "TokenThree": "fTUSD",
-    "TokenGas": "ETH"
-  },
   "gnosis": {
     "TokenOne": "TDL",
     "TokenTwo": "USDC",
@@ -64,11 +58,6 @@
     "TokenGas": "SEP"
   },
   "polygon-zkevm-testnet": {
-    "TokenOne": "fDAI",
-    "TokenTwo": "fUSDC",
-    "TokenGas": "ETH"
-  },
-  "bgoerli": {
     "TokenOne": "fDAI",
     "TokenTwo": "fUSDC",
     "TokenGas": "ETH"

@@ -14,7 +14,6 @@ import ensureDefined from "../../../src/utils/ensureDefined";
 export const autoWrapManagerAddresses = {
   [chain.polygon.id]: "0x2581c27E7f6D6AF452E63fCe884EDE3EDd716b32",
   [chain.bsc.id]: "0x2AcdD61ac1EFFe1535109449c31889bdE8d7f325",
-  [chain.goerli.id]: "0x0B82D14E9616ca4d260E77454834AdCf5887595F",
   [chain.polygonMumbai.id]: "0x3eAB3c6207F488E475b7955B631B564F0E6317B9",
   [chain.avalancheFuji.id]: "0x30aE282CF477E2eF28B14d0125aCEAd57Fe1d7a1",
   [chain.avalanche.id]: "0x8082e58681350876aFe8f52d3Bf8672034A03Db0",
@@ -27,7 +26,6 @@ export const autoWrapManagerAddresses = {
 export const autoWrapStrategyAddresses = {
   [chain.polygon.id]: "0xb4afa36BAd8c76976Dc77a21c9Ad711EF720eE4b",
   [chain.bsc.id]: "0x9e308cb079ae130790F604b1030cDf386670f199",
-  [chain.goerli.id]: "0xea49af829d3e28d3ec49e0e0a0ba1e7860a56f60",
   [chain.polygonMumbai.id]: "0x544728AFDBeEafBeC9e1329031788edb53017bC4",
   [chain.avalancheFuji.id]: "0x1D65c6d3AD39d454Ea8F682c49aE7744706eA96d",
   [chain.avalanche.id]: "0x51FBAbD31A615E14b1bC12E9d887f60997264a4E",
@@ -38,7 +36,6 @@ export const autoWrapStrategyAddresses = {
 } as const;
 
 export const flowSchedulerContractAddresses = {
-  goerli: "0xf428308b426D7cD7Ad8eBE549d750f31C8E060Ca",
   arbitrum: "0x3fA8B653F9abf91428800C0ba0F8D145a71F97A1",
   avalancheC: "0xF7AfF590E9DE493D7ACb421Fca7f1E35C1ad4Ce5",
   bnbSmartChain: "0x2f9e2A2A59405682d4F86779275CF5525AD7eC2B",
@@ -51,7 +48,6 @@ export const flowSchedulerContractAddresses = {
 
 export const vestingContractAddresses = {
   gnosis: "0x0170FFCC75d178d426EBad5b1a31451d00Ddbd0D",
-  goerli: "0xF9240F930d847F70ad900aBEE8949F25649Bf24a",
   polygon: "0xcFE6382B33F2AdaFbE46e6A26A88E0182ae32b0c",
   mumbai: "0x3962EE56c9f7176215D149938BA685F91aBB633B",
   arbitrum: "0x55c8fc400833eEa791087cF343Ff2409A39DeBcC",
@@ -95,7 +91,6 @@ export type Network = {
 };
 
 export const superfluidRpcUrls = {
-  goerli: "https://rpc-endpoints.superfluid.dev/eth-goerli",
   gnosis: "https://rpc-endpoints.superfluid.dev/xdai-mainnet",
   polygon: "https://rpc-endpoints.superfluid.dev/polygon-mainnet",
   polygonMumbai: "https://rpc-endpoints.superfluid.dev/polygon-mumbai",
@@ -114,10 +109,6 @@ export const superfluidRpcUrls = {
 };
 
 export const networkDefinition: {
-  goerli: Network & {
-    flowSchedulerContractAddress: `0x${string}`;
-    platformUrl: string;
-  };
   gnosis: Network;
   polygon: Network;
   polygonMumbai: Network;
@@ -134,40 +125,6 @@ export const networkDefinition: {
   scrollSepolia: Network;
   optimismSepolia: Network;
 } = {
-  goerli: {
-    ...chain.goerli,
-    slugName: "goerli",
-    v1ShortName: "goerli",
-    bufferTimeInMinutes: 60,
-    color: "#9064ff",
-    superfluidRpcUrl: superfluidRpcUrls.goerli,
-    subgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-goerli",
-    getLinkForTransaction: (txHash: string): string =>
-      `https://goerli.etherscan.io/tx/${txHash}`,
-    getLinkForAddress: (address: string): string =>
-      `https://goerli.etherscan.io/address/${address}`,
-    nativeCurrency: {
-      ...BasePage.ensureDefined(chain.goerli.nativeCurrency),
-      address: NATIVE_ASSET_ADDRESS,
-      type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: "ETHx",
-        address: "0x5943f705abb6834cad767e6e4bb258bc48d9c947",
-        name: "Super ETH",
-        decimals: 18,
-      },
-    },
-    autoWrap: {
-      managerContractAddress: autoWrapManagerAddresses[chain.goerli.id],
-      strategyContractAddress: autoWrapStrategyAddresses[chain.goerli.id],
-      lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
-      upperLimit: BigNumber.from(UnitOfTime.Day * 14),
-    },
-    flowSchedulerContractAddress: "0x5b2D8d18FE90D840cbc012a8a06C3EeAA5cBe1a6",
-    platformUrl: "https://prod-goerli-platform-service.dev.superfluid.dev",
-  },
   gnosis: {
     name: "Gnosis Chain",
     slugName: "gnosis",
@@ -655,7 +612,6 @@ export const networkDefinition: {
 };
 
 export const networks: Network[] = [
-  networkDefinition.goerli,
   networkDefinition.gnosis,
   networkDefinition.polygon,
   networkDefinition.polygonMumbai,

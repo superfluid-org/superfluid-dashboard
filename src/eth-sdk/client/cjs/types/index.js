@@ -25,7 +25,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.VestingScheduler__factory = exports.AutoWrapStrategy__factory = exports.AutoWrapManager__factory = exports.FlowScheduler__factory = exports.factories = void 0;
 exports.factories = __importStar(require("./factories"));
-var FlowScheduler__factory_1 = require("./factories/goerli/FlowScheduler__factory");
+var FlowScheduler__factory_1 = require("./factories/mumbai/FlowScheduler__factory");
 Object.defineProperty(exports, "FlowScheduler__factory", { enumerable: true, get: function () { return FlowScheduler__factory_1.FlowScheduler__factory; } });
 var AutoWrapManager__factory_1 = require("./factories/mainnet/AutoWrapManager__factory");
 Object.defineProperty(exports, "AutoWrapManager__factory", { enumerable: true, get: function () { return AutoWrapManager__factory_1.AutoWrapManager__factory; } });

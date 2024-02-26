@@ -262,64 +262,6 @@
     ],
     "avalanche": [],
     "bsc": [],
-    "goerli": [
-      {
-        "timestamp": 1621588523,
-        "activity": "Stream Cancelled",
-        "amount": "0 fUSDCx/mo",
-        "amountToFrom": "To0xF9Ce...3Ff2",
-        "txHash": "0x148a12ab681695e86f165796eabe6c1295b5416457842be2fe9a9d0387930b3c"
-      },
-      {
-        "timestamp": 1621588448,
-        "activity": "Stream Updated",
-        "amount": "25 fUSDCx/mo",
-        "amountToFrom": "To0xF9Ce...3Ff2",
-        "txHash": "0x039a1ebadf9ae0619d32af3d5cddb36678cf7fec80a3c3491852f5ed0f71b9ba"
-      },
-      {
-        "timestamp": 1621588388,
-        "activity": "Send Stream",
-        "amount": "100 fUSDCx/mo",
-        "amountToFrom": "To0xF9Ce...3Ff2",
-        "txHash": "0x04c054715203c4c74d0a222c647106728971bbc357de456305fb4ee60a60c72d"
-      },
-      {
-        "timestamp": 1621588343,
-        "activity": "Receive Transfer",
-        "amount": "100 fUSDCx",
-        "amountToFrom": "From0xB0d6...2cb4",
-        "txHash": "0x1a506a6f5077fb1cbd6834155ff92aa05c671687551b23b5f117adb79cadb1fd"
-      },
-      {
-        "timestamp": 1621587833,
-        "activity": "Send Transfer",
-        "amount": "50 fUSDCx",
-        "amountToFrom": "To0xF9Ce...3Ff2",
-        "txHash": "0x4d562ff9ddab9e726e0b80579e6303d2c8c75f85ed57001c620877d800a7c41d"
-      },
-      {
-        "timestamp": 1621587713,
-        "activity": "Wrap",
-        "amount": "-300 fUSDC",
-        "amountToFrom": "+300 fUSDCx",
-        "txHash": "0x26da36704b4cd1af83bad70dbb307a3ae904797e7fca402d1cef72c81ba0b357"
-      },
-      {
-        "timestamp": 1621587443,
-        "activity": "Wrap",
-        "amount": "-400 fDAI",
-        "amountToFrom": "+400 fDAIx",
-        "txHash": "0xdc917935f68de09be44a36890b2c5ba316770df977289b3cfeb98fcea0266665"
-      },
-      {
-        "timestamp": 1621584784,
-        "activity": "Wrap",
-        "amount": "-500 fTUSD",
-        "amountToFrom": "+500 fTUSDx",
-        "txHash": "0x4d890b24e13fb677d7ee2a49e9b36c930bd813516e2774a2e79cb0fa326dc263"
-      }
-    ],
     "polygon-mumbai": [
       {
         "timestamp": 1621840680,

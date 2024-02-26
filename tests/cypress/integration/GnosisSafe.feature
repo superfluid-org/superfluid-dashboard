@@ -17,7 +17,6 @@ Feature: Gnosis safe test cases
             | arbitrum-one |
             | avalanche    |
             | optimism     |
-            | goerli       |
             | celo         |
 
     Scenario Outline: Gnosis safe - adding superfluid as a custom app <network>
@@ -35,5 +34,4 @@ Feature: Gnosis safe test cases
             | arbitrum-one |
             | avalanche    |
             | optimism     |
-            | goerli       |
             | celo         |

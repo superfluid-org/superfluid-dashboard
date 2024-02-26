@@ -251,7 +251,7 @@ export class VestingPage extends BasePage {
     this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...");
     // cy.get(OK_BUTTON, {timeout: 45000}).should("be.visible").click()
     // this.click(TX_DRAWER_BUTTON)
-    // WrapPage.validatePendingTransaction("Create Vesting Schedule" , "goerli")
+    // WrapPage.validatePendingTransaction("Create Vesting Schedule" , "polygon-mumbai")
   }
 
   static validateFormError(error: string) {
@@ -426,7 +426,7 @@ export class VestingPage extends BasePage {
     this.hasText("[data-cy=fTUSDx-cliff-amount]", "10fTUSDx");
     this.hasText("[data-cy=fTUSDx-allocated]", "100fTUSDx");
     cy.fixture("vestingData").then((data) => {
-      let schedule = data.goerli.fTUSDx.schedule;
+      let schedule = data["polygon-mumbai"].fTUSDx.schedule;
       this.hasText(
         DETAILS_SCHEDULED_DATE,
         format(schedule.createdAt * 1000, "MMM do, yyyy HH:mm")
@@ -451,7 +451,6 @@ export class VestingPage extends BasePage {
       "ethereum",
       "polygon",
       "bsc",
-      "goerli",
       "gnosis",
       "polygon-mumbai",
       "optimism",
@@ -498,7 +497,7 @@ export class VestingPage extends BasePage {
 
   static validateTokenPermissionsData(token: string) {
     cy.fixture("vestingData").then((data) => {
-      let selectedToken = data.goerli[token];
+      let selectedToken = data["polygon-mumbai"][token];
       this.hasText(
         `[data-cy=${token}-current-allowance] p`,
         `${selectedToken.currentAllowances.tokenAllowance} ${token}`
