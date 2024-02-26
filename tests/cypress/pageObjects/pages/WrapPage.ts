@@ -188,7 +188,7 @@ export class WrapPage extends BasePage {
 
   static chooseTokenToWrap(token: string) {
     this.getSelectedToken(token).then((selectedToken) => {
-      this.click(`[data-cy="${selectedToken}-list-item"]`, undefined, {
+      this.click(`[data-cy="${selectedToken}-list-item"]`, 0, {
         timeout: 60000,
       });
     });
