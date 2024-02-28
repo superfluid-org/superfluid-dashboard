@@ -334,12 +334,13 @@ export class Common extends BasePage {
     }
 
     this.changeNetwork(selectedNetwork);
-    let workaroundNetwork =
-      selectedNetwork === "polygon-mumbai"
-        ? "avalanche-fuji"
-        : "polygon-mumbai";
-    this.changeNetwork(workaroundNetwork);
-    this.changeNetwork(selectedNetwork);
+    // Old workaround for changing networks because the provider did not connect instantly
+    // let workaroundNetwork =
+    //   selectedNetwork === "polygon-mumbai"
+    //     ? "avalanche-fuji"
+    //     : "polygon-mumbai";
+    // this.changeNetwork(workaroundNetwork);
+    // this.changeNetwork(selectedNetwork);
   }
 
   static rejectTransactions() {

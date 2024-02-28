@@ -1,14 +1,14 @@
 import { Contract } from 'ethers';
-import mumbai_flowScheduler_abi from '../../abis/mumbai/flowScheduler.json';
+import polygonMumbai_flowScheduler_abi from '../../abis/polygonMumbai/flowScheduler.json';
 import mainnet_vestingScheduler_abi from '../../abis/mainnet/vestingScheduler.json';
 import mainnet_autoWrapManager_abi from '../../abis/mainnet/autoWrapManager.json';
 import mainnet_autoWrapStrategy_abi from '../../abis/mainnet/autoWrapStrategy.json';
 export function getContract(address, abi, defaultSignerOrProvider) {
     return new Contract(address, abi, defaultSignerOrProvider);
 }
-export function getMumbaiSdk(defaultSignerOrProvider) {
+export function getPolygonMumbaiSdk(defaultSignerOrProvider) {
     return {
-        "flowScheduler": getContract('0x59A3Ba9d34c387FB70b4f4e4Fbc9eD7519194139', mumbai_flowScheduler_abi, defaultSignerOrProvider),
+        "flowScheduler": getContract('0x59A3Ba9d34c387FB70b4f4e4Fbc9eD7519194139', polygonMumbai_flowScheduler_abi, defaultSignerOrProvider),
     };
 }
 export function getMainnetSdk(defaultSignerOrProvider) {

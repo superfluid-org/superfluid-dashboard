@@ -101,7 +101,29 @@
           "token": "fUSDCx",
           "id": "usdc",
           "balance": "351.99782021",
-          "underlyingBalance": "700"
+          "underlyingBalance": "700",
+          "transfers": [
+            {
+              "toFrom": "0xB0d69105b5802099EBA8843D3a7823E52B0D2cb4",
+              "amount": 2,
+              "dateSent": "24 May. 2021"
+            },
+            {
+              "toFrom": "0xB0d69105b5802099EBA8843D3a7823E52B0D2cb4",
+              "amount": 100,
+              "dateSent": "21 May. 2021"
+            },
+            {
+              "toFrom": "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2",
+              "amount": -50,
+              "dateSent": "21 May. 2021"
+            },
+            {
+              "toFrom": "0x0000000000000000000000000000000000000000",
+              "amount": 300,
+              "dateSent": "21 May. 2021"
+            }
+          ]
         },
         {
           "tokenAddress": "0x5D8B4C2554aeB7e86F387B4d6c00Ac33499Ed01f",
@@ -121,6 +143,9 @@
     },
     "ongoingStreamsAccount": {
       "tokenValues": {
+        "tokenAddress": "0x5d8b4c2554aeb7e86f387b4d6c00ac33499ed01f",
+        "tokenName": "Super fDAI Fake Token",
+        "liquidationDate": "June 2nd, 2031",
         "token": "fDAIx",
         "netFlowRate": "-1.0139/mo",
         "inFlow": "+4.0556/mo",
@@ -129,12 +154,17 @@
           {
             "fromTo": "0xcb86...42D8",
             "flowRate": "+4.0556/mo",
-            "endDate": "2 Jul. 2021"
+            "endDate": "2 Jul. 2021 08:12"
           },
           {
             "fromTo": "0x618a...DE40",
             "flowRate": "-5.0694/mo",
-            "endDate": "2 Jul. 2021"
+            "endDate": "2 Jul. 2021 07:55"
+          },
+          {
+            "fromTo": "0x74CD...E4cE",
+            "flowRate": "-",
+            "endDate": "6 Apr. 2023 10:286 Apr. 2023 10:49"
           }
         ]
       }

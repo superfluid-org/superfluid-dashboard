@@ -1,9 +1,9 @@
 import { providers, Signer } from 'ethers';
 import * as types from './types';
 export declare function getContract(address: string, abi: object, defaultSignerOrProvider: Signer | providers.Provider): any;
-export type MumbaiSdk = ReturnType<typeof getMumbaiSdk>;
-export declare function getMumbaiSdk(defaultSignerOrProvider: Signer | providers.Provider): {
-    flowScheduler: types.mumbai.FlowScheduler;
+export type PolygonMumbaiSdk = ReturnType<typeof getPolygonMumbaiSdk>;
+export declare function getPolygonMumbaiSdk(defaultSignerOrProvider: Signer | providers.Provider): {
+    flowScheduler: types.polygonMumbai.FlowScheduler;
 };
 export type MainnetSdk = ReturnType<typeof getMainnetSdk>;
 export declare function getMainnetSdk(defaultSignerOrProvider: Signer | providers.Provider): {

@@ -280,7 +280,6 @@ export class IndividualTokenPage extends BasePage {
             (values: any) => values.token === token
           )[0]
         : data[network].ongoingStreamsAccount.tokenValues;
-
       this.hasText(HEADER_SYMBOL, token);
       this.hasText(HEADER_NAME, chosenToken.tokenName);
       this.hasText(LIQUIDATION_DATE, chosenToken.liquidationDate);

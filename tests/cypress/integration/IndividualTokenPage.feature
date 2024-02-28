@@ -13,11 +13,11 @@ Feature: Token page test cases
 
     Scenario: Distributions table in token page
         Given "Dashboard Page" is open without connecting a wallet
-        And User uses view mode to look at "mumbaiDistributionsAccount"
-        And User changes their network to "polygon-mumbai"
-        And User opens "polygon-mumbai" "fDAIx" individual token page
+        And User uses view mode to look at "polygonDistributionsAccount"
+        And User changes their network to "polygon"
+        And User opens "polygon" "MATICx" individual token page
         And User opens the distributions tab
-        And The last distribution row is from "0x39aA80Fc05eD0b3549be279589Fc67f06b7e35EE" with "1025" received with "Approved" "25 Aug. 2022"
+        And The last distribution row is from "0xE093D8A4269CE5C91cD9389A0646bAdAB2c8D9A3" with "0.3885" received with "Approved" "6 Jan. 2022"
         And The revoke buttons are disabled
 
     Scenario: Transfers table in token page

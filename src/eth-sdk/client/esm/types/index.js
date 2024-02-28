@@ -1,5 +1,5 @@
 export * as factories from "./factories";
-export { FlowScheduler__factory } from "./factories/mumbai/FlowScheduler__factory";
 export { AutoWrapManager__factory } from "./factories/mainnet/AutoWrapManager__factory";
 export { AutoWrapStrategy__factory } from "./factories/mainnet/AutoWrapStrategy__factory";
 export { VestingScheduler__factory } from "./factories/mainnet/VestingScheduler__factory";
+export { FlowScheduler__factory } from "./factories/polygonMumbai/FlowScheduler__factory";
