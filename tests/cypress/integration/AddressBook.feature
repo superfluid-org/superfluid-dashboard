@@ -117,9 +117,9 @@ Feature: Address Book test cases
         Given Address book test data is set up
 
         Given "Dashboard Page" is open with "john" connected on "polygon-mumbai"
-        And User clicks on "polygon-mumbai" "TDLx" row
+        And User clicks on "polygon-mumbai" "fTUSDx" row
         Then "alice,dan,bob" are visible in the table as the receivers or senders of streams
-        And User opens "polygon-mumbai" "TDLx" individual token page
+        And User opens "polygon-mumbai" "fTUSDx" individual token page
         Then "alice,dan,bob" are visible in the table as the receivers or senders of streams
 
     Scenario: Address book name showing up in - Stream details page

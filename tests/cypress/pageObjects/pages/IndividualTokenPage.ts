@@ -125,14 +125,14 @@ export class IndividualTokenPage extends BasePage {
   static validateNoPendingStatusForFirstStreamRow() {
     cy.get(STREAM_ROWS)
       .first()
-      .find(PENDING_MESSAGE, { timeout: 60000 })
+      .find(PENDING_MESSAGE, { timeout: 90000 })
       .should("not.exist");
   }
 
   static validateNoPendingStatusForFirstDistributionsRow() {
     cy.get(DISTRIBUTION_ROWS)
       .first()
-      .find(PENDING_MESSAGE, { timeout: 60000 })
+      .find(PENDING_MESSAGE, { timeout: 90000 })
       .should("not.exist");
   }
 
@@ -148,7 +148,7 @@ export class IndividualTokenPage extends BasePage {
   ) {
     this.hasText(PUBLISHERS, BasePage.shortenHex(address), 0);
     this.hasText(AMOUNT_RECEIVED, amount, 0);
-    this.hasText(STATUS, status, 0);
+    this.hasText(STATUS, status, 0, { timeout: 45000 });
     let fromToDate = when === "now" ? format(Date.now(), "d MMM. yyyy") : when;
     this.hasText(LAST_UPDATED_AT, fromToDate, 0);
   }

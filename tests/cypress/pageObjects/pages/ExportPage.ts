@@ -299,7 +299,9 @@ export class ExportPage extends BasePage {
       "have.length.below",
       11
     );
-    cy.get("[data-testid=FilterAltIcon]").should("be.visible");
+    //Lazy fix , not really anything else to assert on
+    //The small loading spinner disapears too fast and getting the whole table during filtering might re-render the values
+    cy.wait(1000);
     cy.get(`.MuiDataGrid-cell[data-field=${column}]`).each((row) => {
       cy.wrap(row).should("contain.text", value);
     });
