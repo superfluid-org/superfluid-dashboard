@@ -50,6 +50,7 @@ Feature: Vesting page second batch of test cases
         Given "Dashboard Page" is open without connecting a wallet
 
         Given User uses view mode to look at "accountWithLotsOfData"
+        And User changes their network to "polygon"
         And User clicks on the "vesting" navigation button
         And "StIbAlluoUSD" permissions icons are all "green"
         And User opens "StIbAlluoUSD" permission table row
@@ -91,13 +92,13 @@ Feature: Vesting page second batch of test cases
         And Transactional account john is connected to the dashboard on polygon-mumbai
         And User clicks on the "vesting" navigation button
         And User clicks on the create vesting schedule button
-        And User selects "ETHx" as the super token to use for the stream
+        And User selects "MATICx" as the super token to use for the stream
         #The UI showing the Enable auto-wrap switch is not instant, waiting just to be sure it is not getting shown
         And User waits for 5 seconds
         Then Auto-wrap switch does not exist
 
     Scenario: Auto-Wrap not available for pure tokens in the vesting form
-        And Transactional account john is connected to the dashboard on polygon-mumbai
+        And Transactional account john is connected to the dashboard on polygon
         And User clicks on the "vesting" navigation button
         And User clicks on the create vesting schedule button
         And User selects "NTDL" as the super token to use for the stream
@@ -109,7 +110,7 @@ Feature: Vesting page second batch of test cases
         And Transactional account john is connected to the dashboard on polygon-mumbai
         And User clicks on the "vesting" navigation button
         And User clicks on the create vesting schedule button
-        And User selects "FUNDx" as the super token to use for the stream
+        And User selects "EURex" as the super token to use for the stream
         And User clicks on the auto-wrap switch
         Then Top up warning is not shown
 
@@ -134,14 +135,14 @@ Feature: Vesting page second batch of test cases
         And Transactional account bob is connected to the dashboard on polygon-mumbai
         And User clicks on the "vesting" navigation button
         And User clicks on the create vesting schedule button
-        And User selects "TDLx" as the super token to use for the stream
+        And User selects "EURex" as the super token to use for the stream
         Then Auto-wrap switch is visible
 
     Scenario: Auto-wrap available to allowlisted addresses on mainnet
         And Transactional account john is connected to the dashboard on polygon
         And User clicks on the "vesting" navigation button
         And User clicks on the create vesting schedule button
-        And User selects "USDCx" as the super token to use for the stream
+        And User selects "DAIx" as the super token to use for the stream
 
     @skip
     @bug

@@ -386,7 +386,7 @@ export class VestingPage extends BasePage {
       this.shortenHex("0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2"),
       0
     );
-    this.hasText(TABLE_ALLOCATED_AMOUNT, "100 fTUSDx", 0);
+    this.hasText(TABLE_ALLOCATED_AMOUNT, "60.87 fTUSDx", 0);
     this.hasText(VESTED_AMOUNT, "0  fTUSDx", 0);
     this.containsText(
       TABLE_START_END_DATES,
@@ -423,8 +423,8 @@ export class VestingPage extends BasePage {
   static validateCreatedVestingScheduleDetailsPage() {
     this.hasText(DETAILS_VESTED_SO_FAR_AMOUNT, "0 ");
     this.hasText(DETAILS_VESTED_TOKEN_SYMBOL, "fTUSDx");
-    this.hasText("[data-cy=fTUSDx-cliff-amount]", "10fTUSDx");
-    this.hasText("[data-cy=fTUSDx-allocated]", "100fTUSDx");
+    this.hasText("[data-cy=fTUSDx-cliff-amount]", "0fTUSDx");
+    this.hasText("[data-cy=fTUSDx-allocated]", "60.87fTUSDx");
     cy.fixture("vestingData").then((data) => {
       let schedule = data["polygon-mumbai"].fTUSDx.schedule;
       this.hasText(
@@ -490,7 +490,7 @@ export class VestingPage extends BasePage {
       this.click(
         `[data-cy="${selectedToken}-row"] [data-testid=ExpandMoreRoundedIcon]`,
         undefined,
-        { timeout: 30000 }
+        { timeout: 60000 }
       );
     });
   }

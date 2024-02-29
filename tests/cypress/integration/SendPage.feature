@@ -197,7 +197,7 @@ Feature: Send Page test cases
         Given HDWallet transactions are rejected
 
         Given "Send Page" is open with "john" connected on "polygon-mumbai"
-        And User inputs all the details to send "1" "fTUSDx" per "month" to "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4"
+        And User inputs all the details to send "2" "fTUSDx" per "month" to "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4"
         And User inputs a date "1" "year" into the future into the stream start date
         And User inputs a date "2" "year" into the future into the stream end date
         And User accepts the risk warning
