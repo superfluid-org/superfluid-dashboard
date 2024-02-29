@@ -112,7 +112,7 @@ Feature: Vesting page first batch of test cases
         #And User deletes the vesting schedule if necessary
         And User clicks on the create vesting schedule button
         And User searches for "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" as a receiver
-        And User selects "TDLx" as the super token to use for the stream
+        And User selects "fTUSD" as the super token to use for the stream
         And User inputs valid vesting schedule details in the form and proceeds to the preview
         And Preview of the vesting schedule is shown correctly
         And User creates the vesting schedule

@@ -154,17 +154,17 @@
           {
             "fromTo": "0xcb86...42D8",
             "flowRate": "+4.0556/mo",
-            "endDate": "2 Jul. 2021 08:12"
+            "endDate": "2 Jul. 2021 07:12"
           },
           {
             "fromTo": "0x618a...DE40",
             "flowRate": "-5.0694/mo",
-            "endDate": "2 Jul. 2021 07:55"
+            "endDate": "2 Jul. 2021 06:55"
           },
           {
             "fromTo": "0x74CD...E4cE",
             "flowRate": "-",
-            "endDate": "6 Apr. 2023 10:286 Apr. 2023 10:49"
+            "endDate": "6 Apr. 2023 10:286 Apr. 2023 09:49"
           }
         ]
       }

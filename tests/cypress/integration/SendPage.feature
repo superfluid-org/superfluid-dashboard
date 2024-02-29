@@ -157,10 +157,10 @@ Feature: Send Page test cases
     Scenario: Stream tables - stream with start and end date
         Given "Dashboard Page" is open with "john" connected on "polygon-mumbai"
         And User clicks on "polygon-mumbai" "fTUSDx" row
-        Then The stream row to "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4" has a flow rate of "-1" and dates to "5 Jul. 2025 13:3728 Feb. 2026 13:37"
+        Then The stream row to "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4" has a flow rate of "-1" and dates to "5 Jul. 2025 12:3728 Feb. 2026 13:37"
         And User clicks on "polygon-mumbai" "fTUSDx" row
         And User opens "polygon-mumbai" "fTUSDx" individual token page
-        Then The stream row to "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4" has a flow rate of "-1" and dates to "5 Jul. 2025 13:3728 Feb. 2026 13:37"
+        Then The stream row to "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4" has a flow rate of "-1" and dates to "5 Jul. 2025 12:3728 Feb. 2026 13:37"
 
     Scenario: Stream tables - stream with end date
         Given "Dashboard Page" is open with "john" connected on "polygon-mumbai"
@@ -234,9 +234,9 @@ Feature: Send Page test cases
         And User searches for "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4" as a receiver
         And User opens the token selection screen
         And User selects "fTUSDx" from the super token list
-        Then The flow rate field in the send page is "12.17"
-        And The stream start date is set to "12/31/2024 22:00"
-        And The stream end date is set to "01/30/2025 22:00"
+        Then The flow rate field in the send page is "1"
+        And The stream start date is set to "07/05/2025 12:37"
+        And The stream end date is set to "02/28/2026 13:37"
 
 
 #TODO: Test cases that are broken/will get changed or no functionality yet

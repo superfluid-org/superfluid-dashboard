@@ -96,6 +96,7 @@ Feature: Address Book test cases
         Given Address book test data is set up
 
         Given "Vesting Page" is open with "john" connected on "polygon-mumbai"
+        And No loading skeletons are visible in the page
         Then The receivers shown in the vesting page are named "Multiple networks test"
 
     Scenario: Address book name showing up in - Vesting details page

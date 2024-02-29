@@ -64,6 +64,8 @@ const MUI_PRESENTATION = ".MuiDialog-root [role=presentation]";
 const FAUCET_WALLET_ADDRESS = "[data-cy=connected-address] input";
 const TOKEN_CHIPS = ".MuiChip-root";
 const FAUCET_CONTRACT_ADDRESS = "0x74CDF863b00789c29734F8dFd9F83423Bc55E4cE";
+const FAUCET_EXECUTION_CONTRACT_ADDRESS =
+  "0x2e043853CC01ccc8275A3913B82F122C20Bc1256";
 const NOTIFICATIONS_BUTTON = "[data-testid=NotificationsIcon]";
 const NOTIF_SETTINGS_BUTTON = "[data-testid=SettingsOutlinedIcon]";
 const NOTIF_ARCHIVE_BUTTON = "[data-cy=archive-button]";
@@ -813,6 +815,13 @@ export class Common extends BasePage {
       return web3.eth.getBalance(FAUCET_CONTRACT_ADDRESS).then((balance) => {
         expect(parseInt(balance)).to.be.greaterThan(1e19);
       });
+    });
+    cy.wrap(null, { log: false }).then(() => {
+      return web3.eth
+        .getBalance(FAUCET_EXECUTION_CONTRACT_ADDRESS)
+        .then((balance) => {
+          expect(parseInt(balance)).to.be.greaterThan(1e19);
+        });
     });
   }
 

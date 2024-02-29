@@ -96,7 +96,7 @@ Feature: Settings page test cases
         Then Settings page wallet not connected screen is visible
 
     Scenario: Change network buttons in the form
-        Given Dashboard is open with a mocked connection to "john" on "polygon-mumbai"
+        Given Dashboard is open with a mocked connection to "john" on "sepolia"
         And User connects their wallet to the dashboard
         And User clicks on the "settings" navigation button
         And No loading skeletons are visible in the page

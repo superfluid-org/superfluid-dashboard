@@ -46,8 +46,6 @@ Feature: Test cases that run indefinitely on all supported networks
             | scrsepolia     |
             | opsepolia      |
 
-    # Add back once cypress uses superfluid rpc
-    #| polygon-zkevm-testnet |
     Scenario Outline: The graph is not behind on <network>
         Given The graph is not more then 10 minutes behind on <network>
 

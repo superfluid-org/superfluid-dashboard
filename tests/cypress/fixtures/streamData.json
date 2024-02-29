@@ -64,8 +64,8 @@
       {
         "flowRate": 380517503805,
         "startedAtUnix": 1709136930000,
-        "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
-        "receiver": "0x9b6157d44134b21d934468b8bf709294cb298aa7",
+        "sender": "0x9Be85A79D847dFa90584F3FD40cC1f6D4026E2B9",
+        "receiver": "0x9B6157d44134b21D934468B8bf709294cB298aa7",
         "scheduledAmount": "24",
         "startDate": "28 Feb. 2024 18:15",
         "endDate": "27 Feb. 2026 15:37",

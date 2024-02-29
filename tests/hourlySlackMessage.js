@@ -116,7 +116,7 @@ async function parseTestResultsAndSendMessage(json) {
     }
     if (element.title.includes("Testnet faucet fund check")) {
       faucetMessage +=
-        "Faucet has got less than *10 MATIC* left , please add some more to *0x74CDF863b00789c29734F8dFd9F83423Bc55E4cE*";
+        "Faucet has got less than *10 MATIC* left , please add some more to *0x74CDF863b00789c29734F8dFd9F83423Bc55E4cE* or *0x2e043853CC01ccc8275A3913B82F122C20Bc1256*";
     }
   });
 

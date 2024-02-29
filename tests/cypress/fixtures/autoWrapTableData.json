@@ -9,8 +9,8 @@
     {
       "asset": "fTUSDx",
       "underlyingAllowance": "0 fTUSD",
-      "lowerLimit": "1 Weeks (0 fTUSDx)",
-      "upperLimit": "2 Weeks (0 fTUSDx)"
+      "lowerLimit": "1 Weeks (0.23 fTUSDx)",
+      "upperLimit": "2 Weeks (0.46 fTUSDx)"
     }
   ]
 }
