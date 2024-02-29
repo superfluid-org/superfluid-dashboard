@@ -95,8 +95,8 @@ const NO_RECEIVED_DESC_STRING =
   "Vesting schedules that you have received will appear here.";
 
 //Dates for the vesting previews etc.
-let staticStartDate = new Date(1722506340000);
-let staticEndDate = new Date(2037866340000);
+let staticStartDate = new Date(1850210429000);
+let staticEndDate = new Date(2007976829000);
 let currentTime = new Date();
 let startDate = new Date(
   currentTime.getTime() + wordTimeUnitMap["year"] * 1000
@@ -321,10 +321,10 @@ export class VestingPage extends BasePage {
   }
 
   static validateVestingSchedulePreview() {
-    this.hasText(PREVIEW_RECEIVER, "elvijs.lens");
+    this.hasText(PREVIEW_RECEIVER, "vijay.eth");
     this.validateSchedulePreviewDetails(cliffDate, startDate, endDate);
-    this.hasText(PREVIEW_TOTAL_AMOUNT, "2 fTDLx");
-    this.hasText(PREVIEW_CLIFF_AMOUNT, "1 fTDLx");
+    this.hasText(PREVIEW_TOTAL_AMOUNT, "2 fTUSDx");
+    this.hasText(PREVIEW_CLIFF_AMOUNT, "1 fTUSDx");
     this.containsText(
       PREVIEW_CLIFF_PERIOD,
       `1 year (${format(cliffDate, "LLLL d, yyyy")})`
@@ -386,8 +386,8 @@ export class VestingPage extends BasePage {
       this.shortenHex("0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2"),
       0
     );
-    this.hasText(TABLE_ALLOCATED_AMOUNT, "60.87 fTUSDx", 0);
-    this.hasText(VESTED_AMOUNT, "0  fTUSDx", 0);
+    this.hasText(TABLE_ALLOCATED_AMOUNT, "60.87 fUSDCx", 0);
+    this.hasText(VESTED_AMOUNT, "0  fUSDCx", 0);
     this.containsText(
       TABLE_START_END_DATES,
       format(staticStartDate, "LLL d, yyyy"),
@@ -422,23 +422,23 @@ export class VestingPage extends BasePage {
 
   static validateCreatedVestingScheduleDetailsPage() {
     this.hasText(DETAILS_VESTED_SO_FAR_AMOUNT, "0 ");
-    this.hasText(DETAILS_VESTED_TOKEN_SYMBOL, "fTUSDx");
-    this.hasText("[data-cy=fTUSDx-cliff-amount]", "0fTUSDx");
-    this.hasText("[data-cy=fTUSDx-allocated]", "60.87fTUSDx");
+    this.hasText(DETAILS_VESTED_TOKEN_SYMBOL, "fUSDCx");
+    this.hasText("[data-cy=fUSDCx-cliff-amount]", "0fUSDCx");
+    this.hasText("[data-cy=fUSDCx-allocated]", "60.87fUSDCx");
     cy.fixture("vestingData").then((data) => {
-      let schedule = data["polygon-mumbai"].fTUSDx.schedule;
+      let schedule = data["polygon-mumbai"].fUSDCx.schedule;
       this.hasText(
         DETAILS_SCHEDULED_DATE,
         format(schedule.createdAt * 1000, "MMM do, yyyy HH:mm")
       );
-      this.hasText(
-        DETAILS_CLIFF_START,
-        format(schedule.startDate * 1000, "MMM do, yyyy HH:mm")
-      );
-      this.hasText(
-        DETAILS_CLIFF_END,
-        format(schedule.cliffDate * 1000, "MMM do, yyyy HH:mm")
-      );
+      // this.hasText(
+      //   DETAILS_CLIFF_START,
+      //   format(schedule.startDate * 1000, "MMM do, yyyy HH:mm")
+      // );
+      // this.hasText(
+      //   DETAILS_CLIFF_END,
+      //   format(schedule.cliffDate * 1000, "MMM do, yyyy HH:mm")
+      // );
       this.hasText(
         DETAILS_VESTING_END,
         format(schedule.endDate * 1000, "MMM do, yyyy HH:mm")

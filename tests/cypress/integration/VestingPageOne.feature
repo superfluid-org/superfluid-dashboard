@@ -111,7 +111,7 @@ Feature: Vesting page first batch of test cases
         Then No received vesting schedules message is shown
         #And User deletes the vesting schedule if necessary
         And User clicks on the create vesting schedule button
-        And User searches for "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" as a receiver
+        And User searches for "0x1dDc50A8b8ef07c654B4ace65070B0E7acfF622B" as a receiver
         And User selects "fTUSDx" as the super token to use for the stream
         And User inputs valid vesting schedule details in the form and proceeds to the preview
         And Preview of the vesting schedule is shown correctly

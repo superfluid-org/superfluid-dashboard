@@ -334,15 +334,20 @@ export class Common extends BasePage {
       //The nextjs error is annoying when developing test cases in dev mode
       cy.get("nextjs-portal").shadow().find("[aria-label=Close]").click();
     }
-
+    this.doesNotExist(`${CONNECTED_WALLET_BUTTON} span circle`);
     this.changeNetwork(selectedNetwork);
-    // Old workaround for changing networks because the provider did not connect instantly
-    // let workaroundNetwork =
-    //   selectedNetwork === "polygon-mumbai"
-    //     ? "avalanche-fuji"
-    //     : "polygon-mumbai";
-    // this.changeNetwork(workaroundNetwork);
-    // this.changeNetwork(selectedNetwork);
+    //Conditional testing is bad, but this way is better than re-trying the whole case
+    //A workaround because sometimes HDWalletProvider does not connect to the right network
+    cy.get(WALLET_CONNECTION_STATUS).then((el) => {
+      if (el.text() === "Wrong network") {
+        let workaroundNetwork =
+          selectedNetwork === "polygon-mumbai"
+            ? "avalanche-fuji"
+            : "polygon-mumbai";
+        this.changeNetwork(workaroundNetwork);
+        this.changeNetwork(selectedNetwork);
+      }
+    });
   }
 
   static rejectTransactions() {
