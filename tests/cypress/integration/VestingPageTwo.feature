@@ -208,7 +208,7 @@ Feature: Vesting page second batch of test cases
         Then Auto-wrap icon for "MATICx" is "not existing"
 
     Scenario: Permissions table - Change network button - enabling auto-wrap
-        Given Dashboard is open with a mocked connection to "john" on "polygon-mumbai"
+        Given Dashboard is open with a mocked connection to "john" on "polygon"
         And User connects their wallet to the dashboard
         And User clicks on the "vesting" navigation button
         And User changes their network to "polygon-mumbai"
@@ -217,7 +217,7 @@ Feature: Vesting page second batch of test cases
         And Switch network button is visible in the "fTUSDx" permission row
 
     Scenario: Permissions table - Change network button - disabling auto-wrap
-        Given Dashboard is open with a mocked connection to "john" on "polygon-mumbai"
+        Given Dashboard is open with a mocked connection to "john" on "polygon"
         And User connects their wallet to the dashboard
         And User clicks on the "vesting" navigation button
         And User changes their network to "polygon-mumbai"
@@ -226,7 +226,7 @@ Feature: Vesting page second batch of test cases
         And Switch network button is visible in the "fUSDCx" permission row
 
     Scenario: Permissions table - Change network button - Fixing vesting permissions
-        Given Dashboard is open with a mocked connection to "john" on "polygon-mumbai"
+        Given Dashboard is open with a mocked connection to "john" on "polygon"
         And User connects their wallet to the dashboard
         And User clicks on the "vesting" navigation button
         And User changes their network to "polygon-mumbai"

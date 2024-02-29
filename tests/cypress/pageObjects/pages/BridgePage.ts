@@ -16,18 +16,22 @@ const NETWORK_BUTTONS = "[aria-label] > .MuiAvatar-root > .MuiAvatar-img";
 export class BridgePage extends BasePage {
   static validateFeaturedTokensAreShownOn(network: string) {
     cy.fixture("rejectedCaseTokens").then((availableTokens) => {
-      //The tokens user has in their wallet are shown at the top sorted by the balance , checking just 2 because 3rd is slightly overlayed
+      //The tokens are not featured at the top like the used to after a package update , still checking if super tokens are shown
       cy.get(TOKEN_LIST_NAMES)
         .contains(availableTokens[network].TokenOne)
+        .scrollIntoView()
         .should("be.visible");
       cy.get(TOKEN_LIST_NAMES)
         .contains(availableTokens[network].TokenTwo)
+        .scrollIntoView()
         .should("be.visible");
       cy.get(TOKEN_LIST_NAMES)
         .contains(`${availableTokens[network].TokenOne}x`)
+        .scrollIntoView()
         .should("be.visible");
       cy.get(TOKEN_LIST_NAMES)
         .contains(`${availableTokens[network].TokenTwo}x`)
+        .scrollIntoView()
         .should("be.visible");
     });
   }
