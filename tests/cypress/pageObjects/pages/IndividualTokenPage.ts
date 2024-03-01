@@ -79,10 +79,12 @@ export class IndividualTokenPage extends BasePage {
     let assertableString = ethers.utils.isAddress(address)
       ? BasePage.shortenHex(address)
       : address;
+    //Extra timeout because lens/ens names might take a while to load sometimes
     this.hasText(
       `${STREAM_ROWS} ${SENDER_RECEIVER_ADDRESSES}`,
       assertableString,
-      0
+      0,
+      { timeout: 30000 }
     );
     let plusOrMinus;
     if (sendOrReceive === "receiving") {
@@ -125,14 +127,16 @@ export class IndividualTokenPage extends BasePage {
   static validateNoPendingStatusForFirstStreamRow() {
     cy.get(STREAM_ROWS)
       .first()
-      .find(PENDING_MESSAGE, { timeout: 90000 })
+      //Mumbai is syncing for years...
+      .find(PENDING_MESSAGE, { timeout: 120000 })
       .should("not.exist");
   }
 
   static validateNoPendingStatusForFirstDistributionsRow() {
     cy.get(DISTRIBUTION_ROWS)
       .first()
-      .find(PENDING_MESSAGE, { timeout: 90000 })
+      //Mumbai is syncing for years...
+      .find(PENDING_MESSAGE, { timeout: 120000 })
       .should("not.exist");
   }
 

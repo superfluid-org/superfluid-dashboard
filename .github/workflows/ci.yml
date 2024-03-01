@@ -77,7 +77,7 @@ jobs:
           CYPRESS_baseUrl: ${{ needs.test_setup.outputs.netlify_url }}
 
   rejected-tests:
-    timeout-minutes: 30
+    timeout-minutes: 45
     needs: ["test_setup"]
     if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-latest

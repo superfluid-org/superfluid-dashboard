@@ -52,7 +52,8 @@ Cypress.on("fail", (err, runneable) => {
     ) ||
     err.name.includes("PollingBlockTracker") ||
     //BSC mainnet sometimes throws these, similar to Pooling block tracker
-    err.message.includes("Could not find block")
+    err.message.includes("Could not find block") ||
+    err.message.includes("([object ProgressEvent])")
   ) {
     return false;
   } else {

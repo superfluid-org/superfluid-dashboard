@@ -54,6 +54,29 @@ Given(
   }
 );
 
+Given(
+  /^The "([^"]*)" stream from "([^"]*)" to "([^"]*)" on "([^"]*)" is cancelled$/,
+  (token: string, sender: string, receiver: string, network: string) => {
+    cy.wrap(
+      SendPage.cancelTokenStreamFromTo(token, sender, receiver, network),
+      { timeout: 60000 }
+    ).then(() => {
+      cy.wait(1000);
+    });
+  }
+);
+
+Given(
+  /^The "([^"]*)" stream from "([^"]*)" to "([^"]*)" on "([^"]*)" is running$/,
+  (token: string, sender: string, receiver: string, network: string) => {
+    cy.wrap(SendPage.startTokenStreamFromTo(token, sender, receiver, network), {
+      timeout: 60000,
+    }).then(() => {
+      cy.wait(1000);
+    });
+  }
+);
+
 Given(/^User connects their wallet to the dashboard$/, () => {
   Common.clickConnectWallet();
   Common.clickInjectedWallet();

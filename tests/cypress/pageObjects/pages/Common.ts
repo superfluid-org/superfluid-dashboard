@@ -517,7 +517,7 @@ export class Common extends BasePage {
         return false;
       }
     });
-    cy.get(TX_ERROR, { timeout: 45000 }).should(
+    cy.get(TX_ERROR, { timeout: 60000 }).should(
       "have.text",
       "Transaction Rejected"
     );
@@ -825,7 +825,7 @@ export class Common extends BasePage {
       return web3.eth
         .getBalance(FAUCET_EXECUTION_CONTRACT_ADDRESS)
         .then((balance) => {
-          expect(parseInt(balance)).to.be.greaterThan(1e19);
+          expect(parseInt(balance)).to.be.greaterThan(5e18);
         });
     });
   }

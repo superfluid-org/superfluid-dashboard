@@ -3,9 +3,10 @@
 Feature: Stream transactional test cases
 
     Scenario: Creating a new stream
+        Given The "fDAIx" stream from "bob" to "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" on "polygon-mumbai" is cancelled
+
         Given "Send Page" is open with "bob" connected on "polygon-mumbai"
         And User inputs all the details to send "1" "fDAIx" per "month" to "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2"
-        And User cancels the stream if necessary
         And User starts the stream and the transaction dialogs are visible for "polygon-mumbai"
         And User goes to the token page from the transaction dialog
         And User opens the transaction drawer
@@ -21,9 +22,10 @@ Feature: Stream transactional test cases
         Then All the details to send "1" "fDAIx" per "month" to "elvijs.lens" on "polygon-mumbai" are set in the fields
 
     Scenario: Modifying a stream
+        Given The "fDAIx" stream from "bob" to "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" on "polygon-mumbai" is running
+
         Given "Send Page" is open with "bob" connected on "polygon-mumbai"
         And User inputs all the details to send "2" "fDAIx" per "month" to "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2"
-        And User starts or cancels the stream if necessary
         And User modifies the stream and the transaction dialogs are visible for "polygon-mumbai"
         And User goes to the token page from the transaction dialog
         And User opens the transaction drawer
@@ -36,9 +38,10 @@ Feature: Stream transactional test cases
         Then All the details to send "2" "fDAIx" per "month" to "elvijs.lens" on "polygon-mumbai" are set in the fields
 
     Scenario: Cancelling a stream
+        Given The "fDAIx" stream from "bob" to "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" on "polygon-mumbai" is running
+
         Given "Send Page" is open with "bob" connected on "polygon-mumbai"
         And User inputs all the details to send "2" "fDAIx" per "month" to "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2"
-        And User starts the stream if necessary
         And User cancels the stream and the transaction dialogs are visible for "polygon-mumbai"
         And User clicks the OK button
         And User opens the transaction drawer

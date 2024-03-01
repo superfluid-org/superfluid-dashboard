@@ -28,7 +28,7 @@ Feature: Transactional rejected test cases
     Scenario: Wrapping network native tokens on selected network
         Given Transactional account john is connected to the dashboard on selected network
         And User clicks on the "wrap-unwrap" navigation button
-        And User wraps the "0.01" of the selected token
+        And User wraps the "0.001" of the selected token
         And Transaction dialog for selected network is shown wrapping 0.01 TokenGas
         And Transaction rejected error is shown
 
@@ -36,7 +36,7 @@ Feature: Transactional rejected test cases
         Given Transactional account john is connected to the dashboard on selected network
         And User clicks on the "wrap-unwrap" navigation button
         And User switches to unwrap tab
-        And User unwraps the "0.01" of the selected token
+        And User unwraps the "0.001" of the selected token
         And Transaction dialog for selected network is shown unwrapping 0.01 TokenGas
         And Transaction rejected error is shown
 
@@ -45,8 +45,8 @@ Feature: Transactional rejected test cases
         And User clicks on the "wrap-unwrap" navigation button
         And User opens the token selection in the wrap page
         And User chooses "TokenTwo" to wrap
-        And User inputs "0.01" into the wrap field
-        And User wraps the "0.01" of the selected token
+        And User inputs "0.001" into the wrap field
+        And User wraps the "0.001" of the selected token
         And Transaction dialog for selected network is shown wrapping 0.01 TokenTwo
         And Transaction rejected error is shown
 
@@ -56,7 +56,7 @@ Feature: Transactional rejected test cases
         And User switches to unwrap tab
         And User opens the token selection in the wrap page
         And User chooses "TokenTwox" to wrap
-        And User unwraps the "0.01" of the selected token
+        And User unwraps the "0.001" of the selected token
         And Transaction dialog for selected network is shown unwrapping 0.01 TokenTwo
         And Transaction rejected error is shown
 
@@ -65,9 +65,9 @@ Feature: Transactional rejected test cases
         And User clicks on the "wrap-unwrap" navigation button
         And User opens the token selection in the wrap page
         And User chooses "TokenOne" to wrap
-        And User inputs "0.01" into the wrap field
+        And User inputs "0.001" into the wrap field
         And User approves the protocol to use "TokenOne"
-        And Transaction dialog for selected network is shown approving allowance of 0.01 TokenOne
+        And Transaction dialog for selected network is shown approving allowance of 0.001 TokenOne
         And Transaction rejected error is shown
 
     Scenario: Approving a subscription on selected network
