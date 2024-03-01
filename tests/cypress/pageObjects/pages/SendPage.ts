@@ -713,7 +713,7 @@ export class SendPage extends BasePage {
     this.hasValue(`${END_DATE} input`, date);
   }
 
-  static isPlatformDeployedOnNetwork(fn: () => void) {
+  static runFunctionIfPlatformIsDeployedOnNetwork(fn: () => void) {
     if (
       [
         "avalanche-fuji",
@@ -731,6 +731,24 @@ export class SendPage extends BasePage {
       return;
     } else {
       fn();
+    }
+  }
+
+  static skipTestIfPlatformNotAvailableOnNetwork() {
+    if (
+      [
+        "avalanche-fuji",
+        "sepolia",
+        "base",
+        "scroll",
+        "scrsepolia",
+        "opsepolia",
+      ].includes(Cypress.env("network")) &&
+      Cypress.env("platformNeeded")
+    ) {
+      return true;
+    } else {
+      return false;
     }
   }
 }

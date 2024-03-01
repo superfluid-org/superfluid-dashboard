@@ -36,14 +36,14 @@ Then(/^Not in allowlist auto\-wrap page screen is visible$/, function () {
   AutoWrapPage.validateAllowlistScreenIsOpen();
 });
 Given(/^User clicks on the add token button$/, function () {
-  SendPage.isPlatformDeployedOnNetwork(() => {
+  SendPage.runFunctionIfPlatformIsDeployedOnNetwork(() => {
     AutoWrapPage.clickAddTokenButton();
   });
 });
 Given(
   /^User selects "([^"]*)" as the network for the auto\-wrap$/,
   function (network: string) {
-    SendPage.isPlatformDeployedOnNetwork(() => {
+    SendPage.runFunctionIfPlatformIsDeployedOnNetwork(() => {
       AutoWrapPage.selectNetworkForAutoWrap(network);
     });
   }
@@ -51,7 +51,7 @@ Given(
 Given(
   /^User clicks on the "([^"]*)" enable button in the auto\-wrap table on "([^"]*)"$/,
   function (token: string, network: string) {
-    SendPage.isPlatformDeployedOnNetwork(() => {
+    SendPage.runFunctionIfPlatformIsDeployedOnNetwork(() => {
       AutoWrapPage.clickEnableButtonForTokenOnNetwork(token, network);
     });
   }
@@ -59,18 +59,18 @@ Given(
 Given(
   /^User clicks on the "([^"]*)" disable auto\-wrap button on "([^"]*)"$/,
   function (token: string, network: string) {
-    SendPage.isPlatformDeployedOnNetwork(() => {
+    SendPage.runFunctionIfPlatformIsDeployedOnNetwork(() => {
       AutoWrapPage.clickDisableButtonForTokenOnNetwork(token, network);
     });
   }
 );
 Given(/^User clicks on the close auto wrap dialog button$/, function () {
-  SendPage.isPlatformDeployedOnNetwork(() => {
+  SendPage.runFunctionIfPlatformIsDeployedOnNetwork(() => {
     AutoWrapPage.clickAutoWrapCloseTxButton();
   });
 });
 Then(/^Auto\-wrap dialog is not visible$/, function () {
-  SendPage.isPlatformDeployedOnNetwork(() => {
+  SendPage.runFunctionIfPlatformIsDeployedOnNetwork(() => {
     AutoWrapPage.validateNoAutoWrapDialogIsVisible();
   });
 });
@@ -85,7 +85,7 @@ Then(
 Then(
   /^User clicks on the enable auto-wrap transaction button in the auto-wrap page dialog$/,
   function () {
-    SendPage.isPlatformDeployedOnNetwork(() => {
+    SendPage.runFunctionIfPlatformIsDeployedOnNetwork(() => {
       AutoWrapPage.clickEnableAutoWrapInDialog();
     });
   }

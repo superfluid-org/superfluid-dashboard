@@ -88,6 +88,8 @@ Feature: Transactional rejected test cases
 
     @platformNeeded
     Scenario: Creating a stream with just start date
+        Given The test case is skipped if the platform is not deployed on the network
+
         Given Transactional account john is connected to the dashboard on selected network
         And User clicks on the "send" navigation button
         And User inputs all the details to send "1" "TokenTwox" per "month" to "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4"
@@ -100,6 +102,8 @@ Feature: Transactional rejected test cases
 
     @platformNeeded
     Scenario: Creating a stream with just end date
+        Given The test case is skipped if the platform is not deployed on the network
+
         Given Transactional account john is connected to the dashboard on selected network
         And User clicks on the "send" navigation button
         And User inputs all the details to send "1" "TokenTwox" per "month" to "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4"
@@ -112,6 +116,8 @@ Feature: Transactional rejected test cases
 
     @platformNeeded
     Scenario: Creating a stream with start and end date
+        Given The test case is skipped if the platform is not deployed on the network
+
         Given Transactional account john is connected to the dashboard on selected network
         And User clicks on the "send" navigation button
         And User inputs all the details to send "1" "TokenTwox" per "month" to "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4"
@@ -125,6 +131,8 @@ Feature: Transactional rejected test cases
 
     @platformNeeded
     Scenario: Adding end date to an ongoing stream
+        Given The test case is skipped if the platform is not deployed on the network
+
         Given Transactional account john is connected to the dashboard on selected network
         And User clicks on the "send" navigation button
         And User inputs all the details to send "1" "TokenOnex" per "month" to "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2"

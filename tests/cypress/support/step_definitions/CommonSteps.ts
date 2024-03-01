@@ -60,9 +60,9 @@ Given(
     cy.wrap(
       SendPage.cancelTokenStreamFromTo(token, sender, receiver, network),
       { timeout: 60000 }
-    ).then(() => {
-      cy.wait(1000);
-    });
+    );
+    //Waiting just to make sure the nonces don't get messed up between the cancel tx and the provider thats used to connect to the dashboard
+    cy.wait(10000);
   }
 );
 
@@ -71,9 +71,9 @@ Given(
   (token: string, sender: string, receiver: string, network: string) => {
     cy.wrap(SendPage.startTokenStreamFromTo(token, sender, receiver, network), {
       timeout: 60000,
-    }).then(() => {
-      cy.wait(1000);
     });
+    //Waiting just to make sure the nonces don't get messed up between the start tx and the provider thats used to connect to the dashboard
+    cy.wait(10000);
   }
 );
 
@@ -250,7 +250,7 @@ Then(/^Transaction rejected error is shown$/, function () {
 Then(
   /^Transaction rejected error is shown for auto-wrap or vesting transaction$/,
   function () {
-    SendPage.isPlatformDeployedOnNetwork(() => {
+    SendPage.runFunctionIfPlatformIsDeployedOnNetwork(() => {
       Common.transactionRejectedErrorIsShown();
     });
   }
@@ -503,5 +503,14 @@ Then(
   /^Ecosystem page navigation button leads to an external site$/,
   function () {
     Common.validateEcosystemNavigationButtonHref();
+  }
+);
+
+Given(
+  /^The test case is skipped if the platform is not deployed on the network$/,
+  function () {
+    if (SendPage.skipTestIfPlatformNotAvailableOnNetwork()) {
+      this.skip();
+    }
   }
 );

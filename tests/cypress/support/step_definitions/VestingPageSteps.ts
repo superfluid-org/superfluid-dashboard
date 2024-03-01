@@ -123,7 +123,7 @@ Given(
   }
 );
 Given(/^User opens "([^"]*)" permission table row$/, function (token: string) {
-  SendPage.isPlatformDeployedOnNetwork(() => {
+  SendPage.runFunctionIfPlatformIsDeployedOnNetwork(() => {
     VestingPage.openTokenPermissionRow(token);
   });
 });
@@ -254,7 +254,7 @@ Then(/^Give allowance button does not exist$/, function () {
 });
 
 Then(/^User clicks the Allowance button for the auto-wrap$/, function () {
-  SendPage.isPlatformDeployedOnNetwork(() => {
+  SendPage.runFunctionIfPlatformIsDeployedOnNetwork(() => {
     VestingPage.clickAutoWrapAllowanceButton();
   });
 });
@@ -262,7 +262,7 @@ Then(/^User clicks the Allowance button for the auto-wrap$/, function () {
 Then(
   /^Auto-wrap icon for "([^"]*)" is "([^"]*)"$/,
   function (token: string, colorOrExisting: string) {
-    SendPage.isPlatformDeployedOnNetwork(() => {
+    SendPage.runFunctionIfPlatformIsDeployedOnNetwork(() => {
       VestingPage.validatePermissionTableAutoWrapIcon(token, colorOrExisting);
     });
   }
@@ -271,20 +271,20 @@ Then(
 Then(
   /^User clicks on the enable auto-wrap transaction button in the permissions table$/,
   function () {
-    SendPage.isPlatformDeployedOnNetwork(() => {
+    SendPage.runFunctionIfPlatformIsDeployedOnNetwork(() => {
       VestingPage.clickPermissionsTableAutoWrapEnableButton();
     });
   }
 );
 
 Then(/^Auto-wrap dialog is showing ACL allowance button$/, function () {
-  SendPage.isPlatformDeployedOnNetwork(() => {
+  SendPage.runFunctionIfPlatformIsDeployedOnNetwork(() => {
     VestingPage.validateAutoWrapDialogShowingACLAllowanceButton();
   });
 });
 
 Then(/^Auto-wrap dialog is showing token allowance button$/, function () {
-  SendPage.isPlatformDeployedOnNetwork(() => {
+  SendPage.runFunctionIfPlatformIsDeployedOnNetwork(() => {
     VestingPage.validateAutoWrapDialogShowingTokenAllowanceButton();
   });
 });
@@ -292,7 +292,7 @@ Then(/^Auto-wrap dialog is showing token allowance button$/, function () {
 Then(
   /^User clicks the disable auto-wrap button in the permissions table$/,
   function () {
-    SendPage.isPlatformDeployedOnNetwork(() => {
+    SendPage.runFunctionIfPlatformIsDeployedOnNetwork(() => {
       VestingPage.clickDisableAutoWrapInPermissionsTable();
     });
   }
@@ -327,7 +327,7 @@ Then(/^Disable auto\-wrap button does not exist$/, function () {
   VestingPage.validateDisableAutoWrapButtonDoesNotExist();
 });
 Then(/^User clicks on the Fix permissions button$/, function () {
-  SendPage.isPlatformDeployedOnNetwork(() => {
+  SendPage.runFunctionIfPlatformIsDeployedOnNetwork(() => {
     VestingPage.clickFixPermissionsButton();
   });
 });
@@ -335,7 +335,7 @@ Then(/^User clicks on the Fix permissions button$/, function () {
 Then(
   /^User clicks on the enable auto-wrap transaction button in the auto-wrap dialog$/,
   function () {
-    SendPage.isPlatformDeployedOnNetwork(() => {
+    SendPage.runFunctionIfPlatformIsDeployedOnNetwork(() => {
       VestingPage.clickEnableAutoWrapButtonInAutoWrapDialog();
     });
   }
