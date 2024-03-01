@@ -3,14 +3,15 @@ import { memo, ReactElement } from "react";
 import Amount from "./Amount";
 import useEtherSignificantFlowingDecimal from "./useEtherSignificantFlowingDecimal";
 import useFlowingBalance from "./useFlowingBalance";
+import { BigNumberish } from "ethers";
 
 export interface FlowingBalanceProps {
-  balance: string;
+  balance: BigNumberish;
   /**
    * Timestamp in seconds.
    */
   balanceTimestamp: number;
-  flowRate: string;
+  flowRate: BigNumberish;
   disableRoundingIndicator?: boolean;
   tokenSymbol?: string;
 }

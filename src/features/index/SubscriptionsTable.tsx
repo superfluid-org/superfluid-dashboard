@@ -41,7 +41,7 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
   const indexSubscriptionsQuery = subgraphApi.useIndexSubscriptionsQuery({
     chainId: network.id,
     filter: {
-      subscriber: visibleAddress.toLowerCase(),
+      subscriber: visibleAddress,
     },
     pagination: {
       take: Infinity

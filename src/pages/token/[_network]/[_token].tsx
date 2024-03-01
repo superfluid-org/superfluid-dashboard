@@ -47,6 +47,7 @@ import TransferEventsTable from "../../../features/transfers/TransferEventsTable
 import { useVisibleAddress } from "../../../features/wallet/VisibleAddressContext";
 import useNavigateBack from "../../../hooks/useNavigateBack";
 import Page404 from "../../404";
+import PoolMembersTable from "../../../features/pool/PoolMembersTable";
 
 export const getTokenPagePath = ({
   network,
@@ -114,6 +115,7 @@ enum TokenDetailsTabs {
   Streams = "streams",
   Distributions = "distributions",
   Transfers = "transfers",
+  StreamDistributions = "stream-distributions",
 }
 
 const GraphTimeUnitFilters = [
@@ -148,16 +150,16 @@ const TokenPageContent: FC<{
 
   const tokenQuery = subgraphApi.useTokenQuery({
     chainId: network.id,
-    id: tokenAddress.toLowerCase(),
+    id: tokenAddress,
   });
-  
+
   const tokenSnapshotQuery = subgraphApi.useAccountTokenSnapshotQuery({
     chainId: network.id,
     id: `${accountAddress.toLowerCase()}-${tokenAddress.toLowerCase()}`,
   }, {
     refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
   });
-  
+
   const onShowForecastChange = (_e: unknown, checked: boolean) =>
     setShowForecast(checked);
 
@@ -404,6 +406,11 @@ const TokenPageContent: FC<{
               label="Transfers"
               value={TokenDetailsTabs.Transfers}
             />
+            <Tab
+              data-cy="stream-distributions-tab"
+              label="Stream Distributions"
+              value={TokenDetailsTabs.StreamDistributions}
+            />
           </TabList>
 
           {activeTab === TokenDetailsTabs.Streams && (
@@ -420,6 +427,14 @@ const TokenPageContent: FC<{
               tokenAddress={tokenAddress}
             />
           )}
+
+          {activeTab === TokenDetailsTabs.StreamDistributions && (
+            <PoolMembersTable
+              network={network}
+              tokenAddress={tokenAddress}
+            />
+          )}
+
         </TabContext>
       </Stack>
     </TokenPageContainer>
