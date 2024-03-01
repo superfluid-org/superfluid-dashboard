@@ -59,10 +59,10 @@ Given(
   (token: string, sender: string, receiver: string, network: string) => {
     cy.wrap(
       SendPage.cancelTokenStreamFromTo(token, sender, receiver, network),
-      { timeout: 60000 }
+      { timeout: 90000 }
     );
     //Waiting just to make sure the nonces don't get messed up between the cancel tx and the provider thats used to connect to the dashboard
-    cy.wait(10000);
+    cy.wait(15000);
   }
 );
 
@@ -70,10 +70,10 @@ Given(
   /^The "([^"]*)" stream from "([^"]*)" to "([^"]*)" on "([^"]*)" is running$/,
   (token: string, sender: string, receiver: string, network: string) => {
     cy.wrap(SendPage.startTokenStreamFromTo(token, sender, receiver, network), {
-      timeout: 60000,
+      timeout: 90000,
     });
     //Waiting just to make sure the nonces don't get messed up between the start tx and the provider thats used to connect to the dashboard
-    cy.wait(10000);
+    cy.wait(15000);
   }
 );
 

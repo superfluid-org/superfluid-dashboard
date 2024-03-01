@@ -1,4 +1,3 @@
-@retries(6)
 Feature: Bridge page test cases (Li-Fi widget)
 
     @skip
