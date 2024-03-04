@@ -98,6 +98,7 @@ const PoolMembersTable: FC<Props> = ({
                         <TableCell>From</TableCell>
                         <TableCell>Total Amount Received</TableCell>
                         <TableCell>Flow Rate</TableCell>
+                        <TableCell>Is Connected</TableCell>
                         <TableCell width="100"></TableCell>
                     </TableRow>
                 </TableHead>
@@ -120,26 +121,28 @@ const PoolMembersTable: FC<Props> = ({
                     )}
                 </TableBody>
                 {/* --- */}
-
-                {poolMembers.length > minPageLength && (
-                    <TablePagination
-                        rowsPerPageOptions={[minPageLength, 10, 25, { value: poolMembers.length, label: 'All' }]}
-                        component="div"
-                        count={poolMembers.length}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        onPageChange={handleChangePage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                        sx={{
-                            "> *": {
-                                visibility:
-                                    poolMembers.length <= 5 ? "hidden" : "visible",
-                            },
-                        }}
-                    />
-                )}
-
             </Table>
+
+            {/*  # Pagination */}
+            {poolMembers.length > minPageLength && (
+                <TablePagination
+                    rowsPerPageOptions={[minPageLength, 10, 25, { value: poolMembers.length, label: 'All' }]}
+                    component="div"
+                    count={poolMembers.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                    sx={{
+                        "> *": {
+                            visibility:
+                                poolMembers.length <= 5 ? "hidden" : "visible",
+                        },
+                    }}
+                />
+            )}
+            {/* --- */}
+
         </TableContainer>
     );
 };

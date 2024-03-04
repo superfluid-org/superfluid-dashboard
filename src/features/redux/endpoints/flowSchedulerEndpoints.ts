@@ -162,7 +162,7 @@ export const flowSchedulerEndpoints = {
               flowOperator: network.flowSchedulerContractAddress,
               sender: arg.senderAddress,
               providerOrSigner: arg.signer,
-            })
+            });
 
             const existingFlowRateAllowance = BigNumber.from(
               flowOperatorData.flowRateAllowance
@@ -306,7 +306,7 @@ export const flowSchedulerEndpoints = {
             ...(arg.transactionExtraData ?? {}),
           },
           title: mainTransactionTitle,
-        });
+        }); 
 
         return {
           data: {

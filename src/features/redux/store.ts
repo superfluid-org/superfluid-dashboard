@@ -64,6 +64,7 @@ import addressBookRpcApi from "../addressBook/addressBookRpcApi.slice";
 import { autoWrapEndpoints } from "./endpoints/autoWrapEndpoints";
 import { autoWrapSubgraphApi } from "../../auto-wrap-subgraph/autoWrapSubgraphApi";
 import { tokenAccessMutationEndpoints } from "./endpoints/tokenAccessEndpoints";
+import { gdaEndpoints } from "./endpoints/gdaEndpoints";
 
 export const rpcApi = initializeRpcApiSlice((options) =>
   createApiWithReactHooks({
@@ -79,7 +80,8 @@ export const rpcApi = initializeRpcApiSlice((options) =>
   .injectEndpoints(vestingSchedulerMutationEndpoints)
   .injectEndpoints(tokenAccessMutationEndpoints)
   .injectEndpoints(vestingSchedulerQueryEndpoints)
-  .injectEndpoints(autoWrapEndpoints);
+  .injectEndpoints(autoWrapEndpoints)
+  .injectEndpoints(gdaEndpoints);
 
 export const subgraphApi = initializeSubgraphApiSlice((options) =>
   createApiWithReactHooks({
