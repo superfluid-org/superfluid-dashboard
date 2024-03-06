@@ -13,6 +13,7 @@ export const isPendingIndexSubscriptionApprove = (
   x: PendingUpdate
 ): x is PendingConnectToPool => x.pendingType === "ConnectToPool";
 
+
 export const usePendingConnectToPool = ({
   chainId,
   poolAddress,
