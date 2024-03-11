@@ -19,7 +19,8 @@ export interface PendingUpdate {
     | "VestingScheduleDelete"
     | "AutoWrapScheduleCreate"
     | "AutoWrapScheduleDelete"
-    | "ConnectToPool";
+    | "ConnectToPool"
+    | "DisconnectFromPool";
   transactionHash: string;
   chainId: number;
   timestamp: number;

@@ -48,6 +48,7 @@ declare module "@superfluid-finance/sdk-redux" {
     "Update Flow Operator Permissions": true;
     "Disable Auto-Wrap": true;
     "Connect to Pool": true;
+    "Disconnect from Pool": true;
   }
 }
 

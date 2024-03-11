@@ -21,6 +21,7 @@ import FlowingBalance from "../token/FlowingBalance";
 import { UnitOfTime } from "../send/FlowRateInput";
 import { ConnectToPoolButton } from "./ConnectToPoolButton";
 import { PoolMemberStatus } from "./PoolMemberStatus";
+import { DisconnectFromPoolButton } from "./DisconnectFromPoolButton";
 
 type Props = {
     network: Network;
@@ -97,7 +98,10 @@ const PoolMemberRow: FC<Props> = ({
             <TableCell>
                 <ConnectionBoundary expectedNetwork={network}>
                     {() => (
-                        <ConnectToPoolButton network={network} poolMember={poolMember} />
+                        <>
+                            <ConnectToPoolButton network={network} poolMember={poolMember} />
+                            <DisconnectFromPoolButton network={network} poolMember={poolMember} />
+                        </>
                     )}
                 </ConnectionBoundary>
             </TableCell>

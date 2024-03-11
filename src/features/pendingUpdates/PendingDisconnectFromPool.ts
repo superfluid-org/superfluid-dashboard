@@ -3,17 +3,17 @@ import { useMemo } from "react";
 import { useAppSelector } from "../redux/store";
 import { pendingUpdateSelectors } from "./pendingUpdate.slice";
 
-export interface PendingConnectToPool extends PendingUpdate {
+export interface PendingDisconnectFromPool extends PendingUpdate {
   pendingType: "ConnectToPool";
   poolAddress: string;
   superTokenAddress: string;
 }
 
-export const isPendingConnectToPool = (
+export const isPendingIndexSubscriptionApprove = (
   x: PendingUpdate
-): x is PendingConnectToPool => x.pendingType === "ConnectToPool";
+): x is PendingDisconnectFromPool => x.pendingType === "DisconnectFromPool";
 
-export const usePendingConnectToPool = ({
+export const usePendingDisconnectFromPool = ({
   chainId,
   poolAddress,
   superTokenAddress,
@@ -21,7 +21,7 @@ export const usePendingConnectToPool = ({
   chainId: number;
   poolAddress: string;
   superTokenAddress: string;
-}): PendingConnectToPool | undefined => {
+}): PendingDisconnectFromPool | undefined => {
   const allPendingUpdates = useAppSelector((state) =>
     pendingUpdateSelectors.selectAll(state.pendingUpdates)
   );
@@ -30,7 +30,7 @@ export const usePendingConnectToPool = ({
   return useMemo(
     () =>
       allPendingUpdates
-        .filter(isPendingConnectToPool)
+        .filter(isPendingIndexSubscriptionApprove)
         .filter(
           (x) =>
             x.chainId === chainId &&
