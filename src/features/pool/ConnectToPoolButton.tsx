@@ -1,4 +1,4 @@
-import { Button, IconButton, Tooltip, Typography } from "@mui/material";
+import { Button, Tooltip, Typography } from "@mui/material";
 import { FC } from "react";
 import { PendingProgress } from "../pendingUpdates/PendingProgress";
 import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
@@ -9,7 +9,6 @@ import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { rpcApi } from "../redux/store";
 import { usePendingConnectToPool } from "../pendingUpdates/PendingConnectToPool";
 import { useConnectionBoundary } from "../transactionBoundary/ConnectionBoundary";
-import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 
 type Props = {
     network: Network;

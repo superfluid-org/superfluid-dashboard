@@ -17,6 +17,7 @@ import { subgraphApi } from "../redux/store";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { PoolMemberRowLoading } from "./PoolMemberRowLoading";
 import PoolMemberRow from "./PoolMemberRow";
+import _ from "lodash";
 
 type Props = {
     tokenAddress: Address;
@@ -30,6 +31,7 @@ const PoolMembersTable: FC<Props> = ({
     const theme = useTheme();
 
     const { visibleAddress } = useVisibleAddress();
+
     const { poolMembers, isPoolMemberLoading } = subgraphApi.usePoolMembersQuery({
         chainId: network.id,
         filter: {
@@ -46,10 +48,12 @@ const PoolMembersTable: FC<Props> = ({
             take: Infinity
         },
     }, {
-        selectFromResult: (result) => ({
-            poolMembers: result.currentData?.items || [],
-            isPoolMemberLoading: result.isLoading
-        }),
+        selectFromResult: (result) => {
+            return ({
+                poolMembers: (result.currentData?.items || []),
+                isPoolMemberLoading: result.isLoading || result.isUninitialized
+            });
+        },
         refetchOnFocus: true // Re-fetch list view more often where there might be something incoming.
     })
     const isPoolMembersEmpty = poolMembers.length === 0;
@@ -92,13 +96,12 @@ const PoolMembersTable: FC<Props> = ({
             }}
         >
             <Table>
-
                 <TableHead>
                     <TableRow>
-                        <TableCell>From</TableCell>
-                        <TableCell>Total Amount Received</TableCell>
+                        <TableCell>Pool</TableCell>
+                        <TableCell>Amount Received</TableCell>
                         <TableCell>Flow Rate</TableCell>
-                        <TableCell>Is Connected</TableCell>
+                        <TableCell>Status</TableCell>
                         <TableCell width="100"></TableCell>
                     </TableRow>
                 </TableHead>

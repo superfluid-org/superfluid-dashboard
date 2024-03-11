@@ -44,18 +44,24 @@ export const PoolMemberRowLoading = () => {
                             height={24}
                             sx={{ borderRadius: "10px" }}
                         />
-                        <Stack>
-                            <Skeleton width={80} />
-                            <Skeleton width={60} />
-                        </Stack>
                     </Stack>
                 </TableCell>
                 <TableCell>
-                    <Stack alignItems="end">
-                        <Skeleton width={60} />
-                        <Skeleton width={40} />
+                    <Stack>
+                        <Skeleton />
                     </Stack>
                 </TableCell>
+                <TableCell>
+                    <Stack>
+                        <Skeleton />
+                    </Stack>
+                </TableCell>
+                <TableCell>
+                    <Stack>
+                        <Skeleton />
+                    </Stack>
+                </TableCell>
+                <TableCell></TableCell>
             </TableRow>
         )
     }

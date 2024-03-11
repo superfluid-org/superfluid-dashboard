@@ -20,6 +20,7 @@ import { usePoolMemberTotalAmountReceived } from "./usePoolMemberTotalAmountRece
 import FlowingBalance from "../token/FlowingBalance";
 import { UnitOfTime } from "../send/FlowRateInput";
 import { ConnectToPoolButton } from "./ConnectToPoolButton";
+import { PoolMemberStatus } from "./PoolMemberStatus";
 
 type Props = {
     network: Network;
@@ -38,6 +39,7 @@ const PoolMemberRow: FC<Props> = ({
     }, {})
 
     const totalAmountReceived = usePoolMemberTotalAmountReceived(poolMember, pool)
+    const isReceivingFlow = totalAmountReceived?.memberFlowRate?.gt(0);
 
     // if not connected, query "claimable"
 
@@ -83,17 +85,14 @@ const PoolMemberRow: FC<Props> = ({
                 {totalAmountReceived && (
                     <Typography data-cy={"flow-rate"} variant="body2mono">
                         {/* TODO: Move this into a component */}
-                        +
-                        <Amount
-                            wei={BigNumber.from(totalAmountReceived?.memberFlowRate).mul(UnitOfTime.Month)}
-                        />
-                        /mo
+                        {isReceivingFlow ? <>+<Amount
+                            wei={BigNumber.from(totalAmountReceived.memberFlowRate).mul(UnitOfTime.Month)}
+                        />/mo</> : "-"}
                     </Typography>
                 )}
             </TableCell>
 
-            <TableCell>{poolMember.isConnected.toString()}
-            </TableCell>
+            <TableCell><PoolMemberStatus poolMember={poolMember} /></TableCell>
 
             <TableCell>
                 <ConnectionBoundary expectedNetwork={network}>
