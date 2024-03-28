@@ -826,12 +826,6 @@ enum Task_orderBy {
   vestingSchedule__endExecutedAt
 }
 
-"""
-A string representation of microseconds UNIX timestamp (16 digits)
-
-"""
-scalar Timestamp
-
 type TokenSenderReceiverCursor {
   id: String!
   currentVestingSchedule: VestingSchedule

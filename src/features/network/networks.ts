@@ -270,8 +270,7 @@ export const networkDefinition = {
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.mumbai,
     vestingContractAddress_v1: vestingContractAddresses_v1.mumbai,
     vestingContractAddress_v2: vestingContractAddresses_v2.mumbai,
-    vestingSubgraphUrl:
-      "https://api.goldsky.com/api/public/project_clsnd6xsoma5j012qepvucfpp/subgraphs/vesting-v1-polygon-mumbai/1.1.0/gn",
+    vestingSubgraphUrl: vestingSubgraphUrls.mumbai,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.mumbai,
     platformUrl: superfluidPlatformUrls.mumbai,
     autoWrap: {
@@ -856,8 +855,7 @@ export const networkDefinition = {
     },
     vestingContractAddress_v1: undefined,
     vestingContractAddress_v2: vestingContractAddresses_v2.optimismSepolia,
-    vestingSubgraphUrl:
-      "https://api.goldsky.com/api/public/project_clsnd6xsoma5j012qepvucfpp/subgraphs/vesting-v1-optimism-sepolia/1.1.0/gn",
+    vestingSubgraphUrl: vestingSubgraphUrls.optimismSepolia,
     autoWrapSubgraphUrl: undefined,
     platformUrl: undefined,
   },

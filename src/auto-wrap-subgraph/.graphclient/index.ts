@@ -42,7 +42,6 @@ export type Scalars = {
   BigInt: string;
   Bytes: string;
   Int8: any;
-  Timestamp: any;
 };
 
 export type AddedApprovedStrategyEvent = Event & {
@@ -1943,7 +1942,6 @@ export type ResolversTypes = ResolversObject<{
   RemovedApprovedStrategyEvent_orderBy: RemovedApprovedStrategyEvent_OrderBy;
   String: ResolverTypeWrapper<Scalars['String']>;
   Subscription: ResolverTypeWrapper<{}>;
-  Timestamp: ResolverTypeWrapper<Scalars['Timestamp']>;
   UserTokenLiquidityToken: ResolverTypeWrapper<UserTokenLiquidityToken>;
   UserTokenLiquidityToken_filter: UserTokenLiquidityToken_Filter;
   UserTokenLiquidityToken_orderBy: UserTokenLiquidityToken_OrderBy;
@@ -1987,7 +1985,6 @@ export type ResolversParentTypes = ResolversObject<{
   RemovedApprovedStrategyEvent_filter: RemovedApprovedStrategyEvent_Filter;
   String: Scalars['String'];
   Subscription: {};
-  Timestamp: Scalars['Timestamp'];
   UserTokenLiquidityToken: UserTokenLiquidityToken;
   UserTokenLiquidityToken_filter: UserTokenLiquidityToken_Filter;
   WrapExecutedEvent: WrapExecutedEvent;
@@ -2134,10 +2131,6 @@ export type SubscriptionResolvers<ContextType = MeshContext, ParentType extends 
   _meta?: SubscriptionResolver<Maybe<ResolversTypes['_Meta_']>, "_meta", ParentType, ContextType, Partial<Subscription_MetaArgs>>;
 }>;
 
-export interface TimestampScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Timestamp'], any> {
-  name: 'Timestamp';
-}
-
 export type UserTokenLiquidityTokenResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['UserTokenLiquidityToken'] = ResolversParentTypes['UserTokenLiquidityToken']> = ResolversObject<{
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   currentWrapSchedule?: Resolver<Maybe<ResolversTypes['WrapSchedule']>, ParentType, ContextType>;
@@ -2247,7 +2240,6 @@ export type Resolvers<ContextType = MeshContext> = ResolversObject<{
   Query?: QueryResolvers<ContextType>;
   RemovedApprovedStrategyEvent?: RemovedApprovedStrategyEventResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
-  Timestamp?: GraphQLScalarType;
   UserTokenLiquidityToken?: UserTokenLiquidityTokenResolvers<ContextType>;
   WrapExecutedEvent?: WrapExecutedEventResolvers<ContextType>;
   WrapSchedule?: WrapScheduleResolvers<ContextType>;

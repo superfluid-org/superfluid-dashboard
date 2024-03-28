@@ -1794,12 +1794,6 @@ enum Task_orderBy {
   receiver
 }
 
-"""
-A string representation of microseconds UNIX timestamp (16 digits)
-
-"""
-scalar Timestamp
-
 type TokenSenderReceiverCursor {
   id: String!
   currentCreateFlowTask: CreateTask

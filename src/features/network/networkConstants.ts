@@ -63,8 +63,8 @@ export const vestingContractAddresses_v1 = {
 } as const;
 
 export const vestingContractAddresses_v2 = {
-  mumbai: "0x4aeeaB12fb6797b3cC8AF8f3C3B3486B09d29F2c",
-  optimismSepolia: "0x5D0acD0864Ad07ba4E1E0474AE69Da87482e14A9",
+  mumbai: "0x2584A8976911d6d8E9D330C4F7a4D5163329cB25",
+  optimismSepolia: "0xAb6c6b7D7033e0cb8C693ACFd471614313eAE342",
 } as const;
 
 export const vestingSubgraphUrls = {
@@ -73,7 +73,9 @@ export const vestingSubgraphUrls = {
   polygon:
     "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-polygon-mainnet",
   mumbai:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-polygon-mumbai",
+    "https://api.goldsky.com/api/public/project_clsnd6xsoma5j012qepvucfpp/subgraphs/vesting-v1-polygon-mumbai/1.1.0/gn",
+  optimismSepolia:
+    "https://api.goldsky.com/api/public/project_clsnd6xsoma5j012qepvucfpp/subgraphs/vesting-v1-optimism-sepolia/1.1.0/gn",
   arbitrum:
     "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-arbitrum-one",
   optimism:
