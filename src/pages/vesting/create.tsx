@@ -17,22 +17,24 @@ const CreateVestingSchedulePage: NextPageWithLayout = () => {
   const { network } = useExpectedNetwork();
   const { address: accountAddress } = useAccount();
 
-  const { isPlatformWhitelisted, isLoading: isWhitelistLoading } =
+  const { isPlatformWhitelisted_, isLoading: isWhitelistLoading } =
     platformApi.useIsAccountWhitelistedQuery(
       accountAddress && network?.platformUrl
         ? {
-            chainId: network.id,
-            baseUrl: network.platformUrl,
-            account: accountAddress?.toLowerCase(),
-          }
+          chainId: network.id,
+          baseUrl: network.platformUrl,
+          account: accountAddress?.toLowerCase(),
+        }
         : skipToken,
       {
         selectFromResult: (queryResult) => ({
           ...queryResult,
-          isPlatformWhitelisted: !!queryResult.data,
+          isPlatformWhitelisted_: !!queryResult.data,
         }),
       }
     );
+
+  const isPlatformWhitelisted = Boolean(isPlatformWhitelisted_ || network?.testnet);
 
   return (
     <Container key={`${network.slugName}`} maxWidth="md">
