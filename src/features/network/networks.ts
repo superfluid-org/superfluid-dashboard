@@ -27,17 +27,17 @@ import { UnitOfTime } from "../send/FlowRateInput";
 import { ChainBlockExplorer } from "viem/_types/types/chain";
 
 const getMetadata = memoize((chainId: number) => {
-  const metadata = sfMeta.getNetworkByChainId(chainId)
+  const metadata = sfMeta.getNetworkByChainId(chainId);
   if (!metadata) {
-    throw new Error(`No metadata for chainId ${chainId}`)
+    throw new Error(`No metadata for chainId ${chainId}`);
   }
-  return metadata
-})
+  return metadata;
+});
 
 const getSupportsGDA = (chainId: number) => {
-  const metadata = getMetadata(chainId)
-  return Boolean(metadata.contractsV1.gdaV1)
-}
+  const metadata = getMetadata(chainId);
+  return Boolean(metadata.contractsV1.gdaV1);
+};
 
 type NetworkMetadata = (typeof sfMeta.networks)[number];
 
@@ -63,7 +63,8 @@ export type Network = Chain & {
   supportsGDA: boolean;
   flowSchedulerContractAddress?: `0x${string}`;
   flowSchedulerSubgraphUrl?: `https://${string}` | undefined;
-  vestingContractAddress: `0x${string}` | undefined;
+  vestingContractAddress_v1: `0x${string}` | undefined;
+  vestingContractAddress_v2: `0x${string}` | undefined;
   vestingSubgraphUrl: `https://${string}` | undefined;
   autoWrapSubgraphUrl: `https://${string}` | undefined;
   platformUrl: string | undefined;
@@ -164,7 +165,8 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.gnosis,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.gnosis,
-    vestingContractAddress: vestingContractAddresses.gnosis,
+    vestingContractAddress_v1: vestingContractAddresses.gnosis,
+    vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: vestingSubgraphUrls.gnosis,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.gnosis,
     platformUrl: superfluidPlatformUrls.gnosis,
@@ -213,7 +215,8 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.polygon,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.polygon,
-    vestingContractAddress: vestingContractAddresses.polygon,
+    vestingContractAddress_v1: vestingContractAddresses.polygon,
+    vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: vestingSubgraphUrls.polygon,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.polygon,
     platformUrl: superfluidPlatformUrls.polygon,
@@ -264,8 +267,10 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.mumbai,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.mumbai,
-    vestingContractAddress: vestingContractAddresses.mumbai,
-    vestingSubgraphUrl: vestingSubgraphUrls.mumbai,
+    vestingContractAddress_v1: vestingContractAddresses.mumbai,
+    vestingContractAddress_v2: "0x4aeeaB12fb6797b3cC8AF8f3C3B3486B09d29F2c",
+    vestingSubgraphUrl:
+      "https://api.goldsky.com/api/public/project_clsnd6xsoma5j012qepvucfpp/subgraphs/vesting-v1-polygon-mumbai/1.1.0/",
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.mumbai,
     platformUrl: superfluidPlatformUrls.mumbai,
     autoWrap: {
@@ -325,7 +330,8 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: undefined,
     flowSchedulerSubgraphUrl: undefined,
-    vestingContractAddress: undefined,
+    vestingContractAddress_v1: undefined,
+    vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: undefined,
     autoWrapSubgraphUrl: undefined,
     platformUrl: undefined,
@@ -375,7 +381,8 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.optimism,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.optimism,
-    vestingContractAddress: vestingContractAddresses.optimism,
+    vestingContractAddress_v1: vestingContractAddresses.optimism,
+    vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: vestingSubgraphUrls.optimism,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.optimism,
     platformUrl: superfluidPlatformUrls.optimism,
@@ -424,7 +431,8 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.arbitrum,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.arbitrum,
-    vestingContractAddress: vestingContractAddresses.arbitrum,
+    vestingContractAddress_v1: vestingContractAddresses.arbitrum,
+    vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: vestingSubgraphUrls.arbitrum,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.arbitrum,
     platformUrl: superfluidPlatformUrls.arbitrum,
@@ -483,7 +491,8 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.avalancheC,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.avalancheC,
-    vestingContractAddress: vestingContractAddresses.avalancheC,
+    vestingContractAddress_v1: vestingContractAddresses.avalancheC,
+    vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: vestingSubgraphUrls.avalancheC,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.avalancheC,
     platformUrl: superfluidPlatformUrls.avalancheC,
@@ -540,7 +549,8 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.bnbSmartChain,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.bnbSmartChain,
-    vestingContractAddress: vestingContractAddresses.bnbSmartChain,
+    vestingContractAddress_v1: vestingContractAddresses.bnbSmartChain,
+    vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: vestingSubgraphUrls.bnbSmartChain,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.bnbSmartChain,
     platformUrl: superfluidPlatformUrls.bnbSmartChain,
@@ -589,7 +599,8 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.ethereum,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.ethereum,
-    vestingContractAddress: vestingContractAddresses.ethereum,
+    vestingContractAddress_v1: vestingContractAddresses.ethereum,
+    vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: vestingSubgraphUrls.ethereum,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.ethereum,
     platformUrl: superfluidPlatformUrls.ethereum,
@@ -639,7 +650,8 @@ export const networkDefinition = {
         decimals: 18,
       },
     },
-    vestingContractAddress: undefined,
+    vestingContractAddress_v1: undefined,
+    vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: undefined,
     autoWrapSubgraphUrl: undefined,
     platformUrl: undefined,
@@ -679,7 +691,8 @@ export const networkDefinition = {
         decimals: 18,
       },
     },
-    vestingContractAddress: undefined,
+    vestingContractAddress_v1: undefined,
+    vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: undefined,
     autoWrapSubgraphUrl: undefined,
     platformUrl: undefined,
@@ -719,7 +732,8 @@ export const networkDefinition = {
         decimals: 18,
       },
     },
-    vestingContractAddress: undefined,
+    vestingContractAddress_v1: undefined,
+    vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: undefined,
     autoWrapSubgraphUrl: undefined,
     platformUrl: undefined,
@@ -759,7 +773,8 @@ export const networkDefinition = {
         decimals: 18,
       },
     },
-    vestingContractAddress: undefined,
+    vestingContractAddress_v1: undefined,
+    vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: undefined,
     autoWrapSubgraphUrl: undefined,
     platformUrl: undefined,
@@ -798,7 +813,8 @@ export const networkDefinition = {
         decimals: 18,
       },
     },
-    vestingContractAddress: undefined,
+    vestingContractAddress_v1: undefined,
+    vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: undefined,
     autoWrapSubgraphUrl: undefined,
     platformUrl: undefined,
@@ -837,8 +853,10 @@ export const networkDefinition = {
         decimals: 18,
       },
     },
-    vestingContractAddress: undefined,
-    vestingSubgraphUrl: undefined,
+    vestingContractAddress_v1: "0x5D0acD0864Ad07ba4E1E0474AE69Da87482e14A9",
+    vestingContractAddress_v2: undefined,
+    vestingSubgraphUrl:
+      "https://api.goldsky.com/api/public/project_clsnd6xsoma5j012qepvucfpp/subgraphs/vesting-v1-optimism-sepolia/1.1.0/",
     autoWrapSubgraphUrl: undefined,
     platformUrl: undefined,
   },

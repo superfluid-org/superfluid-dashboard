@@ -42,6 +42,7 @@ export type Scalars = {
   BigInt: string;
   Bytes: string;
   Int8: any;
+  Timestamp: any;
 };
 
 export type Aggregation_Interval =
@@ -2190,6 +2191,8 @@ export type _Block_ = {
   number: Scalars['Int'];
   /** Integer representation of the timestamp stored in blocks for the chain */
   timestamp?: Maybe<Scalars['Int']>;
+  /** The hash of the parent block */
+  parentHash?: Maybe<Scalars['Bytes']>;
 };
 
 /** The type for the top-level _meta field */
@@ -2322,6 +2325,7 @@ export type ResolversTypes = ResolversObject<{
   TaskType: TaskType;
   Task_filter: Task_Filter;
   Task_orderBy: Task_OrderBy;
+  Timestamp: ResolverTypeWrapper<Scalars['Timestamp']>;
   TokenSenderReceiverCursor: ResolverTypeWrapper<TokenSenderReceiverCursor>;
   TokenSenderReceiverCursor_filter: TokenSenderReceiverCursor_Filter;
   TokenSenderReceiverCursor_orderBy: TokenSenderReceiverCursor_OrderBy;
@@ -2370,6 +2374,7 @@ export type ResolversParentTypes = ResolversObject<{
   Subscription: {};
   Task: Task;
   Task_filter: Task_Filter;
+  Timestamp: Scalars['Timestamp'];
   TokenSenderReceiverCursor: TokenSenderReceiverCursor;
   TokenSenderReceiverCursor_filter: TokenSenderReceiverCursor_Filter;
   VestingCliffAndFlowExecutedEvent: VestingCliffAndFlowExecutedEvent;
@@ -2494,6 +2499,10 @@ export type TaskResolvers<ContextType = MeshContext, ParentType extends Resolver
   vestingSchedule?: Resolver<ResolversTypes['VestingSchedule'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
+
+export interface TimestampScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Timestamp'], any> {
+  name: 'Timestamp';
+}
 
 export type TokenSenderReceiverCursorResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['TokenSenderReceiverCursor'] = ResolversParentTypes['TokenSenderReceiverCursor']> = ResolversObject<{
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -2643,6 +2652,7 @@ export type _Block_Resolvers<ContextType = MeshContext, ParentType extends Resol
   hash?: Resolver<Maybe<ResolversTypes['Bytes']>, ParentType, ContextType>;
   number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   timestamp?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  parentHash?: Resolver<Maybe<ResolversTypes['Bytes']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2662,6 +2672,7 @@ export type Resolvers<ContextType = MeshContext> = ResolversObject<{
   Query?: QueryResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   Task?: TaskResolvers<ContextType>;
+  Timestamp?: GraphQLScalarType;
   TokenSenderReceiverCursor?: TokenSenderReceiverCursorResolvers<ContextType>;
   VestingCliffAndFlowExecutedEvent?: VestingCliffAndFlowExecutedEventResolvers<ContextType>;
   VestingEndExecutedEvent?: VestingEndExecutedEventResolvers<ContextType>;

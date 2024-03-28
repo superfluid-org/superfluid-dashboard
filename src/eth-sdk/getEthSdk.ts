@@ -34,7 +34,8 @@ export const getVestingScheduler = (
 ) => {
   const network = findNetworkOrThrow(allNetworks, chainId);
 
-  const networkContractAddress = network?.vestingContractAddress;
+  const networkContractAddress =
+    network?.vestingContractAddress_v2 ?? network?.vestingContractAddress_v1;
   const doesNetworkSupportContract = networkContractAddress;
   if (!doesNetworkSupportContract) {
     throw new Error(

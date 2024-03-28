@@ -131,7 +131,7 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
           alignItems={isBelowMd ? "flex-start" : "flex-end"}
           gap={isBelowMd ? 0.5 : 0.2}
         >
-          {network.vestingContractAddress && (
+          {network.vestingContractAddress_v1 || network.vestingContractAddress_v2 && (
             <Stack direction="row" alignItems="center" gap={0.5}>
               <Typography
                 variant={isBelowMd ? "body2" : "body1"}
@@ -146,7 +146,7 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
               >
                 <CopyIconBtn
                   TooltipProps={{ placement: "top" }}
-                  copyText={getAddress(network.vestingContractAddress)}
+                  copyText={getAddress(network.vestingContractAddress_v1 || network.vestingContractAddress_v2)}
                   description="Copy address to clipboard"
                   IconButtonProps={{ size: "small" }}
                 />
@@ -158,7 +158,7 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
                   <IconButton
                     LinkComponent={Link}
                     href={network.getLinkForAddress(
-                      network.vestingContractAddress
+                      network.vestingContractAddress_v1 || network.vestingContractAddress_v2
                     )}
                     target="_blank"
                     size="small"
@@ -176,9 +176,9 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
   );
 };
 
-interface VestingScheduleTablesProps {}
+interface VestingScheduleTablesProps { }
 
-const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({}) => {
+const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({ }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -191,11 +191,11 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({}) => {
   } = vestingSubgraphApi.useGetVestingSchedulesQuery(
     visibleAddress
       ? {
-          chainId: network.id,
-          where: { receiver: visibleAddress?.toLowerCase() },
-          orderBy: "createdAt",
-          orderDirection: "desc",
-        }
+        chainId: network.id,
+        where: { receiver: visibleAddress?.toLowerCase() },
+        orderBy: "createdAt",
+        orderDirection: "desc",
+      }
       : skipToken,
     {
       refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
@@ -212,11 +212,11 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({}) => {
   } = vestingSubgraphApi.useGetVestingSchedulesQuery(
     visibleAddress
       ? {
-          chainId: network.id,
-          where: { sender: visibleAddress?.toLowerCase() },
-          orderBy: "createdAt",
-          orderDirection: "desc",
-        }
+        chainId: network.id,
+        where: { sender: visibleAddress?.toLowerCase() },
+        orderBy: "createdAt",
+        orderDirection: "desc",
+      }
       : skipToken,
     {
       selectFromResult: (result) => ({
@@ -230,10 +230,10 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({}) => {
     platformApi.useIsAccountWhitelistedQuery(
       visibleAddress && network?.platformUrl
         ? {
-            chainId: network.id,
-            baseUrl: network.platformUrl,
-            account: visibleAddress?.toLowerCase(),
-          }
+          chainId: network.id,
+          baseUrl: network.platformUrl,
+          account: visibleAddress?.toLowerCase(),
+        }
         : skipToken,
       {
         selectFromResult: (queryResult) => ({
@@ -250,8 +250,8 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({}) => {
     () =>
       visibleAddress
         ? pendingVestingSchedules.map((pendingVestingSchedule) =>
-            mapPendingToVestingSchedule(visibleAddress, pendingVestingSchedule)
-          )
+          mapPendingToVestingSchedule(visibleAddress, pendingVestingSchedule)
+        )
         : [],
     [pendingVestingSchedules, visibleAddress]
   );
@@ -275,7 +275,7 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({}) => {
       gap={3.5}
       direction={
         receivedVestingSchedules.length === 0 &&
-        mappedSentVestingSchedules.length > 0
+          mappedSentVestingSchedules.length > 0
           ? "column-reverse"
           : "column"
       }
