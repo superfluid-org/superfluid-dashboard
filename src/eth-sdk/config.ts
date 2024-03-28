@@ -3,21 +3,24 @@ import {
   autoWrapManagerAddresses,
   autoWrapStrategyAddresses,
   flowSchedulerContractAddresses,
-  vestingContractAddresses,
+  vestingContractAddresses_v1,
 } from "../features/network/networkConstants";
 
 const ethSdkConfig = defineConfig({
   contracts: {
     polygonMumbai: {
       flowScheduler: flowSchedulerContractAddresses.mumbai, // Polygon Mumbai used as source of truth for the ABI of Flow Scheduler.
+      vestingScheduler: vestingContractAddresses_v1.mumbai, // Polygon Mumbai used as source of truth for the ABI of Vesting Scheduler.
     },
     mainnet: {
-      vestingScheduler: vestingContractAddresses.ethereum, // Mainnet used as source of truth for the ABI of Vesting Scheduler.
       autoWrapManager: autoWrapManagerAddresses[1],
-      autoWrapStrategy: autoWrapStrategyAddresses[1]
-    }
+      autoWrapStrategy: autoWrapStrategyAddresses[1],
+    },
   },
   outputPath: "./src/eth-sdk/client",
+  rpc: {
+    polygonMumbai: "https://rpc-endpoints.superfluid.dev/polygon-mumbai",
+  },
 });
 
 export default ethSdkConfig;

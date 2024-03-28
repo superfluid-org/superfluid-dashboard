@@ -51,7 +51,7 @@ export const flowSchedulerContractAddresses = {
   gnosis: "0x9cC7fc484fF588926149577e9330fA5b2cA74336",
 } as const;
 
-export const vestingContractAddresses = {
+export const vestingContractAddresses_v1 = {
   gnosis: "0x0170FFCC75d178d426EBad5b1a31451d00Ddbd0D",
   polygon: "0xcFE6382B33F2AdaFbE46e6A26A88E0182ae32b0c",
   mumbai: "0x3962EE56c9f7176215D149938BA685F91aBB633B",
@@ -60,6 +60,11 @@ export const vestingContractAddresses = {
   avalancheC: "0x3fA8B653F9abf91428800C0ba0F8D145a71F97A1",
   bnbSmartChain: "0x9B91c27f78376383003C6A12Ad12B341d016C5b9",
   ethereum: "0x39D5cBBa9adEBc25085a3918d36D5325546C001B",
+} as const;
+
+export const vestingContractAddresses_v2 = {
+  mumbai: "0x4aeeaB12fb6797b3cC8AF8f3C3B3486B09d29F2c",
+  optimismSepolia: "0x5D0acD0864Ad07ba4E1E0474AE69Da87482e14A9",
 } as const;
 
 export const vestingSubgraphUrls = {
