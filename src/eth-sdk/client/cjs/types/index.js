@@ -31,5 +31,5 @@ var AutoWrapStrategy__factory_1 = require("./factories/mainnet/AutoWrapStrategy_
 Object.defineProperty(exports, "AutoWrapStrategy__factory", { enumerable: true, get: function () { return AutoWrapStrategy__factory_1.AutoWrapStrategy__factory; } });
 var VestingScheduler__factory_1 = require("./factories/mainnet/VestingScheduler__factory");
 Object.defineProperty(exports, "VestingScheduler__factory", { enumerable: true, get: function () { return VestingScheduler__factory_1.VestingScheduler__factory; } });
-var FlowScheduler__factory_1 = require("./factories/polygonMumbai/FlowScheduler__factory");
+var FlowScheduler__factory_1 = require("./factories/avalancheFuji/FlowScheduler__factory");
 Object.defineProperty(exports, "FlowScheduler__factory", { enumerable: true, get: function () { return FlowScheduler__factory_1.FlowScheduler__factory; } });

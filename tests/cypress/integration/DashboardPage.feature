@@ -34,8 +34,8 @@ Feature: Dashboard Page test cases
         And User clicks on the "dashboard" navigation button
         And User changes the visible networks to "testnet"
         And User opens the network selection dropdown
-        And User clicks on the "polygon-mumbai" toggle
-        Then "polygon-mumbai" balances are not visible
+        And User clicks on the "avalanche-fuji" toggle
+        Then "avalanche-fuji" balances are not visible
 
     Scenario: Flow values ,cancel buttons and wrong network warning for an account with ongoing streams
         Given "Dashboard Page" is open with "ongoingStreamAccount" connected on "gnosis"
@@ -65,20 +65,20 @@ Feature: Dashboard Page test cases
         Then There are no cancel or modify buttons in the last stream row
 
     Scenario: Testnet faucet message in the dashboard page for user with no super tokens
-        Given "Dashboard Page" is open with "NewRandomWallet" connected on "polygon-mumbai"
+        Given "Dashboard Page" is open with "NewRandomWallet" connected on "avalanche-fuji"
         Then Dashboard page faucet message is shown
         And User opens the faucet view from the dashboard page
         Then Faucet view is visible
 
     Scenario: Testnet faucet message not shown for users with tokens
-        Given "Dashboard Page" is open with "john" connected on "polygon-mumbai"
+        Given "Dashboard Page" is open with "john" connected on "avalanche-fuji"
         Then Dashboard page faucet message does not exist
 
     Scenario: Cancelling a stream from the streams table
         Given HDWallet transactions are rejected
 
-        Given "Dashboard Page" is open with "john" connected on "polygon-mumbai"
-        And User clicks on "polygon-mumbai" "fDAIx" row
+        Given "Dashboard Page" is open with "john" connected on "avalanche-fuji"
+        And User clicks on "avalanche-fuji" "fDAIx" row
         And Cancel and Edit buttons are visible
         And User clicks on the first visible cancel button
         Then Transaction rejected error is shown

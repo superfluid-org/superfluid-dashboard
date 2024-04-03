@@ -5,12 +5,6 @@
     "TokenThree": "WORK",
     "TokenGas": "xDAI"
   },
-  "polygon-mumbai": {
-    "TokenOne": "fDAI",
-    "TokenTwo": "fUSDC",
-    "TokenThree": "fTUSD",
-    "TokenGas": "MATIC"
-  },
   "polygon": {
     "TokenOne": "DAI",
     "TokenTwo": "USDC",

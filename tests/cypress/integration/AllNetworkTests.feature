@@ -11,7 +11,6 @@ Feature: Test cases that run indefinitely on all supported networks
 
         Examples:
             | network        | token |
-            | polygon-mumbai | MATIC |
             | avalanche-fuji | AVAX  |
             | gnosis         | XDAI  |
             | polygon        | MATIC |
@@ -31,7 +30,6 @@ Feature: Test cases that run indefinitely on all supported networks
 
         Examples:
             | network        |
-            | polygon-mumbai |
             | avalanche-fuji |
             | gnosis         |
             | polygon        |
@@ -51,7 +49,6 @@ Feature: Test cases that run indefinitely on all supported networks
 
         Examples:
             | network        |
-            | polygon-mumbai |
             | avalanche-fuji |
             | gnosis         |
             | polygon        |

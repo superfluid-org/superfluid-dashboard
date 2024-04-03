@@ -14,7 +14,6 @@ import ensureDefined from "../../../src/utils/ensureDefined";
 export const autoWrapManagerAddresses = {
   [chain.polygon.id]: "0x2581c27E7f6D6AF452E63fCe884EDE3EDd716b32",
   [chain.bsc.id]: "0x2AcdD61ac1EFFe1535109449c31889bdE8d7f325",
-  [chain.polygonMumbai.id]: "0x3eAB3c6207F488E475b7955B631B564F0E6317B9",
   [chain.avalancheFuji.id]: "0x30aE282CF477E2eF28B14d0125aCEAd57Fe1d7a1",
   [chain.avalanche.id]: "0x8082e58681350876aFe8f52d3Bf8672034A03Db0",
   [chain.optimism.id]: "0x1fA76f2Cd0C3fe6c399A80111408d9C42C0CAC23",
@@ -26,7 +25,6 @@ export const autoWrapManagerAddresses = {
 export const autoWrapStrategyAddresses = {
   [chain.polygon.id]: "0xb4afa36BAd8c76976Dc77a21c9Ad711EF720eE4b",
   [chain.bsc.id]: "0x9e308cb079ae130790F604b1030cDf386670f199",
-  [chain.polygonMumbai.id]: "0x544728AFDBeEafBeC9e1329031788edb53017bC4",
   [chain.avalancheFuji.id]: "0x1D65c6d3AD39d454Ea8F682c49aE7744706eA96d",
   [chain.avalanche.id]: "0x51FBAbD31A615E14b1bC12E9d887f60997264a4E",
   [chain.optimism.id]: "0x0Cf060a501c0040e9CCC708eFE94079F501c6Bb4",
@@ -42,14 +40,12 @@ export const flowSchedulerContractAddresses = {
   ethereum: "0xAA0cD305eD020137E302CeCede7b18c0A05aCCDA",
   optimism: "0x55c8fc400833eEa791087cF343Ff2409A39DeBcC",
   polygon: "0x55F7758dd99d5e185f4CC08d4Ad95B71f598264D",
-  mumbai: "0x59A3Ba9d34c387FB70b4f4e4Fbc9eD7519194139",
   gnosis: "0x9cC7fc484fF588926149577e9330fA5b2cA74336",
 } as const;
 
 export const vestingContractAddresses = {
   gnosis: "0x0170FFCC75d178d426EBad5b1a31451d00Ddbd0D",
   polygon: "0xcFE6382B33F2AdaFbE46e6A26A88E0182ae32b0c",
-  mumbai: "0x3962EE56c9f7176215D149938BA685F91aBB633B",
   arbitrum: "0x55c8fc400833eEa791087cF343Ff2409A39DeBcC",
   optimism: "0x65377d4dfE9c01639A41952B5083D58964782892",
   avalancheC: "0x3fA8B653F9abf91428800C0ba0F8D145a71F97A1",
@@ -93,7 +89,6 @@ export type Network = {
 export const superfluidRpcUrls = {
   gnosis: "https://rpc-endpoints.superfluid.dev/xdai-mainnet",
   polygon: "https://rpc-endpoints.superfluid.dev/polygon-mainnet",
-  polygonMumbai: "https://rpc-endpoints.superfluid.dev/polygon-mumbai",
   arbitrum: "https://rpc-endpoints.superfluid.dev/arbitrum-one",
   optimism: "https://rpc-endpoints.superfluid.dev/optimism-mainnet",
   avalancheFuji: "https://rpc-endpoints.superfluid.dev/avalanche-fuji",
@@ -111,7 +106,6 @@ export const superfluidRpcUrls = {
 export const networkDefinition: {
   gnosis: Network;
   polygon: Network;
-  polygonMumbai: Network;
   avalancheFuji: Network;
   optimism: Network;
   arbitrum: Network;
@@ -192,39 +186,6 @@ export const networkDefinition: {
     autoWrap: {
       managerContractAddress: autoWrapManagerAddresses[chain.polygon.id],
       strategyContractAddress: autoWrapStrategyAddresses[chain.polygon.id],
-      lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
-      upperLimit: BigNumber.from(UnitOfTime.Day * 14),
-    },
-  },
-  polygonMumbai: {
-    ...chain.polygonMumbai,
-    slugName: "polygon-mumbai",
-    v1ShortName: "mumbai",
-    bufferTimeInMinutes: 60,
-    color: "#3099f2",
-    superfluidRpcUrl: superfluidRpcUrls.polygonMumbai,
-    subgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-mumbai",
-    getLinkForTransaction: (txHash: string): string =>
-      `https://mumbai.polygonscan.com/tx/${txHash}`,
-    getLinkForAddress: (address: string): string =>
-      `https://mumbai.polygonscan.com/address/${address}`,
-    nativeCurrency: {
-      ...BasePage.ensureDefined(chain.polygonMumbai.nativeCurrency),
-      address: NATIVE_ASSET_ADDRESS,
-      type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: "MATICx",
-        address: "0x96b82b65acf7072efeb00502f45757f254c2a0d4",
-        name: "Super MATIC",
-        decimals: 18,
-      },
-    },
-    autoWrap: {
-      managerContractAddress: autoWrapManagerAddresses[chain.polygonMumbai.id],
-      strategyContractAddress:
-        autoWrapStrategyAddresses[chain.polygonMumbai.id],
       lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
       upperLimit: BigNumber.from(UnitOfTime.Day * 14),
     },
@@ -614,7 +575,6 @@ export const networkDefinition: {
 export const networks: Network[] = [
   networkDefinition.gnosis,
   networkDefinition.polygon,
-  networkDefinition.polygonMumbai,
   networkDefinition.avalancheFuji,
   networkDefinition.optimism,
   networkDefinition.arbitrum,

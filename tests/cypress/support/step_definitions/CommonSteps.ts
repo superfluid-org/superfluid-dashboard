@@ -350,9 +350,12 @@ Given(/^User opens the auto-wrap page from the navigation menu$/, function () {
 Then(/^Connect wallet button is visible in the faucet menu$/, function () {
   Common.validateConnectWalletButtonInFaucetMenu();
 });
-Then(/^Switch to Mumbai button is visible in the faucet menu$/, function () {
-  Common.validateSwitchNetworkButtonInFaucetMenu();
-});
+Then(
+  /^Switch to Avalanche Fuji button is visible in the faucet menu$/,
+  function () {
+    Common.validateSwitchNetworkButtonInFaucetMenu();
+  }
+);
 Then(/^User clicks on the switch network to button$/, function () {
   Common.clickSwitchNetworkButton();
 });
