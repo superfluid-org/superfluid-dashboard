@@ -53,7 +53,7 @@ export default defineConfig({
   plugins: [
     etherscan({
       apiKey: "RV4YXDXEMIHXMC7ZXB8T82G4F56FRZ1SZQ", // From eth-sdk: https://github.com/dethcrypto/eth-sdk/blob/0cf7dd50617de710068bde76f774208573a841d3/packages/eth-sdk/src/abi-management/etherscan/explorerEndpoints.ts#LL4C57-L4C57
-      chainId: 80001,
+      chainId: 1,
       contracts: [
         {
           name: "AutoWrapManager",
