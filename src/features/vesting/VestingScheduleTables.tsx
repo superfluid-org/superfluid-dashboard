@@ -131,7 +131,7 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
           alignItems={isBelowMd ? "flex-start" : "flex-end"}
           gap={isBelowMd ? 0.5 : 0.2}
         >
-          {network.vestingContractAddress_v1 || network.vestingContractAddress_v2 && (
+          {!!(network.vestingContractAddress_v2 || network.vestingContractAddress_v1) && (
             <Stack direction="row" alignItems="center" gap={0.5}>
               <Typography
                 variant={isBelowMd ? "body2" : "body1"}
@@ -146,7 +146,7 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
               >
                 <CopyIconBtn
                   TooltipProps={{ placement: "top" }}
-                  copyText={getAddress(network.vestingContractAddress_v1 || network.vestingContractAddress_v2)}
+                  copyText={getAddress(network.vestingContractAddress_v2 || network.vestingContractAddress_v1)}
                   description="Copy address to clipboard"
                   IconButtonProps={{ size: "small" }}
                 />
@@ -158,7 +158,7 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
                   <IconButton
                     LinkComponent={Link}
                     href={network.getLinkForAddress(
-                      network.vestingContractAddress_v1 || network.vestingContractAddress_v2
+                      network.vestingContractAddress_v2 || network.vestingContractAddress_v1
                     )}
                     target="_blank"
                     size="small"
