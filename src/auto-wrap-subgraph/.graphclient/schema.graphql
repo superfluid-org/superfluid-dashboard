@@ -1049,6 +1049,12 @@ type Subscription {
   _meta(block: Block_height): _Meta_
 }
 
+"""
+A string representation of microseconds UNIX timestamp (16 digits)
+
+"""
+scalar Timestamp
+
 type UserTokenLiquidityToken {
   id: String!
   currentWrapSchedule: WrapSchedule

@@ -42,6 +42,7 @@ export type Scalars = {
   BigInt: string;
   Bytes: string;
   Int8: any;
+  Timestamp: any;
 };
 
 export type Aggregation_Interval =
@@ -1968,6 +1969,7 @@ export type ResolversTypes = ResolversObject<{
   TaskType: TaskType;
   Task_filter: Task_Filter;
   Task_orderBy: Task_OrderBy;
+  Timestamp: ResolverTypeWrapper<Scalars['Timestamp']>;
   TokenSenderReceiverCursor: ResolverTypeWrapper<TokenSenderReceiverCursor>;
   TokenSenderReceiverCursor_filter: TokenSenderReceiverCursor_Filter;
   TokenSenderReceiverCursor_orderBy: TokenSenderReceiverCursor_OrderBy;
@@ -2007,6 +2009,7 @@ export type ResolversParentTypes = ResolversObject<{
   Subscription: {};
   Task: ResolversParentTypes['CreateTask'] | ResolversParentTypes['DeleteTask'];
   Task_filter: Task_Filter;
+  Timestamp: Scalars['Timestamp'];
   TokenSenderReceiverCursor: TokenSenderReceiverCursor;
   TokenSenderReceiverCursor_filter: TokenSenderReceiverCursor_Filter;
   _Block_: _Block_;
@@ -2225,6 +2228,10 @@ export type TaskResolvers<ContextType = MeshContext, ParentType extends Resolver
   receiver?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
 }>;
 
+export interface TimestampScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Timestamp'], any> {
+  name: 'Timestamp';
+}
+
 export type TokenSenderReceiverCursorResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['TokenSenderReceiverCursor'] = ResolversParentTypes['TokenSenderReceiverCursor']> = ResolversObject<{
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   currentCreateFlowTask?: Resolver<Maybe<ResolversTypes['CreateTask']>, ParentType, ContextType>;
@@ -2262,6 +2269,7 @@ export type Resolvers<ContextType = MeshContext> = ResolversObject<{
   Query?: QueryResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   Task?: TaskResolvers<ContextType>;
+  Timestamp?: GraphQLScalarType;
   TokenSenderReceiverCursor?: TokenSenderReceiverCursorResolvers<ContextType>;
   _Block_?: _Block_Resolvers<ContextType>;
   _Meta_?: _Meta_Resolvers<ContextType>;

@@ -63,8 +63,8 @@ export const vestingContractAddresses_v1 = {
 } as const;
 
 export const vestingContractAddresses_v2 = {
-  mumbai: "0x2584A8976911d6d8E9D330C4F7a4D5163329cB25",
-  optimismSepolia: "0xAb6c6b7D7033e0cb8C693ACFd471614313eAE342",
+  optimismSepolia: "0x908D8B2A9eDCE5ef2f449e9100b09b8446B9664D",
+  mumbai: "0x445A26833794d8086A758D8BE330a5e563B2D857",
 } as const;
 
 export const vestingSubgraphUrls = {
