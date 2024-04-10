@@ -108,6 +108,8 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
+  const vestingContractAddress = network.vestingContractAddress_v2 || network.vestingContractAddress_v1;
+
   return (
     <Stack>
       <Stack
@@ -131,7 +133,7 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
           alignItems={isBelowMd ? "flex-start" : "flex-end"}
           gap={isBelowMd ? 0.5 : 0.2}
         >
-          {!!(network.vestingContractAddress_v2 || network.vestingContractAddress_v1) && (
+          {!!vestingContractAddress && (
             <Stack direction="row" alignItems="center" gap={0.5}>
               <Typography
                 variant={isBelowMd ? "body2" : "body1"}
@@ -146,7 +148,7 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
               >
                 <CopyIconBtn
                   TooltipProps={{ placement: "top" }}
-                  copyText={getAddress(network.vestingContractAddress_v2 || network.vestingContractAddress_v1)}
+                  copyText={getAddress(vestingContractAddress)}
                   description="Copy address to clipboard"
                   IconButtonProps={{ size: "small" }}
                 />
@@ -157,9 +159,7 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
                 >
                   <IconButton
                     LinkComponent={Link}
-                    href={network.getLinkForAddress(
-                      network.vestingContractAddress_v2 || network.vestingContractAddress_v1
-                    )}
+                    href={network.getLinkForAddress(vestingContractAddress)}
                     target="_blank"
                     size="small"
                   >
