@@ -933,4 +933,5 @@ export const getNetworkDefaultTokenPair = memoize(
 // The vesting contract might be deployed to more networks but we check for the existence of the Platform.;
 export const vestingSupportedNetworks = allNetworks
   .filter((network) => network.platformUrl)
+  .concat([networkDefinition.base]) // TODO: Remove when The Platform is deployed to Base.
   .sort((n1, n2) => (!n1.testnet && n2.testnet ? -1 : 1));
