@@ -650,9 +650,9 @@ export const networkDefinition = {
     autoWrapSubgraphUrl: undefined,
     platformUrl: undefined,
   },
-  degenMainnet: {
+  degenChain: {
     name: 'Degen Chain',
-    network: 'degen',
+    network: 'degen-chain',
     id: 666666666,
     supportsGDA: getSupportsGDA(chainIds.degen),
     metadata: ensureDefined(
@@ -673,10 +673,10 @@ export const networkDefinition = {
         public: {
           http: ['https://rpc.degen.tips'],
       },
-      superfluid: { http: [superfluidRpcUrls["degen-mainnet"]] },
+      superfluid: { http: [superfluidRpcUrls["degen-chain"]] },
     },
     fallbackSubgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-degen-mainnet",
+      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-degen-chain",
     getLinkForTransaction: (txHash: string): string =>
       `https://explorer.degen.tips/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
@@ -918,7 +918,7 @@ export const allNetworks: Network[] = orderBy(
       networkDefinition.base,
       networkDefinition.scroll,
       networkDefinition.scrollSepolia,
-      networkDefinition.degenMainnet,
+      networkDefinition.degenChain,
     ],
     (x) => x.id // Put lower ids first (Ethereum mainnet will be first)
   ),

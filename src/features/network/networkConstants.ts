@@ -131,7 +131,7 @@ export const superfluidRpcUrls = {
   bnbSmartChain: "https://rpc-endpoints.superfluid.dev/bsc-mainnet",
   ethereum: "https://rpc-endpoints.superfluid.dev/eth-mainnet",
   "celo-mainnet": "https://rpc-endpoints.superfluid.dev/celo-mainnet",
-  "degen-mainnet": "https://rpc-endpoints.superfluid.dev/degen-mainnet",
+  "degenChain": "https://rpc-endpoints.superfluid.dev/degen-chain",
   sepolia: "https://rpc-endpoints.superfluid.dev/eth-sepolia",
   base: "https://rpc-endpoints.superfluid.dev/base-mainnet",
   scroll: "https://rpc-endpoints.superfluid.dev/scroll-mainnet",

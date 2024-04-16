@@ -124,7 +124,7 @@ export const networkDefinition: {
   scroll: Network;
   scrollSepolia: Network;
   optimismSepolia: Network;
-  degenMainnet: Network;
+  degenChain: Network;
 } = {
   gnosis: {
     name: "Gnosis Chain",
@@ -610,7 +610,7 @@ export const networkDefinition: {
       },
     },
   },
-  degenMainnet: {
+  degenChain: {
     name: "Degen Chain",
     network: "degen",
     id: 666666666,
@@ -620,7 +620,7 @@ export const networkDefinition: {
     icon: "/icons/network/degen.svg",
     color: "#a46efd",
     subgraphUrl: "https://optimism-sepolia.subgraph.x.superfluid.dev/",
-    superfluidRpcUrl: superfluidRpcUrls["degen-mainnet"],
+    superfluidRpcUrl: superfluidRpcUrls["degenChain"],
     getLinkForTransaction: (txHash: string): string =>
       `https://explorer.degen.tips/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
@@ -658,7 +658,7 @@ export const networks: Network[] = [
   networkDefinition.scroll,
   networkDefinition.scrollSepolia,
   networkDefinition.optimismSepolia,
-  networkDefinition.degenMainnet,
+  networkDefinition.degenChain,
 ];
 
 export const getNetworkDefaultTokenPair = memoize(
