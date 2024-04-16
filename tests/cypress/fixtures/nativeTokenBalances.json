@@ -89,6 +89,12 @@
         "underlyingBalance": "0",
         "superTokenBalance": "0"
       }
+    },
+    "degen-mainnet": {
+      "DEGEN": {
+        "underlyingBalance": "0",
+        "superTokenBalance": "0"
+      }
     }
   }
 }

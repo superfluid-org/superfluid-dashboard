@@ -743,6 +743,7 @@ export class SendPage extends BasePage {
         "scroll",
         "scrsepolia",
         "opsepolia",
+        "degen-mainnet",
       ].includes(Cypress.env("network")) &&
       Cypress.env("platformNeeded")
     ) {

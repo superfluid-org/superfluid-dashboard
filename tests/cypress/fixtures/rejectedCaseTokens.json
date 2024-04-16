@@ -81,5 +81,10 @@
     "TokenOne": "fDAI",
     "TokenTwo": "fUSDC",
     "TokenGas": "ETH"
+  },
+  "degen-mainnet": {
+    "TokenOne": "fDAI",
+    "TokenTwo": "fUSDC",
+    "TokenGas": "DEGEN"
   }
 }
