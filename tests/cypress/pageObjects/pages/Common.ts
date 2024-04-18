@@ -174,7 +174,9 @@ export class Common extends BasePage {
     cy.intercept("POST", "https://rpc-endpoints.superfluid.dev/eth-mainnet", {
       forceNetworkError: true,
     });
-    cy.intercept("POST", "https://api.lens.dev/", { forceNetworkError: true });
+    cy.intercept("POST", "https://api-v2.lens.dev/", {
+      forceNetworkError: true,
+    });
   }
 
   static validateErrorShownInRecepientList(lensOrEns: string) {
@@ -408,7 +410,7 @@ export class Common extends BasePage {
 
   static typeIntoAddressInput(address: string) {
     if (address.includes(".lens")) {
-      cy.intercept("**api.lens.dev**").as("lensQuery");
+      cy.intercept("**api-v2.lens.dev**").as("lensQuery");
       this.type(ADDRESS_DIALOG_INPUT, address);
       cy.wait("@lensQuery", { timeout: 30000 });
     } else {

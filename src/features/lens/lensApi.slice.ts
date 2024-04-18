@@ -9,7 +9,7 @@ export interface ResolveNameResult {
   name: string;
 }
 
-const LENS_API_URL = "https://api.lens.dev/";
+const LENS_API_URL = "https://api-v2.lens.dev/";
 
 // Lens API profile documentation - https://docs.lens.xyz/docs/get-profile
 const LensAddressQuery = gql`
