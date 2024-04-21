@@ -673,7 +673,7 @@ export const networkDefinition = {
         public: {
           http: ['https://rpc.degen.tips'],
       },
-      superfluid: { http: [superfluidRpcUrls["degen-chain"]] },
+      superfluid: { http: [superfluidRpcUrls["degenChain"]] },
     },
     fallbackSubgraphUrl:
       "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-degen-chain",
