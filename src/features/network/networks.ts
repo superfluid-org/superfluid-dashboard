@@ -676,7 +676,7 @@ export const networkDefinition = {
       superfluid: { http: [superfluidRpcUrls["degenChain"]] },
     },
     fallbackSubgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-degen-chain",
+      "https://degenchain.subgraph.superfluid.dev",
     getLinkForTransaction: (txHash: string): string =>
       `https://explorer.degen.tips/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>

@@ -100,7 +100,6 @@ jobs:
             "opsepolia",
             "scrsepolia",
             "base",
-            "degen"
           ]
     steps:
       - uses: actions/checkout@v2
