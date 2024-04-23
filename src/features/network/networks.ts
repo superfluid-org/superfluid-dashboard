@@ -667,7 +667,7 @@ export const networkDefinition = {
     v1ShortName: "degen",
     bufferTimeInMinutes: 240,
     icon: "/icons/network/degen.svg",
-    color: "#a46efd",
+    color: "#A46EFD",
     rpcUrls: {
         default: { http: ['https://rpc.degen.tips'] },
         public: {
