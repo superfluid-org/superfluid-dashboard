@@ -931,6 +931,9 @@ export default memo(function SendStream() {
     }
   );
 
+  // TODO: Remove when The Platform is deployed to Base.
+  const doesNetworkSupportScheduling = !!network.flowSchedulerContractAddress || network.id === networkDefinition.base.id;
+
   return (
     <Stack spacing={2.5}>
       <ErrorMessage
@@ -985,7 +988,7 @@ export default memo(function SendStream() {
           {FlowRateController}
         </Box>
       </Box>
-      {!!network.flowSchedulerContractAddress && (
+      {doesNetworkSupportScheduling && (
         <>
           <FormControlLabel
             data-cy={"scheduling-tooltip"}

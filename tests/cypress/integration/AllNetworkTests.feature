@@ -63,5 +63,6 @@ Feature: Test cases that run indefinitely on all supported networks
             | scrsepolia     |
             | opsepolia      |
 
-    Scenario: Testnet faucet fund check
-        Given The faucet contract has got enough funds to send to people
+# Mumbai down, no faucet gg
+# Scenario: Testnet faucet fund check
+#     Given The faucet contract has got enough funds to send to people
