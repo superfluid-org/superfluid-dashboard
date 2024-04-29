@@ -1,10 +1,14 @@
 import { fakeBaseQuery } from "@reduxjs/toolkit/dist/query";
 import { createApi } from "@reduxjs/toolkit/dist/query/react";
 import { ethers } from "ethers";
-import { LensClient, production, ProfilePictureSetFragment } from "@lens-protocol/client";
+import {
+  LensClient,
+  production,
+  ProfilePictureSetFragment,
+} from "@lens-protocol/client";
 
 const lensClient = new LensClient({
-  environment: production
+  environment: production,
 });
 
 export interface ResolveNameResult {
@@ -21,7 +25,11 @@ export const lensApi = createApi({
       resolveName: builder.query<ResolveNameResult | null, string>({
         queryFn: async (name) => {
           const nameLowercased = name.toLowerCase();
-          const searchHandle = nameLowercased.endsWith(".lens") ? `lens/${nameLowercased.split(".lens")[0]}` : nameLowercased.startsWith("@") ? nameLowercased : null;
+          const searchHandle = nameLowercased.endsWith(".lens")
+            ? `lens/${nameLowercased.split(".lens")[0]}`
+            : nameLowercased.startsWith("@")
+            ? `lens/${nameLowercased.substring(1)}`
+            : null;
 
           if (!searchHandle) {
             return { data: null };
@@ -29,9 +37,7 @@ export const lensApi = createApi({
 
           const profile = await lensClient.profile.fetch({
             forHandle: searchHandle,
-          })
-
-          // const address = profile?.ownedBy?.address;
+          });
 
           return {
             data: profile?.handle
@@ -48,16 +54,18 @@ export const lensApi = createApi({
         string
       >({
         queryFn: async (address) => {
-          const profile =  await lensClient.profile.fetchDefault({
+          const profile = await lensClient.profile.fetchDefault({
             for: address,
           });
 
           if (!profile?.handle) {
             return { data: null };
           }
-          
+
           const name = profile.handle.suggestedFormatted.localName;
-          const avatarUrl = (profile.metadata?.picture as ProfilePictureSetFragment | undefined)?.optimized?.uri;
+          const avatarUrl = (
+            profile.metadata?.picture as ProfilePictureSetFragment | undefined
+          )?.optimized?.uri;
 
           return {
             data: {
