@@ -113,7 +113,7 @@ const transactionTrackerPersistedReducer = persistReducer(
   { storage, key: "transactions", version: 2, migrate: async (persistedState, currentVersion) => {
     if (persistedState && currentVersion === 1) {
       const oldState = persistedState as PersistedState & EntityState<TrackedTransaction>;
-      const transactionsToRemove = Object.values(oldState.entities).filter(x => isDefined(x) && deprecatedNetworkChainIds.includes(x.chainId)) as TrackedTransaction[];
+      const transactionsToRemove = Object.values(oldState.entities).filter(isDefined).filter(x => deprecatedNetworkChainIds.includes(x.chainId)) as TrackedTransaction[];
       const newEntities = { ...oldState.entities };
       for (const tx of transactionsToRemove) {
         delete newEntities[tx.hash];
@@ -121,7 +121,7 @@ const transactionTrackerPersistedReducer = persistReducer(
       return {
         ...oldState,
         entities: newEntities,
-        ids: Object.values(newEntities).map(x => x!.hash)
+        ids: Object.values(newEntities).filter(isDefined).map(x => x.hash)
       }
     }
     return persistedState;
@@ -139,8 +139,8 @@ const addressBookPersistedReducer = persistReducer(
     if (persistedState && currentVersion === 1) {
       const oldState = persistedState as PersistedState & AddressBookState;
       const newEntities = { ...oldState.entities };
-      Object.values(newEntities).forEach((x) => {
-        if (x?.associatedNetworks?.length) {
+      Object.values(newEntities).filter(isDefined).forEach((x) => {
+        if (x.associatedNetworks?.length) {
           x.associatedNetworks = _.without(x.associatedNetworks, ...deprecatedNetworkChainIds);
         }
       });
@@ -167,7 +167,7 @@ const customTokensPersistedReducer = persistReducer(
       return {
         ...oldState,
         entities: newEntities,
-        ids: Object.values(newEntities).map(x => getCustomTokenId(x!.chainId, x!.customToken))
+        ids: Object.values(newEntities).filter(isDefined).map(x => getCustomTokenId(x.chainId, x.customToken))
       }
     }
     return persistedState;
@@ -181,7 +181,9 @@ const networkPreferencesPersistedReducer = persistReducer(
       const oldState = persistedState as PersistedState & NetworkPreferencesState;
       const newEntities = { ...oldState.entities };
       Object.values(newEntities).forEach((x) => {
-        x!.hidden = _.without(x!.hidden, ...deprecatedNetworkChainIds);
+        if (x?.hidden) {
+          x.hidden = _.without(x.hidden, ...deprecatedNetworkChainIds);
+        }
       });
       return {
         ...oldState,
