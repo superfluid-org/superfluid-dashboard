@@ -65,7 +65,7 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
     visibleAddress
       ? {
           type: Flag.TestTokensReceived,
-          chainId: networkDefinition.polygonMumbai.id,
+          chainId: networkDefinition.avalancheFuji.id,
           account: getAddress(visibleAddress),
         }
       : undefined
@@ -74,7 +74,7 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
   const claimTokens = useCallback(() => {
     if (visibleAddress) {
       claimTestTokensTrigger({
-        chainId: networkDefinition.polygonMumbai.id,
+        chainId: networkDefinition.avalancheFuji.id,
         account: visibleAddress,
       }).then((response) => {
         if (response.isSuccess) setTransactionDrawerOpen(true);
@@ -142,7 +142,7 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
             </Alert>
           )}
 
-          <ConnectionBoundary expectedNetwork={networkDefinition.polygonMumbai}>
+          <ConnectionBoundary expectedNetwork={networkDefinition.avalancheFuji}>
             <ConnectionBoundaryButton
               ButtonProps={{
                 size: "xl",

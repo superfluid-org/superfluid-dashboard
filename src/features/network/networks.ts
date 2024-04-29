@@ -227,58 +227,6 @@ export const networkDefinition = {
       nftAddress: "0xa8B0362cfE0c8e4fd1D74c3512348d6f48d71080",
     },
   },
-  polygonMumbai: {
-    ...chain.polygonMumbai,
-    id: chainIds.polygonMumbai,
-    supportsGDA: getSupportsGDA(chainIds.polygonMumbai),
-    metadata: ensureDefined(
-      sfMeta.getNetworkByChainId(chainIds.polygonMumbai),
-      chainIds.polygonMumbai
-    ),
-    blockExplorers: ensureDefined(chain.polygonMumbai.blockExplorers),
-    slugName: "polygon-mumbai",
-    v1ShortName: "mumbai",
-    bufferTimeInMinutes: 60,
-    color: "#3099f2",
-    rpcUrls: {
-      ...chain.polygonMumbai.rpcUrls,
-      superfluid: { http: [superfluidRpcUrls.polygonMumbai] },
-    },
-    fallbackSubgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-mumbai",
-    getLinkForTransaction: (txHash: string): string =>
-      `https://mumbai.polygonscan.com/tx/${txHash}`,
-    getLinkForAddress: (address: string): string =>
-      `https://mumbai.polygonscan.com/address/${address}`,
-    nativeCurrency: {
-      ...ensureDefined(chain.polygonMumbai.nativeCurrency),
-      address: NATIVE_ASSET_ADDRESS,
-      type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: "MATICx",
-        address: "0x96b82b65acf7072efeb00502f45757f254c2a0d4",
-        name: "Super MATIC",
-        decimals: 18,
-      },
-    },
-    flowSchedulerContractAddress: flowSchedulerContractAddresses.mumbai,
-    flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.mumbai,
-    vestingContractAddress: vestingContractAddresses.mumbai,
-    vestingSubgraphUrl: vestingSubgraphUrls.mumbai,
-    autoWrapSubgraphUrl: autoWrapSubgraphUrls.mumbai,
-    platformUrl: superfluidPlatformUrls.mumbai,
-    autoWrap: {
-      managerContractAddress: autoWrapManagerAddresses[chain.polygonMumbai.id],
-      strategyContractAddress:
-        autoWrapStrategyAddresses[chain.polygonMumbai.id],
-      lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
-      upperLimit: BigNumber.from(UnitOfTime.Day * 14),
-    },
-    humaFinance: {
-      nftAddress: "0xAEA5908A082F5667aEA425AEACE8dF6aEDb03694",
-    },
-  },
   avalancheFuji: {
     name: "Fuji (C-Chain)",
     id: chainIds.avalancheFuji,
@@ -850,7 +798,6 @@ export const allNetworks: Network[] = orderBy(
       networkDefinition.ethereum,
       networkDefinition.gnosis,
       networkDefinition.polygon,
-      networkDefinition.polygonMumbai,
       networkDefinition.avalancheFuji,
       networkDefinition.optimism,
       networkDefinition.optimismSepolia,
@@ -935,3 +882,12 @@ export const vestingSupportedNetworks = allNetworks
   .filter((network) => network.platformUrl)
   .concat([networkDefinition.base]) // TODO: Remove when The Platform is deployed to Base.
   .sort((n1, n2) => (!n1.testnet && n2.testnet ? -1 : 1));
+
+export const deprecatedNetworkChainIds = [
+  80001, // Polygon Mumbai
+  5, // Goerli
+  420, // Optimism Goerli
+  421613, // Arbitrum Goerli
+  1442, // Polygon zkEVM Testnet
+  84531, // Base Goerli
+];

@@ -8,3 +8,13 @@ export default function ensureDefined<T>(
     );
   return value;
 }
+
+
+export function isDefined<T>(
+  value: T | undefined | null
+): value is T {
+  if (value === undefined || value === null) {
+    return false;
+  }
+  return true;
+}

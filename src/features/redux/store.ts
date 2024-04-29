@@ -3,13 +3,13 @@ import {
   configureStore,
   createListenerMiddleware,
   Dispatch,
+  EntityState,
   isRejected,
   isRejectedWithValue,
   Middleware,
   MiddlewareAPI,
 } from "@reduxjs/toolkit";
 import {
-  defaultSerializeQueryArgs,
   setupListeners,
 } from "@reduxjs/toolkit/query";
 import * as Sentry from "@sentry/react";
@@ -20,12 +20,14 @@ import {
   initializeRpcApiSlice,
   initializeSubgraphApiSlice,
   initializeTransactionTrackerSlice,
+  TrackedTransaction,
 } from "@superfluid-finance/sdk-redux";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import {
   FLUSH,
   PAUSE,
   PERSIST,
+  PersistedState,
   persistReducer,
   persistStore,
   PURGE,
@@ -37,8 +39,8 @@ import { deserializeError } from "serialize-error";
 import { schedulingSubgraphApi } from "../../scheduling-subgraph/schedulingSubgraphApi";
 import { vestingSubgraphApi } from "../../vesting-subgraph/vestingSubgraphApi";
 import accountingApi from "../accounting/accountingApi.slice";
-import { addressBookSlice } from "../addressBook/addressBook.slice";
-import { customTokensSlice } from "../customTokens/customTokens.slice";
+import { addressBookSlice, AddressBookState } from "../addressBook/addressBook.slice";
+import { customTokensSlice, getCustomTokenId, NetworkCustomTokenState } from "../customTokens/customTokens.slice";
 import { ensApi } from "../ens/ensApi.slice";
 import { lensApi } from "../lens/lensApi.slice";
 import faucetApi from "../faucet/faucetApi.slice";
@@ -46,7 +48,7 @@ import { flagsSlice } from "../flags/flags.slice";
 import gasApi from "../gas/gasApi.slice";
 import { impersonationSlice } from "../impersonation/impersonation.slice";
 import { notificationsSlice } from "../notifications/notifications.slice";
-import { networkPreferencesSlice } from "../network/networkPreferences.slice";
+import { networkPreferencesSlice, NetworkPreferencesState } from "../network/networkPreferences.slice";
 import { pushApi } from "../notifications/pushApi.slice";
 import { pendingUpdateSlice } from "../pendingUpdates/pendingUpdate.slice";
 import appSettingsReducer from "../settings/appSettings.slice";
@@ -64,6 +66,10 @@ import addressBookRpcApi from "../addressBook/addressBookRpcApi.slice";
 import { autoWrapEndpoints } from "./endpoints/autoWrapEndpoints";
 import { autoWrapSubgraphApi } from "../../auto-wrap-subgraph/autoWrapSubgraphApi";
 import { tokenAccessMutationEndpoints } from "./endpoints/tokenAccessEndpoints";
+import { deprecatedNetworkChainIds } from "../network/networks";
+import { isUndefined } from "lodash";
+import _ from "lodash";
+import { isDefined } from "../../utils/ensureDefined";
 
 export const rpcApi = initializeRpcApiSlice((options) =>
   createApiWithReactHooks({
@@ -104,7 +110,22 @@ export const subgraphApi = initializeSubgraphApiSlice((options) =>
 export const transactionTracker = initializeTransactionTrackerSlice();
 
 const transactionTrackerPersistedReducer = persistReducer(
-  { storage, key: "transactions", version: 1 },
+  { storage, key: "transactions", version: 2, migrate: async (persistedState, currentVersion) => {
+    if (persistedState && currentVersion === 1) {
+      const oldState = persistedState as PersistedState & EntityState<TrackedTransaction>;
+      const transactionsToRemove = Object.values(oldState.entities).filter(isDefined).filter(x => deprecatedNetworkChainIds.includes(x.chainId)) as TrackedTransaction[];
+      const newEntities = { ...oldState.entities };
+      for (const tx of transactionsToRemove) {
+        delete newEntities[tx.hash];
+      }
+      return {
+        ...oldState,
+        entities: newEntities,
+        ids: Object.values(newEntities).filter(isDefined).map(x => x.hash)
+      }
+    }
+    return persistedState;
+  } },
   transactionTracker.reducer
 );
 
@@ -114,17 +135,62 @@ const impersonationPersistedReducer = persistReducer(
 );
 
 const addressBookPersistedReducer = persistReducer(
-  { storage, key: "addressBook", version: 1 },
+  { storage, key: "addressBook", version: 2, migrate: async (persistedState, currentVersion) => {
+    if (persistedState && currentVersion === 1) {
+      const oldState = persistedState as PersistedState & AddressBookState;
+      const newEntities = { ...oldState.entities };
+      Object.values(newEntities).filter(isDefined).forEach((x) => {
+        if (x.associatedNetworks?.length) {
+          x.associatedNetworks = _.without(x.associatedNetworks, ...deprecatedNetworkChainIds);
+        }
+      });
+      return {
+        ...oldState,
+        entities: newEntities,
+      }
+    }
+    return persistedState;
+  } },
   addressBookSlice.reducer
 );
 
 const customTokensPersistedReducer = persistReducer(
-  { storage, key: "customTokens", version: 1 },
+  { storage, key: "customTokens", version: 2, migrate: async (persistedState, currentVersion) => {
+    if (persistedState && currentVersion === 1) {
+      const oldState = persistedState as PersistedState & NetworkCustomTokenState;
+      const newEntities = { ...oldState.entities };
+      Object.values(newEntities).forEach((x) => {
+        if (x && deprecatedNetworkChainIds.includes(x.chainId)) {
+          delete newEntities[x.customToken];
+        }
+      });
+      return {
+        ...oldState,
+        entities: newEntities,
+        ids: Object.values(newEntities).filter(isDefined).map(x => getCustomTokenId(x.chainId, x.customToken))
+      }
+    }
+    return persistedState;
+  } },
   customTokensSlice.reducer
 );
 
 const networkPreferencesPersistedReducer = persistReducer(
-  { storage, key: "networkPreferences", version: 1 },
+  { storage, key: "networkPreferences", version: 2, migrate: async (persistedState, currentVersion) => {
+    if (persistedState && currentVersion === 1) {
+      const oldState = persistedState as PersistedState & NetworkPreferencesState;
+      const newEntities = { ...oldState.entities };
+      Object.values(newEntities).forEach((x) => {
+        if (x?.hidden) {
+          x.hidden = _.without(x.hidden, ...deprecatedNetworkChainIds);
+        }
+      });
+      return {
+        ...oldState,
+        entities: newEntities
+      }
+    }
+  } },
   networkPreferencesSlice.reducer
 );
 

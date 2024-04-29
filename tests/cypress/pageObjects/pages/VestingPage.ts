@@ -67,7 +67,7 @@ const SCHEDULE_CLIFF_END = "[data-cy=cliff-end]";
 const SCHEDULE_VESTING_START = "[data-cy=vesting-start]";
 const SCHEDULE_VESTING_END = "[data-cy=vesting-end]";
 const ACCESS_CODE_BUTTON = "[data-cy=vesting-code-button]";
-const TRY_MUMBAI_BUTTON = "[data-cy=polygon-mumbai-link]";
+const TRY_FUJI_BUTTON = "[data-cy=avalanche-fuji-link]";
 const TOPUP_WARNING_TITLE = "[data-cy=top-up-alert-title]";
 const TOPUP_WARNING_TEXT = "[data-cy=top-up-alert-text]";
 const ALLOWLIST_MESSAGE = "[data-cy=allowlist-message]";
@@ -251,7 +251,7 @@ export class VestingPage extends BasePage {
     this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...");
     // cy.get(OK_BUTTON, {timeout: 45000}).should("be.visible").click()
     // this.click(TX_DRAWER_BUTTON)
-    // WrapPage.validatePendingTransaction("Create Vesting Schedule" , "polygon-mumbai")
+    // WrapPage.validatePendingTransaction("Create Vesting Schedule" , "avalanche-fuji")
   }
 
   static validateFormError(error: string) {
@@ -426,7 +426,7 @@ export class VestingPage extends BasePage {
     this.hasText("[data-cy=fUSDCx-cliff-amount]", "0fUSDCx");
     this.hasText("[data-cy=fUSDCx-allocated]", "60.87fUSDCx");
     cy.fixture("vestingData").then((data) => {
-      let schedule = data["polygon-mumbai"].fUSDCx.schedule;
+      let schedule = data["avalanche-fuji"].fUSDCx.schedule;
       this.hasText(
         DETAILS_SCHEDULED_DATE,
         format(schedule.createdAt * 1000, "MMM do, yyyy HH:mm")
@@ -452,7 +452,7 @@ export class VestingPage extends BasePage {
       "polygon",
       "bsc",
       "gnosis",
-      "polygon-mumbai",
+      "avalanche-fuji",
       "optimism",
       "arbitrum-one",
       "avalanche",
@@ -497,7 +497,7 @@ export class VestingPage extends BasePage {
 
   static validateTokenPermissionsData(token: string) {
     cy.fixture("vestingData").then((data) => {
-      let selectedToken = data["polygon-mumbai"][token];
+      let selectedToken = data["avalanche-fuji"][token];
       this.hasText(
         `[data-cy=${token}-current-allowance] p`,
         `${selectedToken.currentAllowances.tokenAllowance} ${token}`
@@ -779,7 +779,7 @@ export class VestingPage extends BasePage {
   static validateAllowListMessage() {
     this.hasText(
       ALLOWLIST_MESSAGE,
-      "You are not on the allow list.If you want to create vesting schedules, Apply for access or try it out on Polygon Mumbai."
+      "You are not on the allow list.If you want to create vesting schedules, Apply for access or try it out on Avalanche Fuji."
     );
     this.isVisible(ALLOWLIST_LINK);
     this.hasAttributeWithValue(
@@ -787,11 +787,11 @@ export class VestingPage extends BasePage {
       "href",
       "https://use.superfluid.finance/vesting"
     );
-    this.isVisible(TRY_MUMBAI_BUTTON);
+    this.isVisible(TRY_FUJI_BUTTON);
   }
 
-  static clickOnTryOnMumbaiButton() {
-    this.click(TRY_MUMBAI_BUTTON);
+  static clickOnTryOnFujiButton() {
+    this.click(TRY_FUJI_BUTTON);
   }
 
   static clickInputAccessCodeButton() {

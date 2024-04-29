@@ -15,6 +15,8 @@ export interface AddressBookEntry {
   isContract?: boolean;
 }
 
+export type AddressBookState = EntityState<AddressBookEntry>;
+
 export const adapter = createEntityAdapter<AddressBookEntry>({
   selectId: (x) => getAddress(x.address),
 });
