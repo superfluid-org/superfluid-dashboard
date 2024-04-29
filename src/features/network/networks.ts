@@ -882,3 +882,12 @@ export const vestingSupportedNetworks = allNetworks
   .filter((network) => network.platformUrl)
   .concat([networkDefinition.base]) // TODO: Remove when The Platform is deployed to Base.
   .sort((n1, n2) => (!n1.testnet && n2.testnet ? -1 : 1));
+
+export const deprecatedNetworkChainIds = [
+  80001, // Polygon Mumbai
+  5, // Goerli
+  420, // Optimism Goerli
+  421613, // Arbitrum Goerli
+  1442, // Polygon zkEVM Testnet
+  84531, // Base Goerli
+];
