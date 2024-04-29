@@ -690,7 +690,7 @@ export const networkDefinition = {
       superToken: {
         type: TokenType.NativeAssetSuperToken,
         symbol: "DEGENx",
-        address: "0x671425ae1f272bc6f79bec3ed5c4b00e9c628240",
+        address: "0xda58FA9bfc3D3960df33ddD8D4d762Cf8Fa6F7ad",
         name: "Super DEGEN",
         decimals: 18,
       },
