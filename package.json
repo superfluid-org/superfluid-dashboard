@@ -28,6 +28,7 @@
     "@ensdomains/ens-avatar": "^0.3.6",
     "@hookform/error-message": "^2.0.1",
     "@hookform/resolvers": "3.3.4",
+    "@lens-protocol/client": "^2.0.0-alpha.38",
     "@lifi/sdk": "^2.5.0",
     "@lifi/widget": "^2.10.1",
     "@mui/icons-material": "^5.15.10",
