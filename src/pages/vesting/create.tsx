@@ -17,7 +17,7 @@ const CreateVestingSchedulePage: NextPageWithLayout = () => {
   const { network } = useExpectedNetwork();
   const { address: accountAddress } = useAccount();
 
-  const { isPlatformWhitelisted, isLoading: isWhitelistLoading } =
+  const { isPlatformWhitelisted_, isLoading: isWhitelistLoading } =
     platformApi.useIsAccountWhitelistedQuery(
       accountAddress && network?.platformUrl
         ? {
@@ -29,10 +29,12 @@ const CreateVestingSchedulePage: NextPageWithLayout = () => {
       {
         selectFromResult: (queryResult) => ({
           ...queryResult,
-          isPlatformWhitelisted: !!queryResult.data,
+          isPlatformWhitelisted_: !!queryResult.data,
         }),
       }
     );
+
+  const isPlatformWhitelisted = Boolean(isPlatformWhitelisted_ || network?.testnet);
 
   return (
     <Container key={`${network.slugName}`} maxWidth="md">
