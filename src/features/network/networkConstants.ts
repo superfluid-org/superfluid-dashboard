@@ -24,6 +24,7 @@ export const autoWrapManagerAddresses = {
   [chainIds.arbitrum]: "0xf01825eAFAe5CD1Dab5593EFAF218efC8968D272",
   [chainIds.mainnet]: "0x30aE282CF477E2eF28B14d0125aCEAd57Fe1d7a1",
   [chainIds.gnosis]: "0x8082e58681350876aFe8f52d3Bf8672034A03Db0",
+  [chainIds.optimismSepolia]: "0xe567b32C10B0dB72d9490eB1B9A409C5ADed192C",
 } as const;
 
 export const autoWrapStrategyAddresses = {
@@ -35,6 +36,7 @@ export const autoWrapStrategyAddresses = {
   [chainIds.arbitrum]: "0x342076aA957B0ec8bC1d3893af719b288eA31e61",
   [chainIds.mainnet]: "0x1D65c6d3AD39d454Ea8F682c49aE7744706eA96d",
   [chainIds.gnosis]: "0x51FBAbD31A615E14b1bC12E9d887f60997264a4E",
+  [chainIds.optimismSepolia]: "0xf232f1fd34CE12e24F4391865c2D6E374D2C34d9",
 } as const;
 
 export const flowSchedulerContractAddresses = {
@@ -45,6 +47,7 @@ export const flowSchedulerContractAddresses = {
   optimism: "0x55c8fc400833eEa791087cF343Ff2409A39DeBcC",
   polygon: "0x55F7758dd99d5e185f4CC08d4Ad95B71f598264D",
   gnosis: "0x9cC7fc484fF588926149577e9330fA5b2cA74336",
+  optimismSepolia: "0x73B1Ce21d03ad389C2A291B1d1dc4DAFE7B5Dc68",
 } as const;
 
 export const vestingContractAddresses = {
@@ -55,6 +58,7 @@ export const vestingContractAddresses = {
   avalancheC: "0x3fA8B653F9abf91428800C0ba0F8D145a71F97A1",
   bnbSmartChain: "0x9B91c27f78376383003C6A12Ad12B341d016C5b9",
   ethereum: "0x39D5cBBa9adEBc25085a3918d36D5325546C001B",
+  optimismSepolia: "0x27444c0235a4D921F3106475faeba0B5e7ABDD7a",
 } as const;
 
 export const vestingSubgraphUrls = {
@@ -72,6 +76,7 @@ export const vestingSubgraphUrls = {
     "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-bsc-mainnet",
   ethereum:
     "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-eth-mainnet",
+  optimismSepolia: "https://api.goldsky.com/api/public/project_clsnd6xsoma5j012qepvucfpp/subgraphs/vesting-v1-optimism-sepolia/prod/gn",
 } as const;
 
 export const flowSchedulerSubgraphUrls = {
@@ -89,6 +94,7 @@ export const flowSchedulerSubgraphUrls = {
     "https://api.thegraph.com/subgraphs/name/superfluid-finance/scheduling-v1-polygon-mainnet",
   gnosis:
     "https://api.thegraph.com/subgraphs/name/superfluid-finance/scheduling-v1-xdai-mainnet",
+  optimismSepolia: "https://api.goldsky.com/api/public/project_clsnd6xsoma5j012qepvucfpp/subgraphs/scheduling-v1-optimism-sepolia/prod/gn",
 } as const;
 
 export const autoWrapSubgraphUrls = {
@@ -106,6 +112,7 @@ export const autoWrapSubgraphUrls = {
     "https://api.thegraph.com/subgraphs/name/superfluid-finance/auto-wrap-v1-polygon-mainnet",
   gnosis:
     "https://api.thegraph.com/subgraphs/name/superfluid-finance/auto-wrap-v1-xdai-mainnet",
+  optimismSepolia: "https://api.goldsky.com/api/public/project_clsnd6xsoma5j012qepvucfpp/subgraphs/auto-wrap-v1-optimism-sepolia/prod/gn",
 } as const;
 
 export const superfluidRpcUrls = {

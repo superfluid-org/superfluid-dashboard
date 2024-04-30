@@ -785,9 +785,9 @@ export const networkDefinition = {
         decimals: 18,
       },
     },
-    vestingContractAddress: undefined,
-    vestingSubgraphUrl: undefined,
-    autoWrapSubgraphUrl: undefined,
+    vestingContractAddress: vestingContractAddresses.optimismSepolia,
+    vestingSubgraphUrl: vestingSubgraphUrls.optimismSepolia,
+    autoWrapSubgraphUrl: autoWrapSubgraphUrls.optimismSepolia,
     platformUrl: undefined,
   },
 } as const satisfies Record<string, Network>;
