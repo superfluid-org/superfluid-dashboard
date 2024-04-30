@@ -667,9 +667,11 @@ export const networkDefinition = {
         decimals: 18,
       },
     },
-    vestingContractAddress: undefined,
-    vestingSubgraphUrl: undefined,
-    autoWrapSubgraphUrl: undefined,
+    vestingContractAddress: vestingContractAddresses.base,
+    vestingSubgraphUrl: vestingSubgraphUrls.base,
+    autoWrapSubgraphUrl: autoWrapSubgraphUrls.base,
+    flowSchedulerContractAddress: flowSchedulerContractAddresses.base,
+    flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.base,
     platformUrl: undefined,
   },
   scroll: {
@@ -788,6 +790,8 @@ export const networkDefinition = {
     vestingContractAddress: vestingContractAddresses.optimismSepolia,
     vestingSubgraphUrl: vestingSubgraphUrls.optimismSepolia,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.optimismSepolia,
+    flowSchedulerContractAddress: flowSchedulerContractAddresses.optimismSepolia,
+    flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.optimismSepolia,
     platformUrl: undefined,
   },
 } as const satisfies Record<string, Network>;
