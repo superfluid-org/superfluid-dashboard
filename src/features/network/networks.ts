@@ -728,7 +728,7 @@ export const networkDefinition = {
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.base,
     flowSchedulerContractAddress: flowSchedulerContractAddresses.base,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.base,
-    platformUrl: undefined,
+    platformUrl: superfluidPlatformUrls.base,
   },
   scroll: {
     ...chain.scroll,
