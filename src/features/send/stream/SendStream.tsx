@@ -211,8 +211,8 @@ const WhitelistTransparentBox = () => (
         </Link>{" "}
         or try it out on{" "}
         <NetworkSwitchLink
-          title="Avalanche Fuji"
-          network={networkDefinition.avalancheFuji}
+          title={networkDefinition.optimismSepolia.name}
+          network={networkDefinition.optimismSepolia}
         />
         .
       </Typography>
@@ -915,7 +915,7 @@ export default memo(function SendStream() {
     return null;
   }, [activeFlow, scheduledStream]);
 
-  const { isPlatformWhitelisted } = platformApi.useIsAccountWhitelistedQuery(
+  const { isPlatformWhitelisted_ } = platformApi.useIsAccountWhitelistedQuery(
     visibleAddress && network?.platformUrl
       ? {
         chainId: network.id,
@@ -926,9 +926,12 @@ export default memo(function SendStream() {
     {
       selectFromResult: (queryResult) => ({
         ...queryResult,
-        isPlatformWhitelisted: !!queryResult.data,
+        isPlatformWhitelisted_: !!queryResult.data,
       }),
     }
+  );
+  const isPlatformWhitelisted = Boolean(
+    isPlatformWhitelisted_ || network?.testnet
   );
 
   // TODO: Remove when The Platform is deployed to Base.

@@ -779,7 +779,7 @@ export class VestingPage extends BasePage {
   static validateAllowListMessage() {
     this.hasText(
       ALLOWLIST_MESSAGE,
-      "You are not on the allow list.If you want to create vesting schedules, Apply for access or try it out on Avalanche Fuji."
+      "You are not on the allow list.If you want to create vesting schedules, Apply for access or try it out on Optimism Sepolia."
     );
     this.isVisible(ALLOWLIST_LINK);
     this.hasAttributeWithValue(
