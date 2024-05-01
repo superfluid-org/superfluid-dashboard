@@ -83,6 +83,12 @@
         "underlyingBalance": "0",
         "superTokenBalance": "0"
       }
+    },
+    "degen": {
+      "DEGEN": {
+        "underlyingBalance": "0",
+        "superTokenBalance": "0"
+      }
     }
   }
 }

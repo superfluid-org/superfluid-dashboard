@@ -115,6 +115,12 @@ const blockExplorers = {
       url: "https://celoscan.io/",
     },
   },
+  degenscan: {
+    mainnet: {
+      name: "Degen Scan",
+      url: "https://explorer.degen.tips/",
+    },
+  },
 } as const;
 
 export const networkDefinition = {
@@ -592,6 +598,56 @@ export const networkDefinition = {
     autoWrapSubgraphUrl: undefined,
     platformUrl: undefined,
   },
+  degenChain: {
+    name: 'Degen Chain',
+    network: 'degen-chain',
+    id: 666666666,
+    supportsGDA: getSupportsGDA(chainIds.degen),
+    metadata: ensureDefined(
+      sfMeta.getNetworkByChainId(chainIds.degen),
+      chainIds.degen
+    ),
+    blockExplorers: {
+      degenscan: blockExplorers.degenscan.mainnet,
+      default: blockExplorers.degenscan.mainnet,
+    },
+    slugName: "degen",
+    v1ShortName: "degen",
+    bufferTimeInMinutes: 240,
+    icon: "/icons/network/degen.svg",
+    color: "#A46EFD",
+    rpcUrls: {
+        default: { http: ['https://rpc.degen.tips'] },
+        public: {
+          http: ['https://rpc.degen.tips'],
+      },
+      superfluid: { http: [superfluidRpcUrls["degenChain"]] },
+    },
+    fallbackSubgraphUrl:
+      "https://degenchain.subgraph.superfluid.dev",
+    getLinkForTransaction: (txHash: string): string =>
+      `https://explorer.degen.tips/tx/${txHash}`,
+    getLinkForAddress: (address: string): string =>
+      `https://explorer.degen.tips/address/${address}`,
+    nativeCurrency: {
+      name: 'Degen',
+      symbol: 'DEGEN', 
+      decimals: 18 ,
+      address: NATIVE_ASSET_ADDRESS,
+      type: TokenType.NativeAssetUnderlyingToken,
+      superToken: {
+        type: TokenType.NativeAssetSuperToken,
+        symbol: "DEGENx",
+        address: "0xda58FA9bfc3D3960df33ddD8D4d762Cf8Fa6F7ad",
+        name: "Super DEGEN",
+        decimals: 18,
+      },
+    },
+    vestingContractAddress: undefined,
+    vestingSubgraphUrl: undefined,
+    autoWrapSubgraphUrl: undefined,
+    platformUrl: undefined,
+  },
   sepolia: {
     ...chain.sepolia,
     id: chainIds.sepolia,
@@ -813,6 +869,7 @@ export const allNetworks: Network[] = orderBy(
       networkDefinition.base,
       networkDefinition.scroll,
       networkDefinition.scrollSepolia,
+      networkDefinition.degenChain,
     ],
     (x) => x.id // Put lower ids first (Ethereum mainnet will be first)
   ),

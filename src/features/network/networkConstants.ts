@@ -13,6 +13,7 @@ export const chainIds = {
   scroll: 534352,
   scrollSepolia: 534351,
   optimismSepolia: 11155420,
+  degen: 666666666,
 } as const;
 
 export const autoWrapManagerAddresses = {
@@ -132,6 +133,7 @@ export const superfluidRpcUrls = {
   bnbSmartChain: "https://rpc-endpoints.superfluid.dev/bsc-mainnet",
   ethereum: "https://rpc-endpoints.superfluid.dev/eth-mainnet",
   "celo-mainnet": "https://rpc-endpoints.superfluid.dev/celo-mainnet",
+  "degenChain": "https://rpc-endpoints.superfluid.dev/degenchain",
   sepolia: "https://rpc-endpoints.superfluid.dev/eth-sepolia",
   base: "https://rpc-endpoints.superfluid.dev/base-mainnet",
   scroll: "https://rpc-endpoints.superfluid.dev/scroll-mainnet",

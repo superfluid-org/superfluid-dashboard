@@ -118,6 +118,7 @@ export const networkDefinition: {
   scroll: Network;
   scrollSepolia: Network;
   optimismSepolia: Network;
+  degenChain: Network;
 } = {
   gnosis: {
     name: "Gnosis Chain",
@@ -570,6 +571,36 @@ export const networkDefinition: {
       },
     },
   },
+  degenChain: {
+    name: "Degen Chain",
+    network: "degen",
+    id: 666666666,
+    slugName: "degen",
+    v1ShortName: "degen",
+    bufferTimeInMinutes: 240,
+    icon: "/icons/network/degen.svg",
+    color: "#a46efd",
+    subgraphUrl: "https://optimism-sepolia.subgraph.x.superfluid.dev/",
+    superfluidRpcUrl: superfluidRpcUrls["degenChain"],
+    getLinkForTransaction: (txHash: string): string =>
+      `https://explorer.degen.tips/tx/${txHash}`,
+    getLinkForAddress: (address: string): string =>
+      `https://explorer.degen.tips/address/${address}`,
+    nativeCurrency: {
+      name: "Degen",
+      symbol: "DEGEN",
+      decimals: 18,
+      address: NATIVE_ASSET_ADDRESS,
+      type: TokenType.NativeAssetUnderlyingToken,
+      superToken: {
+        type: TokenType.NativeAssetSuperToken,
+        symbol: "DEGENx",
+        address: "0x671425ae1f272bc6f79bec3ed5c4b00e9c628240",
+        name: "Super DEGEN",
+        decimals: 18,
+      },
+    },
+  },
 };
 
 export const networks: Network[] = [
@@ -587,6 +618,7 @@ export const networks: Network[] = [
   networkDefinition.scroll,
   networkDefinition.scrollSepolia,
   networkDefinition.optimismSepolia,
+  networkDefinition.degenChain,
 ];
 
 export const getNetworkDefaultTokenPair = memoize(
