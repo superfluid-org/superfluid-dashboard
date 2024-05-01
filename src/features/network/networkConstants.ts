@@ -151,4 +151,5 @@ export const superfluidPlatformUrls = {
   bnbSmartChain:
     "https://prod-bsc-mainnet-platform-service.prod.superfluid.dev",
   ethereum: "https://prod-eth-mainnet-platform-service.prod.superfluid.dev",
+  base: "https://prod-polygon-mainnet-platform-service.prod.superfluid.dev",
 } as const;
