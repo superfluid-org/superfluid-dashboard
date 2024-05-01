@@ -1498,7 +1498,6 @@ export const erc721ABI = [
  * - [__View Contract on Celo Celo Explorer__](https://explorer.celo.org/mainnet/address/0xcfA132E353cB4E398080B9700609bb008eceB125)
  * - [__View Contract on Avalanche Fuji Snow Trace__](https://testnet.snowtrace.io/address/0xcfA132E353cB4E398080B9700609bb008eceB125)
  * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xcfA132E353cB4E398080B9700609bb008eceB125)
- * - [__View Contract on Polygon Mumbai Polygon Scan__](https://mumbai.polygonscan.com/address/0xcfA132E353cB4E398080B9700609bb008eceB125)
  * - [__View Contract on Arbitrum Goerli Arbiscan__](https://goerli.arbiscan.io//address/0xcfA132E353cB4E398080B9700609bb008eceB125)
  */
 export const cfAv1ForwarderABI = [

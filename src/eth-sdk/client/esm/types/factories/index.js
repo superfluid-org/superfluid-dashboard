@@ -2,4 +2,3 @@
 /* tslint:disable */
 /* eslint-disable */
 export * as mainnet from "./mainnet";
-export * as polygonMumbai from "./polygonMumbai";

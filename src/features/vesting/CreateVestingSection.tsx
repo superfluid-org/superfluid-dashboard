@@ -61,8 +61,8 @@ const VestingWhitelistOverlay = () => {
           </Link>{" "}
           or try it out on{" "}
           <NetworkSwitchLink
-            title="Polygon Mumbai"
-            network={networkDefinition.polygonMumbai}
+            title="Avalanche Fuji"
+            network={networkDefinition.avalancheFuji}
           />
           .
         </Typography>

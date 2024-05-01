@@ -107,7 +107,7 @@ Feature: Export Stream Data page test cases
         Then CSV contains the correct data
 
     Scenario: Users address auto-filled if wallet is connected
-        Given "Dashboard Page" is open with "john" connected on "polygon-mumbai"
+        Given "Dashboard Page" is open with "john" connected on "avalanche-fuji"
         And User opens the navigation more menu
         And User clicks on the "export" button in the more menu
         And User waits for 30 seconds

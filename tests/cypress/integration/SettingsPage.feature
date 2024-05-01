@@ -32,7 +32,7 @@ Feature: Settings page test cases
         And Approval modal should not exist
 
     Scenario: Add a new permission and close approval modal
-        Given "Settings Page" is open with "john" connected on "polygon-mumbai"
+        Given "Settings Page" is open with "john" connected on "avalanche-fuji"
         And User clicks on the add approval button
         And User opens the add approval modal is visible
         And User selects "fDAIx" as the super token to use for the stream
@@ -51,33 +51,33 @@ Feature: Settings page test cases
     Scenario: Address book names showing up in the ACL table
         Given Address book test data is set up
 
-        Given "Settings Page" is open with "dan" connected on "polygon-mumbai"
+        Given "Settings Page" is open with "dan" connected on "avalanche-fuji"
         And No loading skeletons are visible in the page
-        Then "fTUSDx" permission row with "john" as an operator on "polygon-mumbai" is visible
+        Then "fTUSDx" permission row with "john" as an operator on "avalanche-fuji" is visible
 
     Scenario: ENS names showing up in the ACL table
-        Given "Settings Page" is open with "dan" connected on "polygon-mumbai"
+        Given "Settings Page" is open with "dan" connected on "avalanche-fuji"
         And No loading skeletons are visible in the page
-        Then "fTUSDx" permission row with "vijay.eth" as an operator on "polygon-mumbai" is visible
+        Then "fTUSDx" permission row with "vijay.eth" as an operator on "avalanche-fuji" is visible
 
     Scenario: Lens names showing up in the ACL table
-        Given "Settings Page" is open with "dan" connected on "polygon-mumbai"
+        Given "Settings Page" is open with "dan" connected on "avalanche-fuji"
         And No loading skeletons are visible in the page
-        Then "fTUSDx" permission row with "elvijs.lens" as an operator on "polygon-mumbai" is visible
+        Then "fTUSDx" permission row with "elvijs.lens" as an operator on "avalanche-fuji" is visible
 
     Scenario: Revoked Allowances and Permissions not showing up in the table
         Given HDWallet transactions are rejected
 
-        Given "Settings Page" is open with "dan" connected on "polygon-mumbai"
+        Given "Settings Page" is open with "dan" connected on "avalanche-fuji"
         And No loading skeletons are visible in the page
-        Then Permission row for "vijay.eth" to use "MATICx" on "polygon-mumbai" does not exist
+        Then Permission row for "vijay.eth" to use "MATICx" on "avalanche-fuji" does not exist
 
     Scenario: Vesting form being auto-completed for existing permissions
         Given HDWallet transactions are rejected
 
-        Given "Settings Page" is open with "john" connected on "polygon-mumbai"
+        Given "Settings Page" is open with "john" connected on "avalanche-fuji"
         And No loading skeletons are visible in the page
-        And User opens the first modify permissions form on "polygon-mumbai"
+        And User opens the first modify permissions form on "avalanche-fuji"
         Then The selected row token , network and operator are auto-filled in the modify form
 
     @bug
@@ -87,8 +87,8 @@ Feature: Settings page test cases
 
         Given "Auto-wrap page" is open using view mode to look at "john"
         And No loading skeletons are visible in the page
-        And User changes their network to "polygon-mumbai"
-        And User opens the first modify permissions form on "polygon-mumbai"
+        And User changes their network to "avalanche-fuji"
+        And User opens the first modify permissions form on "avalanche-fuji"
         Then One stop viewing button is visible in the permissions form
         And User clicks the create permission toggle
         Then One stop viewing button is visible in the permissions form
@@ -100,7 +100,7 @@ Feature: Settings page test cases
         And User connects their wallet to the dashboard
         And User clicks on the "settings" navigation button
         And No loading skeletons are visible in the page
-        And User opens the first modify permissions form on "polygon-mumbai"
+        And User opens the first modify permissions form on "avalanche-fuji"
         Then One change network is visible in the permissions form
         And User clicks the create permission toggle
         Then One change network is visible in the permissions form
@@ -108,6 +108,6 @@ Feature: Settings page test cases
     Scenario: Token and flow allowance showing "Unlimited"
         Given HDWallet transactions are rejected
 
-        Given "Settings Page" is open with "dan" connected on "polygon-mumbai"
-        Then "fTUSDx" permission row with "vijay.eth" as an operator has "Unlimited" token allowance on "polygon-mumbai"
-        Then "fTUSDx" permission row with "vijay.eth" as an operator has "Unlimited" stream allowance on "polygon-mumbai"
+        Given "Settings Page" is open with "dan" connected on "avalanche-fuji"
+        Then "fTUSDx" permission row with "vijay.eth" as an operator has "Unlimited" token allowance on "avalanche-fuji"
+        Then "fTUSDx" permission row with "vijay.eth" as an operator has "Unlimited" stream allowance on "avalanche-fuji"

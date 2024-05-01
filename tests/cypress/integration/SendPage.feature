@@ -96,7 +96,7 @@ Feature: Send Page test cases
         Then The tokens are sorted by amount in the token selection screen
 
     Scenario: Scheduled streams - End date has to be after start date
-        Given "Send Page" is open with "john" connected on "polygon-mumbai"
+        Given "Send Page" is open with "john" connected on "avalanche-fuji"
         And User inputs all the details to send "1" "fTUSDx" per "month" to "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2"
         And User clicks the scheduling toggle
         And User inputs a date "1" "year" into the future into the stream start date
@@ -106,7 +106,7 @@ Feature: Send Page test cases
         And The start stream button is disabled
 
     Scenario: Scheduled streams - Start date has to be at least 15 minutes in the future
-        Given "Send Page" is open with "john" connected on "polygon-mumbai"
+        Given "Send Page" is open with "john" connected on "avalanche-fuji"
         And User inputs all the details to send "1" "fTUSDx" per "month" to "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2"
         And User clicks the scheduling toggle
         And User inputs a date "10" "minute" into the future into the stream start date
@@ -114,7 +114,7 @@ Feature: Send Page test cases
         And The start stream button is disabled
 
     Scenario: Scheduled streams - End date has to be at least 15 minutes in the future
-        Given "Send Page" is open with "john" connected on "polygon-mumbai"
+        Given "Send Page" is open with "john" connected on "avalanche-fuji"
         And User inputs all the details to send "1" "fTUSDx" per "month" to "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2"
         And User clicks the scheduling toggle
         And User inputs a date "10" "minute" into the future into the stream end date
@@ -122,7 +122,7 @@ Feature: Send Page test cases
         And The start stream button is disabled
 
     Scenario: Scheduled streams - Total stream amount getting correctly calculated with end and start date
-        Given "Send Page" is open with "john" connected on "polygon-mumbai"
+        Given "Send Page" is open with "john" connected on "avalanche-fuji"
         And User inputs all the details to send "1" "fTUSDx" per "month" to "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2"
         And User clicks the scheduling toggle
         And User inputs a date "1" "month" into the future into the stream start date
@@ -130,7 +130,7 @@ Feature: Send Page test cases
         Then The total stream amount is correctly calculated to be "1"
 
     Scenario: Scheduled streams - Total stream amount getting correctly calculated with just end date
-        Given "Send Page" is open with "john" connected on "polygon-mumbai"
+        Given "Send Page" is open with "john" connected on "avalanche-fuji"
         And User inputs all the details to send "1" "fTUSDx" per "month" to "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2"
         And User clicks the scheduling toggle
         And User inputs a date "1" "month" into the future into the stream end date
@@ -141,39 +141,39 @@ Feature: Send Page test cases
         And User clicks the scheduling toggle
         Then Allowlist message is shown
 
-    Scenario: Scheduled streams - Allowlist not needed on polygon-mumbai
-        Given "Send Page" is open with "alice" connected on "polygon-mumbai"
+    Scenario: Scheduled streams - Allowlist not needed on avalanche-fuji
+        Given "Send Page" is open with "alice" connected on "avalanche-fuji"
         And User clicks the scheduling toggle
         Then Scheduled stream fields are visible
 
     Scenario: Stream tables - stream with just start date
-        Given "Dashboard Page" is open with "john" connected on "polygon-mumbai"
-        And User clicks on "polygon-mumbai" "fTUSDx" row
+        Given "Dashboard Page" is open with "john" connected on "avalanche-fuji"
+        And User clicks on "avalanche-fuji" "fTUSDx" row
         Then The stream row to "0x66693Ff26e2036FDf3a5EA6B7FDf853Ca1Adaf4B" has a flow rate of "-1" and dates to "25 Feb. 2026 13:37"
-        And User clicks on "polygon-mumbai" "fTUSDx" row
-        And User opens "polygon-mumbai" "fTUSDx" individual token page
+        And User clicks on "avalanche-fuji" "fTUSDx" row
+        And User opens "avalanche-fuji" "fTUSDx" individual token page
         Then The stream row to "0x66693Ff26e2036FDf3a5EA6B7FDf853Ca1Adaf4B" has a flow rate of "-1" and dates to "25 Feb. 2026 13:37"
 
     Scenario: Stream tables - stream with start and end date
-        Given "Dashboard Page" is open with "john" connected on "polygon-mumbai"
-        And User clicks on "polygon-mumbai" "fTUSDx" row
+        Given "Dashboard Page" is open with "john" connected on "avalanche-fuji"
+        And User clicks on "avalanche-fuji" "fTUSDx" row
         Then The stream row to "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4" has a flow rate of "-1" and dates to "5 Jul. 2025 12:3728 Feb. 2026 13:37"
-        And User clicks on "polygon-mumbai" "fTUSDx" row
-        And User opens "polygon-mumbai" "fTUSDx" individual token page
+        And User clicks on "avalanche-fuji" "fTUSDx" row
+        And User opens "avalanche-fuji" "fTUSDx" individual token page
         Then The stream row to "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4" has a flow rate of "-1" and dates to "5 Jul. 2025 12:3728 Feb. 2026 13:37"
 
     Scenario: Stream tables - stream with end date
-        Given "Dashboard Page" is open with "john" connected on "polygon-mumbai"
-        And User clicks on "polygon-mumbai" "fTUSDx" row
+        Given "Dashboard Page" is open with "john" connected on "avalanche-fuji"
+        And User clicks on "avalanche-fuji" "fTUSDx" row
         Then The stream row to "0x9B6157d44134b21D934468B8bf709294cB298aa7" has a flow rate of "-1" and dates to "28 Feb. 2024 16:1527 Feb. 2026 13:37"
-        And User clicks on "polygon-mumbai" "fTUSDx" row
-        And User opens "polygon-mumbai" "fTUSDx" individual token page
+        And User clicks on "avalanche-fuji" "fTUSDx" row
+        And User opens "avalanche-fuji" "fTUSDx" individual token page
         Then The stream row to "0x9B6157d44134b21D934468B8bf709294cB298aa7" has a flow rate of "-1" and dates to "28 Feb. 2024 16:1527 Feb. 2026 13:37"
 
     Scenario: Modifying a streams start date
         Given HDWallet transactions are rejected
 
-        Given "Send Page" is open with "john" connected on "polygon-mumbai"
+        Given "Send Page" is open with "john" connected on "avalanche-fuji"
         And User inputs all the details to send "2" "fTUSDx" per "month" to "0x66693Ff26e2036FDf3a5EA6B7FDf853Ca1Adaf4B"
         And User inputs a date "1" "year" into the future into the stream start date
         And User accepts the risk warning
@@ -184,7 +184,7 @@ Feature: Send Page test cases
     Scenario: Modifying a stream with just end date
         Given HDWallet transactions are rejected
 
-        Given "Send Page" is open with "john" connected on "polygon-mumbai"
+        Given "Send Page" is open with "john" connected on "avalanche-fuji"
         And User inputs all the details to send "1" "fTUSDx" per "month" to "0x9B6157d44134b21D934468B8bf709294cB298aa7"
         And Stream start date field is disabled
         And User inputs a date "2" "year" into the future into the stream end date
@@ -196,7 +196,7 @@ Feature: Send Page test cases
     Scenario: Modifying a stream with start and end date ( not started yet )
         Given HDWallet transactions are rejected
 
-        Given "Send Page" is open with "john" connected on "polygon-mumbai"
+        Given "Send Page" is open with "john" connected on "avalanche-fuji"
         And User inputs all the details to send "2" "fTUSDx" per "month" to "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4"
         And User inputs a date "1" "year" into the future into the stream start date
         And User inputs a date "2" "year" into the future into the stream end date
@@ -208,29 +208,29 @@ Feature: Send Page test cases
     Scenario: Cancelling a scheduled stream - just end date
         Given HDWallet transactions are rejected
 
-        Given "Send Page" is open with "john" connected on "polygon-mumbai"
+        Given "Send Page" is open with "john" connected on "avalanche-fuji"
         And User inputs all the details to send "1" "fTUSDx" per "month" to "0x9B6157d44134b21D934468B8bf709294cB298aa7"
-        And User tries to cancel the stream and the first transaction dialogs are visible on "polygon-mumbai"
+        And User tries to cancel the stream and the first transaction dialogs are visible on "avalanche-fuji"
         And Transaction rejected error is shown
 
     Scenario: Cancelling a scheduled stream - just start date
         Given HDWallet transactions are rejected
 
-        Given "Send Page" is open with "john" connected on "polygon-mumbai"
+        Given "Send Page" is open with "john" connected on "avalanche-fuji"
         And User inputs all the details to send "1" "fTUSDx" per "month" to "0x66693Ff26e2036FDf3a5EA6B7FDf853Ca1Adaf4B"
-        And User tries to cancel the stream and the first transaction dialogs are visible on "polygon-mumbai"
+        And User tries to cancel the stream and the first transaction dialogs are visible on "avalanche-fuji"
         And Transaction rejected error is shown
 
     Scenario: Cancelling a scheduled stream - start and end date ( Not started )
         Given HDWallet transactions are rejected
 
-        Given "Send Page" is open with "john" connected on "polygon-mumbai"
+        Given "Send Page" is open with "john" connected on "avalanche-fuji"
         And User inputs all the details to send "1" "fTUSDx" per "month" to "0x9B6157d44134b21D934468B8bf709294cB298aa7"
-        And User tries to cancel the stream and the first transaction dialogs are visible on "polygon-mumbai"
+        And User tries to cancel the stream and the first transaction dialogs are visible on "avalanche-fuji"
         And Transaction rejected error is shown
 
     Scenario: Stream details are automatically input for ongoing streams
-        Given "Send Page" is open with "john" connected on "polygon-mumbai"
+        Given "Send Page" is open with "john" connected on "avalanche-fuji"
         And User searches for "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4" as a receiver
         And User opens the token selection screen
         And User selects "fTUSDx" from the super token list

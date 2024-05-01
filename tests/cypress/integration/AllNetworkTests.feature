@@ -11,7 +11,6 @@ Feature: Test cases that run indefinitely on all supported networks
 
         Examples:
             | network        | token |
-            | polygon-mumbai | MATIC |
             | avalanche-fuji | AVAX  |
             | gnosis         | XDAI  |
             | polygon        | MATIC |
@@ -32,7 +31,6 @@ Feature: Test cases that run indefinitely on all supported networks
 
         Examples:
             | network        |
-            | polygon-mumbai |
             | avalanche-fuji |
             | gnosis         |
             | polygon        |
@@ -53,7 +51,6 @@ Feature: Test cases that run indefinitely on all supported networks
 
         Examples:
             | network        |
-            | polygon-mumbai |
             | avalanche-fuji |
             | gnosis         |
             | polygon        |
@@ -69,5 +66,6 @@ Feature: Test cases that run indefinitely on all supported networks
             | opsepolia      |
             | degen          |
 
-    Scenario: Testnet faucet fund check
-        Given The faucet contract has got enough funds to send to people
+# Mumbai down, no faucet gg
+# Scenario: Testnet faucet fund check
+#     Given The faucet contract has got enough funds to send to people

@@ -11,7 +11,7 @@ Feature: Vesting page third batch of test cases
         Then Auto-wrap switch does not exist
 
     Scenario: Top up warning not shown if auto-wrap switch is enabled
-        And Transactional account john is connected to the dashboard on polygon-mumbai
+        And Transactional account john is connected to the dashboard on avalanche-fuji
         And User clicks on the "vesting" navigation button
         And User clicks on the create vesting schedule button
         And User selects "EURex" as the super token to use for the stream
@@ -35,8 +35,8 @@ Feature: Vesting page third batch of test cases
         Then The stop viewing as an address button is visible
         And Enable auto-wrap button does not exist
 
-    Scenario: Auto-wrap available to everyone on polygon-mumbai
-        And Transactional account bob is connected to the dashboard on polygon-mumbai
+    Scenario: Auto-wrap available to everyone on avalanche-fuji
+        And Transactional account bob is connected to the dashboard on avalanche-fuji
         And User clicks on the "vesting" navigation button
         And User clicks on the create vesting schedule button
         And User selects "EURex" as the super token to use for the stream
@@ -68,7 +68,7 @@ Feature: Vesting page third batch of test cases
     @skip
     Scenario: Setting up auto-wrap for a user who has already given ACL allowance(rejected)
         Given HDWallet transactions are rejected
-        And Transactional account john is connected to the dashboard on polygon-mumbai
+        And Transactional account john is connected to the dashboard on avalanche-fuji
         And User clicks on the "vesting" navigation button
         And User clicks on the create vesting schedule button
         And User searches for "vijay.eth" as a receiver
@@ -80,12 +80,12 @@ Feature: Vesting page third batch of test cases
         And User clicks on the auto-wrap switch
         And User previews the vesting schedule
         And User clicks the Allowance button for the auto-wrap
-        And Auto-wrap allowance transaction message is shown on "polygon-mumbai"
+        And Auto-wrap allowance transaction message is shown on "avalanche-fuji"
         Then Transaction rejected error is shown
 
     Scenario: Auto-wrap switch not showing up for a user who already has auto-wrap set up
         Given HDWallet transactions are rejected
-        And Transactional account john is connected to the dashboard on polygon-mumbai
+        And Transactional account john is connected to the dashboard on avalanche-fuji
         And User clicks on the "vesting" navigation button
         And User clicks on the create vesting schedule button
         And User searches for "vijay.eth" as a receiver
@@ -115,7 +115,7 @@ Feature: Vesting page third batch of test cases
         Given Dashboard is open with a mocked connection to "john" on "polygon"
         And User connects their wallet to the dashboard
         And User clicks on the "vesting" navigation button
-        And User changes their network to "polygon-mumbai"
+        And User changes their network to "avalanche-fuji"
         Then User opens "fTUSDx" permission table row
         Then Enable auto-wrap button is not visible
         And Switch network button is visible in the "fTUSDx" permission row
@@ -124,7 +124,7 @@ Feature: Vesting page third batch of test cases
         Given Dashboard is open with a mocked connection to "john" on "polygon"
         And User connects their wallet to the dashboard
         And User clicks on the "vesting" navigation button
-        And User changes their network to "polygon-mumbai"
+        And User changes their network to "avalanche-fuji"
         Then User opens "fUSDCx" permission table row
         Then Disable auto-wrap button does not exist
         And Switch network button is visible in the "fUSDCx" permission row
@@ -133,14 +133,14 @@ Feature: Vesting page third batch of test cases
         Given Dashboard is open with a mocked connection to "john" on "polygon"
         And User connects their wallet to the dashboard
         And User clicks on the "vesting" navigation button
-        And User changes their network to "polygon-mumbai"
+        And User changes their network to "avalanche-fuji"
         Then User opens "fUSDCx" permission table row
         Then Fix permissions button does not exist
         And Switch network button is shown instead of fix permissions button
 
     Scenario: Permissions table - Stop viewing button - enabling auto-wrap
         Given "Dashboard page" is open using view mode to look at "john"
-        And User changes their network to "polygon-mumbai"
+        And User changes their network to "avalanche-fuji"
         And User clicks on the "vesting" navigation button
         Then User opens "fTUSDx" permission table row
         Then Enable auto-wrap button is not visible
@@ -150,7 +150,7 @@ Feature: Vesting page third batch of test cases
 
     Scenario: Permissions table - Stop viewing button - disabling auto-wrap
         Given "Dashboard page" is open using view mode to look at "john"
-        And User changes their network to "polygon-mumbai"
+        And User changes their network to "avalanche-fuji"
         And User clicks on the "vesting" navigation button
         Then User opens "fTUSDx" permission table row
         Then Disable auto-wrap button does not exist

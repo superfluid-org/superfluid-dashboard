@@ -13,10 +13,14 @@ export interface NetworkCustomToken {
   customToken: Address;
 }
 
+export type NetworkCustomTokenState = EntityState<NetworkCustomToken>;
+
+export const getCustomTokenId = (chainId: number, customToken: Address) => `${chainId}-${getAddress(customToken)}`;
+
 const adapter = createEntityAdapter<NetworkCustomToken>({
-  selectId: ({ chainId, customToken }) =>
-    `${chainId}-${getAddress(customToken)}`,
+  selectId: ({ chainId, customToken }) => getCustomTokenId(chainId, customToken)
 });
+
 
 export const customTokensSlice = createSlice({
   name: "customTokens",

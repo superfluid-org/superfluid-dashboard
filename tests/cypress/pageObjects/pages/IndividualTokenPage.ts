@@ -127,7 +127,6 @@ export class IndividualTokenPage extends BasePage {
   static validateNoPendingStatusForFirstStreamRow() {
     cy.get(STREAM_ROWS)
       .first()
-      //Mumbai is syncing for years...
       .find(PENDING_MESSAGE, { timeout: 120000 })
       .should("not.exist");
   }
@@ -135,7 +134,6 @@ export class IndividualTokenPage extends BasePage {
   static validateNoPendingStatusForFirstDistributionsRow() {
     cy.get(DISTRIBUTION_ROWS)
       .first()
-      //Mumbai is syncing for years...
       .find(PENDING_MESSAGE, { timeout: 120000 })
       .should("not.exist");
   }
