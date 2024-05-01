@@ -4503,10 +4503,10 @@
     "@stdlib/utils-constructor-name" "^0.0.x"
     "@stdlib/utils-global" "^0.0.x"
 
-"@superfluid-finance/ethereum-contracts@^1.9.2-dev.ac92923.0":
-  version "1.9.2-dev.e56f02a.0"
-  resolved "https://registry.yarnpkg.com/@superfluid-finance/ethereum-contracts/-/ethereum-contracts-1.9.2-dev.e56f02a.0.tgz#70f833e2a926cdcd6d2c6b4c56b07de5bdeffbd3"
-  integrity sha512-RzL7UKgEQ0YxY5auDjfxdQk3DfoWcsX56NEKMcQe6/5fl728yLaqG+K0BxuiHSAzkZkQmzV3wciU1KST5iMS7A==
+"@superfluid-finance/ethereum-contracts@^1.9.1":
+  version "1.9.1"
+  resolved "https://registry.yarnpkg.com/@superfluid-finance/ethereum-contracts/-/ethereum-contracts-1.9.1.tgz#1b19ec8776cad2e73c89f188a64d007716207abe"
+  integrity sha512-o+2CZbxtSQfBC0QMDBykSTnR3rW+gRex75DaYIu17a5s5e5cUwIEf+7gA0EI6FKzMKd8zb//OTIAaCggwtw47Q==
   dependencies:
     "@decentral.ee/web3-helpers" "0.5.3"
     "@nomiclabs/hardhat-ethers" "^2.2.3"
@@ -4521,29 +4521,24 @@
   resolved "https://registry.yarnpkg.com/@superfluid-finance/metadata/-/metadata-1.1.30.tgz#b97a9c9f7956ab4bbd3d293fd4c3050e06ea64b9"
   integrity sha512-+vUFudyVY834D/2npl8EQMobrGdYT6B04p18UWVTBJvvumgCJIfJxxWyKAPOQBKdXW3Gy9PwRkaExyIi0gW1vA==
 
-"@superfluid-finance/metadata@^1.1.31-dev.ac92923.0":
-  version "1.1.31-dev.ac92923.0"
-  resolved "https://registry.yarnpkg.com/@superfluid-finance/metadata/-/metadata-1.1.31-dev.ac92923.0.tgz#e5d837b32b74a17dd4fe5e15b3047255563fe36e"
-  integrity sha512-A90f+E+GdDSUmUCXyJ2oCO0M8BRhUWQ7n274JKPl+NL66OIiq+JUCxf2+FZ5TVrIRRMrtS+mZfWokACzxVZ2eQ==
-
-"@superfluid-finance/sdk-core@0.6.14-dev.ac92923.0":
-  version "0.6.14-dev.ac92923.0"
-  resolved "https://registry.yarnpkg.com/@superfluid-finance/sdk-core/-/sdk-core-0.6.14-dev.ac92923.0.tgz#793704180c94307ba395e6e51f0ffe77e26e4eb9"
-  integrity sha512-hZnVV9Km7cCO3RV58ed9Js4MTH0dHm6Lg+bxuOsE4nvxtsKiNqwr90pZ3IYWALMUs2mXmWXk4kvAq7KEmb5UFA==
+"@superfluid-finance/sdk-core@^0.7.0":
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/@superfluid-finance/sdk-core/-/sdk-core-0.7.0.tgz#39cf85bb86e4eeedc8c449b2d1764eefafd5e57c"
+  integrity sha512-J8ceXl6f0DIMb6o2sSyrU1qewfcyQPlBi2QaIfVykb/EYK5mBI1UozaABOd3ATzrjVcobgeRz8qTVtRJXH9SFg==
   dependencies:
-    "@superfluid-finance/ethereum-contracts" "^1.9.2-dev.ac92923.0"
-    "@superfluid-finance/metadata" "^1.1.31-dev.ac92923.0"
+    "@superfluid-finance/ethereum-contracts" "^1.9.1"
+    "@superfluid-finance/metadata" "^1.1.30"
     browserify "^17.0.0"
     graphql-request "^6.1.0"
     lodash "^4.17.21"
     tsify "^5.0.4"
 
-"@superfluid-finance/sdk-redux@^0.5.1":
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/@superfluid-finance/sdk-redux/-/sdk-redux-0.5.1.tgz#799ccab1f8ae20651b14a199686c7bdad01ff77f"
-  integrity sha512-aAfv2EAsySgeR1eQuWlvc9FThKerKxO7VmcmD5CieGeglLfO3FzI7k5rX2F67chOkJsRi+UAOxVsaP57V38AGQ==
+"@superfluid-finance/sdk-redux@^0.6.0":
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/@superfluid-finance/sdk-redux/-/sdk-redux-0.6.0.tgz#20e7f1b3e9897f405dddea67ecb22e95db8fd49b"
+  integrity sha512-FyPS/YxCxPGYv5VFT4AFC3zeZrML8Y2AO+VRkVls6sHfasHIlUWQY3HH6o3UAENYz466/j5G3f0tQkgGB5cDwA==
   dependencies:
-    graphql-request "^5.0.0"
+    graphql-request "^5.2.0"
     lodash "^4.17.21"
     promise-retry "^2.0.1"
 
@@ -9543,7 +9538,7 @@ graphql-import-node@^0.0.5:
     "@graphql-typed-document-node/core" "^3.2.0"
     cross-fetch "^3.1.5"
 
-graphql-request@^5.0.0:
+graphql-request@^5.2.0:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/graphql-request/-/graphql-request-5.2.0.tgz#a05fb54a517d91bb2d7aefa17ade4523dc5ebdca"
   integrity sha512-pLhKIvnMyBERL0dtFI3medKqWOz/RhHdcgbZ+hMMIb32mEPa5MJSzS4AuXxfI4sRAu6JVVk5tvXuGfCWl9JYWQ==
@@ -14095,7 +14090,7 @@ string-format@^2.0.0:
   resolved "https://registry.yarnpkg.com/string-format/-/string-format-2.0.0.tgz#f2df2e7097440d3b65de31b6d40d54c96eaffb9b"
   integrity sha512-bbEs3scLeYNXLecRRuk6uJxdXUSj6le/8rNPHChIJTn2V79aXVTR1EH2OH5zLKKoz0V02fOUKZZcw01pLUShZA==
 
-"string-width-cjs@npm:string-width@^4.2.0", string-width@^4.0.0, string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.2, string-width@^4.2.3:
+"string-width-cjs@npm:string-width@^4.2.0":
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
@@ -14112,6 +14107,15 @@ string-width@^1.0.1:
     code-point-at "^1.0.0"
     is-fullwidth-code-point "^1.0.0"
     strip-ansi "^3.0.0"
+
+string-width@^4.0.0, string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.2, string-width@^4.2.3:
+  version "4.2.3"
+  resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
+  integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
+  dependencies:
+    emoji-regex "^8.0.0"
+    is-fullwidth-code-point "^3.0.0"
+    strip-ansi "^6.0.1"
 
 string-width@^5.0.1, string-width@^5.1.2:
   version "5.1.2"
@@ -14192,7 +14196,7 @@ string_decoder@~1.1.1:
   dependencies:
     safe-buffer "~5.1.0"
 
-"strip-ansi-cjs@npm:strip-ansi@^6.0.1", strip-ansi@^6.0.0, strip-ansi@^6.0.1:
+"strip-ansi-cjs@npm:strip-ansi@^6.0.1":
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
   integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
@@ -14212,6 +14216,13 @@ strip-ansi@^4.0.0:
   integrity sha512-4XaJ2zQdCzROZDivEVIDPkcQn8LMFSa8kj8Gxb/Lnwzv9A8VctNZ+lfivC/sV3ivW8ElJTERXZoPBRrZKkNKow==
   dependencies:
     ansi-regex "^3.0.0"
+
+strip-ansi@^6.0.0, strip-ansi@^6.0.1:
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
+  integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
+  dependencies:
+    ansi-regex "^5.0.1"
 
 strip-ansi@^7.0.1:
   version "7.1.0"
@@ -15663,7 +15674,7 @@ workerpool@6.2.1:
   resolved "https://registry.yarnpkg.com/workerpool/-/workerpool-6.2.1.tgz#46fc150c17d826b86a008e5a4508656777e9c343"
   integrity sha512-ILEIE97kDZvF9Wb9f6h5aXK4swSlKGUcOEGiIYb2OOu/IrDU9iwj0fD//SsA6E5ibwJxpEvhullJY4Sl4GcpAw==
 
-"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0", wrap-ansi@^7.0.0:
+"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0":
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
   integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
@@ -15684,6 +15695,15 @@ wrap-ansi@^6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-6.2.0.tgz#e9393ba07102e6c91a3b221478f0257cd2856e53"
   integrity sha512-r6lPcBGxZXlIcymEu7InxDMhdW0KDxpLgoFLcguasxCaJ/SOIZwINatK9KY/tf+ZrlywOKU0UDj3ATXUBfxJXA==
+  dependencies:
+    ansi-styles "^4.0.0"
+    string-width "^4.1.0"
+    strip-ansi "^6.0.0"
+
+wrap-ansi@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
+  integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
   dependencies:
     ansi-styles "^4.0.0"
     string-width "^4.1.0"
