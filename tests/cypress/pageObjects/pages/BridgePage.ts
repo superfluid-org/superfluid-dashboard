@@ -16,16 +16,33 @@ const NETWORK_BUTTONS = "[aria-label] > .MuiAvatar-root > .MuiAvatar-img";
 export class BridgePage extends BasePage {
   static validateFeaturedTokensAreShownOn(network: string) {
     cy.fixture("rejectedCaseTokens").then((availableTokens) => {
-      //The tokens user has in their wallet are shown at the top sorted by the balance , checking just 2 because 3rd is slightly overlayed
+      //The tokens are not featured at the top like the used to after a package update , still checking if super tokens are shown
+      cy.get(FROM_TO_SEARCH_BAR).type(availableTokens[network].TokenOne, {
+        force: true,
+      });
       cy.get(TOKEN_LIST_NAMES)
         .contains(availableTokens[network].TokenOne)
         .should("be.visible");
+      cy.get(FROM_TO_SEARCH_BAR).clear({ force: true });
+      cy.get(FROM_TO_SEARCH_BAR).type(availableTokens[network].TokenTwo, {
+        force: true,
+      });
+
       cy.get(TOKEN_LIST_NAMES)
         .contains(availableTokens[network].TokenTwo)
         .should("be.visible");
+      cy.get(FROM_TO_SEARCH_BAR).clear({ force: true });
+      cy.get(FROM_TO_SEARCH_BAR).type(`${availableTokens[network].TokenOne}x`, {
+        force: true,
+      });
       cy.get(TOKEN_LIST_NAMES)
         .contains(`${availableTokens[network].TokenOne}x`)
         .should("be.visible");
+      cy.get(FROM_TO_SEARCH_BAR).clear({ force: true });
+      cy.get(FROM_TO_SEARCH_BAR).type(`${availableTokens[network].TokenTwo}x`, {
+        force: true,
+      });
+
       cy.get(TOKEN_LIST_NAMES)
         .contains(`${availableTokens[network].TokenTwo}x`)
         .should("be.visible");
@@ -44,7 +61,8 @@ export class BridgePage extends BasePage {
     cy.get(TOKEN_LIST_NAMES)
       .its("length")
       .then((amount) => {
-        this.type(FROM_TO_SEARCH_BAR, token);
+        //The tooltip overlays the input field sometimes and makes the test fail
+        cy.get(FROM_TO_SEARCH_BAR).type(token, { force: true });
         cy.get(TOKEN_LIST_NAMES).should("have.length.below", amount);
         cy.get(TOKEN_LIST_NAMES).each((el) => {
           if (el.text() === token) {

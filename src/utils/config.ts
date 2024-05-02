@@ -30,9 +30,9 @@ const config = {
     process.env.NEXT_PUBLIC_ACCOUNTING_API ||
     "https://accounting.superfluid.dev/v1",
   platformApi: {
-    goerli:
-      process.env.NEXT_PUBLIC_PLATFORM_GOERLI ||
-      "https://prod-goerli-platform-service.dev.superfluid.dev",
+    avalanceFuji:
+      process.env.NEXT_PUBLIC_PLATFORM_AVALANCHE_FUJI ||
+      "https://prod-avalanche-fuji-platform-service.dev.superfluid.dev",
   },
   segmentWriteKey: isProduction
     ? segmentWriteKeyForProduction

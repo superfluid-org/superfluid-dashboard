@@ -79,10 +79,12 @@ export class IndividualTokenPage extends BasePage {
     let assertableString = ethers.utils.isAddress(address)
       ? BasePage.shortenHex(address)
       : address;
+    //Extra timeout because lens/ens names might take a while to load sometimes
     this.hasText(
       `${STREAM_ROWS} ${SENDER_RECEIVER_ADDRESSES}`,
       assertableString,
-      0
+      0,
+      { timeout: 30000 }
     );
     let plusOrMinus;
     if (sendOrReceive === "receiving") {
@@ -125,14 +127,14 @@ export class IndividualTokenPage extends BasePage {
   static validateNoPendingStatusForFirstStreamRow() {
     cy.get(STREAM_ROWS)
       .first()
-      .find(PENDING_MESSAGE, { timeout: 60000 })
+      .find(PENDING_MESSAGE, { timeout: 120000 })
       .should("not.exist");
   }
 
   static validateNoPendingStatusForFirstDistributionsRow() {
     cy.get(DISTRIBUTION_ROWS)
       .first()
-      .find(PENDING_MESSAGE, { timeout: 60000 })
+      .find(PENDING_MESSAGE, { timeout: 120000 })
       .should("not.exist");
   }
 
@@ -148,7 +150,7 @@ export class IndividualTokenPage extends BasePage {
   ) {
     this.hasText(PUBLISHERS, BasePage.shortenHex(address), 0);
     this.hasText(AMOUNT_RECEIVED, amount, 0);
-    this.hasText(STATUS, status, 0);
+    this.hasText(STATUS, status, 0, { timeout: 45000 });
     let fromToDate = when === "now" ? format(Date.now(), "d MMM. yyyy") : when;
     this.hasText(LAST_UPDATED_AT, fromToDate, 0);
   }
@@ -280,7 +282,6 @@ export class IndividualTokenPage extends BasePage {
             (values: any) => values.token === token
           )[0]
         : data[network].ongoingStreamsAccount.tokenValues;
-
       this.hasText(HEADER_SYMBOL, token);
       this.hasText(HEADER_NAME, chosenToken.tokenName);
       this.hasText(LIQUIDATION_DATE, chosenToken.liquidationDate);

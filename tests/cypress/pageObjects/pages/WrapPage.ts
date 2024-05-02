@@ -188,7 +188,12 @@ export class WrapPage extends BasePage {
 
   static chooseTokenToWrap(token: string) {
     this.getSelectedToken(token).then((selectedToken) => {
-      this.click(`[data-cy="${selectedToken}-list-item"]`, undefined, {
+      //A workaround for polygon due to the mess the multiple USDC listings created
+      let tokenToChoose =
+        selectedToken.includes("USDC") && Cypress.env("network") === "polygon"
+          ? 1
+          : 0;
+      this.click(`[data-cy="${selectedToken}-list-item"]`, tokenToChoose, {
         timeout: 60000,
       });
     });

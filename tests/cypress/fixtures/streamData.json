@@ -40,7 +40,7 @@
     ]
   },
   "accountWithLotsOfData": {
-    "polygon": [
+    "avalanche-fuji": [
       {
         "flowRate": 3805175038051,
         "startedAtUnix": 1686658805000,
@@ -60,22 +60,22 @@
     ]
   },
   "john": {
-    "goerli": [
+    "avalanche-fuji": [
       {
-        "flowRate": 385802469135,
-        "startedAtUnix": 1679387652000,
+        "flowRate": 380517503805,
+        "startedAtUnix": 1709136930000,
         "sender": "0x9Be85A79D847dFa90584F3FD40cC1f6D4026E2B9",
         "receiver": "0x9B6157d44134b21D934468B8bf709294cB298aa7",
-        "scheduledAmount": "22.72",
-        "startDate": "21 Mar. 2023 8:34",
-        "endDate": "30 Jan. 2025 22:00",
-        "amountPerMonth": "10",
-        "projectedLiquidation": "10 May. 2105 8:34",
-        "buffer": "0.001389",
-        "v2Link": "/stream/goerli/0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0x9b6157d44134b21d934468b8bf709294cb298aa7-0x0be89e17787c0ae021b5e4f84ae8444f900dd92c-0.0",
-        "token": "TDLx",
-        "networkName": "Goerli",
-        "txHash": "0xb94fd487ca8e05fcd525d98867c60e4b8f0d7c9f433491e981af1cad0d3f8366"
+        "scheduledAmount": "24",
+        "startDate": "28 Feb. 2024 18:15",
+        "endDate": "27 Feb. 2026 15:37",
+        "amountPerMonth": "1",
+        "projectedLiquidation": "27 Jun. 2032 10:15",
+        "buffer": "0.00137",
+        "v2Link": "/stream/polygon-mumbai/0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0x9b6157d44134b21d934468b8bf709294cb298aa7-0x918e0d5c96cac79674e2d38066651212be3c9c48-0.0",
+        "token": "fTUSDx",
+        "networkName": "Polygon Mumbai",
+        "txHash": "0x62915454cb4fcaa941b32e94afbdcd99e967408c95259dc4d540783ed7cadf0b"
       }
     ]
   }

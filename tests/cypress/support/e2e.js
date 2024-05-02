@@ -28,6 +28,9 @@ Cypress.on("uncaught:exception", (err, runnable) => {
     //Lifi bridge server errors when opening settings page
     err.name.includes("AxiosError") ||
     err.name.includes("ServerError") ||
+    err.message.includes(
+      "Request failed with status code 429 Too Many Requests"
+    ) ||
     //An error popping up on scroll sepolia , cannot reproduce manually
     err.message.includes("getInitialProps") ||
     //Error popping up when loading gnosis safe custom apps page
@@ -47,7 +50,10 @@ Cypress.on("fail", (err, runneable) => {
     err.message.includes(
       "PollingBlockTracker - encountered an error while attempting to update latest block"
     ) ||
-    err.name.includes("PollingBlockTracker")
+    err.name.includes("PollingBlockTracker") ||
+    //BSC mainnet sometimes throws these, similar to Pooling block tracker
+    err.message.includes("Could not find block") ||
+    err.message.includes("([object ProgressEvent])")
   ) {
     return false;
   } else {

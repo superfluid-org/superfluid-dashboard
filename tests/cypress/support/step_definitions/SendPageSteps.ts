@@ -13,7 +13,9 @@ Given(/^Stream preview is shown correctly when user is not connected$/, () => {
   SendPage.checkIfStreamPreviewIsCorrectWhenUserNotConnected();
 });
 Given(/^User accepts the risk warning$/, () => {
-  SendPage.isPlatformDeployedOnNetwork(() => SendPage.acceptRiskWarning());
+  SendPage.runFunctionIfPlatformIsDeployedOnNetwork(() =>
+    SendPage.acceptRiskWarning()
+  );
 });
 
 Given(/^Stream ending on and amount per second is shown correctly$/, () => {
@@ -114,7 +116,7 @@ Then(
 Then(
   /^User selects "([^"]*)" as the super token to use for auto-wrap or vesting$/,
   (token: string) => {
-    SendPage.isPlatformDeployedOnNetwork(() => {
+    SendPage.runFunctionIfPlatformIsDeployedOnNetwork(() => {
       SendPage.selectTokenForStreaming(token);
     });
   }
@@ -262,12 +264,14 @@ Then(
   }
 );
 Given(/^User clicks the scheduling toggle$/, function () {
-  SendPage.isPlatformDeployedOnNetwork(() => SendPage.clickSchedulingToggle());
+  SendPage.runFunctionIfPlatformIsDeployedOnNetwork(() =>
+    SendPage.clickSchedulingToggle()
+  );
 });
 Given(
   /^User inputs a date "([^"]*)" "([^"]*)" into the future into the stream start date$/,
   function (amount: number, timeunit: string) {
-    SendPage.isPlatformDeployedOnNetwork(() =>
+    SendPage.runFunctionIfPlatformIsDeployedOnNetwork(() =>
       SendPage.inputStartDate(amount, timeunit)
     );
   }
@@ -275,29 +279,29 @@ Given(
 Given(
   /^User inputs a date "([^"]*)" "([^"]*)" into the future into the stream end date$/,
   function (amount: number, timeunit: string) {
-    SendPage.isPlatformDeployedOnNetwork(() =>
+    SendPage.runFunctionIfPlatformIsDeployedOnNetwork(() =>
       SendPage.inputEndDate(amount, timeunit)
     );
   }
 );
 Then(/^The end date container outline is red$/, function () {
-  SendPage.isPlatformDeployedOnNetwork(() =>
+  SendPage.runFunctionIfPlatformIsDeployedOnNetwork(() =>
     SendPage.validateEndDateBorderIsRed()
   );
 });
 Then(/^The start date container outline is red$/, function () {
-  SendPage.isPlatformDeployedOnNetwork(() =>
+  SendPage.runFunctionIfPlatformIsDeployedOnNetwork(() =>
     SendPage.validateStartDateBorderIsRed()
   );
 });
 
 Then(/^Allowlist message is shown$/, function () {
-  SendPage.isPlatformDeployedOnNetwork(() =>
+  SendPage.runFunctionIfPlatformIsDeployedOnNetwork(() =>
     SendPage.validateVisibleAllowlistMessage()
   );
 });
 Then(/^Scheduled stream fields are visible$/, function () {
-  SendPage.isPlatformDeployedOnNetwork(() =>
+  SendPage.runFunctionIfPlatformIsDeployedOnNetwork(() =>
     SendPage.validateScheduledStreamFieldsAreVisible()
   );
 });
@@ -305,38 +309,38 @@ Given(/^User clicks the send transaction button$/, function () {
   SendPage.clickSendButton();
 });
 Given(/^Scheduled stream transaction dialogs are shown$/, function () {
-  SendPage.isPlatformDeployedOnNetwork(() =>
+  SendPage.runFunctionIfPlatformIsDeployedOnNetwork(() =>
     SendPage.validateScheduledStreamDialogs()
   );
 });
 Then(
   /^The total stream amount is correctly calculated to be "([^"]*)"$/,
   function (amount: string) {
-    SendPage.isPlatformDeployedOnNetwork(() =>
+    SendPage.runFunctionIfPlatformIsDeployedOnNetwork(() =>
       SendPage.validateTotalStreamAmount(amount)
     );
   }
 );
 Given(/^Stream start date field is disabled$/, function () {
-  SendPage.isPlatformDeployedOnNetwork(() =>
+  SendPage.runFunctionIfPlatformIsDeployedOnNetwork(() =>
     SendPage.validateDisabledStartDateField()
   );
 });
 Then(
   /^The flow rate field in the send page is "([^"]*)"$/,
   function (flowrate: string) {
-    SendPage.isPlatformDeployedOnNetwork(() =>
+    SendPage.runFunctionIfPlatformIsDeployedOnNetwork(() =>
       SendPage.validateSetFlowRate(flowrate)
     );
   }
 );
 Then(/^The stream start date is set to "([^"]*)"$/, function (date: string) {
-  SendPage.isPlatformDeployedOnNetwork(() =>
+  SendPage.runFunctionIfPlatformIsDeployedOnNetwork(() =>
     SendPage.validateStreamStartDate(date)
   );
 });
 Then(/^The stream end date is set to "([^"]*)"$/, function (date: string) {
-  SendPage.isPlatformDeployedOnNetwork(() =>
+  SendPage.runFunctionIfPlatformIsDeployedOnNetwork(() =>
     SendPage.validateStreamEndDate(date)
   );
 });

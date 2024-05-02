@@ -211,8 +211,8 @@ const WhitelistTransparentBox = () => (
         </Link>{" "}
         or try it out on{" "}
         <NetworkSwitchLink
-          title="Polygon Mumbai"
-          network={networkDefinition.polygonMumbai}
+          title={networkDefinition.optimismSepolia.name}
+          network={networkDefinition.optimismSepolia}
         />
         .
       </Typography>
@@ -915,7 +915,7 @@ export default memo(function SendStream() {
     return null;
   }, [activeFlow, scheduledStream]);
 
-  const { isPlatformWhitelisted } = platformApi.useIsAccountWhitelistedQuery(
+  const { isPlatformWhitelisted_ } = platformApi.useIsAccountWhitelistedQuery(
     visibleAddress && network?.platformUrl
       ? {
         chainId: network.id,
@@ -926,10 +926,16 @@ export default memo(function SendStream() {
     {
       selectFromResult: (queryResult) => ({
         ...queryResult,
-        isPlatformWhitelisted: !!queryResult.data,
+        isPlatformWhitelisted_: !!queryResult.data,
       }),
     }
   );
+  const isPlatformWhitelisted = Boolean(
+    isPlatformWhitelisted_ || network?.testnet
+  );
+
+  // TODO: Remove when The Platform is deployed to Base.
+  const doesNetworkSupportScheduling = !!network.flowSchedulerContractAddress || network.id === networkDefinition.base.id;
 
   return (
     <Stack spacing={2.5}>
@@ -985,7 +991,7 @@ export default memo(function SendStream() {
           {FlowRateController}
         </Box>
       </Box>
-      {!!network.flowSchedulerContractAddress && (
+      {doesNetworkSupportScheduling && (
         <>
           <FormControlLabel
             data-cy={"scheduling-tooltip"}

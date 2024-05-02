@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, EntityState, PayloadAction } from "@reduxjs/toolkit";
 import { uniq } from "lodash";
 
 interface NetworkPreferences {
@@ -7,6 +7,8 @@ interface NetworkPreferences {
    */
   hidden: number[];
 }
+
+export type NetworkPreferencesState = EntityState<NetworkPreferences>;
 
 export const networkPreferencesSlice = createSlice({
   name: "network-preferences",

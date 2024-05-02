@@ -1,21 +1,9 @@
 {
-  "goerli": {
-    "TokenOne": "fDAI",
-    "TokenTwo": "fUSDC",
-    "TokenThree": "fTUSD",
-    "TokenGas": "ETH"
-  },
   "gnosis": {
     "TokenOne": "TDL",
     "TokenTwo": "USDC",
     "TokenThree": "WORK",
     "TokenGas": "xDAI"
-  },
-  "polygon-mumbai": {
-    "TokenOne": "fDAI",
-    "TokenTwo": "fUSDC",
-    "TokenThree": "fTUSD",
-    "TokenGas": "MATIC"
   },
   "polygon": {
     "TokenOne": "DAI",
@@ -68,11 +56,6 @@
     "TokenTwo": "fUSDC",
     "TokenGas": "ETH"
   },
-  "bgoerli": {
-    "TokenOne": "fDAI",
-    "TokenTwo": "fUSDC",
-    "TokenGas": "ETH"
-  },
   "base": {
     "TokenOne": "DAI",
     "TokenTwo": "USDC",
@@ -92,5 +75,10 @@
     "TokenOne": "fDAI",
     "TokenTwo": "fUSDC",
     "TokenGas": "ETH"
+  },
+  "degen": {
+    "TokenOne": "fDAI",
+    "TokenTwo": "fUSDC",
+    "TokenGas": "DEGEN"
   }
 }

@@ -1,12 +1,14 @@
 import { BasePage, UnitOfTime } from "../BasePage";
 import { WrapPage } from "./WrapPage";
 import { networksBySlug } from "../../superData/networks";
+import { EthHelper } from "../../support/helpers/ethHelper";
 import {
   Common,
   CONNECT_WALLET_BUTTON,
   TOKEN_ANIMATION,
   TOKEN_BALANCE,
 } from "./Common";
+import { ethers } from "ethers";
 
 const SEND_BUTTON = "[data-cy=send-transaction-button]";
 const RECEIVER_BUTTON = "[data-cy=address-button]";
@@ -71,6 +73,42 @@ const ALLOWLIST_MESSAGE = "[data-cy=allowlist-message]";
 const ALLOWLIST_LINK = "[data-cy=allowlist-link]";
 
 export class SendPage extends BasePage {
+  static async cancelTokenStreamFromTo(
+    token: string,
+    sender: string,
+    receiver: string,
+    network: string
+  ) {
+    const ethHelper = new EthHelper(
+      network,
+      Cypress.env("TX_ACCOUNT_PRIVATE_KEY2")
+    );
+    //Bobs(TX_ACCOUNT_2) address
+    await ethHelper.deleteFlowIfNeccesary(
+      token,
+      "0x9B6157d44134b21D934468B8bf709294cB298aa7",
+      receiver
+    );
+  }
+  static async startTokenStreamFromTo(
+    token: string,
+    sender: string,
+    receiver: string,
+    network: string
+  ) {
+    const ethHelper = new EthHelper(
+      network,
+      Cypress.env("TX_ACCOUNT_PRIVATE_KEY2")
+    );
+    //Approx 0.5 per month
+    await ethHelper.startFlowIfNeccesary(
+      token,
+      "0x9B6157d44134b21D934468B8bf709294cB298aa7",
+      receiver,
+      "192901234567"
+    );
+    //Wait just to make sure the nonce used by the provider when connecting to the dashboard is not the same and fail the test
+  }
   static searchForTokenInTokenList(token: string) {
     this.type(TOKEN_SEARCH_INPUT, token);
   }
@@ -352,7 +390,7 @@ export class SendPage extends BasePage {
       this.clear(`${FLOW_RATE_INPUT} input`);
       this.type(FLOW_RATE_INPUT, amount);
       this.click(SELECT_TOKEN_BUTTON);
-      this.click(`[data-cy="${selectedToken}-list-item"]`, undefined, {
+      this.click(`[data-cy="${selectedToken}-list-item"]`, 0, {
         timeout: 60000,
       });
       this.click(TIME_UNIT_SELECTION_BUTTON);
@@ -675,7 +713,7 @@ export class SendPage extends BasePage {
     this.hasValue(`${END_DATE} input`, date);
   }
 
-  static isPlatformDeployedOnNetwork(fn: () => void) {
+  static runFunctionIfPlatformIsDeployedOnNetwork(fn: () => void) {
     if (
       [
         "avalanche-fuji",
@@ -693,6 +731,25 @@ export class SendPage extends BasePage {
       return;
     } else {
       fn();
+    }
+  }
+
+  static skipTestIfPlatformNotAvailableOnNetwork() {
+    if (
+      [
+        "avalanche-fuji",
+        "sepolia",
+        "base",
+        "scroll",
+        "scrsepolia",
+        "opsepolia",
+        "degen",
+      ].includes(Cypress.env("network")) &&
+      Cypress.env("platformNeeded")
+    ) {
+      return true;
+    } else {
+      return false;
     }
   }
 }

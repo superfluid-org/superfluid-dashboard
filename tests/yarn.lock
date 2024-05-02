@@ -2778,6 +2778,13 @@
     lodash "^4.17.21"
     tsify "^5.0.4"
 
+"@superfluid-finance/tokenlist@^3.4.0":
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/@superfluid-finance/tokenlist/-/tokenlist-3.4.0.tgz#3e70a7566ed091b8f8211516abf828d2e9aa210e"
+  integrity sha512-JffB+SakpztO17PkO0tQdq/wacWQflaav+aUfpB6RVva2a4Ip0ROqfYQDX1x2s2xjgChPlU6T6QmEa317muGWQ==
+  dependencies:
+    "@uniswap/token-lists" "^1.0.0-beta.33"
+
 "@szmarczak/http-timer@^4.0.5":
   version "4.0.6"
   resolved "https://registry.yarnpkg.com/@szmarczak/http-timer/-/http-timer-4.0.6.tgz#b4a914bb62e7c272d4e5989fe4440f812ab1d807"
@@ -3219,6 +3226,11 @@
   integrity sha512-Cn6WYCm0tXv8p6k+A8PvbDG763EDpBoTzHdA+Q/MF6H3sapGjCm9NzoaJncJS9tUKSuCoDs9XHxYYsQDgxR6kw==
   dependencies:
     "@types/node" "*"
+
+"@uniswap/token-lists@^1.0.0-beta.33":
+  version "1.0.0-beta.33"
+  resolved "https://registry.yarnpkg.com/@uniswap/token-lists/-/token-lists-1.0.0-beta.33.tgz#966ba96c9ccc8f0e9e09809890b438203f2b1911"
+  integrity sha512-JQkXcpRI3jFG8y3/CGC4TS8NkDgcxXaOQuYW8Qdvd6DcDiIyg2vVYCG9igFEzF0G6UvxgHkBKC7cWCgzZNYvQg==
 
 "@wagmi/chains@1.6.0":
   version "1.6.0"

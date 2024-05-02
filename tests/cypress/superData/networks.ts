@@ -14,8 +14,6 @@ import ensureDefined from "../../../src/utils/ensureDefined";
 export const autoWrapManagerAddresses = {
   [chain.polygon.id]: "0x2581c27E7f6D6AF452E63fCe884EDE3EDd716b32",
   [chain.bsc.id]: "0x2AcdD61ac1EFFe1535109449c31889bdE8d7f325",
-  [chain.goerli.id]: "0x0B82D14E9616ca4d260E77454834AdCf5887595F",
-  [chain.polygonMumbai.id]: "0x3eAB3c6207F488E475b7955B631B564F0E6317B9",
   [chain.avalancheFuji.id]: "0x30aE282CF477E2eF28B14d0125aCEAd57Fe1d7a1",
   [chain.avalanche.id]: "0x8082e58681350876aFe8f52d3Bf8672034A03Db0",
   [chain.optimism.id]: "0x1fA76f2Cd0C3fe6c399A80111408d9C42C0CAC23",
@@ -27,8 +25,6 @@ export const autoWrapManagerAddresses = {
 export const autoWrapStrategyAddresses = {
   [chain.polygon.id]: "0xb4afa36BAd8c76976Dc77a21c9Ad711EF720eE4b",
   [chain.bsc.id]: "0x9e308cb079ae130790F604b1030cDf386670f199",
-  [chain.goerli.id]: "0xea49af829d3e28d3ec49e0e0a0ba1e7860a56f60",
-  [chain.polygonMumbai.id]: "0x544728AFDBeEafBeC9e1329031788edb53017bC4",
   [chain.avalancheFuji.id]: "0x1D65c6d3AD39d454Ea8F682c49aE7744706eA96d",
   [chain.avalanche.id]: "0x51FBAbD31A615E14b1bC12E9d887f60997264a4E",
   [chain.optimism.id]: "0x0Cf060a501c0040e9CCC708eFE94079F501c6Bb4",
@@ -38,22 +34,18 @@ export const autoWrapStrategyAddresses = {
 } as const;
 
 export const flowSchedulerContractAddresses = {
-  goerli: "0xf428308b426D7cD7Ad8eBE549d750f31C8E060Ca",
   arbitrum: "0x3fA8B653F9abf91428800C0ba0F8D145a71F97A1",
   avalancheC: "0xF7AfF590E9DE493D7ACb421Fca7f1E35C1ad4Ce5",
   bnbSmartChain: "0x2f9e2A2A59405682d4F86779275CF5525AD7eC2B",
   ethereum: "0xAA0cD305eD020137E302CeCede7b18c0A05aCCDA",
   optimism: "0x55c8fc400833eEa791087cF343Ff2409A39DeBcC",
   polygon: "0x55F7758dd99d5e185f4CC08d4Ad95B71f598264D",
-  mumbai: "0x59A3Ba9d34c387FB70b4f4e4Fbc9eD7519194139",
   gnosis: "0x9cC7fc484fF588926149577e9330fA5b2cA74336",
 } as const;
 
 export const vestingContractAddresses = {
   gnosis: "0x0170FFCC75d178d426EBad5b1a31451d00Ddbd0D",
-  goerli: "0xF9240F930d847F70ad900aBEE8949F25649Bf24a",
   polygon: "0xcFE6382B33F2AdaFbE46e6A26A88E0182ae32b0c",
-  mumbai: "0x3962EE56c9f7176215D149938BA685F91aBB633B",
   arbitrum: "0x55c8fc400833eEa791087cF343Ff2409A39DeBcC",
   optimism: "0x65377d4dfE9c01639A41952B5083D58964782892",
   avalancheC: "0x3fA8B653F9abf91428800C0ba0F8D145a71F97A1",
@@ -95,10 +87,8 @@ export type Network = {
 };
 
 export const superfluidRpcUrls = {
-  goerli: "https://rpc-endpoints.superfluid.dev/eth-goerli",
   gnosis: "https://rpc-endpoints.superfluid.dev/xdai-mainnet",
   polygon: "https://rpc-endpoints.superfluid.dev/polygon-mainnet",
-  polygonMumbai: "https://rpc-endpoints.superfluid.dev/polygon-mumbai",
   arbitrum: "https://rpc-endpoints.superfluid.dev/arbitrum-one",
   optimism: "https://rpc-endpoints.superfluid.dev/optimism-mainnet",
   avalancheFuji: "https://rpc-endpoints.superfluid.dev/avalanche-fuji",
@@ -114,13 +104,8 @@ export const superfluidRpcUrls = {
 };
 
 export const networkDefinition: {
-  goerli: Network & {
-    flowSchedulerContractAddress: `0x${string}`;
-    platformUrl: string;
-  };
   gnosis: Network;
   polygon: Network;
-  polygonMumbai: Network;
   avalancheFuji: Network;
   optimism: Network;
   arbitrum: Network;
@@ -133,41 +118,8 @@ export const networkDefinition: {
   scroll: Network;
   scrollSepolia: Network;
   optimismSepolia: Network;
+  degenChain: Network;
 } = {
-  goerli: {
-    ...chain.goerli,
-    slugName: "goerli",
-    v1ShortName: "goerli",
-    bufferTimeInMinutes: 60,
-    color: "#9064ff",
-    superfluidRpcUrl: superfluidRpcUrls.goerli,
-    subgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-goerli",
-    getLinkForTransaction: (txHash: string): string =>
-      `https://goerli.etherscan.io/tx/${txHash}`,
-    getLinkForAddress: (address: string): string =>
-      `https://goerli.etherscan.io/address/${address}`,
-    nativeCurrency: {
-      ...BasePage.ensureDefined(chain.goerli.nativeCurrency),
-      address: NATIVE_ASSET_ADDRESS,
-      type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: "ETHx",
-        address: "0x5943f705abb6834cad767e6e4bb258bc48d9c947",
-        name: "Super ETH",
-        decimals: 18,
-      },
-    },
-    autoWrap: {
-      managerContractAddress: autoWrapManagerAddresses[chain.goerli.id],
-      strategyContractAddress: autoWrapStrategyAddresses[chain.goerli.id],
-      lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
-      upperLimit: BigNumber.from(UnitOfTime.Day * 14),
-    },
-    flowSchedulerContractAddress: "0x5b2D8d18FE90D840cbc012a8a06C3EeAA5cBe1a6",
-    platformUrl: "https://prod-goerli-platform-service.dev.superfluid.dev",
-  },
   gnosis: {
     name: "Gnosis Chain",
     slugName: "gnosis",
@@ -235,39 +187,6 @@ export const networkDefinition: {
     autoWrap: {
       managerContractAddress: autoWrapManagerAddresses[chain.polygon.id],
       strategyContractAddress: autoWrapStrategyAddresses[chain.polygon.id],
-      lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
-      upperLimit: BigNumber.from(UnitOfTime.Day * 14),
-    },
-  },
-  polygonMumbai: {
-    ...chain.polygonMumbai,
-    slugName: "polygon-mumbai",
-    v1ShortName: "mumbai",
-    bufferTimeInMinutes: 60,
-    color: "#3099f2",
-    superfluidRpcUrl: superfluidRpcUrls.polygonMumbai,
-    subgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-mumbai",
-    getLinkForTransaction: (txHash: string): string =>
-      `https://mumbai.polygonscan.com/tx/${txHash}`,
-    getLinkForAddress: (address: string): string =>
-      `https://mumbai.polygonscan.com/address/${address}`,
-    nativeCurrency: {
-      ...BasePage.ensureDefined(chain.polygonMumbai.nativeCurrency),
-      address: NATIVE_ASSET_ADDRESS,
-      type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: "MATICx",
-        address: "0x96b82b65acf7072efeb00502f45757f254c2a0d4",
-        name: "Super MATIC",
-        decimals: 18,
-      },
-    },
-    autoWrap: {
-      managerContractAddress: autoWrapManagerAddresses[chain.polygonMumbai.id],
-      strategyContractAddress:
-        autoWrapStrategyAddresses[chain.polygonMumbai.id],
       lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
       upperLimit: BigNumber.from(UnitOfTime.Day * 14),
     },
@@ -652,13 +571,41 @@ export const networkDefinition: {
       },
     },
   },
+  degenChain: {
+    name: "Degen Chain",
+    network: "degen",
+    id: 666666666,
+    slugName: "degen",
+    v1ShortName: "degen",
+    bufferTimeInMinutes: 240,
+    icon: "/icons/network/degen.svg",
+    color: "#a46efd",
+    subgraphUrl: "https://optimism-sepolia.subgraph.x.superfluid.dev/",
+    superfluidRpcUrl: superfluidRpcUrls["degenChain"],
+    getLinkForTransaction: (txHash: string): string =>
+      `https://explorer.degen.tips/tx/${txHash}`,
+    getLinkForAddress: (address: string): string =>
+      `https://explorer.degen.tips/address/${address}`,
+    nativeCurrency: {
+      name: "Degen",
+      symbol: "DEGEN",
+      decimals: 18,
+      address: NATIVE_ASSET_ADDRESS,
+      type: TokenType.NativeAssetUnderlyingToken,
+      superToken: {
+        type: TokenType.NativeAssetSuperToken,
+        symbol: "DEGENx",
+        address: "0x671425ae1f272bc6f79bec3ed5c4b00e9c628240",
+        name: "Super DEGEN",
+        decimals: 18,
+      },
+    },
+  },
 };
 
 export const networks: Network[] = [
-  networkDefinition.goerli,
   networkDefinition.gnosis,
   networkDefinition.polygon,
-  networkDefinition.polygonMumbai,
   networkDefinition.avalancheFuji,
   networkDefinition.optimism,
   networkDefinition.arbitrum,
@@ -671,6 +618,7 @@ export const networks: Network[] = [
   networkDefinition.scroll,
   networkDefinition.scrollSepolia,
   networkDefinition.optimismSepolia,
+  networkDefinition.degenChain,
 ];
 
 export const getNetworkDefaultTokenPair = memoize(

@@ -226,7 +226,7 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({}) => {
     }
   );
 
-  const { isPlatformWhitelisted, isLoading: isWhitelistLoading } =
+  const { isPlatformWhitelisted_, isLoading: isWhitelistLoading } =
     platformApi.useIsAccountWhitelistedQuery(
       visibleAddress && network?.platformUrl
         ? {
@@ -238,10 +238,11 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({}) => {
       {
         selectFromResult: (queryResult) => ({
           ...queryResult,
-          isPlatformWhitelisted: !!queryResult.data,
+          isPlatformWhitelisted_: !!queryResult.data,
         }),
       }
     );
+  const isPlatformWhitelisted = Boolean(isPlatformWhitelisted_ || network?.testnet);
 
   const pendingVestingSchedules =
     useAddressPendingVestingSchedules(visibleAddress);

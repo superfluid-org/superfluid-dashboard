@@ -20,6 +20,24 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 18.x
+      # A workaround for Cypress to work with Currents https://github.com/currents-dev/gh-actions-example/blob/main/.github/workflows/currents.yml
+      # Install Currents
+      - name: Install dependencies
+        run: |
+          yarn install
+
+      - name: Unblock Cypress
+        working-directory: "tests"
+        run: |
+          echo 🕊️ Download Free Cypress
+          CYPRESS_DOWNLOAD_MIRROR=https://cy-cdn.currents.dev yarn add cypress@12.17.4 --force
+
+          echo ✅ Verify Cypress
+          npx cypress verify
+
+          echo 👀 Cypress Cache
+          npx cypress cache list
+          npx cypress cache path
 
       - name: Cypress tests
         id: cypress
