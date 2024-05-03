@@ -16,7 +16,7 @@ import { Network } from "../network/networks";
 import { subgraphApi } from "../redux/store";
 import Amount from "../token/Amount";
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
-import { usePoolMemberTotalAmountReceived } from "./usePoolMemberTotalAmountReceived";
+import { useTotalAmountReceivedFromPoolMember } from "./usePoolMemberTotalAmountReceived";
 import FlowingBalance from "../token/FlowingBalance";
 import { UnitOfTime } from "../send/FlowRateInput";
 import { ConnectToPoolButton } from "./ConnectToPoolButton";
@@ -39,7 +39,7 @@ const PoolMemberRow: FC<Props> = ({
         id: poolMember.pool
     }, {})
 
-    const totalAmountReceived = usePoolMemberTotalAmountReceived(poolMember, pool)
+    const totalAmountReceived = useTotalAmountReceivedFromPoolMember(network.id, poolMember.account, poolMember.pool)
     const isReceivingFlow = totalAmountReceived?.memberFlowRate?.gt(0);
 
     // if not connected, query "claimable"
