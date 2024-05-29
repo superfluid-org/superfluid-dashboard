@@ -213,7 +213,6 @@ const StreamRow: FC<StreamRowProps> = ({
                   isPending || !!startDateScheduled ? "0" : currentFlowRate
                 }
                 balanceTimestamp={updatedAtTimestamp}
-                disableRoundingIndicator
               />
             </Typography>
           </TableCell>
@@ -262,7 +261,6 @@ const StreamRow: FC<StreamRowProps> = ({
                 balance={streamedUntilUpdatedAt}
                 flowRate={isPending ? "0" : currentFlowRate}
                 balanceTimestamp={updatedAtTimestamp}
-                disableRoundingIndicator
               />
             }
             secondary={

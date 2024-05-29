@@ -79,7 +79,11 @@ const PoolMemberRow: FC<Props> = ({
 
             <TableCell>
                 {/* Use FIAT price here as well? */}
-                {totalAmountReceived && <FlowingBalance balance={totalAmountReceived.memberCurrentTotalAmountReceived} balanceTimestamp={totalAmountReceived.timestamp} flowRate={totalAmountReceived.memberFlowRate} />}
+                {totalAmountReceived && (
+                    <Typography variant="h7mono">
+                        <FlowingBalance balance={totalAmountReceived.memberCurrentTotalAmountReceived} balanceTimestamp={totalAmountReceived.timestamp} flowRate={totalAmountReceived.memberFlowRate} />
+                    </Typography>
+                )}
             </TableCell>
 
             <TableCell>

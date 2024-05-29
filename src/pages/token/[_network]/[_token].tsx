@@ -240,7 +240,6 @@ const TokenPageContent: FC<{
                     balance={balance}
                     flowRate={flowRate}
                     balanceTimestamp={balanceTimestamp}
-                    disableRoundingIndicator
                   />
                 </Typography>
                 <Typography
@@ -397,9 +396,9 @@ const TokenPageContent: FC<{
               value={TokenDetailsTabs.Streams}
             />
             <Tab
-              data-cy="distribution-tab"
-              label="Distributions"
-              value={TokenDetailsTabs.Distributions}
+              data-cy="stream-distributions-tab"
+              label="Stream Distributions"
+              value={TokenDetailsTabs.StreamDistributions}
             />
             <Tab
               data-cy="transfers-tab"
@@ -407,9 +406,9 @@ const TokenPageContent: FC<{
               value={TokenDetailsTabs.Transfers}
             />
             <Tab
-              data-cy="stream-distributions-tab"
-              label="Stream Distributions"
-              value={TokenDetailsTabs.StreamDistributions}
+              data-cy="distribution-tab"
+              label="Distributions (legacy)"
+              value={TokenDetailsTabs.Distributions}
             />
           </TabList>
 

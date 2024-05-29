@@ -6,6 +6,7 @@ import {
   ListItemAvatar,
   ListItemIcon,
   ListItemText,
+  Skeleton,
   Stack,
   styled,
   TableCell,
@@ -36,6 +37,7 @@ import FiatAmount from "../tokenPrice/FiatAmount";
 import FlowingFiatBalance from "../tokenPrice/FlowingFiatBalance";
 import useTokenPrice from "../tokenPrice/useTokenPrice";
 import BalanceCriticalIndicator from "./BalanceCriticalIndicator";
+import { isDefined } from "../../utils/ensureDefined";
 
 interface SnapshotRowProps {
   lastElement?: boolean;
@@ -105,18 +107,11 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
 
   const tokenPrice = useTokenPrice(network.id, token);
 
-  const realtimeBalance = rpcApi.useRealtimeBalanceQuery({
+  const { data: balanceData } = rpcApi.useRealtimeBalanceQuery({
     chainId: network.id,
     accountAddress: account,
     tokenAddress: token,
   });
-
-  const balance =
-    realtimeBalance?.data?.balance ?? snapshot.balanceUntilUpdatedAt;
-  const balanceTimestamp =
-    realtimeBalance?.data?.balanceTimestamp ?? snapshot.updatedAtTimestamp;
-  const netFlowRate =
-    realtimeBalance?.data?.flowRate ?? snapshot.totalNetFlowRate;
 
   const hasStreams =
     totalNumberOfActiveStreams + totalNumberOfClosedStreams > 0;
@@ -134,10 +129,14 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
   const stopPropagation = (e: MouseEvent) => e.stopPropagation();
 
   const criticalDate = useMemo(() => {
+    if (!balanceData) {
+      return undefined;
+    }
+
     const criticalTimestamp = calculateMaybeCriticalAtTimestamp({
-      balanceUntilUpdatedAtWei: balance,
-      updatedAtTimestamp: balanceTimestamp,
-      totalNetFlowRateWei: netFlowRate,
+      balanceUntilUpdatedAtWei: balanceData.balance,
+      updatedAtTimestamp: balanceData.balanceTimestamp,
+      totalNetFlowRateWei: balanceData.flowRate,
     });
 
     if (criticalTimestamp.gt(BIG_NUMBER_ZERO)) {
@@ -149,16 +148,15 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
     }
 
     return null;
-  }, [balance, balanceTimestamp, netFlowRate]);
-
-  const weiAmountMonthly = useMemo(
-    () => BigNumber.from(netFlowRate).mul(UnitOfTime.Month),
-    [netFlowRate]
-  );
+  }, [balanceData]);
 
   const flowRateMonthly = useMemo(
-    () => BigNumber.from(netFlowRate).mul(UnitOfTime.Month),
-    [netFlowRate]
+    () => {
+      if (balanceData) {
+        return BigNumber.from(balanceData.flowRate).mul(UnitOfTime.Month);
+      }
+    },
+    [balanceData]
   );
 
   return (
@@ -214,22 +212,20 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                     />
                   </ListItemIcon>
                 )}
+
                 <ListItemText
                   primary={
                     <FlowingBalance
-                      balance={balance}
-                      flowRate={netFlowRate}
-                      balanceTimestamp={balanceTimestamp}
-                      disableRoundingIndicator
+                      data={balanceData}
                     />
                   }
                   secondary={
                     tokenPrice && (
                       <FlowingFiatBalance
-                        balance={balance}
-                        flowRate={netFlowRate}
-                        balanceTimestamp={balanceTimestamp}
-                        price={tokenPrice}
+                        data={balanceData ? {
+                          ...balanceData,
+                          price: tokenPrice
+                        } : undefined}
                       />
                     )
                   }
@@ -239,6 +235,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                     color: "text.secondary",
                   }}
                 />
+                
               </ListItem>
             </TableCell>
 
@@ -247,21 +244,22 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                 <ListItemText
                   data-cy="net-flow-value"
                   primary={
+                    balanceData && isDefined(flowRateMonthly) ? 
                     <>
-                      {netFlowRate.charAt(0) !== "-" && "+"}
-                      <Amount wei={weiAmountMonthly}>/mo</Amount>
-                    </>
+                      {balanceData.flowRate.charAt(0) !== "-" && "+"}
+                      <Amount wei={flowRateMonthly}>/mo</Amount>
+                    </> : <Skeleton />
                   }
                   secondary={
-                    tokenPrice && (
+                    tokenPrice && isDefined(flowRateMonthly) ? (
                       <FiatAmount
                         price={tokenPrice}
-                        wei={weiAmountMonthly.abs()}
+                        wei={flowRateMonthly.abs()}
                       >
                         {" "}
                         /mo
                       </FiatAmount>
-                    )
+                    ) : <></>
                   }
                   primaryTypographyProps={{ variant: "body2mono" }}
                   secondaryTypographyProps={{
@@ -330,16 +328,13 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
               <ListItemText
                 primary={
                   <FlowingBalance
-                    balance={balance}
-                    flowRate={netFlowRate}
-                    balanceTimestamp={balanceTimestamp}
-                    disableRoundingIndicator
+                    data={balanceData ? balanceData : undefined}
                   />
                 }
                 secondary={
-                  totalNumberOfActiveStreams > 0 ? (
+                  totalNumberOfActiveStreams > 0 && isDefined(balanceData) && isDefined(flowRateMonthly) ? (
                     <>
-                      {netFlowRate.charAt(0) !== "-" && "+"}
+                      {balanceData.flowRate.charAt(0) !== "-" && "+"}
                       <Amount wei={flowRateMonthly}>/mo</Amount>
                     </>
                   ) : (
