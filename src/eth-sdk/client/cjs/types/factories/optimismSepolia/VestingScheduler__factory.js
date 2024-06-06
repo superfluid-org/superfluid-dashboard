@@ -13,11 +13,6 @@ const _abi = [
                 name: "host",
                 type: "address",
             },
-            {
-                internalType: "string",
-                name: "registrationKey",
-                type: "string",
-            },
         ],
         stateMutability: "nonpayable",
         type: "constructor",
@@ -25,6 +20,11 @@ const _abi = [
     {
         inputs: [],
         name: "AccountInvalid",
+        type: "error",
+    },
+    {
+        inputs: [],
+        name: "CannotClaimFlowOnBehalf",
         type: "error",
     },
     {
@@ -239,6 +239,18 @@ const _abi = [
                 indexed: false,
                 internalType: "uint256",
                 name: "cliffAmount",
+                type: "uint256",
+            },
+            {
+                indexed: false,
+                internalType: "uint32",
+                name: "claimValidityDate",
+                type: "uint32",
+            },
+            {
+                indexed: false,
+                internalType: "uint256",
+                name: "remainderAmount",
                 type: "uint256",
             },
         ],
@@ -626,6 +638,348 @@ const _abi = [
                 type: "address",
             },
             {
+                internalType: "uint256",
+                name: "totalAmount",
+                type: "uint256",
+            },
+            {
+                internalType: "uint32",
+                name: "totalDuration",
+                type: "uint32",
+            },
+            {
+                internalType: "bytes",
+                name: "ctx",
+                type: "bytes",
+            },
+        ],
+        name: "createAndExecuteVestingScheduleFromAmountAndDuration",
+        outputs: [
+            {
+                internalType: "bytes",
+                name: "newCtx",
+                type: "bytes",
+            },
+        ],
+        stateMutability: "nonpayable",
+        type: "function",
+    },
+    {
+        inputs: [
+            {
+                internalType: "contract ISuperToken",
+                name: "superToken",
+                type: "address",
+            },
+            {
+                internalType: "address",
+                name: "receiver",
+                type: "address",
+            },
+            {
+                internalType: "uint256",
+                name: "totalAmount",
+                type: "uint256",
+            },
+            {
+                internalType: "uint32",
+                name: "totalDuration",
+                type: "uint32",
+            },
+        ],
+        name: "createAndExecuteVestingScheduleFromAmountAndDuration",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+    },
+    {
+        inputs: [
+            {
+                internalType: "contract ISuperToken",
+                name: "superToken",
+                type: "address",
+            },
+            {
+                internalType: "address",
+                name: "receiver",
+                type: "address",
+            },
+            {
+                internalType: "uint32",
+                name: "startDate",
+                type: "uint32",
+            },
+            {
+                internalType: "uint32",
+                name: "claimValidityDate",
+                type: "uint32",
+            },
+            {
+                internalType: "uint32",
+                name: "cliffDate",
+                type: "uint32",
+            },
+            {
+                internalType: "int96",
+                name: "flowRate",
+                type: "int96",
+            },
+            {
+                internalType: "uint256",
+                name: "cliffAmount",
+                type: "uint256",
+            },
+            {
+                internalType: "uint32",
+                name: "endDate",
+                type: "uint32",
+            },
+            {
+                internalType: "bytes",
+                name: "ctx",
+                type: "bytes",
+            },
+        ],
+        name: "createClaimableVestingSchedule",
+        outputs: [
+            {
+                internalType: "bytes",
+                name: "newCtx",
+                type: "bytes",
+            },
+        ],
+        stateMutability: "nonpayable",
+        type: "function",
+    },
+    {
+        inputs: [
+            {
+                internalType: "contract ISuperToken",
+                name: "superToken",
+                type: "address",
+            },
+            {
+                internalType: "address",
+                name: "receiver",
+                type: "address",
+            },
+            {
+                internalType: "uint32",
+                name: "startDate",
+                type: "uint32",
+            },
+            {
+                internalType: "uint32",
+                name: "claimValidityDate",
+                type: "uint32",
+            },
+            {
+                internalType: "uint32",
+                name: "cliffDate",
+                type: "uint32",
+            },
+            {
+                internalType: "int96",
+                name: "flowRate",
+                type: "int96",
+            },
+            {
+                internalType: "uint256",
+                name: "cliffAmount",
+                type: "uint256",
+            },
+            {
+                internalType: "uint32",
+                name: "endDate",
+                type: "uint32",
+            },
+        ],
+        name: "createClaimableVestingSchedule",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+    },
+    {
+        inputs: [
+            {
+                internalType: "contract ISuperToken",
+                name: "superToken",
+                type: "address",
+            },
+            {
+                internalType: "address",
+                name: "receiver",
+                type: "address",
+            },
+            {
+                internalType: "uint256",
+                name: "totalAmount",
+                type: "uint256",
+            },
+            {
+                internalType: "uint32",
+                name: "totalDuration",
+                type: "uint32",
+            },
+            {
+                internalType: "uint32",
+                name: "claimValidityDate",
+                type: "uint32",
+            },
+            {
+                internalType: "uint32",
+                name: "cliffPeriod",
+                type: "uint32",
+            },
+        ],
+        name: "createClaimableVestingScheduleFromAmountAndDuration",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+    },
+    {
+        inputs: [
+            {
+                internalType: "contract ISuperToken",
+                name: "superToken",
+                type: "address",
+            },
+            {
+                internalType: "address",
+                name: "receiver",
+                type: "address",
+            },
+            {
+                internalType: "uint256",
+                name: "totalAmount",
+                type: "uint256",
+            },
+            {
+                internalType: "uint32",
+                name: "totalDuration",
+                type: "uint32",
+            },
+            {
+                internalType: "uint32",
+                name: "claimValidityDate",
+                type: "uint32",
+            },
+            {
+                internalType: "uint32",
+                name: "cliffPeriod",
+                type: "uint32",
+            },
+            {
+                internalType: "uint32",
+                name: "startDate",
+                type: "uint32",
+            },
+        ],
+        name: "createClaimableVestingScheduleFromAmountAndDuration",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+    },
+    {
+        inputs: [
+            {
+                internalType: "contract ISuperToken",
+                name: "superToken",
+                type: "address",
+            },
+            {
+                internalType: "address",
+                name: "receiver",
+                type: "address",
+            },
+            {
+                internalType: "uint256",
+                name: "totalAmount",
+                type: "uint256",
+            },
+            {
+                internalType: "uint32",
+                name: "totalDuration",
+                type: "uint32",
+            },
+            {
+                internalType: "uint32",
+                name: "claimValidityDate",
+                type: "uint32",
+            },
+        ],
+        name: "createClaimableVestingScheduleFromAmountAndDuration",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+    },
+    {
+        inputs: [
+            {
+                internalType: "contract ISuperToken",
+                name: "superToken",
+                type: "address",
+            },
+            {
+                internalType: "address",
+                name: "receiver",
+                type: "address",
+            },
+            {
+                internalType: "uint256",
+                name: "totalAmount",
+                type: "uint256",
+            },
+            {
+                internalType: "uint32",
+                name: "totalDuration",
+                type: "uint32",
+            },
+            {
+                internalType: "uint32",
+                name: "claimValidityDate",
+                type: "uint32",
+            },
+            {
+                internalType: "uint32",
+                name: "cliffPeriod",
+                type: "uint32",
+            },
+            {
+                internalType: "uint32",
+                name: "startDate",
+                type: "uint32",
+            },
+            {
+                internalType: "bytes",
+                name: "ctx",
+                type: "bytes",
+            },
+        ],
+        name: "createClaimableVestingScheduleFromAmountAndDuration",
+        outputs: [
+            {
+                internalType: "bytes",
+                name: "newCtx",
+                type: "bytes",
+            },
+        ],
+        stateMutability: "nonpayable",
+        type: "function",
+    },
+    {
+        inputs: [
+            {
+                internalType: "contract ISuperToken",
+                name: "superToken",
+                type: "address",
+            },
+            {
+                internalType: "address",
+                name: "receiver",
+                type: "address",
+            },
+            {
                 internalType: "uint32",
                 name: "startDate",
                 type: "uint32",
@@ -664,6 +1018,197 @@ const _abi = [
                 type: "bytes",
             },
         ],
+        stateMutability: "nonpayable",
+        type: "function",
+    },
+    {
+        inputs: [
+            {
+                internalType: "contract ISuperToken",
+                name: "superToken",
+                type: "address",
+            },
+            {
+                internalType: "address",
+                name: "receiver",
+                type: "address",
+            },
+            {
+                internalType: "uint32",
+                name: "startDate",
+                type: "uint32",
+            },
+            {
+                internalType: "uint32",
+                name: "cliffDate",
+                type: "uint32",
+            },
+            {
+                internalType: "int96",
+                name: "flowRate",
+                type: "int96",
+            },
+            {
+                internalType: "uint256",
+                name: "cliffAmount",
+                type: "uint256",
+            },
+            {
+                internalType: "uint32",
+                name: "endDate",
+                type: "uint32",
+            },
+        ],
+        name: "createVestingSchedule",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+    },
+    {
+        inputs: [
+            {
+                internalType: "contract ISuperToken",
+                name: "superToken",
+                type: "address",
+            },
+            {
+                internalType: "address",
+                name: "receiver",
+                type: "address",
+            },
+            {
+                internalType: "uint256",
+                name: "totalAmount",
+                type: "uint256",
+            },
+            {
+                internalType: "uint32",
+                name: "totalDuration",
+                type: "uint32",
+            },
+        ],
+        name: "createVestingScheduleFromAmountAndDuration",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+    },
+    {
+        inputs: [
+            {
+                internalType: "contract ISuperToken",
+                name: "superToken",
+                type: "address",
+            },
+            {
+                internalType: "address",
+                name: "receiver",
+                type: "address",
+            },
+            {
+                internalType: "uint256",
+                name: "totalAmount",
+                type: "uint256",
+            },
+            {
+                internalType: "uint32",
+                name: "totalDuration",
+                type: "uint32",
+            },
+            {
+                internalType: "uint32",
+                name: "cliffPeriod",
+                type: "uint32",
+            },
+            {
+                internalType: "uint32",
+                name: "startDate",
+                type: "uint32",
+            },
+            {
+                internalType: "bytes",
+                name: "ctx",
+                type: "bytes",
+            },
+        ],
+        name: "createVestingScheduleFromAmountAndDuration",
+        outputs: [
+            {
+                internalType: "bytes",
+                name: "newCtx",
+                type: "bytes",
+            },
+        ],
+        stateMutability: "nonpayable",
+        type: "function",
+    },
+    {
+        inputs: [
+            {
+                internalType: "contract ISuperToken",
+                name: "superToken",
+                type: "address",
+            },
+            {
+                internalType: "address",
+                name: "receiver",
+                type: "address",
+            },
+            {
+                internalType: "uint256",
+                name: "totalAmount",
+                type: "uint256",
+            },
+            {
+                internalType: "uint32",
+                name: "totalDuration",
+                type: "uint32",
+            },
+            {
+                internalType: "uint32",
+                name: "cliffPeriod",
+                type: "uint32",
+            },
+            {
+                internalType: "uint32",
+                name: "startDate",
+                type: "uint32",
+            },
+        ],
+        name: "createVestingScheduleFromAmountAndDuration",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+    },
+    {
+        inputs: [
+            {
+                internalType: "contract ISuperToken",
+                name: "superToken",
+                type: "address",
+            },
+            {
+                internalType: "address",
+                name: "receiver",
+                type: "address",
+            },
+            {
+                internalType: "uint256",
+                name: "totalAmount",
+                type: "uint256",
+            },
+            {
+                internalType: "uint32",
+                name: "totalDuration",
+                type: "uint32",
+            },
+            {
+                internalType: "uint32",
+                name: "cliffPeriod",
+                type: "uint32",
+            },
+        ],
+        name: "createVestingScheduleFromAmountAndDuration",
+        outputs: [],
         stateMutability: "nonpayable",
         type: "function",
     },
@@ -787,6 +1332,11 @@ const _abi = [
                         type: "uint32",
                     },
                     {
+                        internalType: "uint32",
+                        name: "claimValidityDate",
+                        type: "uint32",
+                    },
+                    {
                         internalType: "int96",
                         name: "flowRate",
                         type: "int96",
@@ -796,8 +1346,13 @@ const _abi = [
                         name: "cliffAmount",
                         type: "uint256",
                     },
+                    {
+                        internalType: "uint256",
+                        name: "remainderAmount",
+                        type: "uint256",
+                    },
                 ],
-                internalType: "struct IVestingScheduler.VestingSchedule",
+                internalType: "struct IVestingSchedulerV2.VestingSchedule",
                 name: "",
                 type: "tuple",
             },
@@ -860,6 +1415,11 @@ const _abi = [
                 type: "uint32",
             },
             {
+                internalType: "uint32",
+                name: "claimValidityDate",
+                type: "uint32",
+            },
+            {
                 internalType: "int96",
                 name: "flowRate",
                 type: "int96",
@@ -867,6 +1427,11 @@ const _abi = [
             {
                 internalType: "uint256",
                 name: "cliffAmount",
+                type: "uint256",
+            },
+            {
+                internalType: "uint256",
+                name: "remainderAmount",
                 type: "uint256",
             },
         ],

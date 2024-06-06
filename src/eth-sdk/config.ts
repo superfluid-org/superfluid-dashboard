@@ -3,24 +3,27 @@ import {
   autoWrapManagerAddresses,
   autoWrapStrategyAddresses,
   flowSchedulerContractAddresses,
-  vestingContractAddresses_v1,
+  vestingContractAddresses_v2
 } from "../features/network/networkConstants";
 
 const ethSdkConfig = defineConfig({
   contracts: {
-    polygonMumbai: {
-      flowScheduler: flowSchedulerContractAddresses.mumbai, // Polygon Mumbai used as source of truth for the ABI of Flow Scheduler.
-      vestingScheduler: vestingContractAddresses_v1.mumbai, // Polygon Mumbai used as source of truth for the ABI of Vesting Scheduler.
+    optimismSepolia: {
+      vestingScheduler: vestingContractAddresses_v2.optimismSepolia, // OP Sepolia used as source of truth for the ABI of Vesting Scheduler.
     },
     mainnet: {
+      flowScheduler: flowSchedulerContractAddresses.ethereum, // Mainnet used as source of truth for the ABI of Flow Scheduler.
       autoWrapManager: autoWrapManagerAddresses[1],
       autoWrapStrategy: autoWrapStrategyAddresses[1],
     },
   },
   outputPath: "./src/eth-sdk/client",
   rpc: {
-    polygonMumbai: "https://rpc-endpoints.superfluid.dev/polygon-mumbai",
+    optimismSepolia: "https://rpc-endpoints.superfluid.dev/optimism-sepolia",
   },
+  etherscanURLs: {
+    optimismSepolia: "https://api-sepolia-optimistic.etherscan.io/api",
+  }
 });
 
 export default ethSdkConfig;

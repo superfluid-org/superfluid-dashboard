@@ -1,11 +1,5 @@
 {
   "staticBalanceAccount": {
-    "polygon-mumbai": {
-      "MATIC": {
-        "underlyingBalance": "0.002891",
-        "superTokenBalance": "0"
-      }
-    },
     "avalanche-fuji": {
       "AVAX": {
         "underlyingBalance": "0.9733",
@@ -86,6 +80,12 @@
     },
     "opsepolia": {
       "ETH": {
+        "underlyingBalance": "0",
+        "superTokenBalance": "0"
+      }
+    },
+    "degen": {
+      "DEGEN": {
         "underlyingBalance": "0",
         "superTokenBalance": "0"
       }

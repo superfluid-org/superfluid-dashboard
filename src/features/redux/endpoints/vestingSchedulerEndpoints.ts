@@ -157,7 +157,7 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
       }
 
       const createVestingSchedule =
-        await vestingScheduler.populateTransaction.createVestingSchedule(
+        await vestingScheduler.populateTransaction["createVestingSchedule(address,address,uint32,uint32,int96,uint256,uint32,bytes)"](
           superTokenAddress,
           arg.receiverAddress,
           arg.startDateTimestamp,

@@ -1,6 +1,6 @@
 import { Signer } from "ethers";
 import type { Provider } from "@ethersproject/providers";
-import type { FlowScheduler, FlowSchedulerInterface } from "../../polygonMumbai/FlowScheduler";
+import type { FlowScheduler, FlowSchedulerInterface } from "../../mainnet/FlowScheduler";
 export declare class FlowScheduler__factory {
     static readonly abi: readonly [{
         readonly inputs: readonly [{

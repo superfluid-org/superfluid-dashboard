@@ -1,12 +1,10 @@
 import { providers, Signer } from "ethers";
 import { allNetworks, findNetworkOrThrow } from "../features/network/networks";
-import {
-  FlowScheduler__factory,
-  VestingScheduler__factory,
-} from "./client/esm/types/factories/polygonMumbai";
+import { VestingScheduler__factory } from "./client/esm/types/factories/optimismSepolia";
 import {
   AutoWrapManager__factory,
   AutoWrapStrategy__factory,
+  FlowScheduler__factory
 } from "./client/esm/types/factories/mainnet";
 import { AutoWrapManager, AutoWrapStrategy } from "./client/esm/types";
 

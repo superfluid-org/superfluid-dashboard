@@ -17,9 +17,7 @@ const gasApi = createApi({
     >({
       queryFn: async ({ chainId }) => {
         const endpointMap: { [key: number]: string } = {
-          [chain.polygon.id]: "https://gasstation.polygon.technology/v2",
-          [chain.polygonMumbai.id]:
-            "https://gasstation-testnet.polygon.technology/v2",
+          [chain.polygon.id]: "https://gasstation.polygon.technology/v2"
         };
 
         const endpoint = endpointMap[chainId];

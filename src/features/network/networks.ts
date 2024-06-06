@@ -117,6 +117,12 @@ const blockExplorers = {
       url: "https://celoscan.io/",
     },
   },
+  degenscan: {
+    mainnet: {
+      name: "Degen Scan",
+      url: "https://explorer.degen.tips/",
+    },
+  },
 } as const;
 
 export const networkDefinition = {
@@ -229,59 +235,6 @@ export const networkDefinition = {
     },
     humaFinance: {
       nftAddress: "0xa8B0362cfE0c8e4fd1D74c3512348d6f48d71080",
-    },
-  },
-  polygonMumbai: {
-    ...chain.polygonMumbai,
-    id: chainIds.polygonMumbai,
-    supportsGDA: getSupportsGDA(chainIds.polygonMumbai),
-    metadata: ensureDefined(
-      sfMeta.getNetworkByChainId(chainIds.polygonMumbai),
-      chainIds.polygonMumbai
-    ),
-    blockExplorers: ensureDefined(chain.polygonMumbai.blockExplorers),
-    slugName: "polygon-mumbai",
-    v1ShortName: "mumbai",
-    bufferTimeInMinutes: 60,
-    color: "#3099f2",
-    rpcUrls: {
-      ...chain.polygonMumbai.rpcUrls,
-      superfluid: { http: [superfluidRpcUrls.polygonMumbai] },
-    },
-    fallbackSubgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-mumbai",
-    getLinkForTransaction: (txHash: string): string =>
-      `https://mumbai.polygonscan.com/tx/${txHash}`,
-    getLinkForAddress: (address: string): string =>
-      `https://mumbai.polygonscan.com/address/${address}`,
-    nativeCurrency: {
-      ...ensureDefined(chain.polygonMumbai.nativeCurrency),
-      address: NATIVE_ASSET_ADDRESS,
-      type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: "MATICx",
-        address: "0x96b82b65acf7072efeb00502f45757f254c2a0d4",
-        name: "Super MATIC",
-        decimals: 18,
-      },
-    },
-    flowSchedulerContractAddress: flowSchedulerContractAddresses.mumbai,
-    flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.mumbai,
-    vestingContractAddress_v1: vestingContractAddresses_v1.mumbai,
-    vestingContractAddress_v2: vestingContractAddresses_v2.mumbai,
-    vestingSubgraphUrl: vestingSubgraphUrls.mumbai,
-    autoWrapSubgraphUrl: autoWrapSubgraphUrls.mumbai,
-    platformUrl: superfluidPlatformUrls.mumbai,
-    autoWrap: {
-      managerContractAddress: autoWrapManagerAddresses[chain.polygonMumbai.id],
-      strategyContractAddress:
-        autoWrapStrategyAddresses[chain.polygonMumbai.id],
-      lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
-      upperLimit: BigNumber.from(UnitOfTime.Day * 14),
-    },
-    humaFinance: {
-      nftAddress: "0xAEA5908A082F5667aEA425AEACE8dF6aEDb03694",
     },
   },
   avalancheFuji: {
@@ -656,6 +609,57 @@ export const networkDefinition = {
     autoWrapSubgraphUrl: undefined,
     platformUrl: undefined,
   },
+  degenChain: {
+    name: 'Degen Chain',
+    network: 'degen-chain',
+    id: 666666666,
+    supportsGDA: getSupportsGDA(chainIds.degen),
+    metadata: ensureDefined(
+      sfMeta.getNetworkByChainId(chainIds.degen),
+      chainIds.degen
+    ),
+    blockExplorers: {
+      degenscan: blockExplorers.degenscan.mainnet,
+      default: blockExplorers.degenscan.mainnet,
+    },
+    slugName: "degen",
+    v1ShortName: "degen",
+    bufferTimeInMinutes: 240,
+    icon: "/icons/network/degen.svg",
+    color: "#A46EFD",
+    rpcUrls: {
+        default: { http: ['https://rpc.degen.tips'] },
+        public: {
+          http: ['https://rpc.degen.tips'],
+      },
+      superfluid: { http: [superfluidRpcUrls["degenChain"]] },
+    },
+    fallbackSubgraphUrl:
+      "https://degenchain.subgraph.superfluid.dev",
+    getLinkForTransaction: (txHash: string): string =>
+      `https://explorer.degen.tips/tx/${txHash}`,
+    getLinkForAddress: (address: string): string =>
+      `https://explorer.degen.tips/address/${address}`,
+    nativeCurrency: {
+      name: 'Degen',
+      symbol: 'DEGEN', 
+      decimals: 18 ,
+      address: NATIVE_ASSET_ADDRESS,
+      type: TokenType.NativeAssetUnderlyingToken,
+      superToken: {
+        type: TokenType.NativeAssetSuperToken,
+        symbol: "DEGENx",
+        address: "0xda58FA9bfc3D3960df33ddD8D4d762Cf8Fa6F7ad",
+        name: "Super DEGEN",
+        decimals: 18,
+      },
+    },
+    vestingContractAddress_v1: undefined,
+    vestingContractAddress_v2: undefined,
+    vestingSubgraphUrl: undefined,
+    autoWrapSubgraphUrl: undefined,
+    platformUrl: undefined,
+  },
   sepolia: {
     ...chain.sepolia,
     id: chainIds.sepolia,
@@ -732,11 +736,19 @@ export const networkDefinition = {
         decimals: 18,
       },
     },
-    vestingContractAddress_v1: undefined,
+    vestingContractAddress_v1: vestingContractAddresses_v1.base,
     vestingContractAddress_v2: undefined,
-    vestingSubgraphUrl: undefined,
-    autoWrapSubgraphUrl: undefined,
-    platformUrl: undefined,
+    vestingSubgraphUrl: vestingSubgraphUrls.base,
+    autoWrapSubgraphUrl: autoWrapSubgraphUrls.base,
+    autoWrap: {
+      managerContractAddress: autoWrapManagerAddresses[chain.base.id],
+      strategyContractAddress: autoWrapStrategyAddresses[chain.base.id],
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 14),
+    },
+    flowSchedulerContractAddress: flowSchedulerContractAddresses.base,
+    flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.base,
+    platformUrl: superfluidPlatformUrls.base,
   },
   scroll: {
     ...chain.scroll,
@@ -827,6 +839,7 @@ export const networkDefinition = {
       sfMeta.getNetworkByChainId(chainIds.optimismSepolia),
       chainIds.optimismSepolia
     ),
+    testnet: true,
     blockExplorers: ensureDefined(chain.optimismSepolia.blockExplorers),
     slugName: "opsepolia",
     v1ShortName: "opsepolia",
@@ -853,10 +866,18 @@ export const networkDefinition = {
         decimals: 18,
       },
     },
-    vestingContractAddress_v1: undefined,
+    vestingContractAddress_v1: vestingContractAddresses_v1.optimismSepolia,
     vestingContractAddress_v2: vestingContractAddresses_v2.optimismSepolia,
     vestingSubgraphUrl: vestingSubgraphUrls.optimismSepolia,
-    autoWrapSubgraphUrl: undefined,
+    autoWrapSubgraphUrl: autoWrapSubgraphUrls.optimismSepolia,
+    autoWrap: {
+      managerContractAddress: autoWrapManagerAddresses[chain.optimismSepolia.id],
+      strategyContractAddress: autoWrapStrategyAddresses[chain.optimismSepolia.id],
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 14),
+    },
+    flowSchedulerContractAddress: flowSchedulerContractAddresses.optimismSepolia,
+    flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.optimismSepolia,
     platformUrl: undefined,
   },
 } as const satisfies Record<string, Network>;
@@ -867,7 +888,6 @@ export const allNetworks: Network[] = orderBy(
       networkDefinition.ethereum,
       networkDefinition.gnosis,
       networkDefinition.polygon,
-      networkDefinition.polygonMumbai,
       networkDefinition.avalancheFuji,
       networkDefinition.optimism,
       networkDefinition.optimismSepolia,
@@ -879,6 +899,7 @@ export const allNetworks: Network[] = orderBy(
       networkDefinition.base,
       networkDefinition.scroll,
       networkDefinition.scrollSepolia,
+      networkDefinition.degenChain,
     ],
     (x) => x.id // Put lower ids first (Ethereum mainnet will be first)
   ),
@@ -953,3 +974,12 @@ export const vestingSupportedNetworks = allNetworks
       network.vestingContractAddress_v1 || network.vestingContractAddress_v2
   )
   .sort((n1, n2) => (!n1.testnet && n2.testnet ? -1 : 1));
+
+export const deprecatedNetworkChainIds = [
+  80001, // Polygon Mumbai
+  5, // Goerli
+  420, // Optimism Goerli
+  421613, // Arbitrum Goerli
+  1442, // Polygon zkEVM Testnet
+  84531, // Base Goerli
+];

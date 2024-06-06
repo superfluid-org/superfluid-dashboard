@@ -40,7 +40,7 @@
     ]
   },
   "accountWithLotsOfData": {
-    "polygon-mumbai": [
+    "avalanche-fuji": [
       {
         "flowRate": 3805175038051,
         "startedAtUnix": 1686658805000,
@@ -60,7 +60,7 @@
     ]
   },
   "john": {
-    "polygon-mumbai": [
+    "avalanche-fuji": [
       {
         "flowRate": 380517503805,
         "startedAtUnix": 1709136930000,

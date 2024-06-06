@@ -13,7 +13,7 @@ Feature: Bridge page test cases (Li-Fi widget)
 
     @skip
     Scenario: Routes and swap button showing up for a user with a connected wallet but with no balance for it
-        Given Transactional account bob is connected to the dashboard on polygon-mumbai
+        Given Transactional account bob is connected to the dashboard on avalanche-fuji
         And User clicks on the "bridge" navigation button
         And User chooses "DAIx" token to swap "From" on "Polygon"
         And User chooses "USDC" token to swap "To" on "Polygon"
@@ -36,7 +36,7 @@ Feature: Bridge page test cases (Li-Fi widget)
 
     @skip
     Scenario: Li-Fi widget history page (No activity)
-        Given Transactional account bob is connected to the dashboard on polygon-mumbai
+        Given Transactional account bob is connected to the dashboard on avalanche-fuji
         And User clicks on the "bridge" navigation button
         And LiFi bridge inputs are visible
         And History button is not visible

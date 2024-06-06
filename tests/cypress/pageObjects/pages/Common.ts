@@ -174,7 +174,9 @@ export class Common extends BasePage {
     cy.intercept("POST", "https://rpc-endpoints.superfluid.dev/eth-mainnet", {
       forceNetworkError: true,
     });
-    cy.intercept("POST", "https://api.lens.dev/", { forceNetworkError: true });
+    cy.intercept("POST", "https://api-v2.lens.dev/", {
+      forceNetworkError: true,
+    });
   }
 
   static validateErrorShownInRecepientList(lensOrEns: string) {
@@ -341,9 +343,9 @@ export class Common extends BasePage {
     cy.get(WALLET_CONNECTION_STATUS).then((el) => {
       if (el.text() === "Wrong network") {
         let workaroundNetwork =
-          selectedNetwork === "polygon-mumbai"
-            ? "avalanche-fuji"
-            : "polygon-mumbai";
+          selectedNetwork === "avalanche-fuji"
+            ? "eth-sepolia"
+            : "avalanche-fuji";
         this.changeNetwork(workaroundNetwork);
         this.changeNetwork(selectedNetwork);
       }
@@ -408,7 +410,7 @@ export class Common extends BasePage {
 
   static typeIntoAddressInput(address: string) {
     if (address.includes(".lens")) {
-      cy.intercept("**api.lens.dev**").as("lensQuery");
+      cy.intercept("**api-v2.lens.dev**").as("lensQuery");
       this.type(ADDRESS_DIALOG_INPUT, address);
       cy.wait("@lensQuery", { timeout: 30000 });
     } else {
@@ -701,7 +703,7 @@ export class Common extends BasePage {
 
   static validateSwitchNetworkButtonInFaucetMenu() {
     this.isVisible(CHANGE_NETWORK_BUTTON);
-    this.hasText(CHANGE_NETWORK_BUTTON, "Change Network to Polygon Mumbai");
+    this.hasText(CHANGE_NETWORK_BUTTON, "Change Network to Avalanche Fuji");
   }
 
   static clickSwitchNetworkButton() {
@@ -741,7 +743,7 @@ export class Common extends BasePage {
 
   static async sendBackNotMintableFaucetTokens() {
     const web3 = new Web3(
-      networksBySlug.get("polygon-mumbai").superfluidRpcUrl
+      networksBySlug.get("avalanche-fuji").superfluidRpcUrl
     );
 
     cy.get("@newWalletPublicKey").then((fromAddress) => {
@@ -814,7 +816,7 @@ export class Common extends BasePage {
 
   static checkFaucetContractBalance() {
     const web3 = new Web3(
-      networksBySlug.get("polygon-mumbai").superfluidRpcUrl
+      networksBySlug.get("avalanche-fuji").superfluidRpcUrl
     );
     cy.wrap(null, { log: false }).then(() => {
       return web3.eth.getBalance(FAUCET_CONTRACT_ADDRESS).then((balance) => {
@@ -1229,8 +1231,8 @@ export class Common extends BasePage {
           "v1 ended stream details page":
             streamData["staticBalanceAccount"]["polygon"][0].v1Link,
           "close-ended stream details page":
-            streamData["john"]["polygon-mumbai"][0].v2Link,
-          "vesting details page": `/vesting/polygon-mumbai/${vestingData["polygon-mumbai"].fUSDCx.schedule.id}`,
+            streamData["john"]["avalanche-fuji"][0].v2Link,
+          "vesting details page": `/vesting/avalanche-fuji/${vestingData["avalanche-fuji"].fUSDCx.schedule.id}`,
           "vesting stream details page": `/stream/polygon/${vestingData.polygon.USDCx.vestingStream.id}`,
           "404 token page": "/token/polygon/Testing420HaveANiceDay",
           "404 vesting page": "/vesting/polygon/Testing",
