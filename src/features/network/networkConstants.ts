@@ -67,65 +67,63 @@ export const vestingContractAddresses_v1 = {
 } as const;
 
 export const vestingContractAddresses_v2 = {
-  optimismSepolia: "0x48933d146a446969B54FEd588F8e7ACfda227AEA"
+  optimismSepolia: "0x48933d146a446969B54FEd588F8e7ACfda227AEA",
 } as const;
 
 export const vestingSubgraphUrls = {
   gnosis:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-xdai-mainnet",
+    "https://subgraph-endpoints.superfluid.dev/xdai-mainnet/vesting-scheduler",
   polygon:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-polygon-mainnet",
+    "https://subgraph-endpoints.superfluid.dev/polygon-mainnet/vesting-scheduler",
   optimismSepolia:
-    "https://api.goldsky.com/api/public/project_clsnd6xsoma5j012qepvucfpp/subgraphs/vesting-v1-optimism-sepolia/1.1.1/gn",
+    "https://subgraph-endpoints.superfluid.dev/optimism-sepolia/vesting-scheduler",
   arbitrum:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-arbitrum-one",
+    "https://subgraph-endpoints.superfluid.dev/arbitrum-one/vesting-scheduler",
   optimism:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-optimism-mainnet",
+    "https://subgraph-endpoints.superfluid.dev/optimism-mainnet/vesting-scheduler",
   avalancheC:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-avalanche-c",
+    "https://subgraph-endpoints.superfluid.dev/avalanche-c/vesting-scheduler",
   bnbSmartChain:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-bsc-mainnet",
+    "https://subgraph-endpoints.superfluid.dev/bsc-mainnet/vesting-scheduler",
   ethereum:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-eth-mainnet",
-  base: "https://api.goldsky.com/api/public/project_clsnd6xsoma5j012qepvucfpp/subgraphs/vesting-v1-base-mainnet/prod/gn",
+    "https://subgraph-endpoints.superfluid.dev/eth-mainnet/vesting-scheduler",
+  base: "https://subgraph-endpoints.superfluid.dev/base-mainnet/vesting-scheduler",
 } as const;
 
 export const flowSchedulerSubgraphUrls = {
   arbitrum:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/scheduling-v1-arbitrum-one",
+    "https://subgraph-endpoints.superfluid.dev/arbitrum-one/flow-scheduler",
   avalancheC:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/scheduling-v1-avalanche-c",
+    "https://subgraph-endpoints.superfluid.dev/avalanche-c/flow-scheduler",
   bnbSmartChain:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/scheduling-v1-bsc-mainnet",
+    "https://subgraph-endpoints.superfluid.dev/bsc-mainnet/flow-scheduler",
   ethereum:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/scheduling-v1-eth-mainnet",
+    "https://subgraph-endpoints.superfluid.dev/eth-mainnet/flow-scheduler",
   optimism:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/scheduling-v1-optimism-mainnet",
+    "https://subgraph-endpoints.superfluid.dev/optimism-mainnet/flow-scheduler",
   polygon:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/scheduling-v1-polygon-mainnet",
+    "https://subgraph-endpoints.superfluid.dev/polygon-mainnet/flow-scheduler",
   gnosis:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/scheduling-v1-xdai-mainnet",
-  optimismSepolia: "https://api.goldsky.com/api/public/project_clsnd6xsoma5j012qepvucfpp/subgraphs/scheduling-v1-optimism-sepolia/prod/gn",
-  base: "https://api.goldsky.com/api/public/project_clsnd6xsoma5j012qepvucfpp/subgraphs/scheduling-v1-base-mainnet/prod/gn",
+    "https://subgraph-endpoints.superfluid.dev/xdai-mainnet/flow-scheduler",
+  optimismSepolia:
+    "https://subgraph-endpoints.superfluid.dev/optimism-sepolia/flow-scheduler",
+  base: "https://subgraph-endpoints.superfluid.dev/base-mainnet/flow-scheduler",
 } as const;
 
 export const autoWrapSubgraphUrls = {
-  arbitrum:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/auto-wrap-v1-arbitrum-one",
-  avalancheC:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/auto-wrap-v1-avalanche-c",
+  arbitrum: "https://subgraph-endpoints.superfluid.dev/arbitrum-one/auto-wrap",
+  avalancheC: "https://subgraph-endpoints.superfluid.dev/avalanche-c/auto-wrap",
   bnbSmartChain:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/auto-wrap-v1-bsc-mainnet",
-  ethereum:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/auto-wrap-v1-eth-mainnet",
+    "https://subgraph-endpoints.superfluid.dev/bsc-mainnet/auto-wrap",
+  ethereum: "https://subgraph-endpoints.superfluid.dev/eth-mainnet/auto-wrap",
   optimism:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/auto-wrap-v1-optimism-mainnet",
+    "https://subgraph-endpoints.superfluid.dev/optimism-mainnet/auto-wrap",
   polygon:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/auto-wrap-v1-polygon-mainnet",
-  gnosis:
-    "https://api.thegraph.com/subgraphs/name/superfluid-finance/auto-wrap-v1-xdai-mainnet",
-  optimismSepolia: "https://api.goldsky.com/api/public/project_clsnd6xsoma5j012qepvucfpp/subgraphs/auto-wrap-v1-optimism-sepolia/prod/gn",
-  base: "https://api.goldsky.com/api/public/project_clsnd6xsoma5j012qepvucfpp/subgraphs/auto-wrap-v1-base-mainnet/prod/gn",
+    "https://subgraph-endpoints.superfluid.dev/polygon-mainnet/auto-wrap",
+  gnosis: "https://subgraph-endpoints.superfluid.dev/xdai-mainnet/auto-wrap",
+  optimismSepolia:
+    "https://subgraph-endpoints.superfluid.dev/optimism-sepolia/auto-wrap",
+  base: "https://subgraph-endpoints.superfluid.dev/base-mainnet/auto-wrap",
 } as const;
 
 export const superfluidRpcUrls = {
@@ -138,7 +136,7 @@ export const superfluidRpcUrls = {
   bnbSmartChain: "https://rpc-endpoints.superfluid.dev/bsc-mainnet",
   ethereum: "https://rpc-endpoints.superfluid.dev/eth-mainnet",
   "celo-mainnet": "https://rpc-endpoints.superfluid.dev/celo-mainnet",
-  "degenChain": "https://rpc-endpoints.superfluid.dev/degenchain",
+  degenChain: "https://rpc-endpoints.superfluid.dev/degenchain",
   sepolia: "https://rpc-endpoints.superfluid.dev/eth-sepolia",
   base: "https://rpc-endpoints.superfluid.dev/base-mainnet",
   scroll: "https://rpc-endpoints.superfluid.dev/scroll-mainnet",
