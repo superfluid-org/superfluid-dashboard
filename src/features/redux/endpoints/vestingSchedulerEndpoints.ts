@@ -35,6 +35,12 @@ export interface CreateVestingSchedule extends BaseSuperTokenMutation {
   claimEnabled: boolean;
 }
 
+export interface ClaimVestingSchedule extends BaseSuperTokenMutation {
+  chainId: number;
+  senderAddress: string;
+  receiverAddress: string;
+}
+
 export interface DeleteVestingSchedule extends BaseSuperTokenMutation {
   chainId: number;
   senderAddress: string;
@@ -438,6 +444,60 @@ export const vestingSchedulerMutationEndpoints = {
           dispatch,
           signerAddress,
           title: "Delete Vesting Schedule",
+          extraData: {
+            subTransactionTitles,
+            ...(transactionExtraData ?? {}),
+          },
+        });
+
+        return {
+          data: {
+            chainId,
+            hash: transactionResponse.hash,
+            subTransactionTitles,
+          },
+        };
+      },
+    }),
+    claimVestingSchedule: builder.mutation<
+      TransactionInfo & { subTransactionTitles: TransactionTitle[] },
+      ClaimVestingSchedule
+    >({
+      queryFn: async (
+        {
+          chainId,
+          signer,
+          superTokenAddress,
+          senderAddress,
+          receiverAddress,
+          overrides,
+          transactionExtraData,
+        },
+        { dispatch }
+      ) => {
+        const vestingScheduler = getVestingScheduler(chainId, signer);
+        const signerAddress = await signer.getAddress();
+
+        const batchedOperations: {
+          operation: Operation;
+          title: TransactionTitle;
+        }[] = [];
+
+        const transactionResponse =
+          await vestingScheduler.executeCliffAndFlow(
+            superTokenAddress,
+            senderAddress,
+            receiverAddress
+          );
+
+        const subTransactionTitles = batchedOperations.map((x) => x.title);
+
+        await registerNewTransaction({
+          transactionResponse,
+          chainId,
+          dispatch,
+          signerAddress,
+          title: "Claim Vesting Schedule",
           extraData: {
             subTransactionTitles,
             ...(transactionExtraData ?? {}),
