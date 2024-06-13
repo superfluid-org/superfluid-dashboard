@@ -48,7 +48,7 @@ export const CreateVestingTransactionButton: FC<Props> = ({
               handleSubmit(
                 async (validData) => {
                   const {
-                    data: { receiverAddress, superTokenAddress },
+                    data: { receiverAddress, superTokenAddress, claimEnabled },
                   } = validData;
                   const {
                     startDateTimestamp,
@@ -80,6 +80,7 @@ export const CreateVestingTransactionButton: FC<Props> = ({
                     endDateTimestamp,
                     flowRateWei: flowRate.toString(),
                     cliffTransferAmountWei: cliffAmount.toString(),
+                    claimEnabled: !!claimEnabled
                   };
                   createVestingSchedule({
                     ...primaryArgs,

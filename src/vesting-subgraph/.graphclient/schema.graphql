@@ -33,6 +33,11 @@ input Block_height {
 
 scalar Bytes
 
+enum ContractVersion {
+  v1
+  v2
+}
+
 """
 Event: An interface which is shared by all
 event entities and contains basic transaction
@@ -806,12 +811,14 @@ enum Task_orderBy {
   failedAt
   vestingSchedule
   vestingSchedule__id
+  vestingSchedule__contractVersion
   vestingSchedule__createdAt
   vestingSchedule__superToken
   vestingSchedule__sender
   vestingSchedule__receiver
   vestingSchedule__startDate
   vestingSchedule__endDate
+  vestingSchedule__claimValidityDate
   vestingSchedule__cliffDate
   vestingSchedule__cliffAndFlowDate
   vestingSchedule__cliffAmount
@@ -933,12 +940,14 @@ enum TokenSenderReceiverCursor_orderBy {
   id
   currentVestingSchedule
   currentVestingSchedule__id
+  currentVestingSchedule__contractVersion
   currentVestingSchedule__createdAt
   currentVestingSchedule__superToken
   currentVestingSchedule__sender
   currentVestingSchedule__receiver
   currentVestingSchedule__startDate
   currentVestingSchedule__endDate
+  currentVestingSchedule__claimValidityDate
   currentVestingSchedule__cliffDate
   currentVestingSchedule__cliffAndFlowDate
   currentVestingSchedule__cliffAmount
@@ -1512,12 +1521,14 @@ enum VestingEndFailedEvent_orderBy {
 
 type VestingSchedule {
   id: String!
+  contractVersion: ContractVersion!
   createdAt: BigInt!
   superToken: Bytes!
   sender: Bytes!
   receiver: Bytes!
   startDate: BigInt!
   endDate: BigInt!
+  claimValidityDate: BigInt!
   cliffDate: BigInt
   cliffAndFlowDate: BigInt!
   cliffAmount: BigInt!
@@ -1552,6 +1563,7 @@ type VestingScheduleCreatedEvent implements Event {
   sender: Bytes!
   receiver: Bytes!
   startDate: BigInt!
+  claimValidityDate: BigInt!
   cliffDate: BigInt!
   flowRate: BigInt!
   endDate: BigInt!
@@ -1681,6 +1693,14 @@ input VestingScheduleCreatedEvent_filter {
   startDate_lte: BigInt
   startDate_in: [BigInt!]
   startDate_not_in: [BigInt!]
+  claimValidityDate: BigInt
+  claimValidityDate_not: BigInt
+  claimValidityDate_gt: BigInt
+  claimValidityDate_lt: BigInt
+  claimValidityDate_gte: BigInt
+  claimValidityDate_lte: BigInt
+  claimValidityDate_in: [BigInt!]
+  claimValidityDate_not_in: [BigInt!]
   cliffDate: BigInt
   cliffDate_not: BigInt
   cliffDate_gt: BigInt
@@ -1733,6 +1753,7 @@ enum VestingScheduleCreatedEvent_orderBy {
   sender
   receiver
   startDate
+  claimValidityDate
   cliffDate
   flowRate
   endDate
@@ -2090,6 +2111,10 @@ input VestingSchedule_filter {
   id_ends_with_nocase: String
   id_not_ends_with: String
   id_not_ends_with_nocase: String
+  contractVersion: ContractVersion
+  contractVersion_not: ContractVersion
+  contractVersion_in: [ContractVersion!]
+  contractVersion_not_in: [ContractVersion!]
   createdAt: BigInt
   createdAt_not: BigInt
   createdAt_gt: BigInt
@@ -2144,6 +2169,14 @@ input VestingSchedule_filter {
   endDate_lte: BigInt
   endDate_in: [BigInt!]
   endDate_not_in: [BigInt!]
+  claimValidityDate: BigInt
+  claimValidityDate_not: BigInt
+  claimValidityDate_gt: BigInt
+  claimValidityDate_lt: BigInt
+  claimValidityDate_gte: BigInt
+  claimValidityDate_lte: BigInt
+  claimValidityDate_in: [BigInt!]
+  claimValidityDate_not_in: [BigInt!]
   cliffDate: BigInt
   cliffDate_not: BigInt
   cliffDate_gt: BigInt
@@ -2252,12 +2285,14 @@ input VestingSchedule_filter {
 
 enum VestingSchedule_orderBy {
   id
+  contractVersion
   createdAt
   superToken
   sender
   receiver
   startDate
   endDate
+  claimValidityDate
   cliffDate
   cliffAndFlowDate
   cliffAmount

@@ -1,7 +1,11 @@
 import { miniSerializeError } from "@reduxjs/toolkit";
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { getSerializeQueryArgs } from "@superfluid-finance/sdk-redux";
-import { allNetworks, tryFindNetwork } from "../features/network/networks";
+import {
+  allNetworks,
+  findNetworkOrThrow,
+  tryFindNetwork,
+} from "../features/network/networks";
 import {
   mapSubgraphVestingSchedule,
   VestingSchedule,
@@ -38,9 +42,17 @@ export const vestingSubgraphApi = createApi({
     >({
       queryFn: async ({ chainId, ...variables }) => {
         const sdk = tryGetBuiltGraphSdkForNetwork(chainId);
+
+        const network = findNetworkOrThrow(allNetworks, chainId);
+        const isClaimSupported = !!network.vestingContractAddress_v2;
+
         const subgraphVestingSchedule = sdk
-          ? (await sdk.getVestingSchedule(variables)).vestingSchedule
+          ? (isClaimSupported
+              ? await sdk.getVestingSchedule(variables)
+              : await sdk.getVestingScheduleWithClaim(variables)
+            ).vestingSchedule
           : null;
+
         return {
           data: {
             vestingSchedule: subgraphVestingSchedule
@@ -62,9 +74,17 @@ export const vestingSubgraphApi = createApi({
     >({
       queryFn: async ({ chainId, ...variables }) => {
         const sdk = tryGetBuiltGraphSdkForNetwork(chainId);
+
+        const network = findNetworkOrThrow(allNetworks, chainId);
+        const isClaimSupported = !!network.vestingContractAddress_v2;
+
         const subgraphVestingSchedules = sdk
-          ? (await sdk.getVestingSchedules(variables)).vestingSchedules
+          ? (isClaimSupported
+              ? await sdk.getVestingSchedules(variables)
+              : await sdk.getVestingSchedulesWithClaim(variables)
+            ).vestingSchedules
           : [];
+
         return {
           data: {
             vestingSchedules: subgraphVestingSchedules.map(

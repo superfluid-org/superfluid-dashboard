@@ -1,5 +1,9 @@
 import { getUnixTime } from "date-fns";
-import { GetVestingScheduleQuery } from "../../vesting-subgraph/.graphclient";
+import {
+  GetVestingScheduleQuery,
+  GetVestingScheduleWithClaimQuery,
+  GetVestingSchedulesWithClaimQuery,
+} from "../../vesting-subgraph/.graphclient";
 
 interface VestingStatus {
   title: string;
@@ -114,14 +118,21 @@ export interface VestingSchedule {
   didEarlyEndCompensationFail?: boolean;
   earlyEndCompensation?: string;
   status: VestingStatus;
+  claimValidityDate?: number;
 }
 
-export type SubgraphVestingSchedule = NonNullable<
+export type SubgraphVestingSchedule_v1 = NonNullable<
   Required<GetVestingScheduleQuery>["vestingSchedule"]
 >;
 
+export type SubgraphVestingSchedule_v2 = NonNullable<
+  Required<GetVestingScheduleWithClaimQuery>["vestingSchedule"]
+>;
+
 export const mapSubgraphVestingSchedule = (
-  vestingSchedule: SubgraphVestingSchedule
+  vestingSchedule:
+    | (SubgraphVestingSchedule_v1 & { claimValidityDate?: number })
+    | SubgraphVestingSchedule_v2
 ): VestingSchedule => {
   const mappedVestingSchedule = {
     ...vestingSchedule,
@@ -148,6 +159,9 @@ export const mapSubgraphVestingSchedule = (
     endDate: Number(vestingSchedule.endDate),
     didEarlyEndCompensationFail: vestingSchedule.didEarlyEndCompensationFail,
     earlyEndCompensation: vestingSchedule.earlyEndCompensation,
+    claimValidityDate: vestingSchedule.claimValidityDate
+      ? Number(vestingSchedule.claimValidityDate)
+      : undefined,
   };
   return {
     ...mappedVestingSchedule,

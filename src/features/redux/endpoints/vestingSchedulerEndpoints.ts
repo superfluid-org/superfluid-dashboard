@@ -32,6 +32,7 @@ export interface CreateVestingSchedule extends BaseSuperTokenMutation {
   flowRateWei: string;
   endDateTimestamp: number;
   cliffTransferAmountWei: string;
+  claimEnabled: boolean;
 }
 
 export interface DeleteVestingSchedule extends BaseSuperTokenMutation {
@@ -49,6 +50,7 @@ interface GetVestingSchedule extends BaseQuery<RpcVestingSchedule | null> {
 
 interface RpcVestingSchedule {
   endDateTimestamp: number;
+  claimValidityDate: number;
 }
 
 interface FixAccessForVestingMutation extends BaseSuperTokenMutation {
@@ -99,9 +101,8 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
       ]);
 
       const existingPermissions = Number(flowOperatorData.permissions);
-      const permissionsDelta = ACL_CREATE_PERMISSION | ACL_DELETE_PERMISSION
-      const newPermissions =
-        existingPermissions | permissionsDelta;
+      const permissionsDelta = ACL_CREATE_PERMISSION | ACL_DELETE_PERMISSION;
+      const newPermissions = existingPermissions | permissionsDelta;
 
       const flowRateBigNumber = BigNumber.from(arg.flowRateWei);
       const existingFlowRateAllowance = BigNumber.from(
@@ -112,7 +113,9 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
       )
         ? BigNumber.from("0")
         : existingFlowRateAllowance.add(flowRateBigNumber);
-      const newFlowRateAllowance = existingFlowRateAllowance.add(flowRateAllowanceDelta);
+      const newFlowRateAllowance = existingFlowRateAllowance.add(
+        flowRateAllowanceDelta
+      );
 
       const hasEnoughSuperTokenAccess =
         existingPermissions === newPermissions &&
@@ -130,16 +133,25 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
         });
       }
 
+      const claimValidityDate = arg.claimEnabled
+        ? arg.endDateTimestamp - END_DATE_VALID_BEFORE_IN_SECONDS
+        : undefined;
+      const effectiveStartDateValidAfterInSeconds = claimValidityDate
+        ? claimValidityDate - (arg.cliffDateTimestamp || arg.startDateTimestamp)
+        : START_DATE_VALID_AFTER_IN_SECONDS;
+
       const maximumNeededTokenAllowance = BigNumber.from(
         arg.cliffTransferAmountWei
       )
-        .add(flowRateBigNumber.mul(START_DATE_VALID_AFTER_IN_SECONDS))
+        .add(flowRateBigNumber.mul(effectiveStartDateValidAfterInSeconds))
         .add(flowRateBigNumber.mul(END_DATE_VALID_BEFORE_IN_SECONDS));
 
-      const tokenAllowanceDelta = isCloseToUnlimitedTokenAllowance(existingTokenAllowance)
+      const tokenAllowanceDelta = isCloseToUnlimitedTokenAllowance(
+        existingTokenAllowance
+      )
         ? BigNumber.from("0")
         : maximumNeededTokenAllowance;
-      const newTokenAllowance = existingTokenAllowance.add(tokenAllowanceDelta)
+      const newTokenAllowance = existingTokenAllowance.add(tokenAllowanceDelta);
 
       const hasEnoughTokenAllowance =
         existingTokenAllowance.eq(newTokenAllowance);
@@ -151,22 +163,52 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
             tokenAllowanceDelta
           );
         subOperations.push({
-          operation: new Operation(approveAllowancePromise, "ERC20_INCREASE_ALLOWANCE"),
+          operation: new Operation(
+            approveAllowancePromise,
+            "ERC20_INCREASE_ALLOWANCE"
+          ),
           title: "Approve Allowance",
         });
       }
 
-      const createVestingSchedule =
-        await vestingScheduler.populateTransaction["createVestingSchedule(address,address,uint32,uint32,int96,uint256,uint32,bytes)"](
-          superTokenAddress,
-          arg.receiverAddress,
-          arg.startDateTimestamp,
-          arg.cliffDateTimestamp,
-          arg.flowRateWei,
-          arg.cliffTransferAmountWei,
-          arg.endDateTimestamp,
-          []
-        );
+      //   # Signature description:
+      //   function createClaimableVestingSchedule(
+      //     ISuperToken superToken,
+      //     address receiver,
+      //     uint32 startDate,
+      //     uint32 claimValidityDate,
+      //     uint32 cliffDate,
+      //     int96 flowRate,
+      //     uint256 cliffAmount,
+      //     uint32 endDate
+      // )
+      const createVestingSchedule = claimValidityDate
+        ? await vestingScheduler.populateTransaction[
+            "createClaimableVestingSchedule(address,address,uint32,uint32,uint32,int96,uint256,uint32,bytes)"
+          ](
+            superTokenAddress,
+            arg.receiverAddress,
+            arg.startDateTimestamp,
+            claimValidityDate,
+            arg.cliffDateTimestamp,
+            arg.flowRateWei,
+            arg.cliffTransferAmountWei,
+            arg.endDateTimestamp,
+            []
+          )
+        : await vestingScheduler.populateTransaction[
+            "createVestingSchedule(address,address,uint32,uint32,int96,uint256,uint32,bytes)"
+          ](
+            superTokenAddress,
+            arg.receiverAddress,
+            arg.startDateTimestamp,
+            arg.cliffDateTimestamp,
+            arg.flowRateWei,
+            arg.cliffTransferAmountWei,
+            arg.endDateTimestamp,
+            []
+          );
+
       subOperations.push({
         operation: await framework.host.callAppAction(
           vestingScheduler.address,
@@ -222,7 +264,7 @@ export const vestingSchedulerMutationEndpoints = {
           requiredTokenAllowanceWei,
           requiredFlowOperatorPermissions,
           requiredFlowRateAllowanceWei,
-          transactionExtraData
+          transactionExtraData,
         },
         { dispatch }
       ) => {
@@ -317,7 +359,7 @@ export const vestingSchedulerMutationEndpoints = {
           extraData: {
             subTransactionTitles,
             ...(transactionExtraData ?? {}),
-          }
+          },
         });
 
         return {
@@ -399,7 +441,7 @@ export const vestingSchedulerMutationEndpoints = {
           extraData: {
             subTransactionTitles,
             ...(transactionExtraData ?? {}),
-          }
+          },
         });
 
         return {
@@ -496,14 +538,12 @@ export const vestingSchedulerQueryEndpoints = {
           providerOrSigner: framework.settings.provider,
         });
 
-        const {
-          flowRateAllowance,
-          permissions: flowOperatorPermissions,
-        } = await superToken.getFlowOperatorData({
-          sender: senderAddress,
-          flowOperator: vestingScheduler.address,
-          providerOrSigner: framework.settings.provider,
-        });
+        const { flowRateAllowance, permissions: flowOperatorPermissions } =
+          await superToken.getFlowOperatorData({
+            sender: senderAddress,
+            flowOperator: vestingScheduler.address,
+            providerOrSigner: framework.settings.provider,
+          });
 
         return {
           data: {
@@ -546,6 +586,7 @@ export const vestingSchedulerQueryEndpoints = {
           rawVestingSchedule.endDate > 0
             ? {
                 endDateTimestamp: rawVestingSchedule.endDate,
+                claimValidityDate: rawVestingSchedule.claimValidityDate ?? null,
               }
             : null;
 

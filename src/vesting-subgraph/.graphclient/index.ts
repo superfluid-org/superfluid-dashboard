@@ -59,6 +59,10 @@ export type Block_Height = {
   number_gte?: InputMaybe<Scalars['Int']>;
 };
 
+export type ContractVersion =
+  | 'v1'
+  | 'v2';
+
 /**
  * Event: An interface which is shared by all
  * event entities and contains basic transaction
@@ -713,12 +717,14 @@ export type Task_OrderBy =
   | 'failedAt'
   | 'vestingSchedule'
   | 'vestingSchedule__id'
+  | 'vestingSchedule__contractVersion'
   | 'vestingSchedule__createdAt'
   | 'vestingSchedule__superToken'
   | 'vestingSchedule__sender'
   | 'vestingSchedule__receiver'
   | 'vestingSchedule__startDate'
   | 'vestingSchedule__endDate'
+  | 'vestingSchedule__claimValidityDate'
   | 'vestingSchedule__cliffDate'
   | 'vestingSchedule__cliffAndFlowDate'
   | 'vestingSchedule__cliffAmount'
@@ -833,12 +839,14 @@ export type TokenSenderReceiverCursor_OrderBy =
   | 'id'
   | 'currentVestingSchedule'
   | 'currentVestingSchedule__id'
+  | 'currentVestingSchedule__contractVersion'
   | 'currentVestingSchedule__createdAt'
   | 'currentVestingSchedule__superToken'
   | 'currentVestingSchedule__sender'
   | 'currentVestingSchedule__receiver'
   | 'currentVestingSchedule__startDate'
   | 'currentVestingSchedule__endDate'
+  | 'currentVestingSchedule__claimValidityDate'
   | 'currentVestingSchedule__cliffDate'
   | 'currentVestingSchedule__cliffAndFlowDate'
   | 'currentVestingSchedule__cliffAmount'
@@ -1408,12 +1416,14 @@ export type VestingEndFailedEvent_OrderBy =
 
 export type VestingSchedule = {
   id: Scalars['String'];
+  contractVersion: ContractVersion;
   createdAt: Scalars['BigInt'];
   superToken: Scalars['Bytes'];
   sender: Scalars['Bytes'];
   receiver: Scalars['Bytes'];
   startDate: Scalars['BigInt'];
   endDate: Scalars['BigInt'];
+  claimValidityDate: Scalars['BigInt'];
   cliffDate?: Maybe<Scalars['BigInt']>;
   cliffAndFlowDate: Scalars['BigInt'];
   cliffAmount: Scalars['BigInt'];
@@ -1466,6 +1476,7 @@ export type VestingScheduleCreatedEvent = Event & {
   sender: Scalars['Bytes'];
   receiver: Scalars['Bytes'];
   startDate: Scalars['BigInt'];
+  claimValidityDate: Scalars['BigInt'];
   cliffDate: Scalars['BigInt'];
   flowRate: Scalars['BigInt'];
   endDate: Scalars['BigInt'];
@@ -1595,6 +1606,14 @@ export type VestingScheduleCreatedEvent_Filter = {
   startDate_lte?: InputMaybe<Scalars['BigInt']>;
   startDate_in?: InputMaybe<Array<Scalars['BigInt']>>;
   startDate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  claimValidityDate?: InputMaybe<Scalars['BigInt']>;
+  claimValidityDate_not?: InputMaybe<Scalars['BigInt']>;
+  claimValidityDate_gt?: InputMaybe<Scalars['BigInt']>;
+  claimValidityDate_lt?: InputMaybe<Scalars['BigInt']>;
+  claimValidityDate_gte?: InputMaybe<Scalars['BigInt']>;
+  claimValidityDate_lte?: InputMaybe<Scalars['BigInt']>;
+  claimValidityDate_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  claimValidityDate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   cliffDate?: InputMaybe<Scalars['BigInt']>;
   cliffDate_not?: InputMaybe<Scalars['BigInt']>;
   cliffDate_gt?: InputMaybe<Scalars['BigInt']>;
@@ -1647,6 +1666,7 @@ export type VestingScheduleCreatedEvent_OrderBy =
   | 'sender'
   | 'receiver'
   | 'startDate'
+  | 'claimValidityDate'
   | 'cliffDate'
   | 'flowRate'
   | 'endDate'
@@ -2001,6 +2021,10 @@ export type VestingSchedule_Filter = {
   id_ends_with_nocase?: InputMaybe<Scalars['String']>;
   id_not_ends_with?: InputMaybe<Scalars['String']>;
   id_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  contractVersion?: InputMaybe<ContractVersion>;
+  contractVersion_not?: InputMaybe<ContractVersion>;
+  contractVersion_in?: InputMaybe<Array<ContractVersion>>;
+  contractVersion_not_in?: InputMaybe<Array<ContractVersion>>;
   createdAt?: InputMaybe<Scalars['BigInt']>;
   createdAt_not?: InputMaybe<Scalars['BigInt']>;
   createdAt_gt?: InputMaybe<Scalars['BigInt']>;
@@ -2055,6 +2079,14 @@ export type VestingSchedule_Filter = {
   endDate_lte?: InputMaybe<Scalars['BigInt']>;
   endDate_in?: InputMaybe<Array<Scalars['BigInt']>>;
   endDate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  claimValidityDate?: InputMaybe<Scalars['BigInt']>;
+  claimValidityDate_not?: InputMaybe<Scalars['BigInt']>;
+  claimValidityDate_gt?: InputMaybe<Scalars['BigInt']>;
+  claimValidityDate_lt?: InputMaybe<Scalars['BigInt']>;
+  claimValidityDate_gte?: InputMaybe<Scalars['BigInt']>;
+  claimValidityDate_lte?: InputMaybe<Scalars['BigInt']>;
+  claimValidityDate_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  claimValidityDate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   cliffDate?: InputMaybe<Scalars['BigInt']>;
   cliffDate_not?: InputMaybe<Scalars['BigInt']>;
   cliffDate_gt?: InputMaybe<Scalars['BigInt']>;
@@ -2163,12 +2195,14 @@ export type VestingSchedule_Filter = {
 
 export type VestingSchedule_OrderBy =
   | 'id'
+  | 'contractVersion'
   | 'createdAt'
   | 'superToken'
   | 'sender'
   | 'receiver'
   | 'startDate'
   | 'endDate'
+  | 'claimValidityDate'
   | 'cliffDate'
   | 'cliffAndFlowDate'
   | 'cliffAmount'
@@ -2310,6 +2344,7 @@ export type ResolversTypes = ResolversObject<{
   Block_height: Block_Height;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   Bytes: ResolverTypeWrapper<Scalars['Bytes']>;
+  ContractVersion: ContractVersion;
   Event: ResolversTypes['VestingCliffAndFlowExecutedEvent'] | ResolversTypes['VestingEndExecutedEvent'] | ResolversTypes['VestingEndFailedEvent'] | ResolversTypes['VestingScheduleCreatedEvent'] | ResolversTypes['VestingScheduleDeletedEvent'] | ResolversTypes['VestingScheduleUpdatedEvent'];
   Event_filter: Event_Filter;
   Event_orderBy: Event_OrderBy;
@@ -2570,12 +2605,14 @@ export type VestingEndFailedEventResolvers<ContextType = MeshContext, ParentType
 
 export type VestingScheduleResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['VestingSchedule'] = ResolversParentTypes['VestingSchedule']> = ResolversObject<{
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  contractVersion?: Resolver<ResolversTypes['ContractVersion'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   superToken?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   sender?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   receiver?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   startDate?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   endDate?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  claimValidityDate?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   cliffDate?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   cliffAndFlowDate?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   cliffAmount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
@@ -2607,6 +2644,7 @@ export type VestingScheduleCreatedEventResolvers<ContextType = MeshContext, Pare
   sender?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   receiver?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   startDate?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  claimValidityDate?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   cliffDate?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   flowRate?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   endDate?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
@@ -2737,7 +2775,7 @@ const vestingTransforms = [];
 const additionalTypeDefs = [] as any[];
 const vestingHandler = new GraphqlHandler({
               name: "vesting",
-              config: {"endpoint":"{context.url:https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-polygon-mainnet}","retry":5},
+              config: {"endpoint":"{context.url:https://api.goldsky.com/api/public/project_clsnd6xsoma5j012qepvucfpp/subgraphs/vesting-v1-optimism-sepolia/1.1.1/gn}","retry":5},
               baseDir,
               cache,
               pubsub,
@@ -2788,6 +2826,18 @@ const merger = new(BareMerger as any)({
           return printWithCache(GetVestingSchedulesDocument);
         },
         location: 'GetVestingSchedulesDocument.graphql'
+      },{
+        document: GetVestingScheduleWithClaimDocument,
+        get rawSDL() {
+          return printWithCache(GetVestingScheduleWithClaimDocument);
+        },
+        location: 'GetVestingScheduleWithClaimDocument.graphql'
+      },{
+        document: GetVestingSchedulesWithClaimDocument,
+        get rawSDL() {
+          return printWithCache(GetVestingSchedulesWithClaimDocument);
+        },
+        location: 'GetVestingSchedulesWithClaimDocument.graphql'
       }
     ];
     },
@@ -2851,6 +2901,22 @@ export type GetVestingSchedulesQuery = { vestingSchedules: Array<Pick<VestingSch
 
 export type VestingSchedulePartFragment = Pick<VestingSchedule, 'id' | 'superToken' | 'sender' | 'receiver' | 'flowRate' | 'createdAt' | 'deletedAt' | 'startDate' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowExpirationAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'endDateValidAt' | 'endExecutedAt' | 'failedAt' | 'didEarlyEndCompensationFail' | 'earlyEndCompensation'>;
 
+export type GetVestingScheduleWithClaimQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type GetVestingScheduleWithClaimQuery = { vestingSchedule?: Maybe<Pick<VestingSchedule, 'claimValidityDate' | 'id' | 'superToken' | 'sender' | 'receiver' | 'flowRate' | 'createdAt' | 'deletedAt' | 'startDate' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowExpirationAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'endDateValidAt' | 'endExecutedAt' | 'failedAt' | 'didEarlyEndCompensationFail' | 'earlyEndCompensation'>> };
+
+export type GetVestingSchedulesWithClaimQueryVariables = Exact<{
+  where?: InputMaybe<VestingSchedule_Filter>;
+  orderBy?: InputMaybe<VestingSchedule_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+}>;
+
+
+export type GetVestingSchedulesWithClaimQuery = { vestingSchedules: Array<Pick<VestingSchedule, 'claimValidityDate' | 'id' | 'superToken' | 'sender' | 'receiver' | 'flowRate' | 'createdAt' | 'deletedAt' | 'startDate' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowExpirationAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'endDateValidAt' | 'endExecutedAt' | 'failedAt' | 'didEarlyEndCompensationFail' | 'earlyEndCompensation'>> };
+
 export const VestingSchedulePartFragmentDoc = gql`
     fragment VestingSchedulePart on VestingSchedule {
   id
@@ -2900,6 +2966,29 @@ export const GetVestingSchedulesDocument = gql`
   }
 }
     ${VestingSchedulePartFragmentDoc}` as unknown as DocumentNode<GetVestingSchedulesQuery, GetVestingSchedulesQueryVariables>;
+export const GetVestingScheduleWithClaimDocument = gql`
+    query getVestingScheduleWithClaim($id: ID!) {
+  vestingSchedule(id: $id) {
+    ...VestingSchedulePart
+    claimValidityDate
+  }
+}
+    ${VestingSchedulePartFragmentDoc}` as unknown as DocumentNode<GetVestingScheduleWithClaimQuery, GetVestingScheduleWithClaimQueryVariables>;
+export const GetVestingSchedulesWithClaimDocument = gql`
+    query getVestingSchedulesWithClaim($where: VestingSchedule_filter = {}, $orderBy: VestingSchedule_orderBy = id, $orderDirection: OrderDirection = asc) {
+  vestingSchedules(
+    first: 1000
+    where: $where
+    orderBy: $orderBy
+    orderDirection: $orderDirection
+  ) {
+    ...VestingSchedulePart
+    claimValidityDate
+  }
+}
+    ${VestingSchedulePartFragmentDoc}` as unknown as DocumentNode<GetVestingSchedulesWithClaimQuery, GetVestingSchedulesWithClaimQueryVariables>;
+
+
 
 
 
@@ -2915,6 +3004,12 @@ export function getSdk<C, E>(requester: Requester<C, E>) {
     },
     getVestingSchedules(variables?: GetVestingSchedulesQueryVariables, options?: C): Promise<GetVestingSchedulesQuery> {
       return requester<GetVestingSchedulesQuery, GetVestingSchedulesQueryVariables>(GetVestingSchedulesDocument, variables, options) as Promise<GetVestingSchedulesQuery>;
+    },
+    getVestingScheduleWithClaim(variables: GetVestingScheduleWithClaimQueryVariables, options?: C): Promise<GetVestingScheduleWithClaimQuery> {
+      return requester<GetVestingScheduleWithClaimQuery, GetVestingScheduleWithClaimQueryVariables>(GetVestingScheduleWithClaimDocument, variables, options) as Promise<GetVestingScheduleWithClaimQuery>;
+    },
+    getVestingSchedulesWithClaim(variables?: GetVestingSchedulesWithClaimQueryVariables, options?: C): Promise<GetVestingSchedulesWithClaimQuery> {
+      return requester<GetVestingSchedulesWithClaimQuery, GetVestingSchedulesWithClaimQueryVariables>(GetVestingSchedulesWithClaimDocument, variables, options) as Promise<GetVestingSchedulesWithClaimQuery>;
     }
   };
 }

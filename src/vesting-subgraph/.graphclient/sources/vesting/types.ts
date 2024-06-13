@@ -37,6 +37,10 @@ export type Block_height = {
   number_gte?: InputMaybe<Scalars['Int']>;
 };
 
+export type ContractVersion =
+  | 'v1'
+  | 'v2';
+
 /**
  * Event: An interface which is shared by all
  * event entities and contains basic transaction
@@ -691,12 +695,14 @@ export type Task_orderBy =
   | 'failedAt'
   | 'vestingSchedule'
   | 'vestingSchedule__id'
+  | 'vestingSchedule__contractVersion'
   | 'vestingSchedule__createdAt'
   | 'vestingSchedule__superToken'
   | 'vestingSchedule__sender'
   | 'vestingSchedule__receiver'
   | 'vestingSchedule__startDate'
   | 'vestingSchedule__endDate'
+  | 'vestingSchedule__claimValidityDate'
   | 'vestingSchedule__cliffDate'
   | 'vestingSchedule__cliffAndFlowDate'
   | 'vestingSchedule__cliffAmount'
@@ -811,12 +817,14 @@ export type TokenSenderReceiverCursor_orderBy =
   | 'id'
   | 'currentVestingSchedule'
   | 'currentVestingSchedule__id'
+  | 'currentVestingSchedule__contractVersion'
   | 'currentVestingSchedule__createdAt'
   | 'currentVestingSchedule__superToken'
   | 'currentVestingSchedule__sender'
   | 'currentVestingSchedule__receiver'
   | 'currentVestingSchedule__startDate'
   | 'currentVestingSchedule__endDate'
+  | 'currentVestingSchedule__claimValidityDate'
   | 'currentVestingSchedule__cliffDate'
   | 'currentVestingSchedule__cliffAndFlowDate'
   | 'currentVestingSchedule__cliffAmount'
@@ -1386,12 +1394,14 @@ export type VestingEndFailedEvent_orderBy =
 
 export type VestingSchedule = {
   id: Scalars['String'];
+  contractVersion: ContractVersion;
   createdAt: Scalars['BigInt'];
   superToken: Scalars['Bytes'];
   sender: Scalars['Bytes'];
   receiver: Scalars['Bytes'];
   startDate: Scalars['BigInt'];
   endDate: Scalars['BigInt'];
+  claimValidityDate: Scalars['BigInt'];
   cliffDate?: Maybe<Scalars['BigInt']>;
   cliffAndFlowDate: Scalars['BigInt'];
   cliffAmount: Scalars['BigInt'];
@@ -1444,6 +1454,7 @@ export type VestingScheduleCreatedEvent = Event & {
   sender: Scalars['Bytes'];
   receiver: Scalars['Bytes'];
   startDate: Scalars['BigInt'];
+  claimValidityDate: Scalars['BigInt'];
   cliffDate: Scalars['BigInt'];
   flowRate: Scalars['BigInt'];
   endDate: Scalars['BigInt'];
@@ -1573,6 +1584,14 @@ export type VestingScheduleCreatedEvent_filter = {
   startDate_lte?: InputMaybe<Scalars['BigInt']>;
   startDate_in?: InputMaybe<Array<Scalars['BigInt']>>;
   startDate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  claimValidityDate?: InputMaybe<Scalars['BigInt']>;
+  claimValidityDate_not?: InputMaybe<Scalars['BigInt']>;
+  claimValidityDate_gt?: InputMaybe<Scalars['BigInt']>;
+  claimValidityDate_lt?: InputMaybe<Scalars['BigInt']>;
+  claimValidityDate_gte?: InputMaybe<Scalars['BigInt']>;
+  claimValidityDate_lte?: InputMaybe<Scalars['BigInt']>;
+  claimValidityDate_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  claimValidityDate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   cliffDate?: InputMaybe<Scalars['BigInt']>;
   cliffDate_not?: InputMaybe<Scalars['BigInt']>;
   cliffDate_gt?: InputMaybe<Scalars['BigInt']>;
@@ -1625,6 +1644,7 @@ export type VestingScheduleCreatedEvent_orderBy =
   | 'sender'
   | 'receiver'
   | 'startDate'
+  | 'claimValidityDate'
   | 'cliffDate'
   | 'flowRate'
   | 'endDate'
@@ -1979,6 +1999,10 @@ export type VestingSchedule_filter = {
   id_ends_with_nocase?: InputMaybe<Scalars['String']>;
   id_not_ends_with?: InputMaybe<Scalars['String']>;
   id_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  contractVersion?: InputMaybe<ContractVersion>;
+  contractVersion_not?: InputMaybe<ContractVersion>;
+  contractVersion_in?: InputMaybe<Array<ContractVersion>>;
+  contractVersion_not_in?: InputMaybe<Array<ContractVersion>>;
   createdAt?: InputMaybe<Scalars['BigInt']>;
   createdAt_not?: InputMaybe<Scalars['BigInt']>;
   createdAt_gt?: InputMaybe<Scalars['BigInt']>;
@@ -2033,6 +2057,14 @@ export type VestingSchedule_filter = {
   endDate_lte?: InputMaybe<Scalars['BigInt']>;
   endDate_in?: InputMaybe<Array<Scalars['BigInt']>>;
   endDate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  claimValidityDate?: InputMaybe<Scalars['BigInt']>;
+  claimValidityDate_not?: InputMaybe<Scalars['BigInt']>;
+  claimValidityDate_gt?: InputMaybe<Scalars['BigInt']>;
+  claimValidityDate_lt?: InputMaybe<Scalars['BigInt']>;
+  claimValidityDate_gte?: InputMaybe<Scalars['BigInt']>;
+  claimValidityDate_lte?: InputMaybe<Scalars['BigInt']>;
+  claimValidityDate_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  claimValidityDate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   cliffDate?: InputMaybe<Scalars['BigInt']>;
   cliffDate_not?: InputMaybe<Scalars['BigInt']>;
   cliffDate_gt?: InputMaybe<Scalars['BigInt']>;
@@ -2141,12 +2173,14 @@ export type VestingSchedule_filter = {
 
 export type VestingSchedule_orderBy =
   | 'id'
+  | 'contractVersion'
   | 'createdAt'
   | 'superToken'
   | 'sender'
   | 'receiver'
   | 'startDate'
   | 'endDate'
+  | 'claimValidityDate'
   | 'cliffDate'
   | 'cliffAndFlowDate'
   | 'cliffAmount'
