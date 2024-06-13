@@ -14,7 +14,7 @@ interface VestingStatus {
   isDeleted: boolean;
 }
 
-export const vestingStatuses: Record<string, VestingStatus> = {
+export const vestingStatuses = {
   ScheduledStart: {
     title: "Scheduled",
     isFinished: false,
@@ -95,7 +95,23 @@ export const vestingStatuses: Record<string, VestingStatus> = {
     isError: false,
     isDeleted: true,
   },
-};
+  Claimable: {
+    title: "Unclaimed",
+    isFinished: false,
+    isCliff: false, // Not sure
+    isStreaming: false,
+    isError: false,
+    isDeleted: false,
+  },
+  ClaimExpired: {
+    title: "Claim Expired",
+    isFinished: true,
+    isCliff: false,
+    isStreaming: false,
+    isError: true,
+    isDeleted: false,
+  },
+} as const satisfies Record<string, VestingStatus>;
 
 export interface VestingSchedule {
   id: string;
@@ -180,8 +196,10 @@ const getVestingStatus = (vestingSchedule: Omit<VestingSchedule, "status">) => {
     cliffAndFlowExpirationAt,
     endExecutedAt,
     didEarlyEndCompensationFail,
+    claimValidityDate,
   } = vestingSchedule;
   const nowUnix = getUnixTime(new Date());
+  const cliffAndFlowDate = cliffDate ? cliffDate : startDate;
 
   if (deletedAt) {
     if (deletedAt > startDate) {
@@ -209,6 +227,12 @@ const getVestingStatus = (vestingSchedule: Omit<VestingSchedule, "status">) => {
 
   if (cliffAndFlowExecutedAt) {
     return vestingStatuses.CliffAndFlowExecuted;
+  }
+
+  if (claimValidityDate) {
+    if (nowUnix > cliffAndFlowDate && nowUnix < claimValidityDate) {
+      return vestingStatuses.Claimable;
+    }
   }
 
   if (nowUnix > cliffAndFlowExpirationAt) {
