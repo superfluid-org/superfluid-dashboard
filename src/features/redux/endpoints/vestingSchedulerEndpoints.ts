@@ -19,6 +19,7 @@ import {
   ACL_CREATE_PERMISSION,
   ACL_DELETE_PERMISSION,
 } from "./flowSchedulerEndpoints";
+import { getUnixTime } from "date-fns";
 
 export const MAX_VESTING_DURATION_IN_YEARS = 10;
 export const MAX_VESTING_DURATION_IN_SECONDS =
@@ -57,6 +58,7 @@ interface GetVestingSchedule extends BaseQuery<RpcVestingSchedule | null> {
 interface RpcVestingSchedule {
   endDateTimestamp: number;
   claimValidityDate: number;
+  isClaimable: boolean;
 }
 
 interface FixAccessForVestingMutation extends BaseSuperTokenMutation {
@@ -483,12 +485,11 @@ export const vestingSchedulerMutationEndpoints = {
           title: TransactionTitle;
         }[] = [];
 
-        const transactionResponse =
-          await vestingScheduler.executeCliffAndFlow(
-            superTokenAddress,
-            senderAddress,
-            receiverAddress
-          );
+        const transactionResponse = await vestingScheduler.executeCliffAndFlow(
+          superTokenAddress,
+          senderAddress,
+          receiverAddress
+        );
 
         const subTransactionTitles = batchedOperations.map((x) => x.title);
 
@@ -642,11 +643,18 @@ export const vestingSchedulerQueryEndpoints = {
           receiverAddress
         );
 
+        const unixNow = getUnixTime(new Date());
+
         const mappedVestingSchedule =
           rawVestingSchedule.endDate > 0
             ? {
                 endDateTimestamp: rawVestingSchedule.endDate,
                 claimValidityDate: rawVestingSchedule.claimValidityDate ?? null,
+                isClaimable: 
+                  !!rawVestingSchedule.cliffAndFlowDate &&
+                  !!rawVestingSchedule.claimValidityDate &&
+                  rawVestingSchedule.cliffAndFlowDate < unixNow &&
+                  unixNow < rawVestingSchedule.claimValidityDate,
               }
             : null;
 

@@ -21,6 +21,7 @@ import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import { DeleteVestingTransactionButton } from "./transactionButtons/DeleteVestingTransactionButton";
 import { VestingSchedule } from "./types";
 import Link from "next/link";
+import { ClaimVestingScheduleTransactionButton } from "./transactionButtons/ClaimVestingScheduleTransactionButton";
 
 interface CounterpartyAddressProps {
   title: string;
@@ -86,16 +87,19 @@ const VestingDetailsHeader: FC<VestingDetailsHeaderProps> = ({
   const { address: accountAddress } = useAccount();
   const navigateBack = useNavigateBack("/vesting");
 
-  const { deletedAt, endExecutedAt, superToken, sender, receiver } =
+  const { deletedAt, endExecutedAt, superToken, sender, receiver, status } =
     vestingSchedule;
 
   const canDelete = !!accountAddress && !deletedAt && !endExecutedAt;
 
-  const isIncoming = true;
-  // accountAddress?.toLowerCase() === receiver.toLowerCase();
+  const isIncoming = accountAddress?.toLowerCase() === receiver.toLowerCase();
+  const isSenderOrReceiver = accountAddress?.toLowerCase() === receiver.toLowerCase() || accountAddress?.toLowerCase() === sender.toLowerCase();
+
+  const showUnwrap = (status.isStreaming || status.isFinished) && isIncoming;
+  const showClaim = status.isClaim && isSenderOrReceiver;
 
   return (
-    <>
+    <ConnectionBoundary expectedNetwork={network}>
       <Stack gap={3}>
         <Stack
           direction="row"
@@ -124,15 +128,23 @@ const VestingDetailsHeader: FC<VestingDetailsHeaderProps> = ({
               </Stack>
             </Stack>
           </Stack>
-          {canDelete && !isBelowMd && (
+          {(canDelete || showClaim) && !isBelowMd && (
             <Stack direction="row" alignItems="center" gap={1}>
-              <ConnectionBoundary expectedNetwork={network}>
+              {showClaim && (
+                <ClaimVestingScheduleTransactionButton
+                  superTokenAddress={superToken}
+                  senderAddress={sender}
+                  receiverAddress={receiver}
+                />
+              )}
+
+              {canDelete && (
                 <DeleteVestingTransactionButton
                   superTokenAddress={superToken}
                   senderAddress={sender}
                   receiverAddress={receiver}
                 />
-              </ConnectionBoundary>
+              )}
             </Stack>
           )}
         </Stack>
@@ -154,17 +166,30 @@ const VestingDetailsHeader: FC<VestingDetailsHeaderProps> = ({
         <CounterpartyAddress title="Receiver:" address={receiver} />
 
         <Stack direction="row" justifyContent="end" flex={1}>
-          {canDelete && isBelowMd && (
-            <ConnectionBoundary expectedNetwork={network}>
-              <DeleteVestingTransactionButton
-                superTokenAddress={superToken}
-                senderAddress={sender}
-                receiverAddress={receiver}
-                TransactionButtonProps={{ ButtonProps: { size: "small" } }}
-              />
-            </ConnectionBoundary>
+          {isBelowMd && (
+            <>
+              {showClaim && (
+                <ClaimVestingScheduleTransactionButton
+                  superTokenAddress={superToken}
+                  senderAddress={sender}
+                  receiverAddress={receiver}
+                  TransactionButtonProps={{ ButtonProps: { size: "small" } }}
+                />
+              )}
+
+              {canDelete && (
+                <DeleteVestingTransactionButton
+                  superTokenAddress={superToken}
+                  senderAddress={sender}
+                  receiverAddress={receiver}
+                  TransactionButtonProps={{ ButtonProps: { size: "small" } }}
+                />
+              )}
+            </>
           )}
-          {isIncoming && (
+
+
+          {showUnwrap && (
             <Link
               href={`/wrap?downgrade&token=${superToken}&network=${network.slugName}`}
             >
@@ -173,9 +198,10 @@ const VestingDetailsHeader: FC<VestingDetailsHeaderProps> = ({
               </Button>
             </Link>
           )}
+
         </Stack>
       </Stack>
-    </>
+    </ConnectionBoundary>
   );
 };
 

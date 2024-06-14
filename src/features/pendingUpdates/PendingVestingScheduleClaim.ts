@@ -2,25 +2,25 @@ import { useMemo } from "react";
 import { PendingUpdate } from "./PendingUpdate";
 import { pendingUpdateSelectors } from "./pendingUpdate.slice";
 import { useAppSelector } from "../redux/store";
-import { DeleteVestingSchedule } from "../redux/endpoints/vestingSchedulerEndpoints";
+import { ClaimVestingSchedule } from "../redux/endpoints/vestingSchedulerEndpoints";
 
-export interface PendingVestingScheduleDeletion
+export interface PendingVestingScheduleClaim
   extends PendingUpdate,
     Pick<
-      DeleteVestingSchedule,
+      ClaimVestingSchedule,
       "chainId" | "superTokenAddress" | "senderAddress" | "receiverAddress"
     > {
-  pendingType: "VestingScheduleDelete";
+  pendingType: "VestingScheduleClaim";
 }
 
-export const isPendingVestingScheduleDeletion = (
+export const isPendingVestingScheduleClaim = (
   x: PendingUpdate
-): x is PendingVestingScheduleDeletion =>
-  x.pendingType === "VestingScheduleDelete";
+): x is PendingVestingScheduleClaim =>
+  x.pendingType === "VestingScheduleClaim";
 
-export const useAddressPendingVestingScheduleDeletes = (
+export const useAddressPendingVestingScheduleClaims = (
   address: string | undefined
-): PendingVestingScheduleDeletion[] => {
+): PendingVestingScheduleClaim[] => {
   const allPendingUpdates = useAppSelector((state) =>
     pendingUpdateSelectors.selectAll(state.pendingUpdates)
   );
@@ -29,18 +29,16 @@ export const useAddressPendingVestingScheduleDeletes = (
     () =>
       address
         ? allPendingUpdates
-            .filter(isPendingVestingScheduleDeletion)
+            .filter(isPendingVestingScheduleClaim)
             .filter(
-              (x) =>
-                x.senderAddress.toLowerCase() === address.toLowerCase() ||
-                x.receiverAddress.toLowerCase() === address.toLowerCase()
+              (x) => x.senderAddress.toLowerCase() === address.toLowerCase()
             )
         : [],
     [address, allPendingUpdates]
   );
 };
 
-export const usePendingVestingScheduleDelete = (
+export const usePendingVestingScheduleClaim = (
   {
     chainId,
     superTokenAddress,
@@ -54,7 +52,7 @@ export const usePendingVestingScheduleDelete = (
   },
   options?: { skip: boolean }
 ) => {
-  const list = useAddressPendingVestingScheduleDeletes(senderAddress);
+  const list = useAddressPendingVestingScheduleClaims(senderAddress);
 
   const skip = options?.skip ?? false;
 
@@ -67,8 +65,10 @@ export const usePendingVestingScheduleDelete = (
               x.chainId === chainId &&
               x.superTokenAddress.toLowerCase() ===
                 superTokenAddress.toLowerCase() &&
-              x.receiverAddress.toLowerCase() === receiverAddress.toLowerCase()
+              x.senderAddress.toLowerCase() ===
+                superTokenAddress.toLowerCase() &&
+              x.senderAddress.toLowerCase() === receiverAddress.toLowerCase()
           )[0], // We assume no duplicates here.
-    [chainId, superTokenAddress, senderAddress, receiverAddress, list, skip]
+    [chainId, superTokenAddress, receiverAddress, list, skip]
   );
 };
