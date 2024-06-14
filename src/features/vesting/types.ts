@@ -243,7 +243,9 @@ const getVestingStatus = (vestingSchedule: Omit<VestingSchedule, "status">) => {
   }
 
   if (claimValidityDate) {
-    if (nowUnix > cliffAndFlowDate && nowUnix < claimValidityDate) {
+    if (nowUnix > claimValidityDate) { 
+      return vestingStatuses.ClaimExpired;
+    } else if (nowUnix > cliffAndFlowDate) {
       return vestingStatuses.Claimable;
     }
   }
