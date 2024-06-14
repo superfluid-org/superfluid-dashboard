@@ -80,6 +80,7 @@ export const ClaimVestingScheduleTransactionButton: FC<{
               ButtonProps={{
                 color: "primary",
                 size: "medium",
+                variant: isReceiver ? "contained" : "outlined",
                 fullWidth: false,
                 // TODO: What icon to use?
                 ...ButtonProps,
@@ -111,7 +112,6 @@ export const ClaimVestingScheduleTransactionButton: FC<{
                     <NextLink href="/vesting" passHref legacyBehavior>
                       <TransactionDialogButton
                         data-cy={"ok-button"}
-                        variant={isReceiver ? "contained" : "outlined"}
                         color="primary"
                       >
                         OK

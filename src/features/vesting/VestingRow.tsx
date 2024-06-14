@@ -187,33 +187,31 @@ const VestingRow: FC<VestingRowProps> = ({
             {VestingStatusOrPendingProgress}
           </TableCell>
 
-          {(showClaim || showUnwrap) && (
-            <TableCell
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-              }}
-            >
-              {showClaim ? (
-                <ConnectionBoundary expectedNetwork={network}>
-                  <ClaimVestingScheduleTransactionButton
-                    superTokenAddress={superToken}
-                    senderAddress={sender}
-                    receiverAddress={receiver}
-                    TransactionButtonProps={{ ButtonProps: { size: "small" } }}
-                  />
-                </ConnectionBoundary>
-              ) : showUnwrap ? (
-                <Link
-                  href={`/wrap?downgrade&token=${superToken}&network=${network.slugName}`}
-                >
-                  <Button variant="outlined" color="primary" size="small">
-                    Unwrap
-                  </Button>
-                </Link>
-              ) : null}
-            </TableCell>
-          )}
+          <TableCell
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+          >
+            {showClaim ? (
+              <ConnectionBoundary expectedNetwork={network}>
+                <ClaimVestingScheduleTransactionButton
+                  superTokenAddress={superToken}
+                  senderAddress={sender}
+                  receiverAddress={receiver}
+                  TransactionButtonProps={{ ButtonProps: { size: "small" } }}
+                />
+              </ConnectionBoundary>
+            ) : showUnwrap ? (
+              <Link
+                href={`/wrap?downgrade&token=${superToken}&network=${network.slugName}`}
+              >
+                <Button variant="outlined" color="primary" size="small">
+                  Unwrap
+                </Button>
+              </Link>
+            ) : null}
+          </TableCell>
 
         </>
       ) : (
