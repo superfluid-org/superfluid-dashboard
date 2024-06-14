@@ -207,7 +207,7 @@ const VestingRow: FC<VestingRowProps> = ({
                 <Link
                   href={`/wrap?downgrade&token=${superToken}&network=${network.slugName}`}
                 >
-                  <Button variant="contained" color="primary" size="small">
+                  <Button variant="outlined" color="primary" size="small">
                     Unwrap
                   </Button>
                 </Link>
