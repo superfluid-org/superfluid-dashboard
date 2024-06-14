@@ -189,7 +189,6 @@ const VestingDetailsHeader: FC<VestingDetailsHeaderProps> = ({
             </>
           )}
 
-
           {showUnwrap && (
             <Link
               href={`/wrap?downgrade&token=${superToken}&network=${network.slugName}`}

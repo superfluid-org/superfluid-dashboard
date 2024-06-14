@@ -16,7 +16,6 @@ import {
 } from "../../transactionBoundary/TransactionDialog";
 import NextLink from "next/link";
 import { Typography } from "@mui/material";
-import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import { useAnalytics } from "../../analytics/useAnalytics";
 import { usePendingVestingScheduleClaim } from "../../pendingUpdates/PendingVestingScheduleClaim";
 import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
@@ -42,9 +41,9 @@ export const ClaimVestingScheduleTransactionButton: FC<{
 
     const { visibleAddress } = useVisibleAddress();
 
-    const isSenderOrReceiverLooking =
-      visibleAddress &&
-      (senderAddress.toLowerCase() === visibleAddress.toLowerCase() || receiverAddress.toLowerCase() === visibleAddress.toLowerCase());
+    const isSender = visibleAddress && senderAddress.toLowerCase() === visibleAddress.toLowerCase();
+    const isReceiver = visibleAddress && receiverAddress.toLowerCase() === visibleAddress.toLowerCase();
+    const isSenderOrReceiverLooking = isSender || isReceiver;
 
     const { data: activeVestingSchedule } =
       rpcApi.useGetActiveVestingScheduleQuery(
@@ -88,7 +87,7 @@ export const ClaimVestingScheduleTransactionButton: FC<{
               onClick={async (signer) => {
                 setDialogLoadingInfo(
                   <Typography variant="h5" color="text.secondary" translate="yes">
-                    You are claiming the vesting schedule.
+                    { isSender ? "You are claiming the vesting schedule on behalf of the receiver." : "You are claiming the vesting schedule."}
                   </Typography>
                 );
 
@@ -112,6 +111,7 @@ export const ClaimVestingScheduleTransactionButton: FC<{
                     <NextLink href="/vesting" passHref legacyBehavior>
                       <TransactionDialogButton
                         data-cy={"ok-button"}
+                        variant={isReceiver ? "contained" : "outlined"}
                         color="primary"
                       >
                         OK
