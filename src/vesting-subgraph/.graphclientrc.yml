@@ -2,7 +2,7 @@ sources:
   - name: vesting
     handler:
       graphql:
-        endpoint: '{context.url:https://api.goldsky.com/api/public/project_clsnd6xsoma5j012qepvucfpp/subgraphs/vesting-v1-optimism-sepolia/1.1.1/gn}'
+        endpoint: '{context.url:https://api.goldsky.com/api/public/project_clsnd6xsoma5j012qepvucfpp/subgraphs/vesting-v1-optimism-sepolia/v2/gn}'
         retry: 5
 documents:
   - './*.graphql'

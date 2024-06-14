@@ -15,7 +15,7 @@ function getContract(address, abi, defaultSignerOrProvider) {
 exports.getContract = getContract;
 function getOptimismSepoliaSdk(defaultSignerOrProvider) {
     return {
-        "vestingScheduler": getContract('0x48933d146a446969B54FEd588F8e7ACfda227AEA', vestingScheduler_json_1.default, defaultSignerOrProvider),
+        "vestingScheduler": getContract('0x2cf83669E14D74A4978034b1CF9573a8C10dd0CE', vestingScheduler_json_1.default, defaultSignerOrProvider),
     };
 }
 exports.getOptimismSepoliaSdk = getOptimismSepoliaSdk;

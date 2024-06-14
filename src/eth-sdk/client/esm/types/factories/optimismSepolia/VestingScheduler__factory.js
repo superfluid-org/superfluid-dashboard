@@ -21,7 +21,7 @@ const _abi = [
     },
     {
         inputs: [],
-        name: "CannotClaimFlowOnBehalf",
+        name: "CannotClaimScheduleOnBehalf",
         type: "error",
     },
     {

@@ -16,7 +16,7 @@ export declare class VestingScheduler__factory {
         readonly type: "error";
     }, {
         readonly inputs: readonly [];
-        readonly name: "CannotClaimFlowOnBehalf";
+        readonly name: "CannotClaimScheduleOnBehalf";
         readonly type: "error";
     }, {
         readonly inputs: readonly [];

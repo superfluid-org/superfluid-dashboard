@@ -67,7 +67,7 @@ export const vestingContractAddresses_v1 = {
 } as const;
 
 export const vestingContractAddresses_v2 = {
-  optimismSepolia: "0x48933d146a446969B54FEd588F8e7ACfda227AEA"
+  optimismSepolia: "0x2cf83669E14D74A4978034b1CF9573a8C10dd0CE"
 } as const;
 
 export const vestingSubgraphUrls = {
@@ -76,7 +76,7 @@ export const vestingSubgraphUrls = {
   polygon:
     "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-polygon-mainnet",
   optimismSepolia:
-    "https://api.goldsky.com/api/public/project_clsnd6xsoma5j012qepvucfpp/subgraphs/vesting-v1-optimism-sepolia/1.1.1/gn",
+    "https://api.goldsky.com/api/public/project_clsnd6xsoma5j012qepvucfpp/subgraphs/vesting-v1-optimism-sepolia/v2/gn",
   arbitrum:
     "https://api.thegraph.com/subgraphs/name/superfluid-finance/vesting-v1-arbitrum-one",
   optimism:
