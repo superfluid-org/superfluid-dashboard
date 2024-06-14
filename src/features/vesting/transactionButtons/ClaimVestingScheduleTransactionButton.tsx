@@ -79,11 +79,10 @@ export const ClaimVestingScheduleTransactionButton: FC<{
               {...RestTxButtonProps}
               dataCy={"delete-schedule-button"}
               ButtonProps={{
-                variant: "textContained",
-                color: "error",
+                color: "primary",
                 size: "medium",
                 fullWidth: false,
-                startIcon: <CloseRoundedIcon />,
+                // TODO: What icon to use?
                 ...ButtonProps,
               }}
               onClick={async (signer) => {

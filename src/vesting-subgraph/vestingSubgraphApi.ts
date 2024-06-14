@@ -48,8 +48,8 @@ export const vestingSubgraphApi = createApi({
 
         const subgraphVestingSchedule = sdk
           ? (isClaimSupported
-              ? await sdk.getVestingSchedule(variables)
-              : await sdk.getVestingScheduleWithClaim(variables)
+              ? await sdk.getVestingScheduleWithClaim(variables)
+              : await sdk.getVestingSchedule(variables)
             ).vestingSchedule
           : null;
 
@@ -80,8 +80,8 @@ export const vestingSubgraphApi = createApi({
 
         const subgraphVestingSchedules = sdk
           ? (isClaimSupported
-              ? await sdk.getVestingSchedules(variables)
-              : await sdk.getVestingSchedulesWithClaim(variables)
+              ? await sdk.getVestingSchedulesWithClaim(variables)
+              : await sdk.getVestingSchedules(variables)
             ).vestingSchedules
           : [];
 

@@ -192,31 +192,24 @@ const VestingRow: FC<VestingRowProps> = ({
                 e.stopPropagation();
               }}
             >
-              showClaim ? (
-              <ConnectionBoundary expectedNetwork={network}>
-                <TableCell
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                  }}
-                >
+              {showClaim ? (
+                <ConnectionBoundary expectedNetwork={network}>
                   <ClaimVestingScheduleTransactionButton
                     superTokenAddress={superToken}
                     senderAddress={sender}
                     receiverAddress={receiver}
                     TransactionButtonProps={{ ButtonProps: { size: "small" } }}
                   />
-                </TableCell>
-              </ConnectionBoundary>
+                </ConnectionBoundary>
               ) : showUnwrap ? (
-              <Link
-                href={`/wrap?downgrade&token=${superToken}&network=${network.slugName}`}
-              >
-                <Button variant="contained" color="primary" size="small">
-                  Unwrap
-                </Button>
-              </Link>
-              ) : null
+                <Link
+                  href={`/wrap?downgrade&token=${superToken}&network=${network.slugName}`}
+                >
+                  <Button variant="contained" color="primary" size="small">
+                    Unwrap
+                  </Button>
+                </Link>
+              ) : null}
             </TableCell>
           )}
 
