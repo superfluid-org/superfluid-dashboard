@@ -93,8 +93,10 @@ const VestingRow: FC<VestingRowProps> = ({
 
   const isOutgoing = sender.toLowerCase() === visibleAddress?.toLowerCase();
   const isIncoming = !isOutgoing;
-  const isSenderOrReceiver = visibleAddress?.toLowerCase() === receiver.toLowerCase() || visibleAddress?.toLowerCase() === sender.toLowerCase();
-  const showClaim = !pendingClaim && isSenderOrReceiver && vestingSchedule.status.isClaim;
+  const isSender = visibleAddress?.toLowerCase() === receiver.toLowerCase()
+  const isReceiver = visibleAddress?.toLowerCase() === receiver.toLowerCase()
+  const isSenderOrReceiver = isSender || isReceiver;
+  const showClaim = !pendingClaim && isReceiver && vestingSchedule.status.isClaim; // Note: we show only for receiver in the table.
   const showUnwrap = isIncoming && (vestingSchedule.status.isStreaming || vestingSchedule.status.isFinished);
 
   const VestingStatusOrPendingProgress = (
