@@ -95,7 +95,7 @@ export const ClaimVestingScheduleTransactionButton: FC<{
                 const primaryArgs = {
                   chainId: network.id,
                   superTokenAddress: superTokenAddress,
-                  senderAddress: await signer.getAddress(),
+                  senderAddress: senderAddress,
                   receiverAddress: receiverAddress,
                 };
                 claimVestingSchedule({
