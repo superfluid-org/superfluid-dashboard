@@ -185,8 +185,14 @@ const VestingRow: FC<VestingRowProps> = ({
             {VestingStatusOrPendingProgress}
           </TableCell>
 
-          {
-            showClaim && (
+          {(showClaim || showUnwrap) && (
+            <TableCell
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+            >
+              showClaim ? (
               <ConnectionBoundary expectedNetwork={network}>
                 <TableCell
                   onClick={(e) => {
@@ -202,16 +208,7 @@ const VestingRow: FC<VestingRowProps> = ({
                   />
                 </TableCell>
               </ConnectionBoundary>
-            )
-          }
-
-          {showUnwrap && (
-            <TableCell
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-              }}
-            >
+              ) : showUnwrap ? (
               <Link
                 href={`/wrap?downgrade&token=${superToken}&network=${network.slugName}`}
               >
@@ -219,6 +216,7 @@ const VestingRow: FC<VestingRowProps> = ({
                   Unwrap
                 </Button>
               </Link>
+              ) : null
             </TableCell>
           )}
 
