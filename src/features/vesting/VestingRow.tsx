@@ -92,9 +92,10 @@ const VestingRow: FC<VestingRowProps> = ({
   }, [flowRate, endDate, cliffAndFlowDate, cliffAmount]);
 
   const isOutgoing = sender.toLowerCase() === visibleAddress?.toLowerCase();
-  const showClaim = pendingClaim! && vestingSchedule.status.isClaim && !isOutgoing;
-  const showUnwrap = (vestingSchedule.status.isStreaming || vestingSchedule.status.isFinished) && !isOutgoing;
-
+  const isIncoming = !isOutgoing;
+  const isSenderOrReceiver = visibleAddress?.toLowerCase() === receiver.toLowerCase() || visibleAddress?.toLowerCase() === sender.toLowerCase();
+  const showClaim = !pendingClaim && isSenderOrReceiver && vestingSchedule.status.isClaim;
+  const showUnwrap = isIncoming && (vestingSchedule.status.isStreaming || vestingSchedule.status.isFinished);
 
   const VestingStatusOrPendingProgress = (
     <>
@@ -204,7 +205,7 @@ const VestingRow: FC<VestingRowProps> = ({
             )
           }
 
-          {!isOutgoing && (
+          {showUnwrap && (
             <TableCell
               onClick={(e) => {
                 e.preventDefault();

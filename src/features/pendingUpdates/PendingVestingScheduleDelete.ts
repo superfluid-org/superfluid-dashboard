@@ -31,9 +31,7 @@ export const useAddressPendingVestingScheduleDeletes = (
         ? allPendingUpdates
             .filter(isPendingVestingScheduleDeletion)
             .filter(
-              (x) =>
-                x.senderAddress.toLowerCase() === address.toLowerCase() ||
-                x.receiverAddress.toLowerCase() === address.toLowerCase()
+              (x) => x.senderAddress.toLowerCase() === address.toLowerCase()
             )
         : [],
     [address, allPendingUpdates]
@@ -69,6 +67,6 @@ export const usePendingVestingScheduleDelete = (
                 superTokenAddress.toLowerCase() &&
               x.receiverAddress.toLowerCase() === receiverAddress.toLowerCase()
           )[0], // We assume no duplicates here.
-    [chainId, superTokenAddress, senderAddress, receiverAddress, list, skip]
+    [chainId, superTokenAddress, receiverAddress, list, skip]
   );
 };

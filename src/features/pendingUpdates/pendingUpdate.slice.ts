@@ -12,6 +12,7 @@ import {
 import { PendingUpdate } from "./PendingUpdate";
 import { PendingVestingSchedule } from "./PendingVestingSchedule";
 import { PendingVestingScheduleDeletion as PendingVestingScheduleDelete } from "./PendingVestingScheduleDelete";
+import { PendingVestingScheduleClaim } from "./PendingVestingScheduleClaim";
 
 export const pendingUpdateAdapter = createEntityAdapter<PendingUpdate>({
   selectId: (x) => x.id,
@@ -317,6 +318,26 @@ export const pendingUpdateSlice = createSlice({
           id: transactionHash,
           superTokenAddress,
           pendingType: "VestingScheduleDelete",
+          timestamp: dateNowSeconds(),
+          relevantSubgraph: "Vesting",
+        };
+        pendingUpdateAdapter.addOne(state, pendingUpdate);
+      }
+    );
+    builder.addMatcher(
+      rpcApi.endpoints.claimVestingSchedule.matchFulfilled,
+      (state, action) => {
+        const { chainId, hash: transactionHash } = action.payload;
+        const { senderAddress, superTokenAddress, receiverAddress } =
+          action.meta.arg.originalArgs;
+        const pendingUpdate: PendingVestingScheduleClaim = {
+          chainId,
+          transactionHash,
+          senderAddress,
+          receiverAddress,
+          id: transactionHash,
+          superTokenAddress,
+          pendingType: "VestingScheduleClaim",
           timestamp: dateNowSeconds(),
           relevantSubgraph: "Vesting",
         };

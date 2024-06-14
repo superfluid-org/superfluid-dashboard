@@ -22,6 +22,7 @@ import { DeleteVestingTransactionButton } from "./transactionButtons/DeleteVesti
 import { VestingSchedule } from "./types";
 import Link from "next/link";
 import { ClaimVestingScheduleTransactionButton } from "./transactionButtons/ClaimVestingScheduleTransactionButton";
+import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 
 interface CounterpartyAddressProps {
   title: string;
@@ -84,16 +85,16 @@ const VestingDetailsHeader: FC<VestingDetailsHeaderProps> = ({
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
-  const { address: accountAddress } = useAccount();
+  const { visibleAddress } = useVisibleAddress();
   const navigateBack = useNavigateBack("/vesting");
 
   const { deletedAt, endExecutedAt, superToken, sender, receiver, status } =
     vestingSchedule;
 
-  const canDelete = !!accountAddress && !deletedAt && !endExecutedAt;
+  const canDelete = !!visibleAddress && !deletedAt && !endExecutedAt;
 
-  const isIncoming = accountAddress?.toLowerCase() === receiver.toLowerCase();
-  const isSenderOrReceiver = accountAddress?.toLowerCase() === receiver.toLowerCase() || accountAddress?.toLowerCase() === sender.toLowerCase();
+  const isIncoming = visibleAddress?.toLowerCase() === receiver.toLowerCase();
+  const isSenderOrReceiver = visibleAddress?.toLowerCase() === receiver.toLowerCase() || visibleAddress?.toLowerCase() === sender.toLowerCase();
 
   const showUnwrap = (status.isStreaming || status.isFinished) && isIncoming;
   const showClaim = status.isClaim && isSenderOrReceiver;

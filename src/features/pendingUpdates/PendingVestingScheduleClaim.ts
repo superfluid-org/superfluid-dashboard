@@ -15,8 +15,7 @@ export interface PendingVestingScheduleClaim
 
 export const isPendingVestingScheduleClaim = (
   x: PendingUpdate
-): x is PendingVestingScheduleClaim =>
-  x.pendingType === "VestingScheduleClaim";
+): x is PendingVestingScheduleClaim => x.pendingType === "VestingScheduleClaim";
 
 export const useAddressPendingVestingScheduleClaims = (
   address: string | undefined
@@ -31,7 +30,9 @@ export const useAddressPendingVestingScheduleClaims = (
         ? allPendingUpdates
             .filter(isPendingVestingScheduleClaim)
             .filter(
-              (x) => x.senderAddress.toLowerCase() === address.toLowerCase()
+              (x) =>
+                x.senderAddress.toLowerCase() === address.toLowerCase() ||
+                x.receiverAddress.toLowerCase() === address.toLowerCase()
             )
         : [],
     [address, allPendingUpdates]
@@ -65,9 +66,9 @@ export const usePendingVestingScheduleClaim = (
               x.chainId === chainId &&
               x.superTokenAddress.toLowerCase() ===
                 superTokenAddress.toLowerCase() &&
-              x.senderAddress.toLowerCase() ===
-                superTokenAddress.toLowerCase() &&
-              x.senderAddress.toLowerCase() === receiverAddress.toLowerCase()
+              (x.senderAddress.toLowerCase() === senderAddress.toLowerCase() ||
+                x.receiverAddress.toLowerCase() ===
+                  receiverAddress.toLowerCase())
           )[0], // We assume no duplicates here.
     [chainId, superTokenAddress, receiverAddress, list, skip]
   );
