@@ -407,7 +407,7 @@ const TokenPageContent: FC<{
             />
             <Tab
               data-cy="distribution-tab"
-              label="Distributions (legacy)"
+              label="Distributions"
               value={TokenDetailsTabs.Distributions}
             />
           </TabList>

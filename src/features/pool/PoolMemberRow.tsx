@@ -1,5 +1,6 @@
 import {
     ListItemText,
+    Skeleton,
     Stack,
     TableCell,
     TableRow,
@@ -44,35 +45,38 @@ const PoolMemberRow: FC<Props> = ({
 
     // if not connected, query "claimable"
 
-    if (!pool) {
-        // todo: handle this
-        return null;
-    }
-
     return (
         <TableRow>
 
             {/* Pool ID (the sender, basically) */}
             <TableCell>
                 <Stack direction="row" alignItems="center" gap={1.5}>
-                    <AddressAvatar
-                        address={pool.id}
-                        AvatarProps={{
-                            sx: { width: "24px", height: "24px", borderRadius: "5px" },
-                        }}
-                        BlockiesProps={{ size: 8, scale: 3 }}
-                    />
-                    <ListItemText
-                        data-cy="publisher"
-                        primary={
-                            <AddressCopyTooltip address={pool.id}>
-                                <span>
-                                    <AddressName address={pool.id} />
-                                </span>
-                            </AddressCopyTooltip>
-                        }
-                        primaryTypographyProps={{ variant: "h7" }}
-                    />
+                    {pool ? (
+                        <>
+                            <AddressAvatar
+                                address={pool.id}
+                                AvatarProps={{
+                                    sx: { width: "24px", height: "24px", borderRadius: "5px" },
+                                }}
+                                BlockiesProps={{ size: 8, scale: 3 }}
+                            />
+                            <ListItemText
+                                data-cy="publisher"
+                                primary={
+                                    <AddressCopyTooltip address={pool.id}>
+                                        <span>
+                                            <AddressName address={pool.id} />
+                                        </span>
+                                    </AddressCopyTooltip>
+                                }
+                                primaryTypographyProps={{ variant: "h7" }}
+                            />
+                        </>
+                    ) : (<>
+                    <Skeleton variant="rounded" width="24px" />
+                    <Skeleton width="100px" />
+                    </>)}
+
                 </Stack>
             </TableCell>
             {/* --- */}
