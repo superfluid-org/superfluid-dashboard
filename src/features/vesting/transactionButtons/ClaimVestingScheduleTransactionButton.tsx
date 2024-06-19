@@ -64,7 +64,9 @@ export const ClaimVestingScheduleTransactionButton: FC<{
       senderAddress,
     });
 
-    const isButtonVisible = !isBeingClaimed && !!activeVestingSchedule?.isClaimable;
+    const isButtonVisible = !!activeVestingSchedule?.claimValidityDate;
+    const isClaimEnabled = !!activeVestingSchedule?.isClaimable;
+
     const { ButtonProps = {}, ...RestTxButtonProps } = TransactionButtonProps;
 
     return (
@@ -77,6 +79,8 @@ export const ClaimVestingScheduleTransactionButton: FC<{
             <TransactionButton
               {...RestTxButtonProps}
               dataCy={"delete-schedule-button"}
+              disabled={isClaimEnabled}
+              loading={isBeingClaimed}
               ButtonProps={{
                 color: "primary",
                 size: "medium",

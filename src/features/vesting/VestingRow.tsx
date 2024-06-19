@@ -76,7 +76,7 @@ const VestingRow: FC<VestingRowProps> = ({
       senderAddress: sender,
     },
     {
-      skip: !vestingSchedule.status.isClaim,
+      skip: !vestingSchedule.status.canClaim,
     }
   );
 
@@ -91,13 +91,11 @@ const VestingRow: FC<VestingRowProps> = ({
       .toString();
   }, [flowRate, endDate, cliffAndFlowDate, cliffAmount]);
 
-  const isOutgoing = sender.toLowerCase() === visibleAddress?.toLowerCase();
-  const isIncoming = !isOutgoing;
-  const isSender = visibleAddress?.toLowerCase() === receiver.toLowerCase()
+  const isSender = visibleAddress?.toLowerCase() === sender.toLowerCase()
   const isReceiver = visibleAddress?.toLowerCase() === receiver.toLowerCase()
   const isSenderOrReceiver = isSender || isReceiver;
-  const showClaim = !pendingClaim && isReceiver && vestingSchedule.status.isClaim; // Note: we show only for receiver in the table.
-  const showUnwrap = isIncoming && (vestingSchedule.status.isStreaming || vestingSchedule.status.isFinished);
+  const showClaim = isReceiver && !!vestingSchedule.claimValidityDate && !vestingSchedule.cliffAndFlowExecutedAt; // Note: we show only for receiver in the table.
+  const showUnwrap = isReceiver && (vestingSchedule.status.isStreaming || vestingSchedule.status.isFinished);
 
   const VestingStatusOrPendingProgress = (
     <>
@@ -135,16 +133,16 @@ const VestingRow: FC<VestingRowProps> = ({
       <TableCell>
         <Stack direction="row" alignItems="center" gap={1.5}>
           <AddressAvatar
-            address={isOutgoing ? receiver : sender}
+            address={isSender ? receiver : sender}
             AvatarProps={{
               sx: { width: "24px", height: "24px", borderRadius: "5px" },
             }}
             BlockiesProps={{ size: 8, scale: 3 }}
           />
           <Stack direction="column">
-            <AddressCopyTooltip address={isOutgoing ? receiver : sender}>
+            <AddressCopyTooltip address={isSender ? receiver : sender}>
               <Typography data-cy={"receiver-sender"} variant="h7">
-                <AddressName address={isOutgoing ? receiver : sender} />
+                <AddressName address={isSender ? receiver : sender} />
               </Typography>
             </AddressCopyTooltip>
             {isBelowMd && VestingStatusOrPendingProgress}
@@ -186,33 +184,35 @@ const VestingRow: FC<VestingRowProps> = ({
           <TableCell sx={{ pl: 0 }}>
             {VestingStatusOrPendingProgress}
           </TableCell>
-
-          <TableCell
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}
-          >
-            {showClaim ? (
-              <ConnectionBoundary expectedNetwork={network}>
-                <ClaimVestingScheduleTransactionButton
-                  superTokenAddress={superToken}
-                  senderAddress={sender}
-                  receiverAddress={receiver}
-                  TransactionButtonProps={{ ButtonProps: { size: "small" } }}
-                />
-              </ConnectionBoundary>
-            ) : showUnwrap ? (
-              <Link
-                href={`/wrap?downgrade&token=${superToken}&network=${network.slugName}`}
+          {
+            isReceiver && (
+              <TableCell
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
               >
-                <Button variant="outlined" color="primary" size="small">
-                  Unwrap
-                </Button>
-              </Link>
-            ) : null}
-          </TableCell>
-
+                {showClaim ? (
+                  <ConnectionBoundary expectedNetwork={network}>
+                    <ClaimVestingScheduleTransactionButton
+                      superTokenAddress={superToken}
+                      senderAddress={sender}
+                      receiverAddress={receiver}
+                      TransactionButtonProps={{ ButtonProps: { size: "small" } }}
+                    />
+                  </ConnectionBoundary>
+                ) : showUnwrap ? (
+                  <Link
+                    href={`/wrap?downgrade&token=${superToken}&network=${network.slugName}`}
+                  >
+                    <Button variant="outlined" color="primary" size="small">
+                      Unwrap
+                    </Button>
+                  </Link>
+                ) : null}
+              </TableCell>
+            )
+          }
         </>
       ) : (
         <TableCell align="right">

@@ -9,7 +9,7 @@ interface VestingStatus {
   title: string;
   isFinished: boolean;
   isCliff: boolean;
-  isClaim: boolean;
+  canClaim: boolean;
   isStreaming: boolean;
   isError: boolean;
   isDeleted: boolean;
@@ -20,7 +20,7 @@ export const vestingStatuses = {
     title: "Scheduled",
     isFinished: false,
     isCliff: false,
-    isClaim: false,
+    canClaim: false,
     isStreaming: false,
     isError: false,
     isDeleted: false,
@@ -29,7 +29,7 @@ export const vestingStatuses = {
     title: "Cliff",
     isFinished: false,
     isCliff: true,
-    isClaim: false,
+    canClaim: false,
     isStreaming: false,
     isError: false,
     isDeleted: false,
@@ -38,7 +38,7 @@ export const vestingStatuses = {
     title: "Vesting",
     isFinished: false,
     isCliff: false,
-    isClaim: false,
+    canClaim: false,
     isStreaming: true,
     isError: false,
     isDeleted: false,
@@ -47,7 +47,7 @@ export const vestingStatuses = {
     title: "Stream Error",
     isFinished: false,
     isCliff: false,
-    isClaim: false,
+    canClaim: false,
     isStreaming: true,
     isError: true,
     isDeleted: false,
@@ -56,7 +56,7 @@ export const vestingStatuses = {
     title: "Vested",
     isFinished: true,
     isCliff: false,
-    isClaim: false,
+    canClaim: false,
     isStreaming: false,
     isError: false,
     isDeleted: false,
@@ -65,7 +65,7 @@ export const vestingStatuses = {
     title: "Cancel Error",
     isFinished: true,
     isCliff: false,
-    isClaim: false,
+    canClaim: false,
     isStreaming: false,
     isError: true,
     isDeleted: false,
@@ -74,7 +74,7 @@ export const vestingStatuses = {
     title: "Overflow Error",
     isFinished: true,
     isCliff: false,
-    isClaim: false,
+    canClaim: false,
     isStreaming: false,
     isError: true,
     isDeleted: false,
@@ -83,7 +83,7 @@ export const vestingStatuses = {
     title: "Transfer Error",
     isFinished: true,
     isCliff: false,
-    isClaim: false,
+    canClaim: false,
     isStreaming: false,
     isError: true,
     isDeleted: false,
@@ -92,7 +92,7 @@ export const vestingStatuses = {
     title: "Deleted",
     isFinished: true,
     isCliff: false,
-    isClaim: false,
+    canClaim: false,
     isStreaming: false,
     isError: false,
     isDeleted: true,
@@ -101,7 +101,7 @@ export const vestingStatuses = {
     title: "Deleted",
     isFinished: true,
     isCliff: false,
-    isClaim: false,
+    canClaim: false,
     isStreaming: false,
     isError: false,
     isDeleted: true,
@@ -110,7 +110,7 @@ export const vestingStatuses = {
     title: "Unclaimed",
     isFinished: false,
     isCliff: false,
-    isClaim: true,
+    canClaim: true,
     isStreaming: false,
     isError: false,
     isDeleted: false,
@@ -119,7 +119,7 @@ export const vestingStatuses = {
     title: "Claim Expired",
     isFinished: true,
     isCliff: false,
-    isClaim: false,
+    canClaim: false,
     isStreaming: false,
     isError: true,
     isDeleted: false,
@@ -243,13 +243,13 @@ const getVestingStatus = (vestingSchedule: Omit<VestingSchedule, "status">) => {
   }
 
   if (claimValidityDate) {
+    if (nowUnix > claimValidityDate) { 
+      return vestingStatuses.ClaimExpired;
+    }
+
     if (nowUnix > cliffAndFlowDate && nowUnix < claimValidityDate) {
       return vestingStatuses.Claimable;
     }
-
-    if (nowUnix > claimValidityDate) { 
-      return vestingStatuses.ClaimExpired;
-    } 
   }
 
   if (nowUnix > cliffAndFlowExpirationAt) {

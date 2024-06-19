@@ -10,7 +10,6 @@ import {
 } from "@mui/material";
 import { Address, Token } from "@superfluid-finance/sdk-core";
 import { FC } from "react";
-import { useAccount } from "wagmi";
 import AddressName from "../../components/AddressName/AddressName";
 import useNavigateBack from "../../hooks/useNavigateBack";
 import { CopyIconBtn } from "../common/CopyIconBtn";
@@ -97,7 +96,9 @@ const VestingDetailsHeader: FC<VestingDetailsHeaderProps> = ({
   const isSenderOrReceiver = visibleAddress?.toLowerCase() === receiver.toLowerCase() || visibleAddress?.toLowerCase() === sender.toLowerCase();
 
   const showUnwrap = (status.isStreaming || status.isFinished) && isIncoming;
-  const showClaim = status.isClaim && isSenderOrReceiver;
+
+  const showClaim = isSenderOrReceiver && !!vestingSchedule.claimValidityDate && !vestingSchedule.cliffAndFlowExecutedAt;
+  const isClaimEnabled = showClaim && status.canClaim;
 
   return (
     <ConnectionBoundary expectedNetwork={network}>
@@ -136,6 +137,9 @@ const VestingDetailsHeader: FC<VestingDetailsHeaderProps> = ({
                   superTokenAddress={superToken}
                   senderAddress={sender}
                   receiverAddress={receiver}
+                  TransactionButtonProps={{
+                    disabled: !isClaimEnabled,
+                  }}
                 />
               )}
 
@@ -193,7 +197,7 @@ const VestingDetailsHeader: FC<VestingDetailsHeaderProps> = ({
             <Link
               href={`/wrap?downgrade&token=${superToken}&network=${network.slugName}`}
             >
-              <Button variant="contained" color="primary">
+              <Button variant="outlined" color="primary">
                 Unwrap
               </Button>
             </Link>
