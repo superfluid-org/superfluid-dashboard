@@ -79,7 +79,7 @@ export const ClaimVestingScheduleTransactionButton: FC<{
             <TransactionButton
               {...RestTxButtonProps}
               dataCy={"delete-schedule-button"}
-              disabled={isClaimEnabled}
+              disabled={!isClaimEnabled}
               loading={isBeingClaimed}
               ButtonProps={{
                 color: "primary",
