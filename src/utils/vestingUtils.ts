@@ -191,9 +191,9 @@ export function mapVestingExpectedDataPoints(
 export function calculateVestingScheduleAllocated(
   vestingSchedule: VestingSchedule
 ): BigNumber {
-  const { cliffAmount, cliffAndFlowDate, flowRate, endDate } = vestingSchedule;
+  const { cliffAmount, cliffAndFlowDate, flowRate, endDate, remainderAmount } = vestingSchedule;
   const secondsVesting = endDate - cliffAndFlowDate;
-  return BigNumber.from(secondsVesting).mul(flowRate).add(cliffAmount);
+  return BigNumber.from(secondsVesting).mul(flowRate).add(cliffAmount).add(remainderAmount);
 }
 
 export function calculateVestingSchedulesAllocated(
@@ -219,6 +219,7 @@ export function vestingScheduleToTokenBalance(
     earlyEndCompensation,
     failedAt,
     deletedAt,
+    remainderAmount
   } = vestingSchedule;
 
   if (failedAt) return null;
@@ -229,6 +230,7 @@ export function vestingScheduleToTokenBalance(
     const balance = BigNumber.from(secondsStreamed)
       .mul(flowRate)
       .add(cliffAmount)
+      .add(remainderAmount)
       .add(didEarlyEndCompensationFail ? "0" : earlyEndCompensation ?? "0")
       .toString();
 

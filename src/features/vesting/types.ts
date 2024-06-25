@@ -124,7 +124,7 @@ export const vestingStatuses = {
     isError: true,
     isDeleted: false,
   },
-} as const satisfies Record<string, VestingStatus>; 
+} as const satisfies Record<string, VestingStatus>;
 
 export interface VestingSchedule {
   id: string;
@@ -147,7 +147,8 @@ export interface VestingSchedule {
   didEarlyEndCompensationFail?: boolean;
   earlyEndCompensation?: string;
   status: VestingStatus;
-  claimValidityDate?: number;
+  claimValidityDate: number;
+  remainderAmount: string;
 }
 
 export type SubgraphVestingSchedule_v1 = NonNullable<
@@ -160,7 +161,10 @@ export type SubgraphVestingSchedule_v2 = NonNullable<
 
 export const mapSubgraphVestingSchedule = (
   vestingSchedule:
-    | (SubgraphVestingSchedule_v1 & { claimValidityDate?: number })
+    | (SubgraphVestingSchedule_v1 & {
+        claimValidityDate?: number;
+        remainderAmount?: string;
+      })
     | SubgraphVestingSchedule_v2
 ): VestingSchedule => {
   const mappedVestingSchedule = {
@@ -190,7 +194,10 @@ export const mapSubgraphVestingSchedule = (
     earlyEndCompensation: vestingSchedule.earlyEndCompensation,
     claimValidityDate: vestingSchedule.claimValidityDate
       ? Number(vestingSchedule.claimValidityDate)
-      : undefined,
+      : 0,
+    remainderAmount: vestingSchedule.remainderAmount
+      ? vestingSchedule.remainderAmount
+      : "0",
   };
   return {
     ...mappedVestingSchedule,
@@ -243,7 +250,7 @@ const getVestingStatus = (vestingSchedule: Omit<VestingSchedule, "status">) => {
   }
 
   if (claimValidityDate) {
-    if (nowUnix > claimValidityDate) { 
+    if (nowUnix > claimValidityDate) {
       return vestingStatuses.ClaimExpired;
     }
 

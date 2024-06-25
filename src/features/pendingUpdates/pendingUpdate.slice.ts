@@ -305,6 +305,38 @@ export const pendingUpdateSlice = createSlice({
       }
     );
     builder.addMatcher(
+      rpcApi.endpoints.createVestingScheduleFromAmountAndDuration.matchFulfilled,
+      (state, action) => {
+        const { chainId, hash: transactionHash } = action.payload;
+        const {
+          senderAddress,
+          superTokenAddress,
+          receiverAddress,
+          startDateTimestamp,
+          cliffTransferAmountWei,
+          totalDurationInSeconds,
+        } = action.meta.arg.originalArgs;
+        const endDateTimestamp = startDateTimestamp + totalDurationInSeconds;
+        const pendingUpdate: PendingVestingSchedule = {
+          chainId,
+          transactionHash,
+          senderAddress,
+          receiverAddress,
+          id: transactionHash,
+          superTokenAddress,
+          pendingType: "VestingScheduleCreate",
+          timestamp: dateNowSeconds(),
+          cliffDateTimestamp: 0, // TODO
+          cliffTransferAmountWei,
+          startDateTimestamp,
+          endDateTimestamp,
+          flowRateWei: "0", // TODO
+          relevantSubgraph: "Vesting",
+        };
+        pendingUpdateAdapter.addOne(state, pendingUpdate);
+      }
+    );
+    builder.addMatcher(
       rpcApi.endpoints.deleteVestingSchedule.matchFulfilled,
       (state, action) => {
         const { chainId, hash: transactionHash } = action.payload;

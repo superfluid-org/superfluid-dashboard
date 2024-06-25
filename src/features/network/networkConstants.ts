@@ -67,7 +67,7 @@ export const vestingContractAddresses_v1 = {
 } as const;
 
 export const vestingContractAddresses_v2 = {
-  optimismSepolia: "0x2cf83669E14D74A4978034b1CF9573a8C10dd0CE",
+  optimismSepolia: "0xCC613ef89a8A1F311957c19D4cDF5842173357CB",
 } as const;
 
 export const vestingSubgraphUrls = {

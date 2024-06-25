@@ -13,6 +13,7 @@ import {
 import { calculateAdditionalDataFromValidVestingForm } from "../calculateAdditionalDataFromValidVestingForm";
 import { ValidVestingForm } from "../CreateVestingFormProvider";
 import { CreateVestingCardView } from "../CreateVestingSection";
+import { parseEtherOrZero } from "../../../utils/tokenUtils";
 
 interface Props {
   setView: (value: CreateVestingCardView) => void;
@@ -25,7 +26,7 @@ export const CreateVestingTransactionButton: FC<Props> = ({
 }) => {
   const { txAnalytics } = useAnalytics();
   const [createVestingSchedule, createVestingScheduleResult] =
-    rpcApi.useCreateVestingScheduleMutation();
+    rpcApi.useCreateVestingScheduleFromAmountAndDurationMutation();
 
   const { formState, handleSubmit } = useFormContext<ValidVestingForm>();
   const isDisabled = !formState.isValid || formState.isValidating;
@@ -76,12 +77,13 @@ export const CreateVestingTransactionButton: FC<Props> = ({
                     senderAddress: await signer.getAddress(),
                     receiverAddress,
                     startDateTimestamp,
-                    cliffDateTimestamp,
-                    endDateTimestamp,
-                    flowRateWei: flowRate.toString(),
+                    totalAmountWei: parseEtherOrZero(validData.data.totalAmountEther).toString(),
+                    totalDurationInSeconds: Math.round(validData.data.vestingPeriod.numerator * validData.data.vestingPeriod.denominator),
+                    cliffPeriodInSeconds: validData.data.cliffEnabled ? Math.round(validData.data.cliffPeriod.numerator! * validData.data.cliffPeriod.denominator) : 0,
                     cliffTransferAmountWei: cliffAmount.toString(),
                     claimEnabled: !!claimEnabled
                   };
+
                   createVestingSchedule({
                     ...primaryArgs,
                     signer,

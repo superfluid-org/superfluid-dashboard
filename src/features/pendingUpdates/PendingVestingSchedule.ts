@@ -82,6 +82,8 @@ export const mapPendingToVestingSchedule = (
     didEarlyEndCompensationFail: false,
     earlyEndCompensation: "0",
     failedAt: undefined,
-    status: vestingStatuses.ScheduledStart
+    status: vestingStatuses.ScheduledStart,
+    claimValidityDate: 0,
+    remainderAmount: "0",
   };
 };

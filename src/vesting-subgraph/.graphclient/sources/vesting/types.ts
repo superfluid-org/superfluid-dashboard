@@ -702,7 +702,6 @@ export type Task_orderBy =
   | 'vestingSchedule__receiver'
   | 'vestingSchedule__startDate'
   | 'vestingSchedule__endDate'
-  | 'vestingSchedule__claimValidityDate'
   | 'vestingSchedule__cliffDate'
   | 'vestingSchedule__cliffAndFlowDate'
   | 'vestingSchedule__cliffAmount'
@@ -714,7 +713,9 @@ export type Task_orderBy =
   | 'vestingSchedule__deletedAt'
   | 'vestingSchedule__failedAt'
   | 'vestingSchedule__cliffAndFlowExecutedAt'
-  | 'vestingSchedule__endExecutedAt';
+  | 'vestingSchedule__endExecutedAt'
+  | 'vestingSchedule__claimValidityDate'
+  | 'vestingSchedule__remainderAmount';
 
 export type TokenSenderReceiverCursor = {
   id: Scalars['String'];
@@ -824,7 +825,6 @@ export type TokenSenderReceiverCursor_orderBy =
   | 'currentVestingSchedule__receiver'
   | 'currentVestingSchedule__startDate'
   | 'currentVestingSchedule__endDate'
-  | 'currentVestingSchedule__claimValidityDate'
   | 'currentVestingSchedule__cliffDate'
   | 'currentVestingSchedule__cliffAndFlowDate'
   | 'currentVestingSchedule__cliffAmount'
@@ -837,6 +837,8 @@ export type TokenSenderReceiverCursor_orderBy =
   | 'currentVestingSchedule__failedAt'
   | 'currentVestingSchedule__cliffAndFlowExecutedAt'
   | 'currentVestingSchedule__endExecutedAt'
+  | 'currentVestingSchedule__claimValidityDate'
+  | 'currentVestingSchedule__remainderAmount'
   | 'currentCliffAndFlowTask'
   | 'currentCliffAndFlowTask__id'
   | 'currentCliffAndFlowTask__type'
@@ -1431,7 +1433,6 @@ export type VestingSchedule = {
   receiver: Scalars['Bytes'];
   startDate: Scalars['BigInt'];
   endDate: Scalars['BigInt'];
-  claimValidityDate: Scalars['BigInt'];
   cliffDate?: Maybe<Scalars['BigInt']>;
   cliffAndFlowDate: Scalars['BigInt'];
   cliffAmount: Scalars['BigInt'];
@@ -1446,6 +1447,8 @@ export type VestingSchedule = {
   endExecutedAt?: Maybe<Scalars['BigInt']>;
   tasks: Array<Task>;
   events: Array<Event>;
+  claimValidityDate: Scalars['BigInt'];
+  remainderAmount: Scalars['BigInt'];
 };
 
 
@@ -1484,11 +1487,12 @@ export type VestingScheduleCreatedEvent = Event & {
   sender: Scalars['Bytes'];
   receiver: Scalars['Bytes'];
   startDate: Scalars['BigInt'];
-  claimValidityDate: Scalars['BigInt'];
   cliffDate: Scalars['BigInt'];
   flowRate: Scalars['BigInt'];
   endDate: Scalars['BigInt'];
   cliffAmount: Scalars['BigInt'];
+  claimValidityDate: Scalars['BigInt'];
+  remainderAmount: Scalars['BigInt'];
 };
 
 export type VestingScheduleCreatedEvent_filter = {
@@ -1614,14 +1618,6 @@ export type VestingScheduleCreatedEvent_filter = {
   startDate_lte?: InputMaybe<Scalars['BigInt']>;
   startDate_in?: InputMaybe<Array<Scalars['BigInt']>>;
   startDate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  claimValidityDate?: InputMaybe<Scalars['BigInt']>;
-  claimValidityDate_not?: InputMaybe<Scalars['BigInt']>;
-  claimValidityDate_gt?: InputMaybe<Scalars['BigInt']>;
-  claimValidityDate_lt?: InputMaybe<Scalars['BigInt']>;
-  claimValidityDate_gte?: InputMaybe<Scalars['BigInt']>;
-  claimValidityDate_lte?: InputMaybe<Scalars['BigInt']>;
-  claimValidityDate_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  claimValidityDate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   cliffDate?: InputMaybe<Scalars['BigInt']>;
   cliffDate_not?: InputMaybe<Scalars['BigInt']>;
   cliffDate_gt?: InputMaybe<Scalars['BigInt']>;
@@ -1654,6 +1650,22 @@ export type VestingScheduleCreatedEvent_filter = {
   cliffAmount_lte?: InputMaybe<Scalars['BigInt']>;
   cliffAmount_in?: InputMaybe<Array<Scalars['BigInt']>>;
   cliffAmount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  claimValidityDate?: InputMaybe<Scalars['BigInt']>;
+  claimValidityDate_not?: InputMaybe<Scalars['BigInt']>;
+  claimValidityDate_gt?: InputMaybe<Scalars['BigInt']>;
+  claimValidityDate_lt?: InputMaybe<Scalars['BigInt']>;
+  claimValidityDate_gte?: InputMaybe<Scalars['BigInt']>;
+  claimValidityDate_lte?: InputMaybe<Scalars['BigInt']>;
+  claimValidityDate_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  claimValidityDate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  remainderAmount?: InputMaybe<Scalars['BigInt']>;
+  remainderAmount_not?: InputMaybe<Scalars['BigInt']>;
+  remainderAmount_gt?: InputMaybe<Scalars['BigInt']>;
+  remainderAmount_lt?: InputMaybe<Scalars['BigInt']>;
+  remainderAmount_gte?: InputMaybe<Scalars['BigInt']>;
+  remainderAmount_lte?: InputMaybe<Scalars['BigInt']>;
+  remainderAmount_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  remainderAmount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<VestingScheduleCreatedEvent_filter>>>;
@@ -1674,11 +1686,12 @@ export type VestingScheduleCreatedEvent_orderBy =
   | 'sender'
   | 'receiver'
   | 'startDate'
-  | 'claimValidityDate'
   | 'cliffDate'
   | 'flowRate'
   | 'endDate'
-  | 'cliffAmount';
+  | 'cliffAmount'
+  | 'claimValidityDate'
+  | 'remainderAmount';
 
 export type VestingScheduleDeletedEvent = Event & {
   id: Scalars['ID'];
@@ -2087,14 +2100,6 @@ export type VestingSchedule_filter = {
   endDate_lte?: InputMaybe<Scalars['BigInt']>;
   endDate_in?: InputMaybe<Array<Scalars['BigInt']>>;
   endDate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  claimValidityDate?: InputMaybe<Scalars['BigInt']>;
-  claimValidityDate_not?: InputMaybe<Scalars['BigInt']>;
-  claimValidityDate_gt?: InputMaybe<Scalars['BigInt']>;
-  claimValidityDate_lt?: InputMaybe<Scalars['BigInt']>;
-  claimValidityDate_gte?: InputMaybe<Scalars['BigInt']>;
-  claimValidityDate_lte?: InputMaybe<Scalars['BigInt']>;
-  claimValidityDate_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  claimValidityDate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   cliffDate?: InputMaybe<Scalars['BigInt']>;
   cliffDate_not?: InputMaybe<Scalars['BigInt']>;
   cliffDate_gt?: InputMaybe<Scalars['BigInt']>;
@@ -2195,6 +2200,22 @@ export type VestingSchedule_filter = {
   events_not_contains?: InputMaybe<Array<Scalars['String']>>;
   events_not_contains_nocase?: InputMaybe<Array<Scalars['String']>>;
   events_?: InputMaybe<Event_filter>;
+  claimValidityDate?: InputMaybe<Scalars['BigInt']>;
+  claimValidityDate_not?: InputMaybe<Scalars['BigInt']>;
+  claimValidityDate_gt?: InputMaybe<Scalars['BigInt']>;
+  claimValidityDate_lt?: InputMaybe<Scalars['BigInt']>;
+  claimValidityDate_gte?: InputMaybe<Scalars['BigInt']>;
+  claimValidityDate_lte?: InputMaybe<Scalars['BigInt']>;
+  claimValidityDate_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  claimValidityDate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  remainderAmount?: InputMaybe<Scalars['BigInt']>;
+  remainderAmount_not?: InputMaybe<Scalars['BigInt']>;
+  remainderAmount_gt?: InputMaybe<Scalars['BigInt']>;
+  remainderAmount_lt?: InputMaybe<Scalars['BigInt']>;
+  remainderAmount_gte?: InputMaybe<Scalars['BigInt']>;
+  remainderAmount_lte?: InputMaybe<Scalars['BigInt']>;
+  remainderAmount_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  remainderAmount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<VestingSchedule_filter>>>;
@@ -2210,7 +2231,6 @@ export type VestingSchedule_orderBy =
   | 'receiver'
   | 'startDate'
   | 'endDate'
-  | 'claimValidityDate'
   | 'cliffDate'
   | 'cliffAndFlowDate'
   | 'cliffAmount'
@@ -2224,7 +2244,9 @@ export type VestingSchedule_orderBy =
   | 'cliffAndFlowExecutedAt'
   | 'endExecutedAt'
   | 'tasks'
-  | 'events';
+  | 'events'
+  | 'claimValidityDate'
+  | 'remainderAmount';
 
 export type _Block_ = {
   /** The hash of the block */

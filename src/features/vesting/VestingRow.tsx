@@ -51,6 +51,7 @@ const VestingRow: FC<VestingRowProps> = ({
     startDate,
     pendingCreate,
     cliffAndFlowDate,
+    remainderAmount
   } = vestingSchedule;
 
   const theme = useTheme();
@@ -88,8 +89,9 @@ const VestingRow: FC<VestingRowProps> = ({
     return BigNumber.from(endDate - cliffAndFlowDate)
       .mul(BigNumber.from(flowRate))
       .add(BigNumber.from(cliffAmount))
+      .add(BigNumber.from(remainderAmount))
       .toString();
-  }, [flowRate, endDate, cliffAndFlowDate, cliffAmount]);
+  }, [flowRate, endDate, cliffAndFlowDate, cliffAmount, remainderAmount]);
 
   const isSender = visibleAddress?.toLowerCase() === sender.toLowerCase()
   const isReceiver = visibleAddress?.toLowerCase() === receiver.toLowerCase()

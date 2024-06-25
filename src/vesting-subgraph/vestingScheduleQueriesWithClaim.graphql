@@ -2,6 +2,7 @@ query getVestingScheduleWithClaim($id: ID!) {
   vestingSchedule(id: $id) {
     ...VestingSchedulePart
     claimValidityDate
+    remainderAmount
   }
 }
 
@@ -18,5 +19,6 @@ query getVestingSchedulesWithClaim(
   ) {
     ...VestingSchedulePart
     claimValidityDate
+    remainderAmount
   }
 }
