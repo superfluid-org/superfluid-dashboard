@@ -2,7 +2,7 @@ sources:
   - name: autowrap
     handler:
       graphql:
-        endpoint: '{context.url:https://api.thegraph.com/subgraphs/name/superfluid-finance/auto-wrap-v1-polygon-mainnet}'
+        endpoint: '{context.url:https://subgraph-endpoints.superfluid.dev/optimism-mainnet/auto-wrap}'
         retry: 5
 documents:
   - './*.graphql'

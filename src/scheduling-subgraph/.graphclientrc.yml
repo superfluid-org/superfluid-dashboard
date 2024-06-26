@@ -2,7 +2,7 @@ sources:
   - name: scheduling
     handler:
       graphql:
-        endpoint: '{context.url:https://api.thegraph.com/subgraphs/name/superfluid-finance/scheduling-v1-polygon-mainnet}'
+        endpoint: '{context.url:https://subgraph-endpoints.superfluid.dev/optimism-mainnet/flow-scheduler}'
         retry: 5
 documents:
   - './*.graphql'

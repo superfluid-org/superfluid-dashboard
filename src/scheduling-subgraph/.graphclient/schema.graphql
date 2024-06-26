@@ -47,6 +47,7 @@ type CreateFlowExecutedEvent implements Event {
   timestamp: BigInt!
   transactionHash: Bytes!
   gasPrice: BigInt!
+  gasUsed: BigInt!
   superToken: Bytes!
   sender: Bytes!
   receiver: Bytes!
@@ -142,6 +143,14 @@ input CreateFlowExecutedEvent_filter {
   gasPrice_lte: BigInt
   gasPrice_in: [BigInt!]
   gasPrice_not_in: [BigInt!]
+  gasUsed: BigInt
+  gasUsed_not: BigInt
+  gasUsed_gt: BigInt
+  gasUsed_lt: BigInt
+  gasUsed_gte: BigInt
+  gasUsed_lte: BigInt
+  gasUsed_in: [BigInt!]
+  gasUsed_not_in: [BigInt!]
   superToken: Bytes
   superToken_not: Bytes
   superToken_gt: Bytes
@@ -230,6 +239,7 @@ enum CreateFlowExecutedEvent_orderBy {
   timestamp
   transactionHash
   gasPrice
+  gasUsed
   superToken
   sender
   receiver
@@ -409,6 +419,7 @@ type DeleteFlowExecutedEvent implements Event {
   timestamp: BigInt!
   transactionHash: Bytes!
   gasPrice: BigInt!
+  gasUsed: BigInt!
   superToken: Bytes!
   sender: Bytes!
   receiver: Bytes!
@@ -501,6 +512,14 @@ input DeleteFlowExecutedEvent_filter {
   gasPrice_lte: BigInt
   gasPrice_in: [BigInt!]
   gasPrice_not_in: [BigInt!]
+  gasUsed: BigInt
+  gasUsed_not: BigInt
+  gasUsed_gt: BigInt
+  gasUsed_lt: BigInt
+  gasUsed_gte: BigInt
+  gasUsed_lte: BigInt
+  gasUsed_in: [BigInt!]
+  gasUsed_not_in: [BigInt!]
   superToken: Bytes
   superToken_not: Bytes
   superToken_gt: Bytes
@@ -565,6 +584,7 @@ enum DeleteFlowExecutedEvent_orderBy {
   timestamp
   transactionHash
   gasPrice
+  gasUsed
   superToken
   sender
   receiver

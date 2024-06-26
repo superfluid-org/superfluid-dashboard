@@ -983,6 +983,7 @@ type VestingCliffAndFlowExecutedEvent implements Event {
   timestamp: BigInt!
   transactionHash: Bytes!
   gasPrice: BigInt!
+  gasUsed: BigInt!
   superToken: Bytes!
   sender: Bytes!
   receiver: Bytes!
@@ -1077,6 +1078,14 @@ input VestingCliffAndFlowExecutedEvent_filter {
   gasPrice_lte: BigInt
   gasPrice_in: [BigInt!]
   gasPrice_not_in: [BigInt!]
+  gasUsed: BigInt
+  gasUsed_not: BigInt
+  gasUsed_gt: BigInt
+  gasUsed_lt: BigInt
+  gasUsed_gte: BigInt
+  gasUsed_lte: BigInt
+  gasUsed_in: [BigInt!]
+  gasUsed_not_in: [BigInt!]
   superToken: Bytes
   superToken_not: Bytes
   superToken_gt: Bytes
@@ -1155,6 +1164,7 @@ enum VestingCliffAndFlowExecutedEvent_orderBy {
   timestamp
   transactionHash
   gasPrice
+  gasUsed
   superToken
   sender
   receiver
@@ -1178,6 +1188,7 @@ type VestingEndExecutedEvent implements Event {
   timestamp: BigInt!
   transactionHash: Bytes!
   gasPrice: BigInt!
+  gasUsed: BigInt!
   superToken: Bytes!
   sender: Bytes!
   receiver: Bytes!
@@ -1271,6 +1282,14 @@ input VestingEndExecutedEvent_filter {
   gasPrice_lte: BigInt
   gasPrice_in: [BigInt!]
   gasPrice_not_in: [BigInt!]
+  gasUsed: BigInt
+  gasUsed_not: BigInt
+  gasUsed_gt: BigInt
+  gasUsed_lt: BigInt
+  gasUsed_gte: BigInt
+  gasUsed_lte: BigInt
+  gasUsed_in: [BigInt!]
+  gasUsed_not_in: [BigInt!]
   superToken: Bytes
   superToken_not: Bytes
   superToken_gt: Bytes
@@ -1337,6 +1356,7 @@ enum VestingEndExecutedEvent_orderBy {
   timestamp
   transactionHash
   gasPrice
+  gasUsed
   superToken
   sender
   receiver
@@ -1359,6 +1379,7 @@ type VestingEndFailedEvent implements Event {
   timestamp: BigInt!
   transactionHash: Bytes!
   gasPrice: BigInt!
+  gasUsed: BigInt!
   superToken: Bytes!
   sender: Bytes!
   receiver: Bytes!
@@ -1450,6 +1471,14 @@ input VestingEndFailedEvent_filter {
   gasPrice_lte: BigInt
   gasPrice_in: [BigInt!]
   gasPrice_not_in: [BigInt!]
+  gasUsed: BigInt
+  gasUsed_not: BigInt
+  gasUsed_gt: BigInt
+  gasUsed_lt: BigInt
+  gasUsed_gte: BigInt
+  gasUsed_lte: BigInt
+  gasUsed_in: [BigInt!]
+  gasUsed_not_in: [BigInt!]
   superToken: Bytes
   superToken_not: Bytes
   superToken_gt: Bytes
@@ -1504,6 +1533,7 @@ enum VestingEndFailedEvent_orderBy {
   timestamp
   transactionHash
   gasPrice
+  gasUsed
   superToken
   sender
   receiver

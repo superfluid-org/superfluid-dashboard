@@ -51,6 +51,7 @@ export type CreateFlowExecutedEvent = Event & {
   timestamp: Scalars['BigInt'];
   transactionHash: Scalars['Bytes'];
   gasPrice: Scalars['BigInt'];
+  gasUsed: Scalars['BigInt'];
   superToken: Scalars['Bytes'];
   sender: Scalars['Bytes'];
   receiver: Scalars['Bytes'];
@@ -146,6 +147,14 @@ export type CreateFlowExecutedEvent_filter = {
   gasPrice_lte?: InputMaybe<Scalars['BigInt']>;
   gasPrice_in?: InputMaybe<Array<Scalars['BigInt']>>;
   gasPrice_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  gasUsed?: InputMaybe<Scalars['BigInt']>;
+  gasUsed_not?: InputMaybe<Scalars['BigInt']>;
+  gasUsed_gt?: InputMaybe<Scalars['BigInt']>;
+  gasUsed_lt?: InputMaybe<Scalars['BigInt']>;
+  gasUsed_gte?: InputMaybe<Scalars['BigInt']>;
+  gasUsed_lte?: InputMaybe<Scalars['BigInt']>;
+  gasUsed_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  gasUsed_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   superToken?: InputMaybe<Scalars['Bytes']>;
   superToken_not?: InputMaybe<Scalars['Bytes']>;
   superToken_gt?: InputMaybe<Scalars['Bytes']>;
@@ -234,6 +243,7 @@ export type CreateFlowExecutedEvent_orderBy =
   | 'timestamp'
   | 'transactionHash'
   | 'gasPrice'
+  | 'gasUsed'
   | 'superToken'
   | 'sender'
   | 'receiver'
@@ -411,6 +421,7 @@ export type DeleteFlowExecutedEvent = Event & {
   timestamp: Scalars['BigInt'];
   transactionHash: Scalars['Bytes'];
   gasPrice: Scalars['BigInt'];
+  gasUsed: Scalars['BigInt'];
   superToken: Scalars['Bytes'];
   sender: Scalars['Bytes'];
   receiver: Scalars['Bytes'];
@@ -503,6 +514,14 @@ export type DeleteFlowExecutedEvent_filter = {
   gasPrice_lte?: InputMaybe<Scalars['BigInt']>;
   gasPrice_in?: InputMaybe<Array<Scalars['BigInt']>>;
   gasPrice_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  gasUsed?: InputMaybe<Scalars['BigInt']>;
+  gasUsed_not?: InputMaybe<Scalars['BigInt']>;
+  gasUsed_gt?: InputMaybe<Scalars['BigInt']>;
+  gasUsed_lt?: InputMaybe<Scalars['BigInt']>;
+  gasUsed_gte?: InputMaybe<Scalars['BigInt']>;
+  gasUsed_lte?: InputMaybe<Scalars['BigInt']>;
+  gasUsed_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  gasUsed_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   superToken?: InputMaybe<Scalars['Bytes']>;
   superToken_not?: InputMaybe<Scalars['Bytes']>;
   superToken_gt?: InputMaybe<Scalars['Bytes']>;
@@ -567,6 +586,7 @@ export type DeleteFlowExecutedEvent_orderBy =
   | 'timestamp'
   | 'transactionHash'
   | 'gasPrice'
+  | 'gasUsed'
   | 'superToken'
   | 'sender'
   | 'receiver'
