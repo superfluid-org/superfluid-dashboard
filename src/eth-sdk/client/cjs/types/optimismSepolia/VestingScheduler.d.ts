@@ -3,6 +3,29 @@ import type { FunctionFragment, Result, EventFragment } from "@ethersproject/abi
 import type { Listener, Provider } from "@ethersproject/providers";
 import type { TypedEventFilter, TypedEvent, TypedListener, OnEvent, PromiseOrValue } from "../common";
 export declare namespace IVestingSchedulerV2 {
+    type VestingScheduleStruct = {
+        cliffAndFlowDate: PromiseOrValue<BigNumberish>;
+        endDate: PromiseOrValue<BigNumberish>;
+        flowRate: PromiseOrValue<BigNumberish>;
+        cliffAmount: PromiseOrValue<BigNumberish>;
+        remainderAmount: PromiseOrValue<BigNumberish>;
+        claimValidityDate: PromiseOrValue<BigNumberish>;
+    };
+    type VestingScheduleStructOutput = [
+        number,
+        number,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        number
+    ] & {
+        cliffAndFlowDate: number;
+        endDate: number;
+        flowRate: BigNumber;
+        cliffAmount: BigNumber;
+        remainderAmount: BigNumber;
+        claimValidityDate: number;
+    };
     type ScheduleCreationParamsStruct = {
         superToken: PromiseOrValue<string>;
         receiver: PromiseOrValue<string>;
@@ -35,28 +58,27 @@ export declare namespace IVestingSchedulerV2 {
         endDate: number;
         remainderAmount: BigNumber;
     };
-    type VestingScheduleStruct = {
-        cliffAndFlowDate: PromiseOrValue<BigNumberish>;
-        endDate: PromiseOrValue<BigNumberish>;
-        flowRate: PromiseOrValue<BigNumberish>;
-        cliffAmount: PromiseOrValue<BigNumberish>;
-        remainderAmount: PromiseOrValue<BigNumberish>;
-        claimValidityDate: PromiseOrValue<BigNumberish>;
+}
+export declare namespace VestingSchedulerV2 {
+    type ScheduleAggregateStruct = {
+        superToken: PromiseOrValue<string>;
+        sender: PromiseOrValue<string>;
+        receiver: PromiseOrValue<string>;
+        id: PromiseOrValue<BytesLike>;
+        schedule: IVestingSchedulerV2.VestingScheduleStruct;
     };
-    type VestingScheduleStructOutput = [
-        number,
-        number,
-        BigNumber,
-        BigNumber,
-        BigNumber,
-        number
+    type ScheduleAggregateStructOutput = [
+        string,
+        string,
+        string,
+        string,
+        IVestingSchedulerV2.VestingScheduleStructOutput
     ] & {
-        cliffAndFlowDate: number;
-        endDate: number;
-        flowRate: BigNumber;
-        cliffAmount: BigNumber;
-        remainderAmount: BigNumber;
-        claimValidityDate: number;
+        superToken: string;
+        sender: string;
+        receiver: string;
+        id: string;
+        schedule: IVestingSchedulerV2.VestingScheduleStructOutput;
     };
 }
 export interface VestingSchedulerInterface extends utils.Interface {
@@ -64,6 +86,8 @@ export interface VestingSchedulerInterface extends utils.Interface {
         "END_DATE_VALID_BEFORE()": FunctionFragment;
         "MIN_VESTING_DURATION()": FunctionFragment;
         "START_DATE_VALID_AFTER()": FunctionFragment;
+        "VERSION()": FunctionFragment;
+        "_getVestingScheduleAggregate(address,address,address)": FunctionFragment;
         "afterAgreementCreated(address,address,bytes32,bytes,bytes,bytes)": FunctionFragment;
         "afterAgreementTerminated(address,address,bytes32,bytes,bytes,bytes)": FunctionFragment;
         "afterAgreementUpdated(address,address,bytes32,bytes,bytes,bytes)": FunctionFragment;
@@ -95,10 +119,16 @@ export interface VestingSchedulerInterface extends utils.Interface {
         "updateVestingSchedule(address,address,uint32,bytes)": FunctionFragment;
         "vestingSchedules(bytes32)": FunctionFragment;
     };
-    getFunction(nameOrSignatureOrTopic: "END_DATE_VALID_BEFORE" | "MIN_VESTING_DURATION" | "START_DATE_VALID_AFTER" | "afterAgreementCreated" | "afterAgreementTerminated" | "afterAgreementUpdated" | "beforeAgreementCreated" | "beforeAgreementTerminated" | "beforeAgreementUpdated" | "cfaV1" | "createAndExecuteVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,bytes)" | "createAndExecuteVestingScheduleFromAmountAndDuration(address,address,uint256,uint32)" | "createClaimableVestingSchedule(address,address,uint32,uint32,uint32,int96,uint256,uint32,bytes)" | "createClaimableVestingSchedule(address,address,uint32,uint32,uint32,int96,uint256,uint32)" | "createClaimableVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32)" | "createClaimableVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32)" | "createClaimableVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32)" | "createClaimableVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32,bytes)" | "createVestingSchedule(address,address,uint32,uint32,int96,uint256,uint32,bytes)" | "createVestingSchedule(address,address,uint32,uint32,int96,uint256,uint32)" | "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32)" | "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,bytes)" | "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32)" | "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32)" | "deleteVestingSchedule" | "executeCliffAndFlow" | "executeEndVesting" | "getCreateVestingScheduleParamsFromAmountAndDuration" | "getMaximumNeededTokenAllowance(address,address,address)" | "getMaximumNeededTokenAllowance((uint32,uint32,int96,uint256,uint96,uint32))" | "getVestingSchedule" | "updateVestingSchedule" | "vestingSchedules"): FunctionFragment;
+    getFunction(nameOrSignatureOrTopic: "END_DATE_VALID_BEFORE" | "MIN_VESTING_DURATION" | "START_DATE_VALID_AFTER" | "VERSION" | "_getVestingScheduleAggregate" | "afterAgreementCreated" | "afterAgreementTerminated" | "afterAgreementUpdated" | "beforeAgreementCreated" | "beforeAgreementTerminated" | "beforeAgreementUpdated" | "cfaV1" | "createAndExecuteVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,bytes)" | "createAndExecuteVestingScheduleFromAmountAndDuration(address,address,uint256,uint32)" | "createClaimableVestingSchedule(address,address,uint32,uint32,uint32,int96,uint256,uint32,bytes)" | "createClaimableVestingSchedule(address,address,uint32,uint32,uint32,int96,uint256,uint32)" | "createClaimableVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32)" | "createClaimableVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32)" | "createClaimableVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32)" | "createClaimableVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32,bytes)" | "createVestingSchedule(address,address,uint32,uint32,int96,uint256,uint32,bytes)" | "createVestingSchedule(address,address,uint32,uint32,int96,uint256,uint32)" | "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32)" | "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,bytes)" | "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32)" | "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32)" | "deleteVestingSchedule" | "executeCliffAndFlow" | "executeEndVesting" | "getCreateVestingScheduleParamsFromAmountAndDuration" | "getMaximumNeededTokenAllowance(address,address,address)" | "getMaximumNeededTokenAllowance((uint32,uint32,int96,uint256,uint96,uint32))" | "getVestingSchedule" | "updateVestingSchedule" | "vestingSchedules"): FunctionFragment;
     encodeFunctionData(functionFragment: "END_DATE_VALID_BEFORE", values?: undefined): string;
     encodeFunctionData(functionFragment: "MIN_VESTING_DURATION", values?: undefined): string;
     encodeFunctionData(functionFragment: "START_DATE_VALID_AFTER", values?: undefined): string;
+    encodeFunctionData(functionFragment: "VERSION", values?: undefined): string;
+    encodeFunctionData(functionFragment: "_getVestingScheduleAggregate", values: [
+        PromiseOrValue<string>,
+        PromiseOrValue<string>,
+        PromiseOrValue<string>
+    ]): string;
     encodeFunctionData(functionFragment: "afterAgreementCreated", values: [
         PromiseOrValue<string>,
         PromiseOrValue<string>,
@@ -307,6 +337,8 @@ export interface VestingSchedulerInterface extends utils.Interface {
     decodeFunctionResult(functionFragment: "END_DATE_VALID_BEFORE", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "MIN_VESTING_DURATION", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "START_DATE_VALID_AFTER", data: BytesLike): Result;
+    decodeFunctionResult(functionFragment: "VERSION", data: BytesLike): Result;
+    decodeFunctionResult(functionFragment: "_getVestingScheduleAggregate", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "afterAgreementCreated", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "afterAgreementTerminated", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "afterAgreementUpdated", data: BytesLike): Result;
@@ -342,9 +374,9 @@ export interface VestingSchedulerInterface extends utils.Interface {
         "VestingCliffAndFlowExecuted(address,address,address,uint32,int96,uint256,uint256)": EventFragment;
         "VestingEndExecuted(address,address,address,uint32,uint256,bool)": EventFragment;
         "VestingEndFailed(address,address,address,uint32)": EventFragment;
-        "VestingScheduleCreated(address,address,address,uint32,uint32,int96,uint32,uint256,uint32,uint256)": EventFragment;
+        "VestingScheduleCreated(address,address,address,uint32,uint32,int96,uint32,uint256,uint32,uint96)": EventFragment;
         "VestingScheduleDeleted(address,address,address)": EventFragment;
-        "VestingScheduleUpdated(address,address,address,uint32,uint32)": EventFragment;
+        "VestingScheduleUpdated(address,address,address,uint32,uint32,uint96)": EventFragment;
     };
     getEvent(nameOrSignatureOrTopic: "VestingClaimed"): EventFragment;
     getEvent(nameOrSignatureOrTopic: "VestingCliffAndFlowExecuted"): EventFragment;
@@ -458,13 +490,15 @@ export interface VestingScheduleUpdatedEventObject {
     receiver: string;
     oldEndDate: number;
     endDate: number;
+    remainderAmount: BigNumber;
 }
 export type VestingScheduleUpdatedEvent = TypedEvent<[
     string,
     string,
     string,
     number,
-    number
+    number,
+    BigNumber
 ], VestingScheduleUpdatedEventObject>;
 export type VestingScheduleUpdatedEventFilter = TypedEventFilter<VestingScheduleUpdatedEvent>;
 export interface VestingScheduler extends BaseContract {
@@ -485,6 +519,8 @@ export interface VestingScheduler extends BaseContract {
         END_DATE_VALID_BEFORE(overrides?: CallOverrides): Promise<[number]>;
         MIN_VESTING_DURATION(overrides?: CallOverrides): Promise<[number]>;
         START_DATE_VALID_AFTER(overrides?: CallOverrides): Promise<[number]>;
+        VERSION(overrides?: CallOverrides): Promise<[string]>;
+        _getVestingScheduleAggregate(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, overrides?: CallOverrides): Promise<[VestingSchedulerV2.ScheduleAggregateStructOutput]>;
         afterAgreementCreated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, arg5: PromiseOrValue<BytesLike>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<ContractTransaction>;
@@ -559,7 +595,7 @@ export interface VestingScheduler extends BaseContract {
         }>;
         "getMaximumNeededTokenAllowance(address,address,address)"(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, overrides?: CallOverrides): Promise<[BigNumber]>;
         "getMaximumNeededTokenAllowance((uint32,uint32,int96,uint256,uint96,uint32))"(schedule: IVestingSchedulerV2.VestingScheduleStruct, overrides?: CallOverrides): Promise<[BigNumber]>;
-        getVestingSchedule(supertoken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, overrides?: CallOverrides): Promise<[IVestingSchedulerV2.VestingScheduleStructOutput]>;
+        getVestingSchedule(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, overrides?: CallOverrides): Promise<[IVestingSchedulerV2.VestingScheduleStructOutput]>;
         updateVestingSchedule(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, endDate: PromiseOrValue<BigNumberish>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<ContractTransaction>;
@@ -582,6 +618,8 @@ export interface VestingScheduler extends BaseContract {
     END_DATE_VALID_BEFORE(overrides?: CallOverrides): Promise<number>;
     MIN_VESTING_DURATION(overrides?: CallOverrides): Promise<number>;
     START_DATE_VALID_AFTER(overrides?: CallOverrides): Promise<number>;
+    VERSION(overrides?: CallOverrides): Promise<string>;
+    _getVestingScheduleAggregate(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, overrides?: CallOverrides): Promise<VestingSchedulerV2.ScheduleAggregateStructOutput>;
     afterAgreementCreated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, arg5: PromiseOrValue<BytesLike>, overrides?: Overrides & {
         from?: PromiseOrValue<string>;
     }): Promise<ContractTransaction>;
@@ -652,7 +690,7 @@ export interface VestingScheduler extends BaseContract {
     getCreateVestingScheduleParamsFromAmountAndDuration(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, totalAmount: PromiseOrValue<BigNumberish>, totalDuration: PromiseOrValue<BigNumberish>, cliffPeriod: PromiseOrValue<BigNumberish>, startDate: PromiseOrValue<BigNumberish>, claimPeriod: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<IVestingSchedulerV2.ScheduleCreationParamsStructOutput>;
     "getMaximumNeededTokenAllowance(address,address,address)"(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, overrides?: CallOverrides): Promise<BigNumber>;
     "getMaximumNeededTokenAllowance((uint32,uint32,int96,uint256,uint96,uint32))"(schedule: IVestingSchedulerV2.VestingScheduleStruct, overrides?: CallOverrides): Promise<BigNumber>;
-    getVestingSchedule(supertoken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, overrides?: CallOverrides): Promise<IVestingSchedulerV2.VestingScheduleStructOutput>;
+    getVestingSchedule(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, overrides?: CallOverrides): Promise<IVestingSchedulerV2.VestingScheduleStructOutput>;
     updateVestingSchedule(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, endDate: PromiseOrValue<BigNumberish>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
         from?: PromiseOrValue<string>;
     }): Promise<ContractTransaction>;
@@ -675,6 +713,8 @@ export interface VestingScheduler extends BaseContract {
         END_DATE_VALID_BEFORE(overrides?: CallOverrides): Promise<number>;
         MIN_VESTING_DURATION(overrides?: CallOverrides): Promise<number>;
         START_DATE_VALID_AFTER(overrides?: CallOverrides): Promise<number>;
+        VERSION(overrides?: CallOverrides): Promise<string>;
+        _getVestingScheduleAggregate(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, overrides?: CallOverrides): Promise<VestingSchedulerV2.ScheduleAggregateStructOutput>;
         afterAgreementCreated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, arg5: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<string>;
         afterAgreementTerminated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, arg5: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<string>;
         afterAgreementUpdated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, arg5: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<string>;
@@ -705,7 +745,7 @@ export interface VestingScheduler extends BaseContract {
         getCreateVestingScheduleParamsFromAmountAndDuration(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, totalAmount: PromiseOrValue<BigNumberish>, totalDuration: PromiseOrValue<BigNumberish>, cliffPeriod: PromiseOrValue<BigNumberish>, startDate: PromiseOrValue<BigNumberish>, claimPeriod: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<IVestingSchedulerV2.ScheduleCreationParamsStructOutput>;
         "getMaximumNeededTokenAllowance(address,address,address)"(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, overrides?: CallOverrides): Promise<BigNumber>;
         "getMaximumNeededTokenAllowance((uint32,uint32,int96,uint256,uint96,uint32))"(schedule: IVestingSchedulerV2.VestingScheduleStruct, overrides?: CallOverrides): Promise<BigNumber>;
-        getVestingSchedule(supertoken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, overrides?: CallOverrides): Promise<IVestingSchedulerV2.VestingScheduleStructOutput>;
+        getVestingSchedule(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, overrides?: CallOverrides): Promise<IVestingSchedulerV2.VestingScheduleStructOutput>;
         updateVestingSchedule(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, endDate: PromiseOrValue<BigNumberish>, ctx: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<string>;
         vestingSchedules(arg0: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<[
             number,
@@ -732,17 +772,19 @@ export interface VestingScheduler extends BaseContract {
         VestingEndExecuted(superToken?: PromiseOrValue<string> | null, sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, endDate?: null, earlyEndCompensation?: null, didCompensationFail?: null): VestingEndExecutedEventFilter;
         "VestingEndFailed(address,address,address,uint32)"(superToken?: PromiseOrValue<string> | null, sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, endDate?: null): VestingEndFailedEventFilter;
         VestingEndFailed(superToken?: PromiseOrValue<string> | null, sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, endDate?: null): VestingEndFailedEventFilter;
-        "VestingScheduleCreated(address,address,address,uint32,uint32,int96,uint32,uint256,uint32,uint256)"(superToken?: PromiseOrValue<string> | null, sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, startDate?: null, cliffDate?: null, flowRate?: null, endDate?: null, cliffAmount?: null, claimValidityDate?: null, remainderAmount?: null): VestingScheduleCreatedEventFilter;
+        "VestingScheduleCreated(address,address,address,uint32,uint32,int96,uint32,uint256,uint32,uint96)"(superToken?: PromiseOrValue<string> | null, sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, startDate?: null, cliffDate?: null, flowRate?: null, endDate?: null, cliffAmount?: null, claimValidityDate?: null, remainderAmount?: null): VestingScheduleCreatedEventFilter;
         VestingScheduleCreated(superToken?: PromiseOrValue<string> | null, sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, startDate?: null, cliffDate?: null, flowRate?: null, endDate?: null, cliffAmount?: null, claimValidityDate?: null, remainderAmount?: null): VestingScheduleCreatedEventFilter;
         "VestingScheduleDeleted(address,address,address)"(superToken?: PromiseOrValue<string> | null, sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null): VestingScheduleDeletedEventFilter;
         VestingScheduleDeleted(superToken?: PromiseOrValue<string> | null, sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null): VestingScheduleDeletedEventFilter;
-        "VestingScheduleUpdated(address,address,address,uint32,uint32)"(superToken?: PromiseOrValue<string> | null, sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, oldEndDate?: null, endDate?: null): VestingScheduleUpdatedEventFilter;
-        VestingScheduleUpdated(superToken?: PromiseOrValue<string> | null, sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, oldEndDate?: null, endDate?: null): VestingScheduleUpdatedEventFilter;
+        "VestingScheduleUpdated(address,address,address,uint32,uint32,uint96)"(superToken?: PromiseOrValue<string> | null, sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, oldEndDate?: null, endDate?: null, remainderAmount?: null): VestingScheduleUpdatedEventFilter;
+        VestingScheduleUpdated(superToken?: PromiseOrValue<string> | null, sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, oldEndDate?: null, endDate?: null, remainderAmount?: null): VestingScheduleUpdatedEventFilter;
     };
     estimateGas: {
         END_DATE_VALID_BEFORE(overrides?: CallOverrides): Promise<BigNumber>;
         MIN_VESTING_DURATION(overrides?: CallOverrides): Promise<BigNumber>;
         START_DATE_VALID_AFTER(overrides?: CallOverrides): Promise<BigNumber>;
+        VERSION(overrides?: CallOverrides): Promise<BigNumber>;
+        _getVestingScheduleAggregate(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, overrides?: CallOverrides): Promise<BigNumber>;
         afterAgreementCreated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, arg5: PromiseOrValue<BytesLike>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<BigNumber>;
@@ -810,7 +852,7 @@ export interface VestingScheduler extends BaseContract {
         getCreateVestingScheduleParamsFromAmountAndDuration(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, totalAmount: PromiseOrValue<BigNumberish>, totalDuration: PromiseOrValue<BigNumberish>, cliffPeriod: PromiseOrValue<BigNumberish>, startDate: PromiseOrValue<BigNumberish>, claimPeriod: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<BigNumber>;
         "getMaximumNeededTokenAllowance(address,address,address)"(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, overrides?: CallOverrides): Promise<BigNumber>;
         "getMaximumNeededTokenAllowance((uint32,uint32,int96,uint256,uint96,uint32))"(schedule: IVestingSchedulerV2.VestingScheduleStruct, overrides?: CallOverrides): Promise<BigNumber>;
-        getVestingSchedule(supertoken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, overrides?: CallOverrides): Promise<BigNumber>;
+        getVestingSchedule(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, overrides?: CallOverrides): Promise<BigNumber>;
         updateVestingSchedule(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, endDate: PromiseOrValue<BigNumberish>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<BigNumber>;
@@ -820,6 +862,8 @@ export interface VestingScheduler extends BaseContract {
         END_DATE_VALID_BEFORE(overrides?: CallOverrides): Promise<PopulatedTransaction>;
         MIN_VESTING_DURATION(overrides?: CallOverrides): Promise<PopulatedTransaction>;
         START_DATE_VALID_AFTER(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+        VERSION(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+        _getVestingScheduleAggregate(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, overrides?: CallOverrides): Promise<PopulatedTransaction>;
         afterAgreementCreated(arg0: PromiseOrValue<string>, arg1: PromiseOrValue<string>, arg2: PromiseOrValue<BytesLike>, arg3: PromiseOrValue<BytesLike>, arg4: PromiseOrValue<BytesLike>, arg5: PromiseOrValue<BytesLike>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<PopulatedTransaction>;
@@ -887,7 +931,7 @@ export interface VestingScheduler extends BaseContract {
         getCreateVestingScheduleParamsFromAmountAndDuration(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, totalAmount: PromiseOrValue<BigNumberish>, totalDuration: PromiseOrValue<BigNumberish>, cliffPeriod: PromiseOrValue<BigNumberish>, startDate: PromiseOrValue<BigNumberish>, claimPeriod: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<PopulatedTransaction>;
         "getMaximumNeededTokenAllowance(address,address,address)"(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, overrides?: CallOverrides): Promise<PopulatedTransaction>;
         "getMaximumNeededTokenAllowance((uint32,uint32,int96,uint256,uint96,uint32))"(schedule: IVestingSchedulerV2.VestingScheduleStruct, overrides?: CallOverrides): Promise<PopulatedTransaction>;
-        getVestingSchedule(supertoken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+        getVestingSchedule(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, overrides?: CallOverrides): Promise<PopulatedTransaction>;
         updateVestingSchedule(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, endDate: PromiseOrValue<BigNumberish>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<PopulatedTransaction>;

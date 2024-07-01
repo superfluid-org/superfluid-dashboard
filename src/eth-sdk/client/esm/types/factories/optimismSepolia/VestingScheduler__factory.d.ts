@@ -44,6 +44,10 @@ export declare class VestingScheduler__factory {
         readonly type: "error";
     }, {
         readonly inputs: readonly [];
+        readonly name: "ScheduleNotClaimed";
+        readonly type: "error";
+    }, {
+        readonly inputs: readonly [];
         readonly name: "ScheduleNotFlowing";
         readonly type: "error";
     }, {
@@ -228,9 +232,9 @@ export declare class VestingScheduler__factory {
             readonly type: "uint32";
         }, {
             readonly indexed: false;
-            readonly internalType: "uint256";
+            readonly internalType: "uint96";
             readonly name: "remainderAmount";
-            readonly type: "uint256";
+            readonly type: "uint96";
         }];
         readonly name: "VestingScheduleCreated";
         readonly type: "event";
@@ -281,6 +285,11 @@ export declare class VestingScheduler__factory {
             readonly internalType: "uint32";
             readonly name: "endDate";
             readonly type: "uint32";
+        }, {
+            readonly indexed: false;
+            readonly internalType: "uint96";
+            readonly name: "remainderAmount";
+            readonly type: "uint96";
         }];
         readonly name: "VestingScheduleUpdated";
         readonly type: "event";
@@ -311,6 +320,84 @@ export declare class VestingScheduler__factory {
             readonly internalType: "uint32";
             readonly name: "";
             readonly type: "uint32";
+        }];
+        readonly stateMutability: "view";
+        readonly type: "function";
+    }, {
+        readonly inputs: readonly [];
+        readonly name: "VERSION";
+        readonly outputs: readonly [{
+            readonly internalType: "string";
+            readonly name: "";
+            readonly type: "string";
+        }];
+        readonly stateMutability: "view";
+        readonly type: "function";
+    }, {
+        readonly inputs: readonly [{
+            readonly internalType: "contract ISuperToken";
+            readonly name: "superToken";
+            readonly type: "address";
+        }, {
+            readonly internalType: "address";
+            readonly name: "sender";
+            readonly type: "address";
+        }, {
+            readonly internalType: "address";
+            readonly name: "receiver";
+            readonly type: "address";
+        }];
+        readonly name: "_getVestingScheduleAggregate";
+        readonly outputs: readonly [{
+            readonly components: readonly [{
+                readonly internalType: "contract ISuperToken";
+                readonly name: "superToken";
+                readonly type: "address";
+            }, {
+                readonly internalType: "address";
+                readonly name: "sender";
+                readonly type: "address";
+            }, {
+                readonly internalType: "address";
+                readonly name: "receiver";
+                readonly type: "address";
+            }, {
+                readonly internalType: "bytes32";
+                readonly name: "id";
+                readonly type: "bytes32";
+            }, {
+                readonly components: readonly [{
+                    readonly internalType: "uint32";
+                    readonly name: "cliffAndFlowDate";
+                    readonly type: "uint32";
+                }, {
+                    readonly internalType: "uint32";
+                    readonly name: "endDate";
+                    readonly type: "uint32";
+                }, {
+                    readonly internalType: "int96";
+                    readonly name: "flowRate";
+                    readonly type: "int96";
+                }, {
+                    readonly internalType: "uint256";
+                    readonly name: "cliffAmount";
+                    readonly type: "uint256";
+                }, {
+                    readonly internalType: "uint96";
+                    readonly name: "remainderAmount";
+                    readonly type: "uint96";
+                }, {
+                    readonly internalType: "uint32";
+                    readonly name: "claimValidityDate";
+                    readonly type: "uint32";
+                }];
+                readonly internalType: "struct IVestingSchedulerV2.VestingSchedule";
+                readonly name: "schedule";
+                readonly type: "tuple";
+            }];
+            readonly internalType: "struct VestingSchedulerV2.ScheduleAggregate";
+            readonly name: "";
+            readonly type: "tuple";
         }];
         readonly stateMutability: "view";
         readonly type: "function";
@@ -1185,7 +1272,7 @@ export declare class VestingScheduler__factory {
     }, {
         readonly inputs: readonly [{
             readonly internalType: "address";
-            readonly name: "supertoken";
+            readonly name: "superToken";
             readonly type: "address";
         }, {
             readonly internalType: "address";
