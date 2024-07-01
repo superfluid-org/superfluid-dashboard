@@ -1055,6 +1055,7 @@ export type WrapExecutedEvent = Event & {
   timestamp: Scalars['BigInt'];
   transactionHash: Scalars['Bytes'];
   gasPrice: Scalars['BigInt'];
+  gasUsed: Scalars['BigInt'];
   amount: Scalars['BigInt'];
   wrapScheduleId: Scalars['Bytes'];
 };
@@ -1144,6 +1145,14 @@ export type WrapExecutedEvent_Filter = {
   gasPrice_lte?: InputMaybe<Scalars['BigInt']>;
   gasPrice_in?: InputMaybe<Array<Scalars['BigInt']>>;
   gasPrice_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  gasUsed?: InputMaybe<Scalars['BigInt']>;
+  gasUsed_not?: InputMaybe<Scalars['BigInt']>;
+  gasUsed_gt?: InputMaybe<Scalars['BigInt']>;
+  gasUsed_lt?: InputMaybe<Scalars['BigInt']>;
+  gasUsed_gte?: InputMaybe<Scalars['BigInt']>;
+  gasUsed_lte?: InputMaybe<Scalars['BigInt']>;
+  gasUsed_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  gasUsed_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   amount?: InputMaybe<Scalars['BigInt']>;
   amount_not?: InputMaybe<Scalars['BigInt']>;
   amount_gt?: InputMaybe<Scalars['BigInt']>;
@@ -1178,6 +1187,7 @@ export type WrapExecutedEvent_OrderBy =
   | 'timestamp'
   | 'transactionHash'
   | 'gasPrice'
+  | 'gasUsed'
   | 'amount'
   | 'wrapScheduleId';
 
@@ -2154,6 +2164,7 @@ export type WrapExecutedEventResolvers<ContextType = MeshContext, ParentType ext
   timestamp?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   transactionHash?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   gasPrice?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  gasUsed?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   amount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   wrapScheduleId?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -2309,7 +2320,7 @@ const autowrapTransforms = [];
 const additionalTypeDefs = [] as any[];
 const autowrapHandler = new GraphqlHandler({
               name: "autowrap",
-              config: {"endpoint":"{context.url:https://api.thegraph.com/subgraphs/name/superfluid-finance/auto-wrap-v1-polygon-mainnet}","retry":5},
+              config: {"endpoint":"{context.url:https://subgraph-endpoints.superfluid.dev/optimism-mainnet/auto-wrap}","retry":5},
               baseDir,
               cache,
               pubsub,
