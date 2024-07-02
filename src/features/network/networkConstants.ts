@@ -67,7 +67,8 @@ export const vestingContractAddresses_v1 = {
 } as const;
 
 export const vestingContractAddresses_v2 = {
-  optimismSepolia: "0xc340dc452C4704a4E24f92BeF4F04B20C6587581",
+  optimism: "0x27444c0235a4D921F3106475faeba0B5e7ABDD7a",
+  optimismSepolia: "0xBeB02560Fd1608716ca27704E5191D6937EC244B",
 } as const;
 
 export const vestingSubgraphUrls = {
@@ -80,7 +81,7 @@ export const vestingSubgraphUrls = {
   arbitrum:
     "https://subgraph-endpoints.superfluid.dev/arbitrum-one/vesting-scheduler",
   optimism:
-    "https://subgraph-endpoints.superfluid.dev/optimism-mainnet/vesting-scheduler",
+    "https://api.goldsky.com/api/public/project_clsnd6xsoma5j012qepvucfpp/subgraphs/vesting-v1-optimism-mainnet/v2/gn",
   avalancheC:
     "https://subgraph-endpoints.superfluid.dev/avalanche-c/vesting-scheduler",
   bnbSmartChain:

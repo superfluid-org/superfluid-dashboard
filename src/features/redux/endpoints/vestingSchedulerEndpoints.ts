@@ -204,30 +204,31 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
       // )
       const createVestingSchedule = claimValidityDate
         ? await vestingScheduler.populateTransaction[
-            "createClaimableVestingSchedule(address,address,uint32,uint32,uint32,int96,uint256,uint32,bytes)"
+            "createVestingSchedule(address,address,uint32,uint32,int96,uint256,uint32,uint32,bytes)"
           ](
             superTokenAddress,
             arg.receiverAddress,
             arg.startDateTimestamp,
-            claimValidityDate,
             arg.cliffDateTimestamp,
             arg.flowRateWei,
             arg.cliffTransferAmountWei,
             arg.endDateTimestamp,
+            claimValidityDate,
             []
           )
-        : await vestingScheduler.populateTransaction[
-            "createVestingSchedule(address,address,uint32,uint32,int96,uint256,uint32,bytes)"
-          ](
-            superTokenAddress,
-            arg.receiverAddress,
-            arg.startDateTimestamp,
-            arg.cliffDateTimestamp,
-            arg.flowRateWei,
-            arg.cliffTransferAmountWei,
-            arg.endDateTimestamp,
-            []
-          );
+        : null!; // TODO: fix this when v1 compatible function is added back
+        // await vestingScheduler.populateTransaction[
+        //     "createVestingSchedule(address,address,uint32,uint32,int96,uint256,uint32,bytes)"
+        //   ](
+        //     superTokenAddress,
+        //     arg.receiverAddress,
+        //     arg.startDateTimestamp,
+        //     arg.cliffDateTimestamp,
+        //     arg.flowRateWei,
+        //     arg.cliffTransferAmountWei,
+        //     arg.endDateTimestamp,
+        //     []
+        //   );
 
       subOperations.push({
         operation: await framework.host.callAppAction(
@@ -300,8 +301,9 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
             providerOrSigner: signer,
           }),
           superTokenContract.allowance(senderAddress, vestingScheduler.address),
-          vestingScheduler.getCreateVestingScheduleParamsFromAmountAndDuration(
+          vestingScheduler.mapCreateVestingScheduleParams(
             superTokenAddress,
+            senderAddress,
             arg.receiverAddress,
             arg.totalAmountWei,
             arg.totalDurationInSeconds,
@@ -311,9 +313,7 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
           ),
         ]);
 
-      const maximumNeededTokenAllowance = await vestingScheduler[
-        "getMaximumNeededTokenAllowance((uint32,uint32,int96,uint256,uint96,uint32))"
-      ]({
+      const maximumNeededTokenAllowance = await vestingScheduler.getMaximumNeededTokenAllowance({
         cliffAndFlowDate: params.cliffDate
           ? params.cliffDate
           : params.startDate,
@@ -426,40 +426,28 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
       // uint32 startDate,
       // bytes memory ctx
 
-      console.log([
+      // console.log([
+      //   superTokenAddress,
+      //   arg.receiverAddress,
+      //   arg.totalAmountWei,
+      //   arg.totalDurationInSeconds,
+      //   claimPeriodInSeconds,
+      //   arg.cliffPeriodInSeconds,
+      //   arg.startDateTimestamp
+      // ])
+
+      const createVestingSchedule = await vestingScheduler.populateTransaction[
+        "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32,bytes)"
+      ](
         superTokenAddress,
         arg.receiverAddress,
         arg.totalAmountWei,
         arg.totalDurationInSeconds,
-        claimPeriodInSeconds,
+        arg.startDateTimestamp,
         arg.cliffPeriodInSeconds,
-        arg.startDateTimestamp
-      ])
-
-      const createVestingSchedule = claimValidityDate
-        ? await vestingScheduler.populateTransaction[
-            "createClaimableVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32,bytes)"
-          ](
-            superTokenAddress,
-            arg.receiverAddress,
-            arg.totalAmountWei,
-            arg.totalDurationInSeconds,
-            claimPeriodInSeconds,
-            arg.cliffPeriodInSeconds,
-            arg.startDateTimestamp,
-            []
-          )
-        : await vestingScheduler.populateTransaction[
-            "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,bytes)"
-          ](
-            superTokenAddress,
-            arg.receiverAddress,
-            arg.totalAmountWei,
-            arg.totalDurationInSeconds,
-            arg.cliffPeriodInSeconds,
-            arg.startDateTimestamp,
-            []
-          );
+        claimPeriodInSeconds,
+        []
+      )
 
       subOperations.push({
         operation: await framework.host.callAppAction(

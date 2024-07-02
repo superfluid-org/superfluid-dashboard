@@ -327,7 +327,7 @@ export const networkDefinition = {
     flowSchedulerContractAddress: flowSchedulerContractAddresses.optimism,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.optimism,
     vestingContractAddress_v1: vestingContractAddresses_v1.optimism,
-    vestingContractAddress_v2: undefined,
+    vestingContractAddress_v2: vestingContractAddresses_v2.optimism,
     vestingSubgraphUrl: vestingSubgraphUrls.optimism,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.optimism,
     platformUrl: superfluidPlatformUrls.optimism,
