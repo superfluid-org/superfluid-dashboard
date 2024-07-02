@@ -216,19 +216,19 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
             claimValidityDate,
             []
           )
-        : null!; // TODO: fix this when v1 compatible function is added back
-        // await vestingScheduler.populateTransaction[
-        //     "createVestingSchedule(address,address,uint32,uint32,int96,uint256,uint32,bytes)"
-        //   ](
-        //     superTokenAddress,
-        //     arg.receiverAddress,
-        //     arg.startDateTimestamp,
-        //     arg.cliffDateTimestamp,
-        //     arg.flowRateWei,
-        //     arg.cliffTransferAmountWei,
-        //     arg.endDateTimestamp,
-        //     []
-        //   );
+        : await vestingScheduler.populateTransaction[
+              "createVestingSchedule(address,address,uint32,uint32,int96,uint256,uint32,bytes)"
+            ](
+              superTokenAddress,
+              arg.receiverAddress,
+              arg.startDateTimestamp,
+              arg.cliffDateTimestamp,
+              arg.flowRateWei,
+              arg.cliffTransferAmountWei,
+              arg.endDateTimestamp,
+              []
+            );
+
 
       subOperations.push({
         operation: await framework.host.callAppAction(

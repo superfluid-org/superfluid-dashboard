@@ -547,10 +547,6 @@ export declare class VestingScheduler__factory {
             readonly name: "totalDuration";
             readonly type: "uint32";
         }, {
-            readonly internalType: "uint32";
-            readonly name: "cliffPeriod";
-            readonly type: "uint32";
-        }, {
             readonly internalType: "bytes";
             readonly name: "ctx";
             readonly type: "bytes";
@@ -579,10 +575,6 @@ export declare class VestingScheduler__factory {
         }, {
             readonly internalType: "uint32";
             readonly name: "totalDuration";
-            readonly type: "uint32";
-        }, {
-            readonly internalType: "uint32";
-            readonly name: "cliffPeriod";
             readonly type: "uint32";
         }];
         readonly name: "createAndExecuteVestingScheduleFromAmountAndDuration";
@@ -625,6 +617,48 @@ export declare class VestingScheduler__factory {
         }];
         readonly name: "createVestingSchedule";
         readonly outputs: readonly [];
+        readonly stateMutability: "nonpayable";
+        readonly type: "function";
+    }, {
+        readonly inputs: readonly [{
+            readonly internalType: "contract ISuperToken";
+            readonly name: "superToken";
+            readonly type: "address";
+        }, {
+            readonly internalType: "address";
+            readonly name: "receiver";
+            readonly type: "address";
+        }, {
+            readonly internalType: "uint32";
+            readonly name: "startDate";
+            readonly type: "uint32";
+        }, {
+            readonly internalType: "uint32";
+            readonly name: "cliffDate";
+            readonly type: "uint32";
+        }, {
+            readonly internalType: "int96";
+            readonly name: "flowRate";
+            readonly type: "int96";
+        }, {
+            readonly internalType: "uint256";
+            readonly name: "cliffAmount";
+            readonly type: "uint256";
+        }, {
+            readonly internalType: "uint32";
+            readonly name: "endDate";
+            readonly type: "uint32";
+        }, {
+            readonly internalType: "bytes";
+            readonly name: "ctx";
+            readonly type: "bytes";
+        }];
+        readonly name: "createVestingSchedule";
+        readonly outputs: readonly [{
+            readonly internalType: "bytes";
+            readonly name: "newCtx";
+            readonly type: "bytes";
+        }];
         readonly stateMutability: "nonpayable";
         readonly type: "function";
     }, {

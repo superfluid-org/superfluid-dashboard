@@ -8,7 +8,7 @@ export function getContract(address, abi, defaultSignerOrProvider) {
 }
 export function getOptimismSepoliaSdk(defaultSignerOrProvider) {
     return {
-        "vestingScheduler": getContract('0xBeB02560Fd1608716ca27704E5191D6937EC244B', optimismSepolia_vestingScheduler_abi, defaultSignerOrProvider),
+        "vestingScheduler": getContract('0x55DbCe3f4968616E8a3c0a04D76b5Fdf420AF5F5', optimismSepolia_vestingScheduler_abi, defaultSignerOrProvider),
     };
 }
 export function getMainnetSdk(defaultSignerOrProvider) {

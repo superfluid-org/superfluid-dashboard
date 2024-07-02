@@ -14,6 +14,11 @@ import { calculateAdditionalDataFromValidVestingForm } from "../calculateAdditio
 import { ValidVestingForm } from "../CreateVestingFormProvider";
 import { CreateVestingCardView } from "../CreateVestingSection";
 import { parseEtherOrZero } from "../../../utils/tokenUtils";
+import { useHasFlag } from "../../flags/flagsHooks";
+import { Flag } from "../../flags/flags.slice";
+import { useAccount } from "wagmi";
+import { getAddress } from "../../../utils/memoizedEthersUtils";
+import { useConnectionBoundary } from "../../transactionBoundary/ConnectionBoundary";
 
 interface Props {
   setView: (value: CreateVestingCardView) => void;
@@ -25,16 +30,36 @@ export const CreateVestingTransactionButton: FC<Props> = ({
   isVisible: isVisible_,
 }) => {
   const { txAnalytics } = useAnalytics();
-  const [createVestingSchedule, createVestingScheduleResult] =
+
+  const { expectedNetwork } = useConnectionBoundary();
+
+  const { address: accountAddress } = useAccount();
+  const isVestingV2Enabled = useHasFlag(
+    accountAddress
+      ? {
+        type: Flag.VestingScheduler,
+        chainId: expectedNetwork.id,
+        account: getAddress(accountAddress),
+        version: "v2"
+      }
+      : undefined
+  );
+
+  const [createVestingScheduleFromAmountAndDuration, createVestingScheduleFromAmountAndDurationResult] =
     rpcApi.useCreateVestingScheduleFromAmountAndDurationMutation();
+
+  const [createVestingSchedule, createVestingScheduleResult] =
+    rpcApi.useCreateVestingScheduleMutation();
+
+  const mutationResult = isVestingV2Enabled ? createVestingScheduleFromAmountAndDurationResult : createVestingScheduleResult;
 
   const { formState, handleSubmit } = useFormContext<ValidVestingForm>();
   const isDisabled = !formState.isValid || formState.isValidating;
 
-  const isVisible = !createVestingScheduleResult.isSuccess && isVisible_;
+  const isVisible = !mutationResult.isSuccess && isVisible_;
 
   return (
-    <TransactionBoundary mutationResult={createVestingScheduleResult}>
+    <TransactionBoundary mutationResult={mutationResult}>
       {({
         network,
         getOverrides,
@@ -77,6 +102,19 @@ export const CreateVestingTransactionButton: FC<Props> = ({
                     senderAddress: await signer.getAddress(),
                     receiverAddress,
                     startDateTimestamp,
+                    cliffDateTimestamp,
+                    endDateTimestamp,
+                    flowRateWei: flowRate.toString(),
+                    cliffTransferAmountWei: cliffAmount.toString(),
+                    claimEnabled: !!claimEnabled
+                  };
+
+                  const primaryArgsFromAmountAndDuration = {
+                    chainId: network.id,
+                    superTokenAddress,
+                    senderAddress: await signer.getAddress(),
+                    receiverAddress,
+                    startDateTimestamp,
                     totalAmountWei: parseEtherOrZero(validData.data.totalAmountEther).toString(),
                     totalDurationInSeconds: Math.round(validData.data.vestingPeriod.numerator * validData.data.vestingPeriod.denominator),
                     cliffPeriodInSeconds: validData.data.cliffEnabled ? Math.round(validData.data.cliffPeriod.numerator! * validData.data.cliffPeriod.denominator) : 0,
@@ -84,11 +122,15 @@ export const CreateVestingTransactionButton: FC<Props> = ({
                     claimEnabled: !!claimEnabled
                   };
 
-                  createVestingSchedule({
+                  (isVestingV2Enabled ? createVestingSchedule({
                     ...primaryArgs,
                     signer,
                     overrides: await getOverrides(),
-                  })
+                  }) : createVestingScheduleFromAmountAndDuration({
+                    ...primaryArgsFromAmountAndDuration,
+                    signer,
+                    overrides: await getOverrides(),
+                  }))
                     .unwrap()
                     .then(
                       ...txAnalytics("Create Vesting Schedule", primaryArgs)

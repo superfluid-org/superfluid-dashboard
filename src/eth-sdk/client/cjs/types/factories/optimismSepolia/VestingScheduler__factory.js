@@ -695,11 +695,6 @@ const _abi = [
                 type: "uint32",
             },
             {
-                internalType: "uint32",
-                name: "cliffPeriod",
-                type: "uint32",
-            },
-            {
                 internalType: "bytes",
                 name: "ctx",
                 type: "bytes",
@@ -736,11 +731,6 @@ const _abi = [
             {
                 internalType: "uint32",
                 name: "totalDuration",
-                type: "uint32",
-            },
-            {
-                internalType: "uint32",
-                name: "cliffPeriod",
                 type: "uint32",
             },
         ],
@@ -794,6 +784,60 @@ const _abi = [
         ],
         name: "createVestingSchedule",
         outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+    },
+    {
+        inputs: [
+            {
+                internalType: "contract ISuperToken",
+                name: "superToken",
+                type: "address",
+            },
+            {
+                internalType: "address",
+                name: "receiver",
+                type: "address",
+            },
+            {
+                internalType: "uint32",
+                name: "startDate",
+                type: "uint32",
+            },
+            {
+                internalType: "uint32",
+                name: "cliffDate",
+                type: "uint32",
+            },
+            {
+                internalType: "int96",
+                name: "flowRate",
+                type: "int96",
+            },
+            {
+                internalType: "uint256",
+                name: "cliffAmount",
+                type: "uint256",
+            },
+            {
+                internalType: "uint32",
+                name: "endDate",
+                type: "uint32",
+            },
+            {
+                internalType: "bytes",
+                name: "ctx",
+                type: "bytes",
+            },
+        ],
+        name: "createVestingSchedule",
+        outputs: [
+            {
+                internalType: "bytes",
+                name: "newCtx",
+                type: "bytes",
+            },
+        ],
         stateMutability: "nonpayable",
         type: "function",
     },
