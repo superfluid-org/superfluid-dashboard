@@ -77,11 +77,11 @@ export const vestingSubgraphUrls = {
   polygon:
     "https://subgraph-endpoints.superfluid.dev/polygon-mainnet/vesting-scheduler",
   optimismSepolia:
-    "https://api.goldsky.com/api/public/project_clsnd6xsoma5j012qepvucfpp/subgraphs/vesting-v1-optimism-sepolia/v2/gn",
+    "https://subgraph-endpoints.superfluid.dev/optimism-sepolia/vesting-scheduler",
   arbitrum:
     "https://subgraph-endpoints.superfluid.dev/arbitrum-one/vesting-scheduler",
   optimism:
-    "https://api.goldsky.com/api/public/project_clsnd6xsoma5j012qepvucfpp/subgraphs/vesting-v1-optimism-mainnet/v2/gn",
+    "https://subgraph-endpoints.superfluid.dev/optimism-mainnet/vesting-scheduler",
   avalancheC:
     "https://subgraph-endpoints.superfluid.dev/avalanche-c/vesting-scheduler",
   bnbSmartChain:

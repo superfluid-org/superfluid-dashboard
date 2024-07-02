@@ -43,14 +43,8 @@ export const vestingSubgraphApi = createApi({
       queryFn: async ({ chainId, ...variables }) => {
         const sdk = tryGetBuiltGraphSdkForNetwork(chainId);
 
-        const network = findNetworkOrThrow(allNetworks, chainId);
-        const isClaimSupported = !!network.vestingContractAddress_v2;
-
         const subgraphVestingSchedule = sdk
-          ? (isClaimSupported
-              ? await sdk.getVestingScheduleWithClaim(variables)
-              : await sdk.getVestingSchedule(variables)
-            ).vestingSchedule
+          ? (await sdk.getVestingSchedule(variables)).vestingSchedule
           : null;
 
         return {
@@ -75,14 +69,8 @@ export const vestingSubgraphApi = createApi({
       queryFn: async ({ chainId, ...variables }) => {
         const sdk = tryGetBuiltGraphSdkForNetwork(chainId);
 
-        const network = findNetworkOrThrow(allNetworks, chainId);
-        const isClaimSupported = !!network.vestingContractAddress_v2;
-
         const subgraphVestingSchedules = sdk
-          ? (isClaimSupported
-              ? await sdk.getVestingSchedulesWithClaim(variables)
-              : await sdk.getVestingSchedules(variables)
-            ).vestingSchedules
+          ? (await sdk.getVestingSchedules(variables)).vestingSchedules
           : [];
 
         return {

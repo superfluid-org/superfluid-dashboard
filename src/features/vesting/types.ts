@@ -1,8 +1,6 @@
 import { getUnixTime } from "date-fns";
 import {
-  GetVestingScheduleQuery,
-  GetVestingScheduleWithClaimQuery,
-  GetVestingSchedulesWithClaimQuery,
+  GetVestingScheduleQuery
 } from "../../vesting-subgraph/.graphclient";
 
 interface VestingStatus {
@@ -151,21 +149,12 @@ export interface VestingSchedule {
   remainderAmount: string;
 }
 
-export type SubgraphVestingSchedule_v1 = NonNullable<
+export type SubgraphVestingSchedule = NonNullable<
   Required<GetVestingScheduleQuery>["vestingSchedule"]
 >;
 
-export type SubgraphVestingSchedule_v2 = NonNullable<
-  Required<GetVestingScheduleWithClaimQuery>["vestingSchedule"]
->;
-
 export const mapSubgraphVestingSchedule = (
-  vestingSchedule:
-    | (SubgraphVestingSchedule_v1 & {
-        claimValidityDate?: number;
-        remainderAmount?: string;
-      })
-    | SubgraphVestingSchedule_v2
+  vestingSchedule: SubgraphVestingSchedule
 ): VestingSchedule => {
   const mappedVestingSchedule = {
     ...vestingSchedule,

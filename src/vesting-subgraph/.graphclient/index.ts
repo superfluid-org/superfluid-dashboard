@@ -3089,7 +3089,7 @@ const vestingTransforms = [];
 const additionalTypeDefs = [] as any[];
 const vestingHandler = new GraphqlHandler({
               name: "vesting",
-              config: {"endpoint":"{context.url:https://api.goldsky.com/api/public/project_clsnd6xsoma5j012qepvucfpp/subgraphs/vesting-v1-optimism-sepolia/v2/gn}","retry":5},
+              config: {"endpoint":"{context.url:https://subgraph-endpoints.superfluid.dev/optimism-sepolia/vesting-scheduler}","retry":5},
               baseDir,
               cache,
               pubsub,
@@ -3140,18 +3140,6 @@ const merger = new(BareMerger as any)({
           return printWithCache(GetVestingSchedulesDocument);
         },
         location: 'GetVestingSchedulesDocument.graphql'
-      },{
-        document: GetVestingScheduleWithClaimDocument,
-        get rawSDL() {
-          return printWithCache(GetVestingScheduleWithClaimDocument);
-        },
-        location: 'GetVestingScheduleWithClaimDocument.graphql'
-      },{
-        document: GetVestingSchedulesWithClaimDocument,
-        get rawSDL() {
-          return printWithCache(GetVestingSchedulesWithClaimDocument);
-        },
-        location: 'GetVestingSchedulesWithClaimDocument.graphql'
       }
     ];
     },
@@ -3202,7 +3190,7 @@ export type GetVestingScheduleQueryVariables = Exact<{
 }>;
 
 
-export type GetVestingScheduleQuery = { vestingSchedule?: Maybe<Pick<VestingSchedule, 'id' | 'superToken' | 'sender' | 'receiver' | 'flowRate' | 'createdAt' | 'deletedAt' | 'startDate' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowExpirationAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'endDateValidAt' | 'endExecutedAt' | 'failedAt' | 'didEarlyEndCompensationFail' | 'earlyEndCompensation'>> };
+export type GetVestingScheduleQuery = { vestingSchedule?: Maybe<Pick<VestingSchedule, 'id' | 'superToken' | 'sender' | 'receiver' | 'flowRate' | 'createdAt' | 'deletedAt' | 'startDate' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowExpirationAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'endDateValidAt' | 'endExecutedAt' | 'failedAt' | 'didEarlyEndCompensationFail' | 'earlyEndCompensation' | 'claimValidityDate' | 'remainderAmount'>> };
 
 export type GetVestingSchedulesQueryVariables = Exact<{
   where?: InputMaybe<VestingSchedule_Filter>;
@@ -3211,25 +3199,9 @@ export type GetVestingSchedulesQueryVariables = Exact<{
 }>;
 
 
-export type GetVestingSchedulesQuery = { vestingSchedules: Array<Pick<VestingSchedule, 'id' | 'superToken' | 'sender' | 'receiver' | 'flowRate' | 'createdAt' | 'deletedAt' | 'startDate' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowExpirationAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'endDateValidAt' | 'endExecutedAt' | 'failedAt' | 'didEarlyEndCompensationFail' | 'earlyEndCompensation'>> };
+export type GetVestingSchedulesQuery = { vestingSchedules: Array<Pick<VestingSchedule, 'id' | 'superToken' | 'sender' | 'receiver' | 'flowRate' | 'createdAt' | 'deletedAt' | 'startDate' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowExpirationAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'endDateValidAt' | 'endExecutedAt' | 'failedAt' | 'didEarlyEndCompensationFail' | 'earlyEndCompensation' | 'claimValidityDate' | 'remainderAmount'>> };
 
-export type VestingSchedulePartFragment = Pick<VestingSchedule, 'id' | 'superToken' | 'sender' | 'receiver' | 'flowRate' | 'createdAt' | 'deletedAt' | 'startDate' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowExpirationAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'endDateValidAt' | 'endExecutedAt' | 'failedAt' | 'didEarlyEndCompensationFail' | 'earlyEndCompensation'>;
-
-export type GetVestingScheduleWithClaimQueryVariables = Exact<{
-  id: Scalars['ID'];
-}>;
-
-
-export type GetVestingScheduleWithClaimQuery = { vestingSchedule?: Maybe<Pick<VestingSchedule, 'claimValidityDate' | 'remainderAmount' | 'id' | 'superToken' | 'sender' | 'receiver' | 'flowRate' | 'createdAt' | 'deletedAt' | 'startDate' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowExpirationAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'endDateValidAt' | 'endExecutedAt' | 'failedAt' | 'didEarlyEndCompensationFail' | 'earlyEndCompensation'>> };
-
-export type GetVestingSchedulesWithClaimQueryVariables = Exact<{
-  where?: InputMaybe<VestingSchedule_Filter>;
-  orderBy?: InputMaybe<VestingSchedule_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-}>;
-
-
-export type GetVestingSchedulesWithClaimQuery = { vestingSchedules: Array<Pick<VestingSchedule, 'claimValidityDate' | 'remainderAmount' | 'id' | 'superToken' | 'sender' | 'receiver' | 'flowRate' | 'createdAt' | 'deletedAt' | 'startDate' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowExpirationAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'endDateValidAt' | 'endExecutedAt' | 'failedAt' | 'didEarlyEndCompensationFail' | 'earlyEndCompensation'>> };
+export type VestingSchedulePartFragment = Pick<VestingSchedule, 'id' | 'superToken' | 'sender' | 'receiver' | 'flowRate' | 'createdAt' | 'deletedAt' | 'startDate' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowExpirationAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'endDateValidAt' | 'endExecutedAt' | 'failedAt' | 'didEarlyEndCompensationFail' | 'earlyEndCompensation' | 'claimValidityDate' | 'remainderAmount'>;
 
 export const VestingSchedulePartFragmentDoc = gql`
     fragment VestingSchedulePart on VestingSchedule {
@@ -3252,6 +3224,8 @@ export const VestingSchedulePartFragmentDoc = gql`
   failedAt
   didEarlyEndCompensationFail
   earlyEndCompensation
+  claimValidityDate
+  remainderAmount
 }
     ` as unknown as DocumentNode<VestingSchedulePartFragment, unknown>;
 export const PollDocument = gql`
@@ -3280,31 +3254,6 @@ export const GetVestingSchedulesDocument = gql`
   }
 }
     ${VestingSchedulePartFragmentDoc}` as unknown as DocumentNode<GetVestingSchedulesQuery, GetVestingSchedulesQueryVariables>;
-export const GetVestingScheduleWithClaimDocument = gql`
-    query getVestingScheduleWithClaim($id: ID!) {
-  vestingSchedule(id: $id) {
-    ...VestingSchedulePart
-    claimValidityDate
-    remainderAmount
-  }
-}
-    ${VestingSchedulePartFragmentDoc}` as unknown as DocumentNode<GetVestingScheduleWithClaimQuery, GetVestingScheduleWithClaimQueryVariables>;
-export const GetVestingSchedulesWithClaimDocument = gql`
-    query getVestingSchedulesWithClaim($where: VestingSchedule_filter = {}, $orderBy: VestingSchedule_orderBy = id, $orderDirection: OrderDirection = asc) {
-  vestingSchedules(
-    first: 1000
-    where: $where
-    orderBy: $orderBy
-    orderDirection: $orderDirection
-  ) {
-    ...VestingSchedulePart
-    claimValidityDate
-    remainderAmount
-  }
-}
-    ${VestingSchedulePartFragmentDoc}` as unknown as DocumentNode<GetVestingSchedulesWithClaimQuery, GetVestingSchedulesWithClaimQueryVariables>;
-
-
 
 
 
@@ -3320,12 +3269,6 @@ export function getSdk<C, E>(requester: Requester<C, E>) {
     },
     getVestingSchedules(variables?: GetVestingSchedulesQueryVariables, options?: C): Promise<GetVestingSchedulesQuery> {
       return requester<GetVestingSchedulesQuery, GetVestingSchedulesQueryVariables>(GetVestingSchedulesDocument, variables, options) as Promise<GetVestingSchedulesQuery>;
-    },
-    getVestingScheduleWithClaim(variables: GetVestingScheduleWithClaimQueryVariables, options?: C): Promise<GetVestingScheduleWithClaimQuery> {
-      return requester<GetVestingScheduleWithClaimQuery, GetVestingScheduleWithClaimQueryVariables>(GetVestingScheduleWithClaimDocument, variables, options) as Promise<GetVestingScheduleWithClaimQuery>;
-    },
-    getVestingSchedulesWithClaim(variables?: GetVestingSchedulesWithClaimQueryVariables, options?: C): Promise<GetVestingSchedulesWithClaimQuery> {
-      return requester<GetVestingSchedulesWithClaimQuery, GetVestingSchedulesWithClaimQueryVariables>(GetVestingSchedulesWithClaimDocument, variables, options) as Promise<GetVestingSchedulesWithClaimQuery>;
     }
   };
 }
