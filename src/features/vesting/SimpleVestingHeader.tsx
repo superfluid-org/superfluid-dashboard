@@ -20,14 +20,14 @@ const SimpleVestingHeader: FC = () => {
     accountAddress
       ? {
         type: Flag.VestingScheduler,
-        chainId: networkDefinition.optimism.id,
+        chainId: network.id,
         account: getAddress(accountAddress),
         version: "v2"
       }
       : undefined
   );
 
-  const showVestingToggle = !!accountAddress && network.id === networkDefinition.optimism.id;
+  const showVestingToggle = !!accountAddress && !!network.vestingContractAddress_v2;
 
   return (
     <Stack
@@ -51,7 +51,7 @@ const SimpleVestingHeader: FC = () => {
               onChange={(_e, value) => {
                 dispatch(setVestingSchedulerFlag({
                   account: getAddress(accountAddress),
-                  chainId: networkDefinition.optimism.id,
+                  chainId: network.id,
                   version: value
                 }));
               }}

@@ -19,6 +19,7 @@ export interface PendingVestingSchedule
       | "flowRateWei"
       | "endDateTimestamp"
       | "cliffTransferAmountWei"
+      | "version"
     > {
   pendingType: "VestingScheduleCreate";
 }
@@ -59,6 +60,7 @@ export const mapPendingToVestingSchedule = (
     startDateTimestamp,
     superTokenAddress,
     flowRateWei,
+    version
   } = pendingVestingSchedule;
   const cliffAndFlowDate = cliffDateTimestamp
     ? cliffDateTimestamp
@@ -85,5 +87,6 @@ export const mapPendingToVestingSchedule = (
     status: vestingStatuses.ScheduledStart,
     claimValidityDate: 0,
     remainderAmount: "0",
+    version
   };
 };

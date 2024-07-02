@@ -1,12 +1,13 @@
 import { providers, Signer } from "ethers";
 import { allNetworks, findNetworkOrThrow } from "../features/network/networks";
 import { VestingScheduler__factory } from "./client/esm/types/factories/optimismSepolia";
+import { VestingScheduler_v2__factory } from "./client/esm/types/factories/optimismSepolia";
 import {
   AutoWrapManager__factory,
   AutoWrapStrategy__factory,
   FlowScheduler__factory
 } from "./client/esm/types/factories/mainnet";
-import { AutoWrapManager, AutoWrapStrategy } from "./client/esm/types";
+import { AutoWrapManager, AutoWrapStrategy, VestingScheduler, VestingScheduler_v2 } from "./client/esm/types";
 
 export const getFlowScheduler = (
   chainId: number,
@@ -28,14 +29,18 @@ export const getFlowScheduler = (
   );
 };
 
-export const getVestingScheduler = (
+// Define a generic type for versions
+type Version = 'v1' | 'v2';
+type VestingSchedulerType<T extends Version> = T extends 'v1' ? VestingScheduler : VestingScheduler_v2;
+
+export const getVestingScheduler = <T extends Version>(
   chainId: number,
-  providerOrSigner: providers.Provider | Signer
-) => {
+  providerOrSigner: providers.Provider | Signer,
+  version: T
+): VestingSchedulerType<T> => {
   const network = findNetworkOrThrow(allNetworks, chainId);
 
-  const networkContractAddress =
-    network?.vestingContractAddress_v2 ?? network?.vestingContractAddress_v1;
+  const networkContractAddress = version === 'v2' ? network.vestingContractAddress_v2 : network.vestingContractAddress_v1;
   const doesNetworkSupportContract = networkContractAddress;
   if (!doesNetworkSupportContract) {
     throw new Error(
@@ -43,10 +48,19 @@ export const getVestingScheduler = (
     );
   }
 
+  console.log(networkContractAddress);
+
+  if (version === 'v2') {
+    return VestingScheduler_v2__factory.connect(
+      networkContractAddress,
+      providerOrSigner
+    ) as VestingSchedulerType<T>;
+  }
+
   return VestingScheduler__factory.connect(
     networkContractAddress,
     providerOrSigner
-  );
+  ) as VestingSchedulerType<T>;
 };
 
 export const getAutoWrap = (

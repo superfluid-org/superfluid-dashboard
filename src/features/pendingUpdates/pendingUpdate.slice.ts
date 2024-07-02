@@ -284,6 +284,7 @@ export const pendingUpdateSlice = createSlice({
           cliffTransferAmountWei,
           endDateTimestamp,
           flowRateWei,
+          version
         } = action.meta.arg.originalArgs;
         const pendingUpdate: PendingVestingSchedule = {
           chainId,
@@ -300,6 +301,7 @@ export const pendingUpdateSlice = createSlice({
           endDateTimestamp,
           flowRateWei,
           relevantSubgraph: "Vesting",
+          version
         };
         pendingUpdateAdapter.addOne(state, pendingUpdate);
       }
@@ -332,6 +334,7 @@ export const pendingUpdateSlice = createSlice({
           endDateTimestamp,
           flowRateWei: "0", // TODO
           relevantSubgraph: "Vesting",
+          version: "v2"
         };
         pendingUpdateAdapter.addOne(state, pendingUpdate);
       }

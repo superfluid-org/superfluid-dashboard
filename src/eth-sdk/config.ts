@@ -3,13 +3,15 @@ import {
   autoWrapManagerAddresses,
   autoWrapStrategyAddresses,
   flowSchedulerContractAddresses,
+  vestingContractAddresses_v1,
   vestingContractAddresses_v2
 } from "../features/network/networkConstants";
 
 const ethSdkConfig = defineConfig({
   contracts: {
     optimismSepolia: {
-      vestingScheduler: vestingContractAddresses_v2.optimismSepolia, // OP Sepolia used as source of truth for the ABI of Vesting Scheduler.
+      vestingScheduler_v2: vestingContractAddresses_v2.optimismSepolia, // OP Sepolia used as source of truth for the ABI of Vesting Scheduler.
+      vestingScheduler: vestingContractAddresses_v1.optimismSepolia // OP Sepolia used as source of truth for the ABI of Vesting Scheduler.
     },
     mainnet: {
       flowScheduler: flowSchedulerContractAddresses.ethereum, // Mainnet used as source of truth for the ABI of Flow Scheduler.

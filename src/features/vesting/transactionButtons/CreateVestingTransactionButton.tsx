@@ -122,14 +122,15 @@ export const CreateVestingTransactionButton: FC<Props> = ({
                     claimEnabled: !!claimEnabled
                   };
 
-                  (isVestingV2Enabled ? createVestingSchedule({
-                    ...primaryArgs,
-                    signer,
-                    overrides: await getOverrides(),
-                  }) : createVestingScheduleFromAmountAndDuration({
+                  (isVestingV2Enabled ? createVestingScheduleFromAmountAndDuration({
                     ...primaryArgsFromAmountAndDuration,
                     signer,
                     overrides: await getOverrides(),
+                  }) : createVestingSchedule({
+                    ...primaryArgs,
+                    signer,
+                    version: "v1",
+                    overrides: await getOverrides()
                   }))
                     .unwrap()
                     .then(

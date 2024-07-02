@@ -87,7 +87,7 @@ const VestingDetailsHeader: FC<VestingDetailsHeaderProps> = ({
   const { visibleAddress } = useVisibleAddress();
   const navigateBack = useNavigateBack("/vesting");
 
-  const { deletedAt, endExecutedAt, superToken, sender, receiver, status } =
+  const { deletedAt, endExecutedAt, superToken, sender, receiver, status, version } =
     vestingSchedule;
 
   const canDelete = !!visibleAddress && !deletedAt && !endExecutedAt;
@@ -148,6 +148,7 @@ const VestingDetailsHeader: FC<VestingDetailsHeaderProps> = ({
                   superTokenAddress={superToken}
                   senderAddress={sender}
                   receiverAddress={receiver}
+                  version={version}
                 />
               )}
             </Stack>
@@ -188,6 +189,7 @@ const VestingDetailsHeader: FC<VestingDetailsHeaderProps> = ({
                   senderAddress={sender}
                   receiverAddress={receiver}
                   TransactionButtonProps={{ ButtonProps: { size: "small" } }}
+                  version={version}
                 />
               )}
             </>

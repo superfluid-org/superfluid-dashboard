@@ -7,6 +7,7 @@ exports.getContract = getContract;
 exports.getOptimismSepoliaSdk = getOptimismSepoliaSdk;
 exports.getMainnetSdk = getMainnetSdk;
 const ethers_1 = require("ethers");
+const vestingScheduler_v2_json_1 = __importDefault(require("../../abis/optimismSepolia/vestingScheduler_v2.json"));
 const vestingScheduler_json_1 = __importDefault(require("../../abis/optimismSepolia/vestingScheduler.json"));
 const flowScheduler_json_1 = __importDefault(require("../../abis/mainnet/flowScheduler.json"));
 const autoWrapManager_json_1 = __importDefault(require("../../abis/mainnet/autoWrapManager.json"));
@@ -16,7 +17,8 @@ function getContract(address, abi, defaultSignerOrProvider) {
 }
 function getOptimismSepoliaSdk(defaultSignerOrProvider) {
     return {
-        "vestingScheduler": getContract('0x55DbCe3f4968616E8a3c0a04D76b5Fdf420AF5F5', vestingScheduler_json_1.default, defaultSignerOrProvider),
+        "vestingScheduler_v2": getContract('0x3aa62b96f44D0f8892BeBBC819DE8e02E9DE69A8', vestingScheduler_v2_json_1.default, defaultSignerOrProvider),
+        "vestingScheduler": getContract('0x27444c0235a4D921F3106475faeba0B5e7ABDD7a', vestingScheduler_json_1.default, defaultSignerOrProvider),
     };
 }
 function getMainnetSdk(defaultSignerOrProvider) {

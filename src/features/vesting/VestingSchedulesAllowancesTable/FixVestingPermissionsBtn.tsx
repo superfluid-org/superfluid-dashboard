@@ -52,7 +52,8 @@ const FixVestingPermissionsBtn: FC<FixVestingPermissionsBtnProps> = ({
         requiredTokenAllowanceWei: recommendedTokenAllowance.toString(),
         requiredFlowOperatorPermissions: requiredFlowOperatorPermissions,
         requiredFlowRateAllowanceWei: requiredFlowRateAllowance.toString(),
-      };
+        version: "v1" // TODO: handle v2 too
+      } as const;
 
       fixAccess({
         ...primaryArgs,

@@ -19,6 +19,10 @@ import { Typography } from "@mui/material";
 import { useAnalytics } from "../../analytics/useAnalytics";
 import { usePendingVestingScheduleClaim } from "../../pendingUpdates/PendingVestingScheduleClaim";
 import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
+import { useAccount } from "wagmi";
+import { useHasFlag } from "../../flags/flagsHooks";
+import { getAddress } from "../../../utils/memoizedEthersUtils";
+import { Flag } from "../../flags/flags.slice";
 
 export const ClaimVestingScheduleTransactionButton: FC<{
   superTokenAddress: string;
@@ -39,6 +43,18 @@ export const ClaimVestingScheduleTransactionButton: FC<{
 
     const { expectedNetwork: network } = useConnectionBoundary();
 
+    const { address: accountAddress } = useAccount();
+    const hasVestingV2Enabled = useHasFlag(
+      accountAddress
+        ? {
+          type: Flag.VestingScheduler,
+          chainId: network.id,
+          account: getAddress(accountAddress),
+          version: "v2"
+        }
+        : undefined
+    );
+
     const { visibleAddress } = useVisibleAddress();
 
     const isSender = visibleAddress && senderAddress.toLowerCase() === visibleAddress.toLowerCase();
@@ -53,6 +69,7 @@ export const ClaimVestingScheduleTransactionButton: FC<{
             superTokenAddress,
             receiverAddress,
             senderAddress,
+            version: hasVestingV2Enabled ? "v2" : "v1"
           }
           : skipToken
       );

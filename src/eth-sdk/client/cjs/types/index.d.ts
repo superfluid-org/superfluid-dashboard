@@ -9,5 +9,7 @@ export type { AutoWrapStrategy } from "./mainnet/AutoWrapStrategy";
 export { AutoWrapStrategy__factory } from "./factories/mainnet/AutoWrapStrategy__factory";
 export type { FlowScheduler } from "./mainnet/FlowScheduler";
 export { FlowScheduler__factory } from "./factories/mainnet/FlowScheduler__factory";
+export type { VestingScheduler_v2 } from "./optimismSepolia/VestingScheduler_v2";
+export { VestingScheduler_v2__factory } from "./factories/optimismSepolia/VestingScheduler_v2__factory";
 export type { VestingScheduler } from "./optimismSepolia/VestingScheduler";
 export { VestingScheduler__factory } from "./factories/optimismSepolia/VestingScheduler__factory";
