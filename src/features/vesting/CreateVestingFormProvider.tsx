@@ -144,11 +144,6 @@ const CreateVestingFormProvider: FC<{
 
   const version = hasVestingV2Enabled ? "v2" : "v1";
 
-  console.log({
-    version,
-    hasVestingV2Enabled
-  })
-
   const { data: vestingSchedulerConstants } =
     rpcApi.useGetVestingSchedulerConstantsQuery({
       chainId: network.id,

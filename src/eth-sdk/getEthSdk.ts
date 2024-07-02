@@ -48,8 +48,6 @@ export const getVestingScheduler = <T extends Version>(
     );
   }
 
-  console.log(networkContractAddress);
-
   if (version === 'v2') {
     return VestingScheduler_v2__factory.connect(
       networkContractAddress,

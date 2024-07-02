@@ -158,7 +158,7 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
       }
 
       const claimValidityDate = arg.claimEnabled
-        ? arg.endDateTimestamp - END_DATE_VALID_BEFORE_IN_SECONDS
+        ? arg.endDateTimestamp
         : undefined;
       const effectiveStartDateValidAfterInSeconds = claimValidityDate
         ? claimValidityDate - (arg.cliffDateTimestamp || arg.startDateTimestamp)
@@ -304,7 +304,7 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
       );
 
       const claimPeriodInSeconds = arg.claimEnabled
-        ? arg.totalDurationInSeconds / 2
+        ? arg.totalDurationInSeconds
         : 0;
       const [flowOperatorData, existingTokenAllowance, params] =
         await Promise.all([
@@ -320,8 +320,8 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
             arg.receiverAddress,
             arg.totalAmountWei,
             arg.totalDurationInSeconds,
-            arg.cliffPeriodInSeconds,
             arg.startDateTimestamp,
+            arg.cliffPeriodInSeconds,
             claimPeriodInSeconds
           ),
         ]);
@@ -331,11 +331,11 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
           cliffAndFlowDate: params.cliffDate
             ? params.cliffDate
             : params.startDate,
-          claimValidityDate: params.claimValidityDate,
-          cliffAmount: params.cliffAmount,
-          endDate: params.endDate,
-          flowRate: params.flowRate,
-          remainderAmount: params.remainderAmount,
+            endDate: params.endDate,
+            flowRate: params.flowRate,
+            cliffAmount: params.cliffAmount,
+            remainderAmount: params.remainderAmount,
+            claimValidityDate: params.claimValidityDate
         });
 
       const existingPermissions = Number(flowOperatorData.permissions);
@@ -399,56 +399,6 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
           title: "Approve Allowance",
         });
       }
-
-      //   # Signature description:
-      //   function createClaimableVestingSchedule(
-      //     ISuperToken superToken,
-      //     address receiver,
-      //     uint32 startDate,
-      //     uint32 claimValidityDate,
-      //     uint32 cliffDate,
-      //     int96 flowRate,
-      //     uint256 cliffAmount,
-      //     uint32 endDate
-      // )
-
-      //   function createClaimableVestingScheduleFromAmountAndDuration(
-      //     ISuperToken superToken,
-      //     address receiver,
-      //     uint256 totalAmount,
-      //     uint32 totalDuration,
-      //     uint32 claimPeriod,
-      //     uint32 cliffPeriod,
-      //     uint32 startDate,
-      //     bytes memory ctx
-      // ) external returns (bytes memory newCtx) {
-
-      // function createClaimableVestingScheduleFromAmountAndDuration(
-      //   ISuperToken superToken,
-      //   address receiver,
-      //   uint256 totalAmount,
-      //   uint32 totalDuration,
-      //   uint32 claimPeriod,
-      //   uint32 cliffPeriod,
-      //   uint32 startDate
-
-      // ISuperToken superToken,
-      // address receiver,
-      // uint256 totalAmount,
-      // uint32 totalDuration,
-      // uint32 cliffPeriod,
-      // uint32 startDate,
-      // bytes memory ctx
-
-      // console.log([
-      //   superTokenAddress,
-      //   arg.receiverAddress,
-      //   arg.totalAmountWei,
-      //   arg.totalDurationInSeconds,
-      //   claimPeriodInSeconds,
-      //   arg.cliffPeriodInSeconds,
-      //   arg.startDateTimestamp
-      // ])
 
       const createVestingSchedule = await vestingScheduler.populateTransaction[
         "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32,bytes)"
@@ -903,15 +853,6 @@ export const vestingSchedulerQueryEndpoints = {
             receiverAddress
           )),
         };
-
-        console.log({
-          rawVestingSchedule,
-          version,
-          vestingScheduler,
-          superTokenAddress,
-          senderAddress,
-          receiverAddress
-        })
 
         const unixNow = getUnixTime(new Date());
 
