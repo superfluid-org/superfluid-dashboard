@@ -107,20 +107,36 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
         signer
       );
 
+      const claimValidityDate = arg.claimEnabled
+        ? arg.endDateTimestamp
+        : undefined;
+
       const [
         flowOperatorData,
-        START_DATE_VALID_AFTER_IN_SECONDS,
-        END_DATE_VALID_BEFORE_IN_SECONDS,
         existingTokenAllowance,
+        maximumNeededTokenAllowance,
       ] = await Promise.all([
         superToken.getFlowOperatorData({
           flowOperator: vestingScheduler.address,
           sender: senderAddress,
           providerOrSigner: signer,
         }),
-        vestingScheduler.START_DATE_VALID_AFTER(),
-        vestingScheduler.END_DATE_VALID_BEFORE(),
         superTokenContract.allowance(senderAddress, vestingScheduler.address),
+        // Note: this "v2" function works for "v1" as well
+        getVestingScheduler(
+          chainId,
+          signer,
+          "v2"
+        ).getMaximumNeededTokenAllowance({
+          cliffAndFlowDate: arg.cliffDateTimestamp
+            ? arg.cliffDateTimestamp
+            : arg.startDateTimestamp,
+          endDate: arg.endDateTimestamp,
+          flowRate: arg.flowRateWei,
+          cliffAmount: arg.cliffTransferAmountWei,
+          remainderAmount: "0",
+          claimValidityDate: claimValidityDate ?? "0",
+        }),
       ]);
 
       const existingPermissions = Number(flowOperatorData.permissions);
@@ -155,19 +171,6 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
           title: "Approve Vesting Scheduler",
         });
       }
-
-      const claimValidityDate = arg.claimEnabled
-        ? arg.endDateTimestamp
-        : undefined;
-      const effectiveStartDateValidAfterInSeconds = claimValidityDate
-        ? claimValidityDate - (arg.cliffDateTimestamp || arg.startDateTimestamp)
-        : START_DATE_VALID_AFTER_IN_SECONDS;
-
-      const maximumNeededTokenAllowance = BigNumber.from(
-        arg.cliffTransferAmountWei
-      )
-        .add(flowRateBigNumber.mul(effectiveStartDateValidAfterInSeconds))
-        .add(flowRateBigNumber.mul(END_DATE_VALID_BEFORE_IN_SECONDS));
 
       const tokenAllowanceDelta = isCloseToUnlimitedTokenAllowance(
         existingTokenAllowance
@@ -318,11 +321,11 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
           cliffAndFlowDate: params.cliffDate
             ? params.cliffDate
             : params.startDate,
-            endDate: params.endDate,
-            flowRate: params.flowRate,
-            cliffAmount: params.cliffAmount,
-            remainderAmount: params.remainderAmount,
-            claimValidityDate: params.claimValidityDate
+          endDate: params.endDate,
+          flowRate: params.flowRate,
+          cliffAmount: params.cliffAmount,
+          remainderAmount: params.remainderAmount,
+          claimValidityDate: params.claimValidityDate,
         });
 
       const existingPermissions = Number(flowOperatorData.permissions);

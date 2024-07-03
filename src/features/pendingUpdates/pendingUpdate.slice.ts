@@ -13,6 +13,7 @@ import { PendingUpdate } from "./PendingUpdate";
 import { PendingVestingSchedule } from "./PendingVestingSchedule";
 import { PendingVestingScheduleDeletion as PendingVestingScheduleDelete } from "./PendingVestingScheduleDelete";
 import { PendingVestingScheduleClaim } from "./PendingVestingScheduleClaim";
+import { BigNumber } from "ethers";
 
 export const pendingUpdateAdapter = createEntityAdapter<PendingUpdate>({
   selectId: (x) => x.id,
@@ -315,10 +316,12 @@ export const pendingUpdateSlice = createSlice({
           superTokenAddress,
           receiverAddress,
           startDateTimestamp,
-          cliffTransferAmountWei,
           totalDurationInSeconds,
+          cliffPeriodInSeconds,
+          totalAmountWei
         } = action.meta.arg.originalArgs;
         const endDateTimestamp = startDateTimestamp + totalDurationInSeconds;
+        const flowRate = BigNumber.from(totalDurationInSeconds).div(totalAmountWei);
         const pendingUpdate: PendingVestingSchedule = {
           chainId,
           transactionHash,
@@ -328,11 +331,11 @@ export const pendingUpdateSlice = createSlice({
           superTokenAddress,
           pendingType: "VestingScheduleCreate",
           timestamp: dateNowSeconds(),
-          cliffDateTimestamp: 0, // TODO
-          cliffTransferAmountWei,
+          cliffDateTimestamp: startDateTimestamp + cliffPeriodInSeconds,
+          cliffTransferAmountWei: BigNumber.from(cliffPeriodInSeconds).mul(flowRate).toString(),
           startDateTimestamp,
           endDateTimestamp,
-          flowRateWei: "0", // TODO
+          flowRateWei: flowRate.toString(),
           relevantSubgraph: "Vesting",
           version: "v2"
         };

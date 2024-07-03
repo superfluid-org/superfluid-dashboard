@@ -170,7 +170,7 @@ function isCliffPeriodLinear(params: { totalAmountWei: string, totalDurationInSe
   const totalDuration = new Decimal(params.totalDurationInSeconds);
   const cliffPeriod = new Decimal(params.cliffPeriodInSeconds);
 
-  if (totalDuration.lte(0) || totalAmount.lte(0)) {
+  if (totalDuration.eq(0) || totalAmount.eq(0)) {
     return true;
   }
 
