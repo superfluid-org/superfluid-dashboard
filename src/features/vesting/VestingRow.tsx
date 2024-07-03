@@ -102,6 +102,8 @@ const VestingRow: FC<VestingRowProps> = ({
   const showClaim = isReceiver && !!vestingSchedule.claimValidityDate && !vestingSchedule.cliffAndFlowExecutedAt; // Note: we show only for receiver in the table.
   const showUnwrap = isReceiver && (vestingSchedule.status.isStreaming || vestingSchedule.status.isFinished);
 
+  const showVestingVersion = !isBelowMd && isSender && !!network.vestingContractAddress_v2;
+
   const VestingStatusOrPendingProgress = (
     <>
       {pendingDelete ? (
@@ -189,6 +191,7 @@ const VestingRow: FC<VestingRowProps> = ({
           <TableCell sx={{ pl: 0 }}>
             {VestingStatusOrPendingProgress}
           </TableCell>
+          {showVestingVersion && (<TableCell>{version}</TableCell>)}
           {
             isReceiver && (
               <TableCell
