@@ -24,10 +24,7 @@ import { UnitOfTime } from "../send/FlowRateInput";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { CreateVestingFormEffects } from "./CreateVestingFormEffects";
 import { add } from "date-fns";
-import { useAccount } from "wagmi";
-import { useHasFlag } from "../flags/flagsHooks";
-import { Flag } from "../flags/flags.slice";
-import { getAddress } from "../../utils/memoizedEthersUtils";
+import { useVestingVersion } from "../../hooks/useVestingVersion";
 
 export type ValidVestingForm = {
   data: {
@@ -129,20 +126,8 @@ const CreateVestingFormProvider: FC<{
   const [getActiveVestingSchedule] =
     rpcApi.useLazyGetActiveVestingScheduleQuery();
   const { visibleAddress: senderAddress } = useVisibleAddress();
-  const { address: accountAddress } = useAccount();
 
-  const hasVestingV2Enabled = useHasFlag(
-    accountAddress
-      ? {
-        type: Flag.VestingScheduler,
-        chainId: network.id,
-        account: getAddress(accountAddress),
-        version: "v2"
-      }
-      : undefined
-  );
-
-  const version = hasVestingV2Enabled ? "v2" : "v1";
+  const { vestingVersion: version } = useVestingVersion();
 
   const { data: vestingSchedulerConstants } =
     rpcApi.useGetVestingSchedulerConstantsQuery({

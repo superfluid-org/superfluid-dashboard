@@ -42,11 +42,7 @@ import { PartialVestingForm } from "./CreateVestingFormProvider";
 import { CreateVestingCardView, VestingToken } from "./CreateVestingSection";
 import useActiveAutoWrap from "./useActiveAutoWrap";
 import { TokenType } from "../redux/endpoints/tokenTypes";
-import { getAddress } from "viem";
-import { useHasFlag } from "../flags/flagsHooks";
-import { networkDefinition } from "../network/networks";
-import { useAccount } from "wagmi";
-import { Flag } from "../flags/flags.slice";
+import { useVestingVersion } from "../../hooks/useVestingVersion";
 
 export enum VestingFormLabels {
   Receiver = "Receiver",
@@ -413,17 +409,9 @@ const CreateVestingForm: FC<{
     />
   );
 
-  const { address: accountAddress } = useAccount();
-  const isClaimFeatureEnabled = useHasFlag(
-    accountAddress
-      ? {
-        type: Flag.VestingScheduler,
-        chainId: network.id,
-        account: getAddress(accountAddress),
-        version: "v2"
-      }
-      : undefined
-  );
+  
+  const { vestingVersion } = useVestingVersion();
+  const isClaimFeatureEnabled = vestingVersion === "v2";
 
   const ClaimController = (
     <Controller

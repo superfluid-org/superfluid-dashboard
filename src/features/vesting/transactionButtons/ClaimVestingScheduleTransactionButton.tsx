@@ -19,21 +19,19 @@ import { Typography } from "@mui/material";
 import { useAnalytics } from "../../analytics/useAnalytics";
 import { usePendingVestingScheduleClaim } from "../../pendingUpdates/PendingVestingScheduleClaim";
 import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
-import { useAccount } from "wagmi";
-import { useHasFlag } from "../../flags/flagsHooks";
-import { getAddress } from "../../../utils/memoizedEthersUtils";
-import { Flag } from "../../flags/flags.slice";
 
 export const ClaimVestingScheduleTransactionButton: FC<{
   superTokenAddress: string;
   senderAddress: string;
   receiverAddress: string;
+  version: "v1" | "v2"
   TransactionBoundaryProps?: TransactionBoundaryProps;
   TransactionButtonProps?: Partial<TransactionButtonProps>;
 }> = ({
   superTokenAddress,
   senderAddress,
   receiverAddress,
+  version,
   TransactionBoundaryProps,
   TransactionButtonProps = {},
 }) => {
@@ -43,17 +41,7 @@ export const ClaimVestingScheduleTransactionButton: FC<{
 
     const { expectedNetwork: network } = useConnectionBoundary();
 
-    const { address: accountAddress } = useAccount();
-    const hasVestingV2Enabled = useHasFlag(
-      accountAddress
-        ? {
-          type: Flag.VestingScheduler,
-          chainId: network.id,
-          account: getAddress(accountAddress),
-          version: "v2"
-        }
-        : undefined
-    );
+    const hasVestingV2Enabled = version === "v2";
 
     const { visibleAddress } = useVisibleAddress();
 
@@ -63,13 +51,13 @@ export const ClaimVestingScheduleTransactionButton: FC<{
 
     const { data: activeVestingSchedule } =
       rpcApi.useGetActiveVestingScheduleQuery(
-        isSenderOrReceiverLooking
+        isSenderOrReceiverLooking && hasVestingV2Enabled
           ? {
             chainId: network.id,
             superTokenAddress,
             receiverAddress,
             senderAddress,
-            version: hasVestingV2Enabled ? "v2" : "v1"
+            version
           }
           : skipToken
       );

@@ -29,6 +29,7 @@ import Link from "next/link";
 import { usePendingVestingScheduleClaim } from "../pendingUpdates/PendingVestingScheduleClaim";
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import { ClaimVestingScheduleTransactionButton } from "./transactionButtons/ClaimVestingScheduleTransactionButton";
+import vesting from "../../pages/vesting";
 
 interface VestingRowProps {
   network: Network;
@@ -200,6 +201,7 @@ const VestingRow: FC<VestingRowProps> = ({
                       superTokenAddress={superToken}
                       senderAddress={sender}
                       receiverAddress={receiver}
+                      version={vestingSchedule.version}
                       TransactionButtonProps={{ ButtonProps: { size: "small" } }}
                     />
                   </ConnectionBoundary>

@@ -14,11 +14,11 @@ import { calculateAdditionalDataFromValidVestingForm } from "../calculateAdditio
 import { ValidVestingForm } from "../CreateVestingFormProvider";
 import { CreateVestingCardView } from "../CreateVestingSection";
 import { parseEtherOrZero } from "../../../utils/tokenUtils";
-import { useHasFlag } from "../../flags/flagsHooks";
 import { Flag } from "../../flags/flags.slice";
 import { useAccount } from "wagmi";
 import { getAddress } from "../../../utils/memoizedEthersUtils";
 import { useConnectionBoundary } from "../../transactionBoundary/ConnectionBoundary";
+import { useVestingVersion } from "../../../hooks/useVestingVersion";
 
 interface Props {
   setView: (value: CreateVestingCardView) => void;
@@ -32,18 +32,9 @@ export const CreateVestingTransactionButton: FC<Props> = ({
   const { txAnalytics } = useAnalytics();
 
   const { expectedNetwork } = useConnectionBoundary();
+  const { vestingVersion } = useVestingVersion({ network: expectedNetwork });
 
-  const { address: accountAddress } = useAccount();
-  const isVestingV2Enabled = useHasFlag(
-    accountAddress
-      ? {
-        type: Flag.VestingScheduler,
-        chainId: expectedNetwork.id,
-        account: getAddress(accountAddress),
-        version: "v2"
-      }
-      : undefined
-  );
+  const isVestingV2Enabled = vestingVersion === "v2";
 
   const [createVestingScheduleFromAmountAndDuration, createVestingScheduleFromAmountAndDurationResult] =
     rpcApi.useCreateVestingScheduleFromAmountAndDurationMutation();
@@ -74,8 +65,10 @@ export const CreateVestingTransactionButton: FC<Props> = ({
               handleSubmit(
                 async (validData) => {
                   const {
-                    data: { receiverAddress, superTokenAddress, claimEnabled },
+                    data: { receiverAddress, superTokenAddress, claimEnabled: claimEnabled_ },
                   } = validData;
+                  const claimEnabled = isVestingV2Enabled && claimEnabled_;
+
                   const {
                     startDateTimestamp,
                     cliffDateTimestamp,

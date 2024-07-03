@@ -137,6 +137,7 @@ const VestingDetailsHeader: FC<VestingDetailsHeaderProps> = ({
                   superTokenAddress={superToken}
                   senderAddress={sender}
                   receiverAddress={receiver}
+                  version={version}
                   TransactionButtonProps={{
                     disabled: !isClaimEnabled,
                   }}
@@ -179,6 +180,7 @@ const VestingDetailsHeader: FC<VestingDetailsHeaderProps> = ({
                   superTokenAddress={superToken}
                   senderAddress={sender}
                   receiverAddress={receiver}
+                  version={version}
                   TransactionButtonProps={{ ButtonProps: { size: "small" } }}
                 />
               )}
@@ -188,8 +190,8 @@ const VestingDetailsHeader: FC<VestingDetailsHeaderProps> = ({
                   superTokenAddress={superToken}
                   senderAddress={sender}
                   receiverAddress={receiver}
-                  TransactionButtonProps={{ ButtonProps: { size: "small" } }}
                   version={version}
+                  TransactionButtonProps={{ ButtonProps: { size: "small" } }}
                 />
               )}
             </>
