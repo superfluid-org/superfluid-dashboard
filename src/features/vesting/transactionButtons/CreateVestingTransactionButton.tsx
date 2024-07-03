@@ -14,11 +14,10 @@ import { calculateAdditionalDataFromValidVestingForm } from "../calculateAdditio
 import { ValidVestingForm } from "../CreateVestingFormProvider";
 import { CreateVestingCardView } from "../CreateVestingSection";
 import { parseEtherOrZero } from "../../../utils/tokenUtils";
-import { Flag } from "../../flags/flags.slice";
-import { useAccount } from "wagmi";
-import { getAddress } from "../../../utils/memoizedEthersUtils";
 import { useConnectionBoundary } from "../../transactionBoundary/ConnectionBoundary";
 import { useVestingVersion } from "../../../hooks/useVestingVersion";
+import { BigNumber } from "ethers";
+import Decimal from "decimal.js";
 
 interface Props {
   setView: (value: CreateVestingCardView) => void;
@@ -115,14 +114,21 @@ export const CreateVestingTransactionButton: FC<Props> = ({
                     claimEnabled: !!claimEnabled
                   };
 
-                  (isVestingV2Enabled ? createVestingScheduleFromAmountAndDuration({
+                  const isLinearCliff = isCliffPeriodLinear({
+                    totalAmountWei: primaryArgsFromAmountAndDuration.totalAmountWei,
+                    totalDurationInSeconds: primaryArgsFromAmountAndDuration.totalDurationInSeconds,
+                    cliffPeriodInSeconds: primaryArgsFromAmountAndDuration.cliffPeriodInSeconds,
+                    cliffTransferAmountWei: primaryArgs.cliffTransferAmountWei,
+                  });
+
+                  ((isVestingV2Enabled && isLinearCliff) ? createVestingScheduleFromAmountAndDuration({
                     ...primaryArgsFromAmountAndDuration,
                     signer,
                     overrides: await getOverrides(),
                   }) : createVestingSchedule({
                     ...primaryArgs,
                     signer,
-                    version: "v1",
+                    version: vestingVersion,
                     overrides: await getOverrides()
                   }))
                     .unwrap()
@@ -156,3 +162,22 @@ export const CreateVestingTransactionButton: FC<Props> = ({
     </TransactionBoundary>
   );
 };
+
+// Because the amounts and durations function for creating vesting schedules only supports linear cliff.
+function isCliffPeriodLinear(params: { totalAmountWei: string, totalDurationInSeconds: number, cliffPeriodInSeconds: number, cliffTransferAmountWei: string }) {
+  const totalAmount = new Decimal(params.totalAmountWei);
+  const cliffAmount = new Decimal(params.cliffTransferAmountWei);
+  const totalDuration = new Decimal(params.totalDurationInSeconds);
+  const cliffPeriod = new Decimal(params.cliffPeriodInSeconds);
+
+  if (totalDuration.lte(0) || totalAmount.lte(0)) {
+    return true;
+  }
+
+  const cliffPeriodProportion = cliffPeriod.dividedBy(totalDuration);
+  const cliffAmountProportion = cliffAmount.dividedBy(totalAmount);
+
+  const tolerance = new Decimal(0.0000001);
+  const difference = cliffPeriodProportion.minus(cliffAmountProportion).abs();
+  return difference.lte(tolerance);
+}

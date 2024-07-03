@@ -43,7 +43,6 @@ export interface CreateVestingScheduleFromAmountAndDuration
   receiverAddress: string;
   startDateTimestamp: number;
   cliffPeriodInSeconds: number;
-  cliffTransferAmountWei: string;
   totalDurationInSeconds: number;
   totalAmountWei: string;
   claimEnabled: boolean;
@@ -194,18 +193,6 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
           title: "Approve Allowance",
         });
       }
-
-      //   # Signature description:
-      //   function createClaimableVestingSchedule(
-      //     ISuperToken superToken,
-      //     address receiver,
-      //     uint32 startDate,
-      //     uint32 claimValidityDate,
-      //     uint32 cliffDate,
-      //     int96 flowRate,
-      //     uint256 cliffAmount,
-      //     uint32 endDate
-      // )
 
       const createVestingSchedule =
         version === "v2"
@@ -370,10 +357,6 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
           title: "Approve Vesting Scheduler",
         });
       }
-
-      const claimValidityDate = arg.claimEnabled
-        ? params.claimValidityDate
-        : undefined;
 
       const tokenAllowanceDelta = isCloseToUnlimitedTokenAllowance(
         existingTokenAllowance
