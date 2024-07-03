@@ -67,6 +67,7 @@ export const ClaimVestingScheduleTransactionButton: FC<{
       superTokenAddress,
       receiverAddress,
       senderAddress,
+      version
     });
 
     const isButtonVisible = !!activeVestingSchedule?.claimValidityDate;

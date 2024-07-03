@@ -343,7 +343,7 @@ export const pendingUpdateSlice = createSlice({
       rpcApi.endpoints.deleteVestingSchedule.matchFulfilled,
       (state, action) => {
         const { chainId, hash: transactionHash } = action.payload;
-        const { senderAddress, superTokenAddress, receiverAddress } =
+        const { senderAddress, superTokenAddress, receiverAddress, version } =
           action.meta.arg.originalArgs;
         const pendingUpdate: PendingVestingScheduleDelete = {
           chainId,
@@ -355,6 +355,7 @@ export const pendingUpdateSlice = createSlice({
           pendingType: "VestingScheduleDelete",
           timestamp: dateNowSeconds(),
           relevantSubgraph: "Vesting",
+          version
         };
         pendingUpdateAdapter.addOne(state, pendingUpdate);
       }
@@ -375,6 +376,7 @@ export const pendingUpdateSlice = createSlice({
           pendingType: "VestingScheduleClaim",
           timestamp: dateNowSeconds(),
           relevantSubgraph: "Vesting",
+          version: "v2"
         };
         pendingUpdateAdapter.addOne(state, pendingUpdate);
       }

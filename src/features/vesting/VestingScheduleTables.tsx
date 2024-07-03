@@ -27,6 +27,7 @@ import AggregatedVestingSchedules from "./AggregatedVestingSchedules";
 import VestingSchedulerAllowancesTable from "./VestingSchedulesAllowancesTable/VestingSchedulerAllowancesTable";
 import VestingScheduleTable from "./VestingScheduleTable";
 import Link from "../common/Link";
+import { uniqBy } from "lodash";
 
 interface ExecutionWhitelistInfoProps {
   whitelisted: boolean;
@@ -292,7 +293,7 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({ }) => {
   );
 
   const mappedSentVestingSchedules = useMemo(() => {
-    return [...mappedPendingVestingSchedules, ...(sentVestingSchedules || [])];
+    return uniqBy([...(sentVestingSchedules || []), ...mappedPendingVestingSchedules], x => `${x.superToken}-${x.sender}-${x.receiver}-${x.version}`);
   }, [mappedPendingVestingSchedules, sentVestingSchedules]);
 
   const notDeletedSentVestingSchedules = useMemo(

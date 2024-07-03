@@ -68,7 +68,7 @@ export const mapPendingToVestingSchedule = (
 
   return {
     pendingCreate: pendingVestingSchedule,
-    id: `${receiverAddress}-${superTokenAddress}-${startDateTimestamp}`,
+    id: `${superTokenAddress}-${address}-${receiverAddress}-${version}`,
     superToken: superTokenAddress,
     sender: address,
     receiver: receiverAddress,

@@ -11,6 +11,7 @@ export interface PendingVestingScheduleClaim
       "chainId" | "superTokenAddress" | "senderAddress" | "receiverAddress"
     > {
   pendingType: "VestingScheduleClaim";
+  version: "v2"
 }
 
 export const isPendingVestingScheduleClaim = (
@@ -45,11 +46,13 @@ export const usePendingVestingScheduleClaim = (
     superTokenAddress,
     senderAddress,
     receiverAddress,
+    version
   }: {
     chainId: number;
     superTokenAddress: string;
     senderAddress: string;
     receiverAddress: string;
+    version: "v1" | "v2"
   },
   options?: { skip: boolean }
 ) => {
@@ -64,6 +67,7 @@ export const usePendingVestingScheduleClaim = (
         : list.filter(
             (x) =>
               x.chainId === chainId &&
+              x.version === version &&
               x.superTokenAddress.toLowerCase() ===
                 superTokenAddress.toLowerCase() &&
               (x.senderAddress.toLowerCase() === senderAddress.toLowerCase() ||

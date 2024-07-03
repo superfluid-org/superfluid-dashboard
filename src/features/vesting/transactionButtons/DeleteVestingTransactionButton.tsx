@@ -76,6 +76,7 @@ export const DeleteVestingTransactionButton: FC<{
     superTokenAddress,
     receiverAddress,
     senderAddress,
+    version
   });
   const isButtonVisible = !!activeVestingSchedule && !isBeingDeleted;
 

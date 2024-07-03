@@ -29,7 +29,6 @@ import Link from "next/link";
 import { usePendingVestingScheduleClaim } from "../pendingUpdates/PendingVestingScheduleClaim";
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import { ClaimVestingScheduleTransactionButton } from "./transactionButtons/ClaimVestingScheduleTransactionButton";
-import vesting from "../../pages/vesting";
 
 interface VestingRowProps {
   network: Network;
@@ -52,7 +51,8 @@ const VestingRow: FC<VestingRowProps> = ({
     startDate,
     pendingCreate,
     cliffAndFlowDate,
-    remainderAmount
+    remainderAmount,
+    version
   } = vestingSchedule;
 
   const theme = useTheme();
@@ -64,6 +64,7 @@ const VestingRow: FC<VestingRowProps> = ({
       superTokenAddress: superToken,
       receiverAddress: receiver,
       senderAddress: sender,
+      version
     },
     {
       skip: vestingSchedule.status.isFinished,
@@ -76,6 +77,7 @@ const VestingRow: FC<VestingRowProps> = ({
       superTokenAddress: superToken,
       receiverAddress: receiver,
       senderAddress: sender,
+      version
     },
     {
       skip: !vestingSchedule.status.canClaim,
