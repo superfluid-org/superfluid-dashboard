@@ -162,7 +162,7 @@ export const CreateVestingSection: FC<CreateVestingSectionProps> = ({
                 }}
               >
                 <ToggleButton value="v1">&nbsp;V1&nbsp;</ToggleButton>
-                <ToggleButton value="v2">V2 (BETA)</ToggleButton>
+                <ToggleButton value="v2">&nbsp;V2&nbsp;</ToggleButton>
               </ToggleButtonGroup>
             )
           }
