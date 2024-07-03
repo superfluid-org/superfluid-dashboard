@@ -108,8 +108,6 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
-  const vestingContractAddress = network.vestingContractAddress_v2 || network.vestingContractAddress_v1;
-
   return (
     <Stack>
       <Stack
@@ -133,7 +131,7 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
           alignItems={isBelowMd ? "flex-start" : "flex-end"}
           gap={isBelowMd ? 0.5 : 0.2}
         >
-          {!!vestingContractAddress && (
+          {network.vestingContractAddress_v1 && (
             <Stack direction="row" alignItems="center" gap={0.5}>
               <Typography
                 variant={isBelowMd ? "body2" : "body1"}
@@ -148,7 +146,7 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
               >
                 <CopyIconBtn
                   TooltipProps={{ placement: "top" }}
-                  copyText={getAddress(vestingContractAddress)}
+                  copyText={getAddress(network.vestingContractAddress_v1)}
                   description="Copy address to clipboard"
                   IconButtonProps={{ size: "small" }}
                 />
@@ -159,7 +157,43 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
                 >
                   <IconButton
                     LinkComponent={Link}
-                    href={network.getLinkForAddress(vestingContractAddress)}
+                    href={network.getLinkForAddress(network.vestingContractAddress_v1)}
+                    target="_blank"
+                    size="small"
+                  >
+                    <LaunchRoundedIcon color="inherit" />
+                  </IconButton>
+                </Tooltip>
+              </Stack>
+            </Stack>
+          )}
+          {network.vestingContractAddress_v2 && (
+            <Stack direction="row" alignItems="center" gap={0.5}>
+              <Typography
+                variant={isBelowMd ? "body2" : "body1"}
+                color="secondary"
+              >
+                Vesting (V2) Smart Contract
+              </Typography>
+              <Stack
+                data-cy="vesting-v2-contract-buttons"
+                direction="row"
+                alignItems="center"
+              >
+                <CopyIconBtn
+                  TooltipProps={{ placement: "top" }}
+                  copyText={getAddress(network.vestingContractAddress_v2)}
+                  description="Copy address to clipboard"
+                  IconButtonProps={{ size: "small" }}
+                />
+                <Tooltip
+                  arrow
+                  title="View on blockchain explorer"
+                  placement="top"
+                >
+                  <IconButton
+                    LinkComponent={Link}
+                    href={network.getLinkForAddress(network.vestingContractAddress_v2)}
                     target="_blank"
                     size="small"
                   >
