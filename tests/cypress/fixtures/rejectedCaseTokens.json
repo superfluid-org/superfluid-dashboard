@@ -74,6 +74,7 @@
   "opsepolia": {
     "TokenOne": "fDAI",
     "TokenTwo": "fUSDC",
+    "TokenThree": "fTUSD",
     "TokenGas": "ETH"
   },
   "degen": {

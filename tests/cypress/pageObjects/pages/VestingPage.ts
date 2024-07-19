@@ -790,7 +790,7 @@ export class VestingPage extends BasePage {
     this.isVisible(TRY_FUJI_BUTTON);
   }
 
-  static clickOnTryOnFujiButton() {
+  static clickOnTryOnOpSepoliaButton() {
     this.click(TRY_FUJI_BUTTON);
   }
 

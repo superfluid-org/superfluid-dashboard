@@ -12,7 +12,7 @@ Feature: Vesting page first batch of test cases
         And User clicks on the "vesting" navigation button
         And User clicks on the create vesting schedule button
         And Vesting creation form is visible
-        And User changes their network to "opsepolia"
+        And User changes their network to "avalanche-fuji"
         Then User sees network not supported screen in the vesting page
 
     Scenario: Creation form - Cannot vest to yourself
@@ -63,9 +63,9 @@ Feature: Vesting page first batch of test cases
         And User inputs "4" "year" as the cliff period
         And User inputs "1" as the total vested amount
         And User inputs "1" "year" as the total vesting period
-        Then "The vesting end date has to be at least 120 minutes from the start or the cliff." error is shown in the form
+        Then "The vesting end date has to be at least 420 minutes from the start or the cliff." error is shown in the form
 
-    Scenario: Creation form - Total vesting period has to be atleast 120 minutes after start
+    Scenario: Creation form - Total vesting period has to be atleast 420 minutes after start
         Given Transactional account bob is connected to the dashboard on opsepolia
         And User clicks on the "vesting" navigation button
         And User clicks on the create vesting schedule button
@@ -77,7 +77,7 @@ Feature: Vesting page first batch of test cases
         And User inputs "30" "minute" as the cliff period
         And User inputs "2" as the total vested amount
         And User inputs "59" "minute" as the total vesting period
-        Then "The vesting end date has to be at least 120 minutes from the start or the cliff." error is shown in the form
+        Then "The vesting end date has to be at least 420 minutes from the start or the cliff." error is shown in the form
 
     Scenario: Creation form - Vesting period less than 10 years
         Given Transactional account bob is connected to the dashboard on opsepolia
@@ -154,7 +154,7 @@ Feature: Vesting page first batch of test cases
     #    Then User sees network not supported screen in the vesting page
     #    And Mainnet network link is disabled
     Scenario: Network not supported screen in vesting page
-        Given Transactional account john is connected to the dashboard on opsepolia
+        Given Transactional account john is connected to the dashboard on avalanche-fuji
         And User clicks on the "vesting" navigation button
         Then User sees network not supported screen in the vesting page
 

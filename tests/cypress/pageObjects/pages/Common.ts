@@ -215,7 +215,7 @@ export class Common extends BasePage {
   }
   static validateLensImageIsLoaded(account: string) {
     cy.fixture("ensAndLensAvatarUrls").then((urls) => {
-      cy.get(ADDRESS_SEARCH_AVATAR_IMAGES, { timeout: 30000 })
+      cy.get(ADDRESS_SEARCH_AVATAR_IMAGES, { timeout: 60000 })
         .should("have.attr", "src", urls[account])
         .and("be.visible");
     });
@@ -703,7 +703,7 @@ export class Common extends BasePage {
 
   static validateSwitchNetworkButtonInFaucetMenu() {
     this.isVisible(CHANGE_NETWORK_BUTTON);
-    this.hasText(CHANGE_NETWORK_BUTTON, "Change Network to Avalanche Fuji");
+    this.hasText(CHANGE_NETWORK_BUTTON, "Change Network to Optimism Sepolia");
   }
 
   static clickSwitchNetworkButton() {

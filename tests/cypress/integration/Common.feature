@@ -60,14 +60,14 @@ Feature: Common element test cases
     #     Then The stop viewing as an address button is visible
     #     And User clicks on the stop viewing as an address button
     #     Then Connect wallet button is visible in the faucet menu
-    # Scenario: Change network to Avalanche Fuji button in faucet view
+    # Scenario: Change network to Optimism Sepolia button in faucet view
     #     Given "Dashboard Page" is open with "john" connected on "sepolia"
     #     And User opens the navigation more menu
     #     And User opens the faucet view from the navigation menu
-    #     Then Switch to Avalanche Fuji button is visible in the faucet menu
+    #     Then Switch to Optimism Sepolia button is visible in the faucet menu
     #     And User clicks on the switch network to button
     #     And User closes the presentation dialog
-    #     Then "Avalanche Fuji" is the selected network in the dashboard
+    #     Then "Optimism Sepolia" is the selected network in the dashboard
     # Scenario: Claiming faucet tokens
     #     Given "Dashboard Page" is open with "NewRandomWallet" connected on "opsepolia"
     #     And User opens the navigation more menu

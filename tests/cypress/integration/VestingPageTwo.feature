@@ -56,12 +56,12 @@ Feature: Vesting page second batch of test cases
         And User opens "StIbAlluoUSD" permission table row
         Then All current and recommended permissions are correctly showed for "StIbAlluoUSD"
 
-    Scenario: Vesting schedule allowlist message - Try out on Avalanche Fuji testnet button
+    Scenario: Vesting schedule allowlist message - Try out on Optimism Sepolia testnet button
         Given Transactional account alice is connected to the dashboard on polygon
         And User clicks on the "vesting" navigation button
         And User clicks on the create vesting schedule button
         Then Vesting allowlist message is shown
-        And User tries out vesting on Avalanche Fuji testnet
+        And User tries out vesting on Optimism Sepolia testnet
         And User inputs "3" as the total vested amount
         And User inputs "4" "year" as the total vesting period
 
