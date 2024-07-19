@@ -351,7 +351,7 @@ Then(/^Connect wallet button is visible in the faucet menu$/, function () {
   Common.validateConnectWalletButtonInFaucetMenu();
 });
 Then(
-  /^Switch to Avalanche Fuji button is visible in the faucet menu$/,
+  /^Switch to Optimism Sepolia button is visible in the faucet menu$/,
   function () {
     Common.validateSwitchNetworkButtonInFaucetMenu();
   }

@@ -166,8 +166,8 @@ Then(
 Then(/^Vesting allowlist message is shown$/, function () {
   VestingPage.validateAllowListMessage();
 });
-Then(/^User tries out vesting on Avalanche Fuji testnet$/, function () {
-  VestingPage.clickOnTryOnFujiButton();
+Then(/^User tries out vesting on Optimism Sepolia testnet$/, function () {
+  VestingPage.clickOnTryOnOpSepoliaButton();
 });
 Then(/^User clicks on the input access code button$/, function () {
   VestingPage.clickInputAccessCodeButton();
