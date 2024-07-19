@@ -5,7 +5,7 @@ Feature: Vesting page second batch of test cases
     Scenario Outline: Vesting schedule statuses - <status>
         Given Vesting schedule status is mocked to <status>
 
-        Given Transactional account john is connected to the dashboard on avalanche-fuji
+        Given Transactional account john is connected to the dashboard on opsepolia
         And User clicks on the "vesting" navigation button
         Then The first vesting row in the table shows <status>
 
@@ -25,7 +25,7 @@ Feature: Vesting page second batch of test cases
     Scenario Outline: Schedule progress bar showing correctly for a scheduled vesting
         Given Vesting schedule progress is mocked to <state>
 
-        Given Transactional account john is connected to the dashboard on avalanche-fuji
+        Given Transactional account john is connected to the dashboard on opsepolia
         And User clicks on the "vesting" navigation button
         And User opens the last vesting schedule they have created
         Then The schedule bar is correctly shown when it is in <state>
@@ -73,7 +73,7 @@ Feature: Vesting page second batch of test cases
 
     Scenario: Setting up auto-wrap from the vesting form (rejected)
         Given HDWallet transactions are rejected
-        And Transactional account john is connected to the dashboard on avalanche-fuji
+        And Transactional account john is connected to the dashboard on opsepolia
         And User clicks on the "vesting" navigation button
         And User clicks on the create vesting schedule button
         And User searches for "vijay.eth" as a receiver
@@ -85,11 +85,11 @@ Feature: Vesting page second batch of test cases
         And User clicks on the auto-wrap switch
         And User previews the vesting schedule
         And User clicks on the enable auto-wrap transaction button
-        And Auto-wrap transaction message is shown for "fDAIx" on "avalanche-fuji"
+        And Auto-wrap transaction message is shown for "fDAIx" on "opsepolia"
         Then Transaction rejected error is shown
 
     Scenario: Auto-Wrap not available for native tokens in the vesting form
-        And Transactional account john is connected to the dashboard on avalanche-fuji
+        And Transactional account john is connected to the dashboard on opsepolia
         And User clicks on the "vesting" navigation button
         And User clicks on the create vesting schedule button
         And User selects "MATICx" as the super token to use for the stream

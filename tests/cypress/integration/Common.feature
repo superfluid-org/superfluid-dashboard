@@ -46,69 +46,62 @@ Feature: Common element test cases
         And User closes the access code dialog
         And User opens the dashboard network selection dropdown
 
-    Scenario: Connect wallet button in faucet view
-        Given "Dashboard page" is open without connecting a wallet
-        And User opens the navigation more menu
-        And User opens the faucet view from the navigation menu
-        Then Connect wallet button is visible in the faucet menu
-
-    Scenario: Stop viewing an address button in faucet view
-        Given "Dashboard page" is open without connecting a wallet
-        And User uses view mode to look at "ongoingStreamAccount"
-        And User waits for balances to load
-        And User opens the navigation more menu
-        And User opens the faucet view from the navigation menu
-        Then The stop viewing as an address button is visible
-        And User clicks on the stop viewing as an address button
-        Then Connect wallet button is visible in the faucet menu
-
-    Scenario: Change network to Avalanche Fuji button in faucet view
-        Given "Dashboard Page" is open with "john" connected on "sepolia"
-        And User opens the navigation more menu
-        And User opens the faucet view from the navigation menu
-        Then Switch to Avalanche Fuji button is visible in the faucet menu
-        And User clicks on the switch network to button
-        And User closes the presentation dialog
-        Then "Avalanche Fuji" is the selected network in the dashboard
-
-    Scenario: Claiming faucet tokens
-        Given "Dashboard Page" is open with "NewRandomWallet" connected on "avalanche-fuji"
-        And User opens the navigation more menu
-        And User opens the faucet view from the navigation menu
-        And The new wallet address is visible in the faucet menu
-        And User clicks the claim tokens button
-        Then Successfully claimed tokens message is shown
-        And User clicks on the go to dashboard page button
-        And The transaction drawer shows a pending "Claim Tokens" transaction on "avalanche-fuji"
-        And The transaction drawer shows a succeeded "Claim Tokens" transaction on "avalanche-fuji"
-        Then The netflow and incomming/outgoing amounts in the dashboard page for "fDAIx" on "avalanche-fuji" are "+1521/mo,-0/mo,+1521/mo"
-        Then The netflow and incomming/outgoing amounts in the dashboard page for "fUSDCx" on "avalanche-fuji" are "+1521/mo,-0/mo,+1521/mo"
-        And User clicks on the "wrap-unwrap" navigation button
-        Then "MATIC" is selected as the token to wrap and it has underlying balance of "0.1"
-        And User sends back the remaining MATIC to the faucet
-
-    @mocked
-    Scenario: Something went wrong message in the faucet menu
-        Given Faucet requests are mocked to an error state
-
-        Given "Dashboard Page" is open with "john" connected on "avalanche-fuji"
-        And User opens the navigation more menu
-        And User opens the faucet view from the navigation menu
-        And User clicks the claim tokens button
-        Then Something went wrong message is shown in the faucet menu
-
-    Scenario: Tokens already claimed buttons in the faucet menu
-        Given "Dashboard Page" is open with "john" connected on "avalanche-fuji"
-        And User opens the navigation more menu
-        And User opens the faucet view from the navigation menu
-        And User clicks the claim tokens button
-        Then You have already claimed tokens message is shown
-        And User clicks on the wrap into super tokens button
-        Then Wrap/Unwrap page is open and the wrap container is visible with a wallet connected
-        And User opens the navigation more menu
-        And User opens the faucet view from the navigation menu
-        Then The claim token is disabled and shows Tokens claimed message
-
+    # Scenario: Connect wallet button in faucet view
+    #     Given "Dashboard page" is open without connecting a wallet
+    #     And User opens the navigation more menu
+    #     And User opens the faucet view from the navigation menu
+    #     Then Connect wallet button is visible in the faucet menu
+    # Scenario: Stop viewing an address button in faucet view
+    #     Given "Dashboard page" is open without connecting a wallet
+    #     And User uses view mode to look at "ongoingStreamAccount"
+    #     And User waits for balances to load
+    #     And User opens the navigation more menu
+    #     And User opens the faucet view from the navigation menu
+    #     Then The stop viewing as an address button is visible
+    #     And User clicks on the stop viewing as an address button
+    #     Then Connect wallet button is visible in the faucet menu
+    # Scenario: Change network to Avalanche Fuji button in faucet view
+    #     Given "Dashboard Page" is open with "john" connected on "sepolia"
+    #     And User opens the navigation more menu
+    #     And User opens the faucet view from the navigation menu
+    #     Then Switch to Avalanche Fuji button is visible in the faucet menu
+    #     And User clicks on the switch network to button
+    #     And User closes the presentation dialog
+    #     Then "Avalanche Fuji" is the selected network in the dashboard
+    # Scenario: Claiming faucet tokens
+    #     Given "Dashboard Page" is open with "NewRandomWallet" connected on "opsepolia"
+    #     And User opens the navigation more menu
+    #     And User opens the faucet view from the navigation menu
+    #     And The new wallet address is visible in the faucet menu
+    #     And User clicks the claim tokens button
+    #     Then Successfully claimed tokens message is shown
+    #     And User clicks on the go to dashboard page button
+    #     And The transaction drawer shows a pending "Claim Tokens" transaction on "opsepolia"
+    #     And The transaction drawer shows a succeeded "Claim Tokens" transaction on "opsepolia"
+    #     Then The netflow and incomming/outgoing amounts in the dashboard page for "fDAIx" on "opsepolia" are "+1521/mo,-0/mo,+1521/mo"
+    #     Then The netflow and incomming/outgoing amounts in the dashboard page for "fUSDCx" on "opsepolia" are "+1521/mo,-0/mo,+1521/mo"
+    #     And User clicks on the "wrap-unwrap" navigation button
+    #     Then "MATIC" is selected as the token to wrap and it has underlying balance of "0.1"
+    #     And User sends back the remaining MATIC to the faucet
+    # @mocked
+    # Scenario: Something went wrong message in the faucet menu
+    #     Given Faucet requests are mocked to an error state
+    #     Given "Dashboard Page" is open with "john" connected on "opsepolia"
+    #     And User opens the navigation more menu
+    #     And User opens the faucet view from the navigation menu
+    #     And User clicks the claim tokens button
+    #     Then Something went wrong message is shown in the faucet menu
+    # Scenario: Tokens already claimed buttons in the faucet menu
+    #     Given "Dashboard Page" is open with "john" connected on "opsepolia"
+    #     And User opens the navigation more menu
+    #     And User opens the faucet view from the navigation menu
+    #     And User clicks the claim tokens button
+    #     Then You have already claimed tokens message is shown
+    #     And User clicks on the wrap into super tokens button
+    #     Then Wrap/Unwrap page is open and the wrap container is visible with a wallet connected
+    #     And User opens the navigation more menu
+    #     And User opens the faucet view from the navigation menu
+    #     Then The claim token is disabled and shows Tokens claimed message
     Scenario: No new notifications message
         Given "Settings Page" is open with "dan" connected on "ethereum"
         And User opens the notifications modal
@@ -167,7 +160,7 @@ Feature: Common element test cases
     Scenario: Notifications automatically archived if older than a month
         Given Notifications requests are mocked to "Old notification"
 
-        Given "Settings Page" is open with "dan" connected on "avalanche-fuji"
+        Given "Settings Page" is open with "dan" connected on "opsepolia"
         And User opens the notifications modal
         Then No "new" notifications message is shown
         And User switches to the "archive" notification tab
@@ -218,11 +211,11 @@ Feature: Common element test cases
     Scenario: Searching for an lens address
         Given "Vesting page" is open without connecting a wallet
         And User clicks on the view mode button
-        And User types "elvijs.lens" into the address input
-        Then A lens entry for "elvijs.lens" is visible
-        And The avatar image for "elvijs.lens" is shown loaded
+        And User types "@elvijs" into the address input
+        Then A lens entry for "@elvijs" is visible
+        And The avatar image for "@elvijs" is shown loaded
         And User chooses the first lens entry from the list
-        Then View mode chip shows "elvijs.lens"
+        Then View mode chip shows "@elvijs"
 
     Scenario: Searching for an ens address and validating the image
         Given "Vesting page" is open without connecting a wallet
@@ -245,7 +238,7 @@ Feature: Common element test cases
 
         Given Lens and ENS api requests are blocked
         And User clicks on the view mode button
-        And User types "elvijs.lens" into the address input
+        And User types "@elvijs" into the address input
         Then An error is shown in the "Lens" receiver list
 
     Scenario: ENS Api error when fetching a receiver

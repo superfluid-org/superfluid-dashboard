@@ -34,19 +34,19 @@ Feature: Dashboard Page test cases
         And User clicks on the "dashboard" navigation button
         And User changes the visible networks to "testnet"
         And User opens the network selection dropdown
-        And User clicks on the "avalanche-fuji" toggle
-        Then "avalanche-fuji" balances are not visible
+        And User clicks on the "opsepolia" toggle
+        Then "opsepolia" balances are not visible
 
     Scenario: Flow values ,cancel buttons and wrong network warning for an account with ongoing streams
-        Given "Dashboard Page" is open with "ongoingStreamAccount" connected on "gnosis"
-        And User clicks on "gnosis" "xDAIx" row
-        And "gnosis" "xDAIx" flow rates are shown with the correct values
-        Then "gnosis" streams are shown with the correct values in dashboard page
-        And Cancel and Edit buttons are visible
+        Given "Dashboard Page" is open with "ongoingStreamAccount" connected on "optimism"
         And User clicks on "optimism" "DAIx" row
-        And Cancel button is disabled on all streams on "optimism"
-        And User hovers on the first "optimism" stream cancel button
-        Then A tooltip asking user to switch to "optimism" is shown
+        And "optimism" "DAIx" flow rates are shown with the correct values
+        Then "optimism" streams are shown with the correct values in dashboard page
+        And Cancel and Edit buttons are visible
+        And User clicks on "polygon" "MATICx" row
+        And Cancel button is disabled on all streams on "polygon"
+        And User hovers on the first "polygon" stream cancel button
+        Then A tooltip asking user to switch to "polygon" is shown
 
     Scenario: Changing token stream table pages and amount of results shown
         Given "Dashboard Page" is open without connecting a wallet
@@ -64,21 +64,20 @@ Feature: Dashboard Page test cases
         And User clicks on "polygon" "MATICx" row
         Then There are no cancel or modify buttons in the last stream row
 
-    Scenario: Testnet faucet message in the dashboard page for user with no super tokens
-        Given "Dashboard Page" is open with "NewRandomWallet" connected on "avalanche-fuji"
-        Then Dashboard page faucet message is shown
-        And User opens the faucet view from the dashboard page
-        Then Faucet view is visible
-
+    # Scenario: Testnet faucet message in the dashboard page for user with no super tokens
+    #     Given "Dashboard Page" is open with "NewRandomWallet" connected on "opsepolia"
+    #     Then Dashboard page faucet message is shown
+    #     And User opens the faucet view from the dashboard page
+    #     Then Faucet view is visible
     Scenario: Testnet faucet message not shown for users with tokens
-        Given "Dashboard Page" is open with "john" connected on "avalanche-fuji"
+        Given "Dashboard Page" is open with "john" connected on "opsepolia"
         Then Dashboard page faucet message does not exist
 
     Scenario: Cancelling a stream from the streams table
         Given HDWallet transactions are rejected
 
-        Given "Dashboard Page" is open with "john" connected on "avalanche-fuji"
-        And User clicks on "avalanche-fuji" "fDAIx" row
+        Given "Dashboard Page" is open with "john" connected on "opsepolia"
+        And User clicks on "opsepolia" "fDAIx" row
         And Cancel and Edit buttons are visible
         And User clicks on the first visible cancel button
         Then Transaction rejected error is shown

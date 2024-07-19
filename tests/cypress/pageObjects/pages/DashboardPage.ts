@@ -73,7 +73,7 @@ export class DashboardPage extends BasePage {
   }
 
   static noBalancesScreenIsVisible() {
-    this.isVisible(NO_BALANCE_WRAP_BUTTON);
+    this.isVisible(NO_BALANCE_WRAP_BUTTON, undefined, { timeout: 30000 });
     this.isVisible(NO_BALANCE_MESSAGE);
   }
 

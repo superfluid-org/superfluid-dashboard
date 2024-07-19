@@ -214,7 +214,7 @@ export class BridgePage extends BasePage {
       "Avalanche",
       "Arbitrum",
       "Optimism",
-      "Celo",
+      "CELO",
       "BASE",
     ];
     cy.get(NETWORK_BUTTONS)

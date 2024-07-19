@@ -112,7 +112,7 @@ const MoreNavigationItem: FC = () => {
           </ListItemButton>
         </NextLink>
 
-        <NextLink href="/?showFaucet=true" legacyBehavior>
+        {/* <NextLink href="/?showFaucet=true" legacyBehavior>
           <ListItemButton
             data-cy={"more-faucet-btn"}
             href=""
@@ -123,7 +123,7 @@ const MoreNavigationItem: FC = () => {
             </ListItemIcon>
             <ListItemText>Testnet Faucet</ListItemText>
           </ListItemButton>
-        </NextLink>
+        </NextLink> */}
         <NextLink href="/auto-wrap" legacyBehavior>
           <ListItemButton
             data-cy={"wrap-utility-btn"}

@@ -93,7 +93,7 @@
       }
     }
   },
-  "avalanche-fuji": {
+  "opsepolia": {
     "staticBalanceAccount": {
       "tokenValues": [
         {
@@ -167,10 +167,10 @@
     "ongoingStreamsAccount": {
       "tokenValues": {
         "token": "DAIx",
-        "netFlowRate": "-0.01000000/mo",
-        "inFlow": "+0.03/mo",
+        "netFlowRate": "-0.020278/mo",
+        "inFlow": "+0/mo",
         "outFlow": "-0.020278/mo",
-        "tokenAddress": "0x7d342726B69C28D942ad8BfE6Ac81b972349d524",
+        "tokenAddress": "0x7d342726b69c28d942ad8bfe6ac81b972349d524",
         "streams": [
           {
             "fromTo": "0xf9ce...3ff2",
@@ -179,7 +179,7 @@
           },
           {
             "fromTo": "0x275c...739f",
-            "flowRate": "+0.03/mo",
+            "flowRate": "-",
             "endDate": "4 Apr. 2022"
           },
           {

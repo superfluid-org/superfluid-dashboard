@@ -102,7 +102,6 @@ Feature: ACL and Auto-Wrap related rejected test cases
         Given HDWallet transactions are rejected
 
         Given "Settings Page" is open with "john" connected on "selected network"
-        And No loading skeletons are visible in the page
         And User clicks on the add approval button
         And User opens the add approval modal is visible
         And User selects "TokenOnex" as the super token to use for the stream

@@ -2,21 +2,21 @@
 Feature: Vesting page first batch of test cases
 
     Scenario: No vesting schedule messages
-        Given Transactional account bob is connected to the dashboard on avalanche-fuji
+        Given Transactional account bob is connected to the dashboard on opsepolia
         And User clicks on the "vesting" navigation button
         Then No received vesting schedules message is shown
         And No created vesting schedules message is shown
 
     Scenario: Vesting only available on supported networks
-        Given Transactional account bob is connected to the dashboard on avalanche-fuji
+        Given Transactional account bob is connected to the dashboard on opsepolia
         And User clicks on the "vesting" navigation button
         And User clicks on the create vesting schedule button
         And Vesting creation form is visible
-        And User changes their network to "avalanche-fuji"
+        And User changes their network to "opsepolia"
         Then User sees network not supported screen in the vesting page
 
     Scenario: Creation form - Cannot vest to yourself
-        Given Transactional account bob is connected to the dashboard on avalanche-fuji
+        Given Transactional account bob is connected to the dashboard on opsepolia
         And User clicks on the "vesting" navigation button
         And User clicks on the create vesting schedule button
         And User searches for "0x9B6157d44134b21D934468B8bf709294cB298aa7" as a receiver
@@ -30,7 +30,7 @@ Feature: Vesting page first batch of test cases
         Then "You can’t vest to yourself. Choose a different wallet." error is shown in the form
 
     Scenario: Creation form - Cliff amount has to be less than total amount
-        Given Transactional account bob is connected to the dashboard on avalanche-fuji
+        Given Transactional account bob is connected to the dashboard on opsepolia
         And User clicks on the "vesting" navigation button
         And User clicks on the create vesting schedule button
         And User searches for "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" as a receiver
@@ -44,7 +44,7 @@ Feature: Vesting page first batch of test cases
         Then "Cliff amount has to be less than total amount." error is shown in the form
 
     Scenario: Creation form - Top-up warning message
-        Given Transactional account bob is connected to the dashboard on avalanche-fuji
+        Given Transactional account bob is connected to the dashboard on opsepolia
         And User clicks on the "vesting" navigation button
         And User clicks on the create vesting schedule button
         Then The top-up warning message without cliff is shown
@@ -52,7 +52,7 @@ Feature: Vesting page first batch of test cases
         Then The top-up warning message when cliff is enabled is shown
 
     Scenario: Creation form - Cliff amount period has to be before total vesting period
-        Given Transactional account bob is connected to the dashboard on avalanche-fuji
+        Given Transactional account bob is connected to the dashboard on opsepolia
         And User clicks on the "vesting" navigation button
         And User clicks on the create vesting schedule button
         And User searches for "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" as a receiver
@@ -66,7 +66,7 @@ Feature: Vesting page first batch of test cases
         Then "The vesting end date has to be at least 120 minutes from the start or the cliff." error is shown in the form
 
     Scenario: Creation form - Total vesting period has to be atleast 120 minutes after start
-        Given Transactional account bob is connected to the dashboard on avalanche-fuji
+        Given Transactional account bob is connected to the dashboard on opsepolia
         And User clicks on the "vesting" navigation button
         And User clicks on the create vesting schedule button
         And User searches for "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" as a receiver
@@ -80,7 +80,7 @@ Feature: Vesting page first batch of test cases
         Then "The vesting end date has to be at least 120 minutes from the start or the cliff." error is shown in the form
 
     Scenario: Creation form - Vesting period less than 10 years
-        Given Transactional account bob is connected to the dashboard on avalanche-fuji
+        Given Transactional account bob is connected to the dashboard on opsepolia
         And User clicks on the "vesting" navigation button
         And User clicks on the create vesting schedule button
         And User searches for "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" as a receiver
@@ -91,7 +91,7 @@ Feature: Vesting page first batch of test cases
         Then "The vesting period has to be less than 10 years." error is shown in the form
 
     Scenario: Creation form - Existing schedule
-        Given Transactional account john is connected to the dashboard on avalanche-fuji
+        Given Transactional account john is connected to the dashboard on opsepolia
         And User clicks on the "vesting" navigation button
         And User clicks on the create vesting schedule button
         And User searches for "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" as a receiver
@@ -106,7 +106,7 @@ Feature: Vesting page first batch of test cases
 
     Scenario: Creating a vesting schedule with a cliff
         Given HDWallet transactions are rejected
-        And Transactional account john is connected to the dashboard on avalanche-fuji
+        And Transactional account john is connected to the dashboard on opsepolia
         And User clicks on the "vesting" navigation button
         Then No received vesting schedules message is shown
         #And User deletes the vesting schedule if necessary
@@ -125,14 +125,14 @@ Feature: Vesting page first batch of test cases
     Scenario: Deleting a vesting schedule
         Given HDWallet transactions are rejected
 
-        Given Transactional account john is connected to the dashboard on avalanche-fuji
+        Given Transactional account john is connected to the dashboard on opsepolia
         And User clicks on the "vesting" navigation button
         And User opens the last vesting schedule they have created
         And User deletes the vesting schedule
         And Transaction rejected error is shown
 
-    Scenario: Change network button showing up if user is not on avalanche-fuji
-        Given Transactional account john is connected to the dashboard on avalanche-fuji
+    Scenario: Change network button showing up if user is not on opsepolia
+        Given Transactional account john is connected to the dashboard on opsepolia
         And User clicks on the "vesting" navigation button
         And User opens the last vesting schedule they have created
         And Delete vesting schedule button is visible
@@ -143,23 +143,23 @@ Feature: Vesting page first batch of test cases
         And Delete vesting schedule button is visible
 
     Scenario: Sent vesting schedules details
-        Given Transactional account john is connected to the dashboard on avalanche-fuji
+        Given Transactional account john is connected to the dashboard on opsepolia
         And User clicks on the "vesting" navigation button
         And The created vesting schedule is shown correctly in the table
         And User opens the last vesting schedule they have created
         And Vesting details page is shown correctly for the created schedule
 
-    #  Scenario: Vesting schedules only available on Mainnet,Polygon,BNB and avalanche-fuji
-    #    Given Transactional account john is connected to the dashboard on avalanche-fuji
+    #  Scenario: Vesting schedules only available on Mainnet,Polygon,BNB and opsepolia
+    #    Given Transactional account john is connected to the dashboard on opsepolia
     #    Then User sees network not supported screen in the vesting page
     #    And Mainnet network link is disabled
     Scenario: Network not supported screen in vesting page
-        Given Transactional account john is connected to the dashboard on avalanche-fuji
+        Given Transactional account john is connected to the dashboard on opsepolia
         And User clicks on the "vesting" navigation button
         Then User sees network not supported screen in the vesting page
 
     Scenario: Allowance table statuses
-        Given Transactional account john is connected to the dashboard on avalanche-fuji
+        Given Transactional account john is connected to the dashboard on opsepolia
         And User clicks on the "vesting" navigation button
         And "fUSDCx" permissions icons are all "green"
         And User opens "fUSDCx" permission table row
