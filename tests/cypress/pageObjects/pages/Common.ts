@@ -1230,9 +1230,9 @@ export class Common extends BasePage {
             streamData["ongoingStreamAccount"]["polygon"][0].v2Link,
           "v1 ended stream details page":
             streamData["staticBalanceAccount"]["polygon"][0].v1Link,
-          // "close-ended stream details page":
-          //   streamData["john"]["optimism-sepolia"][0].v2Link,
-          // "vesting details page": `/vesting/optimism-sepolia/${vestingData["optimism-sepolia"].fUSDCx.schedule.id}`,
+          "close-ended stream details page":
+            streamData["john"]["opsepolia"][0].v2Link,
+          "vesting details page": `/vesting/opsepolia/${vestingData["opsepolia"].fUSDCx.schedule.id}`,
           "vesting stream details page": `/stream/polygon/${vestingData.polygon.USDCx.vestingStream.id}`,
           "404 token page": "/token/polygon/Testing420HaveANiceDay",
           "404 vesting page": "/vesting/polygon/Testing",

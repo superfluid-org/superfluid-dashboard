@@ -10,7 +10,7 @@ import {
 
 const GNOSIS_BUTTONS = ".MuiButton-contained";
 const GNOSIS_SAFE_WALLET_OPTION = "[data-testid=rk-wallet-option-gnosis-safe]";
-const SUPERFLUID_IFRAME = 'iframe[title="Superfluid Dashboard"]';
+const SUPERFLUID_IFRAME = 'iframe[title="unknown"]';
 const LOADING_SPINNER = ".MuiCircularProgress-root";
 const GNOSIS_WARNING_CHECKBOX = ".PrivateSwitchBase-input";
 const CUSTOM_APP_URL_FIELD = "input[name=appUrl]";
