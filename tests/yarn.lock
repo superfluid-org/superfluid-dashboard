@@ -12580,7 +12580,7 @@ vm-browserify@^1.0.0:
   resolved "https://registry.yarnpkg.com/vm-browserify/-/vm-browserify-1.1.2.tgz#78641c488b8e6ca91a75f511e7a3b32a86e5dda0"
   integrity sha512-2ham8XPWTONajOR0ohOKOHXkm3+gaBmGut3SRuu75xLd/RRaY6vqgh8NBYYk7+RW3u5AtzPQZG8F10LHkl0lAQ==
 
-wagmi@2.12.9:
+wagmi@2.12.0:
   version "2.12.0"
   resolved "https://registry.yarnpkg.com/wagmi/-/wagmi-2.12.0.tgz#60f1bd93aa997d56dd5dee1f5e3b0d9a4c59eb1c"
   integrity sha512-DsRcFWtz3fVPRWPGL8AMqN8hkcO/PCLn/T1E0xa8K6n2RVujKtr7jtNCw4YmeYNpZSQb52ou1bl7IgpKGbBnig==
