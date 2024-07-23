@@ -2,7 +2,7 @@
   "opsepolia": [
     {
       "asset": "fUSDCx",
-      "underlyingAllowance": "Unlimited",
+      "underlyingAllowance": "100 fUSDC",
       "lowerLimit": "1 Weeks (0 fUSDCx)",
       "upperLimit": "2 Weeks (0 fUSDCx)"
     },

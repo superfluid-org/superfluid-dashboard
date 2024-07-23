@@ -20,6 +20,7 @@ export const autoWrapManagerAddresses = {
   [chain.arbitrum.id]: "0xf01825eAFAe5CD1Dab5593EFAF218efC8968D272",
   [chain.mainnet.id]: "0x30aE282CF477E2eF28B14d0125aCEAd57Fe1d7a1",
   [chain.gnosis.id]: "0x8082e58681350876aFe8f52d3Bf8672034A03Db0",
+  [chain.optimismSepolia.id]: "0xe567b32C10B0dB72d9490eB1B9A409C5ADed192C",
 } as const;
 
 export const autoWrapStrategyAddresses = {
@@ -31,6 +32,7 @@ export const autoWrapStrategyAddresses = {
   [chain.arbitrum.id]: "0x342076aA957B0ec8bC1d3893af719b288eA31e61",
   [chain.mainnet.id]: "0x1D65c6d3AD39d454Ea8F682c49aE7744706eA96d",
   [chain.gnosis.id]: "0x51FBAbD31A615E14b1bC12E9d887f60997264a4E",
+  [chain.optimismSepolia.id]: "0xf232f1fd34CE12e24F4391865c2D6E374D2C34d9",
 } as const;
 
 export const flowSchedulerContractAddresses = {
@@ -41,6 +43,7 @@ export const flowSchedulerContractAddresses = {
   optimism: "0x55c8fc400833eEa791087cF343Ff2409A39DeBcC",
   polygon: "0x55F7758dd99d5e185f4CC08d4Ad95B71f598264D",
   gnosis: "0x9cC7fc484fF588926149577e9330fA5b2cA74336",
+  opsepolia: "0x73B1Ce21d03ad389C2A291B1d1dc4DAFE7B5Dc68",
 } as const;
 
 export const vestingContractAddresses = {
@@ -51,6 +54,7 @@ export const vestingContractAddresses = {
   avalancheC: "0x3fA8B653F9abf91428800C0ba0F8D145a71F97A1",
   bnbSmartChain: "0x9B91c27f78376383003C6A12Ad12B341d016C5b9",
   ethereum: "0x39D5cBBa9adEBc25085a3918d36D5325546C001B",
+  opsepolia: "0x27444c0235a4D921F3106475faeba0B5e7ABDD7a",
 } as const;
 
 // id == chainId
@@ -131,8 +135,7 @@ export const networkDefinition: {
     icon: "/icons/network/gnosis.svg",
     color: "#04795b",
     superfluidRpcUrl: superfluidRpcUrls.gnosis,
-    subgraphUrl:
-      "https://xdai-mainnet.subgraph.x.superfluid.dev",
+    subgraphUrl: "https://xdai-mainnet.subgraph.x.superfluid.dev",
     getLinkForTransaction: (txHash: string): string =>
       `https://blockscout.com/xdai/mainnet/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
@@ -162,12 +165,12 @@ export const networkDefinition: {
     ...chain.polygon,
     slugName: "polygon",
     v1ShortName: "matic",
+    network: "polygon-mainnet",
     bufferTimeInMinutes: 240,
     icon: "/icons/network/polygon.svg",
     color: "#7c3fe4",
     superfluidRpcUrl: superfluidRpcUrls.polygon,
-    subgraphUrl:
-      "https://polygon-mainnet.subgraph.x.superfluid.dev",
+    subgraphUrl: "https://polygon-mainnet.subgraph.x.superfluid.dev",
     getLinkForTransaction: (txHash: string): string =>
       `https://polygonscan.com/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
@@ -201,8 +204,7 @@ export const networkDefinition: {
     bufferTimeInMinutes: 60,
     color: "#2b374b",
     superfluidRpcUrl: superfluidRpcUrls.avalancheFuji,
-    subgraphUrl:
-      "https://avalanche-fuji.subgraph.x.superfluid.dev",
+    subgraphUrl: "https://avalanche-fuji.subgraph.x.superfluid.dev",
     getLinkForTransaction: (txHash: string): string =>
       `https://testnet.snowtrace.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
@@ -233,12 +235,12 @@ export const networkDefinition: {
     ...chain.optimism,
     slugName: "optimism",
     v1ShortName: "optimism-mainnet",
+    network: "optimism-mainnet",
     bufferTimeInMinutes: 240,
     icon: "/icons/network/optimism.svg",
     color: "#ff0320",
     superfluidRpcUrl: superfluidRpcUrls.optimism,
-    subgraphUrl:
-      "https://optimism-mainnet.subgraph.x.superfluid.dev",
+    subgraphUrl: "https://optimism-mainnet.subgraph.x.superfluid.dev",
     getLinkForTransaction: (txHash: string): string =>
       `https://optimistic.etherscan.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
@@ -266,12 +268,12 @@ export const networkDefinition: {
     ...chain.arbitrum,
     slugName: "arbitrum-one",
     v1ShortName: "arbitrum-one",
+    network: "arbitrum-one",
     bufferTimeInMinutes: 240,
     icon: "/icons/network/arbitrum.svg",
     color: "#2b374b",
     superfluidRpcUrl: superfluidRpcUrls.arbitrum,
-    subgraphUrl:
-      "https://arbitrum-one.subgraph.x.superfluid.dev",
+    subgraphUrl: "https://arbitrum-one.subgraph.x.superfluid.dev",
     getLinkForTransaction: (txHash: string): string =>
       `https://arbiscan.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
@@ -306,8 +308,7 @@ export const networkDefinition: {
     icon: "/icons/network/avalanche.svg",
     color: "#e84142",
     superfluidRpcUrl: superfluidRpcUrls.avalancheC,
-    subgraphUrl:
-      "https://avalanche-c.subgraph.x.superfluid.dev",
+    subgraphUrl: "https://avalanche-c.subgraph.x.superfluid.dev",
     getLinkForTransaction: (txHash: string): string =>
       `https://avascan.info/blockchain/c/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
@@ -335,6 +336,7 @@ export const networkDefinition: {
   },
   ethereum: {
     ...chain.mainnet,
+    network: "ethereum",
     slugName: "ethereum",
     v1ShortName: "eth",
     bufferTimeInMinutes: 240,
@@ -376,8 +378,7 @@ export const networkDefinition: {
     icon: "/icons/network/bnb.svg",
     color: "#F0B90B",
     superfluidRpcUrl: superfluidRpcUrls.bsc,
-    subgraphUrl:
-      "https://bsc-mainnet.subgraph.x.superfluid.dev",
+    subgraphUrl: "https://bsc-mainnet.subgraph.x.superfluid.dev",
     getLinkForTransaction: (txHash: string): string =>
       `https://bscscan.com/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
@@ -407,12 +408,12 @@ export const networkDefinition: {
     ...chain.celo,
     slugName: "celo",
     v1ShortName: "celo",
+    network: "celo",
     bufferTimeInMinutes: 240,
     icon: "/icons/network/celo-mainnet.svg",
     color: "#FCFF52",
     superfluidRpcUrl: superfluidRpcUrls["celo-mainnet"],
-    subgraphUrl:
-      "https://celo-mainnet.subgraph.x.superfluid.dev",
+    subgraphUrl: "https://celo-mainnet.subgraph.x.superfluid.dev",
     getLinkForTransaction: (txHash: string): string =>
       `https://celoscan.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
@@ -434,11 +435,11 @@ export const networkDefinition: {
     ...chain.sepolia,
     slugName: "sepolia",
     v1ShortName: "sepolia",
+    network: "sepolia",
     bufferTimeInMinutes: 60,
     color: "#68B1D5",
     superfluidRpcUrl: superfluidRpcUrls["sepolia"],
-    subgraphUrl:
-      "https://eth-sepolia.subgraph.x.superfluid.dev",
+    subgraphUrl: "https://eth-sepolia.subgraph.x.superfluid.dev",
     getLinkForTransaction: (txHash: string): string =>
       `https://sepolia.etherscan.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
@@ -461,6 +462,7 @@ export const networkDefinition: {
     ...chain.base,
     slugName: "base",
     v1ShortName: "base",
+    network: "base",
     bufferTimeInMinutes: 60,
     color: "#68B1D5",
     superfluidRpcUrl: superfluidRpcUrls["base"],
@@ -529,7 +531,7 @@ export const networkDefinition: {
     getLinkForAddress: (address: string): string =>
       `https://sepolia.scrollscan.com/tx/address/${address}`,
     nativeCurrency: {
-      ...ensureDefined(chain.scrollTestnet.nativeCurrency),
+      ...ensureDefined(chain.scrollSepolia.nativeCurrency),
       address: NATIVE_ASSET_ADDRESS,
       type: TokenType.NativeAssetUnderlyingToken,
       superToken: {
@@ -569,6 +571,14 @@ export const networkDefinition: {
         name: "Super ETH",
         decimals: 18,
       },
+    },
+    autoWrap: {
+      managerContractAddress:
+        autoWrapManagerAddresses[chain.optimismSepolia.id],
+      strategyContractAddress:
+        autoWrapStrategyAddresses[chain.optimismSepolia.id],
+      lowerLimit: BigNumber.from(UnitOfTime.Day * 7),
+      upperLimit: BigNumber.from(UnitOfTime.Day * 14),
     },
   },
   degenChain: {

@@ -67,7 +67,7 @@ const SCHEDULE_CLIFF_END = "[data-cy=cliff-end]";
 const SCHEDULE_VESTING_START = "[data-cy=vesting-start]";
 const SCHEDULE_VESTING_END = "[data-cy=vesting-end]";
 const ACCESS_CODE_BUTTON = "[data-cy=vesting-code-button]";
-const TRY_FUJI_BUTTON = "[data-cy=avalanche-fuji-link]";
+const TRY_OP_SEPOLIA_BUTTON = "[data-cy=op-sepolia-link]";
 const TOPUP_WARNING_TITLE = "[data-cy=top-up-alert-title]";
 const TOPUP_WARNING_TEXT = "[data-cy=top-up-alert-text]";
 const ALLOWLIST_MESSAGE = "[data-cy=allowlist-message]";
@@ -349,7 +349,7 @@ export class VestingPage extends BasePage {
   }
 
   static clickCreateScheduleButton() {
-    this.doesNotExist(LOADING_SKELETONS, undefined, { timeout: 45000 });
+    this.isVisible(CREATED_TABLE, undefined, { timeout: 30000 });
     this.click(CREATE_VESTING_SCHEDULE_BUTTON);
   }
 
@@ -424,9 +424,11 @@ export class VestingPage extends BasePage {
     this.hasText(DETAILS_VESTED_SO_FAR_AMOUNT, "0 ");
     this.hasText(DETAILS_VESTED_TOKEN_SYMBOL, "fUSDCx");
     this.hasText("[data-cy=fUSDCx-cliff-amount]", "0fUSDCx");
-    this.hasText("[data-cy=fUSDCx-allocated]", "60.87fUSDCx");
+    this.hasText("[data-cy=fUSDCx-allocated]", "60.87fUSDCx", undefined, {
+      timeout: 30000,
+    });
     cy.fixture("vestingData").then((data) => {
-      let schedule = data["avalanche-fuji"].fUSDCx.schedule;
+      let schedule = data["opsepolia"].fUSDCx.schedule;
       this.hasText(
         DETAILS_SCHEDULED_DATE,
         format(schedule.createdAt * 1000, "MMM do, yyyy HH:mm")
@@ -452,7 +454,7 @@ export class VestingPage extends BasePage {
       "polygon",
       "bsc",
       "gnosis",
-      "avalanche-fuji",
+      "opsepolia",
       "optimism",
       "arbitrum-one",
       "avalanche",
@@ -535,7 +537,7 @@ export class VestingPage extends BasePage {
     let today = BasePage.getDayTimestamp(0);
     let yesterday = BasePage.getDayTimestamp(-1);
 
-    cy.intercept("POST", "**vesting-v1**", (req) => {
+    cy.intercept("POST", "**vesting-scheduler**", (req) => {
       req.continue((res) => {
         console.log(req.body);
         if (req.body.variables.where.sender) {
@@ -668,7 +670,7 @@ export class VestingPage extends BasePage {
   }
 
   static mockProgressTo(status: string) {
-    cy.intercept("POST", "**vesting-v1**", (req) => {
+    cy.intercept("POST", "**vesting-scheduler**", (req) => {
       req.continue((res) => {
         if (req.body.variables.id) {
           let schedule = res.body.data.vestingSchedule;
@@ -787,11 +789,11 @@ export class VestingPage extends BasePage {
       "href",
       "https://use.superfluid.finance/vesting"
     );
-    this.isVisible(TRY_FUJI_BUTTON);
+    this.isVisible(TRY_OP_SEPOLIA_BUTTON);
   }
 
   static clickOnTryOnOpSepoliaButton() {
-    this.click(TRY_FUJI_BUTTON);
+    this.click(TRY_OP_SEPOLIA_BUTTON);
   }
 
   static clickInputAccessCodeButton() {

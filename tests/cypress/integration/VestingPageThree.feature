@@ -14,7 +14,7 @@ Feature: Vesting page third batch of test cases
         And Transactional account john is connected to the dashboard on opsepolia
         And User clicks on the "vesting" navigation button
         And User clicks on the create vesting schedule button
-        And User selects "EURex" as the super token to use for the stream
+        And User selects "fDAIx" as the super token to use for the stream
         And User clicks on the auto-wrap switch
         Then Top up warning is not shown
 
@@ -39,7 +39,7 @@ Feature: Vesting page third batch of test cases
         And Transactional account bob is connected to the dashboard on opsepolia
         And User clicks on the "vesting" navigation button
         And User clicks on the create vesting schedule button
-        And User selects "EURex" as the super token to use for the stream
+        And User selects "fDAIx" as the super token to use for the stream
         Then Auto-wrap switch is visible
 
     Scenario: Auto-wrap available to allowlisted addresses on mainnet

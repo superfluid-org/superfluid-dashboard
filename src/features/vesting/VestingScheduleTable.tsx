@@ -184,7 +184,6 @@ const VestingScheduleTable: FC<VestingScheduleTableProps> = ({
 
   return (
     <TableContainer
-      data-cy={dataCy}
       component={Paper}
       sx={{
         [theme.breakpoints.down("md")]: {
@@ -198,6 +197,7 @@ const VestingScheduleTable: FC<VestingScheduleTableProps> = ({
       }}
     >
       <Table
+        data-cy={dataCy}
         sx={{
           [theme.breakpoints.down("md")]: {
             tableLayout: "fixed",

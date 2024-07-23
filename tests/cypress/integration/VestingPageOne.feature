@@ -154,7 +154,7 @@ Feature: Vesting page first batch of test cases
     #    Then User sees network not supported screen in the vesting page
     #    And Mainnet network link is disabled
     Scenario: Network not supported screen in vesting page
-        Given Transactional account john is connected to the dashboard on avalanche-fuji
+        Given Transactional account john is connected to the dashboard on opsepolia
         And User clicks on the "vesting" navigation button
         Then User sees network not supported screen in the vesting page
 

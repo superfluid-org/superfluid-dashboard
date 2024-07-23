@@ -148,6 +148,7 @@ Feature: Send Page test cases
 
     Scenario: Stream tables - stream with just start date
         Given "Dashboard Page" is open with "john" connected on "opsepolia"
+        And No loading skeletons are visible in the page
         And User clicks on "opsepolia" "fTUSDx" row
         Then The stream row to "0x66693Ff26e2036FDf3a5EA6B7FDf853Ca1Adaf4B" has a flow rate of "-1" and dates to "22 Jul. 2026 04:00"
         And User clicks on "opsepolia" "fTUSDx" row
@@ -156,6 +157,7 @@ Feature: Send Page test cases
 
     Scenario: Stream tables - stream with start and end date
         Given "Dashboard Page" is open with "john" connected on "opsepolia"
+        And No loading skeletons are visible in the page
         And User clicks on "opsepolia" "fTUSDx" row
         Then The stream row to "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4" has a flow rate of "-1" and dates to "14 Jul. 2026 04:0022 Jul. 2026 04:00"
         And User clicks on "opsepolia" "fTUSDx" row
@@ -164,6 +166,7 @@ Feature: Send Page test cases
 
     Scenario: Stream tables - stream with end date
         Given "Dashboard Page" is open with "john" connected on "opsepolia"
+        And No loading skeletons are visible in the page
         And User clicks on "opsepolia" "fTUSDx" row
         Then The stream row to "0x9B6157d44134b21D934468B8bf709294cB298aa7" has a flow rate of "-1" and dates to "22 Jul. 2024 09:3322 Jul. 2026 04:00"
         And User clicks on "opsepolia" "fTUSDx" row
@@ -176,6 +179,8 @@ Feature: Send Page test cases
         Given "Send Page" is open with "john" connected on "opsepolia"
         And User inputs all the details to send "2" "fTUSDx" per "month" to "0x66693Ff26e2036FDf3a5EA6B7FDf853Ca1Adaf4B"
         And User inputs a date "1" "year" into the future into the stream start date
+        #Race condition
+        And User waits for 2 seconds
         And User accepts the risk warning
         And User clicks the send transaction button
         And Scheduled stream transaction dialogs are shown
@@ -188,6 +193,8 @@ Feature: Send Page test cases
         And User inputs all the details to send "1" "fTUSDx" per "month" to "0x9B6157d44134b21D934468B8bf709294cB298aa7"
         And Stream start date field is disabled
         And User inputs a date "2" "year" into the future into the stream end date
+        #Race condition
+        And User waits for 2 seconds
         And User accepts the risk warning
         And User clicks the send transaction button
         And Scheduled stream transaction dialogs are shown
@@ -200,6 +207,8 @@ Feature: Send Page test cases
         And User inputs all the details to send "2" "fTUSDx" per "month" to "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4"
         And User inputs a date "1" "year" into the future into the stream start date
         And User inputs a date "2" "year" into the future into the stream end date
+        #Race condition
+        And User waits for 2 seconds
         And User accepts the risk warning
         And User clicks the send transaction button
         And Scheduled stream transaction dialogs are shown

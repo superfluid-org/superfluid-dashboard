@@ -173,7 +173,7 @@
         "tokenAddress": "0x7d342726b69c28d942ad8bfe6ac81b972349d524",
         "streams": [
           {
-            "fromTo": "0xf9ce...3ff2",
+            "fromTo": "@elvijs",
             "flowRate": "-0.020278/mo",
             "endDate": "5 Apr. 2022"
           },

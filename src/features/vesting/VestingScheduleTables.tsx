@@ -357,7 +357,7 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({ }) => {
                 network={network}
               />
               <VestingScheduleTable
-                data-cy={"created-table"}
+                dataCy={"created-table"}
                 isLoading={vestingSchedulesLoading}
                 network={network}
                 vestingSchedules={mappedSentVestingSchedules}
