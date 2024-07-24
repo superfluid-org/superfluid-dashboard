@@ -16,7 +16,7 @@ export class EthHelper {
   constructor(networkName: string, privateKey: string) {
     const rpcUrl =
       "https://rpc-endpoints.superfluid.dev/" +
-      this.getNetworkByName(networkName).name;
+      this.getNetworkByShortName(networkName).name;
     this.provider = new ethers.providers.JsonRpcProvider(rpcUrl);
     this.wallet = new ethers.Wallet(privateKey, this.provider);
     this.networkName = networkName;
@@ -28,6 +28,10 @@ export class EthHelper {
 
   public getNetworkByName(name: string) {
     return sfMeta.networks.filter((n) => n.name === name)[0];
+  }
+
+  public getNetworkByShortName(name: string) {
+    return sfMeta.networks.filter((n) => n.shortName === name)[0];
   }
 
   public getTokenBySymbolAndChainId(symbol: string, chainId: number) {

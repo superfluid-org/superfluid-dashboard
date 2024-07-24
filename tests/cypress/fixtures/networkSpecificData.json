@@ -122,6 +122,8 @@
     "ongoingStreamsAccount": {
       "tokenValues": {
         "token": "fDAIx",
+        "tokenName": "Super fDAI Fake Token",
+        "liquidationDate": "March 20th, 2041",
         "netFlowRate": "-1/mo",
         "inFlow": "+5/mo",
         "outFlow": "-6/mo",
@@ -129,12 +131,12 @@
           {
             "fromTo": "0x4e1d...235D",
             "flowRate": "-6/mo",
-            "endDate": "24 Jul. 2024"
+            "endDate": "24 Jul. 2024 08:02"
           },
           {
             "fromTo": "0x4e1d...235D",
             "flowRate": "+5/mo",
-            "endDate": "24 Jul. 2024"
+            "endDate": "24 Jul. 2024 08:01"
           }
         ]
       }
@@ -173,22 +175,22 @@
             "endDate": "5 Apr. 2022 11:23"
           },
           {
-            "fromTo": "0x275c...739f",
+            "fromTo": "0x275C...739f",
             "flowRate": "-",
             "endDate": "8 May. 2023"
           },
           {
-            "fromTo": "0x275c...739f",
+            "fromTo": "0x275C...739f",
             "flowRate": "-",
             "endDate": "4 Apr. 2022"
           },
           {
-            "fromTo": "0x275c...739f",
+            "fromTo": "0x275C...739f",
             "flowRate": "-",
             "endDate": "4 Apr. 2022"
           },
           {
-            "fromTo": "0x275c...739f",
+            "fromTo": "0x275C...739f",
             "flowRate": "-",
             "endDate": "4 Apr. 2022"
           }
@@ -221,7 +223,7 @@
             "endDate": "5 Apr. 2022"
           },
           {
-            "fromTo": "0x275c...739f",
+            "fromTo": "0x275C...739f",
             "flowRate": "-",
             "endDate": "5 Apr. 2022"
           },
@@ -231,7 +233,7 @@
             "endDate": "23 Mar. 2022"
           },
           {
-            "fromTo": "0x275c...739f",
+            "fromTo": "0x275C...739f",
             "flowRate": "+0.00008219/mo",
             "endDate": "23 Mar. 2022"
           }

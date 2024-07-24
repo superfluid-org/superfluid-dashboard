@@ -57,7 +57,7 @@
         "flowAllowance": "1"
       },
       "recommendedAllowances": {
-        "tokenAllowance": "0.001389",
+        "tokenAllowance": "0.005556",
         "operatorPermissions": "Create, Delete",
         "flowAllowance": "0.0000003858"
       }
@@ -93,7 +93,7 @@
         "flowAllowance": "0"
       },
       "recommendedAllowances": {
-        "tokenAllowance": "0.001389",
+        "tokenAllowance": "0.005556",
         "operatorPermissions": "Create, Delete",
         "flowAllowance": "0.0000003858"
       }

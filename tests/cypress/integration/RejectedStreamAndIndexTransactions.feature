@@ -1,6 +1,6 @@
 @ignoreDuringUI
 @rejected
-@retries(5)
+@retries(3)
 @numTestsKeptInMemory(0)
 Feature: Transactional rejected test cases
 

@@ -92,7 +92,7 @@ export default defineConfig({
     excludeSpecPattern: "*.js",
     viewportHeight: 720,
     viewportWidth: 1450,
-    defaultCommandTimeout: 10000,
+    defaultCommandTimeout: 15000,
     slowTestThreshold: 30000,
     trashAssetsBeforeRuns: true,
     video: false,

@@ -105,6 +105,7 @@ export const superfluidRpcUrls = {
   scroll: "https://rpc-endpoints.superfluid.dev/scroll-mainnet",
   "scroll-sepolia": "https://rpc-endpoints.superfluid.dev/scroll-sepolia",
   "optimism-sepolia": "https://rpc-endpoints.superfluid.dev/optimism-sepolia",
+  degenchain: "https://rpc-endpoints.superfluid.dev/degenchain",
 };
 
 export const networkDefinition: {

@@ -1,6 +1,6 @@
 @ignoreDuringUI
 @rejected
-@retries(5)
+@retries(3)
 @numTestsKeptInMemory(0)
 Feature: ACL and Auto-Wrap related rejected test cases
 
