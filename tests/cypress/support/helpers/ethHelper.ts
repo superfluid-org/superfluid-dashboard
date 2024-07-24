@@ -50,7 +50,7 @@ export class EthHelper {
     tokenSymbol: string,
     contractToRevokeAllowanceTo: string
   ) {
-    let chainId = this.getNetworkByName(this.networkName).chainId;
+    let chainId = this.getNetworkByShortName(this.networkName).chainId;
     const token = new ethers.Contract(
       this.getTokenBySymbolAndChainId(tokenSymbol, chainId).address,
       erc20ABI,
@@ -86,12 +86,12 @@ export class EthHelper {
     sender: string,
     receiver: string
   ) {
-    const chainId = this.getNetworkByName(this.networkName).chainId;
+    const chainId = this.getNetworkByShortName(this.networkName).chainId;
     const tokenAddress = this.getTokenBySymbolAndChainId(
       tokenSymbol,
       chainId
     ).address;
-    let cfaV1ForwarderAddress = this.getNetworkByName(this.networkName)
+    let cfaV1ForwarderAddress = this.getNetworkByShortName(this.networkName)
       .contractsV1.cfaV1Forwarder;
 
     const CFAv1Forwarder = new ethers.Contract(
@@ -127,12 +127,12 @@ export class EthHelper {
     receiver: string,
     flowRate: string
   ) {
-    const chainId = this.getNetworkByName(this.networkName).chainId;
+    const chainId = this.getNetworkByShortName(this.networkName).chainId;
     const tokenAddress = this.getTokenBySymbolAndChainId(
       tokenSymbol,
       chainId
     ).address;
-    let cfaV1ForwarderAddress = this.getNetworkByName(this.networkName)
+    let cfaV1ForwarderAddress = this.getNetworkByShortName(this.networkName)
       .contractsV1.cfaV1Forwarder;
 
     const CFAv1Forwarder = new ethers.Contract(
@@ -166,7 +166,7 @@ export class EthHelper {
     tokenSymbol: string,
     addressToCheckBalanceOf = process.env.AVERAGEX_WALLET_PUBLIC_KEY
   ) {
-    let chainId = this.getNetworkByName(this.networkName).chainId;
+    let chainId = this.getNetworkByShortName(this.networkName).chainId;
     const token = new ethers.Contract(
       this.getTokenBySymbolAndChainId(tokenSymbol, chainId).address,
       erc20ABI,
@@ -179,7 +179,7 @@ export class EthHelper {
     tokenSymbol: string,
     addressToCheckBalanceOf = process.env.AVERAGEX_WALLET_PUBLIC_KEY
   ) {
-    let chainId = this.getNetworkByName(this.networkName).chainId;
+    let chainId = this.getNetworkByShortName(this.networkName).chainId;
     const token = new ethers.Contract(
       this.getTokenBySymbolAndChainId(tokenSymbol, chainId).address,
       superTokenABI,

@@ -7,6 +7,7 @@ import {
   CONNECT_WALLET_BUTTON,
   TOKEN_ANIMATION,
   TOKEN_BALANCE,
+  TOKEN_SEARCH_RESULTS,
 } from "./Common";
 import { ethers } from "ethers";
 
@@ -26,7 +27,6 @@ const RECENT_ENTRIES = "[data-cy=recents-entry]";
 const RECENT_ENTRIES_ADDRESS = "[data-cy=recents-entry] h6";
 const RECEIVER_CLEAR_BUTTON = "[data-testid=CloseIcon]";
 const TOKEN_SEARCH_INPUT = "[data-cy=token-search-input] input";
-const TOKEN_SEARCH_RESULTS = "[data-cy$=list-item]";
 const RESULTS_WRAP_BUTTONS = "[data-cy=wrap-button]";
 const STREAM_ENDS_ON = "[data-cy=preview-ends-on]";
 const PREVIEW_AMOUNT_PER_SECOND = "[data-cy=amount-per-second]";
@@ -266,6 +266,7 @@ export class SendPage extends BasePage {
 
   static openTokenSelection() {
     this.click(SELECT_TOKEN_BUTTON);
+    this.exists(TOKEN_SEARCH_RESULTS, undefined, { timeout: 45000 });
   }
 
   static validateTokenBalancesInSelectionScreen(

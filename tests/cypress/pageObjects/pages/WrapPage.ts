@@ -7,6 +7,7 @@ import {
   TOKEN_ANIMATION,
   TOKEN_BALANCE,
   STOP_VIEWING_BUTTON,
+  TOKEN_SEARCH_RESULTS,
 } from "./Common";
 
 const WRAP_TAB = "[data-cy=wrap-toggle]";
@@ -145,6 +146,7 @@ export class WrapPage extends BasePage {
 
   static clickSelectTokenButton() {
     this.click(SELECT_TOKEN_BUTTON);
+    this.exists(TOKEN_SEARCH_RESULTS, undefined, { timeout: 45000 });
   }
 
   static validateWrapTokenSelectionBalances(network: string) {

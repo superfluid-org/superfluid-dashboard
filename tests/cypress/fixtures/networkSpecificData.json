@@ -114,8 +114,25 @@
           "tokenAddress": "0x131780640EDf9830099AAc2203229073d6D2FE69",
           "token": "fUSDCx",
           "id": "usdc",
-          "balance": "400",
-          "underlyingBalance": "600"
+          "balance": "301",
+          "underlyingBalance": "600",
+          "transfers": [
+            {
+              "toFrom": "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4",
+              "amount": 1,
+              "dateSent": "24 Jul. 2024"
+            },
+            {
+              "toFrom": "@elvijs",
+              "amount": -100,
+              "dateSent": "24 Jul. 2024"
+            },
+            {
+              "toFrom": "0x0000000000000000000000000000000000000000",
+              "amount": 400,
+              "dateSent": "24 Jul. 2024"
+            }
+          ]
         }
       ]
     },

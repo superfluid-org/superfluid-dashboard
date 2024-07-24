@@ -105,7 +105,7 @@ export const superfluidRpcUrls = {
   scroll: "https://rpc-endpoints.superfluid.dev/scroll-mainnet",
   "scroll-sepolia": "https://rpc-endpoints.superfluid.dev/scroll-sepolia",
   "optimism-sepolia": "https://rpc-endpoints.superfluid.dev/optimism-sepolia",
-  degenchain: "https://rpc-endpoints.superfluid.dev/degenchain",
+  degenChain: "https://rpc-endpoints.superfluid.dev/degenchain",
 };
 
 export const networkDefinition: {
@@ -586,7 +586,7 @@ export const networkDefinition: {
     name: "Degen Chain",
     network: "degen",
     id: 666666666,
-    slugName: "degen",
+    slugName: "degenchain",
     v1ShortName: "degen",
     bufferTimeInMinutes: 240,
     icon: "/icons/network/degen.svg",

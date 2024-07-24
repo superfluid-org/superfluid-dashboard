@@ -22,6 +22,7 @@ export const LIQUIDATED_OR_CANCEL_ICON = "[data-testid=CancelIcon]";
 export const SELECT_TOKEN_BUTTON = "[data-cy=select-token-button]";
 export const ADDRESS_BUTTON = "[data-cy=address-button]";
 export const STOP_VIEWING_BUTTON = "[data-cy=view-mode-button]";
+export const TOKEN_SEARCH_RESULTS = "[data-cy$=list-item]";
 const VESTING_CODE_BUTTON = "[data-cy=vesting-code-button]";
 const NAVIGATION_BUTTON_PREFIX = "[data-cy=nav-";
 const NAVIGATION_DRAWER = "[data-cy=navigation-drawer]";
