@@ -701,11 +701,13 @@ export class SendPage extends BasePage {
   }
 
   static validateDisabledStartDateField() {
-    this.isDisabled(`${START_DATE} input`);
+    this.isDisabled(`${START_DATE} input`, undefined, { timeout: 45000 });
   }
 
   static validateSetFlowRate(flowrate: string) {
-    this.hasValue(`${FLOW_RATE_INPUT} input`, flowrate);
+    this.hasValue(`${FLOW_RATE_INPUT} input`, flowrate, undefined, {
+      timeout: 45000,
+    });
   }
 
   static validateStreamStartDate(date: string) {

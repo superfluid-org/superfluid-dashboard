@@ -108,7 +108,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        container: [1, 2]
+        container: [1,2,3,4]
         network:
           [
             "gnosis",

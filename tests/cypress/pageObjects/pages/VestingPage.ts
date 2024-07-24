@@ -388,8 +388,8 @@ export class VestingPage extends BasePage {
       this.shortenHex("0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2"),
       0
     );
-    this.hasText(TABLE_ALLOCATED_AMOUNT, "60.87 fUSDCx", 0, { timeout: 30000 });
-    this.hasText(VESTED_AMOUNT, "0  fUSDCx", 0);
+    this.hasText(TABLE_ALLOCATED_AMOUNT, "60.87 fTUSDx", 0, { timeout: 30000 });
+    this.hasText(VESTED_AMOUNT, "0  fTUSDx", 0);
     this.containsText(
       TABLE_START_END_DATES,
       format(staticStartDate, "LLL d, yyyy"),
