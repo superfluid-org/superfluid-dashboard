@@ -92,7 +92,7 @@ Feature: Vesting page second batch of test cases
         And Transactional account john is connected to the dashboard on opsepolia
         And User clicks on the "vesting" navigation button
         And User clicks on the create vesting schedule button
-        And User selects "MATICx" as the super token to use for the stream
+        And User selects "ETHx" as the super token to use for the stream
         #The UI showing the Enable auto-wrap switch is not instant, waiting just to be sure it is not getting shown
         And User waits for 5 seconds
         Then Auto-wrap switch does not exist

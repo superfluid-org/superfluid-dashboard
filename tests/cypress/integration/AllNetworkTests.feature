@@ -1,4 +1,5 @@
 @hourly
+@numTestsKeptInMemory(0)
 Feature: Test cases that run indefinitely on all supported networks
 
     Scenario Outline: Smoke testing RPC and Graph in Wrap page on <network>
@@ -65,6 +66,7 @@ Feature: Test cases that run indefinitely on all supported networks
             | scrsepolia     |
             | opsepolia      |
             | degen          |
+
 
 # Mumbai down, no faucet gg
 # Scenario: Testnet faucet fund check

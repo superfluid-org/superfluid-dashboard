@@ -465,8 +465,8 @@ export class WrapPage extends BasePage {
   }
 
   static validateUnwrapTxBroadcastedMessage() {
-    this.hasText(TX_BROADCASTED_MESSAGE, "Transaction broadcasted");
     this.isVisible(TX_BROADCASTED_ICON, undefined, { timeout: 60000 });
+    this.hasText(TX_BROADCASTED_MESSAGE, "Transaction broadcasted");
     this.isVisible(OK_BUTTON);
   }
 

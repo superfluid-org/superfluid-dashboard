@@ -65,7 +65,7 @@ export class BasePage {
     >
   ) {
     if (index !== undefined) {
-      return cy.get(selector).eq(index, options);
+      return cy.get(selector, options).eq(index);
     }
     return cy.get(selector, options);
   }

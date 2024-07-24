@@ -97,49 +97,44 @@
     "staticBalanceAccount": {
       "tokenValues": [
         {
-          "tokenAddress": "0x296E9c01f80D408741f6e15d62013DDbe1041f1D",
+          "tokenAddress": "0xD6FAF98BeFA647403cc56bDB598690660D5257d2",
           "token": "fDAIx",
           "id": "dai",
           "balance": "400",
           "underlyingBalance": "600"
         },
         {
-          "tokenAddress": "0x36BBF94e66f0c953CB451b302e345D6E50c2A215",
+          "tokenAddress": "0x131780640EDf9830099AAc2203229073d6D2FE69",
           "token": "fTUSDx",
           "id": "true-usd",
           "balance": "150",
           "underlyingBalance": "850"
         },
         {
-          "tokenAddress": "0x896C3e90446237be3e27eB4D67e0D3c97FB3b03F",
+          "tokenAddress": "0x131780640EDf9830099AAc2203229073d6D2FE69",
           "token": "fUSDCx",
           "id": "usdc",
-          "balance": "399.99397183",
-          "underlyingBalance": "700"
+          "balance": "400",
+          "underlyingBalance": "600"
         }
       ]
     },
     "ongoingStreamsAccount": {
       "tokenValues": {
         "token": "fDAIx",
-        "netFlowRate": "-1.0139/mo",
-        "inFlow": "+4.0556/mo",
-        "outFlow": "-5.0694/mo",
+        "netFlowRate": "-1/mo",
+        "inFlow": "+5/mo",
+        "outFlow": "-6/mo",
         "streams": [
           {
-            "fromTo": "0x618a...DE40",
-            "flowRate": "-",
-            "endDate": "30 Dec. 2021"
+            "fromTo": "0x4e1d...235D",
+            "flowRate": "-6/mo",
+            "endDate": "24 Jul. 2024"
           },
           {
-            "fromTo": "0xad97...8a19",
-            "flowRate": "+4.0556/mo",
-            "endDate": "30 Dec. 2021"
-          },
-          {
-            "fromTo": "0x618a...DE40",
-            "flowRate": "-5.0694/mo",
-            "endDate": "21 Dec. 2021"
+            "fromTo": "0x4e1d...235D",
+            "flowRate": "+5/mo",
+            "endDate": "24 Jul. 2024"
           }
         ]
       }
@@ -175,7 +170,7 @@
           {
             "fromTo": "@elvijs",
             "flowRate": "-0.020278/mo",
-            "endDate": "5 Apr. 2022"
+            "endDate": "5 Apr. 2022 11:23"
           },
           {
             "fromTo": "0x275c...739f",

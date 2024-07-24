@@ -67,7 +67,7 @@ const SCHEDULE_CLIFF_END = "[data-cy=cliff-end]";
 const SCHEDULE_VESTING_START = "[data-cy=vesting-start]";
 const SCHEDULE_VESTING_END = "[data-cy=vesting-end]";
 const ACCESS_CODE_BUTTON = "[data-cy=vesting-code-button]";
-const TRY_OP_SEPOLIA_BUTTON = "[data-cy=op-sepolia-link]";
+const TRY_OP_SEPOLIA_BUTTON = "[data-cy=opsepolia-link]";
 const TOPUP_WARNING_TITLE = "[data-cy=top-up-alert-title]";
 const TOPUP_WARNING_TEXT = "[data-cy=top-up-alert-text]";
 const ALLOWLIST_MESSAGE = "[data-cy=allowlist-message]";
@@ -354,7 +354,9 @@ export class VestingPage extends BasePage {
   }
 
   static openLastCreatedSchedule() {
-    this.doesNotExist(LOADING_SKELETONS, undefined, { timeout: 45000 });
+    this.doesNotExist(`${CREATED_TABLE} ${LOADING_SKELETONS}`, undefined, {
+      timeout: 45000,
+    });
     this.clickFirstVisible(VESTING_ROWS);
   }
 
@@ -481,7 +483,7 @@ export class VestingPage extends BasePage {
       "color",
       rgbValue,
       undefined,
-      { timeout: 45000 }
+      { timeout: 120000 }
     );
     this.hasCSS(`[data-cy=${token}-permission-status]`, "color", rgbValue);
     this.hasCSS(`[data-cy=${token}-flow-allowance-status]`, "color", rgbValue);
@@ -492,14 +494,14 @@ export class VestingPage extends BasePage {
       this.click(
         `[data-cy="${selectedToken}-row"] [data-testid=ExpandMoreRoundedIcon]`,
         undefined,
-        { timeout: 60000 }
+        { timeout: 120000 }
       );
     });
   }
 
   static validateTokenPermissionsData(token: string) {
     cy.fixture("vestingData").then((data) => {
-      let selectedToken = data["avalanche-fuji"][token];
+      let selectedToken = data["opsepolia"][token];
       this.hasText(
         `[data-cy=${token}-current-allowance] p`,
         `${selectedToken.currentAllowances.tokenAllowance} ${token}`

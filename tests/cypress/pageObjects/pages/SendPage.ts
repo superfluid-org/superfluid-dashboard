@@ -223,7 +223,7 @@ export class SendPage extends BasePage {
   }
 
   static selectFirstENSResult() {
-    this.clickFirstVisible(ENS_ENTRIES);
+    this.clickFirstVisible(ENS_ENTRIES, undefined, { timeout: 30000 });
   }
 
   static chosenReceiverAddress(chosenAddress: string) {
@@ -310,7 +310,9 @@ export class SendPage extends BasePage {
   static selectTokenForStreaming(token: string) {
     this.click(SELECT_TOKEN_BUTTON);
     this.getSelectedToken(token).then((selectedToken) => {
-      this.click(`[data-cy="${selectedToken}-list-item"]`);
+      this.click(`[data-cy="${selectedToken}-list-item"]`, undefined, {
+        timeout: 30000,
+      });
     });
   }
 
