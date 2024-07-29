@@ -593,7 +593,6 @@ const StreamPageContent: FC<{
                     balance={streamedUntilUpdatedAt}
                     flowRate={currentFlowRate}
                     balanceTimestamp={updatedAtTimestamp}
-                    disableRoundingIndicator
                   />
                 </Typography>
                 {!isBelowMd && (

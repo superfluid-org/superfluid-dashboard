@@ -66,6 +66,7 @@ import addressBookRpcApi from "../addressBook/addressBookRpcApi.slice";
 import { autoWrapEndpoints } from "./endpoints/autoWrapEndpoints";
 import { autoWrapSubgraphApi } from "../../auto-wrap-subgraph/autoWrapSubgraphApi";
 import { tokenAccessMutationEndpoints } from "./endpoints/tokenAccessEndpoints";
+import { gdaEndpoints } from "./endpoints/gdaEndpoints";
 import { deprecatedNetworkChainIds } from "../network/networks";
 import { isUndefined } from "lodash";
 import _ from "lodash";
@@ -85,7 +86,8 @@ export const rpcApi = initializeRpcApiSlice((options) =>
   .injectEndpoints(vestingSchedulerMutationEndpoints)
   .injectEndpoints(tokenAccessMutationEndpoints)
   .injectEndpoints(vestingSchedulerQueryEndpoints)
-  .injectEndpoints(autoWrapEndpoints);
+  .injectEndpoints(autoWrapEndpoints)
+  .injectEndpoints(gdaEndpoints);
 
 export const subgraphApi = initializeSubgraphApiSlice((options) =>
   createApiWithReactHooks({

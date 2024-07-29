@@ -16,4 +16,6 @@ export type AnalyticsTransactionNames =
   | "Enable Auto-Wrap"
   | "Revoked Permissions & Allowances"
   | "Updated Permissions & Allowances"
-  | "Disable Auto-Wrap";
+  | "Disable Auto-Wrap"
+  | "Connect to GDA Pool"
+  | "Disconnect from GDA Pool";

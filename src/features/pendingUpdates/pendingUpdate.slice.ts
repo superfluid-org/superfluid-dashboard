@@ -12,6 +12,7 @@ import {
 import { PendingUpdate } from "./PendingUpdate";
 import { PendingVestingSchedule } from "./PendingVestingSchedule";
 import { PendingVestingScheduleDeletion as PendingVestingScheduleDelete } from "./PendingVestingScheduleDelete";
+import { PendingConnectToPool } from "./PendingConnectToPool";
 import { PendingVestingScheduleClaim } from "./PendingVestingScheduleClaim";
 import { BigNumber } from "ethers";
 
@@ -93,7 +94,7 @@ export const pendingUpdateSlice = createSlice({
           superTokenAddress,
           receiverAddress,
           flowRateWei,
-          userDataBytes
+          userDataBytes,
         } = action.meta.arg.originalArgs;
         if (senderAddress) {
           const timestamp = dateNowSeconds();
@@ -111,7 +112,7 @@ export const pendingUpdateSlice = createSlice({
             streamedUntilUpdatedAt: "0",
             currentFlowRate: flowRateWei,
             relevantSubgraph: "Protocol",
-            userData: userDataBytes ?? "0x"
+            userData: userDataBytes ?? "0x",
           };
           pendingUpdateAdapter.addOne(state, pendingUpdate);
         }
@@ -397,6 +398,27 @@ export const pendingUpdateSlice = createSlice({
             },
           });
         }
+      }
+    );
+    builder.addMatcher(
+      rpcApi.endpoints.connectToPool.matchFulfilled,
+      (state, action) => {
+        const { chainId, hash: transactionHash } = action.payload;
+        const { poolAddress, superTokenAddress } = action.meta.arg.originalArgs;
+
+        // TODO: this needs an account address, IMO?
+
+        const pendingUpdate: PendingConnectToPool = {
+          pendingType: "ConnectToPool",
+          chainId,
+          transactionHash,
+          id: transactionHash,
+          poolAddress,
+          superTokenAddress,
+          timestamp: dateNowSeconds(),
+          relevantSubgraph: "Protocol",
+        };
+        pendingUpdateAdapter.addOne(state, pendingUpdate);
       }
     );
     builder.addMatcher(

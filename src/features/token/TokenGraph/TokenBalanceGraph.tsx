@@ -1,5 +1,4 @@
-import { Skeleton } from "@mui/lab";
-import { useTheme } from "@mui/material";
+import { Skeleton, useTheme } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
 import { ChartOptions } from "chart.js/auto";
 import { fromUnixTime, getUnixTime, isSameDay, max, sub } from "date-fns";
@@ -67,8 +66,8 @@ const mapDatesWithData = (
       const flowingBalance =
         totalNetFlowRate !== "0"
           ? BigNumber.from(totalNetFlowRate).mul(
-              BigNumber.from(Math.floor(date.getTime() / 1000) - timestamp)
-            )
+            BigNumber.from(Math.floor(date.getTime() / 1000) - timestamp)
+          )
           : BigNumber.from(0);
 
       const wei = BigNumber.from(balance).add(flowingBalance);
@@ -205,8 +204,8 @@ const TokenBalanceGraph: FC<TokenBalanceGraphProps> = ({
     const dateNowUnix = getUnixTime(dateNow);
     const maxDate = showForecast
       ? fromUnixTime(
-          dateNowUnix + (dateNowUnix - getUnixTime(startDateWithMinimum)) / 4
-        )
+        dateNowUnix + (dateNowUnix - getUnixTime(startDateWithMinimum)) / 4
+      )
       : dateNow;
 
     return {

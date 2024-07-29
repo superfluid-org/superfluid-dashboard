@@ -1,29 +1,29 @@
-import { Box } from "@mui/material";
-import { memo, ReactElement } from "react";
+import { Box, Skeleton } from "@mui/material";
+import { FC, memo, ReactElement } from "react";
 import Amount from "./Amount";
 import useEtherSignificantFlowingDecimal from "./useEtherSignificantFlowingDecimal";
 import useFlowingBalance from "./useFlowingBalance";
+import { BigNumberish } from "ethers";
 
-export interface FlowingBalanceProps {
-  balance: string;
-  /**
-   * Timestamp in seconds.
-   */
-  balanceTimestamp: number;
-  flowRate: string;
-  disableRoundingIndicator?: boolean;
-  tokenSymbol?: string;
+type FlowingBalanceData = 
+  {
+    balance: BigNumberish;
+    /**
+     * Timestamp in seconds.
+     */
+    balanceTimestamp: number;
+    flowRate: BigNumberish;
+    tokenSymbol?: string;
+  }
+
+export type FlowingBalanceProps = FlowingBalanceData | {
+  data: FlowingBalanceData | undefined
 }
 
 export default memo(function FlowingBalance({
-  balance,
-  balanceTimestamp,
-  flowRate,
-  tokenSymbol,
+  ...props
 }: FlowingBalanceProps): ReactElement {
-  const { weiValue } = useFlowingBalance(balance, balanceTimestamp, flowRate);
-
-  const decimalPlaces = useEtherSignificantFlowingDecimal(flowRate);
+  const data = "data" in props ? props.data : props;
 
   return (
     <Box
@@ -33,7 +33,14 @@ export default memo(function FlowingBalance({
       }}
       data-cy={"balance"}
     >
-      <Amount wei={weiValue} decimalPlaces={decimalPlaces} /> {tokenSymbol}
+      {data ? <FlowingBalanceCore {...data} /> : <Skeleton />}
     </Box>
   );
 });
+
+const FlowingBalanceCore: FC<FlowingBalanceData> = ({ balance, balanceTimestamp, flowRate, tokenSymbol }) => {
+  const { weiValue } = useFlowingBalance(balance, balanceTimestamp, flowRate);
+  const decimalPlaces = useEtherSignificantFlowingDecimal(flowRate);
+
+  return <Amount wei={weiValue} decimalPlaces={decimalPlaces}> {tokenSymbol}</Amount>;
+}

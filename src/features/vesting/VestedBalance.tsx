@@ -26,7 +26,6 @@ const VestedBalance: FC<VestedBalanceProps> = ({
         balance={balance}
         flowRate={totalNetFlowRate}
         balanceTimestamp={timestamp}
-        disableRoundingIndicator
       />
       {children}
     </>

@@ -5,9 +5,9 @@ import { useStateWithDep } from "../../useStateWithDep";
 const ANIMATION_MINIMUM_STEP_TIME = 75;
 
 const useFlowingBalance = (
-  balance: string,
+  balance: BigNumberish,
   balanceTimestamp: number,
-  flowRate: string
+  flowRate: BigNumberish
 ) => {
   const [weiValue, setWeiValue] = useStateWithDep<BigNumberish>(balance);
 

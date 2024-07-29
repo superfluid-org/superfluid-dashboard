@@ -7,6 +7,7 @@ import pureSuperTokenJSON from "@superfluid-finance/ethereum-contracts/build/tru
 import superTokenJSON from "@superfluid-finance/ethereum-contracts/build/truffle/SuperToken.json" assert { type: "json" };
 import ConstantFlowAgreementV1JSON from "@superfluid-finance/ethereum-contracts/build/truffle/ConstantFlowAgreementV1.json" assert { type: "json" };
 import GeneralDistributionAgreementV1JSON from "@superfluid-finance/ethereum-contracts/build/truffle/GeneralDistributionAgreementV1.json" assert { type: "json" };
+import SuperfluidPoolJSON from "@superfluid-finance/ethereum-contracts/build/truffle/SuperfluidPool.json" assert { type: "json" };
 import { Abi, Address } from "viem";
 import superfluidMetadata from "@superfluid-finance/metadata";
 
@@ -29,6 +30,10 @@ export default defineConfig({
     {
       name: "PureSuperToken",
       abi: pureSuperTokenJSON.abi as Abi,
+    },
+    {
+      name: "SuperfluidPool",
+      abi: SuperfluidPoolJSON.abi as Abi,
     },
     {
       name: "ConstantFlowAgreementV1",
