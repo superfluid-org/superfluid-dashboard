@@ -26,6 +26,9 @@ import { useVestingToken } from "./useVestingToken";
 import VestedBalance from "./VestedBalance";
 import VestingStatus from "./VestingStatus";
 import Link from "next/link";
+import { usePendingVestingScheduleClaim } from "../pendingUpdates/PendingVestingScheduleClaim";
+import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
+import { ClaimVestingScheduleTransactionButton } from "./transactionButtons/ClaimVestingScheduleTransactionButton";
 
 interface VestingRowProps {
   network: Network;
@@ -48,6 +51,8 @@ const VestingRow: FC<VestingRowProps> = ({
     startDate,
     pendingCreate,
     cliffAndFlowDate,
+    remainderAmount,
+    version
   } = vestingSchedule;
 
   const theme = useTheme();
@@ -59,9 +64,23 @@ const VestingRow: FC<VestingRowProps> = ({
       superTokenAddress: superToken,
       receiverAddress: receiver,
       senderAddress: sender,
+      version
     },
     {
       skip: vestingSchedule.status.isFinished,
+    }
+  );
+
+  const pendingClaim = usePendingVestingScheduleClaim(
+    {
+      chainId: network.id,
+      superTokenAddress: superToken,
+      receiverAddress: receiver,
+      senderAddress: sender,
+      version
+    },
+    {
+      skip: !vestingSchedule.status.canClaim,
     }
   );
 
@@ -73,10 +92,43 @@ const VestingRow: FC<VestingRowProps> = ({
     return BigNumber.from(endDate - cliffAndFlowDate)
       .mul(BigNumber.from(flowRate))
       .add(BigNumber.from(cliffAmount))
+      .add(BigNumber.from(remainderAmount))
       .toString();
-  }, [flowRate, endDate, cliffAndFlowDate, cliffAmount]);
+  }, [flowRate, endDate, cliffAndFlowDate, cliffAmount, remainderAmount]);
 
-  const isOutgoing = sender.toLowerCase() === visibleAddress?.toLowerCase();
+  const isSender = visibleAddress?.toLowerCase() === sender.toLowerCase()
+  const isReceiver = visibleAddress?.toLowerCase() === receiver.toLowerCase()
+  const isSenderOrReceiver = isSender || isReceiver;
+  const showClaim = isReceiver && !!vestingSchedule.claimValidityDate && !vestingSchedule.cliffAndFlowExecutedAt; // Note: we show only for receiver in the table.
+  const showUnwrap = isReceiver && (vestingSchedule.status.isStreaming || vestingSchedule.status.isFinished);
+
+  const showVestingVersion = !isBelowMd && isSender && !!network.vestingContractAddress_v2;
+
+  const VestingStatusOrPendingProgress = (
+    <>
+      {pendingDelete ? (
+        <PendingProgress
+          pendingUpdate={pendingDelete}
+          transactingText="Deleting..."
+        />
+      ) : pendingCreate ? (
+        <PendingProgress
+          pendingUpdate={pendingDelete}
+          transactingText="Creating..."
+        />
+      ) ? pendingClaim : (
+        <PendingProgress
+          pendingUpdate={pendingDelete}
+          transactingText="Claiming..."
+        />
+      ) : (
+        <VestingStatus
+          vestingSchedule={vestingSchedule}
+          TypographyProps={{ variant: "body2" }}
+        />
+      )}
+    </>
+  )
 
   return (
     <TableRow
@@ -88,38 +140,19 @@ const VestingRow: FC<VestingRowProps> = ({
       <TableCell>
         <Stack direction="row" alignItems="center" gap={1.5}>
           <AddressAvatar
-            address={isOutgoing ? receiver : sender}
+            address={isSender ? receiver : sender}
             AvatarProps={{
               sx: { width: "24px", height: "24px", borderRadius: "5px" },
             }}
             BlockiesProps={{ size: 8, scale: 3 }}
           />
           <Stack direction="column">
-            <AddressCopyTooltip address={isOutgoing ? receiver : sender}>
+            <AddressCopyTooltip address={isSender ? receiver : sender}>
               <Typography data-cy={"receiver-sender"} variant="h7">
-                <AddressName address={isOutgoing ? receiver : sender} />
+                <AddressName address={isSender ? receiver : sender} />
               </Typography>
             </AddressCopyTooltip>
-            {isBelowMd && (
-              <>
-                {pendingDelete ? (
-                  <PendingProgress
-                    pendingUpdate={pendingDelete}
-                    transactingText="Deleting..."
-                  />
-                ) : pendingCreate ? (
-                  <PendingProgress
-                    pendingUpdate={pendingDelete}
-                    transactingText="Creating..."
-                  />
-                ) : (
-                  <VestingStatus
-                    vestingSchedule={vestingSchedule}
-                    TypographyProps={{ variant: "body2" }}
-                  />
-                )}
-              </>
-            )}
+            {isBelowMd && VestingStatusOrPendingProgress}
           </Stack>
         </Stack>
       </TableCell>
@@ -156,36 +189,39 @@ const VestingRow: FC<VestingRowProps> = ({
             />
           </TableCell>
           <TableCell sx={{ pl: 0 }}>
-            {pendingDelete ? (
-              <PendingProgress
-                pendingUpdate={pendingDelete}
-                transactingText="Deleting..."
-              />
-            ) : pendingCreate ? (
-              <PendingProgress
-                pendingUpdate={pendingDelete}
-                transactingText="Creating..."
-              />
-            ) : (
-              <VestingStatus vestingSchedule={vestingSchedule} />
-            )}
+            {VestingStatusOrPendingProgress}
           </TableCell>
-          {!isOutgoing && (
-            <TableCell
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-              }}
-            >
-              <Link
-                href={`/wrap?downgrade&token=${superToken}&network=${network.slugName}`}
+          {showVestingVersion && (<TableCell>{version}</TableCell>)}
+          {
+            isReceiver && (
+              <TableCell
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
               >
-                <Button variant="contained" color="primary" size="small">
-                  Unwrap
-                </Button>
-              </Link>
-            </TableCell>
-          )}
+                {showClaim ? (
+                  <ConnectionBoundary expectedNetwork={network}>
+                    <ClaimVestingScheduleTransactionButton
+                      superTokenAddress={superToken}
+                      senderAddress={sender}
+                      receiverAddress={receiver}
+                      version={vestingSchedule.version}
+                      TransactionButtonProps={{ ButtonProps: { size: "small" } }}
+                    />
+                  </ConnectionBoundary>
+                ) : showUnwrap ? (
+                  <Link
+                    href={`/wrap?downgrade&token=${superToken}&network=${network.slugName}`}
+                  >
+                    <Button variant="outlined" color="primary" size="small">
+                      Unwrap
+                    </Button>
+                  </Link>
+                ) : null}
+              </TableCell>
+            )
+          }
         </>
       ) : (
         <TableCell align="right">

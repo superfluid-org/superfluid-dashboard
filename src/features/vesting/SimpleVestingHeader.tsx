@@ -1,6 +1,5 @@
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import { Button, Stack, Typography } from "@mui/material";
-import NextLink from "next/link";
 import { useAccount } from "wagmi";
 
 import { FC } from "react";
@@ -19,6 +18,7 @@ const SimpleVestingHeader: FC = () => {
       <Typography component="h1" variant="h4">
         Vesting
       </Typography>
+
       {accountAddress && (
         <Button
           LinkComponent={Link}

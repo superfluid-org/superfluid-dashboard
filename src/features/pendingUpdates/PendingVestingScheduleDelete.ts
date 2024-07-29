@@ -8,7 +8,7 @@ export interface PendingVestingScheduleDeletion
   extends PendingUpdate,
     Pick<
       DeleteVestingSchedule,
-      "chainId" | "superTokenAddress" | "senderAddress" | "receiverAddress"
+      "chainId" | "superTokenAddress" | "senderAddress" | "receiverAddress" | "version"
     > {
   pendingType: "VestingScheduleDelete";
 }
@@ -44,11 +44,13 @@ export const usePendingVestingScheduleDelete = (
     superTokenAddress,
     senderAddress,
     receiverAddress,
+    version
   }: {
     chainId: number;
     superTokenAddress: string;
     senderAddress: string;
     receiverAddress: string;
+    version: "v1" | "v2"
   },
   options?: { skip: boolean }
 ) => {
@@ -65,7 +67,8 @@ export const usePendingVestingScheduleDelete = (
               x.chainId === chainId &&
               x.superTokenAddress.toLowerCase() ===
                 superTokenAddress.toLowerCase() &&
-              x.receiverAddress.toLowerCase() === receiverAddress.toLowerCase()
+              x.receiverAddress.toLowerCase() === receiverAddress.toLowerCase() &&
+              x.version === version
           )[0], // We assume no duplicates here.
     [chainId, superTokenAddress, receiverAddress, list, skip]
   );

@@ -42,6 +42,7 @@ import { PartialVestingForm } from "./CreateVestingFormProvider";
 import { CreateVestingCardView, VestingToken } from "./CreateVestingSection";
 import useActiveAutoWrap from "./useActiveAutoWrap";
 import { TokenType } from "../redux/endpoints/tokenTypes";
+import { useVestingVersion } from "../../hooks/useVestingVersion";
 
 export enum VestingFormLabels {
   Receiver = "Receiver",
@@ -52,11 +53,13 @@ export enum VestingFormLabels {
   SuperToken = "Super Token",
   TotalVestingPeriod = "Total Vesting Period",
   TotalVestedAmount = "Total Vested Amount",
+  Claim = "Require Receiver to Claim",
   AutoWrap = "Enable Auto-Wrap",
 }
 
 export enum VestingTooltips {
   AutoWrap = "Auto-Wrap wraps your regular ERC-20 tokens to Super Tokens automatically, making it easy to send your streams without the need for manual token wrapping. All your current and future streams will have Auto-Wrap enabled for the selected token and network.",
+  Claim = "Recipients will need to actively claim the vesting schedule with an on-chain transaction to receive the funds. This mitigate funds loss in case they can’t access their wallet."
 }
 
 const CreateVestingForm: FC<{
@@ -91,6 +94,7 @@ const CreateVestingForm: FC<{
     "data.cliffEnabled",
     "data.vestingPeriod",
     "data.setupAutoWrap",
+    "data.claimEnabled"
   ]);
 
   const ReceiverController = (
@@ -122,13 +126,13 @@ const CreateVestingForm: FC<{
   const customSuperTokensQuery = subgraphApi.useTokensQuery(
     networkCustomTokens.length > 0
       ? {
-          chainId: network.id,
-          filter: {
-            isSuperToken: true,
-            isListed: false,
-            id_in: networkCustomTokens,
-          },
-        }
+        chainId: network.id,
+        filter: {
+          isSuperToken: true,
+          isListed: false,
+          id_in: networkCustomTokens,
+        },
+      }
       : skipToken
   );
 
@@ -354,7 +358,7 @@ const CreateVestingForm: FC<{
                 .filter(
                   (x) =>
                     x >=
-                      (network.testnet ? UnitOfTime.Minute : UnitOfTime.Day) &&
+                    (network.testnet ? UnitOfTime.Minute : UnitOfTime.Day) &&
                     x <= UnitOfTime.Year
                 )
                 .map((unitOfTime) => (
@@ -405,6 +409,32 @@ const CreateVestingForm: FC<{
     />
   );
 
+  
+  const { vestingVersion } = useVestingVersion();
+  const isClaimFeatureEnabled = vestingVersion === "v2";
+
+  const ClaimController = (
+    <Controller
+      control={control}
+      name="data.claimEnabled"
+      render={({ field: { value, onChange, onBlur } }) => (
+        <FormControlLabel
+          data-cy={"claim-toggle"}
+          control={
+            <Switch
+              checked={value}
+              onChange={(_event, checked) => {
+                onChange(checked);
+              }}
+              onBlur={onBlur}
+            />
+          }
+          label={VestingFormLabels.Claim}
+        />
+      )}
+    />
+  );
+
   const { visibleAddress } = useVisibleAddress();
 
   const queryAutoWrap =
@@ -424,11 +454,11 @@ const CreateVestingForm: FC<{
   } = useActiveAutoWrap(
     queryAutoWrap
       ? {
-          chainId: network.id,
-          accountAddress: visibleAddress,
-          superTokenAddress: token.address,
-          underlyingTokenAddress: token.underlyingAddress,
-        }
+        chainId: network.id,
+        accountAddress: visibleAddress,
+        superTokenAddress: token.address,
+        underlyingTokenAddress: token.underlyingAddress,
+      }
       : "skip"
   );
 
@@ -497,6 +527,15 @@ const CreateVestingForm: FC<{
           </Stack>
           {ReceiverController}
         </FormGroup>
+
+        {
+          isClaimFeatureEnabled && (
+            <Stack data-cy="claim-switch-and-tooltip" direction="row" alignItems="center">
+              {ClaimController}
+              <TooltipWithIcon title={VestingTooltips.Claim} />
+            </Stack>
+          )
+        }
 
         <Box
           sx={{

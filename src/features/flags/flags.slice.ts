@@ -14,6 +14,7 @@ import { RootState } from "../redux/store";
 export enum Flag {
   TestTokensReceived = "test-tokens-received",
   TokenAdded = "token-added",
+  VestingScheduler = "vesting-scheduler-v2",
 }
 
 interface BaseFlag<T> {
@@ -27,14 +28,22 @@ export interface TestTokensReceivedFlag
   chainId: number;
 }
 
-export interface TokenAddedFlag extends BaseFlag<Flag.TokenAdded> {
+export interface TokenAddedFlag 
+  extends BaseFlag<Flag.TokenAdded> {
   chainId: number;
   account: Address;
   token: Address;
   walletId: string;
 }
 
-type FlagType = TestTokensReceivedFlag | TokenAddedFlag;
+export interface VestingSchedulerFlag 
+  extends BaseFlag<Flag.VestingScheduler> {
+  chainId: number;
+  account: Address;
+  version: "v1" | "v2";
+}
+
+type FlagType = TestTokensReceivedFlag | TokenAddedFlag | VestingSchedulerFlag;
 
 /**
  * Account flags are used to store simple boolean type account data.
@@ -79,6 +88,20 @@ export const flagsSlice = createSlice({
         } as TokenAddedFlag,
       }),
     },
+    setVestingSchedulerFlag: {
+      reducer: (
+        state: EntityState<FlagType>,
+        action: PayloadAction<VestingSchedulerFlag>
+      ) => adapter.upsertOne(state, action.payload),
+      prepare: (payload: Omit<VestingSchedulerFlag, "id" | "type">) => ({
+        payload: {
+          ...payload,
+          id: `${payload.chainId}-${payload.account.toLowerCase()}`,
+          type: Flag.VestingScheduler,
+          account: getAddress(payload.account),
+        } as VestingSchedulerFlag,
+      }),
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -105,7 +128,7 @@ export const flagsSlice = createSlice({
   },
 });
 
-export const { addTestTokensReceivedFlag, addTokenAddedFlag } =
+export const { addTestTokensReceivedFlag, addTokenAddedFlag, setVestingSchedulerFlag } =
   flagsSlice.actions;
 
 const selectSelf = (state: RootState): EntityState<FlagType> => state.flags;

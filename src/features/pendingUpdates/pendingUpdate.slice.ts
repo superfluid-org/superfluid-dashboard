@@ -13,6 +13,8 @@ import { PendingUpdate } from "./PendingUpdate";
 import { PendingVestingSchedule } from "./PendingVestingSchedule";
 import { PendingVestingScheduleDeletion as PendingVestingScheduleDelete } from "./PendingVestingScheduleDelete";
 import { PendingConnectToPool } from "./PendingConnectToPool";
+import { PendingVestingScheduleClaim } from "./PendingVestingScheduleClaim";
+import { BigNumber } from "ethers";
 
 export const pendingUpdateAdapter = createEntityAdapter<PendingUpdate>({
   selectId: (x) => x.id,
@@ -284,6 +286,7 @@ export const pendingUpdateSlice = createSlice({
           cliffTransferAmountWei,
           endDateTimestamp,
           flowRateWei,
+          version
         } = action.meta.arg.originalArgs;
         const pendingUpdate: PendingVestingSchedule = {
           chainId,
@@ -300,6 +303,42 @@ export const pendingUpdateSlice = createSlice({
           endDateTimestamp,
           flowRateWei,
           relevantSubgraph: "Vesting",
+          version
+        };
+        pendingUpdateAdapter.addOne(state, pendingUpdate);
+      }
+    );
+    builder.addMatcher(
+      rpcApi.endpoints.createVestingScheduleFromAmountAndDuration.matchFulfilled,
+      (state, action) => {
+        const { chainId, hash: transactionHash } = action.payload;
+        const {
+          senderAddress,
+          superTokenAddress,
+          receiverAddress,
+          startDateTimestamp,
+          totalDurationInSeconds,
+          cliffPeriodInSeconds,
+          totalAmountWei
+        } = action.meta.arg.originalArgs;
+        const endDateTimestamp = startDateTimestamp + totalDurationInSeconds;
+        const flowRate = BigNumber.from(totalDurationInSeconds).div(totalAmountWei);
+        const pendingUpdate: PendingVestingSchedule = {
+          chainId,
+          transactionHash,
+          senderAddress,
+          receiverAddress,
+          id: transactionHash,
+          superTokenAddress,
+          pendingType: "VestingScheduleCreate",
+          timestamp: dateNowSeconds(),
+          cliffDateTimestamp: startDateTimestamp + cliffPeriodInSeconds,
+          cliffTransferAmountWei: BigNumber.from(cliffPeriodInSeconds).mul(flowRate).toString(),
+          startDateTimestamp,
+          endDateTimestamp,
+          flowRateWei: flowRate.toString(),
+          relevantSubgraph: "Vesting",
+          version: "v2"
         };
         pendingUpdateAdapter.addOne(state, pendingUpdate);
       }
@@ -308,7 +347,7 @@ export const pendingUpdateSlice = createSlice({
       rpcApi.endpoints.deleteVestingSchedule.matchFulfilled,
       (state, action) => {
         const { chainId, hash: transactionHash } = action.payload;
-        const { senderAddress, superTokenAddress, receiverAddress } =
+        const { senderAddress, superTokenAddress, receiverAddress, version } =
           action.meta.arg.originalArgs;
         const pendingUpdate: PendingVestingScheduleDelete = {
           chainId,
@@ -320,6 +359,28 @@ export const pendingUpdateSlice = createSlice({
           pendingType: "VestingScheduleDelete",
           timestamp: dateNowSeconds(),
           relevantSubgraph: "Vesting",
+          version
+        };
+        pendingUpdateAdapter.addOne(state, pendingUpdate);
+      }
+    );
+    builder.addMatcher(
+      rpcApi.endpoints.claimVestingSchedule.matchFulfilled,
+      (state, action) => {
+        const { chainId, hash: transactionHash } = action.payload;
+        const { senderAddress, superTokenAddress, receiverAddress } =
+          action.meta.arg.originalArgs;
+        const pendingUpdate: PendingVestingScheduleClaim = {
+          chainId,
+          transactionHash,
+          senderAddress,
+          receiverAddress,
+          id: transactionHash,
+          superTokenAddress,
+          pendingType: "VestingScheduleClaim",
+          timestamp: dateNowSeconds(),
+          relevantSubgraph: "Vesting",
+          version: "v2"
         };
         pendingUpdateAdapter.addOne(state, pendingUpdate);
       }

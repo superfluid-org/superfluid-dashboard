@@ -2,6 +2,8 @@ import {
   Box,
   IconButton,
   Stack,
+  ToggleButton,
+  ToggleButtonGroup,
   Typography,
   useMediaQuery,
   useTheme,
@@ -21,6 +23,11 @@ import CreateVestingForm from "./CreateVestingForm";
 import { useRouter } from "next/router";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useVestingToken } from "./useVestingToken";
+import { useDispatch } from "react-redux";
+import { setVestingSchedulerFlag } from "../../features/flags/flags.slice";
+import { useVestingVersion } from "../../hooks/useVestingVersion";
+import { useAccount } from "wagmi";
+import { getAddress } from "../../utils/memoizedEthersUtils";
 
 export type VestingToken = Token & SuperTokenMinimal;
 
@@ -96,6 +103,12 @@ export const CreateVestingSection: FC<CreateVestingSectionProps> = ({
     CreateVestingCardView.Form
   );
 
+  const dispatch = useDispatch();
+  const { vestingVersion } = useVestingVersion();
+
+  const { address: accountAddress } = useAccount();
+  const showVestingToggle = view === CreateVestingCardView.Form && !!accountAddress && !!network.vestingContractAddress_v2;
+
   const router = useRouter();
   const BackButton = (
     <Box>
@@ -127,9 +140,33 @@ export const CreateVestingSection: FC<CreateVestingSectionProps> = ({
         sx={{ mb: 3 }}
       >
         {BackButton}
-        <Typography component="h2" variant="h5" flex={1}>
-          Create a Vesting Schedule
-        </Typography>
+
+        <Stack direction="row" alignItems="center" gap={3}>
+          <Typography component="h2" variant="h5" flex={1}>
+            Create a Vesting Schedule
+          </Typography>
+
+          {
+            showVestingToggle && (
+              <ToggleButtonGroup
+                size="small"
+                color="primary"
+                value={vestingVersion}
+                exclusive
+                onChange={(_e, value) => {
+                  dispatch(setVestingSchedulerFlag({
+                    account: getAddress(accountAddress),
+                    chainId: network.id,
+                    version: value
+                  }));
+                }}
+              >
+                <ToggleButton value="v1">&nbsp;V1&nbsp;</ToggleButton>
+                <ToggleButton value="v2">&nbsp;V2&nbsp;</ToggleButton>
+              </ToggleButtonGroup>
+            )
+          }
+        </Stack>
 
         <NetworkBadge
           network={network}
@@ -160,7 +197,7 @@ export const CreateVestingSection: FC<CreateVestingSectionProps> = ({
             <CreateVestingPreview
               token={token}
               network={network}
-              setView={setView} 
+              setView={setView}
             />
           )}
 

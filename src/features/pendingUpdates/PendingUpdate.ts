@@ -17,6 +17,7 @@ export interface PendingUpdate {
     | "IndexSubscriptionRevoke"
     | "VestingScheduleCreate"
     | "VestingScheduleDelete"
+    | "VestingScheduleClaim"
     | "AutoWrapScheduleCreate"
     | "AutoWrapScheduleDelete"
     | "ConnectToPool"

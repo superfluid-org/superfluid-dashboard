@@ -3,19 +3,29 @@ import {
   autoWrapManagerAddresses,
   autoWrapStrategyAddresses,
   flowSchedulerContractAddresses,
-  vestingContractAddresses,
+  vestingContractAddresses_v1,
+  vestingContractAddresses_v2
 } from "../features/network/networkConstants";
 
 const ethSdkConfig = defineConfig({
   contracts: {
+    optimismSepolia: {
+      vestingScheduler_v2: vestingContractAddresses_v2.optimismSepolia, // OP Sepolia used as source of truth for the ABI of Vesting Scheduler.
+      vestingScheduler: vestingContractAddresses_v1.optimismSepolia // OP Sepolia used as source of truth for the ABI of Vesting Scheduler.
+    },
     mainnet: {
       flowScheduler: flowSchedulerContractAddresses.ethereum, // Mainnet used as source of truth for the ABI of Flow Scheduler.
-      vestingScheduler: vestingContractAddresses.ethereum, // Mainnet used as source of truth for the ABI of Vesting Scheduler.
       autoWrapManager: autoWrapManagerAddresses[1],
-      autoWrapStrategy: autoWrapStrategyAddresses[1]
-    }
+      autoWrapStrategy: autoWrapStrategyAddresses[1],
+    },
   },
   outputPath: "./src/eth-sdk/client",
+  rpc: {
+    optimismSepolia: "https://rpc-endpoints.superfluid.dev/optimism-sepolia",
+  },
+  etherscanURLs: {
+    optimismSepolia: "https://api-sepolia-optimistic.etherscan.io/api",
+  }
 });
 
 export default ethSdkConfig;

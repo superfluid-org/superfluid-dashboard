@@ -73,6 +73,7 @@ export type CreateFlowExecutedEvent = Event & {
   timestamp: Scalars['BigInt'];
   transactionHash: Scalars['Bytes'];
   gasPrice: Scalars['BigInt'];
+  gasUsed: Scalars['BigInt'];
   superToken: Scalars['Bytes'];
   sender: Scalars['Bytes'];
   receiver: Scalars['Bytes'];
@@ -168,6 +169,14 @@ export type CreateFlowExecutedEvent_Filter = {
   gasPrice_lte?: InputMaybe<Scalars['BigInt']>;
   gasPrice_in?: InputMaybe<Array<Scalars['BigInt']>>;
   gasPrice_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  gasUsed?: InputMaybe<Scalars['BigInt']>;
+  gasUsed_not?: InputMaybe<Scalars['BigInt']>;
+  gasUsed_gt?: InputMaybe<Scalars['BigInt']>;
+  gasUsed_lt?: InputMaybe<Scalars['BigInt']>;
+  gasUsed_gte?: InputMaybe<Scalars['BigInt']>;
+  gasUsed_lte?: InputMaybe<Scalars['BigInt']>;
+  gasUsed_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  gasUsed_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   superToken?: InputMaybe<Scalars['Bytes']>;
   superToken_not?: InputMaybe<Scalars['Bytes']>;
   superToken_gt?: InputMaybe<Scalars['Bytes']>;
@@ -256,6 +265,7 @@ export type CreateFlowExecutedEvent_OrderBy =
   | 'timestamp'
   | 'transactionHash'
   | 'gasPrice'
+  | 'gasUsed'
   | 'superToken'
   | 'sender'
   | 'receiver'
@@ -433,6 +443,7 @@ export type DeleteFlowExecutedEvent = Event & {
   timestamp: Scalars['BigInt'];
   transactionHash: Scalars['Bytes'];
   gasPrice: Scalars['BigInt'];
+  gasUsed: Scalars['BigInt'];
   superToken: Scalars['Bytes'];
   sender: Scalars['Bytes'];
   receiver: Scalars['Bytes'];
@@ -525,6 +536,14 @@ export type DeleteFlowExecutedEvent_Filter = {
   gasPrice_lte?: InputMaybe<Scalars['BigInt']>;
   gasPrice_in?: InputMaybe<Array<Scalars['BigInt']>>;
   gasPrice_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  gasUsed?: InputMaybe<Scalars['BigInt']>;
+  gasUsed_not?: InputMaybe<Scalars['BigInt']>;
+  gasUsed_gt?: InputMaybe<Scalars['BigInt']>;
+  gasUsed_lt?: InputMaybe<Scalars['BigInt']>;
+  gasUsed_gte?: InputMaybe<Scalars['BigInt']>;
+  gasUsed_lte?: InputMaybe<Scalars['BigInt']>;
+  gasUsed_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  gasUsed_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   superToken?: InputMaybe<Scalars['Bytes']>;
   superToken_not?: InputMaybe<Scalars['Bytes']>;
   superToken_gt?: InputMaybe<Scalars['Bytes']>;
@@ -589,6 +608,7 @@ export type DeleteFlowExecutedEvent_OrderBy =
   | 'timestamp'
   | 'transactionHash'
   | 'gasPrice'
+  | 'gasUsed'
   | 'superToken'
   | 'sender'
   | 'receiver'
@@ -2054,6 +2074,7 @@ export type CreateFlowExecutedEventResolvers<ContextType = MeshContext, ParentTy
   timestamp?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   transactionHash?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   gasPrice?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  gasUsed?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   superToken?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   sender?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   receiver?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
@@ -2093,6 +2114,7 @@ export type DeleteFlowExecutedEventResolvers<ContextType = MeshContext, ParentTy
   timestamp?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   transactionHash?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   gasPrice?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  gasUsed?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   superToken?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   sender?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   receiver?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
@@ -2327,7 +2349,7 @@ const schedulingTransforms = [];
 const additionalTypeDefs = [] as any[];
 const schedulingHandler = new GraphqlHandler({
               name: "scheduling",
-              config: {"endpoint":"{context.url:https://api.thegraph.com/subgraphs/name/superfluid-finance/scheduling-v1-polygon-mainnet}","retry":5},
+              config: {"endpoint":"{context.url:https://subgraph-endpoints.superfluid.dev/optimism-mainnet/flow-scheduler}","retry":5},
               baseDir,
               cache,
               pubsub,

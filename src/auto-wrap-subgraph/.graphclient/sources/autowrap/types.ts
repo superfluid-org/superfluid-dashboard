@@ -1033,6 +1033,7 @@ export type WrapExecutedEvent = Event & {
   timestamp: Scalars['BigInt'];
   transactionHash: Scalars['Bytes'];
   gasPrice: Scalars['BigInt'];
+  gasUsed: Scalars['BigInt'];
   amount: Scalars['BigInt'];
   wrapScheduleId: Scalars['Bytes'];
 };
@@ -1122,6 +1123,14 @@ export type WrapExecutedEvent_filter = {
   gasPrice_lte?: InputMaybe<Scalars['BigInt']>;
   gasPrice_in?: InputMaybe<Array<Scalars['BigInt']>>;
   gasPrice_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  gasUsed?: InputMaybe<Scalars['BigInt']>;
+  gasUsed_not?: InputMaybe<Scalars['BigInt']>;
+  gasUsed_gt?: InputMaybe<Scalars['BigInt']>;
+  gasUsed_lt?: InputMaybe<Scalars['BigInt']>;
+  gasUsed_gte?: InputMaybe<Scalars['BigInt']>;
+  gasUsed_lte?: InputMaybe<Scalars['BigInt']>;
+  gasUsed_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  gasUsed_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   amount?: InputMaybe<Scalars['BigInt']>;
   amount_not?: InputMaybe<Scalars['BigInt']>;
   amount_gt?: InputMaybe<Scalars['BigInt']>;
@@ -1156,6 +1165,7 @@ export type WrapExecutedEvent_orderBy =
   | 'timestamp'
   | 'transactionHash'
   | 'gasPrice'
+  | 'gasUsed'
   | 'amount'
   | 'wrapScheduleId';
 

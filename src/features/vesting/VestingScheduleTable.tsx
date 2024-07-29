@@ -180,6 +180,8 @@ const VestingScheduleTable: FC<VestingScheduleTableProps> = ({
     }
   }, [statusFilter, vestingSchedules]);
 
+  const showVestingVersion = !isBelowMd && !incoming && !!network.vestingContractAddress_v2;
+
   return (
     <TableContainer
       data-cy={dataCy}
@@ -221,6 +223,7 @@ const VestingScheduleTable: FC<VestingScheduleTableProps> = ({
               <TableCell width="140px" sx={{ pr: 2, pl: 0 }}>
                 Status
               </TableCell>
+              {showVestingVersion && (<TableCell>Version</TableCell>)}
               {incoming && !isBelowMd && <TableCell>Action</TableCell>}
             </TableRow>
           )}

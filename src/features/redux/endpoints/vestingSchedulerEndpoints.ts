@@ -19,6 +19,7 @@ import {
   ACL_CREATE_PERMISSION,
   ACL_DELETE_PERMISSION,
 } from "./flowSchedulerEndpoints";
+import { getUnixTime } from "date-fns";
 
 export const MAX_VESTING_DURATION_IN_YEARS = 10;
 export const MAX_VESTING_DURATION_IN_SECONDS =
@@ -32,6 +33,25 @@ export interface CreateVestingSchedule extends BaseSuperTokenMutation {
   flowRateWei: string;
   endDateTimestamp: number;
   cliffTransferAmountWei: string;
+  claimEnabled: boolean;
+  version: "v1" | "v2";
+}
+
+export interface CreateVestingScheduleFromAmountAndDuration
+  extends BaseSuperTokenMutation {
+  senderAddress: string;
+  receiverAddress: string;
+  startDateTimestamp: number;
+  cliffPeriodInSeconds: number;
+  totalDurationInSeconds: number;
+  totalAmountWei: string;
+  claimEnabled: boolean;
+}
+
+export interface ClaimVestingSchedule extends BaseSuperTokenMutation {
+  chainId: number;
+  senderAddress: string;
+  receiverAddress: string;
 }
 
 export interface DeleteVestingSchedule extends BaseSuperTokenMutation {
@@ -39,16 +59,20 @@ export interface DeleteVestingSchedule extends BaseSuperTokenMutation {
   senderAddress: string;
   receiverAddress: string;
   deleteFlow: boolean;
+  version: "v1" | "v2";
 }
 
 interface GetVestingSchedule extends BaseQuery<RpcVestingSchedule | null> {
   superTokenAddress: string;
   senderAddress: string;
   receiverAddress: string;
+  version: "v1" | "v2";
 }
 
 interface RpcVestingSchedule {
   endDateTimestamp: number;
+  claimValidityDate: number;
+  isClaimable: boolean;
 }
 
 interface FixAccessForVestingMutation extends BaseSuperTokenMutation {
@@ -56,6 +80,7 @@ interface FixAccessForVestingMutation extends BaseSuperTokenMutation {
   requiredTokenAllowanceWei: string;
   requiredFlowOperatorPermissions: number;
   requiredFlowRateAllowanceWei: string;
+  version: "v1" | "v2";
 }
 
 export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
@@ -64,10 +89,10 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
     CreateVestingSchedule
   >({
     queryFn: async (
-      { chainId, signer, superTokenAddress, senderAddress, ...arg },
+      { chainId, signer, superTokenAddress, senderAddress, version, ...arg },
       { dispatch }
     ) => {
-      const vestingScheduler = getVestingScheduler(chainId, signer);
+      const vestingScheduler = getVestingScheduler(chainId, signer, version);
 
       const framework = await getFramework(chainId);
       const superToken = await framework.loadSuperToken(superTokenAddress);
@@ -82,26 +107,41 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
         signer
       );
 
+      const claimValidityDate = arg.claimEnabled
+        ? arg.endDateTimestamp
+        : undefined;
+
       const [
         flowOperatorData,
-        START_DATE_VALID_AFTER_IN_SECONDS,
-        END_DATE_VALID_BEFORE_IN_SECONDS,
         existingTokenAllowance,
+        maximumNeededTokenAllowance,
       ] = await Promise.all([
         superToken.getFlowOperatorData({
           flowOperator: vestingScheduler.address,
           sender: senderAddress,
           providerOrSigner: signer,
         }),
-        vestingScheduler.START_DATE_VALID_AFTER(),
-        vestingScheduler.END_DATE_VALID_BEFORE(),
         superTokenContract.allowance(senderAddress, vestingScheduler.address),
+        // Note: this "v2" function works for "v1" as well
+        getVestingScheduler(
+          chainId,
+          signer,
+          "v2"
+        ).getMaximumNeededTokenAllowance({
+          cliffAndFlowDate: arg.cliffDateTimestamp
+            ? arg.cliffDateTimestamp
+            : arg.startDateTimestamp,
+          endDate: arg.endDateTimestamp,
+          flowRate: arg.flowRateWei,
+          cliffAmount: arg.cliffTransferAmountWei,
+          remainderAmount: "0",
+          claimValidityDate: claimValidityDate ?? "0",
+        }),
       ]);
 
       const existingPermissions = Number(flowOperatorData.permissions);
-      const permissionsDelta = ACL_CREATE_PERMISSION | ACL_DELETE_PERMISSION
-      const newPermissions =
-        existingPermissions | permissionsDelta;
+      const permissionsDelta = ACL_CREATE_PERMISSION | ACL_DELETE_PERMISSION;
+      const newPermissions = existingPermissions | permissionsDelta;
 
       const flowRateBigNumber = BigNumber.from(arg.flowRateWei);
       const existingFlowRateAllowance = BigNumber.from(
@@ -112,7 +152,9 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
       )
         ? BigNumber.from("0")
         : existingFlowRateAllowance.add(flowRateBigNumber);
-      const newFlowRateAllowance = existingFlowRateAllowance.add(flowRateAllowanceDelta);
+      const newFlowRateAllowance = existingFlowRateAllowance.add(
+        flowRateAllowanceDelta
+      );
 
       const hasEnoughSuperTokenAccess =
         existingPermissions === newPermissions &&
@@ -130,16 +172,12 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
         });
       }
 
-      const maximumNeededTokenAllowance = BigNumber.from(
-        arg.cliffTransferAmountWei
+      const tokenAllowanceDelta = isCloseToUnlimitedTokenAllowance(
+        existingTokenAllowance
       )
-        .add(flowRateBigNumber.mul(START_DATE_VALID_AFTER_IN_SECONDS))
-        .add(flowRateBigNumber.mul(END_DATE_VALID_BEFORE_IN_SECONDS));
-
-      const tokenAllowanceDelta = isCloseToUnlimitedTokenAllowance(existingTokenAllowance)
         ? BigNumber.from("0")
         : maximumNeededTokenAllowance;
-      const newTokenAllowance = existingTokenAllowance.add(tokenAllowanceDelta)
+      const newTokenAllowance = existingTokenAllowance.add(tokenAllowanceDelta);
 
       const hasEnoughTokenAllowance =
         existingTokenAllowance.eq(newTokenAllowance);
@@ -151,22 +189,216 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
             tokenAllowanceDelta
           );
         subOperations.push({
-          operation: new Operation(approveAllowancePromise, "ERC20_INCREASE_ALLOWANCE"),
+          operation: new Operation(
+            approveAllowancePromise,
+            "ERC20_INCREASE_ALLOWANCE"
+          ),
           title: "Approve Allowance",
         });
       }
 
       const createVestingSchedule =
-        await vestingScheduler.populateTransaction.createVestingSchedule(
-          superTokenAddress,
-          arg.receiverAddress,
-          arg.startDateTimestamp,
-          arg.cliffDateTimestamp,
-          arg.flowRateWei,
-          arg.cliffTransferAmountWei,
-          arg.endDateTimestamp,
-          []
-        );
+        version === "v2"
+          ? await getVestingScheduler(
+              chainId,
+              signer,
+              "v2"
+            ).populateTransaction[
+              "createVestingSchedule(address,address,uint32,uint32,int96,uint256,uint32,uint32,bytes)"
+            ](
+              superTokenAddress,
+              arg.receiverAddress,
+              arg.startDateTimestamp,
+              arg.cliffDateTimestamp,
+              arg.flowRateWei,
+              arg.cliffTransferAmountWei,
+              arg.endDateTimestamp,
+              claimValidityDate ?? 0,
+              []
+            )
+          : await getVestingScheduler(
+              chainId,
+              signer,
+              "v1"
+            ).populateTransaction.createVestingSchedule(
+              superTokenAddress,
+              arg.receiverAddress,
+              arg.startDateTimestamp,
+              arg.cliffDateTimestamp,
+              arg.flowRateWei,
+              arg.cliffTransferAmountWei,
+              arg.endDateTimestamp,
+              []
+            );
+
+      subOperations.push({
+        operation: await framework.host.callAppAction(
+          vestingScheduler.address,
+          createVestingSchedule.data!
+        ),
+        title: "Create Vesting Schedule",
+      });
+
+      const signerAddress = await signer.getAddress();
+      const executable = framework.batchCall(
+        subOperations.map((x) => x.operation)
+      );
+      const subTransactionTitles = subOperations.map((x) => x.title);
+
+      const transactionResponse = await executable.exec(signer);
+
+      await registerNewTransaction({
+        dispatch,
+        chainId,
+        transactionResponse,
+        signerAddress,
+        extraData: {
+          subTransactionTitles,
+          ...(arg.transactionExtraData ?? {}),
+        },
+        title: "Create Vesting Schedule", // Use a different title here?
+      });
+
+      return {
+        data: {
+          chainId,
+          hash: transactionResponse.hash,
+          subTransactionTitles,
+        },
+      };
+    },
+  }),
+  createVestingScheduleFromAmountAndDuration: builder.mutation<
+    TransactionInfo & {
+      subTransactionTitles: TransactionTitle[];
+    },
+    CreateVestingScheduleFromAmountAndDuration
+  >({
+    queryFn: async (
+      { chainId, signer, superTokenAddress, senderAddress, ...arg },
+      { dispatch }
+    ) => {
+      const vestingScheduler = getVestingScheduler(chainId, signer, "v2");
+
+      const framework = await getFramework(chainId);
+      const superToken = await framework.loadSuperToken(superTokenAddress);
+
+      const subOperations: {
+        operation: Operation;
+        title: TransactionTitle;
+      }[] = [];
+
+      const superTokenContract = SuperToken__factory.connect(
+        superToken.address,
+        signer
+      );
+
+      const claimPeriodInSeconds = arg.claimEnabled
+        ? arg.totalDurationInSeconds
+        : 0;
+      const [flowOperatorData, existingTokenAllowance, params] =
+        await Promise.all([
+          superToken.getFlowOperatorData({
+            flowOperator: vestingScheduler.address,
+            sender: senderAddress,
+            providerOrSigner: signer,
+          }),
+          superTokenContract.allowance(senderAddress, vestingScheduler.address),
+          vestingScheduler.mapCreateVestingScheduleParams(
+            superTokenAddress,
+            senderAddress,
+            arg.receiverAddress,
+            arg.totalAmountWei,
+            arg.totalDurationInSeconds,
+            arg.startDateTimestamp,
+            arg.cliffPeriodInSeconds,
+            claimPeriodInSeconds
+          ),
+        ]);
+
+      const maximumNeededTokenAllowance =
+        await vestingScheduler.getMaximumNeededTokenAllowance({
+          cliffAndFlowDate: params.cliffDate
+            ? params.cliffDate
+            : params.startDate,
+          endDate: params.endDate,
+          flowRate: params.flowRate,
+          cliffAmount: params.cliffAmount,
+          remainderAmount: params.remainderAmount,
+          claimValidityDate: params.claimValidityDate,
+        });
+
+      const existingPermissions = Number(flowOperatorData.permissions);
+      const permissionsDelta = ACL_CREATE_PERMISSION | ACL_DELETE_PERMISSION;
+      const newPermissions = existingPermissions | permissionsDelta;
+
+      const flowRateBigNumber = BigNumber.from(params.flowRate);
+      const existingFlowRateAllowance = BigNumber.from(
+        flowOperatorData.flowRateAllowance
+      );
+      const flowRateAllowanceDelta = isCloseToUnlimitedFlowRateAllowance(
+        existingFlowRateAllowance
+      )
+        ? BigNumber.from("0")
+        : existingFlowRateAllowance.add(flowRateBigNumber);
+      const newFlowRateAllowance = existingFlowRateAllowance.add(
+        flowRateAllowanceDelta
+      );
+
+      const hasEnoughSuperTokenAccess =
+        existingPermissions === newPermissions &&
+        existingFlowRateAllowance.eq(newFlowRateAllowance);
+
+      if (!hasEnoughSuperTokenAccess) {
+        subOperations.push({
+          operation: await superToken.increaseFlowRateAllowanceWithPermissions({
+            flowOperator: vestingScheduler.address,
+            flowRateAllowanceDelta: flowRateAllowanceDelta.toString(),
+            permissionsDelta: permissionsDelta,
+            overrides: arg.overrides,
+          }),
+          title: "Approve Vesting Scheduler",
+        });
+      }
+
+      const tokenAllowanceDelta = isCloseToUnlimitedTokenAllowance(
+        existingTokenAllowance
+      )
+        ? BigNumber.from("0")
+        : maximumNeededTokenAllowance;
+      const newTokenAllowance = existingTokenAllowance.add(tokenAllowanceDelta);
+
+      const hasEnoughTokenAllowance =
+        existingTokenAllowance.eq(newTokenAllowance);
+
+      if (!hasEnoughTokenAllowance) {
+        const approveAllowancePromise =
+          superTokenContract.populateTransaction.increaseAllowance(
+            vestingScheduler.address,
+            tokenAllowanceDelta
+          );
+        subOperations.push({
+          operation: new Operation(
+            approveAllowancePromise,
+            "ERC20_INCREASE_ALLOWANCE"
+          ),
+          title: "Approve Allowance",
+        });
+      }
+
+      const createVestingSchedule = await vestingScheduler.populateTransaction[
+        "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32,bytes)"
+      ](
+        superTokenAddress,
+        arg.receiverAddress,
+        arg.totalAmountWei,
+        arg.totalDurationInSeconds,
+        arg.startDateTimestamp,
+        arg.cliffPeriodInSeconds,
+        claimPeriodInSeconds,
+        []
+      );
+
       subOperations.push({
         operation: await framework.host.callAppAction(
           vestingScheduler.address,
@@ -222,13 +454,14 @@ export const vestingSchedulerMutationEndpoints = {
           requiredTokenAllowanceWei,
           requiredFlowOperatorPermissions,
           requiredFlowRateAllowanceWei,
-          transactionExtraData
+          transactionExtraData,
+          version,
         },
         { dispatch }
       ) => {
         const framework = await getFramework(chainId);
         const superToken = await framework.loadSuperToken(superTokenAddress);
-        const vestingScheduler = getVestingScheduler(chainId, signer);
+        const vestingScheduler = getVestingScheduler(chainId, signer, version);
 
         const batchedOperations: {
           operation: Operation;
@@ -317,7 +550,7 @@ export const vestingSchedulerMutationEndpoints = {
           extraData: {
             subTransactionTitles,
             ...(transactionExtraData ?? {}),
-          }
+          },
         });
 
         return {
@@ -343,10 +576,11 @@ export const vestingSchedulerMutationEndpoints = {
           overrides,
           transactionExtraData,
           deleteFlow,
+          version,
         },
         { dispatch }
       ) => {
-        const vestingScheduler = getVestingScheduler(chainId, signer);
+        const vestingScheduler = getVestingScheduler(chainId, signer, version);
         const signerAddress = await signer.getAddress();
         const framework = await getFramework(chainId);
 
@@ -399,7 +633,60 @@ export const vestingSchedulerMutationEndpoints = {
           extraData: {
             subTransactionTitles,
             ...(transactionExtraData ?? {}),
-          }
+          },
+        });
+
+        return {
+          data: {
+            chainId,
+            hash: transactionResponse.hash,
+            subTransactionTitles,
+          },
+        };
+      },
+    }),
+    claimVestingSchedule: builder.mutation<
+      TransactionInfo & { subTransactionTitles: TransactionTitle[] },
+      ClaimVestingSchedule
+    >({
+      queryFn: async (
+        {
+          chainId,
+          signer,
+          superTokenAddress,
+          senderAddress,
+          receiverAddress,
+          overrides,
+          transactionExtraData,
+        },
+        { dispatch }
+      ) => {
+        const vestingScheduler = getVestingScheduler(chainId, signer, "v2");
+        const signerAddress = await signer.getAddress();
+
+        const batchedOperations: {
+          operation: Operation;
+          title: TransactionTitle;
+        }[] = [];
+
+        const transactionResponse = await vestingScheduler.executeCliffAndFlow(
+          superTokenAddress,
+          senderAddress,
+          receiverAddress
+        );
+
+        const subTransactionTitles = batchedOperations.map((x) => x.title);
+
+        await registerNewTransaction({
+          transactionResponse,
+          chainId,
+          dispatch,
+          signerAddress,
+          title: "Claim Vesting Schedule",
+          extraData: {
+            subTransactionTitles,
+            ...(transactionExtraData ?? {}),
+          },
         });
 
         return {
@@ -426,17 +713,18 @@ export const vestingSchedulerQueryEndpoints = {
         END_DATE_VALID_BEFORE_IN_DAYS: number;
         END_DATE_VALID_BEFORE_IN_SECONDS: number;
       },
-      { chainId: number }
+      { chainId: number; version: "v1" | "v2" }
     >({
       keepUnusedDataFor: 3600,
       extraOptions: {
         maxRetries: 10,
       },
-      queryFn: async ({ chainId }) => {
+      queryFn: async ({ chainId, version }) => {
         const framework = await getFramework(chainId);
         const vestingScheduler = getVestingScheduler(
           chainId,
-          framework.settings.provider
+          framework.settings.provider,
+          version
         );
         const [
           MIN_VESTING_DURATION_IN_SECONDS,
@@ -474,7 +762,12 @@ export const vestingSchedulerQueryEndpoints = {
         flowOperatorPermissions: number;
         flowRateAllowance: string;
       },
-      { chainId: number; tokenAddress: string; senderAddress: string }
+      {
+        chainId: number;
+        tokenAddress: string;
+        senderAddress: string;
+        version: "v1" | "v2";
+      }
     >({
       providesTags: (_result, _error, arg) => [
         {
@@ -482,12 +775,13 @@ export const vestingSchedulerQueryEndpoints = {
           id: arg.chainId,
         },
       ],
-      queryFn: async ({ chainId, tokenAddress, senderAddress }) => {
+      queryFn: async ({ chainId, tokenAddress, senderAddress, version }) => {
         const framework = await getFramework(chainId);
         const superToken = await framework.loadSuperToken(tokenAddress);
         const vestingScheduler = getVestingScheduler(
           chainId,
-          framework.settings.provider
+          framework.settings.provider,
+          version
         );
 
         const tokenAllowance = await superToken.allowance({
@@ -496,14 +790,12 @@ export const vestingSchedulerQueryEndpoints = {
           providerOrSigner: framework.settings.provider,
         });
 
-        const {
-          flowRateAllowance,
-          permissions: flowOperatorPermissions,
-        } = await superToken.getFlowOperatorData({
-          sender: senderAddress,
-          flowOperator: vestingScheduler.address,
-          providerOrSigner: framework.settings.provider,
-        });
+        const { flowRateAllowance, permissions: flowOperatorPermissions } =
+          await superToken.getFlowOperatorData({
+            sender: senderAddress,
+            flowOperator: vestingScheduler.address,
+            providerOrSigner: framework.settings.provider,
+          });
 
         return {
           data: {
@@ -529,23 +821,37 @@ export const vestingSchedulerQueryEndpoints = {
         superTokenAddress,
         senderAddress,
         receiverAddress,
+        version,
       }) => {
         const framework = await getFramework(chainId);
+
         const vestingScheduler = getVestingScheduler(
           chainId,
-          framework.settings.provider
+          framework.settings.provider,
+          version
         );
 
-        const rawVestingSchedule = await vestingScheduler.getVestingSchedule(
-          superTokenAddress,
-          senderAddress,
-          receiverAddress
-        );
+        const rawVestingSchedule = {
+          claimValidityDate: 0,
+          ...(await vestingScheduler.getVestingSchedule(
+            superTokenAddress,
+            senderAddress,
+            receiverAddress
+          )),
+        };
+
+        const unixNow = getUnixTime(new Date());
 
         const mappedVestingSchedule =
           rawVestingSchedule.endDate > 0
             ? {
                 endDateTimestamp: rawVestingSchedule.endDate,
+                claimValidityDate: rawVestingSchedule.claimValidityDate ?? null,
+                isClaimable:
+                  !!rawVestingSchedule.cliffAndFlowDate &&
+                  !!rawVestingSchedule.claimValidityDate &&
+                  rawVestingSchedule.cliffAndFlowDate < unixNow &&
+                  unixNow < rawVestingSchedule.claimValidityDate,
               }
             : null;
 

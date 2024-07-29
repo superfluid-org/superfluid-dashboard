@@ -38,7 +38,7 @@ export const useVestingTransactionTracking = () => {
 
           if (
             network &&
-            network.vestingContractAddress &&
+            (network.vestingContractAddress_v1 || network.vestingContractAddress_v2) &&
             blockTransactionSucceededIn
           ) {
             // Poll Subgraph for all the events for this block and then invalidate Subgraph cache based on that.

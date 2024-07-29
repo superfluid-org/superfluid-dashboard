@@ -187,6 +187,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
       chainId: network.id,
       tokenAddress: tokenAddress,
       senderAddress: senderAddress,
+      version: "v1" // TODO: handle v2
     });
 
   if (!vestingSchedulerAllowancesQuery.data) {

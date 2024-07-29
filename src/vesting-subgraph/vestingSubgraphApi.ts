@@ -1,7 +1,11 @@
 import { miniSerializeError } from "@reduxjs/toolkit";
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { getSerializeQueryArgs } from "@superfluid-finance/sdk-redux";
-import { allNetworks, tryFindNetwork } from "../features/network/networks";
+import {
+  allNetworks,
+  findNetworkOrThrow,
+  tryFindNetwork,
+} from "../features/network/networks";
 import {
   mapSubgraphVestingSchedule,
   VestingSchedule,
@@ -38,9 +42,11 @@ export const vestingSubgraphApi = createApi({
     >({
       queryFn: async ({ chainId, ...variables }) => {
         const sdk = tryGetBuiltGraphSdkForNetwork(chainId);
+
         const subgraphVestingSchedule = sdk
           ? (await sdk.getVestingSchedule(variables)).vestingSchedule
           : null;
+
         return {
           data: {
             vestingSchedule: subgraphVestingSchedule
@@ -62,9 +68,11 @@ export const vestingSubgraphApi = createApi({
     >({
       queryFn: async ({ chainId, ...variables }) => {
         const sdk = tryGetBuiltGraphSdkForNetwork(chainId);
+
         const subgraphVestingSchedules = sdk
           ? (await sdk.getVestingSchedules(variables)).vestingSchedules
           : [];
+
         return {
           data: {
             vestingSchedules: subgraphVestingSchedules.map(

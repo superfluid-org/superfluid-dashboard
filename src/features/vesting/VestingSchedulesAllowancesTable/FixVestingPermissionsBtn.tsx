@@ -32,7 +32,7 @@ const FixVestingPermissionsBtn: FC<FixVestingPermissionsBtnProps> = ({
       signer: Signer,
       setDialogLoadingInfo: (children: ReactNode) => void
     ) => {
-      if (!network.vestingContractAddress) {
+      if (!network.vestingContractAddress_v1 || network.vestingContractAddress_v2) {
         throw new Error(
           "No vesting contract configured for network. Should never happen!"
         );
@@ -52,7 +52,8 @@ const FixVestingPermissionsBtn: FC<FixVestingPermissionsBtnProps> = ({
         requiredTokenAllowanceWei: recommendedTokenAllowance.toString(),
         requiredFlowOperatorPermissions: requiredFlowOperatorPermissions,
         requiredFlowRateAllowanceWei: requiredFlowRateAllowance.toString(),
-      };
+        version: "v1" // TODO: handle v2 too
+      } as const;
 
       fixAccess({
         ...primaryArgs,

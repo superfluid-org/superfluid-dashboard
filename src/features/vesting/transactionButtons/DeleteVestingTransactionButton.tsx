@@ -19,18 +19,20 @@ import NextLink from "next/link";
 import { Typography } from "@mui/material";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import { useAnalytics } from "../../analytics/useAnalytics";
-import { useAccount } from "wagmi";
+import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
 
 export const DeleteVestingTransactionButton: FC<{
   superTokenAddress: string;
   senderAddress: string;
   receiverAddress: string;
+  version: "v1" | "v2"
   TransactionBoundaryProps?: TransactionBoundaryProps;
   TransactionButtonProps?: Partial<TransactionButtonProps>;
 }> = ({
   superTokenAddress,
   senderAddress,
   receiverAddress,
+  version,
   TransactionBoundaryProps,
   TransactionButtonProps = {},
 }) => {
@@ -40,7 +42,7 @@ export const DeleteVestingTransactionButton: FC<{
 
   const { expectedNetwork: network } = useConnectionBoundary();
 
-  const { address: currentAccountAddress } = useAccount();
+  const { visibleAddress: currentAccountAddress } = useVisibleAddress();
   const isSenderLooking =
     currentAccountAddress &&
     senderAddress.toLowerCase() === currentAccountAddress.toLowerCase();
@@ -53,6 +55,7 @@ export const DeleteVestingTransactionButton: FC<{
             superTokenAddress,
             receiverAddress,
             senderAddress,
+            version
           }
         : skipToken
     );
@@ -73,6 +76,7 @@ export const DeleteVestingTransactionButton: FC<{
     superTokenAddress,
     receiverAddress,
     senderAddress,
+    version
   });
   const isButtonVisible = !!activeVestingSchedule && !isBeingDeleted;
 
@@ -114,6 +118,7 @@ export const DeleteVestingTransactionButton: FC<{
                 senderAddress: await signer.getAddress(),
                 receiverAddress: receiverAddress,
                 deleteFlow: shouldDeleteActiveFlow,
+                version
               };
               deleteVestingSchedule({
                 ...primaryArgs,

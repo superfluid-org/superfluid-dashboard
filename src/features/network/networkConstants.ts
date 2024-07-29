@@ -54,7 +54,7 @@ export const flowSchedulerContractAddresses = {
   base: "0xC72CEd15204d02183c83fEbb918b183E400811Ee",
 } as const;
 
-export const vestingContractAddresses = {
+export const vestingContractAddresses_v1 = {
   gnosis: "0x0170FFCC75d178d426EBad5b1a31451d00Ddbd0D",
   polygon: "0xcFE6382B33F2AdaFbE46e6A26A88E0182ae32b0c",
   arbitrum: "0x55c8fc400833eEa791087cF343Ff2409A39DeBcC",
@@ -64,6 +64,11 @@ export const vestingContractAddresses = {
   ethereum: "0x39D5cBBa9adEBc25085a3918d36D5325546C001B",
   optimismSepolia: "0x27444c0235a4D921F3106475faeba0B5e7ABDD7a",
   base: "0xDF92D0E6Bcb9385FDe99aD21Ff5e47Fb47E3c6b2",
+} as const;
+
+export const vestingContractAddresses_v2 = {
+  optimism: "0xe567b32C10B0dB72d9490eB1B9A409C5ADed192C",
+  optimismSepolia: "0x3aa62b96f44D0f8892BeBBC819DE8e02E9DE69A8",
 } as const;
 
 export const vestingSubgraphUrls = {
@@ -132,7 +137,7 @@ export const superfluidRpcUrls = {
   bnbSmartChain: "https://rpc-endpoints.superfluid.dev/bsc-mainnet",
   ethereum: "https://rpc-endpoints.superfluid.dev/eth-mainnet",
   "celo-mainnet": "https://rpc-endpoints.superfluid.dev/celo-mainnet",
-  "degenChain": "https://rpc-endpoints.superfluid.dev/degenchain",
+  degenChain: "https://rpc-endpoints.superfluid.dev/degenchain",
   sepolia: "https://rpc-endpoints.superfluid.dev/eth-sepolia",
   base: "https://rpc-endpoints.superfluid.dev/base-mainnet",
   scroll: "https://rpc-endpoints.superfluid.dev/scroll-mainnet",

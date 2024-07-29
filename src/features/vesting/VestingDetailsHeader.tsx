@@ -10,7 +10,6 @@ import {
 } from "@mui/material";
 import { Address, Token } from "@superfluid-finance/sdk-core";
 import { FC } from "react";
-import { useAccount } from "wagmi";
 import AddressName from "../../components/AddressName/AddressName";
 import useNavigateBack from "../../hooks/useNavigateBack";
 import { CopyIconBtn } from "../common/CopyIconBtn";
@@ -21,6 +20,8 @@ import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import { DeleteVestingTransactionButton } from "./transactionButtons/DeleteVestingTransactionButton";
 import { VestingSchedule } from "./types";
 import Link from "next/link";
+import { ClaimVestingScheduleTransactionButton } from "./transactionButtons/ClaimVestingScheduleTransactionButton";
+import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 
 interface CounterpartyAddressProps {
   title: string;
@@ -83,19 +84,24 @@ const VestingDetailsHeader: FC<VestingDetailsHeaderProps> = ({
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
-  const { address: accountAddress } = useAccount();
+  const { visibleAddress } = useVisibleAddress();
   const navigateBack = useNavigateBack("/vesting");
 
-  const { deletedAt, endExecutedAt, superToken, sender, receiver } =
+  const { deletedAt, endExecutedAt, superToken, sender, receiver, status, version } =
     vestingSchedule;
 
-  const canDelete = !!accountAddress && !deletedAt && !endExecutedAt;
+  const canDelete = !!visibleAddress && !deletedAt && !endExecutedAt;
 
-  const isIncoming = true;
-  // accountAddress?.toLowerCase() === receiver.toLowerCase();
+  const isIncoming = visibleAddress?.toLowerCase() === receiver.toLowerCase();
+  const isSenderOrReceiver = visibleAddress?.toLowerCase() === receiver.toLowerCase() || visibleAddress?.toLowerCase() === sender.toLowerCase();
+
+  const showUnwrap = (status.isStreaming || status.isFinished) && isIncoming;
+
+  const showClaim = isSenderOrReceiver && !!vestingSchedule.claimValidityDate && !vestingSchedule.cliffAndFlowExecutedAt;
+  const isClaimEnabled = showClaim && status.canClaim;
 
   return (
-    <>
+    <ConnectionBoundary expectedNetwork={network}>
       <Stack gap={3}>
         <Stack
           direction="row"
@@ -124,15 +130,28 @@ const VestingDetailsHeader: FC<VestingDetailsHeaderProps> = ({
               </Stack>
             </Stack>
           </Stack>
-          {canDelete && !isBelowMd && (
+          {(canDelete || showClaim) && !isBelowMd && (
             <Stack direction="row" alignItems="center" gap={1}>
-              <ConnectionBoundary expectedNetwork={network}>
+              {showClaim && (
+                <ClaimVestingScheduleTransactionButton
+                  superTokenAddress={superToken}
+                  senderAddress={sender}
+                  receiverAddress={receiver}
+                  version={version}
+                  TransactionButtonProps={{
+                    disabled: !isClaimEnabled,
+                  }}
+                />
+              )}
+
+              {canDelete && (
                 <DeleteVestingTransactionButton
                   superTokenAddress={superToken}
                   senderAddress={sender}
                   receiverAddress={receiver}
+                  version={version}
                 />
-              </ConnectionBoundary>
+              )}
             </Stack>
           )}
         </Stack>
@@ -154,28 +173,43 @@ const VestingDetailsHeader: FC<VestingDetailsHeaderProps> = ({
         <CounterpartyAddress title="Receiver:" address={receiver} />
 
         <Stack direction="row" justifyContent="end" flex={1}>
-          {canDelete && isBelowMd && (
-            <ConnectionBoundary expectedNetwork={network}>
-              <DeleteVestingTransactionButton
-                superTokenAddress={superToken}
-                senderAddress={sender}
-                receiverAddress={receiver}
-                TransactionButtonProps={{ ButtonProps: { size: "small" } }}
-              />
-            </ConnectionBoundary>
+          {isBelowMd && (
+            <>
+              {showClaim && (
+                <ClaimVestingScheduleTransactionButton
+                  superTokenAddress={superToken}
+                  senderAddress={sender}
+                  receiverAddress={receiver}
+                  version={version}
+                  TransactionButtonProps={{ ButtonProps: { size: "small" } }}
+                />
+              )}
+
+              {canDelete && (
+                <DeleteVestingTransactionButton
+                  superTokenAddress={superToken}
+                  senderAddress={sender}
+                  receiverAddress={receiver}
+                  version={version}
+                  TransactionButtonProps={{ ButtonProps: { size: "small" } }}
+                />
+              )}
+            </>
           )}
-          {isIncoming && (
+
+          {showUnwrap && (
             <Link
               href={`/wrap?downgrade&token=${superToken}&network=${network.slugName}`}
             >
-              <Button variant="contained" color="primary">
+              <Button variant="outlined" color="primary">
                 Unwrap
               </Button>
             </Link>
           )}
+
         </Stack>
       </Stack>
-    </>
+    </ConnectionBoundary>
   );
 };
 

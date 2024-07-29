@@ -39,4 +39,7 @@ fragment VestingSchedulePart on VestingSchedule {
   failedAt
   didEarlyEndCompensationFail
   earlyEndCompensation
+  claimValidityDate
+  remainderAmount
+  contractVersion
 }

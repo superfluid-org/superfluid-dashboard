@@ -19,7 +19,8 @@ import {
   flowSchedulerSubgraphUrls,
   superfluidPlatformUrls,
   superfluidRpcUrls,
-  vestingContractAddresses,
+  vestingContractAddresses_v1,
+  vestingContractAddresses_v2,
   vestingSubgraphUrls,
 } from "./networkConstants";
 import { BigNumber, BigNumberish } from "ethers";
@@ -27,17 +28,17 @@ import { UnitOfTime } from "../send/FlowRateInput";
 import { ChainBlockExplorer } from "viem/_types/types/chain";
 
 const getMetadata = memoize((chainId: number) => {
-  const metadata = sfMeta.getNetworkByChainId(chainId)
+  const metadata = sfMeta.getNetworkByChainId(chainId);
   if (!metadata) {
-    throw new Error(`No metadata for chainId ${chainId}`)
+    throw new Error(`No metadata for chainId ${chainId}`);
   }
-  return metadata
-})
+  return metadata;
+});
 
 const getSupportsGDA = (chainId: number) => {
-  const metadata = getMetadata(chainId)
-  return Boolean(metadata.contractsV1.gdaV1)
-}
+  const metadata = getMetadata(chainId);
+  return Boolean(metadata.contractsV1.gdaV1);
+};
 
 type NetworkMetadata = (typeof sfMeta.networks)[number];
 
@@ -46,7 +47,7 @@ type NetworkMetadata = (typeof sfMeta.networks)[number];
 export type Network = Chain & {
   slugName: string;
   v1ShortName: string | undefined;
-  fallbackSubgraphUrl: string; // We'll normally use the Subgraph URL from the metadata package.
+  fallbackSubgraphUrl?: string; // We'll normally use the Subgraph URL from the metadata package.
   getLinkForTransaction(txHash: string): string;
   getLinkForAddress(adderss: string): string;
   icon?: string;
@@ -63,7 +64,8 @@ export type Network = Chain & {
   supportsGDA: boolean;
   flowSchedulerContractAddress?: `0x${string}`;
   flowSchedulerSubgraphUrl?: `https://${string}` | undefined;
-  vestingContractAddress: `0x${string}` | undefined;
+  vestingContractAddress_v1: `0x${string}` | undefined;
+  vestingContractAddress_v2: `0x${string}` | undefined;
   vestingSubgraphUrl: `https://${string}` | undefined;
   autoWrapSubgraphUrl: `https://${string}` | undefined;
   platformUrl: string | undefined;
@@ -148,8 +150,6 @@ export const networkDefinition = {
       default: { http: ["https://rpc.gnosischain.com/"] },
       public: { http: ["https://rpc.gnosischain.com/"] },
     },
-    fallbackSubgraphUrl:
-      "https://subgraph.satsuma-prod.com/c5br3jaVlJI6/superfluid/xdai/api",
     getLinkForTransaction: (txHash: string): string =>
       `https://blockscout.com/xdai/mainnet/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
@@ -170,7 +170,8 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.gnosis,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.gnosis,
-    vestingContractAddress: vestingContractAddresses.gnosis,
+    vestingContractAddress_v1: vestingContractAddresses_v1.gnosis,
+    vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: vestingSubgraphUrls.gnosis,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.gnosis,
     platformUrl: superfluidPlatformUrls.gnosis,
@@ -199,8 +200,6 @@ export const networkDefinition = {
       ...chain.polygon.rpcUrls,
       superfluid: { http: [superfluidRpcUrls.polygon] },
     },
-    fallbackSubgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-matic",
     getLinkForTransaction: (txHash: string): string =>
       `https://polygonscan.com/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
@@ -219,7 +218,8 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.polygon,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.polygon,
-    vestingContractAddress: vestingContractAddresses.polygon,
+    vestingContractAddress_v1: vestingContractAddresses_v1.polygon,
+    vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: vestingSubgraphUrls.polygon,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.polygon,
     platformUrl: superfluidPlatformUrls.polygon,
@@ -252,8 +252,6 @@ export const networkDefinition = {
       default: { http: ["https://api.avax-test.network/ext/C/rpc"] },
       public: { http: ["https://api.avax-test.network/ext/C/rpc"] },
     },
-    fallbackSubgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-avalanche-fuji",
     getLinkForTransaction: (txHash: string): string =>
       `https://testnet.snowtrace.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
@@ -279,7 +277,8 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: undefined,
     flowSchedulerSubgraphUrl: undefined,
-    vestingContractAddress: undefined,
+    vestingContractAddress_v1: undefined,
+    vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: undefined,
     autoWrapSubgraphUrl: undefined,
     platformUrl: undefined,
@@ -309,8 +308,6 @@ export const networkDefinition = {
       ...chain.optimism.rpcUrls,
       superfluid: { http: [superfluidRpcUrls.optimism] },
     },
-    fallbackSubgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-optimism-mainnet",
     getLinkForTransaction: (txHash: string): string =>
       `https://optimistic.etherscan.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
@@ -329,7 +326,8 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.optimism,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.optimism,
-    vestingContractAddress: vestingContractAddresses.optimism,
+    vestingContractAddress_v1: vestingContractAddresses_v1.optimism,
+    vestingContractAddress_v2: vestingContractAddresses_v2.optimism,
     vestingSubgraphUrl: vestingSubgraphUrls.optimism,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.optimism,
     platformUrl: superfluidPlatformUrls.optimism,
@@ -358,8 +356,6 @@ export const networkDefinition = {
       ...chain.arbitrum.rpcUrls,
       superfluid: { http: [superfluidRpcUrls.arbitrum] },
     },
-    fallbackSubgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-arbitrum-one",
     getLinkForTransaction: (txHash: string): string =>
       `https://arbiscan.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
@@ -378,7 +374,8 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.arbitrum,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.arbitrum,
-    vestingContractAddress: vestingContractAddresses.arbitrum,
+    vestingContractAddress_v1: vestingContractAddresses_v1.arbitrum,
+    vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: vestingSubgraphUrls.arbitrum,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.arbitrum,
     platformUrl: superfluidPlatformUrls.arbitrum,
@@ -409,8 +406,6 @@ export const networkDefinition = {
       default: { http: ["https://api.avax.network/ext/bc/C/rpc"] },
       public: { http: ["https://api.avax.network/ext/bc/C/rpc"] },
     },
-    fallbackSubgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-avalanche-c",
     getLinkForTransaction: (txHash: string): string =>
       `https://avascan.info/blockchain/c/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
@@ -437,7 +432,8 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.avalancheC,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.avalancheC,
-    vestingContractAddress: vestingContractAddresses.avalancheC,
+    vestingContractAddress_v1: vestingContractAddresses_v1.avalancheC,
+    vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: vestingSubgraphUrls.avalancheC,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.avalancheC,
     platformUrl: superfluidPlatformUrls.avalancheC,
@@ -468,8 +464,6 @@ export const networkDefinition = {
       default: { http: ["https://bsc-dataseed1.binance.org"] },
       public: { http: ["https://bsc-dataseed1.binance.org"] },
     },
-    fallbackSubgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-bsc-mainnet",
     getLinkForTransaction: (txHash: string): string =>
       `https://bscscan.com/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
@@ -494,7 +488,8 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.bnbSmartChain,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.bnbSmartChain,
-    vestingContractAddress: vestingContractAddresses.bnbSmartChain,
+    vestingContractAddress_v1: vestingContractAddresses_v1.bnbSmartChain,
+    vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: vestingSubgraphUrls.bnbSmartChain,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.bnbSmartChain,
     platformUrl: superfluidPlatformUrls.bnbSmartChain,
@@ -523,8 +518,6 @@ export const networkDefinition = {
       ...chain.mainnet.rpcUrls,
       superfluid: { http: [superfluidRpcUrls.ethereum] },
     },
-    fallbackSubgraphUrl:
-      "https://subgraph.satsuma-prod.com/c5br3jaVlJI6/superfluid/eth-mainnet/api",
     getLinkForTransaction: (txHash: string): string =>
       `https://etherscan.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
@@ -543,7 +536,8 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.ethereum,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.ethereum,
-    vestingContractAddress: vestingContractAddresses.ethereum,
+    vestingContractAddress_v1: vestingContractAddresses_v1.ethereum,
+    vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: vestingSubgraphUrls.ethereum,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.ethereum,
     platformUrl: superfluidPlatformUrls.ethereum,
@@ -575,8 +569,6 @@ export const networkDefinition = {
       ...chain.celo.rpcUrls,
       superfluid: { http: [superfluidRpcUrls["celo-mainnet"]] },
     },
-    fallbackSubgraphUrl:
-      "https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-celo-mainnet",
     getLinkForTransaction: (txHash: string): string =>
       `https://celoscan.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
@@ -593,7 +585,8 @@ export const networkDefinition = {
         decimals: 18,
       },
     },
-    vestingContractAddress: undefined,
+    vestingContractAddress_v1: undefined,
+    vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: undefined,
     autoWrapSubgraphUrl: undefined,
     platformUrl: undefined,
@@ -643,7 +636,8 @@ export const networkDefinition = {
         decimals: 18,
       },
     },
-    vestingContractAddress: undefined,
+    vestingContractAddress_v1: undefined,
+    vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: undefined,
     autoWrapSubgraphUrl: undefined,
     platformUrl: undefined,
@@ -665,8 +659,6 @@ export const networkDefinition = {
       ...chain.sepolia.rpcUrls,
       superfluid: { http: [superfluidRpcUrls.sepolia] },
     },
-    fallbackSubgraphUrl:
-      "https://subgraph.satsuma-prod.com/c5br3jaVlJI6/superfluid/eth-sepolia/api",
     getLinkForTransaction: (txHash: string): string =>
       `https://sepolia.etherscan.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
@@ -683,7 +675,8 @@ export const networkDefinition = {
         decimals: 18,
       },
     },
-    vestingContractAddress: undefined,
+    vestingContractAddress_v1: undefined,
+    vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: undefined,
     autoWrapSubgraphUrl: undefined,
     platformUrl: undefined,
@@ -706,7 +699,6 @@ export const networkDefinition = {
       ...chain.base.rpcUrls,
       superfluid: { http: [superfluidRpcUrls["base"]] },
     },
-    fallbackSubgraphUrl: "https://base-mainnet.subgraph.x.superfluid.dev/",
     getLinkForTransaction: (txHash: string): string =>
       `https://basescan.org/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
@@ -723,7 +715,8 @@ export const networkDefinition = {
         decimals: 18,
       },
     },
-    vestingContractAddress: vestingContractAddresses.base,
+    vestingContractAddress_v1: vestingContractAddresses_v1.base,
+    vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: vestingSubgraphUrls.base,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.base,
     autoWrap: {
@@ -754,7 +747,6 @@ export const networkDefinition = {
       ...chain.scroll.rpcUrls,
       superfluid: { http: [superfluidRpcUrls["scroll"]] },
     },
-    fallbackSubgraphUrl: "https://scroll-mainnet.subgraph.x.superfluid.dev/",
     getLinkForTransaction: (txHash: string): string =>
       `https://scrollscan.com/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
@@ -771,7 +763,8 @@ export const networkDefinition = {
         decimals: 18,
       },
     },
-    vestingContractAddress: undefined,
+    vestingContractAddress_v1: undefined,
+    vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: undefined,
     autoWrapSubgraphUrl: undefined,
     platformUrl: undefined,
@@ -793,7 +786,6 @@ export const networkDefinition = {
       ...chain.scrollSepolia.rpcUrls,
       superfluid: { http: [superfluidRpcUrls["scroll-sepolia"]] },
     },
-    fallbackSubgraphUrl: "https://scroll-sepolia.subgraph.x.superfluid.dev/",
     getLinkForTransaction: (txHash: string): string =>
       `https://sepolia.scrollscan.com/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
@@ -810,7 +802,8 @@ export const networkDefinition = {
         decimals: 18,
       },
     },
-    vestingContractAddress: undefined,
+    vestingContractAddress_v1: undefined,
+    vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: undefined,
     autoWrapSubgraphUrl: undefined,
     platformUrl: undefined,
@@ -833,7 +826,6 @@ export const networkDefinition = {
       ...chain.optimismSepolia.rpcUrls,
       superfluid: { http: [superfluidRpcUrls["optimism-sepolia"]] },
     },
-    fallbackSubgraphUrl: "https://optimism-sepolia.subgraph.x.superfluid.dev/",
     getLinkForTransaction: (txHash: string): string =>
       `https://sepolia-optimism.etherscan.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
@@ -850,7 +842,8 @@ export const networkDefinition = {
         decimals: 18,
       },
     },
-    vestingContractAddress: vestingContractAddresses.optimismSepolia,
+    vestingContractAddress_v1: vestingContractAddresses_v1.optimismSepolia,
+    vestingContractAddress_v2: vestingContractAddresses_v2.optimismSepolia,
     vestingSubgraphUrl: vestingSubgraphUrls.optimismSepolia,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.optimismSepolia,
     autoWrap: {
@@ -951,10 +944,10 @@ export const getNetworkDefaultTokenPair = memoize(
   })
 );
 
-// The vesting contract might be deployed to more networks but we check for the existence of the Platform.;
 export const vestingSupportedNetworks = allNetworks
   .filter(
-    (network) => network.vestingContractAddress
+    (network) =>
+      network.vestingContractAddress_v1 || network.vestingContractAddress_v2
   )
   .sort((n1, n2) => (!n1.testnet && n2.testnet ? -1 : 1));
 

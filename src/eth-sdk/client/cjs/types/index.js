@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.VestingScheduler__factory = exports.FlowScheduler__factory = exports.AutoWrapStrategy__factory = exports.AutoWrapManager__factory = exports.factories = void 0;
+exports.VestingScheduler__factory = exports.VestingScheduler_v2__factory = exports.FlowScheduler__factory = exports.AutoWrapStrategy__factory = exports.AutoWrapManager__factory = exports.factories = void 0;
 exports.factories = __importStar(require("./factories"));
 var AutoWrapManager__factory_1 = require("./factories/mainnet/AutoWrapManager__factory");
 Object.defineProperty(exports, "AutoWrapManager__factory", { enumerable: true, get: function () { return AutoWrapManager__factory_1.AutoWrapManager__factory; } });
@@ -31,5 +31,7 @@ var AutoWrapStrategy__factory_1 = require("./factories/mainnet/AutoWrapStrategy_
 Object.defineProperty(exports, "AutoWrapStrategy__factory", { enumerable: true, get: function () { return AutoWrapStrategy__factory_1.AutoWrapStrategy__factory; } });
 var FlowScheduler__factory_1 = require("./factories/mainnet/FlowScheduler__factory");
 Object.defineProperty(exports, "FlowScheduler__factory", { enumerable: true, get: function () { return FlowScheduler__factory_1.FlowScheduler__factory; } });
-var VestingScheduler__factory_1 = require("./factories/mainnet/VestingScheduler__factory");
+var VestingScheduler_v2__factory_1 = require("./factories/optimismSepolia/VestingScheduler_v2__factory");
+Object.defineProperty(exports, "VestingScheduler_v2__factory", { enumerable: true, get: function () { return VestingScheduler_v2__factory_1.VestingScheduler_v2__factory; } });
+var VestingScheduler__factory_1 = require("./factories/optimismSepolia/VestingScheduler__factory");
 Object.defineProperty(exports, "VestingScheduler__factory", { enumerable: true, get: function () { return VestingScheduler__factory_1.VestingScheduler__factory; } });

@@ -22,9 +22,9 @@ import {
 import { rpcApi } from "../redux/store";
 import { UnitOfTime } from "../send/FlowRateInput";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
-import { DevTool } from "@hookform/devtools";
 import { CreateVestingFormEffects } from "./CreateVestingFormEffects";
 import { add } from "date-fns";
+import { useVestingVersion } from "../../hooks/useVestingVersion";
 
 export type ValidVestingForm = {
   data: {
@@ -43,6 +43,7 @@ export type ValidVestingForm = {
       denominator: UnitOfTime;
     };
     setupAutoWrap?: boolean;
+    claimEnabled?: boolean;
   };
 };
 
@@ -63,6 +64,7 @@ export type PartialVestingForm = {
       denominator: UnitOfTime;
     };
     setupAutoWrap: boolean;
+    claimEnabled: boolean;
   };
 };
 
@@ -114,6 +116,7 @@ const CreateVestingFormProvider: FC<{
               .test((x) => Object.values(UnitOfTime).includes(x as UnitOfTime)),
           }).required(),
           setupAutoWrap: boolean().optional(),
+          claimEnabled: boolean().optional(),
         }),
       }),
     []
@@ -124,9 +127,12 @@ const CreateVestingFormProvider: FC<{
     rpcApi.useLazyGetActiveVestingScheduleQuery();
   const { visibleAddress: senderAddress } = useVisibleAddress();
 
+  const { vestingVersion: version } = useVestingVersion();
+
   const { data: vestingSchedulerConstants } =
     rpcApi.useGetVestingSchedulerConstantsQuery({
       chainId: network.id,
+      version
     });
 
   const formSchema = useMemo(
@@ -252,6 +258,7 @@ const CreateVestingFormProvider: FC<{
             superTokenAddress,
             senderAddress,
             receiverAddress,
+            version
           });
 
           if (vestingSchedule) {
@@ -268,6 +275,7 @@ const CreateVestingFormProvider: FC<{
       getActiveVestingSchedule,
       senderAddress,
       vestingSchedulerConstants,
+      version
     ]
   );
 
@@ -289,6 +297,7 @@ const CreateVestingFormProvider: FC<{
         receiverAddress: null,
         cliffEnabled: false,
         setupAutoWrap: false,
+        claimEnabled: false
       },
     },
     resolver: yupResolver(formSchema as ObjectSchema<PartialVestingForm>),

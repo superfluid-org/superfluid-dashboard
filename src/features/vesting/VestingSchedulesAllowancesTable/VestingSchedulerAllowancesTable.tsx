@@ -36,6 +36,7 @@ const VestingSchedulerAllowancesTable: FC = () => {
   const { data: vestingSchedulerConstants } =
     rpcApi.useGetVestingSchedulerConstantsQuery({
       chainId: network.id,
+      version: "v1" // todo: handle v2
     });
 
   // TODO(KK): This query could be optimized.
@@ -65,7 +66,7 @@ const VestingSchedulerAllowancesTable: FC = () => {
     return Object.entries(vestingSchedulesGroupedByToken).map((entry) => {
       const [tokenAddress, allGroupVestingSchedules] = entry;
       const activeVestingSchedules = allGroupVestingSchedules.filter(
-        (x) => !x.status.isFinished
+        (x) => !x.status.isFinished && x.version === "v1" // TODO: handle v2 too
       );
 
       const aggregatedRequiredAccess = activeVestingSchedules

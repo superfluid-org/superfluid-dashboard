@@ -1,4 +1,4 @@
-import { Box, Card, Container, useTheme } from "@mui/material";
+import { Box, Card, Container, useTheme, ToggleButton, ToggleButtonGroup, Stack } from "@mui/material";
 import { ReactElement } from "react";
 import withStaticSEO from "../../components/SEO/withStaticSEO";
 import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
@@ -21,10 +21,10 @@ const CreateVestingSchedulePage: NextPageWithLayout = () => {
     platformApi.useIsAccountWhitelistedQuery(
       accountAddress && network?.platformUrl
         ? {
-            chainId: network.id,
-            baseUrl: network.platformUrl,
-            account: accountAddress?.toLowerCase(),
-          }
+          chainId: network.id,
+          baseUrl: network.platformUrl,
+          account: accountAddress?.toLowerCase(),
+        }
         : skipToken,
       {
         selectFromResult: (queryResult) => ({
@@ -49,22 +49,22 @@ const CreateVestingSchedulePage: NextPageWithLayout = () => {
           },
         }}
       >
-        <Card
-          elevation={1}
-          sx={{
-            maxWidth: "600px",
-            width: "100%",
-            position: "relative",
-            [theme.breakpoints.down("md")]: {
-              boxShadow: "none",
-              backgroundImage: "none",
-              borderRadius: 0,
-              border: 0,
-              p: 0,
-            },
-          }}
-        >
-          <ConnectionBoundary>
+        <ConnectionBoundary>
+          <Card
+            elevation={1}
+            sx={{
+              maxWidth: "600px",
+              width: "100%",
+              position: "relative",
+              [theme.breakpoints.down("md")]: {
+                boxShadow: "none",
+                backgroundImage: "none",
+                borderRadius: 0,
+                border: 0,
+                p: 0,
+              },
+            }}
+          >
             <CreateVestingFormProvider>
               {(isInitialized) =>
                 isInitialized && !isWhitelistLoading ? (
@@ -74,8 +74,8 @@ const CreateVestingSchedulePage: NextPageWithLayout = () => {
                 )
               }
             </CreateVestingFormProvider>
-          </ConnectionBoundary>
-        </Card>
+          </Card>
+        </ConnectionBoundary>
       </Box>
     </Container>
   );

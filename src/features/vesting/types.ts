@@ -1,20 +1,24 @@
 import { getUnixTime } from "date-fns";
-import { GetVestingScheduleQuery } from "../../vesting-subgraph/.graphclient";
+import {
+  GetVestingScheduleQuery
+} from "../../vesting-subgraph/.graphclient";
 
 interface VestingStatus {
   title: string;
   isFinished: boolean;
   isCliff: boolean;
+  canClaim: boolean;
   isStreaming: boolean;
   isError: boolean;
   isDeleted: boolean;
 }
 
-export const vestingStatuses: Record<string, VestingStatus> = {
+export const vestingStatuses = {
   ScheduledStart: {
     title: "Scheduled",
     isFinished: false,
     isCliff: false,
+    canClaim: false,
     isStreaming: false,
     isError: false,
     isDeleted: false,
@@ -23,6 +27,7 @@ export const vestingStatuses: Record<string, VestingStatus> = {
     title: "Cliff",
     isFinished: false,
     isCliff: true,
+    canClaim: false,
     isStreaming: false,
     isError: false,
     isDeleted: false,
@@ -31,6 +36,7 @@ export const vestingStatuses: Record<string, VestingStatus> = {
     title: "Vesting",
     isFinished: false,
     isCliff: false,
+    canClaim: false,
     isStreaming: true,
     isError: false,
     isDeleted: false,
@@ -39,6 +45,7 @@ export const vestingStatuses: Record<string, VestingStatus> = {
     title: "Stream Error",
     isFinished: false,
     isCliff: false,
+    canClaim: false,
     isStreaming: true,
     isError: true,
     isDeleted: false,
@@ -47,6 +54,7 @@ export const vestingStatuses: Record<string, VestingStatus> = {
     title: "Vested",
     isFinished: true,
     isCliff: false,
+    canClaim: false,
     isStreaming: false,
     isError: false,
     isDeleted: false,
@@ -55,6 +63,7 @@ export const vestingStatuses: Record<string, VestingStatus> = {
     title: "Cancel Error",
     isFinished: true,
     isCliff: false,
+    canClaim: false,
     isStreaming: false,
     isError: true,
     isDeleted: false,
@@ -63,6 +72,7 @@ export const vestingStatuses: Record<string, VestingStatus> = {
     title: "Overflow Error",
     isFinished: true,
     isCliff: false,
+    canClaim: false,
     isStreaming: false,
     isError: true,
     isDeleted: false,
@@ -71,6 +81,7 @@ export const vestingStatuses: Record<string, VestingStatus> = {
     title: "Transfer Error",
     isFinished: true,
     isCliff: false,
+    canClaim: false,
     isStreaming: false,
     isError: true,
     isDeleted: false,
@@ -79,6 +90,7 @@ export const vestingStatuses: Record<string, VestingStatus> = {
     title: "Deleted",
     isFinished: true,
     isCliff: false,
+    canClaim: false,
     isStreaming: false,
     isError: false,
     isDeleted: true,
@@ -87,11 +99,30 @@ export const vestingStatuses: Record<string, VestingStatus> = {
     title: "Deleted",
     isFinished: true,
     isCliff: false,
+    canClaim: false,
     isStreaming: false,
     isError: false,
     isDeleted: true,
   },
-};
+  Claimable: {
+    title: "Unclaimed",
+    isFinished: false,
+    isCliff: false,
+    canClaim: true,
+    isStreaming: false,
+    isError: false,
+    isDeleted: false,
+  },
+  ClaimExpired: {
+    title: "Claim Expired",
+    isFinished: true,
+    isCliff: false,
+    canClaim: false,
+    isStreaming: false,
+    isError: true,
+    isDeleted: false,
+  },
+} as const satisfies Record<string, VestingStatus>;
 
 export interface VestingSchedule {
   id: string;
@@ -114,6 +145,9 @@ export interface VestingSchedule {
   didEarlyEndCompensationFail?: boolean;
   earlyEndCompensation?: string;
   status: VestingStatus;
+  claimValidityDate: number;
+  remainderAmount: string;
+  version: "v1" | "v2";
 }
 
 export type SubgraphVestingSchedule = NonNullable<
@@ -148,6 +182,13 @@ export const mapSubgraphVestingSchedule = (
     endDate: Number(vestingSchedule.endDate),
     didEarlyEndCompensationFail: vestingSchedule.didEarlyEndCompensationFail,
     earlyEndCompensation: vestingSchedule.earlyEndCompensation,
+    claimValidityDate: vestingSchedule.claimValidityDate
+      ? Number(vestingSchedule.claimValidityDate)
+      : 0,
+    remainderAmount: vestingSchedule.remainderAmount
+      ? vestingSchedule.remainderAmount
+      : "0",
+    version: vestingSchedule.contractVersion,
   };
   return {
     ...mappedVestingSchedule,
@@ -166,8 +207,10 @@ const getVestingStatus = (vestingSchedule: Omit<VestingSchedule, "status">) => {
     cliffAndFlowExpirationAt,
     endExecutedAt,
     didEarlyEndCompensationFail,
+    claimValidityDate,
   } = vestingSchedule;
   const nowUnix = getUnixTime(new Date());
+  const cliffAndFlowDate = cliffDate ? cliffDate : startDate;
 
   if (deletedAt) {
     if (deletedAt > startDate) {
@@ -195,6 +238,16 @@ const getVestingStatus = (vestingSchedule: Omit<VestingSchedule, "status">) => {
 
   if (cliffAndFlowExecutedAt) {
     return vestingStatuses.CliffAndFlowExecuted;
+  }
+
+  if (claimValidityDate) {
+    if (nowUnix > claimValidityDate) {
+      return vestingStatuses.ClaimExpired;
+    }
+
+    if (nowUnix > cliffAndFlowDate && nowUnix < claimValidityDate) {
+      return vestingStatuses.Claimable;
+    }
   }
 
   if (nowUnix > cliffAndFlowExpirationAt) {
