@@ -16,3 +16,11 @@ export const getWrapPagePath = ({
   network: string;
   token: string;
 }) => `/wrap?network=${network}&token=${token}`;
+
+export const getVestingPagePath = ({
+  network,
+  vestingScheduleId,
+}: {
+  network: string;
+  vestingScheduleId: string;
+}) => `/vesting/${network}/${vestingScheduleId}`;

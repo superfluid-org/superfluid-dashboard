@@ -4,7 +4,10 @@ import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
 import CloseIcon from "@mui/icons-material/Close";
 import LaunchRoundedIcon from "@mui/icons-material/LaunchRounded";
 import {
+  Alert,
+  AlertTitle,
   Box,
+  Button,
   Container,
   Divider,
   IconButton,
@@ -18,7 +21,7 @@ import {
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { Address } from "@superfluid-finance/sdk-core";
-import { format, fromUnixTime } from "date-fns";
+import { format } from "date-fns";
 import { BigNumber } from "ethers";
 import { isString } from "lodash";
 import { NextPage } from "next";
@@ -51,18 +54,17 @@ import { useScheduledStream } from "../../../hooks/streamSchedulingHooks";
 import useAddressName from "../../../hooks/useAddressName";
 import useNavigateBack from "../../../hooks/useNavigateBack";
 import config from "../../../utils/config";
-import { getTimeInSeconds } from "../../../utils/dateUtils";
 import shortenHex from "../../../utils/shortenHex";
 import {
   calculateBuffer,
   calculateMaybeCriticalAtTimestamp,
 } from "../../../utils/tokenUtils";
-import { vestingSubgraphApi } from "../../../vesting-subgraph/vestingSubgraphApi";
 import Page404 from "../../404";
 import { useVisibleAddress } from "../../../features/wallet/VisibleAddressContext";
 import AddressName from "../../../components/AddressName/AddressName";
 import Link from "../../../features/common/Link";
 import { HumaFinanceLink } from "../../../features/streamsTable/StreamRow";
+import { getVestingPagePath } from "../../../utils/URLUtils";
 
 const TEXT_TO_SHARE = (up?: boolean) =>
   encodeURIComponent(`I’m streaming money every second with @Superfluid_HQ! 🌊
@@ -440,23 +442,6 @@ const StreamPageContent: FC<{
     );
   }, [scheduledStream]);
 
-  const vestingScheduleQuery = vestingSubgraphApi.useGetVestingSchedulesQuery(
-    scheduledStream
-      ? {
-        chainId: network.id,
-        where: {
-          superToken: scheduledStream.token.toLowerCase(),
-          sender: scheduledStream.sender.toLowerCase(),
-          receiver: scheduledStream.receiver.toLowerCase(),
-          cliffAndFlowExecutedAt: getTimeInSeconds(
-            scheduledStream.startDate
-          ).toString(),
-        },
-      }
-      : skipToken
-  );
-  const vestingSchedule = vestingScheduleQuery.data?.vestingSchedules?.[0]; // TODO(KK): Does this work?
-
   if (scheduledStreamQuery.isLoading || tokenSnapshotQuery.isLoading) {
     return (
       <SEO ogUrl={urlToShare}>
@@ -729,6 +714,29 @@ const StreamPageContent: FC<{
               </Stack>
             </Stack>
           )}
+
+          {
+            scheduledStream.mostLikelyAssociatedVestingScheduleId && (
+              <Alert
+                severity="success"
+                action={
+                  <Link
+                    href={getVestingPagePath({
+                      network: network.slugName,
+                      vestingScheduleId: scheduledStream.mostLikelyAssociatedVestingScheduleId,
+                    })}
+                  >
+                    <Button color="primary" size="large">
+                      Go to vesting page
+                    </Button>
+                  </Link>
+                }
+              >
+                <AlertTitle>Vesting</AlertTitle>
+                This stream is associated with a vesting schedule.
+              </Alert>
+            )
+          }
 
           <Stack
             rowGap={0.5}

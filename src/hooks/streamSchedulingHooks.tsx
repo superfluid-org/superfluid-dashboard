@@ -89,14 +89,16 @@ export const useScheduledStream = (
         ? mapStreamScheduling(
           x.data,
           mostRelevantSchedulerData?.startDate,
-          mostRelevantSchedulerData?.endDate
+          mostRelevantSchedulerData?.endDate,
+          mostLikelyAssociatedVestingSchedule?.id
         )
         : x.data,
       currentData: x.currentData
         ? mapStreamScheduling(
           x.currentData,
           mostRelevantSchedulerData?.startDate,
-          mostRelevantSchedulerData?.endDate
+          mostRelevantSchedulerData?.endDate,
+          mostLikelyAssociatedVestingSchedule?.id
         )
         : x.currentData,
     }),
