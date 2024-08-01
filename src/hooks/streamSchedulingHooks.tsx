@@ -54,8 +54,8 @@ export const useScheduledStream = (
       where: {
         superToken: stream.token,
         receiver: stream.receiver,
-        cliffAndFlowDate_gt: stream.createdAtTimestamp.toString(),
-        endDate_lt: stream.createdAtTimestamp.toString()
+        cliffAndFlowDate_lte: stream.createdAtTimestamp.toString(),
+        endDate_gt: stream.createdAtTimestamp.toString()
       },
       orderBy: "createdAt",
       orderDirection: "desc"
