@@ -114,15 +114,15 @@ const StreamAccountCard: FC<StreamAccountCardProps> = ({
           address={address}
           {...(isBelowMd
             ? {
-                AvatarProps: {
-                  sx: {
-                    width: "24px",
-                    height: "24px",
-                    borderRadius: "5px",
-                  },
+              AvatarProps: {
+                sx: {
+                  width: "24px",
+                  height: "24px",
+                  borderRadius: "5px",
                 },
-                BlockiesProps: { size: 8, scale: 3 },
-              }
+              },
+              BlockiesProps: { size: 8, scale: 3 },
+            }
             : {})}
         />
         <ListItemText
@@ -331,10 +331,10 @@ const StreamPageContent: FC<{
     subgraphApi.useIsHumaFinanceOperatorStreamQuery(
       network.humaFinance
         ? {
-            chainId: network.id,
-            streamId: streamId,
-            flowOperatorAddress: network.humaFinance?.nftAddress,
-          }
+          chainId: network.id,
+          streamId: streamId,
+          flowOperatorAddress: network.humaFinance?.nftAddress,
+        }
         : skipToken
     );
 
@@ -443,16 +443,16 @@ const StreamPageContent: FC<{
   const vestingScheduleQuery = vestingSubgraphApi.useGetVestingSchedulesQuery(
     scheduledStream
       ? {
-          chainId: network.id,
-          where: {
-            superToken: scheduledStream.token.toLowerCase(),
-            sender: scheduledStream.sender.toLowerCase(),
-            receiver: scheduledStream.receiver.toLowerCase(),
-            cliffAndFlowExecutedAt: getTimeInSeconds(
-              scheduledStream.startDate
-            ).toString(),
-          },
-        }
+        chainId: network.id,
+        where: {
+          superToken: scheduledStream.token.toLowerCase(),
+          sender: scheduledStream.sender.toLowerCase(),
+          receiver: scheduledStream.receiver.toLowerCase(),
+          cliffAndFlowExecutedAt: getTimeInSeconds(
+            scheduledStream.startDate
+          ).toString(),
+        },
+      }
       : skipToken
   );
   const vestingSchedule = vestingScheduleQuery.data?.vestingSchedules?.[0]; // TODO(KK): Does this work?
@@ -745,55 +745,24 @@ const StreamPageContent: FC<{
               },
             }}
           >
-            {vestingSchedule ? (
-              <OverviewItem
-                dataCy={"cliff-date"}
-                label="Cliff Date"
-                value={
-                  vestingSchedule.cliffDate
-                    ? format(
-                        fromUnixTime(Number(vestingSchedule.cliffDate)),
-                        "LLL d, yyyy HH:mm"
-                      )
-                    : "-"
-                }
-              />
-            ) : (
-              <OverviewItem
-                dataCy={"start-date"}
-                label="Start Date:"
-                value={format(startDate.getTime(), "d MMM. yyyy H:mm")}
-              />
-            )}
-            {vestingSchedule ? (
-              <OverviewItem
-                dataCy={"cliff-amount"}
-                label="Cliff Amount"
-                value={
-                  vestingSchedule.cliffDate ? (
-                    <>
-                      <Amount wei={vestingSchedule.cliffAmount} /> {tokenSymbol}
-                    </>
-                  ) : (
-                    "-"
-                  )
-                }
-              />
-            ) : (
-              <OverviewItem
-                dataCy={"buffer"}
-                label="Buffer:"
-                value={
-                  bufferSize ? (
-                    <>
-                      <Amount wei={bufferSize} /> {tokenSymbol}
-                    </>
-                  ) : (
-                    "-"
-                  )
-                }
-              />
-            )}
+            <OverviewItem
+              dataCy={"start-date"}
+              label="Start Date:"
+              value={format(startDate.getTime(), "d MMM. yyyy H:mm")}
+            />
+            <OverviewItem
+              dataCy={"buffer"}
+              label="Buffer:"
+              value={
+                bufferSize ? (
+                  <>
+                    <Amount wei={bufferSize} /> {tokenSymbol}
+                  </>
+                ) : (
+                  "-"
+                )
+              }
+            />
             {!endDate && updatedAtTimestamp > createdAtTimestamp && (
               <OverviewItem
                 label={`Updated Date:`}
@@ -801,16 +770,7 @@ const StreamPageContent: FC<{
               />
             )}
 
-            {vestingSchedule ? (
-              <OverviewItem
-                dataCy={"vesting-start-date"}
-                label="Vesting Start Date:"
-                value={format(
-                  fromUnixTime(Number(vestingSchedule.startDate)),
-                  "LLL d, yyyy HH:mm"
-                )}
-              />
-            ) : endDateScheduled ? (
+            {endDateScheduled ? (
               <OverviewItem
                 label={`End Date:`}
                 value={
@@ -845,26 +805,15 @@ const StreamPageContent: FC<{
                 </Stack>
               }
             />
-            {vestingSchedule ? (
-              <OverviewItem
-                dataCy={"vesting-end-date"}
-                label="Vesting End Date:"
-                value={format(
-                  fromUnixTime(Number(vestingSchedule.endDate)),
-                  "LLL d, yyyy HH:mm"
-                )}
-              />
-            ) : (
-              <OverviewItem
-                dataCy={"projected-liquidation"}
-                label="Projected Liquidation:"
-                value={
-                  isActive && liquidationDate
-                    ? format(liquidationDate, "d MMM. yyyy H:mm")
-                    : "-"
-                }
-              />
-            )}
+            <OverviewItem
+              dataCy={"projected-liquidation"}
+              label="Projected Liquidation:"
+              value={
+                isActive && liquidationDate
+                  ? format(liquidationDate, "d MMM. yyyy H:mm")
+                  : "-"
+              }
+            />
             <OverviewItem
               dataCy={"tx-hash"}
               label="Transaction Hash:"

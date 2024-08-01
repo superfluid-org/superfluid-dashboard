@@ -3,4 +3,5 @@ export interface StreamScheduling {
   startDateScheduled: Date | undefined;
   endDate: Date | undefined;
   endDateScheduled: Date | undefined;
+  mostLikelyAssociatedVestingScheduleId: string | undefined;
 }
