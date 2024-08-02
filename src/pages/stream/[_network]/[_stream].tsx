@@ -65,6 +65,7 @@ import AddressName from "../../../components/AddressName/AddressName";
 import Link from "../../../features/common/Link";
 import { HumaFinanceLink } from "../../../features/streamsTable/StreamRow";
 import { getVestingPagePath } from "../../../utils/URLUtils";
+import LockClockRoundedIcon from "@mui/icons-material/LockClockRounded";
 
 const TEXT_TO_SHARE = (up?: boolean) =>
   encodeURIComponent(`I’m streaming money every second with @Superfluid_HQ! 🌊
@@ -717,24 +718,24 @@ const StreamPageContent: FC<{
 
           {
             scheduledStream.mostLikelyAssociatedVestingScheduleId && (
-              <Alert
-                severity="success"
-                action={
-                  <Link
+              <Box minWidth="100%">
+                <Alert
+                  icon={<LockClockRoundedIcon />}
+                  severity="success"
+                >
+                  <AlertTitle>Vesting</AlertTitle>
+                  This stream is associated with a vesting schedule. <Link
                     href={getVestingPagePath({
                       network: network.slugName,
                       vestingScheduleId: scheduledStream.mostLikelyAssociatedVestingScheduleId,
                     })}
                   >
-                    <Button color="primary" size="large">
-                      Go to vesting page
-                    </Button>
+                    <Typography display="inline-block" fontSize="inherit" fontWeight={500}>
+                      Click here to go to the vesting details.
+                    </Typography>
                   </Link>
-                }
-              >
-                <AlertTitle>Vesting</AlertTitle>
-                This stream is associated with a vesting schedule.
-              </Alert>
+                </Alert>
+              </Box>
             )
           }
 
