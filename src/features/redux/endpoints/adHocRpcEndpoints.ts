@@ -19,8 +19,9 @@ import {
   UnderlyingBalance,
 } from "./balanceFetcher";
 import { NATIVE_ASSET_ADDRESS } from "./tokenTypes";
-import { ContractFunctionConfig } from "viem";
 import { uniq } from "lodash";
+import { WriteContractParameters } from "viem";
+import { wagmiConfig } from "../../wallet/WagmiManager";
 
 declare module "@superfluid-finance/sdk-redux" {
   interface TransactionTitleOverrides {
@@ -65,7 +66,7 @@ const writeContractEndpoint = (builder: RpcEndpointBuilder) =>
     TransactionInfo,
     {
       signer: Signer; // TODO(KK): Remove this at some point...
-      request: ContractFunctionConfig & {
+      request: WriteContractParameters & {
         chainId: number;
       };
       transactionExtraData?: Record<string, unknown>;
@@ -76,7 +77,7 @@ const writeContractEndpoint = (builder: RpcEndpointBuilder) =>
       { signer, request, transactionTitle, transactionExtraData },
       { dispatch }
     ) => {
-      const result = await writeContract(request);
+      const txHash = await writeContract(wagmiConfig, request);
       const framework = await getFramework(request.chainId);
 
       return registerNewTransactionAndReturnQueryFnResult({
@@ -86,9 +87,9 @@ const writeContractEndpoint = (builder: RpcEndpointBuilder) =>
         title: transactionTitle,
         transactionResponse: {
           chainId: request.chainId,
-          hash: result.hash,
+          hash: txHash,
           wait: () =>
-            framework.settings.provider.waitForTransaction(result.hash), // TODO(KK): This might not work the best with Gnosis Safe.
+            framework.settings.provider.waitForTransaction(txHash), // TODO(KK): This might not work the best with Gnosis Safe.
         },
         extraData: transactionExtraData,
       });

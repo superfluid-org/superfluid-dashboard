@@ -3,7 +3,7 @@ import { IconButton, Tooltip } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
 import { FC, useCallback } from "react";
 import { useDispatch } from "react-redux";
-import { useAccount, useSwitchNetwork } from "wagmi";
+import { useAccount, useSwitchChain, useWatchAsset } from "wagmi";
 import config from "../../utils/config";
 import { addTokenAddedFlag } from "../flags/flags.slice";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
@@ -26,6 +26,7 @@ const AddToWalletButton: FC<AddToWalletButtonProps> = ({
   const { address: accountAddress, connector } = useAccount();
   const dispatch = useDispatch();
   const [tokenManifestTrigger] = assetApiSlice.useLazyTokenManifestQuery();
+  const { watchAssetAsync } = useWatchAsset();
 
   const addToWallet = useCallback(async () => {
     if (connector && connector.watchAsset && accountAddress) {
@@ -39,13 +40,15 @@ const AddToWalletButton: FC<AddToWalletButtonProps> = ({
         )
         .catch(() => undefined);
 
-      connector
-        .watchAsset({
+      watchAssetAsync({
+        type: "ERC20",
+        options: {
           address: token,
           symbol,
           decimals,
           image: tokenImage,
-        })
+        }
+      })
         .then(() =>
           dispatch(
             addTokenAddedFlag({
@@ -71,15 +74,17 @@ const AddToWalletButton: FC<AddToWalletButtonProps> = ({
     tokenManifestTrigger,
   ]);
 
-  const { switchNetwork } = useSwitchNetwork({
-    onSuccess: addToWallet,
+  const { switchChain } = useSwitchChain({
+    mutation: {
+      onSuccess: addToWallet,
+    }
   });
 
   const addToWalletWithNetworkCheck = () => {
     if (isCorrectNetwork) {
       addToWallet();
     } else {
-      switchNetwork && switchNetwork(expectedNetwork.id);
+      switchChain && switchChain({ chainId: expectedNetwork.id });
     }
   };
 

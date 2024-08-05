@@ -5,7 +5,7 @@ import { LiFi } from "@lifi/sdk";
 import { Box, Container, Stack, Typography, useTheme } from "@mui/material";
 import { NextPage } from "next";
 import { useEffect, useMemo } from "react";
-import { useDisconnect, useSwitchNetwork, useWalletClient } from "wagmi";
+import { useDisconnect, useSwitchChain, useWalletClient } from "wagmi";
 import useFeaturedTokens from "../features/bridge/useFeaturedTokens";
 import { ELEVATION1_BG } from "../features/theme/theme";
 import { useConnectButton } from "../features/wallet/ConnectButtonProvider";
@@ -38,7 +38,7 @@ const Bridge: NextPage = () => {
   const signer = useEthersSigner();
   const { isEOA } = useVisibleAddress();
   const { disconnectAsync } = useDisconnect();
-  const { switchNetworkAsync } = useSwitchNetwork();
+  const { switchChainAsync } = useSwitchChain();
   const { openConnectModal } = useConnectButton();
   const { availableNetworks } = useAvailableNetworks();
 
@@ -50,7 +50,7 @@ const Bridge: NextPage = () => {
     () => ({
       walletManagement: {
         switchChain: async (chainId) => {
-          await switchNetworkAsync?.(chainId);
+          await switchChainAsync?.({ chainId });
           return refetch().then((x) =>
             x.data ? walletClientToSigner(x.data) : signer!
           );

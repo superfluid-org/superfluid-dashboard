@@ -9,7 +9,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useNetwork } from "wagmi";
+import { useAccount } from "wagmi";
 import { useAvailableNetworks } from "./AvailableNetworksContext";
 import { findNetworkOrThrow, Network, networkDefinition, tryFindNetwork } from "./networks";
 
@@ -119,7 +119,7 @@ export const ExpectedNetworkProvider: FC<PropsWithChildren> = ({
     }
   }, [router.isReady, networkQueryParam]);
 
-  const { chain: activeChain } = useNetwork();
+  const { chain: activeChain } = useAccount();
 
   useEffect(() => {
     if (autoSwitchStop) {

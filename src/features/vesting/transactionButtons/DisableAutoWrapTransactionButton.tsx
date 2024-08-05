@@ -2,7 +2,7 @@ import { ButtonProps, Typography } from "@mui/material";
 import { TransactionTitle } from "@superfluid-finance/sdk-redux";
 import { constants } from "ethers";
 import { FC, memo } from "react";
-import { usePrepareContractWrite, useQuery, useWalletClient } from "wagmi";
+import { useSimulateContract, useWalletClient } from "wagmi";
 import { rpcApi, subgraphApi } from "../../redux/store";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
@@ -10,9 +10,10 @@ import useGetTransactionOverrides from "../../../hooks/useGetTransactionOverride
 import { convertOverridesForWagmi } from "../../../utils/convertOverridesForWagmi";
 import { Token } from "@superfluid-finance/sdk-core";
 import { toVestingToken } from "../useVestingToken";
-import { erc20ABI } from "../../../generated";
+import { erc20Abi } from "../../../generated";
 import { Network } from "../../network/networks";
 import { ConnectionBoundaryButtonProps } from "../../transactionBoundary/ConnectionBoundaryButton";
+import { useQuery } from "@tanstack/react-query";
 
 const TX_TITLE: TransactionTitle = "Disable Auto-Wrap";
 
@@ -27,26 +28,25 @@ const DisableAutoWrapTransactionButton: FC<{
   const { data: walletClient } = useWalletClient();
   const vestingToken = toVestingToken(token, network);
   const getGasOverrides = useGetTransactionOverrides();
-  const { data: overrides } = useQuery(
-    ["gasOverrides", TX_TITLE, network.id],
-    async () => convertOverridesForWagmi(await getGasOverrides(network))
-  );
+  const { data: overrides } = useQuery({
+    queryKey: ["gasOverrides", TX_TITLE, network.id],
+    queryFn: async () => convertOverridesForWagmi(await getGasOverrides(network))
+  });
 
   const primaryArgs = {
     spender: network.autoWrap!.strategyContractAddress,
     amount: BigInt(constants.Zero.toString()),
   };
   const prepare = !props.isDisabled && network.autoWrap && walletClient && walletClient.chain.id === network.id;
-  const { config } = usePrepareContractWrite(
+  const { data: config } = useSimulateContract(
     prepare
       ? {
-          abi: erc20ABI,
+          abi: erc20Abi,
           functionName: "approve",
           address: vestingToken.underlyingAddress as `0x${string}`,
           chainId: network.id,
           args: [primaryArgs.spender, primaryArgs.amount],
-          walletClient,
-          ...overrides
+          // TODO: overrides
         }
       : undefined
   );
@@ -59,7 +59,7 @@ const DisableAutoWrapTransactionButton: FC<{
   });
   const underlyingToken = underlyingTokenQuery.data;
 
-  const isButtonEnabled = prepare && config.request;
+  const isButtonEnabled = prepare && config && config.request;
   const isButtonDisabled = !isButtonEnabled;
 
   return (

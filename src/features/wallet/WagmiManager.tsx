@@ -5,58 +5,65 @@ import {
   lightTheme,
   DisclaimerComponent,
 } from "@rainbow-me/rainbowkit";
-import { createConfig as createWagmiConfig, WagmiConfig } from "wagmi";
+import { createConfig as createWagmiConfig, WagmiConfig, http, WagmiProvider } from "wagmi";
 import "@rainbow-me/rainbowkit/styles.css";
 import { useTheme } from "@mui/material";
 import { allNetworks, findNetworkOrThrow } from "../network/networks";
 import { getAppWallets } from "./getAppWallets";
-import { configureChains } from "wagmi";
-import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { Chain, createPublicClient } from "viem";
 
-export const { chains: wagmiChains, publicClient: createPublicClient } =
-  configureChains(
-    allNetworks,
-    [
-      jsonRpcProvider({
-        rpc: (chain) => ({
-          http: findNetworkOrThrow(allNetworks, chain.id).rpcUrls.superfluid
-            .http[0],
-        }),
-      }),
-    ],
-    {
-      batch: {
-        // NOTE: It is very important to enable the multicall support, otherwise token balance queries will run into rate limits.
-        multicall: {
-          wait: 100,
-        },
+const queryClient = new QueryClient();
+
+export const wagmiConfig =
+  createWagmiConfig({
+    chains: [ allNetworks[0], ...allNetworks.splice(0, 1)], // TODO: wagmi migration
+    transports: Object.fromEntries(allNetworks.map(x => ([x.id, http(findNetworkOrThrow(allNetworks, x.id).rpcUrls.superfluid.http[0])]))),
+    batch: {
+      // NOTE: It is very important to enable the multicall support, otherwise token balance queries will run into rate limits.
+      multicall: {
+        wait: 100,
       },
     }
-  );
+  }
+);
+
+const wagmiChains = wagmiConfig.chains;
+
+// TODO: clean-up
 
 // Note: We need to create the public clients and re-use them to have the automatic multicall batching work.
 export const resolvedPublicClients = wagmiChains.reduce((acc, current) => {
-  acc[current.id] = createPublicClient({ chainId: current.id });
+  acc[current.id] = createPublicClient({ chain: current, transport: http(findNetworkOrThrow(allNetworks, current.id).rpcUrls.superfluid.http[0]),     batch: {
+    // NOTE: It is very important to enable the multicall support, otherwise token balance queries will run into rate limits.
+    multicall: {
+      wait: 100,
+    },
+  } });
   return acc;
 }, {} as Record<number, ReturnType<typeof createPublicClient>>);
 
 const { connectors } = getAppWallets({
   appName: "Superfluid Dashboard",
-  chains: wagmiChains,
+  chains: (wagmiChains as unknown) as any[], // TODO: wagmi migration
 });
 
-export const wagmiConfig = createWagmiConfig({
-  autoConnect: false, // Disable because of special Gnosis Safe handling in useAutoConnect.
-  connectors,
-  publicClient: (config) =>
-    (config.chainId ? resolvedPublicClients[config.chainId] : null) ??
-    createPublicClient(config),
-});
+// export const wagmiConfig = createWagmiConfig({
+//   autoConnect: false, // Disable because of special Gnosis Safe handling in useAutoConnect.
+//   connectors,
+//   publicClient: (config) =>
+//     (config.chainId ? resolvedPublicClients[config.chainId] : null) ??
+//     createPublicClient(config),
+// });
 
 const WagmiManager: FC<PropsWithChildren> = ({ children }) => {
-  return <WagmiConfig config={wagmiConfig}>{children}</WagmiConfig>;
+  return (
+    <QueryClientProvider client={queryClient}>
+      <WagmiProvider config={wagmiConfig}>{children}</WagmiProvider>
+    </QueryClientProvider>
+  );
 };
 
 export default WagmiManager;
@@ -85,7 +92,7 @@ export const RainbowKitManager: FC<PropsWithChildren> = ({ children }) => {
 
   return (
     <RainbowKitProvider
-      chains={selectableChains}
+      // chains={selectableChains}
       initialChain={initialChainId}
       avatar={AddressAvatar}
       appInfo={{ disclaimer: Disclaimer }}

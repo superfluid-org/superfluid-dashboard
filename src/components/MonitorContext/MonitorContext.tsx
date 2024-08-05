@@ -13,7 +13,7 @@ import {
   RootState,
   transactionTracker,
 } from "../../features/redux/store";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount } from "wagmi";
 import { supportId } from "../../features/analytics/useAppInstanceDetails";
 import { useAnalytics } from "../../features/analytics/useAnalytics";
 import { transactionTrackerSelectors } from "@superfluid-finance/sdk-redux";
@@ -107,8 +107,7 @@ const MonitorContext: FC = () => {
     setPreviousInstanceDetails(instanceDetails);
   }, [instanceDetails]);
 
-  const { connector: activeConnector, isConnected } = useAccount();
-  const { chain: activeChain } = useNetwork();
+  const { connector: activeConnector, isConnected, chain: activeChain } = useAccount();
 
   useEffect(() => {
     if (isConnected && activeConnector) {

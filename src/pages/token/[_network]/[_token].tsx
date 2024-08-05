@@ -23,7 +23,7 @@ import { useRouter } from "next/router";
 import { FC, PropsWithChildren, useEffect, useState } from "react";
 import SEO from "../../../components/SEO/SEO";
 import withStaticSEO from "../../../components/SEO/withStaticSEO";
-import { useAutoConnect } from "../../../features/autoConnect/AutoConnect";
+// import { useAutoConnect } from "../../../features/autoConnect/AutoConnect";
 import TimeUnitFilter, {
   TimeUnitFilterType,
 } from "../../../features/graph/TimeUnitFilter";
@@ -75,7 +75,10 @@ const TokenPage: NextPage = () => {
   const [network, setNetwork] = useState<Network | undefined>();
   const [tokenAddress, setTokenAddress] = useState<string | undefined>();
   const { visibleAddress } = useVisibleAddress();
-  const { isAutoConnecting } = useAutoConnect();
+  
+  // const { isAutoConnecting } = useAutoConnect();
+  const isAutoConnecting = false;
+
   const [routeHandled, setRouteHandled] = useState(false);
 
   useEffect(() => {

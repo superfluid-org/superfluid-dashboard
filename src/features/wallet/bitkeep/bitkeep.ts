@@ -1,5 +1,5 @@
 import { Chain, Wallet } from "@rainbow-me/rainbowkit";
-import { InjectedConnector } from "wagmi/connectors/injected";
+import { injected } from 'wagmi/connectors'
 
 export interface BitkeepConnectorOptions {
   chains: Chain[];
@@ -25,15 +25,11 @@ const bitkeep = ({
       ios: "https://bitkeep.com/en/download?type=1",
       browserExtension: "https://bitkeep.com/en/download?type=2"
     },
-    createConnector: () => ({
-      connector: new InjectedConnector({
-        chains,
-        options: {
-          shimDisconnect,
-          name: "BitKeep",
-          getProvider: () => typeof window !== "undefined" ? window.bitkeep?.ethereum : undefined,
-        },
-      }),
+    createConnector: () => injected({
+      shimDisconnect,
+      target: "bitKeep",
+      
+      // getProvider: () => typeof window !== "undefined" ? window.bitkeep?.ethereum : undefined,
     }),
   };
 };

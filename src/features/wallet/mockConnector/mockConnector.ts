@@ -1,5 +1,5 @@
 import { Chain, Wallet } from "@rainbow-me/rainbowkit";
-import { MockConnector } from "wagmi/connectors/mock";
+import { mock } from "wagmi/connectors";
 import { Address, createWalletClient, custom } from "viem";
 import { allNetworks, findNetworkOrThrow } from "../../network/networks";
 
@@ -23,18 +23,9 @@ const mockConnector = ({ chains }: MockConnectorOptions): Wallet => ({
     };
     const chain = findNetworkOrThrow(allNetworks, mockWallet.chainId);
 
-    return {
-      connector: new MockConnector({
-        chains,
-        options: {
-          walletClient: createWalletClient({
-            chain,
-            account: mockWallet.getAddress(),
-            transport: custom(mockBridge),
-          }),
-        },
-      }),
-    };
+    return mock({
+      accounts: [mockWallet.getAddress()]
+    });
   },
 });
 

@@ -8,7 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import MonitorContext from "../components/MonitorContext/MonitorContext";
 import { ToastProvider } from "../components/Toast/toast";
 import { AnalyticsProvider } from "../features/analytics/AnalyticsProvider";
-import { AutoConnectProvider } from "../features/autoConnect/AutoConnect";
+// import { AutoConnectProvider } from "../features/autoConnect/AutoConnect";
 import { ImpersonationProvider } from "../features/impersonation/ImpersonationContext";
 import IntercomProvider from "../features/intercom/IntercomProvider";
 import Layout from "../features/layout/Layout";
@@ -70,7 +70,7 @@ export default function MyApp(props: AppPropsWithLayout) {
           <meta name="viewport" content="initial-scale=1, width=device-width" />
         </Head>
         <WagmiManager>
-          <AutoConnectProvider>
+          {/* <AutoConnectProvider> */}
             <ReduxProvider>
               <AvailableNetworksProvider>
                 <ImpersonationProvider>
@@ -108,7 +108,7 @@ export default function MyApp(props: AppPropsWithLayout) {
                 </ImpersonationProvider>
               </AvailableNetworksProvider>
             </ReduxProvider>
-          </AutoConnectProvider>
+          {/* </AutoConnectProvider> */}
         </WagmiManager>
       </CacheProvider>
     </NextThemesProvider>

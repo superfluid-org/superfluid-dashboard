@@ -13,7 +13,7 @@ import {
 import bitkeep from "./bitkeep/bitkeep";
 import gnosisSafe from "./gnosisSafeWalletConnector/gnosisSafe";
 import mockConnector from "./mockConnector/mockConnector";
-import { namedInjectedWallet } from "./namedInjectedWallet/namedInjectedWallet";
+// import { namedInjectedWallet } from "./namedInjectedWallet/namedInjectedWallet";
 import config from "../../utils/config";
 
 // Inspired by: https://github.com/rainbow-me/rainbowkit/blob/main/packages/rainbowkit/src/wallets/getDefaultWallets.ts
@@ -35,25 +35,21 @@ export const getAppWallets = ({
     {
       groupName: "Popular",
       wallets: [
-        namedInjectedWallet({ chains, shimDisconnect: true }),
-        gnosisSafe({ chains }),
-        braveWallet({ chains, shimDisconnect: true }),
-        metaMaskWallet({
-          chains,
-          shimDisconnect: true,
+        // () => namedInjectedWallet({ chains, shimDisconnect: true }),
+        () => gnosisSafe({ chains }),
+        () => braveWallet(),
+        () => metaMaskWallet({
           projectId: config.walletConnectProjectId,
         }),
-        walletConnectWallet({
-          chains,
+        () => walletConnectWallet({
           projectId: config.walletConnectProjectId,
         }),
-        coinbaseWallet({ appName, chains }),
-        bitkeep({ chains, shimDisconnect: true }),
-        rainbowWallet({
-          chains,
+        () => coinbaseWallet({ appName }),
+        () => bitkeep({ chains, shimDisconnect: true }),
+        () =>rainbowWallet({
           projectId: config.walletConnectProjectId,
         }),
-        ...(needsMock ? [mockConnector({ chains })] : []),
+        ...(needsMock ? [() => mockConnector({ chains })] : []),
         // wallet.trust({ chains }),
       ],
     },
@@ -68,7 +64,10 @@ export const getAppWallets = ({
   ];
 
   return {
-    connectors: connectorsForWallets(wallets)(),
+    connectors: connectorsForWallets(wallets, {
+      appName: "Superfluid Dashboard",
+      projectId: config.walletConnectProjectId
+    }),
     wallets,
   };
 };

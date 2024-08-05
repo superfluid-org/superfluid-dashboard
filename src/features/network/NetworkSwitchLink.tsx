@@ -1,6 +1,6 @@
 import Link from "@mui/material/Link";
 import { FC, useCallback } from "react";
-import { useAccount, useSwitchNetwork } from "wagmi";
+import { useAccount, useSwitchChain } from "wagmi";
 import { useExpectedNetwork } from "./ExpectedNetworkContext";
 import { Network } from "./networks";
 
@@ -17,15 +17,15 @@ const NetworkSwitchLink: FC<NetworkSwitchLinkProps> = ({
 }) => {
   const { setExpectedNetwork } = useExpectedNetwork();
   const { address: accountAddress } = useAccount();
-  const { switchNetwork } = useSwitchNetwork();
+  const { switchChain } = useSwitchChain();
 
   const networkSwitchClicked = useCallback(() => {
     setExpectedNetwork(network.id);
 
-    if (accountAddress && switchNetwork) {
-      switchNetwork(network.id);
+    if (accountAddress && switchChain) {
+      switchChain({ chainId: network.id });
     }
-  }, [network, accountAddress, setExpectedNetwork, switchNetwork]);
+  }, [network, accountAddress, setExpectedNetwork, switchChain]);
 
   return (
     <Link
