@@ -25,6 +25,7 @@ import VestingSchedulerAllowanceRow, {
   VestingSchedulerAllowanceRowSkeleton,
 } from "./VestingSchedulerAllowanceRow";
 import { VestingTooltips } from "../CreateVestingForm";
+import { useVestingVersion } from "../../../hooks/useVestingVersion";
 
 const VestingSchedulerAllowancesTable: FC = () => {
   const theme = useTheme();
@@ -33,19 +34,21 @@ const VestingSchedulerAllowancesTable: FC = () => {
   const { network } = useExpectedNetwork();
   const { visibleAddress: senderAddress } = useVisibleAddress();
 
+  const { vestingVersion } = useVestingVersion();
+
   const { data: vestingSchedulerConstants } =
     rpcApi.useGetVestingSchedulerConstantsQuery({
       chainId: network.id,
-      version: "v1" // todo: handle v2
+      version: vestingVersion
     });
 
   // TODO(KK): This query could be optimized.
   const vestingSchedulesQuery = vestingSubgraphApi.useGetVestingSchedulesQuery(
     senderAddress
       ? {
-          chainId: network.id,
-          where: { sender: senderAddress?.toLowerCase() },
-        }
+        chainId: network.id,
+        where: { sender: senderAddress?.toLowerCase(), contractVersion: vestingVersion },
+      }
       : skipToken,
     {
       selectFromResult: (result) => ({
@@ -66,7 +69,7 @@ const VestingSchedulerAllowancesTable: FC = () => {
     return Object.entries(vestingSchedulesGroupedByToken).map((entry) => {
       const [tokenAddress, allGroupVestingSchedules] = entry;
       const activeVestingSchedules = allGroupVestingSchedules.filter(
-        (x) => !x.status.isFinished && x.version === "v1" // TODO: handle v2 too
+        (x) => !x.status.isFinished
       );
 
       const aggregatedRequiredAccess = activeVestingSchedules
@@ -141,7 +144,7 @@ const VestingSchedulerAllowancesTable: FC = () => {
         >
           <TableHead>
             <TableRow>
-              <TableCell  width={"180px"}>Token</TableCell>
+              <TableCell width={"180px"}>Token</TableCell>
               {!isBelowMd && (
                 <>
                   <TableCell data-cy="allowance-cell" width="200px">
@@ -211,6 +214,7 @@ const VestingSchedulerAllowancesTable: FC = () => {
                       requiredFlowOperatorPermissions
                     }
                     requiredFlowRateAllowance={requiredFlowRateAllowance}
+                    vestingVersion={vestingVersion}
                   />
                 )
               )

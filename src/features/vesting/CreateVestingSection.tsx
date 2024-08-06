@@ -103,8 +103,7 @@ export const CreateVestingSection: FC<CreateVestingSectionProps> = ({
     CreateVestingCardView.Form
   );
 
-  const dispatch = useDispatch();
-  const { vestingVersion } = useVestingVersion();
+  const { vestingVersion, setVestingVersion } = useVestingVersion();
 
   const { address: accountAddress } = useAccount();
   const showVestingToggle = view === CreateVestingCardView.Form && !!accountAddress && !!network.vestingContractAddress_v2;
@@ -153,12 +152,11 @@ export const CreateVestingSection: FC<CreateVestingSectionProps> = ({
                 color="primary"
                 value={vestingVersion}
                 exclusive
-                onChange={(_e, value) => {
-                  dispatch(setVestingSchedulerFlag({
-                    account: getAddress(accountAddress),
+                onChange={(_e, value: "v1" | "v2") => {
+                  setVestingVersion({
                     chainId: network.id,
                     version: value
-                  }));
+                  });
                 }}
               >
                 <ToggleButton value="v1">&nbsp;V1&nbsp;</ToggleButton>

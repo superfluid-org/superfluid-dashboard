@@ -1,10 +1,11 @@
-import { useAccount } from "wagmi";
+import { Address, useAccount } from "wagmi";
 import { useHasFlag } from "../features/flags/flagsHooks";
 import { useExpectedNetwork } from "../features/network/ExpectedNetworkContext";
-import { Flag } from "../features/flags/flags.slice";
+import { Flag, setVestingSchedulerFlag } from "../features/flags/flags.slice";
 import { getAddress } from "../utils/memoizedEthersUtils";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { Network } from "../features/network/networks";
+import { useDispatch } from "react-redux";
 
 export const useVestingVersion = (props?: { network?: Network }) => {
     const { network: expectedNetwork } = useExpectedNetwork();
@@ -22,7 +23,24 @@ export const useVestingVersion = (props?: { network?: Network }) => {
             : undefined
     );
 
+    const dispatch = useDispatch();
+    const setVestingVersion = useCallback((input:
+        {
+            chainId: number,
+            version: "v1" | "v2"
+        }
+    ) => {
+        if (accountAddress) {
+            dispatch(setVestingSchedulerFlag({
+                account: getAddress(accountAddress),
+                chainId: input.chainId,
+                version: input.version
+            }));
+        }
+    }, [dispatch, accountAddress]);
+
     return useMemo(() => ({
         vestingVersion: hasVestingV2Enabled ? "v2" : "v1",
+        setVestingVersion,
     } as const), [hasVestingV2Enabled]);
 }
