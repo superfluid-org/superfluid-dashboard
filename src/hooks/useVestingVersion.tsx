@@ -42,5 +42,5 @@ export const useVestingVersion = (props?: { network?: Network }) => {
     return useMemo(() => ({
         vestingVersion: hasVestingV2Enabled ? "v2" : "v1",
         setVestingVersion,
-    } as const), [hasVestingV2Enabled]);
+    } as const), [hasVestingV2Enabled, setVestingVersion]);
 }
