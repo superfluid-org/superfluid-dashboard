@@ -1,10 +1,9 @@
 import { Framework } from "@superfluid-finance/sdk-core";
 import promiseRetry from "promise-retry";
-import { resolvedPublicClients } from "../wallet/WagmiManager";
+import { resolvedWagmiClients } from "../wallet/WagmiManager";
 import { allNetworks } from "./networks";
 import superfluidMetadata from "@superfluid-finance/metadata";
 import { publicClientToProvider } from "../../utils/wagmiEthersAdapters";
-import { PublicClient } from "viem";
 
 const readOnlyFrameworks = allNetworks.map((network) => {
   const networkFromMetadata = superfluidMetadata.getNetworkByChainId(
@@ -16,11 +15,14 @@ const readOnlyFrameworks = allNetworks.map((network) => {
     frameworkGetter: () =>
       promiseRetry<Framework>(
         (retry) =>
-          Framework.create({
-            chainId: network.id,
-            provider: publicClientToProvider((resolvedPublicClients[network.id] as unknown) as PublicClient), // todo: wagmi migration
-            customSubgraphQueriesEndpoint: subgraphEndpoint,
-          }).catch(retry),
+          {
+            const publicClient = resolvedWagmiClients[network.id]();
+            return Framework.create({
+              chainId: network.id,
+              provider: publicClientToProvider(publicClient),
+              customSubgraphQueriesEndpoint: subgraphEndpoint,
+            }).catch(retry);
+          },
         {
           minTimeout: 500,
           maxTimeout: 3000,

@@ -10,7 +10,7 @@ import {
   TransactionInfo,
   TransactionTitle,
 } from "@superfluid-finance/sdk-redux";
-import { writeContract } from "@wagmi/core";
+import { writeContract } from "wagmi/actions";
 import { Overrides, Signer } from "ethers";
 import {
   balanceFetcher,

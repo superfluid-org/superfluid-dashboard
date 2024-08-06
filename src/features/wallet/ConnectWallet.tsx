@@ -115,10 +115,11 @@ const ConnectWallet: FC<ConnectWalletProps> = ({
   const isAboveMd = useMediaQuery(theme.breakpoints.up("md"));
 
   const { network } = useExpectedNetwork();
-  const { openConnectModal, openAccountModal, mounted } = useConnectButton();
+  
+  const { openConnectModal, openAccountModal } = useConnectButton();
 
   const { visibleAddress } = useVisibleAddress();
-  const { chain: activeChain } = useAccount();
+  const { chain: activeChain, isReconnecting } = useAccount();
   const { stopImpersonation, isImpersonated } = useImpersonation();
 
   // const { isAutoConnecting } = useAutoConnect();
@@ -132,7 +133,7 @@ const ConnectWallet: FC<ConnectWalletProps> = ({
     [stopImpersonation]
   );
 
-  if (visibleAddress && activeChain && mounted) {
+  if (visibleAddress && activeChain) {
     // TODO(KK): Better solution for pointer/click
     return isAboveMd ? (
       <AccountInfo
@@ -155,9 +156,7 @@ const ConnectWallet: FC<ConnectWalletProps> = ({
   return (
     <LoadingButton
       data-cy={"connect-wallet-button"}
-      loading={!mounted 
-        // || isAutoConnecting
-      }
+      loading={isReconnecting}
       variant="contained"
       {...ButtonProps}
       onClick={() => {

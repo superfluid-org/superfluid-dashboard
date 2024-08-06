@@ -1,5 +1,5 @@
 import { NATIVE_ASSET_ADDRESS } from "./tokenTypes";
-import { resolvedPublicClients } from "../../wallet/WagmiManager";
+import { resolvedWagmiClients } from "../../wallet/WagmiManager";
 import {
   constantFlowAgreementV1Abi,
   constantFlowAgreementV1Address,
@@ -32,7 +32,7 @@ export const balanceFetcher = {
   async getUnderlyingBalance(
     arg: BalanceQueryParams
   ): Promise<UnderlyingBalance> {
-    const publicClient = resolvedPublicClients[arg.chainId];
+    const publicClient = resolvedWagmiClients[arg.chainId]();
 
     if (arg.tokenAddress === NATIVE_ASSET_ADDRESS) {
       return {
@@ -54,7 +54,7 @@ export const balanceFetcher = {
     }
   },
   async getRealtimeBalance(arg: BalanceQueryParams): Promise<RealtimeBalance> {
-    const publicClient = resolvedPublicClients[arg.chainId];
+    const publicClient = resolvedWagmiClients[arg.chainId]();
     const network = findNetworkOrThrow(allNetworks, arg.chainId);
 
     const [realtimeBalanceOfNow, cfaflowRate, gdaFlowRate] = await Promise.all([

@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
 import { allNetworks } from "../network/networks";
 import { isAddress } from "../../utils/memoizedEthersUtils";
 import { publicClientToProvider } from "../../utils/wagmiEthersAdapters";
-import { resolvedPublicClients } from "../wallet/WagmiManager";
+import { resolvedWagmiClients } from "../wallet/WagmiManager";
 import { PublicClient } from "viem";
 
 const addressBookRpcApi = createApi({
@@ -27,8 +27,8 @@ const addressBookRpcApi = createApi({
         const result = (
           await Promise.all(
             allNetworks.map(async (network) => {
-              const publicClient = resolvedPublicClients[network.id];
-              const provider = publicClientToProvider((publicClient as unknown) as PublicClient); // TODO: wagmi migration
+              const publicClient = resolvedWagmiClients[network.id]();
+              const provider = publicClientToProvider(publicClient);
               const code = await provider.getCode(address);
 
               return { network, code };

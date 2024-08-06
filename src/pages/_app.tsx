@@ -24,9 +24,7 @@ import createEmotionCache from "../features/theme/createEmotionCache";
 import { TransactionRestorationContextProvider } from "../features/transactionRestoration/TransactionRestorationContext";
 import ConnectButtonProvider from "../features/wallet/ConnectButtonProvider";
 import { VisibleAddressProvider } from "../features/wallet/VisibleAddressContext";
-import WagmiManager, {
-  RainbowKitManager,
-} from "../features/wallet/WagmiManager";
+import WagmiManager from "../features/wallet/WagmiManager";
 import { initializeSuperfluidDashboardGlobalObject } from "../global";
 import { IsCypress } from "../utils/SSRUtils";
 import config from "../utils/config";
@@ -78,7 +76,7 @@ export default function MyApp(props: AppPropsWithLayout) {
                     <ActiveNetworksProvider>
                       <MuiProvider>
                         {(_muiTheme) => (
-                          <RainbowKitManager>
+                          // <RainbowKitManager>
                             <VisibleAddressProvider>
                               <ConnectButtonProvider>
                                 <TransactionRestorationContextProvider>
@@ -100,7 +98,7 @@ export default function MyApp(props: AppPropsWithLayout) {
                                 </TransactionRestorationContextProvider>
                               </ConnectButtonProvider>
                             </VisibleAddressProvider>
-                          </RainbowKitManager>
+                          // </RainbowKitManager>
                         )}
                       </MuiProvider>
                     </ActiveNetworksProvider>

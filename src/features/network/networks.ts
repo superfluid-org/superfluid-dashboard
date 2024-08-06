@@ -852,7 +852,7 @@ export const networkDefinition = {
   },
 } as const satisfies Record<string, Network>;
 
-export const allNetworks: Network[] = orderBy(
+export const allNetworks: [Network, ...Network[]] = orderBy(
   orderBy(
     [
       networkDefinition.ethereum,
@@ -874,7 +874,7 @@ export const allNetworks: Network[] = orderBy(
     (x) => x.id // Put lower ids first (Ethereum mainnet will be first)
   ),
   (x) => !!(x as { testnet?: boolean }).testnet // Put non-testnets first
-);
+) as unknown as [Network, ...Network[]]; // The weird cast is because wagmi expects an array type with atleast one element.
 
 export const mainNetworks = allNetworks.filter((x) => !x.testnet);
 export const testNetworks = allNetworks.filter((x) => x.testnet);

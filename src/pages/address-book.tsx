@@ -47,7 +47,7 @@ import { getAddress } from "../utils/memoizedEthersUtils";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 import { LoadingButton } from "@mui/lab";
 import { publicClientToProvider } from "../utils/wagmiEthersAdapters";
-import { resolvedPublicClients } from "../features/wallet/WagmiManager";
+import { resolvedWagmiClients } from "../features/wallet/WagmiManager";
 import { PublicClient } from "viem";
 
 const AddressBook: NextPage = () => {
@@ -192,7 +192,7 @@ const AddressBook: NextPage = () => {
             const firstChainId = chainIds[0];
             if (firstChainId) {
               const provider = publicClientToProvider(
-                (resolvedPublicClients[firstChainId] as unknown) as PublicClient, // todo: wagmi migration
+                (resolvedWagmiClients[firstChainId] as unknown) as PublicClient, // todo: wagmi migration
               );
 
               if ((await provider.getCode(parsedItem.address)) !== "0x") {
