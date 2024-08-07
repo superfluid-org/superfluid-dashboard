@@ -9,6 +9,7 @@ import { useAvailableNetworks } from "../network/AvailableNetworksContext";
 import { useEffect, useMemo } from "react";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { useConnectButton } from "../wallet/ConnectButtonProvider";
+import useFeaturedTokens from "./useFeaturedTokens";
 
 export function LiFiWidgetManager() {
     const theme = useTheme();
@@ -16,6 +17,8 @@ export function LiFiWidgetManager() {
     const { availableNetworks } = useAvailableNetworks();
 
     const { openConnectModal } = useConnectButton();
+
+    const featuredTokens = useFeaturedTokens();
 
     const config = useMemo(() => {
         const config = {
@@ -55,11 +58,14 @@ export function LiFiWidgetManager() {
                 onConnect() {
                     openConnectModal()
                 }
+            },
+            tokens: {
+                featured: featuredTokens
             }
         } as Partial<WidgetConfig>;
 
         return config;
-    }, [isEOA, availableNetworks, theme, openConnectModal]);
+    }, [isEOA, availableNetworks, theme, openConnectModal, featuredTokens]);
 
     // # Side
     const { stopAutoSwitchToWalletNetwork } = useExpectedNetwork();
