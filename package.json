@@ -37,7 +37,7 @@
     "@mui/material": "^5.15.15",
     "@mui/x-data-grid": "^5.17.26",
     "@mui/x-date-pickers": "^5.0.20",
-    "@pushprotocol/restapi": "0.7.5",
+    "@pushprotocol/restapi": "^1.7.25",
     "@reduxjs/toolkit": "1.9.2",
     "@rtk-query/graphql-request-base-query": "^2.3.1",
     "@segment/analytics-next": "^1.69.0",

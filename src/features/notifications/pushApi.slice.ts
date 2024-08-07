@@ -6,10 +6,10 @@ import {
 } from "../../hooks/usePushProtocol";
 import {
   ApiNotificationType,
-  ParsedResponseType,
   SignerType,
 } from "@pushprotocol/restapi";
 import * as PushApi from "@pushprotocol/restapi";
+import { ENV } from "@pushprotocol/restapi/src/lib/constants";
 
 export interface ResolveNameResult {
   address: string;
@@ -27,7 +27,7 @@ export const pushApi = createApi({
           const result: { channel: string }[] =
             await PushApi.user.getSubscriptions({
               user,
-              env: "prod",
+              env: ENV.PROD,
             });
 
           return {
@@ -50,7 +50,7 @@ export const pushApi = createApi({
             signer,
             channelAddress: superFluidChannel,
             userAddress: `eip155:1:${address}`,
-            env: "prod",
+            env: ENV.PROD,
           });
 
           return { data: result };
@@ -83,7 +83,7 @@ export const pushApi = createApi({
           const notifications: ApiNotificationType[] =
             await PushApi.user.getFeeds({
               user: `eip155:1:${user}`,
-              env: "prod",
+              env: ENV.PROD,
               limit: 500,
               raw: true,
             });
