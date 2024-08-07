@@ -6,7 +6,6 @@ import { Network } from "../../network/networks";
 import { rpcApi } from "../../redux/store";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
-import { versions } from "process";
 
 interface FixVestingPermissionsBtnProps {
   network: Network;
