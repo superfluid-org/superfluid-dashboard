@@ -8,7 +8,6 @@ import "react-toastify/dist/ReactToastify.css";
 import MonitorContext from "../components/MonitorContext/MonitorContext";
 import { ToastProvider } from "../components/Toast/toast";
 import { AnalyticsProvider } from "../features/analytics/AnalyticsProvider";
-// import { AutoConnectProvider } from "../features/autoConnect/AutoConnect";
 import { ImpersonationProvider } from "../features/impersonation/ImpersonationContext";
 import IntercomProvider from "../features/intercom/IntercomProvider";
 import Layout from "../features/layout/Layout";
@@ -68,45 +67,41 @@ export default function MyApp(props: AppPropsWithLayout) {
           <meta name="viewport" content="initial-scale=1, width=device-width" />
         </Head>
         <WagmiManager>
-          {/* <AutoConnectProvider> */}
-            <ReduxProvider>
-              <AvailableNetworksProvider>
-                <ImpersonationProvider>
-                  <ExpectedNetworkProvider>
-                    <ActiveNetworksProvider>
-                      <MuiProvider>
-                        {(_muiTheme) => (
-                          // <RainbowKitManager>
-                            <VisibleAddressProvider>
-                              <ConnectButtonProvider>
-                                <TransactionRestorationContextProvider>
-                                  <LayoutContextProvider>
-                                    <AnalyticsProvider>
-                                      <ToastProvider />
-                                      <IntercomProvider>
-                                        <MonitorContext />
-                                        <Layout>
-                                          <MinigameProvider>
-                                            {getLayout(
-                                              <Component {...pageProps} />
-                                            )}
-                                          </MinigameProvider>
-                                        </Layout>
-                                      </IntercomProvider>
-                                    </AnalyticsProvider>
-                                  </LayoutContextProvider>
-                                </TransactionRestorationContextProvider>
-                              </ConnectButtonProvider>
-                            </VisibleAddressProvider>
-                          // </RainbowKitManager>
-                        )}
-                      </MuiProvider>
-                    </ActiveNetworksProvider>
-                  </ExpectedNetworkProvider>
-                </ImpersonationProvider>
-              </AvailableNetworksProvider>
-            </ReduxProvider>
-          {/* </AutoConnectProvider> */}
+          <ReduxProvider>
+            <AvailableNetworksProvider>
+              <ImpersonationProvider>
+                <ExpectedNetworkProvider>
+                  <ActiveNetworksProvider>
+                    <MuiProvider>
+                      {(_muiTheme) => (
+                        <VisibleAddressProvider>
+                          <ConnectButtonProvider>
+                            <TransactionRestorationContextProvider>
+                              <LayoutContextProvider>
+                                <AnalyticsProvider>
+                                  <ToastProvider />
+                                  <IntercomProvider>
+                                    <MonitorContext />
+                                    <Layout>
+                                      <MinigameProvider>
+                                        {getLayout(
+                                          <Component {...pageProps} />
+                                        )}
+                                      </MinigameProvider>
+                                    </Layout>
+                                  </IntercomProvider>
+                                </AnalyticsProvider>
+                              </LayoutContextProvider>
+                            </TransactionRestorationContextProvider>
+                          </ConnectButtonProvider>
+                        </VisibleAddressProvider>
+                      )}
+                    </MuiProvider>
+                  </ActiveNetworksProvider>
+                </ExpectedNetworkProvider>
+              </ImpersonationProvider>
+            </AvailableNetworksProvider>
+          </ReduxProvider>
         </WagmiManager>
       </CacheProvider>
     </NextThemesProvider>
