@@ -7,12 +7,10 @@ import {
   useEffect,
   useState,
 } from "react";
-import { useAccount, usePublicClient } from "wagmi";
+import { useAccount } from "wagmi";
 import AccountModal from "./AccountModal";
-import { useWeb3Modal, useWeb3ModalEvents, useWeb3ModalState, useWeb3ModalTheme } from '@web3modal/wagmi/react'
+import { useWeb3Modal, useWeb3ModalState, useWeb3ModalTheme } from '@web3modal/wagmi/react'
 import { useTheme } from "@mui/material";
-import { reconnect } from "wagmi/actions";
-import { wagmiConfig } from "./wagmiConfig";
 
 interface ConnectButtonContextValue {
   openAccountModal: () => void;
@@ -33,7 +31,6 @@ const ConnectButtonProvider: FC<PropsWithChildren> = ({ children }) => {
   const theme = useTheme();
 
   useEffect(() => {
-    console.log("A")
     if (theme.palette.mode === "dark") {
       setThemeMode("dark");
     } else {
@@ -42,7 +39,6 @@ const ConnectButtonProvider: FC<PropsWithChildren> = ({ children }) => {
   }, [theme.palette.mode]); // Don't put `setThemeMode` here
 
   useEffect(() => {
-    console.log("B")
     setThemeVariables({
       "--w3m-accent": theme.palette.primary.main
     });
@@ -61,10 +57,6 @@ const ConnectButtonProvider: FC<PropsWithChildren> = ({ children }) => {
   const openConnectModal = useCallback(() => open({
     view: "Connect",
   }), [open]);
-
-  useEffect(() => {
-    reconnect(wagmiConfig);
-  }, []);
 
   return (
     <ConnectButtonContext.Provider
