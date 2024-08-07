@@ -54,7 +54,7 @@ export default function MyApp(props: AppPropsWithLayout) {
   useEffect(() => {
     const { id, sv } = config.hotjar;
     if (!IsCypress && id && sv) {
-      hotjar.initialize(Number(id), Number(sv));
+      hotjar.initialize({ id: Number(id), sv: Number(sv) });
     } else {
       console.warn("Hotjar not initialized.");
     }
