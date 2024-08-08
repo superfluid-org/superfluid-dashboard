@@ -546,7 +546,7 @@ export const vestingSchedulerMutationEndpoints = {
           chainId,
           dispatch,
           signerAddress,
-          title: "Fix Access for Vesting",
+          title: `Fix Access for Vesting (${version})`,
           extraData: {
             subTransactionTitles,
             ...(transactionExtraData ?? {}),
