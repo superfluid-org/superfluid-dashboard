@@ -42,12 +42,11 @@ export function LiFiWidgetManager() {
                 // components: theme.components,
                 palette: theme.palette,
                 shape: theme.shape,
-                typography: {
+/*                 typography: {
                     fontFamily: theme.typography.fontFamily,
                     body1: theme.typography.body1,
                     body2: theme.typography.body2,
-                    
-                }
+                } */
             },
             chains: {
                 allow: availableNetworks.map(x => x.id)
