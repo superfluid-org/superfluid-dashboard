@@ -327,7 +327,7 @@ export class IndividualTokenPage extends BasePage {
   ) {
     cy.fixture("networkSpecificData").then((fixture) => {
       let chosenTransfers = fixture[network][account].tokenValues.filter(
-        (x: any) => (x.token = token)
+        (x: any) => x.token === token
       )[0].transfers;
       this.hasText("[data-cy=all-tab]", `All  (${chosenTransfers.length})`);
       this.validateTransferTable(chosenTransfers);
