@@ -41,6 +41,7 @@ import DisableAutoWrapTransactionButton from "../transactionButtons/DisableAutoW
 import { VestingToken } from "../CreateVestingSection";
 import AutoWrapEnableDialog from "../dialogs/AutoWrapEnableDialog";
 import ConnectionBoundaryButton from "../../transactionBoundary/ConnectionBoundaryButton";
+import { useVestingVersion } from "../../../hooks/useVestingVersion";
 
 export const EditIconWrapper = styled(Avatar)(({ theme }) => ({
   width: "50px",
@@ -117,6 +118,7 @@ interface VestingSchedulerAllowanceRowProps {
   recommendedTokenAllowance: BigNumber;
   requiredFlowOperatorPermissions: number; // Usually 5 (Create or Delete) https://docs.superfluid.finance/superfluid/developers/constant-flow-agreement-cfa/cfa-access-control-list-acl/acl-features
   requiredFlowRateAllowance: BigNumber;
+  vestingVersion: "v1" | "v2"
 }
 
 const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
@@ -127,6 +129,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
   recommendedTokenAllowance,
   requiredFlowOperatorPermissions,
   requiredFlowRateAllowance,
+  vestingVersion
 }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
@@ -187,7 +190,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
       chainId: network.id,
       tokenAddress: tokenAddress,
       senderAddress: senderAddress,
-      version: "v1" // TODO: handle v2
+      version: vestingVersion
     });
 
   if (!vestingSchedulerAllowancesQuery.data) {
@@ -358,6 +361,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                             requiredFlowOperatorPermissions
                           }
                           requiredFlowRateAllowance={requiredFlowRateAllowance}
+                          version={vestingVersion}
                         />
                       )}
                     </TableCell>
@@ -694,6 +698,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                       requiredFlowOperatorPermissions
                     }
                     requiredFlowRateAllowance={requiredFlowRateAllowance}
+                    version={vestingVersion}
                   />
                 )}
               </Stack>

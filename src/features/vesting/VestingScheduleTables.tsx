@@ -4,6 +4,8 @@ import {
   IconButton,
   Skeleton,
   Stack,
+  ToggleButton,
+  ToggleButtonGroup,
   Tooltip,
   Typography,
   useMediaQuery,
@@ -28,6 +30,7 @@ import VestingSchedulerAllowancesTable from "./VestingSchedulesAllowancesTable/V
 import VestingScheduleTable from "./VestingScheduleTable";
 import Link from "../common/Link";
 import { uniqBy } from "lodash";
+import { useVestingVersion } from "../../hooks/useVestingVersion";
 
 interface ExecutionWhitelistInfoProps {
   whitelisted: boolean;
@@ -306,6 +309,8 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({ }) => {
   const vestingSchedulesLoading =
     receivedSchedulesLoading || sentSchedulesLoading;
 
+  const { vestingVersion, setVestingVersion } = useVestingVersion();
+
   return (
     <Stack
       gap={3.5}
@@ -379,7 +384,27 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({ }) => {
             <Typography variant="h6">Permissions & Allowances</Typography>
           )}
 
-          <VestingSchedulerAllowancesTable />
+          {network.vestingContractAddress_v2 && (
+            <Box>
+              <ToggleButtonGroup
+                color="primary"
+                value={vestingVersion}
+                size="small"
+                exclusive
+                onChange={(_e, value: "v1" | "v2") => {
+                  setVestingVersion({
+                    chainId: network.id,
+                    version: value
+                  });
+                }}
+              >
+                <ToggleButton value="v1">V1</ToggleButton>
+                <ToggleButton value="v2">V2</ToggleButton>
+              </ToggleButtonGroup>
+            </Box>
+          )}
+
+          <VestingSchedulerAllowancesTable key={vestingVersion} />
 
           {!isWhitelistLoading && (
             <ExecutionWhitelistInfo

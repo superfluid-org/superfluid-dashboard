@@ -4,7 +4,10 @@ import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
 import CloseIcon from "@mui/icons-material/Close";
 import LaunchRoundedIcon from "@mui/icons-material/LaunchRounded";
 import {
+  Alert,
+  AlertTitle,
   Box,
+  Button,
   Container,
   Divider,
   IconButton,
@@ -18,7 +21,7 @@ import {
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { Address } from "@superfluid-finance/sdk-core";
-import { format, fromUnixTime } from "date-fns";
+import { format } from "date-fns";
 import { BigNumber } from "ethers";
 import { isString } from "lodash";
 import { NextPage } from "next";
@@ -51,18 +54,18 @@ import { useScheduledStream } from "../../../hooks/streamSchedulingHooks";
 import useAddressName from "../../../hooks/useAddressName";
 import useNavigateBack from "../../../hooks/useNavigateBack";
 import config from "../../../utils/config";
-import { getTimeInSeconds } from "../../../utils/dateUtils";
 import shortenHex from "../../../utils/shortenHex";
 import {
   calculateBuffer,
   calculateMaybeCriticalAtTimestamp,
 } from "../../../utils/tokenUtils";
-import { vestingSubgraphApi } from "../../../vesting-subgraph/vestingSubgraphApi";
 import Page404 from "../../404";
 import { useVisibleAddress } from "../../../features/wallet/VisibleAddressContext";
 import AddressName from "../../../components/AddressName/AddressName";
 import Link from "../../../features/common/Link";
 import { HumaFinanceLink } from "../../../features/streamsTable/StreamRow";
+import { getVestingPagePath } from "../../../utils/URLUtils";
+import LockClockRoundedIcon from "@mui/icons-material/LockClockRounded";
 
 const TEXT_TO_SHARE = (up?: boolean) =>
   encodeURIComponent(`I’m streaming money every second with @Superfluid_HQ! 🌊
@@ -114,15 +117,15 @@ const StreamAccountCard: FC<StreamAccountCardProps> = ({
           address={address}
           {...(isBelowMd
             ? {
-                AvatarProps: {
-                  sx: {
-                    width: "24px",
-                    height: "24px",
-                    borderRadius: "5px",
-                  },
+              AvatarProps: {
+                sx: {
+                  width: "24px",
+                  height: "24px",
+                  borderRadius: "5px",
                 },
-                BlockiesProps: { size: 8, scale: 3 },
-              }
+              },
+              BlockiesProps: { size: 8, scale: 3 },
+            }
             : {})}
         />
         <ListItemText
@@ -331,10 +334,10 @@ const StreamPageContent: FC<{
     subgraphApi.useIsHumaFinanceOperatorStreamQuery(
       network.humaFinance
         ? {
-            chainId: network.id,
-            streamId: streamId,
-            flowOperatorAddress: network.humaFinance?.nftAddress,
-          }
+          chainId: network.id,
+          streamId: streamId,
+          flowOperatorAddress: network.humaFinance?.nftAddress,
+        }
         : skipToken
     );
 
@@ -439,23 +442,6 @@ const StreamPageContent: FC<{
       )
     );
   }, [scheduledStream]);
-
-  const vestingScheduleQuery = vestingSubgraphApi.useGetVestingSchedulesQuery(
-    scheduledStream
-      ? {
-          chainId: network.id,
-          where: {
-            superToken: scheduledStream.token.toLowerCase(),
-            sender: scheduledStream.sender.toLowerCase(),
-            receiver: scheduledStream.receiver.toLowerCase(),
-            cliffAndFlowExecutedAt: getTimeInSeconds(
-              scheduledStream.startDate
-            ).toString(),
-          },
-        }
-      : skipToken
-  );
-  const vestingSchedule = vestingScheduleQuery.data?.vestingSchedules?.[0]; // TODO(KK): Does this work?
 
   if (scheduledStreamQuery.isLoading || tokenSnapshotQuery.isLoading) {
     return (
@@ -730,6 +716,29 @@ const StreamPageContent: FC<{
             </Stack>
           )}
 
+          {
+            scheduledStream.mostLikelyAssociatedVestingScheduleId && (
+              <Box minWidth="100%">
+                <Alert
+                  icon={<LockClockRoundedIcon />}
+                  severity="success"
+                >
+                  <AlertTitle>Vesting</AlertTitle>
+                  This stream is associated with a vesting schedule. <Link
+                    href={getVestingPagePath({
+                      network: network.slugName,
+                      vestingScheduleId: scheduledStream.mostLikelyAssociatedVestingScheduleId,
+                    })}
+                  >
+                    <Typography display="inline-block" fontSize="inherit" fontWeight={500}>
+                      Click here to go to the vesting details.
+                    </Typography>
+                  </Link>
+                </Alert>
+              </Box>
+            )
+          }
+
           <Stack
             rowGap={0.5}
             columnGap={6}
@@ -745,55 +754,24 @@ const StreamPageContent: FC<{
               },
             }}
           >
-            {vestingSchedule ? (
-              <OverviewItem
-                dataCy={"cliff-date"}
-                label="Cliff Date"
-                value={
-                  vestingSchedule.cliffDate
-                    ? format(
-                        fromUnixTime(Number(vestingSchedule.cliffDate)),
-                        "LLL d, yyyy HH:mm"
-                      )
-                    : "-"
-                }
-              />
-            ) : (
-              <OverviewItem
-                dataCy={"start-date"}
-                label="Start Date:"
-                value={format(startDate.getTime(), "d MMM. yyyy H:mm")}
-              />
-            )}
-            {vestingSchedule ? (
-              <OverviewItem
-                dataCy={"cliff-amount"}
-                label="Cliff Amount"
-                value={
-                  vestingSchedule.cliffDate ? (
-                    <>
-                      <Amount wei={vestingSchedule.cliffAmount} /> {tokenSymbol}
-                    </>
-                  ) : (
-                    "-"
-                  )
-                }
-              />
-            ) : (
-              <OverviewItem
-                dataCy={"buffer"}
-                label="Buffer:"
-                value={
-                  bufferSize ? (
-                    <>
-                      <Amount wei={bufferSize} /> {tokenSymbol}
-                    </>
-                  ) : (
-                    "-"
-                  )
-                }
-              />
-            )}
+            <OverviewItem
+              dataCy={"start-date"}
+              label="Start Date:"
+              value={format(startDate.getTime(), "d MMM. yyyy H:mm")}
+            />
+            <OverviewItem
+              dataCy={"buffer"}
+              label="Buffer:"
+              value={
+                bufferSize ? (
+                  <>
+                    <Amount wei={bufferSize} /> {tokenSymbol}
+                  </>
+                ) : (
+                  "-"
+                )
+              }
+            />
             {!endDate && updatedAtTimestamp > createdAtTimestamp && (
               <OverviewItem
                 label={`Updated Date:`}
@@ -801,16 +779,7 @@ const StreamPageContent: FC<{
               />
             )}
 
-            {vestingSchedule ? (
-              <OverviewItem
-                dataCy={"vesting-start-date"}
-                label="Vesting Start Date:"
-                value={format(
-                  fromUnixTime(Number(vestingSchedule.startDate)),
-                  "LLL d, yyyy HH:mm"
-                )}
-              />
-            ) : endDateScheduled ? (
+            {endDateScheduled ? (
               <OverviewItem
                 label={`End Date:`}
                 value={
@@ -845,26 +814,15 @@ const StreamPageContent: FC<{
                 </Stack>
               }
             />
-            {vestingSchedule ? (
-              <OverviewItem
-                dataCy={"vesting-end-date"}
-                label="Vesting End Date:"
-                value={format(
-                  fromUnixTime(Number(vestingSchedule.endDate)),
-                  "LLL d, yyyy HH:mm"
-                )}
-              />
-            ) : (
-              <OverviewItem
-                dataCy={"projected-liquidation"}
-                label="Projected Liquidation:"
-                value={
-                  isActive && liquidationDate
-                    ? format(liquidationDate, "d MMM. yyyy H:mm")
-                    : "-"
-                }
-              />
-            )}
+            <OverviewItem
+              dataCy={"projected-liquidation"}
+              label="Projected Liquidation:"
+              value={
+                isActive && liquidationDate
+                  ? format(liquidationDate, "d MMM. yyyy H:mm")
+                  : "-"
+              }
+            />
             <OverviewItem
               dataCy={"tx-hash"}
               label="Transaction Hash:"

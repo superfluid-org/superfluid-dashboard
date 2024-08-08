@@ -98,8 +98,8 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
                     !isConnected
                       ? "Connect wallet to cancel stream"
                       : !isCorrectNetwork
-                      ? `Switch network to ${network.name} to cancel stream`
-                      : "Cancel stream"
+                        ? `Switch network to ${network.name} to cancel stream`
+                        : "Cancel stream"
                   }
                   {...TooltipProps}
                 >
@@ -107,20 +107,43 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
                     <IconButton
                       data-cy={"cancel-button"}
                       color="error"
-                      onClick={() => {
+                      onClick={async () => {
                         if (!signer)
                           throw new Error(
                             "Signer should always be present here."
                           );
-                        setDialogLoadingInfo(
-                          <Typography
-                            variant="h5"
-                            color="text.secondary"
-                            translate="yes"
-                          >
-                            You are canceling a stream.
-                          </Typography>
-                        );
+
+                        const signerAddress = await signer.getAddress();
+
+                        const streamDirection = signerAddress.toLowerCase() === receiver.toLowerCase()
+                          ? "incoming"
+                          : "outgoing";
+
+                        switch (streamDirection) {
+                          case "incoming":
+                            setDialogLoadingInfo(
+                              <Typography
+                                variant="h5"
+                                color="text.secondary"
+                                translate="yes"
+                              >
+                                You are canceling an <em>incoming</em> stream. Are you sure? You are not able to restart the stream on behalf of the sender.
+                              </Typography>
+                            );
+                            break;
+                          case "outgoing":
+                            setDialogLoadingInfo(
+                              <Typography
+                                variant="h5"
+                                color="text.secondary"
+                                translate="yes"
+                              >
+                                You are canceling an outgoing stream.
+                              </Typography>
+                            );
+                            break;
+                        }
+
                         deleteStream(signer);
                       }}
                       disabled={!(isConnected && signer && isCorrectNetwork)}

@@ -8,16 +8,17 @@ import { PendingCreateTask } from "../features/pendingUpdates/PendingOutgoingTas
 import { rpcApi, subgraphApi } from "../features/redux/store";
 import { StreamScheduling } from "../features/streamsTable/StreamScheduling";
 import { CreateTask } from "../scheduling-subgraph/.graphclient";
+import { vestingSubgraphApi } from "../vesting-subgraph/vestingSubgraphApi";
 
 export interface ScheduledStream
   extends Omit<
     Stream,
     "createdAtBlockNumber" | "updatedAtBlockNumber" | "tokenSymbol" | "deposit"
-  > {}
+  > { }
 
 export interface PendingScheduledStream
   extends ScheduledStream,
-    Pick<PendingCreateTask, "pendingType" | "hasTransactionSucceeded"> {}
+  Pick<PendingCreateTask, "pendingType" | "hasTransactionSucceeded"> { }
 
 export const useScheduledStream = (
   arg: Omit<StreamQuery, "block"> | SkipToken
@@ -27,20 +28,58 @@ export const useScheduledStream = (
 
   const isSkip = arg === skipToken;
   const network = isSkip ? undefined : tryFindNetwork(allNetworks, arg.chainId);
+  const isStreamActive = stream && stream.currentFlowRate !== "0";
 
-  const scheduleResponse = rpcApi.useGetFlowScheduleQuery(
-    stream && network?.flowSchedulerContractAddress
+  const { flowSchedulerScheduling } = rpcApi.useGetFlowScheduleQuery(
+    stream && network?.flowSchedulerContractAddress && isStreamActive
       ? {
-          chainId: network.id,
-          receiverAddress: stream.receiver,
-          senderAddress: stream.sender,
-          superTokenAddress: stream.token,
+        chainId: network.id,
+        receiverAddress: stream.receiver,
+        senderAddress: stream.sender,
+        superTokenAddress: stream.token,
+      }
+      : skipToken,
+    {
+      selectFromResult: (queryResult) => {
+        return {
+          flowSchedulerScheduling: queryResult.currentData
         }
-      : skipToken
+      }
+    }
   );
 
-  const isStreamActive = stream && stream.currentFlowRate !== "0";
-  const streamScheduling = isStreamActive ? scheduleResponse.data : undefined;
+  const { mostLikelyAssociatedVestingSchedule } = vestingSubgraphApi.useGetVestingSchedulesQuery(
+    stream && network ? {
+      chainId: network.id,
+      where: {
+        superToken: stream.token,
+        receiver: stream.receiver,
+        cliffAndFlowDate_lte: stream.createdAtTimestamp.toString(),
+        endDate_gt: stream.createdAtTimestamp.toString()
+      },
+      orderBy: "createdAt",
+      orderDirection: "desc"
+    } : skipToken,
+    {
+      selectFromResult: (queryResult) => {
+        // Filter out the deleted schedules because it's currently not possible to filter by `null` with SDK-redux.
+        const vestingSchedules = (queryResult.currentData?.vestingSchedules ?? []).filter(x => !x.deletedAt);
+        
+        // If there is a vesting schedule completely in sync with the stream, assume that as the most likely associated one.
+        // Otherwise, effectively pick the latest created vesting schedule.
+        const mostLikelyAssociatedVestingSchedule = vestingSchedules.find(x => x.cliffAndFlowExecutedAt === stream!.createdAtTimestamp) ?? vestingSchedules[0];
+
+        return {
+          mostLikelyAssociatedVestingSchedule
+        }
+      }
+    }
+  );
+
+  const mostRelevantSchedulerData = {
+    startDate: flowSchedulerScheduling?.startDate,
+    endDate:  getNonZeroMathMinWithPossibleUndefined(flowSchedulerScheduling?.endDate, mostLikelyAssociatedVestingSchedule?.endDateValidAt)
+  };
 
   return subgraphApi.useStreamQuery(arg, {
     refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
@@ -48,32 +87,45 @@ export const useScheduledStream = (
       ...x,
       data: x.data
         ? mapStreamScheduling(
-            x.data,
-            streamScheduling?.startDate,
-            streamScheduling?.endDate
-          )
+          x.data,
+          mostRelevantSchedulerData?.startDate,
+          mostRelevantSchedulerData?.endDate,
+          mostLikelyAssociatedVestingSchedule?.id
+        )
         : x.data,
       currentData: x.currentData
         ? mapStreamScheduling(
-            x.currentData,
-            streamScheduling?.startDate,
-            streamScheduling?.endDate
-          )
+          x.currentData,
+          mostRelevantSchedulerData?.startDate,
+          mostRelevantSchedulerData?.endDate,
+          mostLikelyAssociatedVestingSchedule?.id
+        )
         : x.currentData,
     }),
   });
 };
 
+function getNonZeroMathMinWithPossibleUndefined(a?: number, b?: number): number | undefined {
+  if (a === undefined && b === undefined) return undefined;
+
+  a = a || Infinity;
+  b = b || Infinity;
+
+  const minValue = Math.min(a, b);
+  return minValue === Infinity ? undefined : minValue;
+}
+
 export const mapStreamScheduling = <
   T extends
-    | Stream
-    | PendingOutgoingStream
-    | ScheduledStream
-    | PendingScheduledStream
+  | Stream
+  | PendingOutgoingStream
+  | ScheduledStream
+  | PendingScheduledStream
 >(
   stream: T,
   scheduledUnixStart?: number | null,
-  scheduledUnixEnd?: number | null
+  scheduledUnixEnd?: number | null,
+  mostLikelyAssociatedVestingScheduleId?: string | null
 ): T & StreamScheduling => {
   const startDateScheduled = scheduledUnixStart
     ? fromUnixTime(scheduledUnixStart)
@@ -95,6 +147,7 @@ export const mapStreamScheduling = <
     endDate: isActive
       ? endDateScheduled
       : fromUnixTime(stream.updatedAtTimestamp),
+    mostLikelyAssociatedVestingScheduleId: mostLikelyAssociatedVestingScheduleId ?? undefined
   };
 };
 

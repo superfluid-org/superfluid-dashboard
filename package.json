@@ -94,6 +94,6 @@
     "npm-run-all": "^4.1.5",
     "replayio": "^1.3.2",
     "ts-node": "^10.9.2",
-    "typescript": "^5.4.5"
+    "typescript": "^5.5.4"
   }
 }

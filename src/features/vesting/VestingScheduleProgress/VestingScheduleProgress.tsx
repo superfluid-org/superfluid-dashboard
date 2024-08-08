@@ -5,6 +5,7 @@ import useTimer from "../../../hooks/useTimer";
 import { UnitOfTime } from "../../send/FlowRateInput";
 import { VestingSchedule } from "../types";
 import VestingScheduleProgressCheckpoint from "./VestingScheduleProgressCheckpoint";
+import { groupBy, map, orderBy, size, sortBy, uniqBy } from "lodash";
 
 interface VestingProgressProps {
   nth: number;
@@ -104,25 +105,100 @@ const VestingScheduleProgress: FC<VestingScheduleProgressProps> = ({
     cliffDate: unixCliffDate,
     endDate: unixEndDate,
     cliffAndFlowDate: unixCliffAndFlowDate,
+    claimValidityDate: unixClaimValidityDate,
+    cliffAndFlowExecutedAt: unixCliffAndFlowExecutedAt,
   } = vestingSchedule;
+
+  const unixClaimedAt = (unixClaimValidityDate && unixCliffAndFlowExecutedAt) ? unixCliffAndFlowExecutedAt : 0; 
 
   const dateNow = useTimer(UnitOfTime.Minute);
 
-  const createdAt = useMemo(() => fromUnixTime(unixCreatedAt), [unixCreatedAt]);
+  function* generateProgressDataPoints() {
+    // We generate data points first based on which we create the progress slices. We want them to be sequential without breaks.
+    // Don't worry about them being correctly ordered here, we'll order them in the next step.
+    yield unixCreatedAt;
+    yield unixStartDate;
+    if (unixCliffDate) {
+      yield unixCliffDate;
+    } else {
+      yield unixCliffAndFlowDate;
+    }
+    if (unixClaimedAt) {
+      yield unixClaimedAt;
+    }
+    yield unixEndDate;
+    if (unixClaimValidityDate) {
+      yield unixClaimValidityDate;
+    }
+  }
 
-  const startDate = useMemo(() => fromUnixTime(unixStartDate), [unixStartDate]);
+  function* generateProgressDataSlices() {
+    // We create the progress slices, we want them to be sequential without breaks.
+    // We order them and leave only unique values.
+    const dates = uniqBy(orderBy([...generateProgressDataPoints()], x => x, "asc"), x => x);
 
-  const cliffDate = useMemo(
-    () => (unixCliffDate ? fromUnixTime(unixCliffDate) : null),
-    [unixCliffDate]
-  );
+    for (let i = 0; i < dates.length - 1; i++) {
+      yield { start: dates[i], end: dates[i + 1] };
+    }
+  }
 
-  const endDate = useMemo(() => fromUnixTime(unixEndDate), [unixEndDate]);
+  const progressData = [...generateProgressDataSlices()];
 
-  const cliffAndFlowDate = useMemo(
-    () => fromUnixTime(Number(unixCliffAndFlowDate)),
-    [unixCliffAndFlowDate]
-  );
+  function* generateCheckpointData() {
+    // We create checkpoints to put on the timeline.
+    // Don't worry about ordering or things happening at the same time, we'll do ordering and grouping in a next step.
+    yield {
+      title: "Vesting Scheduled",
+      targetDate: unixCreatedAt,
+      dataCy: "vesting-scheduled",
+    };
+    yield {
+      title: "Vesting Starts",
+      targetDate: unixCliffDate ? unixStartDate : unixCliffAndFlowDate,
+      dataCy: "vesting-start",
+    }
+    if (unixClaimValidityDate) {
+      yield {
+        title: "Claiming Starts",
+        targetDate: unixCliffAndFlowDate,
+        dataCy: "claim-start",
+      };
+    } else {
+      yield {
+        title: "Stream Starts",
+        targetDate: unixCliffAndFlowDate,
+        dataCy: "stream-start",
+      };
+    }
+    if (unixCliffDate) {
+      yield {
+        title: "Cliff Vested",
+        targetDate: unixCliffDate,
+        dataCy: "cliff-end",
+      };
+    }
+    if (unixClaimedAt) {
+      yield {
+        title: "Claimed",
+        targetDate: unixClaimedAt,
+        dataCy: "vesting-claimed",
+      };
+    }
+    yield {
+      title: "Vesting Ends",
+      targetDate: unixEndDate,
+      dataCy: "vesting-end",
+    };
+    if (!unixClaimedAt && unixClaimValidityDate) {
+      yield {
+        title: "Claiming Ends",
+        targetDate: unixClaimValidityDate,
+        dataCy: "claim-ends",
+      };
+    }
+  }
+  const checkpointData = groupBy(orderBy([...generateCheckpointData()], ordering => ordering.targetDate), grouping => grouping.targetDate);
+  let checkpointDataIterator = 0;
 
   return (
     <Box
@@ -130,86 +206,36 @@ const VestingScheduleProgress: FC<VestingScheduleProgressProps> = ({
         display: "grid",
         justifyContent: "space-between",
         [theme.breakpoints.up("md")]: {
-          gridTemplateColumns: `repeat(${cliffDate ? 4 : 3}, 170px)`,
+          gridTemplateColumns: `repeat(${size(checkpointData)}, 170px)`,
         },
         [theme.breakpoints.down("md")]: {
-          gridTemplateRows: `repeat(${cliffDate ? 4 : 3}, 90px)`,
+          gridTemplateRows: `repeat(${size(checkpointData)}, 90px)`,
         },
       }}
     >
-      <VestingProgress
-        nth={1}
-        start={createdAt}
-        end={startDate}
-        dateNow={dateNow}
-      />
-
-      {!cliffDate ? (
+      {progressData.map((props, index) => (
         <VestingProgress
-          nth={cliffDate ? 4 : 2}
-          start={cliffAndFlowDate}
-          end={endDate}
+          key={index}
+          nth={index + 1}
           dateNow={dateNow}
+          start={fromUnixTime(props.start)}
+          end={fromUnixTime(props.end)}
         />
-      ) : (
-        <>
-          <VestingProgress
-            nth={2}
-            start={startDate}
-            end={cliffDate}
-            dateNow={dateNow}
-          />
-          <VestingProgress
-            nth={3}
-            start={cliffDate}
-            end={endDate}
-            dateNow={dateNow}
-          />
-        </>
-      )}
+      ))}
 
-      <VestingScheduleProgressCheckpoint
-        titles={["Vesting Scheduled"]}
-        targetDate={createdAt}
-        dateNow={dateNow}
-        nth={1}
-        dataCy={"vesting-scheduled"}
-      />
-
-      {!cliffDate ? (
-        <VestingScheduleProgressCheckpoint
-          titles={["Vesting Starts", "Stream Starts"]}
-          targetDate={cliffAndFlowDate}
-          dateNow={dateNow}
-          nth={2}
-          dataCy={"vesting-start"}
-        />
-      ) : (
-        <>
+      {map(checkpointData, (group) => {
+        ++checkpointDataIterator;
+        return (
           <VestingScheduleProgressCheckpoint
-            titles={["Vesting Starts"]}
-            targetDate={startDate}
+            key={checkpointDataIterator}
+            nth={checkpointDataIterator}
             dateNow={dateNow}
-            nth={2}
-            dataCy={"cliff-start"}
+            targetDate={fromUnixTime(group[0].targetDate)}
+            titles={group.map(x => x.title)}
           />
-          <VestingScheduleProgressCheckpoint
-            titles={["Cliff Vested", "Stream starts"]}
-            targetDate={cliffDate}
-            dateNow={dateNow}
-            nth={3}
-            dataCy={"cliff-end"}
-          />
-        </>
+        );
+      }
       )}
-
-      <VestingScheduleProgressCheckpoint
-        titles={["Vesting Ends"]}
-        targetDate={endDate}
-        dateNow={dateNow}
-        nth={cliffDate ? 4 : 3}
-        dataCy={"vesting-end"}
-      />
     </Box>
   );
 };
