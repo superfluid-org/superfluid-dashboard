@@ -3,9 +3,9 @@ import { extendedSuperTokenList } from "@superfluid-finance/tokenlist";
 import { ethers } from "ethers";
 
 import {
-  cfAv1ForwarderAbi,
-  erc20Abi,
-  superTokenAbi,
+  cfAv1ForwarderABI,
+  erc20ABI,
+  superTokenABI,
 } from "./abis/wagmi-generated";
 
 export class EthHelper {
@@ -49,7 +49,7 @@ export class EthHelper {
     let chainId = this.getNetworkByName(this.networkName).chainId;
     const token = new ethers.Contract(
       this.getTokenBySymbolAndChainId(tokenSymbol, chainId).address,
-      erc20Abi,
+      erc20ABI,
       this.wallet.provider
     );
 
@@ -92,7 +92,7 @@ export class EthHelper {
 
     const CFAv1Forwarder = new ethers.Contract(
       cfaV1ForwarderAddress,
-      cfAv1ForwarderAbi,
+      cfAv1ForwarderABI,
       this.wallet.provider
     );
     await CFAv1Forwarder.getFlowInfo(tokenAddress, sender, receiver).then(
@@ -133,7 +133,7 @@ export class EthHelper {
 
     const CFAv1Forwarder = new ethers.Contract(
       cfaV1ForwarderAddress,
-      cfAv1ForwarderAbi,
+      cfAv1ForwarderABI,
       this.wallet.provider
     );
     await CFAv1Forwarder.getFlowInfo(tokenAddress, sender, receiver).then(
@@ -165,7 +165,7 @@ export class EthHelper {
     let chainId = this.getNetworkByName(this.networkName).chainId;
     const token = new ethers.Contract(
       this.getTokenBySymbolAndChainId(tokenSymbol, chainId).address,
-      erc20Abi,
+      erc20ABI,
       this.wallet.provider
     );
     return await token.balanceOf(addressToCheckBalanceOf);
@@ -178,7 +178,7 @@ export class EthHelper {
     let chainId = this.getNetworkByName(this.networkName).chainId;
     const token = new ethers.Contract(
       this.getTokenBySymbolAndChainId(tokenSymbol, chainId).address,
-      superTokenAbi,
+      superTokenABI,
       this.wallet.provider
     );
     return await token.realtimeBalanceOfNow(addressToCheckBalanceOf);
@@ -190,7 +190,7 @@ export class EthHelper {
   ) {
     const token = new ethers.Contract(
       tokenAddress,
-      superTokenAbi,
+      superTokenABI,
       this.wallet.provider
     );
     return await token.realtimeBalanceOfNow(addressToCheckBalanceOf);
@@ -203,7 +203,7 @@ export class EthHelper {
   ) {
     const token = new ethers.Contract(
       tokenAddress,
-      superTokenAbi,
+      superTokenABI,
       this.wallet.provider
     );
     return await token.transfer(receiverAddress, amount);
