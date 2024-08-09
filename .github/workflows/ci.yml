@@ -68,6 +68,8 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
+        with:
+          version: 8
 
       - name: Use Node.js 18.x
         uses: actions/setup-node@v3
@@ -138,6 +140,8 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
+        with:
+          version: 8
 
       #A workaround for Cypress to work with Currents https://github.com/currents-dev/gh-actions-example/blob/main/.github/workflows/currents.yml
       # Install Currents
@@ -192,9 +196,11 @@ jobs:
       - name: Install dependencies
         run: |
           pnpm install
-          
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
+        with:
+          version: 8
 
       - name: Unblock Cypress
         working-directory: "tests"
