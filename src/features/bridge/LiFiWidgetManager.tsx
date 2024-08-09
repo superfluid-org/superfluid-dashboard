@@ -2,7 +2,7 @@
 
 import { Box, useTheme } from "@mui/material";
 import { ClientOnly } from "./ClientOnly";
-import { LiFiWidget, WidgetConfig, WidgetSkeleton } from "@lifi/widget";
+import { LiFiWidget, WidgetConfig, WidgetSkeleton, WidgetTheme, jumperTheme } from "@lifi/widget";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { ELEVATION1_BG } from "../theme/theme";
 import { useAvailableNetworks } from "../network/AvailableNetworksContext";
@@ -21,33 +21,34 @@ export function LiFiWidgetManager() {
     const featuredTokens = useFeaturedTokens();
 
     const config = useMemo(() => {
+        const widgetTheme = {
+            container: {
+                maxWidth: "560px",
+                margin: "32px auto",
+                display: "flex",
+                width: "100%",
+                minWidth: 0,
+                borderRadius: "20px",
+                border:
+                    theme.palette.mode === "dark"
+                        ? `1px solid ${theme.palette.other.outline}`
+                        : "none",
+                backgroundColor: theme.palette.background.paper,
+                backgroundImage: ELEVATION1_BG,
+                boxShadow: theme.shadows[1],
+            },
+            // components: theme.components,
+            palette: theme.palette,
+            shape: theme.shape,
+            typography: {
+                ...jumperTheme.typography,
+                fontFamily: theme.typography.fontFamily,
+            },
+        } as Partial<WidgetTheme>;
+
         const config = {
             appearance: theme.palette.mode,
-            theme: {
-                container: {
-                    maxWidth: "560px",
-                    margin: "32px auto",
-                    display: "flex",
-                    width: "100%",
-                    minWidth: 0,
-                    borderRadius: "20px",
-                    border:
-                        theme.palette.mode === "dark"
-                            ? `1px solid ${theme.palette.other.outline}`
-                            : "none",
-                    backgroundColor: theme.palette.background.paper,
-                    backgroundImage: ELEVATION1_BG,
-                    boxShadow: theme.shadows[1],
-                },
-                // components: theme.components,
-                palette: theme.palette,
-                shape: theme.shape,
-/*                 typography: {
-                    fontFamily: theme.typography.fontFamily,
-                    body1: theme.typography.body1,
-                    body2: theme.typography.body2,
-                } */
-            },
+            theme: widgetTheme,
             chains: {
                 allow: availableNetworks.map(x => x.id)
             },
