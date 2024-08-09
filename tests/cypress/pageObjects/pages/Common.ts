@@ -306,7 +306,7 @@ export class Common extends BasePage {
             privateKeys: [usedAccountPrivateKey],
             url: networkRpc,
             chainId: chainId,
-            pollingInterval: 1000
+            pollingInterval: 1000,
           });
           if (Cypress.env("rejected")) {
             // Make HDWallet automatically reject transaction.
@@ -369,7 +369,7 @@ export class Common extends BasePage {
 
   static clickMockWallet() {
     this.isVisible(WAGMI_CONNECT_WALLET_TITLE);
-    cy.contains("Mock").click()
+    cy.contains("Mock").click();
   }
 
   static changeNetwork(network: string) {
@@ -821,14 +821,14 @@ export class Common extends BasePage {
     );
     cy.wrap(null, { log: false }).then(() => {
       return web3.eth.getBalance(FAUCET_CONTRACT_ADDRESS).then((balance) => {
-        expect(parseInt(balance)).to.be.greaterThan(1e19);
+        expect(parseInt(balance.toString())).to.be.greaterThan(1e19);
       });
     });
     cy.wrap(null, { log: false }).then(() => {
       return web3.eth
         .getBalance(FAUCET_EXECUTION_CONTRACT_ADDRESS)
         .then((balance) => {
-          expect(parseInt(balance)).to.be.greaterThan(5e18);
+          expect(parseInt(balance.toString())).to.be.greaterThan(5e18);
         });
     });
   }
