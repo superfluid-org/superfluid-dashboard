@@ -283,23 +283,11 @@ const mapTransactionActivityRecursive = (
       );
 
     case "Transfer": {
-      const tokenAddressLowerCased = keyEvent.token.toLowerCase();
-      const isNFTTransfer = // this is also mapped to subgraph but currently not mapped in the SDK
-        tokenAddressLowerCased ===
-          network.metadata.contractsV1.constantInflowNFT?.toLowerCase() ||
-        tokenAddressLowerCased ===
-          network.metadata.contractsV1.constantOutflowNFT?.toLowerCase();
-
-      if (isNFTTransfer) {
-        // skip NFT events
-        return mapTransactionActivityRecursive(
-          transactionEvents,
-          network,
-          activities
-        );
-      }
-
-      // fall to next case
+      return mapTransactionActivityRecursive(
+        transactionEvents,
+        network,
+        activities
+      );
     }
     case "FlowUpdated":
     case "IndexCreated":
