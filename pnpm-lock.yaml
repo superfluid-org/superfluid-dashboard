@@ -183,15 +183,9 @@ importers:
       '@dethcrypto/eth-sdk':
         specifier: ^0.3.4
         version: 0.3.4(@ethersproject/abi@5.7.0)(@ethersproject/abstract-provider@5.7.0)(@ethersproject/bignumber@5.7.0)(@ethersproject/providers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(typescript@5.5.4)
-      '@dethcrypto/eth-sdk-client':
-        specifier: ^0.1.6
-        version: 0.1.6
       '@graphprotocol/client-cli':
         specifier: ^2.2.22
         version: 2.2.22(sxjsxkcs7gukqbjurajazznmhi)
-      '@hookform/devtools':
-        specifier: ^4.3.1
-        version: 4.3.1(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@rtk-query/codegen-openapi':
         specifier: ^1.2.0
         version: 1.2.0(openapi-types@12.1.3)
@@ -201,9 +195,6 @@ importers:
       '@types/lodash':
         specifier: ^4.17.7
         version: 4.17.7
-      '@types/node':
-        specifier: ^20.14.14
-        version: 20.14.14
       '@types/papaparse':
         specifier: ^5.3.14
         version: 5.3.14
@@ -237,9 +228,6 @@ importers:
       replayio:
         specifier: ^1.5.2
         version: 1.5.2(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      ts-node:
-        specifier: ^10.9.2
-        version: 10.9.2(@types/node@20.14.14)(typescript@5.5.4)
       typescript:
         specifier: ^5.5.4
         version: 5.5.4
@@ -1066,9 +1054,6 @@ packages:
     peerDependencies:
       '@openzeppelin/test-helpers': ^0.5.10
 
-  '@dethcrypto/eth-sdk-client@0.1.6':
-    resolution: {integrity: sha512-Iv2xdcxernDINyLsuet9bfySXoFXhNGXmP9GEabpaFjK1AGUTVTurEEQObbu1RTIPNqx0+l2vu9fd14RLpCsqg==}
-
   '@dethcrypto/eth-sdk@0.3.4':
     resolution: {integrity: sha512-LCHbb+S2+BQm8dxumeAQEk7s8spLwdkuBnXbATEgvxfdLd7kyvF+QF7GJqpToXwT2LLNg6Mb8fe6UrbpoL8LiQ==}
     hasBin: true
@@ -1842,12 +1827,6 @@ packages:
 
   '@hapi/topo@5.1.0':
     resolution: {integrity: sha512-foQZKJig7Ob0BMAYBfcJk8d77QtOe7Wo4ox7ff1lQYoNNAb6jwcY1ncdoy2e9wQZzvNy7ODZCYJkK8kzmcAnAg==}
-
-  '@hookform/devtools@4.3.1':
-    resolution: {integrity: sha512-CrWxEoHQZaOXJZVQ8KBgOuAa8p2LI8M0DAN5GTRTmdCieRwFVjVDEmuTAVazWVRRkpEQSgSt3KYp7VmmqXdEnw==}
-    peerDependencies:
-      react: ^16.8.0 || ^17 || ^18
-      react-dom: ^16.8.0 || ^17 || ^18
 
   '@hookform/error-message@2.0.1':
     resolution: {integrity: sha512-U410sAr92xgxT1idlu9WWOVjndxLdgPUHEB8Schr27C9eh7/xUnITWpCMF93s+lGiG++D4JnbSnrb5A21AdSNg==}
@@ -7411,11 +7390,6 @@ packages:
   lit@3.1.0:
     resolution: {integrity: sha512-rzo/hmUqX8zmOdamDAeydfjsGXbbdtAFqMhmocnh2j9aDYqbu0fjXygjCa0T99Od9VQ/2itwaGrjZz/ZELVl7w==}
 
-  little-state-machine@4.8.0:
-    resolution: {integrity: sha512-xfi5+iDxTLhu0hbnNubUs+qoQQqxhtEZeObP5ELjUlHnl74bbasY7mOonsGQrAouyrbag3ebNLSse5xX1T7buQ==}
-    peerDependencies:
-      react: ^16.8.0 || ^17 || ^18
-
   livepeer@2.9.2:
     resolution: {integrity: sha512-bkFLjw/+wFFNI5TT9z2Fa1yNEByGxBtkA1IoEWHytvkJtA2ifoiT676sZYpy+D+nZp1XdLEBdvudkDwM/SlPhg==}
     peerDependencies:
@@ -8972,11 +8946,6 @@ packages:
     peerDependencies:
       react: ^16.0.0 || ^17.0.0 || ^18.0.0
 
-  react-simple-animate@3.5.2:
-    resolution: {integrity: sha512-xLE65euP920QMTOmv5haPlml+hmOPDkbIr5WeF7ADIXWBYt5kW/vwpNfWg8EKMab8aeDxIZ6QjffVh8v2dUyhg==}
-    peerDependencies:
-      react-dom: ^16.8.0 || ^17 || ^18
-
   react-toastify@9.1.3:
     resolution: {integrity: sha512-fPfb8ghtn/XMxw3LkxQBk3IyagNpF/LIKjOBflbexr2AWxAH1MJgvnESwEwBn9liLFXgTKWgBSdZpw9m4OTHTg==}
     peerDependencies:
@@ -10351,12 +10320,6 @@ packages:
 
   urlpattern-polyfill@8.0.2:
     resolution: {integrity: sha512-Qp95D4TPJl1kC9SKigDcqgyM2VDVO4RiJc2d4qe5GrYm+zbIQCWWKAFaJNQ4BhdFeDGwBmAxqJBwWSJDb9T3BQ==}
-
-  use-deep-compare-effect@1.8.1:
-    resolution: {integrity: sha512-kbeNVZ9Zkc0RFGpfMN3MNfaKNvcLNyxOAAd9O4CBZ+kCBXXscn9s/4I+8ytUER4RDpEYs5+O6Rs4PqiZ+rHr5Q==}
-    engines: {node: '>=10', npm: '>=6'}
-    peerDependencies:
-      react: '>=16.13'
 
   use-sync-external-store@1.2.0:
     resolution: {integrity: sha512-eEgnFxGQ1Ife9bzYs6VLi8/4X6CObHMw9Qr9tPY43iKwsPw8xE8+EFsf/2cFZ5S3esXgpWgtSCtLNS41F+sKPA==}
@@ -12104,8 +12067,6 @@ snapshots:
       '@openzeppelin/test-helpers': 0.5.16(bn.js@5.2.1)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       web3-utils: 1.10.4
 
-  '@dethcrypto/eth-sdk-client@0.1.6': {}
-
   '@dethcrypto/eth-sdk@0.3.4(@ethersproject/abi@5.7.0)(@ethersproject/abstract-provider@5.7.0)(@ethersproject/bignumber@5.7.0)(@ethersproject/providers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(typescript@5.5.4)':
     dependencies:
       '@ethersproject/abi': 5.7.0
@@ -13401,22 +13362,6 @@ snapshots:
   '@hapi/topo@5.1.0':
     dependencies:
       '@hapi/hoek': 9.3.0
-
-  '@hookform/devtools@4.3.1(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
-    dependencies:
-      '@emotion/react': 11.13.0(@types/react@18.3.3)(react@18.3.1)
-      '@emotion/styled': 11.13.0(@emotion/react@11.13.0(@types/react@18.3.3)(react@18.3.1))(@types/react@18.3.3)(react@18.3.1)
-      '@types/lodash': 4.17.7
-      little-state-machine: 4.8.0(react@18.3.1)
-      lodash: 4.17.21
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
-      react-simple-animate: 3.5.2(react-dom@18.3.1(react@18.3.1))
-      use-deep-compare-effect: 1.8.1(react@18.3.1)
-      uuid: 8.3.2
-    transitivePeerDependencies:
-      - '@types/react'
-      - supports-color
 
   '@hookform/error-message@2.0.1(react-dom@18.3.1(react@18.3.1))(react-hook-form@7.52.2(react@18.3.1))(react@18.3.1)':
     dependencies:
@@ -21155,10 +21100,6 @@ snapshots:
       lit-element: 4.1.0
       lit-html: 3.2.0
 
-  little-state-machine@4.8.0(react@18.3.1):
-    dependencies:
-      react: 18.3.1
-
   livepeer@2.9.2(@types/react@18.3.3)(immer@10.1.1)(react@18.3.1):
     dependencies:
       '@livepeer/core': 1.9.2(@types/react@18.3.3)(immer@10.1.1)(react@18.3.1)
@@ -22901,10 +22842,6 @@ snapshots:
       react: 18.3.1
       react-is: 18.3.1
 
-  react-simple-animate@3.5.2(react-dom@18.3.1(react@18.3.1)):
-    dependencies:
-      react-dom: 18.3.1(react@18.3.1)
-
   react-toastify@9.1.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       clsx: 1.2.1
@@ -24480,12 +24417,6 @@ snapshots:
       qs: 6.11.2
 
   urlpattern-polyfill@8.0.2: {}
-
-  use-deep-compare-effect@1.8.1(react@18.3.1):
-    dependencies:
-      '@babel/runtime': 7.25.0
-      dequal: 2.0.3
-      react: 18.3.1
 
   use-sync-external-store@1.2.0(react@18.3.1):
     dependencies:
