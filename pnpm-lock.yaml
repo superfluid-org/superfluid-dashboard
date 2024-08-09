@@ -65,9 +65,6 @@ importers:
       '@reduxjs/toolkit':
         specifier: 1.9.2
         version: 1.9.2(react-redux@8.1.3(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react-native@0.74.5(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.3.1)(utf-8-validate@5.0.10))(react@18.3.1)(redux@4.2.1))(react@18.3.1)
-      '@rtk-query/graphql-request-base-query':
-        specifier: ^2.3.1
-        version: 2.3.1(@reduxjs/toolkit@1.9.2(react-redux@8.1.3(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react-native@0.74.5(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.3.1)(utf-8-validate@5.0.10))(react@18.3.1)(redux@4.2.1))(react@18.3.1))(graphql@16.9.0)
       '@segment/analytics-next':
         specifier: ^1.72.1
         version: 1.72.1
@@ -3189,12 +3186,6 @@ packages:
   '@rtk-query/codegen-openapi@1.2.0':
     resolution: {integrity: sha512-Sru3aPHyFC0Tb7jeFh/kVMGBdQUcofb9frrHhjNSRLEoJWsG9fjaioUx3nPT5HZVbdAvAFF4xMWFQNfgJBrAGw==}
     hasBin: true
-
-  '@rtk-query/graphql-request-base-query@2.3.1':
-    resolution: {integrity: sha512-D8R+YLPGpP3xLQ9JmNK2jgBWmcsIQm3u4kCjW6vRACBaGEey4WbjanYmtRPv16WbW+NcA7yXicVTuExuSXSi4A==}
-    peerDependencies:
-      '@reduxjs/toolkit': ^1.7.1 || ^2.0.0
-      graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
 
   '@rushstack/eslint-patch@1.5.1':
     resolution: {integrity: sha512-6i/8UoL0P5y4leBIGzvkZdS85RDMG9y1ihZzmTZQ5LdHUYmZ7pKFoj8X0236s3lusPs1Fa5HTQUpwI+UfTcmeA==}
@@ -15277,14 +15268,6 @@ snapshots:
     transitivePeerDependencies:
       - encoding
       - openapi-types
-
-  '@rtk-query/graphql-request-base-query@2.3.1(@reduxjs/toolkit@1.9.2(react-redux@8.1.3(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react-native@0.74.5(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.3.1)(utf-8-validate@5.0.10))(react@18.3.1)(redux@4.2.1))(react@18.3.1))(graphql@16.9.0)':
-    dependencies:
-      '@reduxjs/toolkit': 1.9.2(react-redux@8.1.3(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react-native@0.74.5(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.3.1)(utf-8-validate@5.0.10))(react@18.3.1)(redux@4.2.1))(react@18.3.1)
-      graphql: 16.9.0
-      graphql-request: 6.1.0(graphql@16.9.0)
-    transitivePeerDependencies:
-      - encoding
 
   '@rushstack/eslint-patch@1.5.1': {}
 
