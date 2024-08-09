@@ -56,7 +56,7 @@ const moduleExports = {
   // modularizeImports: // It's enabled automatically for many packages in use: https://nextjs.org/docs/app/api-reference/next-config-js/optimizePackageImports
   experimental: {
     forceSwcTransforms: !shouldInstrumentCode, // .babelrc.js existence is because of code instrumentation.
-  },
+  }
 };
 
 module.exports = withSentryIfNecessary(moduleExports);
