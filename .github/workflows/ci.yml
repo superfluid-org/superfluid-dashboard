@@ -13,7 +13,7 @@ jobs:
       netlify_url: ${{ steps.waitForDeployment.outputs.url }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
@@ -60,7 +60,7 @@ jobs:
           ]
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         #In order to change the default behaviour and checkout the triggering commit ,
         #e.g. don't show Merge 23452345234523452345 into 34563456345634563456 but the actual commit that triggered the workflow in the test results
         with:
@@ -69,12 +69,12 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 8
+          version: 9
 
-      - name: Use Node.js 18.x
-        uses: actions/setup-node@v3
+      - name: Use Node.js 20.x
+        uses: actions/setup-node@v4
         with:
-          node-version: 18.x
+          node-version: 20.x
 
       #A workaround for Cypress to work with Currents https://github.com/currents-dev/gh-actions-example/blob/main/.github/workflows/currents.yml
       # Install Currents
@@ -129,19 +129,19 @@ jobs:
             "base",
           ]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
-      - name: Use Node.js 18.x
-        uses: actions/setup-node@v3
+      - name: Use Node.js 20.x
+        uses: actions/setup-node@v4
         with:
-          node-version: 18.x
+          node-version: 20.x
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 8
+          version: 9
 
       #A workaround for Cypress to work with Currents https://github.com/currents-dev/gh-actions-example/blob/main/.github/workflows/currents.yml
       # Install Currents
@@ -180,16 +180,16 @@ jobs:
       fail-fast: false
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         #In order to change the default behaviour and checkout the triggering commit ,
         #e.g. don't show Merge 23452345234523452345 into 34563456345634563456 but the actual commit that triggered the workflow in the test results
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
-      - name: Use Node.js 18.x
-        uses: actions/setup-node@v3
+      - name: Use Node.js 20.x
+        uses: actions/setup-node@v4
         with:
-          node-version: 18.x
+          node-version: 20.x
 
       #A workaround for Cypress to work with Currents https://github.com/currents-dev/gh-actions-example/blob/main/.github/workflows/currents.yml
       # Install Currents

@@ -65,5 +65,9 @@
     "*.{ts,tsx,feature,json,js}": [
       "prettier --write"
     ]
+  },
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
   }
 }

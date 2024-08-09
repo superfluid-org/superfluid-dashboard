@@ -1,5 +1,5 @@
 import { Overrides } from "ethers";
-import { Ethereum } from "@wagmi/connectors";
+import { Ethereum } from "wagmi/connectors";
 
 export type GlobalGasOverrides = Pick<
   Overrides,

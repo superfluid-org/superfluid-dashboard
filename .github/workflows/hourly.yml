@@ -14,17 +14,17 @@ jobs:
       matrix:
         container: [AllNetworkTests]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      - name: Use Node.js 18.x
-        uses: actions/setup-node@v1
+      - name: Use Node.js 20.x
+        uses: actions/setup-node@v4
         with:
-          node-version: 18.x
+          node-version: 20.x
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 8  
+          version: 9
 
       # A workaround for Cypress to work with Currents https://github.com/currents-dev/gh-actions-example/blob/main/.github/workflows/currents.yml
       # Install Currents
@@ -64,6 +64,3 @@ jobs:
           CI_SLACK_WEBHOOK: ${{ secrets.CI_SLACK_WEBHOOK }}
           CI_ACTION_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           CI_RUN_NUMBER: ${{ github.run_number }}
-
-
-
