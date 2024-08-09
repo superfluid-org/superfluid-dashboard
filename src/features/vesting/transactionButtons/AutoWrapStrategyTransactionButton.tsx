@@ -2,8 +2,8 @@ import { Typography } from "@mui/material";
 import { TransactionTitle } from "@superfluid-finance/sdk-redux";
 import { BigNumber , Contract } from "ethers";
 import { FC, memo } from "react";
-import { usePrepareContractWrite, useQuery, useWalletClient  } from "wagmi";
-import { autoWrapManagerABI, autoWrapManagerAddress } from "../../../generated";
+import { useSimulateContract, useWalletClient  } from "wagmi";
+import { autoWrapManagerAbi, autoWrapManagerAddress } from "../../../generated";
 import { rpcApi } from "../../redux/store";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
@@ -30,10 +30,10 @@ const AutoWrapStrategyTransactionButton: FC<{
   };
 
   const prepare = !props.isDisabled && network.autoWrap && walletClient && walletClient.chain.id === network.id;;
-  const { config } = usePrepareContractWrite(
+  const { data: config } = useSimulateContract(
     prepare
       ? {
-          abi: autoWrapManagerABI,
+          abi: autoWrapManagerAbi,
           functionName: "createWrapSchedule",
           address: network.autoWrap!.managerContractAddress,
           args: [
@@ -50,7 +50,7 @@ const AutoWrapStrategyTransactionButton: FC<{
   );
 
   const [write, mutationResult] = rpcApi.useWriteContractMutation();
-  const isButtonEnabled = prepare && config.request;
+  const isButtonEnabled = prepare && config && config.request;
   const isButtonDisabled = !isButtonEnabled;
 
   return (

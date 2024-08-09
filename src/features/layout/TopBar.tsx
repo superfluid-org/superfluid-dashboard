@@ -22,7 +22,7 @@ import TransactionBell from "../transactions/TransactionBell";
 import ConnectWallet from "../wallet/ConnectWallet";
 import { useLayoutContext } from "./LayoutContext";
 import { menuDrawerWidth } from "./NavigationDrawer";
-import { useAccount, useSwitchNetwork } from "wagmi";
+import { useAccount, useSwitchChain } from "wagmi";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { Network } from "../network/networks";
 
@@ -73,7 +73,7 @@ export default memo(function TopBar() {
   const isBelowLg = useMediaQuery(theme.breakpoints.down("lg"));
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { address: accountAddress, isConnected } = useAccount();
-  const { switchNetwork } = useSwitchNetwork();
+  const { switchChain } = useSwitchChain();
   const { network: selectedNetwork, setExpectedNetwork: setSelectedNetwork, stopAutoSwitchToWalletNetwork } =
     useExpectedNetwork();
 
@@ -83,8 +83,8 @@ export default memo(function TopBar() {
     setSelectedNetwork(network.id);
     stopAutoSwitchToWalletNetwork(); // If user explicitly chooses a network from the drop-down, we'll respect that decision and not switch to the wallet's network automatically.
 
-    if (accountAddress && switchNetwork) {
-      switchNetwork(network.id);
+    if (accountAddress && switchChain) {
+      switchChain({ chainId: network.id });
     }
   };
 

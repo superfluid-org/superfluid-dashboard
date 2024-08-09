@@ -1,6 +1,5 @@
 import { defineConfig } from "@wagmi/cli";
 import { etherscan, react } from "@wagmi/cli/plugins";
-import { erc20ABI } from "wagmi";
 import { autoWrapManagerAddresses } from "./src/features/network/networkConstants";
 import nativeAssetSuperTokenJSON from "@superfluid-finance/ethereum-contracts/build/truffle/SETHProxy.json" assert { type: "json" };
 import pureSuperTokenJSON from "@superfluid-finance/ethereum-contracts/build/truffle/PureSuperToken.json" assert { type: "json" };
@@ -8,7 +7,7 @@ import superTokenJSON from "@superfluid-finance/ethereum-contracts/build/truffle
 import ConstantFlowAgreementV1JSON from "@superfluid-finance/ethereum-contracts/build/truffle/ConstantFlowAgreementV1.json" assert { type: "json" };
 import GeneralDistributionAgreementV1JSON from "@superfluid-finance/ethereum-contracts/build/truffle/GeneralDistributionAgreementV1.json" assert { type: "json" };
 import SuperfluidPoolJSON from "@superfluid-finance/ethereum-contracts/build/truffle/SuperfluidPool.json" assert { type: "json" };
-import { Abi, Address } from "viem";
+import { Abi, Address, erc20Abi } from "viem";
 import superfluidMetadata from "@superfluid-finance/metadata";
 
 /** @type {import('@wagmi/cli').Config} */
@@ -17,7 +16,7 @@ export default defineConfig({
   contracts: [
     {
       name: "ERC20",
-      abi: erc20ABI,
+      abi: erc20Abi,
     },
     {
       name: "SuperToken",
@@ -67,14 +66,8 @@ export default defineConfig({
       ],
     }),
     react({
-      useContractWrite: false,
-      useContractRead: false,
-      useContractItemEvent: false,
-      useContractFunctionRead: false,
-      useContractEvent: false,
-      useContractFunctionWrite: false,
-      usePrepareContractWrite: false,
-      usePrepareContractFunctionWrite: false,
+      getHookName: 'legacy', 
+      
     }),
   ],
 });

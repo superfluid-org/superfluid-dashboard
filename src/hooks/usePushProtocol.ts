@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";
+import { useAccount, useSwitchChain } from "wagmi";
 import { SignerType } from "@pushprotocol/restapi";
 import { pushApi } from "../features/notifications/pushApi.slice";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
@@ -15,10 +15,9 @@ const productionFetchFrequency = 300 * 1000; // 5mins
 const developmentFetchFrequency = 15000; // 15seconds
 
 export const usePushProtocol = () => {
-  const { address } = useAccount();
+  const { address, chain } = useAccount();
   const signer = useEthersSigner();
-  const { chain } = useNetwork();
-  const { switchNetworkAsync } = useSwitchNetwork();
+  const { switchChainAsync } = useSwitchChain();
   
   const [changeSubscription, subscriptionStatus] =
     pushApi.useChangeSubscriptionMutation();
@@ -38,8 +37,10 @@ export const usePushProtocol = () => {
   const toggleSubscribe = useCallback(async () => {
     const originalChainId = chain?.id;
     if (address) {
-      if (originalChainId !== 1 && switchNetworkAsync) {
-        await switchNetworkAsync(1);
+      if (originalChainId !== 1 && switchChainAsync) {
+        await switchChainAsync({
+          chainId: 1
+        });
       }
 
       if (signer) {

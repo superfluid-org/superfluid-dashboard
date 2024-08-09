@@ -1,44 +1,22 @@
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import {
   createContext,
   FC,
   PropsWithChildren,
   useCallback,
   useContext,
-  useMemo,
+  useEffect,
   useState,
 } from "react";
 import { useAccount } from "wagmi";
 import AccountModal from "./AccountModal";
+import { useWeb3Modal, useWeb3ModalState, useWeb3ModalTheme } from '@web3modal/wagmi/react'
+import { useTheme } from "@mui/material";
 
-// TODO: PR to rainbowkit to expose this interface. It is inpossible to get it out atm.
 interface ConnectButtonContextValue {
-  account?: {
-    address: string;
-    balanceDecimals?: number;
-    balanceFormatted?: string;
-    balanceSymbol?: string;
-    displayBalance?: string;
-    displayName: string;
-    ensAvatar?: string;
-    ensName?: string;
-    hasPendingTransactions: boolean;
-  };
-  chain?: {
-    hasIcon: boolean;
-    iconUrl?: string;
-    iconBackground?: string;
-    id: number;
-    name?: string;
-    unsupported?: boolean;
-  };
-  mounted: boolean;
   openAccountModal: () => void;
   closeAccountModal: () => void;
-  openChainModal: () => void;
   openConnectModal: () => void;
   accountModalOpen: boolean;
-  chainModalOpen: boolean;
   connectModalOpen: boolean;
 }
 
@@ -47,9 +25,27 @@ const ConnectButtonContext = createContext<ConnectButtonContextValue>(null!);
 const ConnectButtonProvider: FC<PropsWithChildren> = ({ children }) => {
   const [accountModalOpen, setAccountModalOpen] = useState(false);
   const { address } = useAccount();
+  const { open } = useWeb3Modal()
+  const { open: isOpen } = useWeb3ModalState();
+  const { setThemeMode, setThemeVariables } = useWeb3ModalTheme();
+  const theme = useTheme();
+
+  useEffect(() => {
+    if (theme.palette.mode === "dark") {
+      setThemeMode("dark");
+    } else {
+      setThemeMode("light");
+    }
+  }, [theme.palette.mode]); // Don't put `setThemeMode` here
+
+  useEffect(() => {
+    setThemeVariables({
+      "--w3m-accent": theme.palette.primary.main
+    });
+  }, [theme.palette.primary.main]); // Don't put `setThemeVariables` here
 
   const openAccountModal = useCallback(
-    () => address && setAccountModalOpen(true),
+    () => setAccountModalOpen(!!address), // Do nothing when no address.
     [setAccountModalOpen, address]
   );
 
@@ -58,25 +54,23 @@ const ConnectButtonProvider: FC<PropsWithChildren> = ({ children }) => {
     [setAccountModalOpen]
   );
 
-  const overriddenContext = useMemo(
-    () => ({ accountModalOpen, openAccountModal, closeAccountModal }),
-    [accountModalOpen, openAccountModal, closeAccountModal]
-  );
+  const openConnectModal = useCallback(() => open({
+    view: "Connect",
+  }), [open]);
 
   return (
-    <ConnectButton.Custom>
-      {(connectButtonContext) => (
-        <ConnectButtonContext.Provider
-          value={{
-            ...connectButtonContext,
-            ...overriddenContext,
-          }}
-        >
-          {children}
-          <AccountModal open={accountModalOpen} onClose={closeAccountModal} />
-        </ConnectButtonContext.Provider>
-      )}
-    </ConnectButton.Custom>
+    <ConnectButtonContext.Provider
+      value={{
+        accountModalOpen,
+        openAccountModal,
+        closeAccountModal,
+        openConnectModal,
+        connectModalOpen: isOpen,
+      }}
+    >
+      {children}
+      <AccountModal open={accountModalOpen} onClose={closeAccountModal} />
+    </ConnectButtonContext.Provider>
   );
 };
 

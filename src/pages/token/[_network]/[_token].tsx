@@ -23,7 +23,6 @@ import { useRouter } from "next/router";
 import { FC, PropsWithChildren, useEffect, useState } from "react";
 import SEO from "../../../components/SEO/SEO";
 import withStaticSEO from "../../../components/SEO/withStaticSEO";
-import { useAutoConnect } from "../../../features/autoConnect/AutoConnect";
 import TimeUnitFilter, {
   TimeUnitFilterType,
 } from "../../../features/graph/TimeUnitFilter";
@@ -48,6 +47,7 @@ import { useVisibleAddress } from "../../../features/wallet/VisibleAddressContex
 import useNavigateBack from "../../../hooks/useNavigateBack";
 import Page404 from "../../404";
 import PoolMembersTable from "../../../features/pool/PoolMembersTable";
+import { useAccount } from "wagmi";
 
 export const getTokenPagePath = ({
   network,
@@ -75,7 +75,8 @@ const TokenPage: NextPage = () => {
   const [network, setNetwork] = useState<Network | undefined>();
   const [tokenAddress, setTokenAddress] = useState<string | undefined>();
   const { visibleAddress } = useVisibleAddress();
-  const { isAutoConnecting } = useAutoConnect();
+  const { isReconnecting } = useAccount();
+
   const [routeHandled, setRouteHandled] = useState(false);
 
   useEffect(() => {
@@ -89,10 +90,10 @@ const TokenPage: NextPage = () => {
   }, [setRouteHandled, router.isReady, router.query._token, router.query._network]);
 
   useEffect(() => {
-    if (!isAutoConnecting && !visibleAddress) {
+    if (!isReconnecting && !visibleAddress) {
       router.push("/");
     }
-  }, [isAutoConnecting, visibleAddress]);
+  }, [isReconnecting, visibleAddress]);
 
   const isPageReady = routeHandled && visibleAddress;
   if (!isPageReady) return <TokenPageContainer />;

@@ -18,7 +18,10 @@ function withSentryIfNecessary(nextConfig) {
     return nextConfig;
   }
 
-  const sentryWebpackPluginOptions = {
+  // Make sure adding Sentry options is the last code to run before exporting, to
+  // ensure that your source maps include changes from all other Webpack plugins
+  // NOTE from developer: withTM is also recommended to keep last.
+  return withSentryConfig(nextConfig, {
     // Additional config options for the Sentry Webpack plugin. Keep in mind that
     // the following options are set automatically, and overriding them is not
     // recommended:
@@ -28,12 +31,8 @@ function withSentryIfNecessary(nextConfig) {
     silent: true, // Suppresses all logs
     // For all available options, see:
     // https://github.com/getsentry/sentry-webpack-plugin#options.
-  };
-
-  // Make sure adding Sentry options is the last code to run before exporting, to
-  // ensure that your source maps include changes from all other Webpack plugins
-  // NOTE from developer: withTM is also recommended to keep last.
-  return withSentryConfig(nextConfig, sentryWebpackPluginOptions);
+    hideSourceMaps: false, // If this not specified as `true` then Sentry will expose the production source maps. We've decided to expose the source maps though.
+  });
 }
 
 const shouldInstrumentCode = "INSTRUMENT_CODE" in process.env;
@@ -51,25 +50,10 @@ const moduleExports = {
     NEXT_PUBLIC_SENTRY_ENVIRONMENT: SENTRY_ENVIRONMENT,
     NEXT_PUBLIC_NETLIFY_CONTEXT: process.env.CONTEXT, // https://docs.netlify.com/configure-builds/environment-variables/#build-metadata
   },
-  transpilePackages: ["@lifi/widget", "@lifi/wallet-management"],
-  swcMinify: false, // Recommended by next-transpile-modules... BUT Chart.js has problems with it so it needs to be turned off: https://github.com/chartjs/Chart.js/issues/10673
   productionBrowserSourceMaps: true, // NOTE: If this is set to `false` then be careful -- Sentry might still override this to `true`...
-  sentry: {
-    hideSourceMaps: false, // If this not specified as `true` then Sentry will expose the production source maps. We've decided to expose the source maps though.
-  },
   // Modularize imports to prevent compilation of unused modules.
   // More info here: https://nextjs.org/docs/advanced-features/compiler
-  modularizeImports: {
-    lodash: {
-      transform: "lodash/{{member}}",
-    },
-    "date-fns": {
-      transform: "date-fns/{{member}}",
-    },
-    "@mui/icons-material": {
-      transform: "@mui/icons-material/{{member}}",
-    },
-  },
+  // modularizeImports: // It's enabled automatically for many packages in use: https://nextjs.org/docs/app/api-reference/next-config-js/optimizePackageImports
   experimental: {
     forceSwcTransforms: !shouldInstrumentCode, // .babelrc.js existence is because of code instrumentation.
   },

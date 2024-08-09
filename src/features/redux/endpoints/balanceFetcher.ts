@@ -1,12 +1,12 @@
 import { NATIVE_ASSET_ADDRESS } from "./tokenTypes";
-import { resolvedPublicClients } from "../../wallet/WagmiManager";
+import { resolvedWagmiClients } from "../../wallet/WagmiManager";
 import {
-  constantFlowAgreementV1ABI,
+  constantFlowAgreementV1Abi,
   constantFlowAgreementV1Address,
-  erc20ABI,
-  generalDistributionAgreementV1ABI,
+  erc20Abi,
+  generalDistributionAgreementV1Abi,
   generalDistributionAgreementV1Address,
-  superTokenABI,
+  superTokenAbi,
 } from "../../../generated";
 import { allNetworks, findNetworkOrThrow } from "../../network/networks";
 
@@ -32,7 +32,7 @@ export const balanceFetcher = {
   async getUnderlyingBalance(
     arg: BalanceQueryParams
   ): Promise<UnderlyingBalance> {
-    const publicClient = resolvedPublicClients[arg.chainId];
+    const publicClient = resolvedWagmiClients[arg.chainId]();
 
     if (arg.tokenAddress === NATIVE_ASSET_ADDRESS) {
       return {
@@ -44,7 +44,7 @@ export const balanceFetcher = {
       return {
         balance: await publicClient
           .readContract({
-            abi: erc20ABI,
+            abi: erc20Abi,
             address: arg.tokenAddress as `0x${string}`,
             functionName: "balanceOf",
             args: [arg.accountAddress as `0x${string}`],
@@ -54,18 +54,18 @@ export const balanceFetcher = {
     }
   },
   async getRealtimeBalance(arg: BalanceQueryParams): Promise<RealtimeBalance> {
-    const publicClient = resolvedPublicClients[arg.chainId];
+    const publicClient = resolvedWagmiClients[arg.chainId]();
     const network = findNetworkOrThrow(allNetworks, arg.chainId);
 
     const [realtimeBalanceOfNow, cfaflowRate, gdaFlowRate] = await Promise.all([
       publicClient.readContract({
-        abi: superTokenABI,
+        abi: superTokenAbi,
         address: arg.tokenAddress as `0x${string}`,
         functionName: "realtimeBalanceOfNow",
         args: [arg.accountAddress as `0x${string}`],
       }),
       publicClient.readContract({
-        abi: constantFlowAgreementV1ABI,
+        abi: constantFlowAgreementV1Abi,
         address:
           constantFlowAgreementV1Address[
             arg.chainId as keyof typeof constantFlowAgreementV1Address
@@ -78,7 +78,7 @@ export const balanceFetcher = {
       }),
       network.supportsGDA
         ? publicClient.readContract({
-            abi: generalDistributionAgreementV1ABI,
+            abi: generalDistributionAgreementV1Abi,
             address:
               generalDistributionAgreementV1Address[
                 arg.chainId as keyof typeof generalDistributionAgreementV1Address

@@ -25,7 +25,6 @@ import {
 } from "./networkConstants";
 import { BigNumber, BigNumberish } from "ethers";
 import { UnitOfTime } from "../send/FlowRateInput";
-import { ChainBlockExplorer } from "viem/_types/types/chain";
 
 const getMetadata = memoize((chainId: number) => {
   const metadata = sfMeta.getNetworkByChainId(chainId);
@@ -79,7 +78,7 @@ export type Network = Chain & {
     nftAddress: `0x${string}`;
   };
   metadata: NetworkMetadata;
-  blockExplorers: Chain["blockExplorers"] & Record<string, ChainBlockExplorer>;
+  blockExplorers: Chain["blockExplorers"] & Record<string, any>; // TODO: wagmi migration (ChainBlockExplorer)
 };
 
 const blockExplorers = {
@@ -140,7 +139,6 @@ export const networkDefinition = {
     },
     slugName: "gnosis",
     v1ShortName: "xdai",
-    network: "xdai",
     testnet: false,
     bufferTimeInMinutes: 240,
     icon: "/icons/network/gnosis.svg",
@@ -243,7 +241,6 @@ export const networkDefinition = {
     ),
     slugName: "avalanche-fuji",
     v1ShortName: "avalanche-fuji",
-    network: "avalanche-fuji",
     testnet: true,
     bufferTimeInMinutes: 60,
     color: "#2b374b",
@@ -396,7 +393,6 @@ export const networkDefinition = {
     ),
     slugName: "avalanche",
     v1ShortName: "avalanche-c",
-    network: "avalanche-c",
     testnet: false,
     bufferTimeInMinutes: 240,
     icon: "/icons/network/avalanche.svg",
@@ -455,7 +451,6 @@ export const networkDefinition = {
     name: "BNB Smart Chain",
     slugName: "bsc",
     v1ShortName: "bsc-mainnet",
-    network: "bnb-smart-chain",
     bufferTimeInMinutes: 240,
     icon: "/icons/network/bnb.svg",
     color: "#F0B90B",
@@ -593,7 +588,6 @@ export const networkDefinition = {
   },
   degenChain: {
     name: 'Degen Chain',
-    network: 'degen-chain',
     id: 666666666,
     supportsGDA: getSupportsGDA(chainIds.degen),
     metadata: ensureDefined(
@@ -858,7 +852,7 @@ export const networkDefinition = {
   },
 } as const satisfies Record<string, Network>;
 
-export const allNetworks: Network[] = orderBy(
+export const allNetworks: [Network, ...Network[]] = orderBy(
   orderBy(
     [
       networkDefinition.ethereum,
@@ -880,7 +874,7 @@ export const allNetworks: Network[] = orderBy(
     (x) => x.id // Put lower ids first (Ethereum mainnet will be first)
   ),
   (x) => !!(x as { testnet?: boolean }).testnet // Put non-testnets first
-);
+) as unknown as [Network, ...Network[]]; // The weird cast is because wagmi expects an array type with atleast one element.
 
 export const mainNetworks = allNetworks.filter((x) => !x.testnet);
 export const testNetworks = allNetworks.filter((x) => x.testnet);

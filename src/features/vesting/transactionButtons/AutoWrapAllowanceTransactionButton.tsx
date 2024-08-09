@@ -2,14 +2,14 @@ import { Typography } from "@mui/material";
 import { TransactionTitle } from "@superfluid-finance/sdk-redux";
 import { constants } from "ethers";
 import { FC, memo } from "react";
-import { usePrepareContractWrite, useQuery, useWalletClient } from "wagmi";
+import { useSimulateContract, useWalletClient } from "wagmi";
 import { rpcApi, subgraphApi } from "../../redux/store";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
 import { VestingToken } from "../CreateVestingSection";
 import useGetTransactionOverrides from "../../../hooks/useGetTransactionOverrides";
 import { convertOverridesForWagmi } from "../../../utils/convertOverridesForWagmi";
-import { erc20ABI } from "../../../generated";
+import { erc20Abi } from "../../../generated";
 import { Network } from "../../network/networks";
 
 const TX_TITLE: TransactionTitle = "Approve Allowance";
@@ -28,10 +28,10 @@ const AutoWrapAllowanceTransactionButton: FC<{
   };
 
   const prepare = !props.isDisabled && network.autoWrap && walletClient && walletClient.chain.id === network.id;
-  const { config } = usePrepareContractWrite(
+  const { data: config } = useSimulateContract(
     prepare
       ? {
-        abi: erc20ABI,
+        abi: erc20Abi,
         functionName: "approve",
         address: token.underlyingAddress as `0x${string}`,
         chainId: network.id,
@@ -48,7 +48,7 @@ const AutoWrapAllowanceTransactionButton: FC<{
   });
   const underlyingToken = underlyingTokenQuery.data;
 
-  const isButtonEnabled = prepare && config.request;
+  const isButtonEnabled = prepare && config && config.request;
   const isButtonDisabled = !isButtonEnabled;
 
   return (

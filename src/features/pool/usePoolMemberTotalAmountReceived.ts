@@ -1,7 +1,7 @@
 import { BigNumber, BigNumberish } from "ethers";
 import { useMemo } from "react";
 import { Address } from "viem";
-import { superfluidPoolABI } from "../../generated";
+import { superfluidPoolAbi } from "../../generated";
 import { useContractReads } from "wagmi";
 
 export type PoolMemberInput = {
@@ -22,24 +22,26 @@ export const useTotalAmountReceivedFromPoolMember = (
   memberAddress?: string | Address,
   poolAddress?: string | Address
 ) => {
-  const { data, internal: { dataUpdatedAt } } = useContractReads({
-    enabled: Boolean(memberAddress && poolAddress),
+  const { data, dataUpdatedAt } = useContractReads({
     contracts: [
       {
         chainId: chainId,
         address: poolAddress as Address,
-        abi: superfluidPoolABI,
+        abi: superfluidPoolAbi,
         functionName: 'getTotalAmountReceivedByMember',
         args: [memberAddress as Address]
       },
       {
         chainId: chainId,
         address: poolAddress as Address,
-        abi: superfluidPoolABI,
+        abi: superfluidPoolAbi,
         functionName: 'getMemberFlowRate',
         args: [memberAddress as Address]
       }
     ],
+    query: {
+      enabled: Boolean(memberAddress && poolAddress),
+    }
   })
 
   const [getTotalAmountReceivedByMember, getMemberFlowRate] = data ?? []

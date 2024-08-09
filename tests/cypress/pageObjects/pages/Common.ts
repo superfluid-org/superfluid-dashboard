@@ -306,7 +306,7 @@ export class Common extends BasePage {
             privateKeys: [usedAccountPrivateKey],
             url: networkRpc,
             chainId: chainId,
-            pollingInterval: 1000,
+            pollingInterval: 1000
           });
           if (Cypress.env("rejected")) {
             // Make HDWallet automatically reject transaction.
@@ -320,13 +320,13 @@ export class Common extends BasePage {
             }
           }
 
-          const mockProvider = new ethers.providers.Web3Provider(hdwallet);
-          const mockSigner = mockProvider.getSigner();
+          // const mockProvider = new ethers.providers.Web3Provider(hdwallet);
+          // const mockSigner = mockProvider.getSigner();
 
           win.mockBridge = new ProviderAdapter(hdwallet);
 
           // @ts-ignore
-          win.mockSigner = mockSigner;
+          // win.mockSigner = mockSigner;
           win.mockWallet = hdwallet;
         } catch (e) {
           console.log("Error during wallet provider setup: ", e);
@@ -369,7 +369,7 @@ export class Common extends BasePage {
 
   static clickMockWallet() {
     this.isVisible(WAGMI_CONNECT_WALLET_TITLE);
-    cy.contains("Mock").click();
+    cy.contains("Mock").click()
   }
 
   static changeNetwork(network: string) {

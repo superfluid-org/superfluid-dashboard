@@ -1,7 +1,6 @@
 import { customAlphabet } from "nanoid";
 import { useMemo } from "react";
-import { useAccount, useNetwork } from "wagmi";
-import { useAutoConnect } from "../autoConnect/AutoConnect";
+import { useAccount } from "wagmi";
 import { useLayoutContext } from "../layout/LayoutContext";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 
@@ -43,14 +42,13 @@ export type ConnectedWalletDetails = {
 };
 
 export const useAppInstanceDetails = () => {
-  const { chain: activeChain } = useNetwork();
   const { network: expectedNetwork } = useExpectedNetwork();
   const { transactionDrawerOpen } = useLayoutContext();
-  const { isAutoConnectedRef } = useAutoConnect();
   const {
     connector: activeConnector,
     isConnected,
     address: activeAccountAddress,
+    chain: activeChain
   } = useAccount();
 
   const deps = [
@@ -59,7 +57,6 @@ export const useAppInstanceDetails = () => {
     activeConnector,
     activeChain,
     activeAccountAddress,
-    isAutoConnectedRef,
     transactionDrawerOpen,
   ];
 
@@ -75,7 +72,7 @@ export const useAppInstanceDetails = () => {
       ...(isConnected && activeConnector && activeAccountAddress
         ? {
             isConnected: true,
-            isReconnected: isAutoConnectedRef.current, // TODO(KK): This possibly doesn't work correctly.
+            isReconnected: false, // TODO(KK): This possibly doesn't work correctly.
             address: activeAccountAddress,
             connector: activeConnector.name,
             connectorId: activeConnector.id,

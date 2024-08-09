@@ -3,7 +3,7 @@
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
 import * as Sentry from "@sentry/nextjs";
-import { Event as SentryEvent, EventHint } from "@sentry/nextjs";
+import { ErrorEvent as SentryErrorEvent, EventHint } from "@sentry/nextjs";
 import { IsCypress } from "./src/utils/SSRUtils";
 
 const SENTRY_DSN = process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN;
@@ -29,7 +29,7 @@ if (!IsCypress && SENTRY_DSN) {
       return breadcrumb;
     },
     async beforeSend(event, hint) {
-      let eventModified = event as SentryEvent;
+      let eventModified = event as SentryErrorEvent;
 
       for (const callback of beforeSendCallbacks) {
         eventModified = (await callback(eventModified, hint)) ?? eventModified;
@@ -52,9 +52,9 @@ if (!IsCypress && SENTRY_DSN) {
  * Necessary to enable logging Sentry errors to Segment.
  */
 export type BeforeSendFunc = (
-  event: SentryEvent,
+  event: SentryErrorEvent,
   hint: EventHint
-) => PromiseLike<SentryEvent | null> | SentryEvent | null;
+) => PromiseLike<SentryErrorEvent | null> | SentryErrorEvent | null;
 
 const beforeSendCallbacks: BeforeSendFunc[] = [];
 

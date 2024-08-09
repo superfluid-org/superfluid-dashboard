@@ -4,11 +4,13 @@ import ReduxPersistGate from "../../features/redux/ReduxPersistGate";
 import config from "../../utils/config";
 import SEO, { SEOProps } from "./SEO";
 
+export const defaultAppDescription = `Superfluid is an asset streaming protocol that brings subscriptions, salaries and rewards to DAOs and crypto-native businesses.`;
+
 const StaticSEO: FC<PropsWithChildren<SEOProps>> = ({
   children,
   // General meta tags
   title = `Superfluid Dashboard`,
-  description = `Superfluid is an asset streaming protocol that brings subscriptions, salaries and rewards to DAOs and crypto-native businesses.`,
+  description = defaultAppDescription,
   // Open Graph metadata
   ogTitle = title,
   ogDescription = description,

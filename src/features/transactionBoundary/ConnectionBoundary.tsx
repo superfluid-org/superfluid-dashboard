@@ -1,6 +1,6 @@
 import { createContext, FC, ReactNode, useContext, useMemo } from "react";
-import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";
-import { useAutoConnect } from "../autoConnect/AutoConnect";
+import { useAccount, useSwitchChain } from "wagmi";
+// import { useAutoConnect } from "../autoConnect/AutoConnect";
 import { useImpersonation } from "../impersonation/ImpersonationContext";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { Network } from "../network/networks";
@@ -41,10 +41,8 @@ const ConnectionBoundary: FC<ConnectionBoundaryProps> = ({
   ...props
 }) => {
   const { isImpersonated, stopImpersonation } = useImpersonation();
-  const { chain: activeChain } = useNetwork();
-  const { switchNetwork } = useSwitchNetwork();
-  const { isConnecting, isConnected } = useAccount();
-  const { isAutoConnecting } = useAutoConnect();
+  const { switchChain } = useSwitchChain();
+  const { isConnecting, isReconnecting, isConnected, chain: activeChain } = useAccount();
   const { openConnectModal } = useConnectButton();
   const { network, setExpectedNetwork } = useExpectedNetwork();
   const expectedNetwork = props.expectedNetwork ?? network;
@@ -65,12 +63,12 @@ const ConnectionBoundary: FC<ConnectionBoundaryProps> = ({
       isImpersonated,
       stopImpersonation,
       isConnected,
-      isConnecting: isConnecting || isAutoConnecting,
+      isConnecting: isConnecting || isReconnecting,
       connectWallet: () => openConnectModal(),
       isCorrectNetwork: isCorrectNetwork,
-      switchNetwork: switchNetwork
+      switchNetwork: switchChain
         ? () => {
-            switchNetwork(expectedNetwork.id);
+            switchChain({ chainId: expectedNetwork.id });
             if (instantlyForceGlobalExpectedNetworkOnSwitch) {
               setExpectedNetwork(expectedNetwork.id);
             }
@@ -85,9 +83,9 @@ const ConnectionBoundary: FC<ConnectionBoundaryProps> = ({
       stopImpersonation,
       isConnected,
       isConnecting,
-      isAutoConnecting,
+      isReconnecting,
       openConnectModal,
-      switchNetwork,
+      switchChain,
       expectedNetwork,
       activeChain,
     ]

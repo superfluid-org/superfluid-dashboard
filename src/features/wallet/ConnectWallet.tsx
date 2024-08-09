@@ -13,10 +13,10 @@ import {
 } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
 import { FC, memo, SyntheticEvent, useCallback } from "react";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount } from "wagmi";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
-import { useAutoConnect } from "../autoConnect/AutoConnect";
+// import { useAutoConnect } from "../autoConnect/AutoConnect";
 import { useImpersonation } from "../impersonation/ImpersonationContext";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { useConnectButton } from "./ConnectButtonProvider";
@@ -115,13 +115,14 @@ const ConnectWallet: FC<ConnectWalletProps> = ({
   const isAboveMd = useMediaQuery(theme.breakpoints.up("md"));
 
   const { network } = useExpectedNetwork();
-  const { openConnectModal, openAccountModal, mounted } = useConnectButton();
+  
+  const { openConnectModal, openAccountModal } = useConnectButton();
 
   const { visibleAddress } = useVisibleAddress();
-  const { chain: activeChain } = useNetwork();
+  const { chain: activeChain, isReconnecting } = useAccount();
   const { stopImpersonation, isImpersonated } = useImpersonation();
 
-  const { isAutoConnecting } = useAutoConnect();
+  // const { isAutoConnecting } = useAutoConnect();
 
   const handleStopImpersonation = useCallback(
     (e: SyntheticEvent) => {
@@ -132,7 +133,7 @@ const ConnectWallet: FC<ConnectWalletProps> = ({
     [stopImpersonation]
   );
 
-  if (visibleAddress && activeChain && mounted) {
+  if (visibleAddress && activeChain) {
     // TODO(KK): Better solution for pointer/click
     return isAboveMd ? (
       <AccountInfo
@@ -155,7 +156,7 @@ const ConnectWallet: FC<ConnectWalletProps> = ({
   return (
     <LoadingButton
       data-cy={"connect-wallet-button"}
-      loading={!mounted || isAutoConnecting}
+      loading={isReconnecting}
       variant="contained"
       {...ButtonProps}
       onClick={() => {
