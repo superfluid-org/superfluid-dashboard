@@ -42,8 +42,7 @@ const ConnectionBoundary: FC<ConnectionBoundaryProps> = ({
 }) => {
   const { isImpersonated, stopImpersonation } = useImpersonation();
   const { switchChain } = useSwitchChain();
-  const { isConnecting, isConnected, chain: activeChain } = useAccount();
-  // const { isAutoConnecting } = useAutoConnect();
+  const { isConnecting, isReconnecting, isConnected, chain: activeChain } = useAccount();
   const { openConnectModal } = useConnectButton();
   const { network, setExpectedNetwork } = useExpectedNetwork();
   const expectedNetwork = props.expectedNetwork ?? network;
@@ -64,8 +63,7 @@ const ConnectionBoundary: FC<ConnectionBoundaryProps> = ({
       isImpersonated,
       stopImpersonation,
       isConnected,
-      isConnecting: isConnecting ,
-      // || isAutoConnecting,
+      isConnecting: isConnecting || isReconnecting,
       connectWallet: () => openConnectModal(),
       isCorrectNetwork: isCorrectNetwork,
       switchNetwork: switchChain
@@ -85,7 +83,7 @@ const ConnectionBoundary: FC<ConnectionBoundaryProps> = ({
       stopImpersonation,
       isConnected,
       isConnecting,
-      // isAutoConnecting,
+      isReconnecting,
       openConnectModal,
       switchChain,
       expectedNetwork,
