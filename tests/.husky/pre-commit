@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-cd tests && yarn lint:check-no-focused-tests && yarn lint-staged
+cd tests && pnpm lint:check-no-focused-tests && pnpm lint-staged
