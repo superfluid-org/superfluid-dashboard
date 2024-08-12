@@ -330,8 +330,6 @@ export class Common extends BasePage {
           // @ts-ignore
           // win.mockSigner = mockSigner;
           window["mockWallet"] = hdwallet;
-
-          console.log();
         } catch (e) {
           console.log("Error during wallet provider setup: ", e);
         }
