@@ -282,13 +282,7 @@ const mapTransactionActivityRecursive = (
         ])
       );
 
-    case "Transfer": {
-      return mapTransactionActivityRecursive(
-        transactionEvents,
-        network,
-        activities
-      );
-    }
+    case "Transfer":
     case "FlowUpdated":
     case "IndexCreated":
       return mapTransactionActivityRecursive(
