@@ -1,5 +1,5 @@
-import { default as Wallet } from "ethereumjs-wallet";
 import format from "date-fns/format";
+import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 
 export enum UnitOfTime {
   Second = 1,
@@ -446,10 +446,10 @@ export class BasePage {
   }
 
   static generateNewWallet() {
-    const { default: Wallet } = require("ethereumjs-wallet");
-    const wallet = Wallet.generate();
-    const privateKey = wallet.getPrivateKeyString();
-    const publicKey = wallet.getChecksumAddressString();
+    const privateKey = generatePrivateKey();
+    const account = privateKeyToAccount(privateKey);
+    const publicKey = account.address;
+
     cy.wrap(privateKey).as("newWalletPrivateKey");
     cy.wrap(publicKey).as("newWalletPublicKey");
     cy.log(`Public key:${publicKey}`);

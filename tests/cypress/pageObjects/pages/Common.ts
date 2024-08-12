@@ -283,6 +283,7 @@ export class Common extends BasePage {
     let usedAccountPrivateKey;
     let personas = ["alice", "bob", "dan", "john"];
     let selectedNetwork = this.getSelectedNetwork(network);
+
     if (personas.includes(persona)) {
       let chosenPersona = personas.findIndex((el) => el === persona) + 1;
       usedAccountPrivateKey = Cypress.env(
@@ -300,7 +301,7 @@ export class Common extends BasePage {
     let chainId = networksBySlug.get(selectedNetwork)?.id;
     let networkRpc = networksBySlug.get(selectedNetwork)?.superfluidRpcUrl;
     cy.visit(page, {
-      onBeforeLoad: (win: any) => {
+      onBeforeLoad: (window) => {
         try {
           const hdwallet = new HDWalletProvider({
             privateKeys: [usedAccountPrivateKey],
@@ -323,11 +324,14 @@ export class Common extends BasePage {
           // const mockProvider = new ethers.providers.Web3Provider(hdwallet);
           // const mockSigner = mockProvider.getSigner();
 
-          win.mockBridge = new ProviderAdapter(hdwallet);
+          const mockBridge = new ProviderAdapter(hdwallet);
+          window["mockBridge"] = mockBridge;
 
           // @ts-ignore
           // win.mockSigner = mockSigner;
-          win.mockWallet = hdwallet;
+          window["mockWallet"] = hdwallet;
+
+          console.log();
         } catch (e) {
           console.log("Error during wallet provider setup: ", e);
         }
