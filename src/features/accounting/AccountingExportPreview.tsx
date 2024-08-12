@@ -293,8 +293,8 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({ }) => {
         minWidth: 120,
         flex: 1,
         hide: true,
-        valueGetter: (params) => formatAmount(params.row.amount, 18),
-      },
+        valueGetter: (params) => formatAmount(params.row.amount, 18, undefined, true /* disable rounding */),
+      }
     ],
     [currency, mappedAddresses, lowerCaseAddresses]
   );
