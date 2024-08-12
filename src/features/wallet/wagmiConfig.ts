@@ -42,7 +42,7 @@ type EthereumProvider = Parameters<typeof custom>[0];
 
 const needsTestConnector =
   typeof window !== "undefined" &&
-  typeof (window as any).mockSigner !== "undefined";
+  typeof (window as any).mockBridge !== "undefined";
 
 const testConnectors: CreateConnectorFn[] = [];
 if (needsTestConnector) {
