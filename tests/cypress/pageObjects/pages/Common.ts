@@ -29,7 +29,7 @@ const ADDRESS_DIALOG_INPUT = '[data-cy=address-dialog-input] input';
 const VIEWED_ACCOUNT = '[data-cy=view-mode-chip] > span';
 const VIEW_MODE_CHIP_CLOSE =
   '[data-cy=view-mode-chip] [data-testid=CancelIcon]';
-const WAGMI_CONNECT_WALLET_TITLE = '#rk_connect_title';
+const WEB3_MODAL = 'w3m-modal';
 const ADDRESS_BOOK_ENTRIES = '[data-cy=address-book-entry]';
 const ADDRESS_BOOK_RESULT_NAMES = '[data-cy=address-book-entry] h6';
 const ADDRESS_BOOK_RESULT_ADDRESS = '[data-cy=address-book-entry] p';
@@ -167,7 +167,7 @@ export class Common extends BasePage {
     this.click(MODIFY_OR_CANCEL_STREAM_ONBOARDING_CARD);
   }
   static validateWalletConnectionModalIsShown() {
-    this.isVisible(WAGMI_CONNECT_WALLET_TITLE);
+    this.isVisible(WEB3_MODAL);
   }
   static blockLensAndENSApiRequests() {
     cy.intercept('POST', 'https://rpc-endpoints.superfluid.dev/eth-mainnet', {
@@ -360,12 +360,12 @@ export class Common extends BasePage {
   }
 
   static clickInjectedWallet() {
-    this.isVisible(WAGMI_CONNECT_WALLET_TITLE);
+    this.isVisible(WEB3_MODAL);
     cy.contains('MetaMask').click();
   }
 
   static clickMockWallet() {
-    this.isVisible(WAGMI_CONNECT_WALLET_TITLE);
+    this.isVisible(WEB3_MODAL);
     cy.contains('Mock').click();
   }
 

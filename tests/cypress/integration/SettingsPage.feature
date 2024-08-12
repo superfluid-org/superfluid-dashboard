@@ -2,6 +2,7 @@ Feature: Settings page test cases
 
   Scenario: Enabling and disabling notifications
     Given "Settings Page" is open with "john" connected on "ethereum"
+    And No loading skeletons are visible in the page
     And User clicks on the notification button
     And User opens the notifications modal
     Then No "new" notifications message is shown

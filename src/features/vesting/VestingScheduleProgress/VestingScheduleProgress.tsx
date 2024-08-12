@@ -232,6 +232,7 @@ const VestingScheduleProgress: FC<VestingScheduleProgressProps> = ({
             dateNow={dateNow}
             targetDate={fromUnixTime(group[0].targetDate)}
             titles={group.map(x => x.title)}
+            dataCy={group[0].dataCy}
           />
         );
       }

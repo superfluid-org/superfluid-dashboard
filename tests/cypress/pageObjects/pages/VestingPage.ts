@@ -62,7 +62,7 @@ const DETAILS_VESTING_END = '[data-cy=vesting-end-date]';
 const DETAILS_VESTED_SO_FAR_AMOUNT = '[data-cy=balance]';
 const DETAILS_VESTED_TOKEN_SYMBOL = '[data-cy=token-symbol]';
 const SCHEDULE_VESTING_SCHEDULED = '[data-cy=vesting-scheduled]';
-const SCHEDULE_CLIFF_START = '[data-cy=cliff-start]';
+const SCHEDULE_CLIFF_START = '[data-cy=vesting-start]';
 const SCHEDULE_CLIFF_END = '[data-cy=cliff-end]';
 const SCHEDULE_VESTING_START = '[data-cy=vesting-start]';
 const SCHEDULE_VESTING_END = '[data-cy=vesting-end]';
@@ -632,34 +632,29 @@ export class VestingPage extends BasePage {
       case 'Scheduled':
         this.validateScheduleBarElements(
           [SCHEDULE_VESTING_SCHEDULED],
-          [SCHEDULE_CLIFF_START, SCHEDULE_CLIFF_END, SCHEDULE_VESTING_END],
+          [SCHEDULE_VESTING_START, SCHEDULE_VESTING_END],
           50
         );
         break;
       case 'Vesting Started':
         this.validateScheduleBarElements(
-          [SCHEDULE_VESTING_SCHEDULED, SCHEDULE_CLIFF_START],
-          [SCHEDULE_CLIFF_END, SCHEDULE_VESTING_END],
+          [SCHEDULE_VESTING_SCHEDULED, SCHEDULE_VESTING_START],
+          [SCHEDULE_VESTING_END],
           50
         );
         break;
       case 'Cliff vested':
         this.validateScheduleBarElements(
-          [
-            SCHEDULE_VESTING_SCHEDULED,
-            SCHEDULE_CLIFF_START,
-            SCHEDULE_CLIFF_END,
-          ],
+          [SCHEDULE_VESTING_SCHEDULED, SCHEDULE_VESTING_START],
           [SCHEDULE_VESTING_END],
-          50
+          100
         );
         break;
       case 'Vesting ended':
         this.validateScheduleBarElements(
           [
             SCHEDULE_VESTING_SCHEDULED,
-            SCHEDULE_CLIFF_START,
-            SCHEDULE_CLIFF_END,
+            SCHEDULE_VESTING_START,
             SCHEDULE_VESTING_END,
           ],
           [],

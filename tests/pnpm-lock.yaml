@@ -12,8 +12,8 @@ importers:
         specifier: ^0.8.0
         version: 0.8.0(@openzeppelin/test-helpers@0.5.16(bn.js@5.2.1)(bufferutil@4.0.8)(utf-8-validate@5.0.10))(bufferutil@4.0.8)(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(graphql@16.9.0)(typescript@5.5.4)(utf-8-validate@5.0.10)
       '@superfluid-finance/tokenlist':
-        specifier: ^3.4.0
-        version: 3.4.0
+        specifier: 5.3.0
+        version: 5.3.0
       '@truffle/encoder':
         specifier: ^1.0.27
         version: 1.0.27(bufferutil@4.0.8)(utf-8-validate@5.0.10)
@@ -1427,8 +1427,8 @@ packages:
       ethers: ^5.7.2
       graphql: ^16.0.0
 
-  '@superfluid-finance/tokenlist@3.4.0':
-    resolution: {integrity: sha512-JffB+SakpztO17PkO0tQdq/wacWQflaav+aUfpB6RVva2a4Ip0ROqfYQDX1x2s2xjgChPlU6T6QmEa317muGWQ==}
+  '@superfluid-finance/tokenlist@5.3.0':
+    resolution: {integrity: sha512-hv0LjDCfCRPuSZS0Z7F4W1xU9w716CZo3zUcTRX+SHG+H4QzrFEJ/WqqW81zw0uy5fTg6ezxTwcOxmZu1Vvk4w==}
 
   '@szmarczak/http-timer@4.0.6':
     resolution: {integrity: sha512-4BAffykYOgO+5nzBWYwE3W90sBgLJoUPRWWcL8wlyiM8IB8ipJz3UMJ9KXQd1RKQXpKp8Tutn80HZtWsu2u76w==}
@@ -7952,7 +7952,7 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@superfluid-finance/tokenlist@3.4.0':
+  '@superfluid-finance/tokenlist@5.3.0':
     dependencies:
       '@uniswap/token-lists': 1.0.0-beta.34
 
