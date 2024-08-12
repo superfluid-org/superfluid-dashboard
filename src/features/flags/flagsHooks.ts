@@ -5,7 +5,7 @@ import { Flag, flagsSelectors } from "./flags.slice";
 
 interface FlagSearch {
   type: Flag;
-  [any: string]: any;
+  [key: string]: unknown;
 }
 
 export const useHasFlag = (search?: FlagSearch) => {

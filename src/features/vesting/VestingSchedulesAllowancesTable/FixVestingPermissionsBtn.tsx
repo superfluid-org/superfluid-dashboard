@@ -34,7 +34,7 @@ const FixVestingPermissionsBtn: FC<FixVestingPermissionsBtnProps> = ({
       signer: Signer,
       setDialogLoadingInfo: (children: ReactNode) => void
     ) => {
-      if (!network.vestingContractAddress_v1 || !network.vestingContractAddress_v2) {
+      if (!network.vestingContractAddress_v1 && !network.vestingContractAddress_v2) {
         throw new Error(
           "No vesting contract configured for network. Should never happen!"
         );

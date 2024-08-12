@@ -20,8 +20,7 @@ export const useVestingVersion = (props?: { network?: Network }) => {
         chainId: network.id,
         account: getAddress(flagAddress),
         version: "v2"
-    }
-    );
+    });
 
     const dispatch = useDispatch();
     const setVestingVersion = useCallback((input:

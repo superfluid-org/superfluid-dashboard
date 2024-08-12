@@ -48,7 +48,15 @@ export function calculateRequiredAccessForActiveVestingSchedule(
   };
 }
 
-export function getMaximumNeededTokenAllowance(input: { schedule: VestingSchedule, START_DATE_VALID_AFTER_IN_SECONDS: number, END_DATE_VALID_BEFORE_IN_SECONDS: number }): bigint {
+export function getMaximumNeededTokenAllowance(input: { schedule: {
+  cliffAndFlowDate: number;
+  endDate: number;
+  cliffAndFlowExecutedAt?: number;
+  flowRate: string;
+  cliffAmount: string;
+  remainderAmount: string;
+  claimValidityDate: number;
+}, START_DATE_VALID_AFTER_IN_SECONDS: number, END_DATE_VALID_BEFORE_IN_SECONDS: number }): bigint {
   const { schedule: { cliffAndFlowDate, endDate, cliffAndFlowExecutedAt }, START_DATE_VALID_AFTER_IN_SECONDS, END_DATE_VALID_BEFORE_IN_SECONDS } = input;
 
   const flowRate = BigInt(input.schedule.flowRate);

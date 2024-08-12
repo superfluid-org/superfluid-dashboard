@@ -20,6 +20,7 @@ import {
   ACL_DELETE_PERMISSION,
 } from "./flowSchedulerEndpoints";
 import { getUnixTime } from "date-fns";
+import { getMaximumNeededTokenAllowance } from "../../vesting/VestingSchedulesAllowancesTable/calculateRequiredAccessForActiveVestingSchedule";
 
 export const MAX_VESTING_DURATION_IN_YEARS = 10;
 export const MAX_VESTING_DURATION_IN_SECONDS =
@@ -114,7 +115,8 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
       const [
         flowOperatorData,
         existingTokenAllowance,
-        maximumNeededTokenAllowance,
+        END_DATE_VALID_BEFORE_IN_SECONDS,
+        START_DATE_VALID_AFTER_IN_SECONDS,
       ] = await Promise.all([
         superToken.getFlowOperatorData({
           flowOperator: vestingScheduler.address,
@@ -122,22 +124,27 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
           providerOrSigner: signer,
         }),
         superTokenContract.allowance(senderAddress, vestingScheduler.address),
-        // Note: this "v2" function works for "v1" as well
-        getVestingScheduler(
-          chainId,
-          signer,
-          "v2"
-        ).getMaximumNeededTokenAllowance({
-          cliffAndFlowDate: arg.cliffDateTimestamp
-            ? arg.cliffDateTimestamp
-            : arg.startDateTimestamp,
+        vestingScheduler.END_DATE_VALID_BEFORE(),
+        vestingScheduler.START_DATE_VALID_AFTER(),
+      ]);
+
+      const cliffAndFlowDate = arg.cliffDateTimestamp
+        ? arg.cliffDateTimestamp
+        : arg.startDateTimestamp;
+
+      const maximumNeededTokenAllowance = getMaximumNeededTokenAllowance({
+        END_DATE_VALID_BEFORE_IN_SECONDS,
+        START_DATE_VALID_AFTER_IN_SECONDS,
+        schedule: {
+          cliffAndFlowDate: cliffAndFlowDate,
           endDate: arg.endDateTimestamp,
+          cliffAndFlowExecutedAt: arg.cliffDateTimestamp,
           flowRate: arg.flowRateWei,
           cliffAmount: arg.cliffTransferAmountWei,
-          remainderAmount: "0",
-          claimValidityDate: claimValidityDate ?? "0",
-        }),
-      ]);
+          claimValidityDate: claimValidityDate ?? 0,
+          remainderAmount: "0", // No remainder amount with this function (i.e. the one without amounts and durations)
+        }
+      });
 
       const existingPermissions = Number(flowOperatorData.permissions);
       const permissionsDelta = ACL_CREATE_PERMISSION | ACL_DELETE_PERMISSION;
