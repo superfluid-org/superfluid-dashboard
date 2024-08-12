@@ -11,6 +11,7 @@ import { useAccount } from "wagmi";
 import AccountModal from "./AccountModal";
 import { useWeb3Modal, useWeb3ModalState, useWeb3ModalTheme } from '@web3modal/wagmi/react'
 import { useTheme } from "@mui/material";
+import { useSafeAppAutoConnect } from "./useSafeAppAutoConnect";
 
 interface ConnectButtonContextValue {
   openAccountModal: () => void;
@@ -29,6 +30,7 @@ const ConnectButtonProvider: FC<PropsWithChildren> = ({ children }) => {
   const { open: isOpen } = useWeb3ModalState();
   const { setThemeMode, setThemeVariables } = useWeb3ModalTheme();
   const theme = useTheme();
+  useSafeAppAutoConnect();
 
   useEffect(() => {
     if (theme.palette.mode === "dark") {

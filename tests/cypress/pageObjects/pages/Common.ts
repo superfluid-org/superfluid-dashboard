@@ -597,6 +597,7 @@ export class Common extends BasePage {
         networksBySlug.get(network).superfluidRpcUrl
       )
     );
+
     cy.wrap(null).then(() => {
       return web3.eth.getBlock("latest").then((block) => {
         let blockVsTimeNowDifferenceInMinutes =

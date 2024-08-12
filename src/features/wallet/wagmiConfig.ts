@@ -135,7 +135,8 @@ export const wagmiConfig = defaultWagmiConfig({
         /^https:\/\/(?:[^\/]+\.)?coinshift\.xyz$/,
         /^http:\/\/(localhost|127\.0\.0\.1):(\d+)$/,
       ],
-      debug: false
+      debug: false,
+      shimDisconnect: true
     }),
     ...testConnectors,
   ],
