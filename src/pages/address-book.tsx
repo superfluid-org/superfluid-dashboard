@@ -192,7 +192,7 @@ const AddressBook: NextPage = () => {
             const firstChainId = chainIds[0];
             if (firstChainId) {
               const provider = publicClientToProvider(
-                (resolvedWagmiClients[firstChainId] as unknown) as PublicClient, // todo: wagmi migration
+                resolvedWagmiClients[firstChainId]()
               );
 
               if ((await provider.getCode(parsedItem.address)) !== "0x") {
