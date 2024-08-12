@@ -49,7 +49,7 @@
   "sepolia": {
     "TokenOne": "fDAI",
     "TokenTwo": "fUSDC",
-    "TokenGas": "SEP"
+    "TokenGas": "ETH"
   },
   "polygon-zkevm-testnet": {
     "TokenOne": "fDAI",

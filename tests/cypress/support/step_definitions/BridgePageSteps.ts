@@ -1,5 +1,5 @@
-import { Given, Then } from "@badeball/cypress-cucumber-preprocessor";
-import { BridgePage } from "../../pageObjects/pages/BridgePage";
+import { Given, Then } from '@badeball/cypress-cucumber-preprocessor';
+import { BridgePage } from '../../pageObjects/pages/BridgePage';
 
 Given(
   /^User chooses "([^"]*)" token to swap "([^"]*)" on "([^"]*)"$/,
@@ -27,8 +27,8 @@ Given(/^Featured super tokens on "([^"]*)" are visible$/, (network: string) => {
 Given(/^Token swapping route for is correctly shown$/, () => {
   BridgePage.validateSwapRoute();
 });
-Given(/^The You pay section shows the correct token and network icons$/, () => {
-  BridgePage.validateYouPayTokenIcons();
+Given(/^The Send section shows the correct token and network icons$/, () => {
+  BridgePage.validateSendTokenIcons();
 });
 
 Given(/^Review swap button is disabled$/, () => {

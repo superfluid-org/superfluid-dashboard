@@ -74,7 +74,7 @@
         "buffer": "0.00137",
         "v2Link": "/stream/opsepolia/0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0x9b6157d44134b21d934468b8bf709294cb298aa7-0xfd0957cbf7c1638581a3cdeb16256e5f08e7ce75-0.0",
         "token": "fTUSDx",
-        "networkName": "Optimism Sepolia",
+        "networkName": "OP Sepolia",
         "txHash": "0x388c74a34824bf4542191c01fa5a84e5b78725fd7420d601dded57c0141eca93"
       }
     ]

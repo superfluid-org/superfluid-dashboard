@@ -1,109 +1,109 @@
-import { BasePage, wordTimeUnitMap } from "../BasePage";
-import { format } from "date-fns";
-import { SendPage } from "./SendPage";
+import { BasePage, wordTimeUnitMap } from '../BasePage';
+import { format } from 'date-fns';
+import { SendPage } from './SendPage';
 import {
   Common,
   CHANGE_NETWORK_BUTTON,
   CONNECT_WALLET_BUTTON,
   STOP_VIEWING_BUTTON,
-} from "./Common";
-import { networksBySlug } from "../../superData/networks";
+} from './Common';
+import { networksBySlug } from '../../superData/networks';
 
-const NO_CREATED_TITLE = "[data-cy=no-created-schedules-title]";
-const NO_CREATED_DESC = "[data-cy=no-created-schedules-description]";
-const NO_RECEIVED_TITLE = "[data-cy=no-received-schedules-title]";
-const NO_RECEIVED_DESC = "[data-cy=no-received-schedules-description]";
-const CREATED_TABLE = "[data-cy=created-table]";
-const RECEIVED_TABLE = "[data-cy=received-table]";
-const FORM_ERROR = ".MuiAlert-message";
-const CREATE_VESTING_SCHEDULE_BUTTON = "[data-cy=create-schedule-button]";
-const PREVIEW_SCHEDULE_BUTTON = "[data-cy=preview-schedule-button]";
-const DATE_INPUT = "[data-cy=date-input] input";
-const CLIFF_AMOUNT_INPUT = "[data-cy=cliff-amount-input] input";
-const CLIFF_PERIOD_INPUT = "[data-cy=cliff-period-input] input";
-const CLIFF_PERIOD_UNIT = "[data-cy=cliff-period-unit]";
+const NO_CREATED_TITLE = '[data-cy=no-created-schedules-title]';
+const NO_CREATED_DESC = '[data-cy=no-created-schedules-description]';
+const NO_RECEIVED_TITLE = '[data-cy=no-received-schedules-title]';
+const NO_RECEIVED_DESC = '[data-cy=no-received-schedules-description]';
+const CREATED_TABLE = '[data-cy=created-table]';
+const RECEIVED_TABLE = '[data-cy=received-table]';
+const FORM_ERROR = '.MuiAlert-message';
+const CREATE_VESTING_SCHEDULE_BUTTON = '[data-cy=create-schedule-button]';
+const PREVIEW_SCHEDULE_BUTTON = '[data-cy=preview-schedule-button]';
+const DATE_INPUT = '[data-cy=date-input] input';
+const CLIFF_AMOUNT_INPUT = '[data-cy=cliff-amount-input] input';
+const CLIFF_PERIOD_INPUT = '[data-cy=cliff-period-input] input';
+const CLIFF_PERIOD_UNIT = '[data-cy=cliff-period-unit]';
 const CLIFF_PERIOD_SELECTED_UNIT = `${CLIFF_PERIOD_UNIT} div`;
-const TOTAL_AMOUNT_INPUT = "[data-cy=total-amount-input] input";
-const TOTAL_PERIOD_INPUT = "[data-cy=total-period-input] input";
-const TOTAL_PERIOD_UNIT = "[data-cy=total-period-unit]";
+const TOTAL_AMOUNT_INPUT = '[data-cy=total-amount-input] input';
+const TOTAL_PERIOD_INPUT = '[data-cy=total-period-input] input';
+const TOTAL_PERIOD_UNIT = '[data-cy=total-period-unit]';
 const TOTAL_PERIOD_SELECTED_UNIT = `${TOTAL_PERIOD_UNIT} div`;
-const LOADING_SKELETONS = "[class*=MuiSkeleton]";
-const DELETE_SCHEDULE_BUTTON = "[data-cy=delete-schedule-button]";
-const FORWARD_BUTTON = "[data-testid=ArrowForwardIcon]";
-const BACK_BUTTON = "[data-testid=ArrowBackIcon]";
-const VESTING_ROWS = "[data-cy=vesting-row]";
-const OK_BUTTON = "[data-cy=ok-button]";
-const TX_DRAWER_BUTTON = "[data-cy=tx-drawer-button]";
-const GRAPH_CLIFF_DATE = "[data-cy=graph-cliff-date]";
-const GRAPH_START_DATE = "[data-cy=graph-start-date]";
-const GRAPH_END_DATE = "[data-cy=graph-end-date]";
-const CREATE_SCHEDULE_TX_BUTTON = "[data-cy=create-schedule-tx-button]";
-const PREVIEW_RECEIVER = "[data-cy=preview-receiver]";
-const PREVIEW_START_DATE = "[data-cy=preview-start-date]";
-const PREVIEW_CLIFF_AMOUNT = "[data-cy=preview-cliff-amount]";
-const PREVIEW_CLIFF_PERIOD = "[data-cy=preview-cliff-period]";
-const PREVIEW_TOTAL_AMOUNT = "[data-cy=preview-total-amount]";
-const PREVIEW_TOTAL_PERIOD = "[data-cy=preview-total-period]";
-const APPROVAL_MESSAGE = "[data-cy=approval-message]";
-const TABLE_ALLOCATED_AMOUNT = "[data-cy=allocated-amount]";
-const VESTED_AMOUNT = "[data-cy=vested-amount]";
-const TABLE_START_END_DATES = "[data-cy=start-end-dates]";
-const TABLE_VESTING_STATUS = "[data-cy=vesting-status]";
-const TABLE_RECEIVER_SENDER = "[data-cy=receiver-sender]";
-const PENDING_MESSAGE = "[data-cy=pending-message]";
-const NOT_SUPPORTED_NETWORK_MSG = "[data-cy=not-supported-network-msg]";
-const MAINNET_NETWORK_LINK = "[data-cy=ethereum-link]";
-const CLIFF_TOGGLE = "[data-cy=cliff-toggle]";
-const DETAILS_SCHEDULED_DATE = "[data-cy=vesting-scheduled-date]";
-const DETAILS_CLIFF_START = "[data-cy=cliff-start-date]";
-const DETAILS_CLIFF_END = "[data-cy=cliff-end-date]";
-const DETAILS_VESTING_START = "[data-cy=vesting-start-date]";
-const DETAILS_VESTING_END = "[data-cy=vesting-end-date]";
-const DETAILS_VESTED_SO_FAR_AMOUNT = "[data-cy=balance]";
-const DETAILS_VESTED_TOKEN_SYMBOL = "[data-cy=token-symbol]";
-const SCHEDULE_VESTING_SCHEDULED = "[data-cy=vesting-scheduled]";
-const SCHEDULE_CLIFF_START = "[data-cy=cliff-start]";
-const SCHEDULE_CLIFF_END = "[data-cy=cliff-end]";
-const SCHEDULE_VESTING_START = "[data-cy=vesting-start]";
-const SCHEDULE_VESTING_END = "[data-cy=vesting-end]";
-const ACCESS_CODE_BUTTON = "[data-cy=vesting-code-button]";
-const TRY_OP_SEPOLIA_BUTTON = "[data-cy=opsepolia-link]";
-const TOPUP_WARNING_TITLE = "[data-cy=top-up-alert-title]";
-const TOPUP_WARNING_TEXT = "[data-cy=top-up-alert-text]";
-const ALLOWLIST_MESSAGE = "[data-cy=allowlist-message]";
-const ALLOWLIST_LINK = "[data-cy=allowlist-link]";
-const AUTO_WRAP_SWITCH_AND_TOOLTIP = "[data-cy=auto-wrap-switch-and-tooltip]";
-const AUTO_WRAP_SWITCH = "[data-cy=auto-wrap-switch]";
-const AUTO_WRAP_ENABLE_BUTTON = "[data-cy=enable-auto-wrap-button]";
-const AUTO_WRAP_ALLOWANCE_BUTTON = "[data-cy=auto-wrap-allowance-button]";
+const LOADING_SKELETONS = '[class*=MuiSkeleton]';
+const DELETE_SCHEDULE_BUTTON = '[data-cy=delete-schedule-button]';
+const FORWARD_BUTTON = '[data-testid=ArrowForwardIcon]';
+const BACK_BUTTON = '[data-testid=ArrowBackIcon]';
+const VESTING_ROWS = '[data-cy=vesting-row]';
+const OK_BUTTON = '[data-cy=ok-button]';
+const TX_DRAWER_BUTTON = '[data-cy=tx-drawer-button]';
+const GRAPH_CLIFF_DATE = '[data-cy=graph-cliff-date]';
+const GRAPH_START_DATE = '[data-cy=graph-start-date]';
+const GRAPH_END_DATE = '[data-cy=graph-end-date]';
+const CREATE_SCHEDULE_TX_BUTTON = '[data-cy=create-schedule-tx-button]';
+const PREVIEW_RECEIVER = '[data-cy=preview-receiver]';
+const PREVIEW_START_DATE = '[data-cy=preview-start-date]';
+const PREVIEW_CLIFF_AMOUNT = '[data-cy=preview-cliff-amount]';
+const PREVIEW_CLIFF_PERIOD = '[data-cy=preview-cliff-period]';
+const PREVIEW_TOTAL_AMOUNT = '[data-cy=preview-total-amount]';
+const PREVIEW_TOTAL_PERIOD = '[data-cy=preview-total-period]';
+const APPROVAL_MESSAGE = '[data-cy=approval-message]';
+const TABLE_ALLOCATED_AMOUNT = '[data-cy=allocated-amount]';
+const VESTED_AMOUNT = '[data-cy=vested-amount]';
+const TABLE_START_END_DATES = '[data-cy=start-end-dates]';
+const TABLE_VESTING_STATUS = '[data-cy=vesting-status]';
+const TABLE_RECEIVER_SENDER = '[data-cy=receiver-sender]';
+const PENDING_MESSAGE = '[data-cy=pending-message]';
+const NOT_SUPPORTED_NETWORK_MSG = '[data-cy=not-supported-network-msg]';
+const MAINNET_NETWORK_LINK = '[data-cy=ethereum-link]';
+const CLIFF_TOGGLE = '[data-cy=cliff-toggle]';
+const DETAILS_SCHEDULED_DATE = '[data-cy=vesting-scheduled-date]';
+const DETAILS_CLIFF_START = '[data-cy=cliff-start-date]';
+const DETAILS_CLIFF_END = '[data-cy=cliff-end-date]';
+const DETAILS_VESTING_START = '[data-cy=vesting-start-date]';
+const DETAILS_VESTING_END = '[data-cy=vesting-end-date]';
+const DETAILS_VESTED_SO_FAR_AMOUNT = '[data-cy=balance]';
+const DETAILS_VESTED_TOKEN_SYMBOL = '[data-cy=token-symbol]';
+const SCHEDULE_VESTING_SCHEDULED = '[data-cy=vesting-scheduled]';
+const SCHEDULE_CLIFF_START = '[data-cy=cliff-start]';
+const SCHEDULE_CLIFF_END = '[data-cy=cliff-end]';
+const SCHEDULE_VESTING_START = '[data-cy=vesting-start]';
+const SCHEDULE_VESTING_END = '[data-cy=vesting-end]';
+const ACCESS_CODE_BUTTON = '[data-cy=vesting-code-button]';
+const TRY_OP_SEPOLIA_BUTTON = '[data-cy=opsepolia-link]';
+const TOPUP_WARNING_TITLE = '[data-cy=top-up-alert-title]';
+const TOPUP_WARNING_TEXT = '[data-cy=top-up-alert-text]';
+const ALLOWLIST_MESSAGE = '[data-cy=allowlist-message]';
+const ALLOWLIST_LINK = '[data-cy=allowlist-link]';
+const AUTO_WRAP_SWITCH_AND_TOOLTIP = '[data-cy=auto-wrap-switch-and-tooltip]';
+const AUTO_WRAP_SWITCH = '[data-cy=auto-wrap-switch]';
+const AUTO_WRAP_ENABLE_BUTTON = '[data-cy=enable-auto-wrap-button]';
+const AUTO_WRAP_ALLOWANCE_BUTTON = '[data-cy=auto-wrap-allowance-button]';
 const AUTO_WRAP_TOOLTIP = `${AUTO_WRAP_SWITCH_AND_TOOLTIP} svg`;
-const AUTO_WRAP_TX_MESSAGE = "[data-cy=auto-wrap-tx-message]";
-const TX_MESSAGE_NETWORK = "[data-cy=tx-network]";
-const AUTO_WRAP_DIALOG = "[data-cy=auto-wrap-enable-dialog]";
-const DISABLE_AUTO_WRAP_BUTTON = "[data-cy=disable-auto-wrap-button]";
-const FIX_PERMISSIONS_BUTTON = "[data-cy=fix-permissions-button]";
+const AUTO_WRAP_TX_MESSAGE = '[data-cy=auto-wrap-tx-message]';
+const TX_MESSAGE_NETWORK = '[data-cy=tx-network]';
+const AUTO_WRAP_DIALOG = '[data-cy=auto-wrap-enable-dialog]';
+const DISABLE_AUTO_WRAP_BUTTON = '[data-cy=disable-auto-wrap-button]';
+const FIX_PERMISSIONS_BUTTON = '[data-cy=fix-permissions-button]';
 const VIEW_DASHBOARD_AS_ANY_ADDRESS_BUTTON =
-  "[data-cy=view-mode-inputs] button";
-const VESTING_FORM_LINK = "[data-cy=vesting-form-link]";
+  '[data-cy=view-mode-inputs] button';
+const VESTING_FORM_LINK = '[data-cy=vesting-form-link]';
 
 //Strings
-const NO_CREATED_TITLE_STRING = "No Sent Vesting Schedules";
+const NO_CREATED_TITLE_STRING = 'No Sent Vesting Schedules';
 const NO_CREATED_DESC_STRING =
-  "Vesting schedules that you have created will appear here.";
-const NO_RECEIVED_TITLE_STRING = "No Received Vesting Schedules";
+  'Vesting schedules that you have created will appear here.';
+const NO_RECEIVED_TITLE_STRING = 'No Received Vesting Schedules';
 const NO_RECEIVED_DESC_STRING =
-  "Vesting schedules that you have received will appear here.";
+  'Vesting schedules that you have received will appear here.';
 
 //Dates for the vesting previews etc.
-let staticStartDate = new Date(1850210429000);
-let staticEndDate = new Date(2007976829000);
+let staticStartDate = new Date(1879145815000);
+let staticEndDate = new Date(2036912215000);
 let currentTime = new Date();
 let startDate = new Date(
-  currentTime.getTime() + wordTimeUnitMap["year"] * 1000
+  currentTime.getTime() + wordTimeUnitMap['year'] * 1000
 );
-let cliffDate = new Date(startDate.getTime() + wordTimeUnitMap["year"] * 1000);
+let cliffDate = new Date(startDate.getTime() + wordTimeUnitMap['year'] * 1000);
 let endDate = new Date(
-  startDate.getTime() + 2 * (wordTimeUnitMap["year"] * 1000)
+  startDate.getTime() + 2 * (wordTimeUnitMap['year'] * 1000)
 );
 
 export class VestingPage extends BasePage {
@@ -143,9 +143,9 @@ export class VestingPage extends BasePage {
   static validateNotConnectedScreen() {
     this.isVisible(CONNECT_WALLET_BUTTON);
     this.isVisible(VIEW_DASHBOARD_AS_ANY_ADDRESS_BUTTON);
-    cy.contains("No Vesting Schedules Available").should("be.visible");
-    cy.contains("Received and Sent Vesting Schedules will appear here.").should(
-      "be.visible"
+    cy.contains('No Vesting Schedules Available').should('be.visible');
+    cy.contains('Received and Sent Vesting Schedules will appear here.').should(
+      'be.visible'
     );
     this.isVisible(VESTING_FORM_LINK);
   }
@@ -165,23 +165,23 @@ export class VestingPage extends BasePage {
   ) {
     this.getSelectedToken(token).then((selectedToken) => {
       switch (colorOrExisting) {
-        case "not existing":
+        case 'not existing':
           this.doesNotExist(`[data-cy="${selectedToken}-auto-wrap-status"]`);
           break;
-        case "grey":
+        case 'grey':
           this.hasCSS(
             `[data-cy="${selectedToken}-auto-wrap-status"]`,
-            "color",
-            "rgba(130, 146, 173, 0.26)",
+            'color',
+            'rgba(130, 146, 173, 0.26)',
             undefined,
             { timeout: 30000 }
           );
           break;
-        case "green":
+        case 'green':
           this.hasCSS(
             `[data-cy="${selectedToken}-auto-wrap-status"]`,
-            "color",
-            "rgb(16, 187, 53)",
+            'color',
+            'rgb(16, 187, 53)',
             undefined,
             { timeout: 30000 }
           );
@@ -209,7 +209,7 @@ export class VestingPage extends BasePage {
   }
 
   static validateAutoWrapAllowanceTxMessage(network: string) {
-    this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...");
+    this.hasText(APPROVAL_MESSAGE, 'Waiting for transaction approval...');
     this.hasText(TX_MESSAGE_NETWORK, `(${networksBySlug.get(network)?.name})`);
     this.hasText(
       AUTO_WRAP_TX_MESSAGE,
@@ -218,7 +218,7 @@ export class VestingPage extends BasePage {
   }
 
   static validateAutoWrapTxMessage(token: string, network: string) {
-    this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...");
+    this.hasText(APPROVAL_MESSAGE, 'Waiting for transaction approval...');
     this.hasText(TX_MESSAGE_NETWORK, `(${networksBySlug.get(network)?.name})`);
     this.hasText(
       AUTO_WRAP_TX_MESSAGE,
@@ -230,7 +230,7 @@ export class VestingPage extends BasePage {
     cy.get(VESTING_ROWS)
       .first()
       .find(PENDING_MESSAGE, { timeout: 60000 })
-      .should("have.text", status);
+      .should('have.text', status);
   }
 
   static validateNoReceivedVestingScheduleMessage() {
@@ -248,7 +248,7 @@ export class VestingPage extends BasePage {
   static createNewVestingSchedule() {
     SendPage.overrideNextGasPrice();
     this.click(CREATE_SCHEDULE_TX_BUTTON);
-    this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...");
+    this.hasText(APPROVAL_MESSAGE, 'Waiting for transaction approval...');
     // cy.get(OK_BUTTON, {timeout: 45000}).should("be.visible").click()
     // this.click(TX_DRAWER_BUTTON)
     // WrapPage.validatePendingTransaction("Create Vesting Schedule" , "avalanche-fuji")
@@ -306,7 +306,7 @@ export class VestingPage extends BasePage {
   static deleteScheduleIfNecessary() {
     SendPage.overrideNextGasPrice();
     this.doesNotExist(LOADING_SKELETONS);
-    cy.get("body").then((body) => {
+    cy.get('body').then((body) => {
       if (body.find(FORWARD_BUTTON).length > 0) {
         this.clickFirstVisible(VESTING_ROWS);
         this.clickFirstVisible(DELETE_SCHEDULE_BUTTON);
@@ -321,17 +321,17 @@ export class VestingPage extends BasePage {
   }
 
   static validateVestingSchedulePreview() {
-    this.hasText(PREVIEW_RECEIVER, "vijay.eth");
+    this.hasText(PREVIEW_RECEIVER, 'vijay.eth');
     this.validateSchedulePreviewDetails(cliffDate, startDate, endDate);
-    this.hasText(PREVIEW_TOTAL_AMOUNT, "2 fTUSDx");
-    this.hasText(PREVIEW_CLIFF_AMOUNT, "1 fTUSDx");
+    this.hasText(PREVIEW_TOTAL_AMOUNT, '2 fTUSDx');
+    this.hasText(PREVIEW_CLIFF_AMOUNT, '1 fTUSDx');
     this.containsText(
       PREVIEW_CLIFF_PERIOD,
-      `1 year (${format(cliffDate, "LLLL d, yyyy")})`
+      `1 year (${format(cliffDate, 'LLLL d, yyyy')})`
     );
     this.containsText(
       PREVIEW_TOTAL_PERIOD,
-      `2 year (${format(endDate, "LLLL d, yyyy")})`
+      `2 year (${format(endDate, 'LLLL d, yyyy')})`
     );
   }
 
@@ -339,12 +339,12 @@ export class VestingPage extends BasePage {
     this.isVisible(FORWARD_BUTTON);
     this.hasText(
       TABLE_RECEIVER_SENDER,
-      this.shortenHex("0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2")
+      this.shortenHex('0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2')
     );
-    this.hasText(TABLE_ALLOCATED_AMOUNT, "2 fTUSDx");
-    this.hasText(VESTED_AMOUNT, "1 fTUSDx");
-    this.hasText(TABLE_START_END_DATES, format(startDate, "LLL d, yyyy"), 0);
-    this.hasText(TABLE_START_END_DATES, format(endDate, "LLL d, yyyy"), -1);
+    this.hasText(TABLE_ALLOCATED_AMOUNT, '2 fTUSDx');
+    this.hasText(VESTED_AMOUNT, '1 fTUSDx');
+    this.hasText(TABLE_START_END_DATES, format(startDate, 'LLL d, yyyy'), 0);
+    this.hasText(TABLE_START_END_DATES, format(endDate, 'LLL d, yyyy'), -1);
     this.doesNotExist(PENDING_MESSAGE);
   }
 
@@ -362,7 +362,7 @@ export class VestingPage extends BasePage {
 
   static deleteVestingSchedule() {
     this.click(DELETE_SCHEDULE_BUTTON, undefined, { timeout: 30000 });
-    this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...");
+    this.hasText(APPROVAL_MESSAGE, 'Waiting for transaction approval...');
   }
 
   static deleteVestingButtonDoesNotExist() {
@@ -382,22 +382,22 @@ export class VestingPage extends BasePage {
   }
 
   static validateCreatedVestingSchedule() {
-    this.hasText(TABLE_VESTING_STATUS, "Scheduled", 0);
+    this.hasText(TABLE_VESTING_STATUS, 'Scheduled', 0);
     this.hasText(
       TABLE_RECEIVER_SENDER,
-      this.shortenHex("0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2"),
+      this.shortenHex('0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2'),
       0
     );
-    this.hasText(TABLE_ALLOCATED_AMOUNT, "60.87 fTUSDx", 0, { timeout: 30000 });
-    this.hasText(VESTED_AMOUNT, "0  fTUSDx", 0);
+    this.hasText(TABLE_ALLOCATED_AMOUNT, '60.87 fTUSDx', 0, { timeout: 30000 });
+    this.hasText(VESTED_AMOUNT, '0  fTUSDx', 0);
     this.containsText(
       TABLE_START_END_DATES,
-      format(staticStartDate, "LLL d, yyyy"),
+      format(staticStartDate, 'LLL d, yyyy'),
       0
     );
     this.containsText(
       TABLE_START_END_DATES,
-      format(staticEndDate, "LLL d, yyyy"),
+      format(staticEndDate, 'LLL d, yyyy'),
       0
     );
   }
@@ -409,31 +409,31 @@ export class VestingPage extends BasePage {
   ) {
     //The graph goes up by 1-5 minutes if test is too slow in the form
     cy.get(GRAPH_CLIFF_DATE).then((el) => {
-      let graphCliffTimestamp = Date.parse(el.text().replace("Cliff: ", ""));
+      let graphCliffTimestamp = Date.parse(el.text().replace('Cliff: ', ''));
       expect(graphCliffTimestamp).to.be.closeTo(cliffDate.getTime(), 300000);
     });
     cy.get(GRAPH_END_DATE).then((el) => {
-      let graphCliffTimestamp = Date.parse(el.text().replace("End: ", ""));
+      let graphCliffTimestamp = Date.parse(el.text().replace('End: ', ''));
       expect(graphCliffTimestamp).to.be.closeTo(endDate.getTime(), 300000);
     });
     cy.get(GRAPH_START_DATE).then((el) => {
-      let graphCliffTimestamp = Date.parse(el.text().replace("Start: ", ""));
+      let graphCliffTimestamp = Date.parse(el.text().replace('Start: ', ''));
       expect(graphCliffTimestamp).to.be.closeTo(startDate.getTime(), 300000);
     });
   }
 
   static validateCreatedVestingScheduleDetailsPage() {
-    this.hasText(DETAILS_VESTED_SO_FAR_AMOUNT, "0 ");
-    this.hasText(DETAILS_VESTED_TOKEN_SYMBOL, "fUSDCx");
-    this.hasText("[data-cy=fUSDCx-cliff-amount]", "0fUSDCx");
-    this.hasText("[data-cy=fUSDCx-allocated]", "60.87fUSDCx", undefined, {
+    this.hasText(DETAILS_VESTED_SO_FAR_AMOUNT, '0 ');
+    this.hasText(DETAILS_VESTED_TOKEN_SYMBOL, 'fTUSDx');
+    this.hasText('[data-cy=fTUSDx-cliff-amount]', '0fTUSDx');
+    this.hasText('[data-cy=fTUSDx-allocated]', '60.87fTUSDx', undefined, {
       timeout: 30000,
     });
-    cy.fixture("vestingData").then((data) => {
-      let schedule = data["opsepolia"].fUSDCx.schedule;
+    cy.fixture('vestingData').then((data) => {
+      let schedule = data['opsepolia'].fTUSDx.schedule;
       this.hasText(
         DETAILS_SCHEDULED_DATE,
-        format(schedule.createdAt * 1000, "MMM do, yyyy HH:mm")
+        format(schedule.createdAt * 1000, 'MMM do, yyyy HH:mm')
       );
       // this.hasText(
       //   DETAILS_CLIFF_START,
@@ -445,27 +445,27 @@ export class VestingPage extends BasePage {
       // );
       this.hasText(
         DETAILS_VESTING_END,
-        format(schedule.endDate * 1000, "MMM do, yyyy HH:mm")
+        format(schedule.endDate * 1000, 'MMM do, yyyy HH:mm')
       );
     });
   }
 
   static validateNotSupportedNetworkScreen() {
     const supportedNetworks = [
-      "ethereum",
-      "polygon",
-      "bsc",
-      "gnosis",
-      "opsepolia",
-      "optimism",
-      "arbitrum-one",
-      "avalanche",
+      'ethereum',
+      'polygon',
+      'bsc',
+      'gnosis',
+      'opsepolia',
+      'optimism',
+      'arbitrum-one',
+      'avalanche',
     ];
-    this.hasText(NOT_SUPPORTED_NETWORK_MSG, "This network is not supported.");
+    this.hasText(NOT_SUPPORTED_NETWORK_MSG, 'This network is not supported.');
     supportedNetworks.forEach((network) => {
       this.isVisible(`[data-cy=${network}-link]`);
     });
-    this.doesNotExist("[data-cy=avalanche-fuji-link]");
+    this.doesNotExist('[data-cy=avalanche-fuji-link]');
   }
 
   static validateDisabledMainnetNetworkLink() {
@@ -477,16 +477,16 @@ export class VestingPage extends BasePage {
   }
 
   static validateTokenPermissionIcons(token: string, color: string) {
-    let rgbValue = color === "green" ? "rgb(16, 187, 53)" : "rgb(210, 37, 37)";
+    let rgbValue = color === 'green' ? 'rgb(16, 187, 53)' : 'rgb(210, 37, 37)';
     this.hasCSS(
       `[data-cy=${token}-allowance-status]`,
-      "color",
+      'color',
       rgbValue,
       undefined,
       { timeout: 120000 }
     );
-    this.hasCSS(`[data-cy=${token}-permission-status]`, "color", rgbValue);
-    this.hasCSS(`[data-cy=${token}-flow-allowance-status]`, "color", rgbValue);
+    this.hasCSS(`[data-cy=${token}-permission-status]`, 'color', rgbValue);
+    this.hasCSS(`[data-cy=${token}-flow-allowance-status]`, 'color', rgbValue);
   }
 
   static openTokenPermissionRow(token: string) {
@@ -500,8 +500,8 @@ export class VestingPage extends BasePage {
   }
 
   static validateTokenPermissionsData(token: string) {
-    cy.fixture("vestingData").then((data) => {
-      let selectedToken = data["opsepolia"][token];
+    cy.fixture('vestingData').then((data) => {
+      let selectedToken = data['opsepolia'][token];
       this.hasText(
         `[data-cy=${token}-current-allowance] p`,
         `${selectedToken.currentAllowances.tokenAllowance} ${token}`
@@ -539,40 +539,40 @@ export class VestingPage extends BasePage {
     let today = BasePage.getDayTimestamp(0);
     let yesterday = BasePage.getDayTimestamp(-1);
 
-    cy.intercept("POST", "**vesting-scheduler**", (req) => {
+    cy.intercept('POST', '**vesting-scheduler**', (req) => {
       req.continue((res) => {
         console.log(req.body);
         if (req.body.variables.where.sender) {
           let schedule = res.body.data.vestingSchedules[0];
           switch (status) {
-            case "Cancel Error":
+            case 'Cancel Error':
               schedule.failedAt = today;
               schedule.endDateValidAt = yesterday;
               break;
-            case "Scheduled":
+            case 'Scheduled':
               //Scheduled in a few years, no need to modify the response
               break;
-            case "Vesting":
+            case 'Vesting':
               schedule.cliffAndFlowExecutedAt = today;
               break;
-            case "Vested":
+            case 'Vested':
               schedule.endDate = yesterday;
               schedule.endExecutedAt = yesterday;
               break;
-            case "Cliff":
+            case 'Cliff':
               schedule.cliffDate = yesterday;
               break;
-            case "Stream Error":
+            case 'Stream Error':
               schedule.cliffAndFlowExpirationAt = yesterday;
               break;
-            case "Overflow Error":
+            case 'Overflow Error':
               schedule.endDate = yesterday;
               schedule.endExecutedAt = yesterday + 1;
               break;
-            case "Deleted":
+            case 'Deleted':
               schedule.deletedAt = yesterday;
               break;
-            case "Transfer Error":
+            case 'Transfer Error':
               schedule.didEarlyEndCompensationFail = true;
               break;
           }
@@ -582,9 +582,9 @@ export class VestingPage extends BasePage {
   }
 
   static validateVestingRowStatus(status: string) {
-    if (status === "Deleted") {
-      cy.get(TABLE_VESTING_STATUS).should("be.visible");
-      cy.contains("Deleted").click();
+    if (status === 'Deleted') {
+      cy.get(TABLE_VESTING_STATUS).should('be.visible');
+      cy.contains('Deleted').click();
     }
     this.hasText(TABLE_VESTING_STATUS, status, 0);
   }
@@ -597,31 +597,31 @@ export class VestingPage extends BasePage {
     greenOnes.forEach((greenOne, i) => {
       this.hasCSS(
         `${greenOne} div div`,
-        "background",
-        "rgb(16, 187, 53) none repeat scroll 0% 0% / auto padding-box border-box"
+        'background',
+        'rgb(16, 187, 53) none repeat scroll 0% 0% / auto padding-box border-box'
       );
       if (greyOnes.length === 0 && i === greenOnes.length - 1) {
         return;
       }
-      cy.get("[data-cy=total-progress-line]")
+      cy.get('[data-cy=total-progress-line]')
         .eq(i)
         .then((el) => {
           let expectedWidth =
             i === greenOnes.length - 1
               ? (el.width() / 100) * barPercentage
               : el.width();
-          this.get("[data-cy=actual-progress-line]", i)
-            .invoke("width")
-            .should("be.closeTo", expectedWidth, 1);
-          this.isVisible("[data-cy=actual-progress-line]", i);
+          this.get('[data-cy=actual-progress-line]', i)
+            .invoke('width')
+            .should('be.closeTo', expectedWidth, 1);
+          this.isVisible('[data-cy=actual-progress-line]', i);
         });
     });
     greyOnes.forEach((greyOne, i) => {
       if (greyOne) {
         this.hasCSS(
           `${greyOne} div div`,
-          "background",
-          "rgba(0, 0, 0, 0.12) none repeat scroll 0% 0% / auto padding-box border-box"
+          'background',
+          'rgba(0, 0, 0, 0.12) none repeat scroll 0% 0% / auto padding-box border-box'
         );
       }
     });
@@ -629,21 +629,21 @@ export class VestingPage extends BasePage {
 
   static validateScheduleBar(status: string) {
     switch (status) {
-      case "Scheduled":
+      case 'Scheduled':
         this.validateScheduleBarElements(
           [SCHEDULE_VESTING_SCHEDULED],
           [SCHEDULE_CLIFF_START, SCHEDULE_CLIFF_END, SCHEDULE_VESTING_END],
           50
         );
         break;
-      case "Vesting Started":
+      case 'Vesting Started':
         this.validateScheduleBarElements(
           [SCHEDULE_VESTING_SCHEDULED, SCHEDULE_CLIFF_START],
           [SCHEDULE_CLIFF_END, SCHEDULE_VESTING_END],
           50
         );
         break;
-      case "Cliff vested":
+      case 'Cliff vested':
         this.validateScheduleBarElements(
           [
             SCHEDULE_VESTING_SCHEDULED,
@@ -654,7 +654,7 @@ export class VestingPage extends BasePage {
           50
         );
         break;
-      case "Vesting ended":
+      case 'Vesting ended':
         this.validateScheduleBarElements(
           [
             SCHEDULE_VESTING_SCHEDULED,
@@ -672,12 +672,12 @@ export class VestingPage extends BasePage {
   }
 
   static mockProgressTo(status: string) {
-    cy.intercept("POST", "**vesting-scheduler**", (req) => {
+    cy.intercept('POST', '**vesting-scheduler**', (req) => {
       req.continue((res) => {
         if (req.body.variables.id) {
           let schedule = res.body.data.vestingSchedule;
           switch (status) {
-            case "Scheduled":
+            case 'Scheduled':
               schedule.cliffAndFlowDate = this.getDayTimestamp(2);
               schedule.cliffAndFlowExecutedAt = null;
               schedule.cliffAndFlowExpirationAt =
@@ -691,7 +691,7 @@ export class VestingPage extends BasePage {
               schedule.failedAt = null;
               schedule.startDate = this.getDayTimestamp(1);
               break;
-            case "Vesting Started":
+            case 'Vesting Started':
               //Vesting scheduled
               schedule.createdAt = this.getDayTimestamp(-2);
               //Cliff starts
@@ -711,7 +711,7 @@ export class VestingPage extends BasePage {
               schedule.earlyEndCompensation = null;
               schedule.failedAt = null;
               break;
-            case "Cliff vested":
+            case 'Cliff vested':
               //Vesting scheduled
               schedule.createdAt = this.getDayTimestamp(-3);
               //Cliff starts
@@ -731,7 +731,7 @@ export class VestingPage extends BasePage {
               schedule.earlyEndCompensation = null;
               schedule.failedAt = null;
               break;
-            case "Vesting ended":
+            case 'Vesting ended':
               //Vesting scheduled
               schedule.createdAt = this.getDayTimestamp(-4);
               //Cliff starts
@@ -758,7 +758,7 @@ export class VestingPage extends BasePage {
   }
 
   static validateAggregateStats() {
-    cy.fixture("vestingData").then((data) => {
+    cy.fixture('vestingData').then((data) => {
       let schedule = data.polygon.USDCx.schedule;
       let stream = data.polygon.USDCx.vestingStream;
       let totalVestedAmount = (
@@ -777,19 +777,19 @@ export class VestingPage extends BasePage {
       );
     });
     this.hasText(`[data-cy=DAIx-total-allocated]`, `60.87DAIx`);
-    this.containsText(`[data-cy=DAIx-total-vested]`, "0");
+    this.containsText(`[data-cy=DAIx-total-vested]`, '0');
   }
 
   static validateAllowListMessage() {
     this.hasText(
       ALLOWLIST_MESSAGE,
-      "You are not on the allow list.If you want to create vesting schedules, Apply for access or try it out on Optimism Sepolia."
+      'You are not on the allow list.If you want to create vesting schedules, Apply for access or try it out on OP Sepolia.'
     );
     this.isVisible(ALLOWLIST_LINK);
     this.hasAttributeWithValue(
       ALLOWLIST_LINK,
-      "href",
-      "https://use.superfluid.finance/vesting"
+      'href',
+      'https://use.superfluid.finance/vesting'
     );
     this.isVisible(TRY_OP_SEPOLIA_BUTTON);
   }
@@ -812,22 +812,22 @@ export class VestingPage extends BasePage {
   static validateTopUpMessageWithoutCliff() {
     this.hasText(
       TOPUP_WARNING_TITLE,
-      "Don’t forget to top up for the vesting schedule!"
+      'Don’t forget to top up for the vesting schedule!'
     );
     this.hasText(
       TOPUP_WARNING_TEXT,
-      "Remember to top up your Super Token balance in time for the vesting stream."
+      'Remember to top up your Super Token balance in time for the vesting stream.'
     );
   }
 
   static validateTopUpMessageWithCliff() {
     this.hasText(
       TOPUP_WARNING_TITLE,
-      "Don’t forget to top up for the vesting schedule!"
+      'Don’t forget to top up for the vesting schedule!'
     );
     this.hasText(
       TOPUP_WARNING_TEXT,
-      "Remember to top up your Super Token balance in time for the cliff amount and vesting stream."
+      'Remember to top up your Super Token balance in time for the cliff amount and vesting stream.'
     );
   }
 

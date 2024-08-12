@@ -49,7 +49,7 @@
       }
     },
     "sepolia": {
-      "SEP": {
+      "ETH": {
         "underlyingBalance": "0",
         "superTokenBalance": "0"
       }

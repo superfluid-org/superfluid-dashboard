@@ -1,28 +1,28 @@
-import { BasePage } from "../BasePage";
+import { BasePage } from '../BasePage';
 
-const LIFI_WIDGET_CONTAINER = "[data-cy=lifi-widget]";
+const LIFI_WIDGET_CONTAINER = '[data-cy=lifi-widget]';
 const FROM_TO_SEARCH_BAR = `${LIFI_WIDGET_CONTAINER} input`;
 const TOKEN_LIST_NAMES = `${LIFI_WIDGET_CONTAINER} [class*=MuiListItem] span`;
 const SWAP_ROUTE_AMOUNT = `${LIFI_WIDGET_CONTAINER} [class*=MuiBox-root] text`;
 const LIFI_BUTTONS = `${LIFI_WIDGET_CONTAINER} [class*=MuiBox] button`;
-const WARNING_TEXT = "[data-testid=WarningAmberRoundedIcon] + div > p";
-const FROM_AMOUNT = "[name=fromAmount]";
-const LOADING_SKELETONS = "[class*=MuiSkeleton]";
+const WARNING_TEXT = '[data-testid=WarningAmberRoundedIcon] + div > p';
+const FROM_AMOUNT = '[name=fromAmount]';
+const LOADING_SKELETONS = '[class*=MuiSkeleton]';
 const FROM_TO_HEADERS = `${LIFI_WIDGET_CONTAINER} [class*=MuiCardHeader-avatar]`;
-const HISTORY_BUTTON = "[data-testid=ReceiptLongRoundedIcon]";
-const SETTINGS_BUTTON = "[data-testid=SettingsOutlinedIcon]";
-const NETWORK_BUTTONS = "[aria-label] > .MuiAvatar-root > .MuiAvatar-img";
+const HISTORY_BUTTON = '[data-testid=ReceiptLongRoundedIcon]';
+const SETTINGS_BUTTON = '[data-testid=SettingsOutlinedIcon]';
+const NETWORK_BUTTONS = '[aria-label] > .MuiAvatar-root > .MuiAvatar-img';
 
 export class BridgePage extends BasePage {
   static validateFeaturedTokensAreShownOn(network: string) {
-    cy.fixture("rejectedCaseTokens").then((availableTokens) => {
+    cy.fixture('rejectedCaseTokens').then((availableTokens) => {
       //The tokens are not featured at the top like the used to after a package update , still checking if super tokens are shown
       cy.get(FROM_TO_SEARCH_BAR).type(availableTokens[network].TokenOne, {
         force: true,
       });
       cy.get(TOKEN_LIST_NAMES)
         .contains(availableTokens[network].TokenOne)
-        .should("be.visible");
+        .should('be.visible');
       cy.get(FROM_TO_SEARCH_BAR).clear({ force: true });
       cy.get(FROM_TO_SEARCH_BAR).type(availableTokens[network].TokenTwo, {
         force: true,
@@ -30,14 +30,14 @@ export class BridgePage extends BasePage {
 
       cy.get(TOKEN_LIST_NAMES)
         .contains(availableTokens[network].TokenTwo)
-        .should("be.visible");
+        .should('be.visible');
       cy.get(FROM_TO_SEARCH_BAR).clear({ force: true });
       cy.get(FROM_TO_SEARCH_BAR).type(`${availableTokens[network].TokenOne}x`, {
         force: true,
       });
       cy.get(TOKEN_LIST_NAMES)
         .contains(`${availableTokens[network].TokenOne}x`)
-        .should("be.visible");
+        .should('be.visible');
       cy.get(FROM_TO_SEARCH_BAR).clear({ force: true });
       cy.get(FROM_TO_SEARCH_BAR).type(`${availableTokens[network].TokenTwo}x`, {
         force: true,
@@ -45,7 +45,7 @@ export class BridgePage extends BasePage {
 
       cy.get(TOKEN_LIST_NAMES)
         .contains(`${availableTokens[network].TokenTwo}x`)
-        .should("be.visible");
+        .should('be.visible');
     });
   }
   static chooseTokenToSwapFromTo(
@@ -59,11 +59,11 @@ export class BridgePage extends BasePage {
     this.selectBridgeNetwork(network);
     this.doesNotExist(LOADING_SKELETONS);
     cy.get(TOKEN_LIST_NAMES)
-      .its("length")
+      .its('length')
       .then((amount) => {
         //The tooltip overlays the input field sometimes and makes the test fail
         cy.get(FROM_TO_SEARCH_BAR).type(token, { force: true });
-        cy.get(TOKEN_LIST_NAMES).should("have.length.below", amount);
+        cy.get(TOKEN_LIST_NAMES).should('have.length.below', amount);
         cy.get(TOKEN_LIST_NAMES).each((el) => {
           if (el.text() === token) {
             cy.wrap(el).click();
@@ -78,13 +78,13 @@ export class BridgePage extends BasePage {
 
   static inputSwapAmount(amount: string) {
     this.type(FROM_AMOUNT, amount);
-    cy.wrap(amount).as("swapAmount");
+    cy.wrap(amount).as('swapAmount');
   }
 
   static validateSwapRoute() {
-    cy.get("@ToNetwork").then((network) => {
-      cy.get("@ToToken").then((token) => {
-        cy.get("@swapAmount").then((amount) => {
+    cy.get('@ToNetwork').then((network) => {
+      cy.get('@ToToken').then((token) => {
+        cy.get('@swapAmount').then((amount) => {
           cy.get(SWAP_ROUTE_AMOUNT)
             .first()
             .then((el) => {
@@ -96,49 +96,49 @@ export class BridgePage extends BasePage {
           cy.get(SWAP_ROUTE_AMOUNT)
             .parent()
             .parent()
-            .find("img")
+            .find('img')
             .first()
-            .should("have.attr", "alt", token);
+            .should('have.attr', 'alt', token);
           cy.get(SWAP_ROUTE_AMOUNT)
             .parent()
             .parent()
-            .find("img")
+            .find('img')
             .last()
-            .should("have.attr", "alt", network);
+            .should('have.attr', 'alt', network);
         });
       });
     });
   }
 
-  static validateYouPayTokenIcons() {
-    cy.get("@FromToken").then((token) => {
-      cy.get("@FromNetwork").then((network) => {
-        cy.contains("You pay")
+  static validateSendTokenIcons() {
+    cy.get('@FromToken').then((token) => {
+      cy.get('@FromNetwork').then((network) => {
+        cy.contains('Send')
           .parent()
-          .find("img")
+          .find('img')
           .first()
-          .should("have.attr", "alt", token);
-        cy.contains("You pay")
+          .should('have.attr', 'alt', token);
+        cy.contains('Send')
           .parent()
-          .find("img")
+          .find('img')
           .last()
-          .should("have.attr", "alt", network);
+          .should('have.attr', 'alt', network);
       });
     });
   }
 
   static validateConnectWalletButton() {
     cy.get(LIFI_BUTTONS)
-      .contains("Connect wallet")
-      .should("be.visible")
-      .and("be.enabled");
+      .contains('Connect wallet')
+      .should('be.visible')
+      .and('be.enabled');
   }
 
   static validateReviewSwapButtonWithoutBalance() {
     cy.get(LIFI_BUTTONS)
-      .contains("Review swap")
-      .should("be.visible")
-      .and("be.enabled");
+      .contains('Review swap')
+      .should('be.visible')
+      .and('be.enabled');
   }
 
   static validateNotEnoughFundsError() {
@@ -149,7 +149,7 @@ export class BridgePage extends BasePage {
   }
 
   static validateNotEnoughGasFundsError() {
-    this.containsText(WARNING_TEXT, "Insufficient gas");
+    this.containsText(WARNING_TEXT, 'Insufficient gas');
   }
 
   static clickOnHistoryPageButton() {
@@ -160,22 +160,22 @@ export class BridgePage extends BasePage {
     cy.get(HISTORY_BUTTON)
       .parent()
       .parent()
-      .find("p")
-      .contains("No recent swaps");
+      .find('p')
+      .contains('No recent swaps');
     cy.get(HISTORY_BUTTON)
       .parent()
       .parent()
-      .find("p")
+      .find('p')
       .contains(
-        "Swap history is only stored locally and will be deleted if you clear your browser data."
+        'Swap history is only stored locally and will be deleted if you clear your browser data.'
       );
   }
 
   static validateFromToInputsVisible() {
-    cy.contains("From").should("be.visible");
-    cy.contains("To").should("be.visible");
-    cy.contains("Select chain and token");
-    cy.contains("You pay");
+    cy.contains('From').should('be.visible');
+    cy.contains('To').should('be.visible');
+    cy.contains('Select chain and token');
+    cy.contains('Send');
   }
 
   static validateNoHistoryButtonWhenNotConnected() {
@@ -183,7 +183,7 @@ export class BridgePage extends BasePage {
   }
 
   static clickConnectWalletButton() {
-    cy.get(LIFI_BUTTONS).contains("Connect wallet").click();
+    cy.get(LIFI_BUTTONS).contains('Connect wallet').click();
   }
 
   static openLifiSettings() {
@@ -191,37 +191,38 @@ export class BridgePage extends BasePage {
   }
 
   static verifyLifiSettingsFields() {
-    cy.contains("Language").should("be.visible");
-    cy.contains("English").should("be.visible");
-    cy.contains("Route priority").should("be.visible");
-    cy.contains("Recommended").should("be.visible");
-    cy.contains("Slippage").should("be.visible");
-    cy.contains("Gas price").should("be.visible");
-    cy.contains("Show destination wallet").should("be.visible");
-    cy.contains("Advanced preferences").should("be.visible");
+    cy.contains('Language').should('be.visible');
+    cy.contains('English').should('be.visible');
+    cy.contains('Route priority').should('be.visible');
+    cy.contains('Recommended').should('be.visible');
+    cy.contains('Slippage').should('be.visible');
+    cy.contains('Gas price').should('be.visible');
+    cy.contains('Show destination wallet').should('be.visible');
+    cy.contains('Advanced preferences').should('be.visible');
   }
 
   static openTokenSelection() {
-    cy.contains("From").click();
+    cy.contains('From').click();
   }
 
   static validateOnlySupportedNetworksShown() {
     let supportedNetworks = [
-      "Ethereum",
-      "Polygon",
-      "BSC",
-      "Gnosis",
-      "Avalanche",
-      "Arbitrum",
-      "Optimism",
-      "Celo",
-      "Base",
+      'Ethereum',
+      'Polygon',
+      'BSC',
+      'Gnosis',
+      'Avalanche',
+      'Arbitrum',
+      'Optimism',
+      'Celo',
+      'Base',
+      'Scroll',
     ];
     cy.get(NETWORK_BUTTONS)
       .parent()
       .parent()
       .each((button) => {
-        expect(supportedNetworks).to.include(button.attr("aria-label"));
+        expect(supportedNetworks).to.include(button.attr('aria-label'));
       });
   }
 
@@ -229,7 +230,7 @@ export class BridgePage extends BasePage {
     cy.get(NETWORK_BUTTONS)
       .parent()
       .parent()
-      .should("have.attr", "aria-label", "Ethereum")
-      .and("be.visible");
+      .should('have.attr', 'aria-label', 'Ethereum')
+      .and('be.visible');
   }
 }

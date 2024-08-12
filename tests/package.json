@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "@rsksmart/mock-web3-provider": "1.0.2-beta1",
     "@superfluid-finance/sdk-core": "^0.8.0",
     "@superfluid-finance/tokenlist": "^3.4.0",
     "@truffle/encoder": "^1.0.27",
@@ -12,7 +11,6 @@
     "ethers": "^5.7.2",
     "lodash": "^4.17.21",
     "viem": "^2.19.3",
-    "web3": "^4.11.1",
     "web3-provider-engine": "^16.0.8"
   },
   "devDependencies": {

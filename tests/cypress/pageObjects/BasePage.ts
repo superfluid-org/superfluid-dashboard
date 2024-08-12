@@ -1,5 +1,5 @@
-import format from "date-fns/format";
-import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
+import format from 'date-fns/format';
+import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 
 export enum UnitOfTime {
   Second = 1,
@@ -23,18 +23,18 @@ export const wordTimeUnitMap: Record<string, UnitOfTime> = {
 
 export class BasePage {
   static getSelectedNetwork(network: string) {
-    return network === "selected network" ? Cypress.env("network") : network;
+    return network === 'selected network' ? Cypress.env('network') : network;
   }
   static getSelectedToken(token: string) {
-    return cy.fixture("rejectedCaseTokens").then((tokens) => {
+    return cy.fixture('rejectedCaseTokens').then((tokens) => {
       let selectedToken: string;
 
-      if (token.startsWith("Token")) {
-        selectedToken = token.endsWith("x")
-          ? `${tokens[Cypress.env("network")][token.slice(0, -1)]}x`
-          : tokens[Cypress.env("network")][token];
-        if (selectedToken === "WORKx") {
-          selectedToken = "WORK";
+      if (token.startsWith('Token')) {
+        selectedToken = token.endsWith('x')
+          ? `${tokens[Cypress.env('network')][token.slice(0, -1)]}x`
+          : tokens[Cypress.env('network')][token];
+        if (selectedToken === 'WORKx') {
+          selectedToken = 'WORK';
         }
       } else {
         selectedToken = token;
@@ -43,15 +43,17 @@ export class BasePage {
     });
   }
   static ensureDefined<T>(value: T | undefined | null): T {
-    if (!value) throw Error("Value has to be defined.");
+    if (!value) throw Error('Value has to be defined.');
     return value;
   }
 
   static shortenHex(address: string, length = 4) {
-    return `${address.substring(0, 2 + length)}...${address.substring(
-      address.length - length,
-      address.length
-    )}`;
+    return address.includes('@')
+      ? address
+      : `${address.substring(0, 2 + length)}...${address.substring(
+          address.length - length,
+          address.length
+        )}`;
   }
 
   static get(
@@ -121,7 +123,7 @@ export class BasePage {
     >
   ) {
     return this.get(selector, index, options)
-      .filter(":visible")
+      .filter(':visible')
       .first()
       .click();
   }
@@ -138,7 +140,7 @@ export class BasePage {
     >
   ) {
     return this.get(selector, index, options)
-      .filter(":visible")
+      .filter(':visible')
       .type(text.toString());
   }
 
@@ -154,8 +156,8 @@ export class BasePage {
     >
   ) {
     return this.get(selector, index, options)
-      .filter(":visible")
-      .should("have.text", text);
+      .filter(':visible')
+      .should('have.text', text);
   }
 
   static doesNotHaveText(
@@ -170,8 +172,8 @@ export class BasePage {
     >
   ) {
     return this.get(selector, index, options)
-      .filter(":visible")
-      .should("not.have.text", text);
+      .filter(':visible')
+      .should('not.have.text', text);
   }
 
   static check(
@@ -200,7 +202,7 @@ export class BasePage {
   ) {
     return this.get(selector, index, options)
       .scrollIntoView()
-      .should("have.text", text);
+      .should('have.text', text);
   }
 
   static scrollTo(
@@ -226,7 +228,7 @@ export class BasePage {
         Cypress.Shadow
     >
   ) {
-    return this.get(selector, index, options).should("not.exist");
+    return this.get(selector, index, options).should('not.exist');
   }
 
   static exists(
@@ -239,7 +241,7 @@ export class BasePage {
         Cypress.Shadow
     >
   ) {
-    return this.get(selector, index, options).should("exist");
+    return this.get(selector, index, options).should('exist');
   }
 
   static isVisible(
@@ -252,7 +254,7 @@ export class BasePage {
         Cypress.Shadow
     >
   ) {
-    return this.get(selector, index, options).should("be.visible");
+    return this.get(selector, index, options).should('be.visible');
   }
 
   static isNotVisible(
@@ -265,7 +267,7 @@ export class BasePage {
         Cypress.Shadow
     >
   ) {
-    return this.get(selector, index, options).should("not.be.visible");
+    return this.get(selector, index, options).should('not.be.visible');
   }
 
   static isNotDisabled(
@@ -279,8 +281,8 @@ export class BasePage {
     >
   ) {
     return this.get(selector, index, options).should(
-      "not.have.attr",
-      "disabled"
+      'not.have.attr',
+      'disabled'
     );
   }
 
@@ -294,7 +296,7 @@ export class BasePage {
         Cypress.Shadow
     >
   ) {
-    return this.get(selector, index, options).should("be.enabled");
+    return this.get(selector, index, options).should('be.enabled');
   }
 
   static isDisabled(
@@ -307,7 +309,7 @@ export class BasePage {
         Cypress.Shadow
     >
   ) {
-    return this.get(selector, index, options).should("have.attr", "disabled");
+    return this.get(selector, index, options).should('have.attr', 'disabled');
   }
 
   static containsText(
@@ -321,7 +323,7 @@ export class BasePage {
         Cypress.Shadow
     >
   ) {
-    return this.get(selector, index, options).should("contain.text", text);
+    return this.get(selector, index, options).should('contain.text', text);
   }
 
   static contains(
@@ -335,7 +337,7 @@ export class BasePage {
         Cypress.Shadow
     >
   ) {
-    return this.get(selector, index, options).should("contain", number);
+    return this.get(selector, index, options).should('contain', number);
   }
 
   static clear(
@@ -348,7 +350,7 @@ export class BasePage {
         Cypress.Shadow
     >
   ) {
-    return this.get(selector, index, options).filter(":visible").clear();
+    return this.get(selector, index, options).filter(':visible').clear();
   }
 
   static hasCSS(
@@ -363,7 +365,7 @@ export class BasePage {
         Cypress.Shadow
     >
   ) {
-    return this.get(selector, index, options).should("have.css", value, match);
+    return this.get(selector, index, options).should('have.css', value, match);
   }
 
   static hasLength(
@@ -377,7 +379,7 @@ export class BasePage {
         Cypress.Shadow
     >
   ) {
-    return this.get(selector, index, options).should("have.length", length);
+    return this.get(selector, index, options).should('have.length', length);
   }
 
   static hasValue(
@@ -391,7 +393,7 @@ export class BasePage {
         Cypress.Shadow
     >
   ) {
-    return this.get(selector, index, options).should("have.value", value);
+    return this.get(selector, index, options).should('have.value', value);
   }
 
   static trigger(
@@ -421,7 +423,7 @@ export class BasePage {
     >
   ) {
     return this.get(selector, index, options).should(
-      "have.attr",
+      'have.attr',
       attribute,
       value
     );
@@ -434,14 +436,14 @@ export class BasePage {
   }
 
   static getNotificationDateString(date: Date) {
-    return date.toLocaleString("en-US", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
+    return date.toLocaleString('en-US', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
       hour12: false,
-      timeZone: "UTC",
+      timeZone: 'UTC',
     });
   }
 
@@ -450,8 +452,8 @@ export class BasePage {
     const account = privateKeyToAccount(privateKey);
     const publicKey = account.address;
 
-    cy.wrap(privateKey).as("newWalletPrivateKey");
-    cy.wrap(publicKey).as("newWalletPublicKey");
+    cy.wrap(privateKey).as('newWalletPrivateKey');
+    cy.wrap(publicKey).as('newWalletPublicKey');
     cy.log(`Public key:${publicKey}`);
     cy.log(`Private key:${privateKey}`);
     return privateKey;
@@ -460,7 +462,7 @@ export class BasePage {
   static getNotifDateAssertStringFromDate(date: Date) {
     return format(
       Number((date.getTime() / 1000).toFixed(0)) * 1000,
-      "yyyy/MM/dd HH:mm"
+      'yyyy/MM/dd HH:mm'
     );
   }
 }

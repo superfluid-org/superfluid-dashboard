@@ -136,6 +136,7 @@
         "earlyEndCompensation": null
       },
       "vestingStream": {
+        "totalScheduled": "0.089975",
         "createdAtBlockNumber": "38914627",
         "startedAtUnix": 1675545293000,
         "flowRate": 285388909,

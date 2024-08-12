@@ -1,8 +1,8 @@
-import { Given, Then } from "@badeball/cypress-cucumber-preprocessor";
-import { Common } from "../../pageObjects/pages/Common";
-import { DashboardPage } from "../../pageObjects/pages/DashboardPage";
-import { WrapPage } from "../../pageObjects/pages/WrapPage";
-import { SendPage } from "../../pageObjects/pages/SendPage";
+import { Given, Then } from '@badeball/cypress-cucumber-preprocessor';
+import { Common } from '../../pageObjects/pages/Common';
+import { DashboardPage } from '../../pageObjects/pages/DashboardPage';
+import { WrapPage } from '../../pageObjects/pages/WrapPage';
+import { SendPage } from '../../pageObjects/pages/SendPage';
 
 Given(/^"([^"]*)" is open without connecting a wallet$/, (page: string) => {
   Common.openPage(page);
@@ -235,7 +235,7 @@ Then(/^404 page is shown$/, () => {
 Given(
   /^Transactional account ([^"]*) is connected to the dashboard on ([^"]*)$/,
   (persona: string, network: string) => {
-    Common.openDashboardWithConnectedTxAccount("/", persona, network);
+    Common.openDashboardWithConnectedTxAccount('/', persona, network);
   }
 );
 Given(/^User restores the last transaction$/, () => {
@@ -257,10 +257,10 @@ Then(
 );
 
 Given(/^Stream table requests are mocked to an empty state$/, function () {
-  Common.mockQueryToEmptyState("streams");
+  Common.mockQueryToEmptyState('streams');
 });
 Given(/^Transfer event requests are mocked to an empty state$/, function () {
-  Common.mockQueryToEmptyState("transferEvents");
+  Common.mockQueryToEmptyState('transferEvents');
 });
 
 Given(/^User disconnects their wallet from the dashboard$/, () => {
@@ -315,12 +315,7 @@ Given(/^User opens the dashboard network selection dropdown$/, function () {
 Given(/^HDWallet transactions are rejected$/, function () {
   Common.rejectTransactions();
 });
-Given(
-  /^Dashboard is open with a mocked connection to "([^"]*)" on "([^"]*)"$/,
-  function (account: string, network: string) {
-    Common.mockConnectionTo(account, network);
-  }
-);
+
 Given(
   /^Superfluid RPCs are not more then (\d+) minutes behind on (.*)$/,
   function (minutes: number, network: string) {
@@ -383,9 +378,9 @@ Then(/^Successfully claimed tokens message is shown$/, function () {
 Then(/^User clicks on the go to dashboard page button$/, function () {
   Common.clickFaucetGoToDashboardButton();
 });
-Then(/^User sends back the remaining MATIC to the faucet$/, function () {
-  Common.sendBackNotMintableFaucetTokens();
-});
+// Then(/^User sends back the remaining MATIC to the faucet$/, function () {
+//   Common.sendBackNotMintableFaucetTokens();
+// });
 Then(/^You have already claimed tokens message is shown$/, function () {
   Common.validateYouHaveAlreadyClaimedTokensMessage();
 });
@@ -401,12 +396,12 @@ Then(/^User closes the presentation dialog$/, function () {
 Given(/^The new wallet address is visible in the faucet menu$/, function () {
   Common.validateNewWalletAddress();
 });
-Given(
-  /^The faucet contract has got enough funds to send to people$/,
-  function () {
-    Common.checkFaucetContractBalance();
-  }
-);
+// Given(
+//   /^The faucet contract has got enough funds to send to people$/,
+//   function () {
+//     Common.checkFaucetContractBalance();
+//   }
+// );
 Then(/^Faucet view is visible$/, function () {
   Common.validateOpenFaucetView();
 });

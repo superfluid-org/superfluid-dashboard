@@ -720,11 +720,13 @@ const StreamPageContent: FC<{
             scheduledStream.mostLikelyAssociatedVestingScheduleId && (
               <Box minWidth="100%">
                 <Alert
+                  data-cy="vesting-alert"
                   icon={<LockClockRoundedIcon />}
                   severity="success"
                 >
                   <AlertTitle>Vesting</AlertTitle>
                   This stream is associated with a vesting schedule. <Link
+                    data-cy={"vesting-link"}
                     href={getVestingPagePath({
                       network: network.slugName,
                       vestingScheduleId: scheduledStream.mostLikelyAssociatedVestingScheduleId,
