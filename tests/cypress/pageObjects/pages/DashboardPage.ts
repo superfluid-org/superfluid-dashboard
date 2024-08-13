@@ -1,37 +1,37 @@
-import { BasePage } from "../BasePage";
+import { BasePage } from '../BasePage';
 import {
   mainNetworks,
   networksBySlug,
   testNetworks,
-} from "../../superData/networks";
-import { Common, CONNECT_WALLET_BUTTON } from "./Common";
+} from '../../superData/networks';
+import { Common, CONNECT_WALLET_BUTTON } from './Common';
 
-const NETWORK_SNAPSHOT_TABLE_APPENDIX = "-token-snapshot-table]";
-const TOKEN_SYMBOLS = "[data-cy=token-symbol]";
-const TOKEN_BALANCES = "[data-cy=balance]";
-const CANCEL_BUTTON_BACKDROP = "[class*=backdrop]";
-const NETWORK_SELECTION_TOGGLE_APPENDIX = "-toggle]";
-const NO_BALANCE_WRAP_BUTTON = "[data-cy=no-balance-wrap-button]";
-const NO_BALANCE_MESSAGE = "[data-cy=no-balance-message]";
-const LOADING_SKELETONS = "[data-cy=loading-skeletons]";
-const NET_FLOW_VALUES = "[data-cy=net-flow-value]";
-const NO_NET_FLOW_VALUE = "[data-cy=net-flow-value] > span:nth-child(1)";
-const NET_FLOW_FIAT = "[data-cy=net-flow-value] [data-cy=token-amount]";
-const INFLOW_VALUES = "[data-cy=inflow]";
-const OUTFLOW_VALUES = "[data-cy=outflow]";
-const CANCEL_BUTTONS = "[data-cy=cancel-button]";
-const EDIT_BUTTONS = "[data-testid=EditRoundedIcon]";
-const CANCEL_STREAM_BUTTON = "[data-cy=cancel-stream-button]";
-const TOOLTIPS = "[role=tooltip]";
-const ROWS_PER_PAGE_ARROW = "[data-testid=ArrowDropDownIcon]";
-const DISPLAYED_ROWS = "[class*=displayedRows]";
-const NEXT_PAGE_BUTTON = "[data-testid=KeyboardArrowRightIcon]";
-const STREAM_ROWS = "[data-cy=stream-row]";
-const ALL_BALANCE_ROWS = "[data-cy*=-cell]";
-const MODIFY_STREAM_BUTTON = "[data-cy=modify-stream-tooltip]";
-const SWITCH_NETWORK_BUTTON = "[data-cy=switch-network-tooltip]";
-const FAUCET_MESSAGE_CONTAINER = "[data-cy=dashboard-faucet-message]";
-const FAUCET_CLAIM_BUTTON = "[data-cy=dashboard-claim-button]";
+const NETWORK_SNAPSHOT_TABLE_APPENDIX = '-token-snapshot-table]';
+const TOKEN_SYMBOLS = '[data-cy=token-symbol]';
+const TOKEN_BALANCES = '[data-cy=balance]';
+const CANCEL_BUTTON_BACKDROP = '[class*=backdrop]';
+const NETWORK_SELECTION_TOGGLE_APPENDIX = '-toggle]';
+const NO_BALANCE_WRAP_BUTTON = '[data-cy=no-balance-wrap-button]';
+const NO_BALANCE_MESSAGE = '[data-cy=no-balance-message]';
+const LOADING_SKELETONS = '[data-cy=loading-skeletons]';
+const NET_FLOW_VALUES = '[data-cy=net-flow-value]';
+const NO_NET_FLOW_VALUE = '[data-cy=net-flow-value]';
+const NET_FLOW_FIAT = '[data-cy=net-flow-value] [data-cy=token-amount]';
+const INFLOW_VALUES = '[data-cy=inflow]';
+const OUTFLOW_VALUES = '[data-cy=outflow]';
+const CANCEL_BUTTONS = '[data-cy=cancel-button]';
+const EDIT_BUTTONS = '[data-testid=EditRoundedIcon]';
+const CANCEL_STREAM_BUTTON = '[data-cy=cancel-stream-button]';
+const TOOLTIPS = '[role=tooltip]';
+const ROWS_PER_PAGE_ARROW = '[data-testid=ArrowDropDownIcon]';
+const DISPLAYED_ROWS = '[class*=displayedRows]';
+const NEXT_PAGE_BUTTON = '[data-testid=KeyboardArrowRightIcon]';
+const STREAM_ROWS = '[data-cy=stream-row]';
+const ALL_BALANCE_ROWS = '[data-cy*=-cell]';
+const MODIFY_STREAM_BUTTON = '[data-cy=modify-stream-tooltip]';
+const SWITCH_NETWORK_BUTTON = '[data-cy=switch-network-tooltip]';
+const FAUCET_MESSAGE_CONTAINER = '[data-cy=dashboard-faucet-message]';
+const FAUCET_CLAIM_BUTTON = '[data-cy=dashboard-claim-button]';
 const FAUCET_MESSAGE_TITLE = `${FAUCET_MESSAGE_CONTAINER} h5`;
 const FAUCET_MESSAGE_DESCRIPTION = `${FAUCET_MESSAGE_CONTAINER} p`;
 
@@ -43,9 +43,9 @@ export class DashboardPage extends BasePage {
   }
 
   static verifyBalancesForAccount(networkType: string, account: string) {
-    let network = networkType === "testnet" ? testNetworks : mainNetworks;
+    let network = networkType === 'testnet' ? testNetworks : mainNetworks;
     network.forEach((network) => {
-      cy.fixture("networkSpecificData").then((networkSpecificData) => {
+      cy.fixture('networkSpecificData').then((networkSpecificData) => {
         networkSpecificData[network.slugName][account].tokenValues.forEach(
           (tokenValues: any, index: number) => {
             this.hasText(
@@ -93,7 +93,7 @@ export class DashboardPage extends BasePage {
   }
 
   static validateTokenTotalFlowRates(network: string, token: string) {
-    cy.fixture("networkSpecificData").then((networkSpecificData) => {
+    cy.fixture('networkSpecificData').then((networkSpecificData) => {
       let flowValues =
         networkSpecificData[network].ongoingStreamsAccount.tokenValues;
       this.containsText(
@@ -112,7 +112,7 @@ export class DashboardPage extends BasePage {
   }
 
   static validateTokenStreams(network: string) {
-    cy.fixture("networkSpecificData").then((networkSpecificData) => {
+    cy.fixture('networkSpecificData').then((networkSpecificData) => {
       let specificSelector = `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${networkSpecificData[
         network
       ].ongoingStreamsAccount.tokenValues.tokenAddress.toLowerCase()}-streams-table] ${STREAM_ROWS} `;
@@ -137,13 +137,13 @@ export class DashboardPage extends BasePage {
   }
 
   static validateAllCancelButtonsDisabledForToken(network: string) {
-    cy.fixture("networkSpecificData").then((networkSpecificData) => {
+    cy.fixture('networkSpecificData').then((networkSpecificData) => {
       cy.get(
         `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${networkSpecificData[
           network
         ].ongoingStreamsAccount.tokenValues.tokenAddress.toLowerCase()}-streams-table] ${STREAM_ROWS} ${CANCEL_BUTTONS}`
       ).each((button: JQuery<HTMLElement>) => {
-        cy.wrap(button).should("have.attr", "disabled");
+        cy.wrap(button).should('have.attr', 'disabled');
       });
     });
   }
@@ -151,7 +151,7 @@ export class DashboardPage extends BasePage {
   static hoverOnFirstCancelButton(network: string) {
     this.trigger(
       `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} ${SWITCH_NETWORK_BUTTON}`,
-      "mouseover",
+      'mouseover',
       0
     );
   }
@@ -170,7 +170,7 @@ export class DashboardPage extends BasePage {
   }
 
   static checkVisibleRowsAmount(amount: string, token: string) {
-    cy.fixture("networkSpecificData").then((networkSpecificData) => {
+    cy.fixture('networkSpecificData').then((networkSpecificData) => {
       let tokenAddress =
         networkSpecificData.gnosis.staticBalanceAccount.tokenValues
           .filter((values: any) => values.token === token)[0]
@@ -183,22 +183,22 @@ export class DashboardPage extends BasePage {
       ).and(($el) => {
         lastRowData.push($el.text());
       });
-      cy.wrap(lastRowData).as("lastStreamRows");
-      cy.log("@lastStreamRows", lastRowData);
+      cy.wrap(lastRowData).as('lastStreamRows');
+      cy.log('@lastStreamRows', lastRowData);
     });
   }
 
   static switchToNextStreamPage(token: string) {
-    cy.fixture("networkSpecificData").then((networkSpecificData) => {
+    cy.fixture('networkSpecificData').then((networkSpecificData) => {
       let tokenAddress =
         networkSpecificData.gnosis.staticBalanceAccount.tokenValues
           .filter((values: any) => values.token === token)[0]
           .tokenAddress.toLowerCase();
       cy.get(DISPLAYED_ROWS).then((el) => {
-        let totalRows = parseInt(el.text().split(" ")[2]);
+        let totalRows = parseInt(el.text().split(' ')[2]);
         //Some kind of special dash here between visible pages counter "1–"
         let currentPagesVisible = parseInt(
-          el.text().split(" ")[0].replaceAll("1–", "")
+          el.text().split(' ')[0].replaceAll('1–', '')
         );
         let amountOfExpectedPagesInNewPage = totalRows - currentPagesVisible;
 
@@ -208,17 +208,17 @@ export class DashboardPage extends BasePage {
           amountOfExpectedPagesInNewPage
         );
         let newRows: string[] = [];
-        cy.get("@lastStreamRows").then((rows) => {
+        cy.get('@lastStreamRows').then((rows) => {
           cy.get(
             `[data-cy="${tokenAddress}-streams-table"] ${STREAM_ROWS}`
           ).then(($el) => {
             newRows.push($el.text());
-            cy.wrap(newRows).should("not.equal", rows);
+            cy.wrap(newRows).should('not.equal', rows);
           });
         });
         cy.get(DISPLAYED_ROWS).then((el) => {
           cy.wrap(el.text()).should(
-            "eq",
+            'eq',
             `${currentPagesVisible + 1}–${totalRows} of ${totalRows}`
           );
         });
@@ -261,7 +261,7 @@ export class DashboardPage extends BasePage {
           .first()
           .then((elAfter) => {
             cy.wrap(parseFloat(elAfter.text())).should(
-              "eq",
+              'eq',
               parseFloat(el.text())
             );
           });
@@ -272,15 +272,15 @@ export class DashboardPage extends BasePage {
     cy.get(STREAM_ROWS)
       .first({ timeout: 45000 })
       .find(CANCEL_BUTTONS)
-      .should("not.exist");
+      .should('not.exist');
     cy.get(STREAM_ROWS)
       .first({ timeout: 45000 })
       .find(SWITCH_NETWORK_BUTTON)
-      .should("not.exist");
+      .should('not.exist');
     cy.get(STREAM_ROWS)
       .first({ timeout: 45000 })
       .find(MODIFY_STREAM_BUTTON)
-      .should("not.exist");
+      .should('not.exist');
   }
 
   static validateTokenTotalNetFlowRates(
@@ -289,12 +289,12 @@ export class DashboardPage extends BasePage {
     amounts: string
   ) {
     //Input the amounts in order seperating with a comma, e.g. 1,-1,2 = 1 net , -1 outflow , 1 inflow
-    let flowValues = amounts === "-" ? amounts : amounts.split(",");
+    let flowValues = amounts === '-' ? amounts : amounts.split(',');
     cy.get(
       `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell]`,
       { timeout: 60000 }
-    ).should("be.visible");
-    if (amounts === "-") {
+    ).should('be.visible');
+    if (amounts === '-') {
       this.hasText(
         `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell] ${NO_NET_FLOW_VALUE}`,
         flowValues[0]
@@ -333,10 +333,10 @@ export class DashboardPage extends BasePage {
 
   static validateThatFaucetMessageIsShown() {
     this.isVisible(FAUCET_MESSAGE_CONTAINER);
-    this.hasText(FAUCET_MESSAGE_TITLE, "Get Testnet Tokens");
+    this.hasText(FAUCET_MESSAGE_TITLE, 'Get Testnet Tokens');
     this.hasText(
       FAUCET_MESSAGE_DESCRIPTION,
-      "Claim tokens from our free testnet faucet to try out streaming payments."
+      'Claim tokens from our free testnet faucet to try out streaming payments.'
     );
   }
 
