@@ -127,6 +127,9 @@ export const wagmiConfig = defaultWagmiConfig({
   enableInjected: true,
   enableWalletConnect: true,
   enableEIP6963: enableEIP6963,
+  auth: {
+    email: false,
+  },
   connectors: [
     safe({
       allowedDomains: [
