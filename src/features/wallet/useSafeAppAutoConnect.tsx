@@ -1,5 +1,5 @@
 import { useAccount, useConnect } from 'wagmi';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 const SAFE_CONNECTOR_ID = "safe";
 
@@ -9,13 +9,32 @@ const useSafeAppAutoConnect = () => {
 
     const safeConnector = useMemo(() => {
         return connectors.find((c) => c.id === SAFE_CONNECTOR_ID);
-    }, [connect, connectors]);
+    }, [connectors]);
+
+    const [hasAttemptedConnection, setHasAttemptedConnection] = useState(false);
 
     useEffect(() => {
-        if (!isReconnecting && !isConnected && safeConnector) {
+        if (!hasAttemptedConnection && !isReconnecting && !isConnected && safeConnector) {
             connect({ connector: safeConnector });
+            setHasAttemptedConnection(true);
         }
-    }, [isReconnecting, safeConnector]); // Don't include `isConnected` here, we only want to run this once in practice.
+    }, [isReconnecting, safeConnector, connect]); // Don't include `isConnected` here, we only want to run this once in practice.
 }
 
-export { useSafeAppAutoConnect };
+const SafeAppAutoConnector = () => {
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    // Safe App connecting is flaky, so we fight with any chance of a race condition.
+    return mounted ? <SafeAppAutoConnectorInternal /> : null;
+}
+
+const SafeAppAutoConnectorInternal = () => {
+    useSafeAppAutoConnect();
+    return null;
+}
+
+export { SafeAppAutoConnector };
