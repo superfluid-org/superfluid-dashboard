@@ -194,7 +194,7 @@ const OnboardingCards: FC<OnboardingCardsProps> = ({
           <CancelIcon />
         </IconButton>
       </OnboardingItem>
-      <OnboardingItem
+      {/* <OnboardingItem
         dataCy="try-out-superfluid-onboarding-card"
         title="Try out Superfluid"
         subheader="Start on a Testnet"
@@ -204,7 +204,7 @@ const OnboardingCards: FC<OnboardingCardsProps> = ({
         <IconButton color="primary">
           <MoveToInboxRoundedIcon />
         </IconButton>
-      </OnboardingItem>
+      </OnboardingItem> */}
     </Stack>
   );
 };
