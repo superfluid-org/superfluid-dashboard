@@ -9,8 +9,8 @@ import {
   TOKEN_BALANCE,
   TOKEN_SEARCH_RESULTS,
 } from './Common';
-import { ethers } from 'ethers';
 
+export const RANDOM_VALUE_DURING_TEST = Math.floor(Math.random() * 10) + 2;
 const SEND_BUTTON = '[data-cy=send-transaction-button]';
 const RECEIVER_BUTTON = '[data-cy=address-button]';
 const SELECT_TOKEN_BUTTON = '[data-cy=select-token-button]';
@@ -71,7 +71,6 @@ const SCHEDULING_TOGGLE = '[data-cy=scheduling-tooltip] [type=checkbox]';
 const TOTAL_STREAM_INPUT = '[data-cy=total-stream] input';
 const ALLOWLIST_MESSAGE = '[data-cy=allowlist-message]';
 const ALLOWLIST_LINK = '[data-cy=allowlist-link]';
-
 export class SendPage extends BasePage {
   static async cancelTokenStreamFromTo(
     token: string,
@@ -391,7 +390,9 @@ export class SendPage extends BasePage {
       });
       this.doesNotExist('[role=dialog]');
       this.clear(`${FLOW_RATE_INPUT} input`);
-      this.type(FLOW_RATE_INPUT, amount);
+      const amountToPutIn =
+        amount === 'random' ? RANDOM_VALUE_DURING_TEST : amount;
+      this.type(FLOW_RATE_INPUT, amountToPutIn);
       this.click(SELECT_TOKEN_BUTTON);
       this.click(`[data-cy="${selectedToken}-list-item"]`, 0, {
         timeout: 60000,
@@ -447,9 +448,10 @@ export class SendPage extends BasePage {
   ) {
     this.hasText(ADDRESS_BUTTON_TEXT, address);
     this.hasText(SELECT_TOKEN_BUTTON, token);
+    let valueToCheck = amount === 'random' ? RANDOM_VALUE_DURING_TEST : amount;
     this.hasValue(
       `${FLOW_RATE_INPUT} input`,
-      parseFloat(amount).toFixed(1).toString()
+      parseFloat(valueToCheck.toString()).toFixed(1).toString()
     );
     this.hasText(`${TIME_UNIT_SELECTION_BUTTON} div`, `/ ${timeUnit}`);
     this.isVisible(`[data-cy=network-badge-${networksBySlug.get(network)?.id}`);

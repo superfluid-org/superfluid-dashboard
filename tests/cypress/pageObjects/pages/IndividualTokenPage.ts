@@ -3,6 +3,7 @@ import { format } from 'date-fns';
 import { networksBySlug } from '../../superData/networks';
 import { Common, TOKEN_ANIMATION, TOKEN_BALANCE } from './Common';
 import { ethers } from 'ethers';
+import { RANDOM_VALUE_DURING_TEST } from './SendPage';
 
 const TOKEN_GRAPH = '[data-cy=token-graph]';
 const LIQUIDATION_DATE = '[data-cy=liquidation-date]';
@@ -94,8 +95,11 @@ export class IndividualTokenPage extends BasePage {
       plusOrMinus = '+';
       this.get(STREAM_ROWS, 0).find(RECEIVING_ICON).should('be.visible');
     }
+    let amountToCheck = amount === 'random' ? RANDOM_VALUE_DURING_TEST : amount;
     let flowRateString =
-      parseInt(amount) > 0 ? `${plusOrMinus + amount}/mo` : '-';
+      parseInt(amountToCheck.toString()) > 0
+        ? `${plusOrMinus + amount}/mo`
+        : '-';
     this.hasText(`${STREAM_ROWS} ${STREAM_FLOW_RATES}`, flowRateString, 0, {
       timeout: 60000,
     });

@@ -82,10 +82,10 @@ export class GnosisSafe extends BasePage {
   }
 
   static connectGnosisSafeWallet() {
+    //A workaround for gnosis safe connecting during cypress tests/ otherwise it would not connect
+    cy.wait(10000);
     cy.enter(SUPERFLUID_IFRAME).then((getBody) => {
-      cy.wait(30000);
       getBody().find(CONNECT_WALLET_BUTTON).first().click();
-      getBody().click(750, 400);
     });
   }
 
