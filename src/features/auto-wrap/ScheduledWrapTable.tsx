@@ -25,7 +25,6 @@ import { AutoWrapContractInfo } from "../vesting/VestingScheduleTables";
 import { PlatformWhitelistedStatus } from "./ScheduledWrapTables";
 import { platformApi } from "../redux/platformApi/platformApi";
 import ScheduledWrapLoadingTable from "./ScheduledWrapLoadingTable";
-import { uniqBy } from "lodash";
 
 interface TokenSnapshotTableProps {
   address: Address;
@@ -67,6 +66,11 @@ const ScheduledWrapTable: FC<TokenSnapshotTableProps> = ({
         }),
       }
     );
+
+    console.log({
+      wrapSchedules,
+      network: network.name,
+    })
 
   const paginatedWrapSchedules = useMemo(
     () => wrapSchedules.slice(page * rowsPerPage, (page + 1) * rowsPerPage),

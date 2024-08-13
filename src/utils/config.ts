@@ -29,11 +29,6 @@ const config = {
   accountingApi:
     process.env.NEXT_PUBLIC_ACCOUNTING_API ||
     "https://accounting.superfluid.dev/v1",
-  platformApi: {
-    avalanceFuji:
-      process.env.NEXT_PUBLIC_PLATFORM_AVALANCHE_FUJI ||
-      "https://prod-avalanche-fuji-platform-service.dev.superfluid.dev",
-  },
   segmentWriteKey: isProduction
     ? segmentWriteKeyForProduction
     : isDeployPreview
