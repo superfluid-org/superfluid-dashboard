@@ -1,7 +1,6 @@
 import { GlobalStyles, useMediaQuery, useTheme } from "@mui/material";
-import { FC, ReactElement, ReactNode, useEffect } from "react";
+import { FC, ReactNode, useEffect } from "react";
 import { useIntercom } from "react-use-intercom";
-import config from "../../utils/config";
 import { useLayoutContext } from "../layout/LayoutContext";
 import { transactionDrawerWidth } from "../transactionDrawer/TransactionDrawer";
 
@@ -13,17 +12,7 @@ const IntercomHandler: FC<IntercomHandlerProps> = ({ children }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { transactionDrawerOpen } = useLayoutContext();
-  const { boot, update, hide } = useIntercom();
-
-  useEffect(() => {
-    if (!config.intercom.appId) console.warn("Intercom not initialized.");
-
-    boot({
-      horizontalPadding: 24,
-      verticalPadding: 24,
-      alignment: "right",
-    });
-  }, [boot]);
+  const { update, hide } = useIntercom();
 
   useEffect(() => {
     const isDarkMode = theme.palette.mode === "dark";
