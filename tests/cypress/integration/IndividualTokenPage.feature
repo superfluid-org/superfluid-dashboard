@@ -21,9 +21,7 @@ Feature: Token page test cases
     And The revoke buttons are disabled
 
   Scenario: Transfers table in token page
-    Given "Dashboard Page" is open without connecting a wallet
-    And User uses view mode to look at "staticBalanceAccount"
-    And User changes their network to "opsepolia"
+    Given "Dashboard Page" is open with "staticBalanceAccount" connected on "opsepolia"
     And User opens "opsepolia" "fUSDCx" individual token page
     And User opens the transfers tab
     Then "staticBalanceAccount" transfers for "fUSDCx" on "opsepolia" are shown correctly

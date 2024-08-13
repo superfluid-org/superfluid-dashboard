@@ -1,76 +1,76 @@
-import { BasePage, UnitOfTime } from "../BasePage";
-import { WrapPage } from "./WrapPage";
-import { networksBySlug } from "../../superData/networks";
-import { EthHelper } from "../../support/helpers/ethHelper";
+import { BasePage, UnitOfTime } from '../BasePage';
+import { WrapPage } from './WrapPage';
+import { networksBySlug } from '../../superData/networks';
+import { EthHelper } from '../../support/helpers/ethHelper';
 import {
   Common,
   CONNECT_WALLET_BUTTON,
   TOKEN_ANIMATION,
   TOKEN_BALANCE,
   TOKEN_SEARCH_RESULTS,
-} from "./Common";
-import { ethers } from "ethers";
+} from './Common';
+import { ethers } from 'ethers';
 
-const SEND_BUTTON = "[data-cy=send-transaction-button]";
-const RECEIVER_BUTTON = "[data-cy=address-button]";
-const SELECT_TOKEN_BUTTON = "[data-cy=select-token-button]";
-const FLOW_RATE_INPUT = "[data-cy=flow-rate-input]";
-const TIME_UNIT_SELECTION_BUTTON = "[data-cy=time-unit-selection-button]";
-const AMOUNT_PER_SECOND = "[data-cy=preview-per-second]";
-const ADDRESS_DIALOG_INPUT = "[data-cy=address-dialog-input]";
-const CLOSE_DIALOG_BUTTON = "[data-testid=CloseRoundedIcon]";
-const OTHER_CLOSE_DIALOG_BUTTON = "[data-testid=CloseIcon]";
-const ENS_ENTRIES = "[data-cy=ens-entry]";
-const ENS_ENTRY_NAMES = "[data-cy=ens-entry] h6";
-const ENS_ENTRY_ADDRESS = "[data-cy=ens-entry] p";
-const RECENT_ENTRIES = "[data-cy=recents-entry]";
-const RECENT_ENTRIES_ADDRESS = "[data-cy=recents-entry] h6";
-const RECEIVER_CLEAR_BUTTON = "[data-testid=CloseIcon]";
-const TOKEN_SEARCH_INPUT = "[data-cy=token-search-input] input";
-const RESULTS_WRAP_BUTTONS = "[data-cy=wrap-button]";
-const STREAM_ENDS_ON = "[data-cy=preview-ends-on]";
-const PREVIEW_AMOUNT_PER_SECOND = "[data-cy=amount-per-second]";
-const PREVIEW_FLOW_RATE = "[data-cy=preview-flow-rate]";
-const PREVIEW_RECEIVER = "[data-cy=preview-receiver]";
-const PREVIEW_ENDS_ON = "[data-cy=preview-ends-on]";
-const PREVIEW_UPFRONT_BUFFER = "[data-cy=preview-upfront-buffer]";
+const SEND_BUTTON = '[data-cy=send-transaction-button]';
+const RECEIVER_BUTTON = '[data-cy=address-button]';
+const SELECT_TOKEN_BUTTON = '[data-cy=select-token-button]';
+const FLOW_RATE_INPUT = '[data-cy=flow-rate-input]';
+const TIME_UNIT_SELECTION_BUTTON = '[data-cy=time-unit-selection-button]';
+const AMOUNT_PER_SECOND = '[data-cy=preview-per-second]';
+const ADDRESS_DIALOG_INPUT = '[data-cy=address-dialog-input]';
+const CLOSE_DIALOG_BUTTON = '[data-testid=CloseRoundedIcon]';
+const OTHER_CLOSE_DIALOG_BUTTON = '[data-testid=CloseIcon]';
+const ENS_ENTRIES = '[data-cy=ens-entry]';
+const ENS_ENTRY_NAMES = '[data-cy=ens-entry] h6';
+const ENS_ENTRY_ADDRESS = '[data-cy=ens-entry] p';
+const RECENT_ENTRIES = '[data-cy=recents-entry]';
+const RECENT_ENTRIES_ADDRESS = '[data-cy=recents-entry] h6';
+const RECEIVER_CLEAR_BUTTON = '[data-testid=CloseIcon]';
+const TOKEN_SEARCH_INPUT = '[data-cy=token-search-input] input';
+const RESULTS_WRAP_BUTTONS = '[data-cy=wrap-button]';
+const STREAM_ENDS_ON = '[data-cy=preview-ends-on]';
+const PREVIEW_AMOUNT_PER_SECOND = '[data-cy=amount-per-second]';
+const PREVIEW_FLOW_RATE = '[data-cy=preview-flow-rate]';
+const PREVIEW_RECEIVER = '[data-cy=preview-receiver]';
+const PREVIEW_ENDS_ON = '[data-cy=preview-ends-on]';
+const PREVIEW_UPFRONT_BUFFER = '[data-cy=preview-upfront-buffer]';
 const BUFFER_WARNING_AMOUNT =
-  "[data-cy=buffer-warning] span [data-cy=token-amount]";
-const PROTECT_YOUR_BUFFER_ERROR = "[data-cy=protect-your-buffer-error]";
-const RISK_CHECKBOX = "[data-cy=risk-checkbox]";
-const ADDRESS_BUTTON_TEXT = "[data-cy=address-button]";
-const CHOSEN_ENS_ADDRESS = "[data-cy=address-button] span p";
-const TOKEN_SELECT_NAME = "[data-cy=token-symbol-and-name] p";
-const TOKEN_SELECT_SYMBOL = "[data-cy=token-symbol-and-name] h6";
+  '[data-cy=buffer-warning] span [data-cy=token-amount]';
+const PROTECT_YOUR_BUFFER_ERROR = '[data-cy=protect-your-buffer-error]';
+const RISK_CHECKBOX = '[data-cy=risk-checkbox]';
+const ADDRESS_BUTTON_TEXT = '[data-cy=address-button]';
+const CHOSEN_ENS_ADDRESS = '[data-cy=address-button] span p';
+const TOKEN_SELECT_NAME = '[data-cy=token-symbol-and-name] p';
+const TOKEN_SELECT_SYMBOL = '[data-cy=token-symbol-and-name] h6';
 const TOKEN_SELECT_BALANCE = `${TOKEN_BALANCE} span`;
-const BALANCE_WRAP_BUTTON = "[data-cy=balance-wrap-button]";
-const PREVIEW_BALANCE = "[data-cy=balance]";
-const TOKEN_NO_SEARCH_RESULTS = "[data-cy=token-search-no-results]";
-const DIALOG = "[role=dialog]";
-const DIALOG_CONTENT = "[data-cy=dialog-content]";
-const APPROVAL_MESSAGE = "[data-cy=approval-message]";
-const TX_MESSAGE_NETWORK = "[data-cy=tx-network]";
-const LOADING_SPINNER = "[role=progressbar]";
-const TX_BROADCASTED_MESSAGE = "[data-cy=broadcasted-message]";
-const TX_BROADCASTED_ICON = "[data-cy=broadcasted-icon]";
-const SEND_MORE_STREAMS_BUTTON = "[data-cy=send-more-streams-button]";
-const GO_TO_TOKENS_PAGE_BUTTON = "[data-cy=go-to-token-page-button]";
-const CANCEL_STREAM_BUTTON = "[data-cy=cancel-stream-button]";
-const MODIFY_STREAM_BUTTON = "[data-cy=modify-stream-button]";
-const SEND_OR_MOD_STREAM = "[data-cy=send-or-modify-stream]";
-const ALL_BUTTONS = "[data-cy=send-card] [data-cy*=button]";
-const PREVIEW_BUFFER_LOSS = "[data-cy=preview-buffer-loss]";
-const TX_DRAWER_BUTTON = "[data-cy=tx-drawer-button]";
-const OK_BUTTON = "[data-cy=ok-button]";
-const RECEIVER_DIALOG = "[data-cy=receiver-dialog]";
-const START_DATE = "[data-cy=start-date]";
+const BALANCE_WRAP_BUTTON = '[data-cy=balance-wrap-button]';
+const PREVIEW_BALANCE = '[data-cy=balance]';
+const TOKEN_NO_SEARCH_RESULTS = '[data-cy=token-search-no-results]';
+const DIALOG = '[role=dialog]';
+const DIALOG_CONTENT = '[data-cy=dialog-content]';
+const APPROVAL_MESSAGE = '[data-cy=approval-message]';
+const TX_MESSAGE_NETWORK = '[data-cy=tx-network]';
+const LOADING_SPINNER = '[role=progressbar]';
+const TX_BROADCASTED_MESSAGE = '[data-cy=broadcasted-message]';
+const TX_BROADCASTED_ICON = '[data-cy=broadcasted-icon]';
+const SEND_MORE_STREAMS_BUTTON = '[data-cy=send-more-streams-button]';
+const GO_TO_TOKENS_PAGE_BUTTON = '[data-cy=go-to-token-page-button]';
+const CANCEL_STREAM_BUTTON = '[data-cy=cancel-stream-button]';
+const MODIFY_STREAM_BUTTON = '[data-cy=modify-stream-button]';
+const SEND_OR_MOD_STREAM = '[data-cy=send-or-modify-stream]';
+const ALL_BUTTONS = '[data-cy=send-card] [data-cy*=button]';
+const PREVIEW_BUFFER_LOSS = '[data-cy=preview-buffer-loss]';
+const TX_DRAWER_BUTTON = '[data-cy=tx-drawer-button]';
+const OK_BUTTON = '[data-cy=ok-button]';
+const RECEIVER_DIALOG = '[data-cy=receiver-dialog]';
+const START_DATE = '[data-cy=start-date]';
 const START_DATE_BORDER = `${START_DATE} fieldset`;
-const END_DATE = "[data-cy=end-date]";
+const END_DATE = '[data-cy=end-date]';
 const END_DATE_BORDER = `${END_DATE} fieldset`;
-const SCHEDULING_TOGGLE = "[data-cy=scheduling-tooltip] [type=checkbox]";
-const TOTAL_STREAM_INPUT = "[data-cy=total-stream] input";
-const ALLOWLIST_MESSAGE = "[data-cy=allowlist-message]";
-const ALLOWLIST_LINK = "[data-cy=allowlist-link]";
+const SCHEDULING_TOGGLE = '[data-cy=scheduling-tooltip] [type=checkbox]';
+const TOTAL_STREAM_INPUT = '[data-cy=total-stream] input';
+const ALLOWLIST_MESSAGE = '[data-cy=allowlist-message]';
+const ALLOWLIST_LINK = '[data-cy=allowlist-link]';
 
 export class SendPage extends BasePage {
   static async cancelTokenStreamFromTo(
@@ -81,12 +81,12 @@ export class SendPage extends BasePage {
   ) {
     const ethHelper = new EthHelper(
       network,
-      Cypress.env("TX_ACCOUNT_PRIVATE_KEY2")
+      Cypress.env('TX_ACCOUNT_PRIVATE_KEY2')
     );
     //Bobs(TX_ACCOUNT_2) address
     await ethHelper.deleteFlowIfNeccesary(
       token,
-      "0x9B6157d44134b21D934468B8bf709294cB298aa7",
+      '0x9B6157d44134b21D934468B8bf709294cB298aa7',
       receiver
     );
   }
@@ -98,23 +98,23 @@ export class SendPage extends BasePage {
   ) {
     const ethHelper = new EthHelper(
       network,
-      Cypress.env("TX_ACCOUNT_PRIVATE_KEY2")
+      Cypress.env('TX_ACCOUNT_PRIVATE_KEY2')
     );
     //Approx 0.5 per month
     await ethHelper.startFlowIfNeccesary(
       token,
-      "0x9B6157d44134b21D934468B8bf709294cB298aa7",
+      '0x9B6157d44134b21D934468B8bf709294cB298aa7',
       receiver,
-      "192901234567"
+      '192901234567'
     );
-    //Wait just to make sure the nonce used by the provider when connecting to the dashboard is not the same and fail the test
   }
+
   static searchForTokenInTokenList(token: string) {
     this.type(TOKEN_SEARCH_INPUT, token);
   }
 
   static validateSendPagePreviewBalance() {
-    cy.fixture("networkSpecificData").then((networkSpecificData) => {
+    cy.fixture('networkSpecificData').then((networkSpecificData) => {
       let selectedValues =
         networkSpecificData.polygon.staticBalanceAccount.tokenValues[0].balance;
 
@@ -128,7 +128,7 @@ export class SendPage extends BasePage {
   }
 
   static recentReceiversAreShown(network: string) {
-    cy.fixture("networkSpecificData").then((networkSpecificData) => {
+    cy.fixture('networkSpecificData').then((networkSpecificData) => {
       networkSpecificData[network].staticBalanceAccount.recentReceivers.forEach(
         (receiver: any, index: number) => {
           this.hasText(RECENT_ENTRIES, receiver.address, index);
@@ -145,9 +145,9 @@ export class SendPage extends BasePage {
   }
 
   static inputStreamTestData(isConnected: string) {
-    const connected = isConnected === "with";
+    const connected = isConnected === 'with';
     this.click(RECEIVER_BUTTON);
-    cy.fixture("commonData").then((commonData) => {
+    cy.fixture('commonData').then((commonData) => {
       this.type(ADDRESS_DIALOG_INPUT, commonData.staticBalanceAccount);
       this.doesNotExist(ADDRESS_DIALOG_INPUT);
       this.hasText(ADDRESS_BUTTON_TEXT, commonData.staticBalanceAccount);
@@ -167,26 +167,26 @@ export class SendPage extends BasePage {
         .eq(0)
         .find(TOKEN_SELECT_SYMBOL)
         .then(($tokenSearchResultName) => {
-          cy.wrap($tokenSearchResultName.text()).as("lastChosenToken");
+          cy.wrap($tokenSearchResultName.text()).as('lastChosenToken');
         });
       this.clickFirstVisible(TOKEN_SEARCH_RESULTS);
-      this.type(FLOW_RATE_INPUT, "1");
+      this.type(FLOW_RATE_INPUT, '1');
     });
   }
 
   static validateStreamEndingAndAmountPerSecond() {
-    this.containsText(STREAM_ENDS_ON, "Never");
-    this.containsText(AMOUNT_PER_SECOND, "0.000000380517503805");
+    this.containsText(STREAM_ENDS_ON, 'Never');
+    this.containsText(AMOUNT_PER_SECOND, '0.000000380517503805');
   }
 
   static checkIfStreamPreviewIsCorrectWhenUserNotConnected() {
-    cy.fixture("commonData").then((commonData) => {
+    cy.fixture('commonData').then((commonData) => {
       this.hasText(PREVIEW_RECEIVER, commonData.staticBalanceAccount);
-      cy.get("@lastChosenToken").then((lastChosenToken) => {
+      cy.get('@lastChosenToken').then((lastChosenToken) => {
         this.hasText(PREVIEW_FLOW_RATE, `1 ${lastChosenToken}/month`);
       });
     });
-    this.hasText(PREVIEW_ENDS_ON, "Never");
+    this.hasText(PREVIEW_ENDS_ON, 'Never');
   }
 
   static acceptRiskWarning() {
@@ -199,17 +199,17 @@ export class SendPage extends BasePage {
   static checkConnectWalletButton() {
     this.isVisible(CONNECT_WALLET_BUTTON);
     this.isNotDisabled(CONNECT_WALLET_BUTTON);
-    this.hasText(`main ${CONNECT_WALLET_BUTTON}`, "Connect Wallet");
+    this.hasText(`main ${CONNECT_WALLET_BUTTON}`, 'Connect Wallet');
   }
 
   static searchForReceiver(ensNameOrAddress: string, index = 0) {
     this.click(RECEIVER_BUTTON, index);
     this.type(ADDRESS_DIALOG_INPUT, ensNameOrAddress);
-    cy.wrap(ensNameOrAddress).as("ensNameOrAddress");
+    cy.wrap(ensNameOrAddress).as('ensNameOrAddress');
   }
 
   static recipientEnsResultsContain(result: string) {
-    cy.get("@ensNameOrAddress").then((ensNameOrAddress) => {
+    cy.get('@ensNameOrAddress').then((ensNameOrAddress) => {
       this.hasText(ENS_ENTRY_NAMES, ensNameOrAddress);
       this.hasText(ENS_ENTRY_ADDRESS, result);
     });
@@ -217,7 +217,7 @@ export class SendPage extends BasePage {
 
   static validateEnsEntry(ensName: string) {
     this.hasText(ENS_ENTRY_NAMES, ensName);
-    cy.fixture("commonData").then((data) => {
+    cy.fixture('commonData').then((data) => {
       this.hasText(ENS_ENTRY_ADDRESS, data[ensName]);
     });
   }
@@ -232,7 +232,7 @@ export class SendPage extends BasePage {
 
   static clearReceiverField() {
     this.clickFirstVisible(RECEIVER_CLEAR_BUTTON);
-    this.hasText(RECEIVER_BUTTON, "Public Address, ENS or Lens");
+    this.hasText(RECEIVER_BUTTON, 'Public Address, ENS or Lens');
   }
 
   static receiverDialog() {
@@ -253,13 +253,13 @@ export class SendPage extends BasePage {
     cy.get(RECENT_ENTRIES_ADDRESS)
       .eq(0)
       .then((el) => {
-        cy.wrap(el.text()).as("lastChosenReceiver");
+        cy.wrap(el.text()).as('lastChosenReceiver');
       });
     this.clickFirstVisible(RECENT_ENTRIES);
   }
 
   static correctRecentReceiverIsChosen() {
-    cy.get("@lastChosenReceiver").then((lastChosenReceiver) => {
+    cy.get('@lastChosenReceiver').then((lastChosenReceiver) => {
       this.hasText(ADDRESS_BUTTON_TEXT, lastChosenReceiver);
     });
   }
@@ -273,7 +273,7 @@ export class SendPage extends BasePage {
     account: string,
     network: string
   ) {
-    cy.fixture("networkSpecificData").then((networkSpecificData) => {
+    cy.fixture('networkSpecificData').then((networkSpecificData) => {
       networkSpecificData[network][account].tokenValues.forEach(
         (values: any) => {
           let specificToken = `[data-cy=${values.token}-list-item] `;
@@ -298,8 +298,8 @@ export class SendPage extends BasePage {
   }
 
   static verifyAllSupertokenAnimations() {
-    cy.get("[data-cy*=list-item]").each((el) => {
-      cy.wrap(el).find(TOKEN_ANIMATION).should("exist");
+    cy.get('[data-cy*=list-item]').each((el) => {
+      cy.wrap(el).find(TOKEN_ANIMATION).should('exist');
     });
   }
 
@@ -323,7 +323,7 @@ export class SendPage extends BasePage {
   }
 
   static validateBalanceAndNoWrapButtonForNativeToken() {
-    this.hasText(PREVIEW_BALANCE, "0 ");
+    this.hasText(PREVIEW_BALANCE, '0 ');
     this.doesNotExist(BALANCE_WRAP_BUTTON);
   }
 
@@ -333,13 +333,13 @@ export class SendPage extends BasePage {
 
   static tokenSearchResultsOnlyContain(token: string) {
     cy.get(`[data-cy*=-list-item] ${TOKEN_SELECT_SYMBOL}`).each((el) => {
-      cy.wrap(el).should("contain", token);
+      cy.wrap(el).should('contain', token);
     });
   }
 
   static tokenSearchNoResultsMessageIsShown() {
     this.isVisible(TOKEN_NO_SEARCH_RESULTS);
-    this.hasText(TOKEN_NO_SEARCH_RESULTS, "Could not find any tokens. :(");
+    this.hasText(TOKEN_NO_SEARCH_RESULTS, 'Could not find any tokens. :(');
   }
 
   static clearTokenSearchField() {
@@ -354,7 +354,7 @@ export class SendPage extends BasePage {
   static validateSortedTokensByAmount() {
     let balances: any[] = [];
     cy.get(TOKEN_BALANCE).each((balance) => {
-      balances.push(parseFloat(balance.text().replace("$", "")));
+      balances.push(parseFloat(balance.text().replace('$', '')));
     });
     cy.wrap(balances).then((array) => {
       let expectedArray = [...array].sort(function (a, b) {
@@ -366,7 +366,7 @@ export class SendPage extends BasePage {
 
   static waitForTokenBalancesToLoad() {
     this.exists(TOKEN_ANIMATION);
-    this.hasText(TOKEN_BALANCE, "0 ", 0);
+    this.hasText(TOKEN_BALANCE, '0 ', 0);
   }
 
   static clickAddressButton() {
@@ -384,12 +384,12 @@ export class SendPage extends BasePage {
       this.isVisible(RECENT_ENTRIES, undefined, { timeout: 30000 });
       this.type(ADDRESS_DIALOG_INPUT, address);
       cy.wait(2000);
-      cy.get("body").then((body) => {
-        if (body.find("[role=presentation]").length > 0) {
-          body.find("[role=presentation]").click();
+      cy.get('body').then((body) => {
+        if (body.find('[role=presentation]').length > 0) {
+          body.find('[role=presentation]').click();
         }
       });
-      this.doesNotExist("[role=dialog]");
+      this.doesNotExist('[role=dialog]');
       this.clear(`${FLOW_RATE_INPUT} input`);
       this.type(FLOW_RATE_INPUT, amount);
       this.click(SELECT_TOKEN_BUTTON);
@@ -411,25 +411,25 @@ export class SendPage extends BasePage {
   }
 
   static overrideNextGasPrice() {
-    if (!Cypress.env("rejected")) {
-      cy.window().then((win) => {
-        // @ts-ignore
-        win.mockSigner.getGasPrice().then((gas) => {
-          // @ts-ignore
-          win.superfluid_dashboard.advanced.nextGasOverrides.gasPrice = gas
-            .mul(2)
-            .toString();
-          // @ts-ignore
-          win.superfluid_dashboard.advanced.nextGasOverrides.gasLimit =
-            "1000000";
-        });
-      });
+    if (!Cypress.env('rejected')) {
+      // cy.window().then((win) => {
+      //   // @ts-ignore
+      //   win.mockBridge.getGasPrice().then((gas) => {
+      //     // @ts-ignore
+      //     win.superfluid_dashboard.advanced.nextGasOverrides.gasPrice = gas
+      //       .mul(2)
+      //       .toString();
+      //     // @ts-ignore
+      //     win.superfluid_dashboard.advanced.nextGasOverrides.gasLimit =
+      //       "1000000";
+      //   });
+      // });
     }
   }
 
   static checkNewStreamBrodcastedDialogs() {
     this.isVisible(TX_BROADCASTED_ICON, undefined, { timeout: 60000 });
-    this.hasText(TX_BROADCASTED_MESSAGE, "Transaction broadcasted");
+    this.hasText(TX_BROADCASTED_MESSAGE, 'Transaction broadcasted');
     this.isVisible(GO_TO_TOKENS_PAGE_BUTTON);
     this.doesNotExist(`${SEND_BUTTON} ${LOADING_SPINNER}`);
   }
@@ -456,10 +456,10 @@ export class SendPage extends BasePage {
   }
 
   static cancelStreamIfStillOngoing() {
-    cy.fixture("commonData").then((data) => {
+    cy.fixture('commonData').then((data) => {
       this.isVisible(PREVIEW_BUFFER_LOSS);
       cy.wait(1000);
-      cy.get("body").then((body) => {
+      cy.get('body').then((body) => {
         if (body.find(CANCEL_STREAM_BUTTON).length > 0) {
           this.overrideNextGasPrice();
           this.click(CANCEL_STREAM_BUTTON);
@@ -469,23 +469,23 @@ export class SendPage extends BasePage {
             timeout: 60000,
           });
           this.inputStreamDetails(
-            "1",
-            "fDAIx",
-            "month",
+            '1',
+            'fDAIx',
+            'month',
             data.accountWithLotsOfData
           );
-          this.hasText(SEND_OR_MOD_STREAM, "Send Stream", undefined, {
+          this.hasText(SEND_OR_MOD_STREAM, 'Send Stream', undefined, {
             timeout: 30000,
           });
           cy.wait(2000);
-          cy.get("body").then((body) => {
-            if (body.find("[role=presentation]").length > 0) {
-              body.find("[role=presentation]").click();
+          cy.get('body').then((body) => {
+            if (body.find('[role=presentation]').length > 0) {
+              body.find('[role=presentation]').click();
             }
           });
-          this.doesNotExist("[role=dialog]");
+          this.doesNotExist('[role=dialog]');
           this.clear(`${FLOW_RATE_INPUT} input`);
-          this.type(FLOW_RATE_INPUT, "1");
+          this.type(FLOW_RATE_INPUT, '1');
           this.click(RISK_CHECKBOX);
         }
       });
@@ -494,18 +494,18 @@ export class SendPage extends BasePage {
 
   static startOrCancelStreamIfNecessary() {
     this.isVisible(PREVIEW_BUFFER_LOSS);
-    cy.fixture("commonData").then((data) => {
-      cy.get("body").then((body) => {
+    cy.fixture('commonData').then((data) => {
+      cy.get('body').then((body) => {
         if (body.find(SEND_BUTTON).length === 0) {
           cy.wait(2000);
-          cy.get("body").then((body) => {
-            if (body.find("[role=presentation]").length > 0) {
-              body.find("[role=presentation]").click();
+          cy.get('body').then((body) => {
+            if (body.find('[role=presentation]').length > 0) {
+              body.find('[role=presentation]').click();
             }
           });
-          this.doesNotExist("[role=dialog]");
+          this.doesNotExist('[role=dialog]');
           this.clear(`${FLOW_RATE_INPUT} input`);
-          this.type(FLOW_RATE_INPUT, "1");
+          this.type(FLOW_RATE_INPUT, '1');
           this.click(RISK_CHECKBOX);
           this.overrideNextGasPrice();
           this.clickSendButton();
@@ -516,16 +516,16 @@ export class SendPage extends BasePage {
             timeout: 90000,
           });
           this.inputStreamDetails(
-            "2",
-            "fDAIx",
-            "month",
+            '2',
+            'fDAIx',
+            'month',
             data.accountWithLotsOfData
           );
-          this.hasText(SEND_OR_MOD_STREAM, "Modify Stream");
+          this.hasText(SEND_OR_MOD_STREAM, 'Modify Stream');
         }
         if (body.find(SEND_BUTTON).length > 0) {
           if (
-            body.find("[class*=MuiAlert-root] [class*=MuiAlert-message]")
+            body.find('[class*=MuiAlert-root] [class*=MuiAlert-message]')
               .length > 2
           ) {
             this.overrideNextGasPrice();
@@ -536,12 +536,12 @@ export class SendPage extends BasePage {
               timeout: 60000,
             });
             this.inputStreamDetails(
-              "1",
-              "fDAIx",
-              "month",
+              '1',
+              'fDAIx',
+              'month',
               data.accountWithLotsOfData
             );
-            this.hasText(SEND_OR_MOD_STREAM, "Send Stream");
+            this.hasText(SEND_OR_MOD_STREAM, 'Send Stream');
             this.overrideNextGasPrice();
             this.clickSendButton();
             this.click(OTHER_CLOSE_DIALOG_BUTTON);
@@ -550,9 +550,9 @@ export class SendPage extends BasePage {
               timeout: 60000,
             });
             this.inputStreamDetails(
-              "2",
-              "fDAIx",
-              "month",
+              '2',
+              'fDAIx',
+              'month',
               data.accountWithLotsOfData
             );
           }
@@ -568,7 +568,7 @@ export class SendPage extends BasePage {
     this.clickSendButton();
     this.isVisible(LOADING_SPINNER);
     this.exists(`${SEND_BUTTON} ${LOADING_SPINNER}`);
-    this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...");
+    this.hasText(APPROVAL_MESSAGE, 'Waiting for transaction approval...');
     this.hasText(
       TX_MESSAGE_NETWORK,
       `(${networksBySlug.get(selectedNetwork)?.name})`
@@ -577,7 +577,7 @@ export class SendPage extends BasePage {
 
   static validateBroadcastedDialogsAfterModifyingStream() {
     this.isVisible(TX_BROADCASTED_ICON, undefined, { timeout: 60000 });
-    this.hasText(TX_BROADCASTED_MESSAGE, "Transaction broadcasted");
+    this.hasText(TX_BROADCASTED_MESSAGE, 'Transaction broadcasted');
     this.isVisible(GO_TO_TOKENS_PAGE_BUTTON);
     this.doesNotExist(`${SEND_BUTTON} ${LOADING_SPINNER}`);
   }
@@ -585,8 +585,8 @@ export class SendPage extends BasePage {
   static startStreamIfNecessary() {
     this.isVisible(PREVIEW_BUFFER_LOSS);
     cy.wait(2000);
-    cy.fixture("commonData").then((data) => {
-      cy.get("body").then((body) => {
+    cy.fixture('commonData').then((data) => {
+      cy.get('body').then((body) => {
         if (body.find(CANCEL_STREAM_BUTTON).length < 1) {
           this.overrideNextGasPrice();
           this.clickSendButton();
@@ -597,12 +597,12 @@ export class SendPage extends BasePage {
             timeout: 60000,
           });
           this.inputStreamDetails(
-            "2",
-            "fDAIx",
-            "month",
+            '2',
+            'fDAIx',
+            'month',
             data.accountWithLotsOfData
           );
-          this.hasText(SEND_OR_MOD_STREAM, "Modify Stream");
+          this.hasText(SEND_OR_MOD_STREAM, 'Modify Stream');
         }
       });
     });
@@ -615,7 +615,7 @@ export class SendPage extends BasePage {
     this.click(CANCEL_STREAM_BUTTON);
     this.isVisible(LOADING_SPINNER);
     this.exists(`${CANCEL_STREAM_BUTTON} ${LOADING_SPINNER}`);
-    this.hasText(APPROVAL_MESSAGE, "Waiting for transaction approval...");
+    this.hasText(APPROVAL_MESSAGE, 'Waiting for transaction approval...');
     this.hasText(
       TX_MESSAGE_NETWORK,
       `(${networksBySlug.get(selectedNetwork)?.name})`
@@ -624,7 +624,7 @@ export class SendPage extends BasePage {
 
   static verifyDialogAfterBroadcastingCancelledStream() {
     this.isVisible(TX_BROADCASTED_ICON, undefined, { timeout: 60000 });
-    this.hasText(TX_BROADCASTED_MESSAGE, "Transaction broadcasted");
+    this.hasText(TX_BROADCASTED_MESSAGE, 'Transaction broadcasted');
     this.isVisible(OK_BUTTON);
     this.doesNotExist(`${CANCEL_STREAM_BUTTON} ${LOADING_SPINNER}`);
   }
@@ -634,7 +634,7 @@ export class SendPage extends BasePage {
   }
 
   static validateEthereumMainnetMinimumDeposit() {
-    cy.get("@lastChosenToken").then((token) => {
+    cy.get('@lastChosenToken').then((token) => {
       this.hasText(PREVIEW_UPFRONT_BUFFER, `69 ${token}`);
       this.hasText(BUFFER_WARNING_AMOUNT, `69 ${token}`);
     });
@@ -655,25 +655,25 @@ export class SendPage extends BasePage {
   }
 
   static validateEndDateBorderIsRed() {
-    this.hasCSS(END_DATE_BORDER, "border-color", "rgb(210, 37, 37)");
+    this.hasCSS(END_DATE_BORDER, 'border-color', 'rgb(210, 37, 37)');
   }
 
   static validateStartDateBorderIsRed() {
-    this.hasCSS(START_DATE_BORDER, "border-color", "rgb(210, 37, 37)");
+    this.hasCSS(START_DATE_BORDER, 'border-color', 'rgb(210, 37, 37)');
   }
 
   static validateVisibleAllowlistMessage() {
     this.isVisible(ALLOWLIST_MESSAGE);
-    this.containsText(ALLOWLIST_MESSAGE, "You are not on the allow list.");
+    this.containsText(ALLOWLIST_MESSAGE, 'You are not on the allow list.');
     this.containsText(
       ALLOWLIST_MESSAGE,
-      "If you want to set start and end dates for your streams,"
+      'If you want to set start and end dates for your streams,'
     );
-    this.containsText(ALLOWLIST_LINK, "Apply for access");
+    this.containsText(ALLOWLIST_LINK, 'Apply for access');
     this.hasAttributeWithValue(
       ALLOWLIST_LINK,
-      "href",
-      "https://use.superfluid.finance/schedulestreams"
+      'href',
+      'https://use.superfluid.finance/schedulestreams'
     );
   }
 
@@ -684,16 +684,16 @@ export class SendPage extends BasePage {
   }
 
   static clickSendButton() {
-    cy.get(SEND_BUTTON).as("sendButton");
-    this.isNotDisabled("@sendButton", undefined, { timeout: 45000 });
-    this.click("@sendButton");
+    cy.get(SEND_BUTTON).as('sendButton');
+    this.isNotDisabled('@sendButton', undefined, { timeout: 45000 });
+    this.click('@sendButton');
   }
 
   static validateScheduledStreamDialogs() {
     this.isVisible(DIALOG_CONTENT);
     cy.get(DIALOG_CONTENT)
-      .invoke("text")
-      .should("match", /You are (sending|modifying) a scheduled stream/);
+      .invoke('text')
+      .should('match', /You are (sending|modifying) a scheduled stream/);
   }
 
   static validateTotalStreamAmount(amount: string) {
@@ -721,17 +721,17 @@ export class SendPage extends BasePage {
   static runFunctionIfPlatformIsDeployedOnNetwork(fn: () => void) {
     if (
       [
-        "avalanche-fuji",
-        "sepolia",
-        "base",
-        "scroll",
-        "scrsepolia",
-        "opsepolia",
-      ].includes(Cypress.env("network")) &&
-      Cypress.env("platformNeeded")
+        'avalanche-fuji',
+        'sepolia',
+        'base',
+        'scroll',
+        'scrsepolia',
+        'opsepolia',
+      ].includes(Cypress.env('network')) &&
+      Cypress.env('platformNeeded')
     ) {
       cy.log(
-        `Skipping the step because ${Cypress.env("network")} is not supported`
+        `Skipping the step because ${Cypress.env('network')} is not supported`
       );
       return;
     } else {
@@ -742,15 +742,15 @@ export class SendPage extends BasePage {
   static skipTestIfPlatformNotAvailableOnNetwork() {
     if (
       [
-        "avalanche-fuji",
-        "sepolia",
-        "base",
-        "scroll",
-        "scrsepolia",
-        "opsepolia",
-        "degen",
-      ].includes(Cypress.env("network")) &&
-      Cypress.env("platformNeeded")
+        'avalanche-fuji',
+        'sepolia',
+        'base',
+        'scroll',
+        'scrsepolia',
+        'opsepolia',
+        'degen',
+      ].includes(Cypress.env('network')) &&
+      Cypress.env('platformNeeded')
     ) {
       return true;
     } else {

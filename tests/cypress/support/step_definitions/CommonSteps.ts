@@ -73,7 +73,7 @@ Given(
       timeout: 90000,
     });
     //Waiting just to make sure the nonces don't get messed up between the start tx and the provider thats used to connect to the dashboard
-    cy.wait(15000);
+    cy.wait(30000);
   }
 );
 

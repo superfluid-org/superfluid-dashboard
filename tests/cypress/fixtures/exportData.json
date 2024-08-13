@@ -313,7 +313,7 @@
           "startTime": 1674745952,
           "endTime": 1675202399,
           "amount": "-679193136",
-          "amountFiat": "-0.000013640311922909267283"
+          "amountFiat": "0"
         }
       ]
     },
@@ -2203,37 +2203,37 @@
           "startTime": 1674745952,
           "endTime": 1674777599,
           "amount": "-47090736",
-          "amountFiat": "-0.0000010836164786373430396"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674777600,
           "endTime": 1674863999,
           "amount": "-128561712",
-          "amountFiat": "-0.0000029485985389322653882"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674864000,
           "endTime": 1674950399,
           "amount": "-128561712",
-          "amountFiat": "-0.0000029574955048057754799"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674950400,
           "endTime": 1675036799,
           "amount": "-128561712",
-          "amountFiat": "-0.0000030077000775941727814"
+          "amountFiat": "0"
         },
         {
           "startTime": 1675036800,
           "endTime": 1675123199,
           "amount": "-128561712",
-          "amountFiat": "-0.0000029917361711785942646"
+          "amountFiat": "0"
         },
         {
           "startTime": 1675123200,
           "endTime": 1675202399,
           "amount": "-117848112",
-          "amountFiat": "-0.0000027009928411955539694"
+          "amountFiat": "0"
         }
       ]
     },
@@ -3979,13 +3979,13 @@
           "startTime": 1674745952,
           "endTime": 1674950399,
           "amount": "-304217136",
-          "amountFiat": "-0.0000069551250906393418446"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674950400,
           "endTime": 1675202399,
           "amount": "-374974512",
-          "amountFiat": "-0.0000087008567746392766577"
+          "amountFiat": "0"
         }
       ]
     },
@@ -4693,7 +4693,7 @@
           "startTime": 1674745952,
           "endTime": 1675202399,
           "amount": "-679193136",
-          "amountFiat": "-0.000013640311922909267283"
+          "amountFiat": "0"
         }
       ]
     },
@@ -5277,7 +5277,7 @@
           "startTime": 1674745952,
           "endTime": 1675209599,
           "amount": "-689906736",
-          "amountFiat": "-0.00001593548698125180314"
+          "amountFiat": "0"
         }
       ]
     },
@@ -5417,7 +5417,7 @@
           "startTime": 1674745952,
           "endTime": 1675209599,
           "amount": "-689906736",
-          "amountFiat": "-0.00001593548698125180314"
+          "amountFiat": "0"
         }
       ]
     },
@@ -5779,7 +5779,7 @@
           "startTime": 1674745952,
           "endTime": 1675209599,
           "amount": "-689906736",
-          "amountFiat": "-0.00001593548698125180314"
+          "amountFiat": "0"
         }
       ]
     },
