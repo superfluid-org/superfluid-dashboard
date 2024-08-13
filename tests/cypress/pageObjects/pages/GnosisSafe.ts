@@ -86,6 +86,10 @@ export class GnosisSafe extends BasePage {
     cy.wait(10000);
     cy.enter(SUPERFLUID_IFRAME).then((getBody) => {
       getBody().find(CONNECT_WALLET_BUTTON).first().click();
+      cy.wait(10000);
+      getBody().click(750, 400);
+      cy.wait(1000);
+      getBody().click(750, 300);
     });
   }
 

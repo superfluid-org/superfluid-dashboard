@@ -98,7 +98,7 @@ export class IndividualTokenPage extends BasePage {
     let amountToCheck = amount === 'random' ? RANDOM_VALUE_DURING_TEST : amount;
     let flowRateString =
       parseInt(amountToCheck.toString()) > 0
-        ? `${plusOrMinus + amount}/mo`
+        ? `${plusOrMinus + amountToCheck}/mo`
         : '-';
     this.hasText(`${STREAM_ROWS} ${STREAM_FLOW_RATES}`, flowRateString, 0, {
       timeout: 60000,

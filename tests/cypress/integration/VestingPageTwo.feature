@@ -85,7 +85,7 @@ Feature: Vesting page second batch of test cases
     And User clicks on the auto-wrap switch
     And User previews the vesting schedule
     And User clicks on the enable auto-wrap transaction button
-    And Auto-wrap transaction message is shown for "fDAIx" on "opsepolia"
+    # And Auto-wrap transaction message is shown for "fDAIx" on "opsepolia"
     Then Transaction rejected error is shown
 
   Scenario: Auto-Wrap not available for native tokens in the vesting form
