@@ -27,11 +27,11 @@ import WagmiManager from "../features/wallet/WagmiManager";
 import { initializeSuperfluidDashboardGlobalObject } from "../global";
 import { IsCypress } from "../utils/SSRUtils";
 import config from "../utils/config";
+import { useStore } from "react-redux";
+import { useAppDispatch } from "../features/redux/store";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
-
-initializeSuperfluidDashboardGlobalObject();
 
 export interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache;
@@ -101,9 +101,22 @@ export default function MyApp(props: AppPropsWithLayout) {
                 </ExpectedNetworkProvider>
               </ImpersonationProvider>
             </AvailableNetworksProvider>
+            <GlobalSuperfluidDashboardObjectInitializer />
           </ReduxProvider>
         </WagmiManager>
       </CacheProvider>
     </NextThemesProvider>
   );
+}
+
+function GlobalSuperfluidDashboardObjectInitializer() {
+  const appDispatch = useAppDispatch();
+
+  useEffect(() => {
+    initializeSuperfluidDashboardGlobalObject({
+      appDispatch,
+    });
+  }, [appDispatch]);
+
+  return null;
 }

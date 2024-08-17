@@ -10,6 +10,7 @@ export type SuperfluidDashboardGlobal = {
   advanced: {
     // Will be used to override gas settings for the next transaction attempt.
     nextGasOverrides: GlobalGasOverrides;
+    addCustomToken: (token: NetworkCustomToken) => Promise<void>;
   };
 };
 

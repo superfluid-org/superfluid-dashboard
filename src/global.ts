@@ -1,12 +1,19 @@
 import { isUndefined } from "lodash";
 import { GlobalGasOverrides } from "./typings/global";
 import { SSR } from "./utils/SSRUtils";
+import { AppDispatch } from "./features/redux/store";
+import { addCustomToken, NetworkCustomToken } from "./features/customTokens/customTokens.slice";
 
-export const initializeSuperfluidDashboardGlobalObject = () => {
+export const initializeSuperfluidDashboardGlobalObject = ({
+  appDispatch
+}: { appDispatch: AppDispatch }) => {
   if (!SSR && !window.superfluid_dashboard) {
     window.superfluid_dashboard = {
       advanced: {
         nextGasOverrides: createEmptyGasOverrides(),
+        addCustomToken: async (token: NetworkCustomToken) => {
+          await appDispatch(addCustomToken(token));
+        },
       },
     };
   }
