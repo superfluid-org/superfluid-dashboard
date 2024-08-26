@@ -7,19 +7,19 @@
   },
   "polygon": {
     "TokenOne": "DAI",
-    "TokenTwo": "USDC",
+    "TokenTwo": "USDC.e",
     "TokenThree": "TDL",
     "TokenGas": "MATIC"
   },
   "optimism": {
     "TokenOne": "DAI",
-    "TokenTwo": "USDC",
+    "TokenTwo": "USDC.e",
     "TokenGas": "ETH",
     "TokenThree": "OP"
   },
   "arbitrum-one": {
     "TokenOne": "DAI",
-    "TokenTwo": "USDC",
+    "TokenTwo": "USDC.e",
     "TokenThree": "RPL",
     "TokenGas": "ETH"
   },
