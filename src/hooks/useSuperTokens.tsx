@@ -48,6 +48,8 @@ export const useSuperTokens = ({ network, onlyWrappable }: { network: Network, o
     return {
         listedSuperTokensQuery,
         customSuperTokensQuery,
-        superTokens
+        superTokens,
+        isLoading: listedSuperTokensQuery.isLoading || customSuperTokensQuery.isLoading,
+        isFetching: listedSuperTokensQuery.isFetching || customSuperTokensQuery.isFetching,
     };
 }

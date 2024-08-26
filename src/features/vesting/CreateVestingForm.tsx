@@ -43,6 +43,7 @@ import { CreateVestingCardView } from "./CreateVestingSection";
 import useActiveAutoWrap from "./useActiveAutoWrap";
 import { SuperTokenMinimal, TokenType } from "../redux/endpoints/tokenTypes";
 import { useVestingVersion } from "../../hooks/useVestingVersion";
+import { useSuperTokens } from "../../hooks/useSuperTokens";
 
 export enum VestingFormLabels {
   Receiver = "Receiver",
@@ -113,43 +114,7 @@ const CreateVestingForm: FC<{
     />
   );
 
-  const networkCustomTokens = useNetworkCustomTokens(network.id);
-
-  const listedSuperTokensQuery = subgraphApi.useTokensQuery({
-    chainId: network.id,
-    filter: {
-      isSuperToken: true,
-      isListed: true,
-    },
-  });
-
-  const customSuperTokensQuery = subgraphApi.useTokensQuery(
-    networkCustomTokens.length > 0
-      ? {
-        chainId: network.id,
-        filter: {
-          isSuperToken: true,
-          isListed: false,
-          id_in: networkCustomTokens,
-        },
-      }
-      : skipToken
-  );
-
-  const superTokens = useMemo(
-    () =>
-      (listedSuperTokensQuery.data?.items || [])
-        .concat(customSuperTokensQuery.data?.items || [])
-        .map((x) => ({
-          type: getSuperTokenType({ ...x, network, address: x.id }),
-          address: x.id,
-          name: x.name,
-          symbol: x.symbol,
-          decimals: 18,
-          isListed: x.isListed,
-        })),
-    [network, listedSuperTokensQuery.data, customSuperTokensQuery.data]
-  );
+  const { superTokens, isFetching } = useSuperTokens({ network });
 
   const TokenController = (
     <Controller
@@ -163,10 +128,8 @@ const CreateVestingForm: FC<{
             showUpgrade: true,
             tokenPairsQuery: {
               data: superTokens,
-              isFetching:
-                listedSuperTokensQuery.isFetching ||
-                customSuperTokensQuery.isFetching,
-            },
+              isFetching: isFetching
+            }
           }}
           onTokenSelect={(x) => onChange(x.address)}
           onBlur={onBlur}

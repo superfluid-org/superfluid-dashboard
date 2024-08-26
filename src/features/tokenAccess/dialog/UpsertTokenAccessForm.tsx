@@ -32,11 +32,8 @@ import AddressSearch from "../../send/AddressSearch";
 import ConnectionBoundaryButton from "../../transactionBoundary/ConnectionBoundaryButton";
 import SelectNetwork from "../../network/SelectNetwork";
 import { TokenDialogButton } from "../../tokenWrapping/TokenDialogButton";
-import { useNetworkCustomTokens } from "../../customTokens/customTokens.slice";
-import { subgraphApi } from "../../redux/store";
-import { skipToken } from "@reduxjs/toolkit/dist/query";
-import { getSuperTokenType } from "../../redux/endpoints/adHocSubgraphEndpoints";
 import TooltipWithIcon from "../../common/TooltipWithIcon";
+import { useSuperTokens } from "../../../hooks/useSuperTokens";
 
 export type TokenAccessProps = {
   flowRateAllowance: {
@@ -182,50 +179,7 @@ export const UpsertTokenAccessForm: FC<{
     />
   );
 
-  const networkCustomTokens = useNetworkCustomTokens(network?.id!);
-
-  const listedSuperTokensQuery = subgraphApi.useTokensQuery({
-    chainId: network?.id!,
-    filter: {
-      isSuperToken: true,
-      isListed: true,
-    },
-  });
-
-  const customSuperTokensQuery = subgraphApi.useTokensQuery(
-    networkCustomTokens.length > 0
-      ? {
-          chainId: network?.id!,
-          filter: {
-            isSuperToken: true,
-            isListed: false,
-            id_in: networkCustomTokens,
-          },
-        }
-      : skipToken
-  );
-
-  const superTokens = useMemo(
-    () =>
-      (listedSuperTokensQuery.data?.items || [])
-        .concat(customSuperTokensQuery.data?.items || [])
-        .map((x) => ({
-          ...x,
-          type: getSuperTokenType({ ...x, network: network!, address: x.id }),
-          address: x.id,
-          name: x.name,
-          symbol: x.symbol,
-          decimals: 18,
-          isListed: x.isListed,
-        })),
-    [
-      network,
-      listedSuperTokensQuery.isLoading,
-      listedSuperTokensQuery.data,
-      customSuperTokensQuery.isLoading,
-      customSuperTokensQuery.data,
-    ]
-  );
+  const { superTokens, isFetching } = useSuperTokens({ network: network! })
 
   return (
     <ConnectionBoundary expectedNetwork={network}>
@@ -290,9 +244,7 @@ export const UpsertTokenAccessForm: FC<{
                             showUpgrade: true,
                             tokenPairsQuery: {
                               data: superTokens,
-                              isFetching:
-                                listedSuperTokensQuery.isFetching ||
-                                customSuperTokensQuery.isFetching,
+                              isFetching: isFetching
                             },
                           }}
                           onTokenSelect={(x) => onChange(x)}
