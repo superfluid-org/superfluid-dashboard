@@ -9,7 +9,11 @@ import {
 } from './tokenTypes';
 import { BigNumber, BigNumberish } from 'ethers';
 import { BasePage, UnitOfTime } from '../pageObjects/BasePage';
-import ensureDefined from '../../../src/utils/ensureDefined';
+
+function ensureDefined<T>(value: T | undefined | null): T {
+  if (!value) throw Error('Value has to be defined.');
+  return value;
+}
 
 export const autoWrapManagerAddresses = {
   [chain.polygon.id]: '0x2581c27E7f6D6AF452E63fCe884EDE3EDd716b32',
