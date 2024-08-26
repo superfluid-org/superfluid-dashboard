@@ -47,7 +47,7 @@ const DefaultActivityRow: FC<DefaultActivityRowProps> = ({
       <TableCell>
         <ListItem sx={{ p: 0 }}>
           <ListItemAvatar>
-            <TokenIcon isUnlisted isSuper tokenSymbol={"fDAIx"} />
+            <TokenIcon isUnlisted isSuper chainId={137} tokenAddress="0x1305F6B6Df9Dc47159D12Eb7aC2804d4A33173c2" /> {/* DAIx */}
           </ListItemAvatar>
           <ListItemText
             primary={"-12.59 ETH"}

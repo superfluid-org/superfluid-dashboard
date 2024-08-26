@@ -4,15 +4,16 @@ import TokenIcon from "../token/TokenIcon";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 
 export const TokenChip: FC<{
+  chainId: number;
   token: {
     address: string;
     symbol: string;
     name: string;
   };
-}> = ({ token }) => {
+}> = ({ chainId, token }) => {
   return (
     <Chip
-      avatar={<TokenIcon tokenSymbol={token.symbol} isSuper />}
+      avatar={<TokenIcon chainId={chainId} tokenAddress={token.address} isSuper />}
       label={
         <Stack>
           <Typography color="text.primary">{token.symbol}</Typography>

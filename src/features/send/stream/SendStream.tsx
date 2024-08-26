@@ -604,7 +604,7 @@ export default memo(function SendStream() {
         startAdornment: <>≈&nbsp;</>,
         endAdornment: (
           <Stack direction="row" gap={0.75} sx={{ ml: 0.5 }}>
-            <TokenIcon tokenSymbol={superToken?.symbol} isSuper size={24} />
+            <TokenIcon isSuper size={24} chainId={network.id} tokenAddress={superToken?.address} />
             <Typography variant="h6" component="span">
               {superToken?.symbol ?? ""}
             </Typography>

@@ -7,13 +7,15 @@ import { extendedSuperTokenList } from "@superfluid-finance/tokenlist"
 import { useMemo } from "react";
 import { memoize } from 'lodash';
 
-export const findTokenFromTokenList = (address: string) => _findTokenFromTokenList(address.toLowerCase());
+export const findTokenFromTokenList = (input: { chainId: number, address: string }) => _findTokenFromTokenList({ chainId: input.chainId, address: input.address.toLowerCase() });
 
-const _findTokenFromTokenList = memoize((address: string) => {
-    const tokenAddressLowerCased = address.toLowerCase();
-    const token = extendedSuperTokenList.tokens.find(x => x.address === tokenAddressLowerCased);
+const _findTokenFromTokenList = memoize((input: { chainId: number, address: string }) => {
+    const tokenAddressLowerCased = input.address.toLowerCase();
+    const token = extendedSuperTokenList.tokens.find(x => x.chainId === input.chainId && x.address === tokenAddressLowerCased);
 
     if (token) {
+        const network = findNetworkOrThrow(allNetworks, input.chainId);
+
         const superTokenInfo = token.extensions?.superTokenInfo;
         if (superTokenInfo) {
             return {
@@ -22,7 +24,12 @@ const _findTokenFromTokenList = memoize((address: string) => {
                 isSuperToken: true,
                 isListed: true,
                 underlyingAddress: superTokenInfo.type === "Wrapper" ? superTokenInfo.underlyingTokenAddress : null,
-                isLoading: false
+                isLoading: false,
+                type: getSuperTokenType({
+                    network,
+                    address: token.address,
+                    underlyingAddress: superTokenInfo.type === "Wrapper" ? superTokenInfo.underlyingTokenAddress : null
+                })
             };
         } else {
             return {
@@ -31,6 +38,9 @@ const _findTokenFromTokenList = memoize((address: string) => {
                 isSuperToken: false,
                 isListed: true,
                 underlyingAddress: null,
+                type: getUnderlyingTokenType({
+                    address: token.address
+                })
             };
         }
     }
@@ -53,7 +63,7 @@ export const useTokenQuery = <T extends boolean = false>(input: {
             return undefined;
         }
 
-        return findTokenFromTokenList(inputParsed.id);
+        return findTokenFromTokenList({ chainId: inputParsed.chainId, address: inputParsed.id });
     }, [inputParsed.isSkip, inputParsed.chainId, inputParsed.id]);
 
     const skipSubgraphQuery = (inputParsed.isSkip || !tokenListToken);

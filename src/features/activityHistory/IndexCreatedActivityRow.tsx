@@ -66,7 +66,8 @@ const IndexCreatedActivityRow: FC<IndexCreatedActivityRowProps> = ({
               <ListItemAvatar>
                 <TokenIcon
                   isSuper
-                  tokenSymbol={tokenQuery.data?.symbol}
+                  chainId={network.id}
+                  tokenAddress={token}
                   isUnlisted={!tokenQuery.data?.isListed}
                   isLoading={tokenQuery.isLoading}
                 />
@@ -89,7 +90,8 @@ const IndexCreatedActivityRow: FC<IndexCreatedActivityRowProps> = ({
             <ListItemText primary={tokenQuery.data?.symbol} />
             <TokenIcon
               isSuper
-              tokenSymbol={tokenQuery.data?.symbol}
+              chainId={network.id}
+              tokenAddress={token}
               isUnlisted={!tokenQuery.data?.isListed}
               isLoading={tokenQuery.isLoading}
             />

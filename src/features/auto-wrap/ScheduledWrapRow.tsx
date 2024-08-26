@@ -170,7 +170,8 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
               >
                 <TokenIcon
                   isSuper
-                  tokenSymbol={superToken?.symbol}
+                  chainId={network.id}
+                  tokenAddress={superTokenAddress}
                   isLoading={isTokenLoading}
                 />
                 <Typography variant="h6" data-cy={"token-symbol"}>
@@ -342,7 +343,8 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
             >
               <TokenIcon
                 isSuper
-                tokenSymbol={superToken?.symbol}
+                chainId={network.id}
+                tokenAddress={superTokenAddress}
                 isLoading={isTokenLoading}
               />
               <Typography variant="h6" data-cy={"token-symbol"}>

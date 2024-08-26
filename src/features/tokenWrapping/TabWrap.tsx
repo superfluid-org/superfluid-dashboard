@@ -375,7 +375,8 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
               startIcon={
                 <TokenIcon
                   isSuper
-                  tokenSymbol={superToken.symbol}
+                  chainId={network.id}
+                  tokenAddress={superToken.address}
                   isUnlisted={!isListed}
                   isLoading={isListedLoading}
                   size={24}

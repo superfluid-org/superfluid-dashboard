@@ -10,14 +10,18 @@ import TokenIcon from "../token/TokenIcon";
 
 interface VestingDataCardProps {
   title: string;
+  chainId: number;
+  tokenAddress: string;
   tokenSymbol: string;
-  tokenAmount: any;
+  tokenAmount: any; // TODO: why any?
   fiatAmount?: any;
   dataCy?: string;
 }
 
 export const VestingDataCardContent: FC<VestingDataCardProps> = ({
   title,
+  chainId,
+  tokenAddress,
   tokenSymbol,
   tokenAmount,
   fiatAmount,
@@ -35,7 +39,7 @@ export const VestingDataCardContent: FC<VestingDataCardProps> = ({
         {title}
       </Typography>
       <Stack direction="row" alignItems="center" gap={1.5}>
-        <TokenIcon isSuper tokenSymbol={tokenSymbol} size={32} />
+        <TokenIcon chainId={chainId} tokenAddress={tokenAddress} isSuper />
         <Stack
           data-cy={dataCy}
           direction={isBelowMd ? "column" : "row"}

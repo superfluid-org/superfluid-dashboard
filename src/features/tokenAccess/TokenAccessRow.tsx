@@ -161,7 +161,8 @@ const TokenAccessRow: FC<Props> = ({
                 >
                   <TokenIcon
                     isSuper
-                    tokenSymbol={superToken?.symbol}
+                    chainId={network.id}
+                    tokenAddress={tokenAddress}
                     isLoading={isTokenLoading}
                   />
                   <Typography variant="h6" data-cy={"token-symbol"}>
@@ -328,7 +329,8 @@ const TokenAccessRow: FC<Props> = ({
             >
               <TokenIcon
                 isSuper
-                tokenSymbol={superToken?.symbol}
+                chainId={network.id}
+                tokenAddress={tokenAddress}
                 isLoading={isTokenLoading}
               />
               <Typography variant="h6" data-cy={"token-symbol"}>

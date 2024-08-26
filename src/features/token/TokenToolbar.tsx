@@ -25,18 +25,22 @@ import AddToWalletButton from "../wallet/AddToWalletButton";
 import TokenIcon from "./TokenIcon";
 
 interface TokenToolbarData {
+  chainId: number;
+  tokenAddress: string;
   symbol: string;
   name: string;
   isUnlisted: boolean;
 }
 
 const TokenToolbarData: FC<TokenToolbarData> = ({
+  chainId,
+  tokenAddress,
   symbol,
   name,
   isUnlisted,
 }) => (
   <Stack data-cy={"token-header"} direction="row" alignItems="center" gap={2}>
-    <TokenIcon isSuper tokenSymbol={symbol} isUnlisted={isUnlisted} />
+    <TokenIcon chainId={chainId} tokenAddress={tokenAddress} isUnlisted={isUnlisted} />
     <Typography data-cy={"token-name"} variant="h3" component="h1">
       {name}
     </Typography>
@@ -98,6 +102,8 @@ const TokenToolbar: FC<TokenToolbarProps> = ({ token, network, onBack }) => {
         {!isBelowMd && (
           <>
             <TokenToolbarData
+              chainId={network.id}
+              tokenAddress={tokenAddress}
               symbol={symbol}
               name={name}
               isUnlisted={!isListed}
@@ -160,7 +166,13 @@ const TokenToolbar: FC<TokenToolbarProps> = ({ token, network, onBack }) => {
       </Stack>
 
       {isBelowMd && (
-        <TokenToolbarData symbol={symbol} name={name} isUnlisted={!isListed} />
+        <TokenToolbarData
+          chainId={network.id}
+          tokenAddress={tokenAddress}
+          symbol={symbol}
+          name={name}
+          isUnlisted={!isListed}
+        />
       )}
     </Stack>
   );

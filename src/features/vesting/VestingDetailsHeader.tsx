@@ -116,7 +116,7 @@ const VestingDetailsHeader: FC<VestingDetailsHeaderProps> = ({
             </IconButton>
             <Stack direction="column">
               <Stack direction="row" alignItems="center" gap={2}>
-                <TokenIcon isSuper tokenSymbol={token.symbol} />
+                <TokenIcon isSuper chainId={network.id} tokenAddress={token.address} />
                 <Typography component="h1" variant="h4">
                   Vesting {token.symbol}
                 </Typography>

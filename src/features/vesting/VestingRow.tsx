@@ -163,7 +163,8 @@ const VestingRow: FC<VestingRowProps> = ({
               <TokenIcon
                 isSuper
                 size={26}
-                tokenSymbol={superTokenQuery.data?.symbol}
+                chainId={network.id}
+                tokenAddress={superTokenAddress}
                 isLoading={superTokenQuery.isLoading}
               />
               <Typography variant="body1mono">
@@ -243,7 +244,8 @@ const VestingRow: FC<VestingRowProps> = ({
             <TokenIcon
               isSuper
               size={26}
-              tokenSymbol={superTokenQuery.data?.symbol}
+              chainId={network.id}
+              tokenAddress={superTokenAddress}
               isLoading={superTokenQuery.isLoading}
             />
           </Stack>

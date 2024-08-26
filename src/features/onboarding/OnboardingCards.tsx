@@ -151,9 +151,9 @@ const OnboardingCards: FC<OnboardingCardsProps> = ({
         href="/wrap?upgrade"
         onClick={onClick}
       >
-        <TokenIcon size={32} tokenSymbol="DAI" />
+        <TokenIcon size={32} chainId={137} tokenAddress="0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063" /> {/* DAI */}
         <SwapVertIcon color="primary" sx={{ transform: "rotate(90deg)" }} />
-        <TokenIcon isSuper size={32} tokenSymbol="DAIx" />
+        <TokenIcon isSuper size={32} chainId={137} tokenAddress="0x1305F6B6Df9Dc47159D12Eb7aC2804d4A33173c2" /> {/* DAIx */} 
       </OnboardingItem>
 
       <OnboardingItem

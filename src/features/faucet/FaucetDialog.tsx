@@ -106,17 +106,23 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
             gap={0.5}
           >
             <TokenChip
-              symbol="MATIC"
+              symbol="OP"
+              chainId={10}
+              tokenAddress="0x4200000000000000000000000000000000000042"
               ChipProps={{ size: isBelowMd ? "small" : "medium" }}
               IconProps={{ size: isBelowMd ? 18 : 24 }}
             />
             <TokenChip
               symbol="fUSDC"
+              chainId={43114}
+              tokenAddress="0x37A024D7f9EA1c7EBb658F5a14CAeddd30F212B7"
               ChipProps={{ size: isBelowMd ? "small" : "medium" }}
               IconProps={{ size: isBelowMd ? 18 : 24 }}
             />
             <TokenChip
               symbol="fDAI"
+              chainId={43114}
+              tokenAddress="0x3b526B50709a5551030673BE284bC9C1e38351ac"
               ChipProps={{ size: isBelowMd ? "small" : "medium" }}
               IconProps={{ size: isBelowMd ? 18 : 24 }}
             />

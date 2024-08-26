@@ -36,7 +36,7 @@ export const useSuperTokens = ({ network, onlyWrappable }: { network: Network, o
         () => {
             const subgraphTokens = (listedSuperTokensQuery.data?.items || []).concat(customSuperTokensQuery.data?.items || []);
             return subgraphTokens.map((x) => {
-                const tokenListToken = findTokenFromTokenList(x.id);
+                const tokenListToken = findTokenFromTokenList({ chainId: network.id, address: x.id });
                 if (tokenListToken) {
                     return ({
                         ...x,

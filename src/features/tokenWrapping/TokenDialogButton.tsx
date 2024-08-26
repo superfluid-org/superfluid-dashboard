@@ -41,7 +41,8 @@ export const TokenDialogButton: FC<{
               <TokenIcon
                 size={24}
                 isSuper={!!isSuperToken}
-                tokenSymbol={token.symbol}
+                chainId={network.id}
+                tokenAddress={token.address}
                 isUnlisted={!isUnderlyingToken && !isListed}
                 isLoading={false}
               />

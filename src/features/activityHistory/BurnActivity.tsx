@@ -88,7 +88,8 @@ const BurnActivity: FC<BurnActivityProps> = ({
                 <ListItemAvatar>
                   <TokenIcon
                     isSuper
-                    tokenSymbol={superToken.symbol}
+                    chainId={network.id}
+                    tokenAddress={superToken.address}
                     isUnlisted={!superToken.isListed}
                   />
                 </ListItemAvatar>
@@ -117,7 +118,10 @@ const BurnActivity: FC<BurnActivityProps> = ({
             {underlyingToken && (
               <ListItem sx={{ p: 0 }}>
                 <ListItemAvatar>
-                  <TokenIcon tokenSymbol={underlyingToken.symbol} />
+                  <TokenIcon
+                    chainId={network.id}
+                    tokenAddress={underlyingToken.address}
+                  />
                 </ListItemAvatar>
                 <ListItemText
                   data-cy={"amountToFrom"}
@@ -167,7 +171,10 @@ const BurnActivity: FC<BurnActivityProps> = ({
                 primaryTypographyProps={{ variant: "h7mono" }}
                 secondaryTypographyProps={{ variant: "body2mono" }}
               />
-              <TokenIcon tokenSymbol={underlyingToken.symbol} />
+              <TokenIcon
+                chainId={network.id}
+                tokenAddress={underlyingToken.address}
+              />
             </Stack>
           )}
         </TableCell>

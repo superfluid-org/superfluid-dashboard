@@ -172,7 +172,8 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
             <ListItemAvatar>
               <TokenIcon
                 isSuper
-                tokenSymbol={tokenSymbol}
+                chainId={network.id}
+                tokenAddress={token}
                 isUnlisted={!snapshot.isListed}
               />
             </ListItemAvatar>

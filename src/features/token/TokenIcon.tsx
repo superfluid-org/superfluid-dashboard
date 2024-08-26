@@ -3,7 +3,8 @@ import { Avatar, Skeleton, styled, Tooltip, useTheme } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { FC } from "react";
 import config from "../../utils/config";
-import { assetApiSlice } from "./tokenManifestSlice";
+import { findTokenFromTokenList, useTokenQuery } from "../../hooks/useSuperToken";
+import { isSuper } from "../redux/endpoints/tokenTypes";
 
 const BorderSvg = styled("svg")(() => ({
   "@keyframes rotating": {
@@ -30,14 +31,15 @@ const AvatarWrapper = styled("div", {
     padding: isSuperToken ? 2 : 0,
     ...(isUnlisted &&
       !isSuperToken && {
-        border: `1px solid ${theme.palette.warning.main}`,
-        borderRadius: "50%",
-      }),
+      border: `1px solid ${theme.palette.warning.main}`,
+      borderRadius: "50%",
+    }),
   })
 );
 
 export interface TokenIconProps {
-  tokenSymbol?: string;
+  chainId?: number;
+  tokenAddress?: string;
   isSuper?: boolean;
   isUnlisted?: boolean;
   isLoading?: boolean;
@@ -45,26 +47,23 @@ export interface TokenIconProps {
 }
 
 const TokenIcon: FC<TokenIconProps> = ({
-  tokenSymbol,
-  isSuper = false,
+  chainId,
+  tokenAddress,
+  isSuper: isSuper_ = false,
   isUnlisted = false,
   isLoading = false,
   size = 36,
 }) => {
   const theme = useTheme();
 
-  const { isLoading: isQueryLoading, data: tokenManifest } =
-    assetApiSlice.useTokenManifestQuery(
-      !!tokenSymbol
-        ? {
-            tokenSymbol,
-          }
-        : skipToken
-    );
+  const token = (chainId && tokenAddress) ? findTokenFromTokenList({
+    chainId,
+    address: tokenAddress,
+  }) : undefined;
 
-  const isSuperToken = isSuper || tokenManifest?.isSuperToken;
+  const isSuperToken = isSuper_ || Boolean((token && isSuper(token)));
   const diameter = size - (isSuperToken ? 4 : 0);
-  const loading = isLoading || isQueryLoading;
+  const loading = isLoading;
 
   return (
     <Tooltip
@@ -153,16 +152,14 @@ const TokenIcon: FC<TokenIconProps> = ({
         {!loading && !isUnlisted && (
           <Avatar
             data-cy={"token-icon"}
-            alt={`${tokenSymbol} token icon`}
+            alt={`${token?.symbol} token icon`}
             sx={{
               width: diameter,
               height: diameter,
             }}
             imgProps={{ sx: { objectFit: "contain", borderRadius: "50%" } }}
             src={
-              tokenManifest?.svgIconPath
-                ? `${config.tokenIconUrl}${tokenManifest.svgIconPath}`
-                : "/icons/token-default.webp"
+              token?.logoURI ?? "/icons/token-default.webp"
             }
           />
         )}

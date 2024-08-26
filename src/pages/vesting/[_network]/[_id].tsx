@@ -370,6 +370,8 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
         >
           <VestingDataCard
             title="Tokens Allocated"
+            chainId={network.id}
+            tokenAddress={token.address}
             dataCy={`${token.symbol}-allocated`}
             tokenSymbol={token.symbol}
             tokenAmount={<Amount wei={expectedVestedBalance || "0"} />}
@@ -384,6 +386,8 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
           />
           <VestingDataCard
             title="Cliff Amount"
+            chainId={network.id}
+            tokenAddress={token.address}
             dataCy={`${token.symbol}-cliff-amount`}
             tokenSymbol={token.symbol}
             tokenAmount={<Amount wei={vestingSchedule.cliffAmount} />}

@@ -76,6 +76,8 @@ const VestingTokenAggregationRow: FC<VestingTokenAggregationRowProps> = ({
         >
           <VestingDataCardContent
             title="Total Allocated"
+            chainId={network.id}
+            tokenAddress={tokenAddress}
             tokenSymbol={token?.symbol || ""}
             tokenAmount={<Amount wei={allocated} />}
             fiatAmount={
@@ -97,6 +99,8 @@ const VestingTokenAggregationRow: FC<VestingTokenAggregationRowProps> = ({
         >
           <VestingDataCardContent
             title="Total Vested"
+            chainId={network.id}
+            tokenAddress={tokenAddress}
             tokenSymbol={token?.symbol || ""}
             tokenAmount={
               <FlowingBalance

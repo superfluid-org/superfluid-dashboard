@@ -241,7 +241,8 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
           <Stack direction="row" alignItems="center" gap={1.5}>
             <TokenIcon
               isSuper
-              tokenSymbol={tokenSymbol}
+              chainId={network.id}
+              tokenAddress={tokenAddress}
               isLoading={isTokenLoading}
             />
             <ListItemText primary={tokenSymbol} />

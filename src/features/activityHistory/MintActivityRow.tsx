@@ -91,7 +91,8 @@ const MintActivityRow: FC<MintActivityRowProps> = ({
             <ListItem sx={{ p: 0 }}>
               <ListItemAvatar>
                 <TokenIcon
-                  tokenSymbol={underlyingToken?.symbol}
+                  chainId={network.id}
+                  tokenAddress={token}
                   isLoading={underlyingTokenQuery.isLoading}
                 />
               </ListItemAvatar>
@@ -123,7 +124,8 @@ const MintActivityRow: FC<MintActivityRowProps> = ({
               <ListItemAvatar>
                 <TokenIcon
                   isSuper
-                  tokenSymbol={superToken?.symbol}
+                  chainId={network.id}
+                  tokenAddress={superTokenAddress}
                   isUnlisted={!isSuperTokenListed}
                   isLoading={superTokenQuery.isLoading}
                 />
@@ -180,7 +182,8 @@ const MintActivityRow: FC<MintActivityRowProps> = ({
             )}
             <TokenIcon
               isSuper
-              tokenSymbol={superToken?.symbol}
+              chainId={network.id}
+              tokenAddress={superTokenAddress}
               isUnlisted={!isSuperTokenListed}
               isLoading={superTokenQuery.isLoading}
             />

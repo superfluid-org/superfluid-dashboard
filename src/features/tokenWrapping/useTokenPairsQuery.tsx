@@ -40,8 +40,14 @@ export const useTokenPairsQuery = ({ network }: { network: Network }) => {
         // TODO: Clean up the duplication
 
         data: (result.data ?? [defaultTokenPair]).map(x => {
-          const underlyingTokenFromTokenList = findTokenFromTokenList(x.underlyingToken.address);
-          const superTokenFromTokenList = findTokenFromTokenList(x.superToken.address);
+          const underlyingTokenFromTokenList = findTokenFromTokenList({
+            chainId: network.id,
+            address: x.underlyingToken.address
+          });
+          const superTokenFromTokenList = findTokenFromTokenList({
+            chainId: network.id,
+            address: x.superToken.address
+          });
 
           return {
             underlyingToken: {
@@ -51,26 +57,29 @@ export const useTokenPairsQuery = ({ network }: { network: Network }) => {
             },
             superToken: {
               ...x.superToken,
-              ...superTokenFromTokenList,
               symbol: superTokenFromTokenList?.symbol ?? x.superToken.symbol,
               name: superTokenFromTokenList?.name ?? x.superToken.name
             }
           }
         }), // Doing it this way the list is never empty and always contains the default token pairs.
         currentData: (result.currentData ?? [defaultTokenPair]).map(x => {
-          const underlyingTokenFromTokenList = findTokenFromTokenList(x.underlyingToken.address);
-          const superTokenFromTokenList = findTokenFromTokenList(x.superToken.address);
+          const underlyingTokenFromTokenList = findTokenFromTokenList({
+            chainId: network.id,
+            address: x.underlyingToken.address
+          });
+          const superTokenFromTokenList = findTokenFromTokenList({
+            chainId: network.id,
+            address: x.superToken.address
+          });
 
           return {
             underlyingToken: {
               ...x.underlyingToken,
-              ...underlyingTokenFromTokenList,
               symbol: underlyingTokenFromTokenList?.symbol ?? x.underlyingToken.symbol,
               name: underlyingTokenFromTokenList?.name ?? x.underlyingToken.name,
             },
             superToken: {
               ...x.superToken,
-              ...superTokenFromTokenList,
               symbol: superTokenFromTokenList?.symbol ?? x.superToken.symbol,
               name: superTokenFromTokenList?.name ?? x.superToken.name
             }

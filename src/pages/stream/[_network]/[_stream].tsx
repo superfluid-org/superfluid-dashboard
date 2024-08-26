@@ -554,7 +554,8 @@ const StreamPageContent: FC<{
               {!isBelowMd && (
                 <TokenIcon
                   isSuper
-                  tokenSymbol={tokenSymbol}
+                  chainId={network.id}
+                  tokenAddress={tokenAddress}
                   isUnlisted={!token?.isListed}
                   isLoading={isTokenLoading}
                   size={isBelowMd ? 32 : 60}
@@ -602,7 +603,8 @@ const StreamPageContent: FC<{
               >
                 <TokenIcon
                   isSuper
-                  tokenSymbol={tokenSymbol}
+                  chainId={network.id}
+                  tokenAddress={tokenAddress}
                   isUnlisted={!token?.isListed}
                   isLoading={isTokenLoading}
                   size={isBelowMd ? 32 : 60}

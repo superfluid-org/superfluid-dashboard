@@ -112,7 +112,7 @@ const CreateVestingPreview: FC<CreateVestingPreviewProps> = ({
               {VestingFormLabels.SuperToken}
             </Typography>
             <Stack direction="row" alignItems="center" gap={1}>
-              <TokenIcon isSuper tokenSymbol={token.symbol} size={28} />
+              <TokenIcon isSuper chainId={network.id} tokenAddress={token.address} size={28} />
               <Typography>{token.symbol}</Typography>
             </Stack>
           </Stack>

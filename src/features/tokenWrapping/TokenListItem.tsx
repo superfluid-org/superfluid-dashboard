@@ -94,7 +94,7 @@ export const TokenListItem: FC<TokenListItemProps> = ({
       <ListItemAvatar>
         <TokenIcon
           isSuper={isSuperToken}
-          tokenSymbol={token.symbol}
+          tokenAddress={token.address}
           isUnlisted={!isListed}
         />
       </ListItemAvatar>

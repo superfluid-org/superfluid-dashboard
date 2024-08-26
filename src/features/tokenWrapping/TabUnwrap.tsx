@@ -259,7 +259,7 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
               variant={theme.palette.mode === "light" ? "outlined" : "token"}
               color="secondary"
               startIcon={
-                <TokenIcon tokenSymbol={underlyingToken.symbol} size={24} />
+                <TokenIcon chainId={network.id} tokenAddress={underlyingToken.address} size={24} />
               }
               sx={{ pointerEvents: "none" }}
               translate="no"

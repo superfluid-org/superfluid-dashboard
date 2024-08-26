@@ -3,12 +3,16 @@ import { FC } from "react";
 import TokenIcon, { TokenIconProps } from "./TokenIcon";
 
 interface TokenChipProps {
+  chainId: number;
+  tokenAddress: string;
   symbol: string;
   ChipProps?: ChipProps;
   IconProps?: TokenIconProps;
 }
 
 const TokenChip: FC<TokenChipProps> = ({
+  chainId,
+  tokenAddress,
   symbol,
   ChipProps = {},
   IconProps = {},
@@ -19,7 +23,7 @@ const TokenChip: FC<TokenChipProps> = ({
     label={symbol}
     avatar={
       <Avatar sx={{ background: "transparent" }}>
-        <TokenIcon tokenSymbol={symbol} size={24} {...IconProps} />
+        <TokenIcon chainId={chainId} tokenAddress={tokenAddress} size={24} {...IconProps} />
       </Avatar>
     }
   />
