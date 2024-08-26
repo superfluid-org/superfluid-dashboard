@@ -4,7 +4,7 @@ import { Network } from "../features/network/networks";
 import { subgraphApi } from "../features/redux/store";
 import { useMemo } from "react";
 import { getSuperTokenType } from "../features/redux/endpoints/adHocSubgraphEndpoints";
-import { SuperTokenType } from "../features/redux/endpoints/tokenTypes";
+import { findTokenFromTokenList } from "./useSuperToken";
 
 export const useSuperTokens = ({ network, onlyWrappable }: { network: Network, onlyWrappable?: boolean }) => {
     const networkCustomTokens = useNetworkCustomTokens(network.id);
@@ -33,15 +33,29 @@ export const useSuperTokens = ({ network, onlyWrappable }: { network: Network, o
     );
 
     const superTokens = useMemo(
-        () =>
-            (listedSuperTokensQuery.data?.items || [])
-                .concat(customSuperTokensQuery.data?.items || [])
-                .map((x) => ({
-                    ...x,
-                    address: x.id,
-                    type: getSuperTokenType({ ...x, network, address: x.id }) as SuperTokenType,
-                    decimals: 18,
-                })),
+        () => {
+            const subgraphTokens = (listedSuperTokensQuery.data?.items || []).concat(customSuperTokensQuery.data?.items || []);
+            return subgraphTokens.map((x) => {
+                const tokenListToken = findTokenFromTokenList(x.id);
+                if (tokenListToken) {
+                    return ({
+                        ...x,
+                        address: x.id,
+                        symbol: tokenListToken.symbol,
+                        name: tokenListToken.name,
+                        type: getSuperTokenType({ ...x, network, address: x.id }),
+                        decimals: 18
+                    });
+                } else {
+                    return ({
+                        ...x,
+                        address: x.id,
+                        type: getSuperTokenType({ ...x, network, address: x.id }),
+                        decimals: 18,
+                    });
+                }
+            });
+        },
         [network, listedSuperTokensQuery.data, customSuperTokensQuery.data]
     );
 

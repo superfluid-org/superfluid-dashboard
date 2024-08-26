@@ -6,6 +6,33 @@ import { SuperTokenMinimal, TokenMinimal } from "../features/redux/endpoints/tok
 import { extendedSuperTokenList } from "@superfluid-finance/tokenlist"
 import { useMemo } from "react";
 
+export const findTokenFromTokenList = (address: string) => {
+    const tokenAddressLowerCased = address.toLowerCase();
+    const token = extendedSuperTokenList.tokens.find(x => x.address === tokenAddressLowerCased);
+
+    if (token) {
+        const superTokenInfo = token.extensions?.superTokenInfo;
+        if (superTokenInfo) {
+            return {
+                ...token,
+                id: token.address,
+                isSuperToken: true,
+                isListed: true,
+                underlyingAddress: superTokenInfo.type === "Wrapper" ? superTokenInfo.underlyingTokenAddress : null,
+                isLoading: false
+            };
+        } else {
+            return {
+                ...token,
+                id: token.address,
+                isSuperToken: false,
+                isListed: true,
+                underlyingAddress: null,
+            };
+        }
+    }
+};
+
 export const useTokenQuery = <T extends boolean = false>(input: {
     chainId: number;
     id: string;
@@ -23,30 +50,7 @@ export const useTokenQuery = <T extends boolean = false>(input: {
             return undefined;
         }
 
-        const tokenAddressLowerCased = inputParsed.id.toLocaleLowerCase();
-        const token = extendedSuperTokenList.tokens.find(x => x.address === tokenAddressLowerCased);
-
-        if (token) {
-            const superTokenInfo = token.extensions?.superTokenInfo;
-            if (superTokenInfo) {
-                return {
-                    ...token,
-                    id: token.address,
-                    isSuperToken: true,
-                    isListed: true,
-                    underlyingAddress: superTokenInfo.type === "Wrapper" ? superTokenInfo.underlyingTokenAddress : null,
-                    isLoading: false
-                };
-            } else {
-                return {
-                    ...token,
-                    id: token.address,
-                    isSuperToken: false,
-                    isListed: true,
-                    underlyingAddress: null,
-                };
-            }
-        }
+        return findTokenFromTokenList(inputParsed.id);
     }, [inputParsed.isSkip, inputParsed.chainId, inputParsed.id]);
 
     const skipSubgraphQuery = (inputParsed.isSkip || !tokenListToken);
