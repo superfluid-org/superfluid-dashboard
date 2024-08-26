@@ -7,15 +7,15 @@ import { extendedSuperTokenList } from "@superfluid-finance/tokenlist"
 import { useMemo } from "react";
 import { memoize } from 'lodash';
 
-export const findTokenFromTokenList = (input: { chainId: number, address: string }) => _findTokenFromTokenList({ chainId: input.chainId, address: input.address.toLowerCase() });
-
-const _findTokenFromTokenList = memoize((input: { chainId: number, address: string }) => {
+export const findTokenFromTokenList = memoize((input: { chainId: number, address: string }) => {
     const tokenAddressLowerCased = input.address.toLowerCase();
 
     // TODO: Optimize token list into a map?
     const token = extendedSuperTokenList.tokens.find(x => x.chainId === input.chainId && x.address === tokenAddressLowerCased);
 
     // TODO: How to handle native asset here?
+
+    // console.log(`${input.chainId}-${tokenAddressLowerCased}`);
 
     const network = findNetworkOrThrow(allNetworks, input.chainId);
     if (token) {
@@ -60,7 +60,7 @@ const _findTokenFromTokenList = memoize((input: { chainId: number, address: stri
             };
         }
     }
-});
+}, ({ chainId, address }) => `${chainId}-${address.toLowerCase()}`);
 
 export const useTokenQuery = <T extends boolean = false>(input: {
     chainId: number;
@@ -70,8 +70,10 @@ export const useTokenQuery = <T extends boolean = false>(input: {
     data: T extends true ? SuperTokenMinimal | null | undefined : TokenMinimal | null | undefined,
     isLoading: boolean
 } => {
-    const inputParsed = input === skipToken 
-        ? { isSkip: true, chainId: undefined, id: undefined, onlySuperToken: undefined as T | undefined } as const 
+    // TODO: Handle onlySuperToken
+
+    const inputParsed = input === skipToken
+        ? { isSkip: true, chainId: undefined, id: undefined, onlySuperToken: undefined as T | undefined } as const
         : { isSkip: false, ...input, onlySuperToken: input.onlySuperToken as T | undefined } as const;
 
     const tokenListToken = useMemo(() => {

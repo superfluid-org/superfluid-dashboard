@@ -27,8 +27,8 @@ const NotificationList: FC<NotificationListProps> = ({
   activeTab,
 }) => {
   const dispatch = useDispatch();
-  const { address } = useAccount();
-  const lastSeenNotification = useLastSeenNotification(address ?? "");
+  const { address: accountAddress } = useAccount();
+  const lastSeenNotification = useLastSeenNotification(accountAddress ?? "");
   const { channels } = useNotificationChannels();
 
   const isSeen = useCallback(
@@ -52,14 +52,14 @@ const NotificationList: FC<NotificationListProps> = ({
 
   const archive = useCallback(
     (notificationId: string) => () => {
-      if (address) {
+      if (accountAddress) {
         const index = notifications.new.findIndex(
           (n) => n.id === notificationId
         );
 
         dispatch(
           markAsArchived({
-            address,
+            address: accountAddress,
             notificationId,
             nextNotificationId:
               index === 0 && notifications.new[index + 1]
@@ -69,7 +69,7 @@ const NotificationList: FC<NotificationListProps> = ({
         );
       }
     },
-    [notifications]
+    [notifications, accountAddress, dispatch]
   );
 
   return notifications[activeTab].length > 0 ? (

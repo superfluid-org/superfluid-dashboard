@@ -38,6 +38,6 @@ export const usePendingConnectToPool = ({
             x.superTokenAddress.toLowerCase() ===
               superTokenAddress.toLowerCase()
         )[0],
-    [allPendingUpdates]
+    [allPendingUpdates, chainId, poolAddress, superTokenAddress]
   );
 };

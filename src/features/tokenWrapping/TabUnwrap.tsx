@@ -61,7 +61,7 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
       shouldTouch: false,
       shouldValidate: true,
     });
-  }, []);
+  }, [setValue]);
 
   const [tokenPair, amount] = watch(["data.tokenPair", "data.amountDecimal"]);
 

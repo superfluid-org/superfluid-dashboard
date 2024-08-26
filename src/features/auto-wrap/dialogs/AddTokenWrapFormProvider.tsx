@@ -78,7 +78,7 @@ const AddTokenWrapFormProvider: FC<
       );
       setIsInitialized(true);
     }
-  }, [initialFormValues]);
+  }, [initialFormValues, setValue]);
 
   return isInitialized ? (
     <FormProvider {...formMethods}>

@@ -51,15 +51,6 @@ export const useAppInstanceDetails = () => {
     chain: activeChain
   } = useAccount();
 
-  const deps = [
-    expectedNetwork,
-    isConnected,
-    activeConnector,
-    activeChain,
-    activeAccountAddress,
-    transactionDrawerOpen,
-  ];
-
   return useMemo<AppInstanceDetails>(() => {
     const networkObj: AppInstanceDetails["appInstance"]["expectedNetwork"] = {
       id: expectedNetwork.id,
@@ -93,5 +84,12 @@ export const useAppInstanceDetails = () => {
         wallet: walletObj,
       },
     };
-  }, deps);
+  }, [
+    expectedNetwork,
+    isConnected,
+    activeConnector,
+    activeChain,
+    activeAccountAddress,
+    transactionDrawerOpen,
+  ]);
 };

@@ -284,7 +284,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
     if (streams.length > 500 && refetchOnFocus) {
       setRefetchOnFocus(false);
     }
-  }, [streams]);
+  }, [streams, refetchOnFocus]);
 
   const filteredStreams = useMemo(() => {
     switch (streamsFilter.type) {

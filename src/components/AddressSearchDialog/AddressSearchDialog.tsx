@@ -149,7 +149,7 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
     useState(searchTermVisible);
 
   const setSearchTermDebounced = useCallback(
-    debounce((searchTerm) => {
+    debounce((searchTerm: string) => {
       _setSearchTermDebounced(searchTerm);
     }, 250),
     []

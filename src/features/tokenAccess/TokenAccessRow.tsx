@@ -139,7 +139,7 @@ const TokenAccessRow: FC<Props> = ({
       flowRateAllowance: initialAccess.flowRateAllowance,
       tokenAllowanceWei: initialAccess.tokenAllowanceWei,
     };
-  }, [initialAccess, address, network]);
+  }, [initialAccess, address, network, superToken]);
 
   return (
     <>

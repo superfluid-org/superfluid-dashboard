@@ -37,7 +37,7 @@ export const MinigameProvider: FC<PropsWithChildren> = ({ children }) => {
       void dispatch(
         applySettings({ lastSuperfluidRunnerCosmetics: cosmetics })
       ),
-    [cosmetics]
+    [cosmetics, dispatch]
   );
 
   const getUrl = useCallback(() => {

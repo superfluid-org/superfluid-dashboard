@@ -107,7 +107,7 @@ const ScheduledWrapTable: FC<TokenSnapshotTableProps> = ({
       isLoading: isWhitelistLoading,
       isWhitelisted: isPlatformWhitelisted,
     });
-  }, [isWhitelistLoading, isPlatformWhitelisted, whitelistedCallback]);
+  }, [isWhitelistLoading, isPlatformWhitelisted, whitelistedCallback, network.id]);
 
   const handleChangePage = (_e: unknown, newPage: number) => {
     setPage(newPage);

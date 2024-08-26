@@ -80,7 +80,7 @@ const ReduxProviderCore: FC<PropsWithChildren> = ({ children }) => {
         ); // TODO(weird version mismatch):
       });
     }
-  }, [signer]);
+  }, [signer, dispatch]);
 
   useVestingTransactionTracking();
   useSchedulerTransactionTracking();

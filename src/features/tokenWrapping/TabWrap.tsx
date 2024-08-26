@@ -86,7 +86,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
       shouldTouch: false,
       shouldValidate: true,
     });
-  }, []);
+  }, [setValue]);
 
   const [tokenPair, amountDecimal] = watch([
     "data.tokenPair",
@@ -121,7 +121,6 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
 
   const isUnderlyingBlockchainNativeAsset =
     tokenPair?.underlyingTokenAddress === NATIVE_ASSET_ADDRESS;
-
   const { data: _discard, ...allowanceQuery } =
     rpcApi.useSuperTokenUpgradeAllowanceQuery(
       tokenPair && !isUnderlyingBlockchainNativeAsset && visibleAddress

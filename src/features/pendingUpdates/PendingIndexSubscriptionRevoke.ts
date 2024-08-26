@@ -43,6 +43,6 @@ export const usePendingIndexSubscriptionRevoke = ({
               publisherAddress.toLowerCase() &&
             x.superTokenAddress.toLowerCase() === tokenAddress.toLowerCase()
         )[0],
-    [allPendingUpdates]
+    [allPendingUpdates, chainId, indexId, publisherAddress, tokenAddress]
   );
 };

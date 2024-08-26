@@ -49,28 +49,31 @@ const MonitorContext: FC = () => {
 
   useEffect(
     () =>
-      listenerMiddleware.startListening({
-        actionCreator: transactionTracker.actions.updateTransaction,
-        effect: ({ payload }, { getState }) => {
-          const state = getState() as RootState;
-          if (payload.changes.status) {
-            const trackedTransaction = transactionTrackerSelectors.selectById(
-              state,
-              payload.id
-            );
-            track(
-              `Transaction Marked ${payload.changes.status}`, // Succeeded, Failure, Unknown etc
-              trackedTransaction
-                ? {
+      {
+        const unsubscribe = listenerMiddleware.startListening({
+          actionCreator: transactionTracker.actions.updateTransaction,
+          effect: ({ payload }, { getState }) => {
+            const state = getState() as RootState;
+            if (payload.changes.status) {
+              const trackedTransaction = transactionTrackerSelectors.selectById(
+                state,
+                payload.id
+              );
+              track(
+                `Transaction Marked ${payload.changes.status}`, // Succeeded, Failure, Unknown etc
+                trackedTransaction
+                  ? {
                     chainId: trackedTransaction.chainId,
                     transactionHash: trackedTransaction.hash,
                   }
-                : {}
-            );
-          }
-        },
-      }),
-    []
+                  : {}
+              );
+            }
+          },
+        });
+        return () => unsubscribe();
+      },
+    [track]
   );
 
   useEffect(() => {
@@ -105,7 +108,7 @@ const MonitorContext: FC = () => {
     }
 
     setPreviousInstanceDetails(instanceDetails);
-  }, [instanceDetails]);
+  }, [instanceDetails, previousInstanceDetails, track, reset, identify]);
 
   const { connector: activeConnector, isConnected, chain: activeChain } = useAccount();
 

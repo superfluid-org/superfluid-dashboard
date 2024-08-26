@@ -60,7 +60,7 @@ export const useToast = () => {
         dispatch(updateDisplayedToasts(props.id));
       }
     },
-    [displayedToasts]
+    [displayedToasts, dispatch]
   );
 
   return displayToast;

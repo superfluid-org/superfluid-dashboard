@@ -125,11 +125,10 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
       }
     }
   }, [
-    network.id,
-    listedTokensSnapshotsQuery.isLoading,
-    unlistedTokensSnapshotsQuery.isLoading,
-    tokenSnapshots.length,
-    fetchingCallback,
+    network,
+    setCosmetics,
+    tokenSnapshots,
+    fetchingCallback
   ]);
 
   if (

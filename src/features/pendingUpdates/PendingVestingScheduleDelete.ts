@@ -70,6 +70,6 @@ export const usePendingVestingScheduleDelete = (
               x.receiverAddress.toLowerCase() === receiverAddress.toLowerCase() &&
               x.version === version
           )[0], // We assume no duplicates here.
-    [chainId, superTokenAddress, receiverAddress, list, skip]
+    [chainId, superTokenAddress, receiverAddress, list, skip, version]
   );
 };

@@ -61,5 +61,5 @@ export const useTotalAmountReceivedFromPoolMember = (
     } else {
       return null
     }
-  }, [getTotalAmountReceivedByMember, getMemberFlowRate])
+  }, [getTotalAmountReceivedByMember, getMemberFlowRate, dataUpdatedAt])
 }

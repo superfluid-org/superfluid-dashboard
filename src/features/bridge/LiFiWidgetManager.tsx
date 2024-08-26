@@ -72,7 +72,7 @@ export function LiFiWidgetManager() {
     useEffect(() => {
         // We don't know when the Li.Fi widget form is filled and we don't want to automatically switch the expected network because that would re-render the Li.Fi widget.
         stopAutoSwitchToWalletNetwork(); 
-    }, []);
+    }, [stopAutoSwitchToWalletNetwork]);
     // ---
 
     return (
