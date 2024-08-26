@@ -41,6 +41,7 @@ import { useTokenPairQuery } from "./useTokenPairQuery";
 import { WrapInputCard } from "./WrapInputCard";
 import { ValidWrappingForm, WrappingForm } from "./WrappingFormProvider";
 import { useTokenQuery } from "../../hooks/useSuperToken";
+import { useTokenPairsQuery } from "./useTokenPairsQuery";
 
 const underlyingIbAlluoTokenOverrides = [
   // StIbAlluoEth
@@ -96,11 +97,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
     ethers.BigNumber.from(0)
   );
 
-  const networkCustomTokens = useNetworkCustomTokens(network.id);
-  const tokenPairsQuery = subgraphApi.useTokenUpgradeDowngradePairsQuery({
-    chainId: network.id,
-    unlistedTokenIDs: networkCustomTokens,
-  });
+  const { data: tokenPairs, isFetching: tokenPairsIsFetching } = useTokenPairsQuery({ network });
 
   const { superToken, underlyingToken } = useTokenPairQuery({
     network,
@@ -174,8 +171,6 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
   }, [amountInputRef, tokenPair]);
 
   const tokenSelection = useMemo(() => {
-    const tokenPairs = tokenPairsQuery.data || [];
-
     /**
      * Filtering out duplicate pairs with the same underlying tokens due to UI limitations.
      * If pair with same underlying token already exists then...
@@ -198,7 +193,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
         return allowedTokenPairs.concat([tokenPair]);
       }, [] as SuperTokenPair[])
       .map((x) => x.underlyingToken);
-  }, [tokenPairsQuery.data]);
+  }, [tokenPairs]);
 
   const { underlyingBalance } = rpcApi.useUnderlyingBalanceQuery(
     tokenPair && visibleAddress
@@ -264,12 +259,12 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                 tokenSelection={{
                   tokenPairsQuery: {
                     data: tokenSelection,
-                    isFetching: tokenPairsQuery.isFetching,
+                    isFetching: tokenPairsIsFetching,
                   },
                 }}
                 onTokenSelect={(token) => {
                   resetField("data.amountDecimal");
-                  const tokenPair = tokenPairsQuery?.data?.find(
+                  const tokenPair = tokenPairs?.find(
                     (x) =>
                       x.underlyingToken.address.toLowerCase() ===
                       token.address.toLowerCase()

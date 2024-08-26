@@ -2,7 +2,7 @@ import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { allNetworks, findNetworkOrThrow } from "../features/network/networks";
 import { subgraphApi } from "../features/redux/store";
 import { getSuperTokenType, getUnderlyingTokenType } from "../features/redux/endpoints/adHocSubgraphEndpoints";
-import { SuperTokenMinimal, TokenMinimal } from "../features/redux/endpoints/tokenTypes";
+import { NATIVE_ASSET_ADDRESS, SuperTokenMinimal, TokenMinimal, TokenType } from "../features/redux/endpoints/tokenTypes";
 import { extendedSuperTokenList } from "@superfluid-finance/tokenlist"
 import { useMemo } from "react";
 import { memoize } from 'lodash';
@@ -11,11 +11,14 @@ export const findTokenFromTokenList = (input: { chainId: number, address: string
 
 const _findTokenFromTokenList = memoize((input: { chainId: number, address: string }) => {
     const tokenAddressLowerCased = input.address.toLowerCase();
+
+    // TODO: Optimize token list into a map?
     const token = extendedSuperTokenList.tokens.find(x => x.chainId === input.chainId && x.address === tokenAddressLowerCased);
 
-    if (token) {
-        const network = findNetworkOrThrow(allNetworks, input.chainId);
+    // TODO: How to handle native asset here?
 
+    const network = findNetworkOrThrow(allNetworks, input.chainId);
+    if (token) {
         const superTokenInfo = token.extensions?.superTokenInfo;
         if (superTokenInfo) {
             return {
@@ -41,6 +44,19 @@ const _findTokenFromTokenList = memoize((input: { chainId: number, address: stri
                 type: getUnderlyingTokenType({
                     address: token.address
                 })
+            };
+        }
+    } else {
+        // TODO: Not happy with this.
+        if (input.address === "0x0000000000000000000000000000000000000000" || input.address === NATIVE_ASSET_ADDRESS) {
+            return {
+                ...network.nativeCurrency,
+                id: input.address,
+                isSuperToken: false,
+                isListed: true,
+                underlyingAddress: null,
+                type: TokenType.NativeAssetUnderlyingToken,
+                logoURI: network.nativeCurrency.logoURI
             };
         }
     }

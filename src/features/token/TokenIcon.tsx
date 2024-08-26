@@ -1,9 +1,7 @@
 import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
 import { Avatar, Skeleton, styled, Tooltip, useTheme } from "@mui/material";
-import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { FC } from "react";
-import config from "../../utils/config";
-import { findTokenFromTokenList, useTokenQuery } from "../../hooks/useSuperToken";
+import { findTokenFromTokenList } from "../../hooks/useSuperToken";
 import { isSuper } from "../redux/endpoints/tokenTypes";
 
 const BorderSvg = styled("svg")(() => ({
@@ -37,7 +35,7 @@ const AvatarWrapper = styled("div", {
   })
 );
 
-export interface TokenIconProps {
+export type TokenIconProps = {
   chainId?: number;
   tokenAddress?: string;
   isSuper?: boolean;

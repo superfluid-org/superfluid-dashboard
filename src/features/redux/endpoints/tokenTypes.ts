@@ -55,11 +55,12 @@ export type ERC20TokenMinimal = {
   isListed?: boolean;
   decimals: number;
 };
+
 /**
  * A dummy address to signal that the token is the blockchain's coin (native asset).
  */
-
 export const NATIVE_ASSET_ADDRESS = "native-asset";
+// TODO: This might not be such a good idea.
 
 export type NativeAsset = {
   type: TokenType.NativeAssetUnderlyingToken;

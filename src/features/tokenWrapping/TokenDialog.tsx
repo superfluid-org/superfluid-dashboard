@@ -1,14 +1,12 @@
 import CloseIcon from "@mui/icons-material/Close";
 import {
   CircularProgress,
-  DialogActions,
   DialogContent,
   DialogTitle,
   Divider,
   IconButton,
   List,
   ListItem,
-  ListItemButton,
   Stack,
   TextField,
   Typography,
@@ -17,9 +15,8 @@ import {
 import { skipToken } from "@reduxjs/toolkit/query";
 import { ethers } from "ethers";
 import Fuse from "fuse.js";
-import { FC, memo, useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import ResponsiveDialog from "../common/ResponsiveDialog";
-import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import {
   isSuper,
   isUnderlying,
