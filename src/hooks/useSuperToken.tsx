@@ -5,8 +5,11 @@ import { getSuperTokenType, getUnderlyingTokenType } from "../features/redux/end
 import { SuperTokenMinimal, TokenMinimal } from "../features/redux/endpoints/tokenTypes";
 import { extendedSuperTokenList } from "@superfluid-finance/tokenlist"
 import { useMemo } from "react";
+import { memoize } from 'lodash';
 
-export const findTokenFromTokenList = (address: string) => {
+export const findTokenFromTokenList = (address: string) => _findTokenFromTokenList(address.toLowerCase());
+
+const _findTokenFromTokenList = memoize((address: string) => {
     const tokenAddressLowerCased = address.toLowerCase();
     const token = extendedSuperTokenList.tokens.find(x => x.address === tokenAddressLowerCased);
 
@@ -31,7 +34,7 @@ export const findTokenFromTokenList = (address: string) => {
             };
         }
     }
-};
+});
 
 export const useTokenQuery = <T extends boolean = false>(input: {
     chainId: number;
