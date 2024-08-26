@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
 import { getNetworkDefaultTokenPair, Network, networkDefinition } from "../network/networks";
 import { subgraphApi } from "../redux/store";
+import { findTokenFromTokenList } from "../../hooks/useSuperToken";
 
 export const useTokenPairsQuery = ({ network }: { network: Network }) => {
   const networkCustomTokens = useNetworkCustomTokens(network.id);
@@ -35,8 +36,46 @@ export const useTokenPairsQuery = ({ network }: { network: Network }) => {
     {
       selectFromResult: (result) => ({
         ...result,
-        data: result.data ?? [defaultTokenPair], // Doing it this way the list is never empty and always contains the default token pairs.
-        currentData: result.currentData ?? [defaultTokenPair],
+
+        // TODO: Clean up the duplication
+
+        data: (result.data ?? [defaultTokenPair]).map(x => {
+          const underlyingTokenFromTokenList = findTokenFromTokenList(x.underlyingToken.address);
+          const superTokenFromTokenList = findTokenFromTokenList(x.superToken.address);
+
+          return {
+            underlyingToken: {
+              ...x.underlyingToken,
+              symbol: underlyingTokenFromTokenList?.symbol ?? x.underlyingToken.symbol,
+              name: underlyingTokenFromTokenList?.name ?? x.underlyingToken.name,
+            },
+            superToken: {
+              ...x.superToken,
+              ...superTokenFromTokenList,
+              symbol: superTokenFromTokenList?.symbol ?? x.superToken.symbol,
+              name: superTokenFromTokenList?.name ?? x.superToken.name
+            }
+          }
+        }), // Doing it this way the list is never empty and always contains the default token pairs.
+        currentData: (result.currentData ?? [defaultTokenPair]).map(x => {
+          const underlyingTokenFromTokenList = findTokenFromTokenList(x.underlyingToken.address);
+          const superTokenFromTokenList = findTokenFromTokenList(x.superToken.address);
+
+          return {
+            underlyingToken: {
+              ...x.underlyingToken,
+              ...underlyingTokenFromTokenList,
+              symbol: underlyingTokenFromTokenList?.symbol ?? x.underlyingToken.symbol,
+              name: underlyingTokenFromTokenList?.name ?? x.underlyingToken.name,
+            },
+            superToken: {
+              ...x.superToken,
+              ...superTokenFromTokenList,
+              symbol: superTokenFromTokenList?.symbol ?? x.superToken.symbol,
+              name: superTokenFromTokenList?.name ?? x.superToken.name
+            }
+          }
+        }),
       }),
     }
   );

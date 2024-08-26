@@ -44,7 +44,7 @@ export type SuperTokenMinimal = {
   symbol: string;
   isListed?: boolean;
   decimals: number;
-  underlyingAddress?: string; // TODO: map this
+  underlyingAddress?: string | null; // TODO: map this
 };
 
 export type ERC20TokenMinimal = {
