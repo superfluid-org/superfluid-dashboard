@@ -20,10 +20,10 @@ import { AgreementLiquidatedActivity } from "../../utils/activityUtils";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import TxHashLink from "../common/TxHashLink";
 import NetworkBadge from "../network/NetworkBadge";
-import { subgraphApi } from "../redux/store";
 import TokenIcon from "../token/TokenIcon";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import ActivityIcon from "./ActivityIcon";
+import { useTokenQuery } from "../../hooks/useSuperToken";
 
 interface LiquidatedActivityRowProps extends AgreementLiquidatedActivity {
   dateFormat?: string;
@@ -42,7 +42,7 @@ const LiquidatedActivityRow: FC<LiquidatedActivityRowProps> = ({
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { visibleAddress } = useVisibleAddress();
 
-  const tokenQuery = subgraphApi.useTokenQuery(
+  const tokenQuery = useTokenQuery(
     token
       ? {
           chainId: network.id,

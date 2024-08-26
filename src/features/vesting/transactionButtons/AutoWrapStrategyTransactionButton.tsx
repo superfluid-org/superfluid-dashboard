@@ -1,19 +1,19 @@
 import { Typography } from "@mui/material";
 import { TransactionTitle } from "@superfluid-finance/sdk-redux";
-import { BigNumber , Contract } from "ethers";
+import { BigNumber } from "ethers";
 import { FC, memo } from "react";
 import { useSimulateContract, useWalletClient  } from "wagmi";
 import { autoWrapManagerAbi, autoWrapManagerAddress } from "../../../generated";
 import { rpcApi } from "../../redux/store";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
-import { VestingToken } from "../CreateVestingSection";
 import { Network } from "../../network/networks";
+import { SuperTokenMinimal } from "../../redux/endpoints/tokenTypes";
 
 const TX_TITLE: TransactionTitle = "Enable Auto-Wrap";
 
 const AutoWrapStrategyTransactionButton: FC<{
-  token: VestingToken;
+  token: SuperTokenMinimal;
   isVisible: boolean;
   isDisabled: boolean;
   network: Network;
@@ -21,7 +21,7 @@ const AutoWrapStrategyTransactionButton: FC<{
   const { data: walletClient } = useWalletClient();
 
   const primaryArgs = {
-    superToken: token.id as `0x${string}`,
+    superToken: token.address as `0x${string}`,
     strategy: network.autoWrap!.strategyContractAddress,
     liquidityToken: token.underlyingAddress as `0x${string}`,
     expiry: BigInt(BigNumber.from("3000000000").toString()),

@@ -27,11 +27,12 @@ import { TransactionBoundary } from "../../transactionBoundary/TransactionBounda
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
 import { parseEtherOrZero } from "../../../utils/tokenUtils";
 import { useSuperTokens } from "../../../hooks/useSuperTokens";
-import { useSuperToken } from "../../../hooks/useSuperToken";
+import { useTokenQuery } from "../../../hooks/useSuperToken";
 import { SendBalance } from "../stream/SendStream";
 import { inputPropsForEtherAmount } from "../../../utils/inputPropsForEtherAmount";
 import { Address } from "@superfluid-finance/sdk-core";
 import { RestorationType, SendTransferRestoration } from "../../transactionRestoration/transactionRestorations";
+import { skipToken } from "@reduxjs/toolkit/dist/query/react";
 
 export default memo(function SendTransfer() {
   const theme = useTheme();
@@ -80,7 +81,7 @@ export default memo(function SendTransfer() {
     />
   );
 
-  const { token } = useSuperToken({ network, tokenAddress });
+  const { data: superToken } = useTokenQuery(tokenAddress ? { chainId: network.id, id: tokenAddress, onlySuperToken: true } : skipToken);
   const { listedSuperTokensQuery, customSuperTokensQuery, superTokens } = useSuperTokens({ network });
 
   const TokenController = (
@@ -89,7 +90,7 @@ export default memo(function SendTransfer() {
       name="data.tokenAddress"
       render={({ field: { onChange, onBlur } }) => (
         <TokenDialogButton
-          token={token}
+          token={superToken}
           network={network}
           tokenSelection={{
             showUpgrade: true,
@@ -124,7 +125,7 @@ export default memo(function SendTransfer() {
           InputProps={{
             endAdornment: (
               <Typography component="span" color={"text.secondary"}>
-                {token?.symbol ?? ""}
+                {superToken?.symbol ?? ""}
               </Typography>
             ),
           }}
@@ -162,7 +163,7 @@ export default memo(function SendTransfer() {
 
           setDialogLoadingInfo(
             <Typography variant="h5" color="text.secondary" translate="yes">
-              You are sending {amountEther} {token?.symbol} to {receiverAddress}.
+              You are sending {amountEther} {superToken?.symbol} to {receiverAddress}.
             </Typography>
           );
 
@@ -253,9 +254,9 @@ export default memo(function SendTransfer() {
         </Stack>
       </Box>
 
-      <SendBalance network={network} visibleAddress={visibleAddress} token={token} />
+      <SendBalance network={network} visibleAddress={visibleAddress} token={superToken} />
 
-      {(token && visibleAddress) && <Divider />}
+      {(superToken && visibleAddress) && <Divider />}
 
       <ConnectionBoundary>
         <ConnectionBoundaryButton

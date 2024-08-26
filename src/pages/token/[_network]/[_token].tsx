@@ -48,6 +48,7 @@ import useNavigateBack from "../../../hooks/useNavigateBack";
 import Page404 from "../../404";
 import PoolMembersTable from "../../../features/pool/PoolMembersTable";
 import { useAccount } from "wagmi";
+import { useTokenQuery } from "../../../hooks/useSuperToken";
 
 export const getTokenPagePath = ({
   network,
@@ -149,9 +150,10 @@ const TokenPageContent: FC<{
     accountAddress: accountAddress,
   });
 
-  const tokenQuery = subgraphApi.useTokenQuery({
+  const superTokenQuery = useTokenQuery({
     chainId: network.id,
     id: tokenAddress,
+    onlySuperToken: true
   });
 
   const tokenSnapshotQuery = subgraphApi.useAccountTokenSnapshotQuery({
@@ -164,11 +166,11 @@ const TokenPageContent: FC<{
   const onShowForecastChange = (_e: unknown, checked: boolean) =>
     setShowForecast(checked);
 
-  if (tokenQuery.isLoading || tokenSnapshotQuery.isLoading) {
+  if (superTokenQuery.isLoading || tokenSnapshotQuery.isLoading) {
     return <TokenPageContainer />;
   }
 
-  if (!tokenQuery.data || !tokenSnapshotQuery.data) {
+  if (!superTokenQuery.data || !tokenSnapshotQuery.data) {
     return <Page404 />;
   }
 
@@ -198,7 +200,7 @@ const TokenPageContent: FC<{
     <TokenPageContainer tokenSymbol={tokenSymbol}>
       <Stack gap={isBelowMd ? 3 : 4}>
         <TokenToolbar
-          token={tokenQuery.data}
+          token={superTokenQuery.data}
           network={network}
           onBack={navigateBack}
         />

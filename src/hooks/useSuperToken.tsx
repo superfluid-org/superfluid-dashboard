@@ -1,23 +1,29 @@
 import { skipToken } from "@reduxjs/toolkit/dist/query";
-import { allNetworks, findNetworkOrThrow, Network } from "../features/network/networks";
+import { allNetworks, findNetworkOrThrow } from "../features/network/networks";
 import { subgraphApi } from "../features/redux/store";
 import { getSuperTokenType, getUnderlyingTokenType } from "../features/redux/endpoints/adHocSubgraphEndpoints";
-import { SuperTokenMinimal, TokenMinimal, isWrappable } from "../features/redux/endpoints/tokenTypes";
+import { SuperTokenMinimal, TokenMinimal } from "../features/redux/endpoints/tokenTypes";
 import { extendedSuperTokenList } from "@superfluid-finance/tokenlist"
 import { useMemo } from "react";
 
-export const useToken = (input: {
+export const useTokenQuery = <T extends boolean = false>(input: {
     chainId: number;
-    tokenAddress: string;
-} | typeof skipToken) => {
-    const data = input === skipToken ? { isSkip: true, chainId: undefined, tokenAddress: undefined } as const : { isSkip: false, ...input } as const;
+    id: string;
+    onlySuperToken?: T;
+} | typeof skipToken): {
+    data: T extends true ? SuperTokenMinimal | null | undefined : TokenMinimal | null | undefined,
+    isLoading: boolean
+} => {
+    const inputParsed = input === skipToken 
+        ? { isSkip: true, chainId: undefined, id: undefined, onlySuperToken: undefined as T | undefined } as const 
+        : { isSkip: false, ...input, onlySuperToken: input.onlySuperToken as T | undefined } as const;
 
     const tokenListToken = useMemo(() => {
-        if (data.isSkip) {
+        if (inputParsed.isSkip) {
             return undefined;
         }
 
-        const tokenAddressLowerCased = data.tokenAddress.toLocaleLowerCase();
+        const tokenAddressLowerCased = inputParsed.id.toLocaleLowerCase();
         const token = extendedSuperTokenList.tokens.find(x => x.address === tokenAddressLowerCased);
 
         if (token) {
@@ -27,58 +33,58 @@ export const useToken = (input: {
                     ...token,
                     id: token.address,
                     isSuperToken: true,
-                    underlyingAddress: superTokenInfo.type === "Wrapper" ? superTokenInfo.underlyingTokenAddress : "0x0000000000000000000000000000000000000000",
+                    isListed: true,
+                    underlyingAddress: superTokenInfo.type === "Wrapper" ? superTokenInfo.underlyingTokenAddress : null,
+                    isLoading: false
                 };
             } else {
                 return {
                     ...token,
                     id: token.address,
                     isSuperToken: false,
-                    underlyingAddress: "0x0000000000000000000000000000000000000000",
+                    isListed: true,
+                    underlyingAddress: null,
                 };
             }
         }
-    }, [data.isSkip, data.chainId, data.tokenAddress]);
+    }, [inputParsed.isSkip, inputParsed.chainId, inputParsed.id]);
 
-    const skipSubgraphQuery = (data.isSkip || !tokenListToken);
-    const { data: subgraphToken } = subgraphApi.useTokenQuery(skipSubgraphQuery ? skipToken : {
-        chainId: data.chainId,
-        id: data.tokenAddress
+    const skipSubgraphQuery = (inputParsed.isSkip || !tokenListToken);
+    const { data: subgraphToken, isLoading: isSubgraphTokenLoading } = subgraphApi.useTokenQuery(skipSubgraphQuery ? skipToken : {
+        chainId: inputParsed.chainId,
+        id: inputParsed.id
     });
 
     const token = tokenListToken ?? subgraphToken;
 
     return useMemo(() => {
-        if (token) {
-            const network = findNetworkOrThrow(allNetworks, data.chainId);
-
+        if (!token) {
             return {
-                ...token,
-                address: token.id,
-                type: token.isSuperToken ? getSuperTokenType({
-                    network,
-                    address: token.id,
-                    underlyingAddress: token.underlyingAddress
-                }) : getUnderlyingTokenType({
-                    address: token.id
-                })
-            } satisfies TokenMinimal;
+                data: null,
+                isLoading: isSubgraphTokenLoading
+            }
         }
-    }, [token]);
-}
 
-export const useSuperToken = ({ network, tokenAddress }: { network: Network, tokenAddress: string | undefined | null }) => {
-    const token = useToken(tokenAddress ? {
-        chainId: network.id,
-        tokenAddress: tokenAddress
-    } : skipToken);
+        const network = findNetworkOrThrow(allNetworks, inputParsed.chainId);
 
-    // TODO: Enforce that the token is a super token
+        const processedToken = {
+            ...token,
+            address: token.id,
+            type: token.isSuperToken ? getSuperTokenType({
+                network,
+                address: token.id,
+                underlyingAddress: token.underlyingAddress
+            }) : getUnderlyingTokenType({
+                address: token.id
+            })
+        };
 
-    const isWrappableSuperToken = token ? isWrappable(token) : false;
-
-    return {
-        token: token as SuperTokenMinimal | undefined,
-        isWrappableSuperToken
-    };
+        return {
+            data: (inputParsed.onlySuperToken && !token.isSuperToken) ? null : processedToken,
+            isLoading: false
+        } as {
+            data: T extends true ? SuperTokenMinimal | null | undefined : TokenMinimal | null | undefined,
+            isLoading: boolean
+        };
+    }, [token, isSubgraphTokenLoading, inputParsed.chainId, inputParsed.onlySuperToken]);
 }

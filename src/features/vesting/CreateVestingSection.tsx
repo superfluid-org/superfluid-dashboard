@@ -8,7 +8,6 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { Token } from "@superfluid-finance/sdk-core";
 import { FC, PropsWithChildren, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import Link from "../common/Link";
@@ -16,20 +15,16 @@ import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import NetworkBadge from "../network/NetworkBadge";
 import NetworkSwitchLink from "../network/NetworkSwitchLink";
 import { networkDefinition } from "../network/networks";
-import { SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
 import { PartialVestingForm } from "./CreateVestingFormProvider";
 import CreateVestingPreview from "./CreateVestingPreview";
 import CreateVestingForm from "./CreateVestingForm";
 import { useRouter } from "next/router";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { useVestingToken } from "./useVestingToken";
-import { useDispatch } from "react-redux";
-import { setVestingSchedulerFlag } from "../../features/flags/flags.slice";
 import { useVestingVersion } from "../../hooks/useVestingVersion";
 import { useAccount } from "wagmi";
-import { getAddress } from "../../utils/memoizedEthersUtils";
-
-export type VestingToken = Token & SuperTokenMinimal;
+import { useTokenQuery } from "../../hooks/useSuperToken";
+import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
 
 const VestingWhitelistOverlay = () => {
   const theme = useTheme();
@@ -97,7 +92,8 @@ export const CreateVestingSection: FC<CreateVestingSectionProps> = ({
   const [superTokenAddress] = watch(["data.superTokenAddress"]);
 
   const { network } = useExpectedNetwork();
-  const { token } = useVestingToken(network, superTokenAddress);
+  const tokenQuery = useTokenQuery(superTokenAddress ? { chainId: network.id, id: superTokenAddress } : skipToken);
+  const token = tokenQuery.data as SuperTokenMinimal | undefined | null; // TODO: get rid of the cast
 
   const [view, setView] = useState<CreateVestingCardView>(
     CreateVestingCardView.Form

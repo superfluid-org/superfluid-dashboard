@@ -21,6 +21,7 @@ import TokenIcon from "../token/TokenIcon";
 import FiatAmount from "../tokenPrice/FiatAmount";
 import useTokenPrice from "../tokenPrice/useTokenPrice";
 import ActivityIcon from "./ActivityIcon";
+import { useTokenQuery } from "../../hooks/useSuperToken";
 
 interface MintActivityRowProps extends MintedActivity {
   dateFormat?: string;
@@ -38,50 +39,30 @@ const MintActivityRow: FC<MintActivityRowProps> = ({
   const { amount, transactionHash, timestamp, token } = keyEvent;
   const { token: superTokenAddress } = transferEvent || {};
 
-  const isNativeAssetSuperToken =
-    network.nativeCurrency.superToken.address.toLowerCase() ===
-    superTokenAddress?.toLowerCase();
-
   const tokenPrice = useTokenPrice(network.id, token);
 
-  const superTokenQuery = subgraphApi.useTokenQuery(
-    !isNativeAssetSuperToken && superTokenAddress
+  const superTokenQuery = useTokenQuery(
+    superTokenAddress
       ? {
           chainId: network.id,
           id: superTokenAddress,
+          onlySuperToken: true
         }
       : skipToken
   );
+  const superToken = superTokenQuery.data;
 
-  const superToken = useMemo(
-    () =>
-      isNativeAssetSuperToken
-        ? network.nativeCurrency.superToken
-        : superTokenQuery.data,
-    [isNativeAssetSuperToken, superTokenQuery.data]
-  );
-
-  const underlyingTokenQuery = subgraphApi.useTokenQuery(
-    !isNativeAssetSuperToken && superTokenQuery.data
+  const underlyingTokenQuery = useTokenQuery(
+    superToken?.underlyingAddress
       ? {
           chainId: network.id,
-          id: superTokenQuery.data.underlyingAddress,
+          id: superToken.underlyingAddress,
         }
       : skipToken
   );
+  const underlyingToken = underlyingTokenQuery.data;
 
-  const underlyingToken = useMemo(
-    () =>
-      isNativeAssetSuperToken
-        ? network.nativeCurrency
-        : underlyingTokenQuery.data,
-    [isNativeAssetSuperToken, underlyingTokenQuery.data]
-  );
-
-  const isSuperTokenListed = useMemo(
-    () => isNativeAssetSuperToken || superTokenQuery.data?.isListed,
-    [isNativeAssetSuperToken, superTokenQuery.data]
-  );
+  const isSuperTokenListed = Boolean(superToken?.isListed);
 
   return (
     <TableRow data-cy={`${network.slugName}-row`}>

@@ -10,14 +10,13 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { FC, memo, useCallback, useMemo, useState } from "react";
+import { FC, memo, useCallback, useState } from "react";
 import { Network } from "../network/networks";
 import { WrapSchedule } from "./types";
 import { rpcApi, subgraphApi } from "../redux/store";
 import TokenIcon from "../token/TokenIcon";
 import DisableAutoWrapTransactionButton from "../vesting/transactionButtons/DisableAutoWrapTransactionButton";
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
-import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
 import { TokenType } from "../redux/endpoints/tokenTypes";
 import useActiveAutoWrap from "../vesting/useActiveAutoWrap";
 import AutoWrapEnableDialog from "../vesting/dialogs/AutoWrapEnableDialog";
@@ -25,9 +24,9 @@ import { differenceInWeeks, fromUnixTime } from "date-fns";
 import { isCloseToUnlimitedTokenAllowance } from "../../utils/isCloseToUnlimitedAllowance";
 import Amount from "../token/Amount";
 import { BigNumber, BigNumberish } from "ethers";
-import { skipToken } from "@reduxjs/toolkit/dist/query";
 import TooltipWithIcon from "../common/TooltipWithIcon";
 import ConnectionBoundaryButton from "../transactionBoundary/ConnectionBoundaryButton";
+import { useTokenQuery } from "../../hooks/useSuperToken";
 
 interface ScheduledWrapRowProps {
   network: Network;
@@ -93,45 +92,33 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
     [setEnableAutoWrapDialogOpen]
   );
 
-  const { superToken, account } = schedule;
+  const { superToken: superTokenAddress, account } = schedule;
 
-  const { data: superTokenQueryData, isLoading: isTokenLoading } =
-    subgraphApi.useTokenQuery({
-      id: superToken,
+  const { data: superToken, isLoading: isTokenLoading } =
+    useTokenQuery({
+      id: superTokenAddress,
       chainId: network.id,
+      onlySuperToken: true
     });
 
   const { data: accountTokenSnapshot } =
     subgraphApi.useAccountTokenSnapshotQuery(
       {
         chainId: network.id,
-        id: `${account.toLowerCase()}-${superToken.toLowerCase()}`,
+        id: `${account.toLowerCase()}-${superTokenAddress.toLowerCase()}`,
       },
       {
         refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
       }
     );
 
-  const isNativeAssetSuperToken =
-    network.nativeCurrency.superToken.address.toLowerCase() ===
-    schedule.superToken?.toLowerCase();
-
-  const underlyingTokenQuery = subgraphApi.useTokenQuery(
-    !isNativeAssetSuperToken
-      ? {
-        chainId: network.id,
-        id: schedule.liquidityToken,
-      }
-      : skipToken
+  const underlyingTokenQuery = useTokenQuery(
+    {
+      chainId: network.id,
+      id: schedule.liquidityToken,
+    }
   );
-
-  const underlyingToken = useMemo(
-    () =>
-      isNativeAssetSuperToken
-        ? network.nativeCurrency
-        : underlyingTokenQuery.data,
-    [isNativeAssetSuperToken, underlyingTokenQuery.data]
-  );
+  const underlyingToken = underlyingTokenQuery.data;
 
   const {
     isLoading: isUnderlyingTokenAllowanceLoading,
@@ -143,12 +130,7 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
   });
 
   const isAutoWrappable =
-    superTokenQueryData &&
-    getSuperTokenType({
-      network,
-      address: superTokenQueryData.id,
-      underlyingAddress: superTokenQueryData.underlyingAddress,
-    }) === TokenType.WrapperSuperToken;
+    superToken?.type === TokenType.WrapperSuperToken;
 
   const {
     isAutoWrapLoading,
@@ -159,8 +141,8 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
       ? {
         chainId: network.id,
         accountAddress: account,
-        superTokenAddress: superTokenQueryData.id,
-        underlyingTokenAddress: superTokenQueryData.underlyingAddress,
+        superTokenAddress: superToken.address,
+        underlyingTokenAddress: superToken.underlyingAddress!,
       }
       : "skip"
   );
@@ -188,11 +170,11 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
               >
                 <TokenIcon
                   isSuper
-                  tokenSymbol={superTokenQueryData?.symbol}
+                  tokenSymbol={superToken?.symbol}
                   isLoading={isTokenLoading}
                 />
                 <Typography variant="h6" data-cy={"token-symbol"}>
-                  {superTokenQueryData?.symbol}
+                  {superToken?.symbol}
                 </Typography>
               </Stack>
             </Stack>
@@ -250,7 +232,7 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
               <TokenLimitComponent
                 limit={schedule.lowerLimit}
                 netFlowRate={accountTokenSnapshot?.totalNetFlowRate}
-                tokenSymbol={superTokenQueryData?.symbol}
+                tokenSymbol={superToken?.symbol}
                 dataCy="lower-limit"
               />
             </Stack>
@@ -278,7 +260,7 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
                 <TokenLimitComponent
                   limit={schedule.upperLimit}
                   netFlowRate={accountTokenSnapshot?.totalNetFlowRate}
-                  tokenSymbol={superTokenQueryData?.symbol}
+                  tokenSymbol={superToken?.symbol}
                   dataCy="upper-limit"
                 />
               </Typography>
@@ -286,15 +268,15 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
           </Box>
           <Box alignContent={"center"}>
             <ConnectionBoundary expectedNetwork={network}>
-              {superTokenQueryData && network.autoWrap ? (
+              {superToken && network.autoWrap ? (
                 isAutoWrapLoading ? (
                   <Skeleton width={60} height={22} />
                 ) : isAutoWrapOK ? (
                   <DisableAutoWrapTransactionButton
-                    key={`auto-wrap-revoke-${superTokenQueryData?.symbol}`}
+                    key={`auto-wrap-revoke-${superToken?.symbol}`}
                     isDisabled={false}
                     isVisible={true}
-                    token={superTokenQueryData}
+                    token={superToken}
                     network={network}
                     ButtonProps={{
                       fullWidth: false,
@@ -337,12 +319,12 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
                   </ConnectionBoundaryButton>
                 ) : null
               ) : null}
-              {superTokenQueryData && (
+              {superToken && (
                 <AutoWrapEnableDialog
                   key={"auto-wrap-enable-dialog-section"}
                   closeEnableAutoWrapDialog={closeEnableAutoWrapDialog}
                   isEnableAutoWrapDialogOpen={isEnableAutoWrapDialogOpen}
-                  token={superTokenQueryData}
+                  token={superToken}
                   network={network}
                 />
               )}
@@ -350,7 +332,7 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
           </Box>
         </Stack>
       ) : (
-        <TableRow data-cy={`${superTokenQueryData?.symbol}-row`}>
+        <TableRow data-cy={`${superToken?.symbol}-row`}>
           <TableCell align="left">
             <Stack
               data-cy={"auto-wrap-token"}
@@ -360,11 +342,11 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
             >
               <TokenIcon
                 isSuper
-                tokenSymbol={superTokenQueryData?.symbol}
+                tokenSymbol={superToken?.symbol}
                 isLoading={isTokenLoading}
               />
               <Typography variant="h6" data-cy={"token-symbol"}>
-                {superTokenQueryData?.symbol}
+                {superToken?.symbol}
               </Typography>
             </Stack>
           </TableCell>
@@ -389,7 +371,7 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
               <TokenLimitComponent
                 limit={schedule.lowerLimit}
                 netFlowRate={accountTokenSnapshot?.totalNetFlowRate}
-                tokenSymbol={superTokenQueryData?.symbol}
+                tokenSymbol={superToken?.symbol}
                 dataCy="lower-limit"
               />
             </Typography>
@@ -399,23 +381,23 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
               <TokenLimitComponent
                 limit={schedule.upperLimit}
                 netFlowRate={accountTokenSnapshot?.totalNetFlowRate}
-                tokenSymbol={superTokenQueryData?.symbol}
+                tokenSymbol={superToken?.symbol}
                 dataCy="upper-limit"
               />
             </Typography>
           </TableCell>
           <TableCell align="center">
             <ConnectionBoundary expectedNetwork={network}>
-              {superTokenQueryData && network.autoWrap ? (
+              {superToken && network.autoWrap ? (
                 isAutoWrapLoading ? (
                   <Skeleton width={116} height={22} />
                 ) : isAutoWrapOK ? (
                   <DisableAutoWrapTransactionButton
-                    key={`auto-wrap-revoke-${superTokenQueryData?.symbol}`}
+                    key={`auto-wrap-revoke-${superToken?.symbol}`}
                     isDisabled={false}
                     isVisible={true}
                     network={network}
-                    token={superTokenQueryData}
+                    token={superToken}
                     ButtonProps={{
                       size: "small",
                       color: "primary",
@@ -456,12 +438,12 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
                   </ConnectionBoundaryButton>
                 ) : null
               ) : null}
-              {superTokenQueryData && (
+              {superToken && (
                 <AutoWrapEnableDialog
                   key={"auto-wrap-enable-dialog-section"}
                   closeEnableAutoWrapDialog={closeEnableAutoWrapDialog}
                   isEnableAutoWrapDialogOpen={isEnableAutoWrapDialogOpen}
-                  token={superTokenQueryData}
+                  token={superToken}
                   network={network}
                 />
               )}

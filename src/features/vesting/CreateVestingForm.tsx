@@ -39,9 +39,9 @@ import { TokenDialogButton } from "../tokenWrapping/TokenDialogButton";
 import { transactionButtonDefaultProps } from "../transactionBoundary/TransactionButton";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { PartialVestingForm } from "./CreateVestingFormProvider";
-import { CreateVestingCardView, VestingToken } from "./CreateVestingSection";
+import { CreateVestingCardView } from "./CreateVestingSection";
 import useActiveAutoWrap from "./useActiveAutoWrap";
-import { TokenType } from "../redux/endpoints/tokenTypes";
+import { SuperTokenMinimal, TokenType } from "../redux/endpoints/tokenTypes";
 import { useVestingVersion } from "../../hooks/useVestingVersion";
 
 export enum VestingFormLabels {
@@ -63,7 +63,7 @@ export enum VestingTooltips {
 }
 
 const CreateVestingForm: FC<{
-  token: VestingToken | undefined;
+  token: SuperTokenMinimal | null | undefined;
   setView: (value: CreateVestingCardView) => void;
 }> = ({ token, setView }) => {
   const theme = useTheme();
@@ -443,7 +443,7 @@ const CreateVestingForm: FC<{
     token &&
     getSuperTokenType({
       network,
-      address: token.id,
+      address: token.address,
       underlyingAddress: token.underlyingAddress,
     }) === TokenType.WrapperSuperToken;
 
@@ -457,7 +457,7 @@ const CreateVestingForm: FC<{
         chainId: network.id,
         accountAddress: visibleAddress,
         superTokenAddress: token.address,
-        underlyingTokenAddress: token.underlyingAddress,
+        underlyingTokenAddress: token.underlyingAddress!, // TODO: Do it without the bang?
       }
       : "skip"
   );

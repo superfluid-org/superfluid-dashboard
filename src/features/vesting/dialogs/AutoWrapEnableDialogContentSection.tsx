@@ -1,29 +1,27 @@
-import { Token } from "@superfluid-finance/sdk-core";
 import { FC, memo, useMemo } from "react";
 import { Network } from "../../network/networks";
 import { Button, Stack, Step, StepLabel, Stepper } from "@mui/material";
 import AutoWrapStrategyTransactionButton from "../transactionButtons/AutoWrapStrategyTransactionButton";
 import AutoWrapAllowanceTransactionButton from "../transactionButtons/AutoWrapAllowanceTransactionButton";
 import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
-import { getSuperTokenType } from "../../redux/endpoints/adHocSubgraphEndpoints";
-import { TokenType } from "../../redux/endpoints/tokenTypes";
+import { SuperTokenMinimal, TokenType } from "../../redux/endpoints/tokenTypes";
 import useActiveAutoWrap from "../useActiveAutoWrap";
-import { VestingToken } from "../CreateVestingSection";
 import ConnectionBoundaryButton from "../../transactionBoundary/ConnectionBoundaryButton";
+import { useTokenQuery } from "../../../hooks/useSuperToken";
 
 const AutoWrapEnableDialogContentSection: FC<{
   closeEnableAutoWrapDialog: () => void;
-  token: Token;
+  token: SuperTokenMinimal;
   network: Network;
-}> = ({ token, network, closeEnableAutoWrapDialog }) => {
+}> = ({ token: token_, network, closeEnableAutoWrapDialog }) => {
   const { visibleAddress } = useVisibleAddress();
 
-  const isAutoWrappable =
-    getSuperTokenType({
-      network,
-      address: token.id,
-      underlyingAddress: token.underlyingAddress,
-    }) === TokenType.WrapperSuperToken;
+  const tokenQuery = useTokenQuery({
+    chainId: network.id,
+    id: token_.address
+  });
+  const token = tokenQuery.data as SuperTokenMinimal | null | undefined; // TODO: get rid of the cast
+  const isAutoWrappable = token?.type === TokenType.WrapperSuperToken;
 
   const {
     isAutoWrapLoading,
@@ -34,8 +32,8 @@ const AutoWrapEnableDialogContentSection: FC<{
       ? {
         chainId: network.id,
         accountAddress: visibleAddress,
-        superTokenAddress: token.id,
-        underlyingTokenAddress: token.underlyingAddress,
+        superTokenAddress: token.address,
+        underlyingTokenAddress: token.underlyingAddress!,
       }
       : "skip"
   );
@@ -76,12 +74,16 @@ const AutoWrapEnableDialogContentSection: FC<{
           },
         }}
       >
-        <AutoWrapStrategyTransactionButton
-          token={token as VestingToken}
-          isVisible={activeStep == 0}
-          isDisabled={isAutoWrapLoading}
-          network={network}
-        />
+        {
+          token && ( // TODO: Get rid of this
+            <AutoWrapStrategyTransactionButton
+              token={token}
+              isVisible={activeStep == 0}
+              isDisabled={isAutoWrapLoading}
+              network={network}
+            />
+          )
+        }
       </ConnectionBoundaryButton>
       <ConnectionBoundaryButton
         impersonationTitle={"Stop viewing"}
@@ -95,12 +97,16 @@ const AutoWrapEnableDialogContentSection: FC<{
           },
         }}
       >
-        <AutoWrapAllowanceTransactionButton
-          token={token as VestingToken}
-          isVisible={activeStep == 1}
-          isDisabled={isAutoWrapLoading}
-          network={network}
-        />
+        {
+          token && (
+            <AutoWrapAllowanceTransactionButton
+              token={token}
+              isVisible={activeStep == 1}
+              isDisabled={isAutoWrapLoading}
+              network={network}
+            />
+          )
+        }
       </ConnectionBoundaryButton>
       {activeStep == 2 && (
         <Button

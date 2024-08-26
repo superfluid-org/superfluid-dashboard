@@ -18,10 +18,10 @@ import { SubscriptionRevokedActivity } from "../../utils/activityUtils";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import TxHashLink from "../common/TxHashLink";
 import NetworkBadge from "../network/NetworkBadge";
-import { subgraphApi } from "../redux/store";
 import TokenIcon from "../token/TokenIcon";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import ActivityIcon from "./ActivityIcon";
+import { useTokenQuery } from "../../hooks/useSuperToken";
 
 interface SubscriptionRevokedActivityRowProps
   extends SubscriptionRevokedActivity {
@@ -37,7 +37,7 @@ const SubscriptionRevokedActivityRow: FC<
 
   const { timestamp, token, publisher, subscriber, transactionHash } = keyEvent;
 
-  const tokenQuery = subgraphApi.useTokenQuery({
+  const tokenQuery = useTokenQuery({
     chainId: network.id,
     id: token,
   });

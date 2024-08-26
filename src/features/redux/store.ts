@@ -68,7 +68,6 @@ import { autoWrapSubgraphApi } from "../../auto-wrap-subgraph/autoWrapSubgraphAp
 import { tokenAccessMutationEndpoints } from "./endpoints/tokenAccessEndpoints";
 import { gdaEndpoints } from "./endpoints/gdaEndpoints";
 import { deprecatedNetworkChainIds } from "../network/networks";
-import { isUndefined } from "lodash";
 import _ from "lodash";
 import { isDefined } from "../../utils/ensureDefined";
 

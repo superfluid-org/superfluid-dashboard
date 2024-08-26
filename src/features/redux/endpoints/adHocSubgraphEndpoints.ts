@@ -444,7 +444,7 @@ export const adHocSubgraphEndpoints = {
 export const getSuperTokenType = (arg: {
   network: Network;
   address: string;
-  underlyingAddress: string;
+  underlyingAddress: string | null | undefined;
 }) => {
   if (
     arg.address.toLowerCase() ===
@@ -452,7 +452,7 @@ export const getSuperTokenType = (arg: {
   ) {
     return TokenType.NativeAssetSuperToken;
   } else if (
-    arg.underlyingAddress === "0x0000000000000000000000000000000000000000"
+    arg.underlyingAddress === "0x0000000000000000000000000000000000000000" || !arg.underlyingAddress
   ) {
     return TokenType.PureSuperToken;
   } else {

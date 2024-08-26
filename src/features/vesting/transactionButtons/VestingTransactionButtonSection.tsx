@@ -4,14 +4,15 @@ import AutoWrapAllowanceTransactionButton from "./AutoWrapAllowanceTransactionBu
 import AutoWrapStrategyTransactionButton from "./AutoWrapStrategyTransactionButton";
 import { CreateVestingTransactionButton } from "./CreateVestingTransactionButton";
 import { ValidVestingForm } from "../CreateVestingFormProvider";
-import { CreateVestingCardView, VestingToken } from "../CreateVestingSection";
+import { CreateVestingCardView } from "../CreateVestingSection";
 import { Network } from "../../network/networks";
 import { Stack, Step, StepLabel, Stepper } from "@mui/material";
 import useActiveAutoWrap from "../useActiveAutoWrap";
+import { SuperTokenMinimal } from "../../redux/endpoints/tokenTypes";
 
 export interface VestingTransactionSectionProps {
   network: Network;
-  token: VestingToken;
+  token: SuperTokenMinimal;
   setView: (value: CreateVestingCardView) => void;
 }
 
@@ -42,7 +43,7 @@ export function VestingTransactionButtonSection({
           chainId: network.id,
           accountAddress: visibleAddress,
           superTokenAddress: token.address,
-          underlyingTokenAddress: token.underlyingAddress,
+          underlyingTokenAddress: token.underlyingAddress!, // TODO: get rid of bang?
         }
       : "skip"
   );

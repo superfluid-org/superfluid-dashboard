@@ -21,13 +21,13 @@ import { Activity } from "../../utils/activityUtils";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import TxHashLink from "../common/TxHashLink";
 import NetworkBadge from "../network/NetworkBadge";
-import { subgraphApi } from "../redux/store";
 import Amount from "../token/Amount";
 import TokenIcon from "../token/TokenIcon";
 import FiatAmount from "../tokenPrice/FiatAmount";
 import useTokenPrice from "../tokenPrice/useTokenPrice";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import ActivityIcon from "./ActivityIcon";
+import { useTokenQuery } from "../../hooks/useSuperToken";
 
 interface TransferActivityRowProps extends Activity<TransferEvent> {
   dateFormat?: string;
@@ -46,7 +46,7 @@ const TransferActivityRow: FC<TransferActivityRowProps> = ({
 
   const tokenPrice = useTokenPrice(network.id, token);
 
-  const tokenQuery = subgraphApi.useTokenQuery(
+  const tokenQuery = useTokenQuery(
     token
       ? {
           chainId: network.id,

@@ -7,11 +7,11 @@ import { useAnalytics } from "../analytics/useAnalytics";
 import { rpcApi } from "../redux/store";
 import { calculateTotalAmountWei } from "../send/FlowRateInput";
 import { TokenAccessProps } from "./dialog/UpsertTokenAccessForm";
-import { Token } from "@superfluid-finance/sdk-core";
+import { SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
 
 interface RevokeButtonProps {
   network: Network;
-  superToken: Token;
+  superToken: SuperTokenMinimal;
   operatorAddress: string;
   access: TokenAccessProps;
 }
@@ -55,7 +55,7 @@ const RevokeButton: FC<RevokeButtonProps> = ({
 
             const primaryArgs = {
               chainId: network.id,
-              superTokenAddress: superToken.id,
+              superTokenAddress: superToken.address,
               operatorAddress: operatorAddress,
               initialAccess: {
                 flowRateAllowanceWei: calculateTotalAmountWei(access.flowRateAllowance).toString(),

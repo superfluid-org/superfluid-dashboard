@@ -15,9 +15,9 @@ import { FC } from "react";
 import { Activity } from "../../utils/activityUtils";
 import TxHashLink from "../common/TxHashLink";
 import NetworkBadge from "../network/NetworkBadge";
-import { subgraphApi } from "../redux/store";
 import TokenIcon from "../token/TokenIcon";
 import ActivityIcon from "./ActivityIcon";
+import { useTokenQuery } from "../../hooks/useSuperToken";
 
 interface IndexCreatedActivityRowProps extends Activity<IndexCreatedEvent> {
   dateFormat?: string;
@@ -33,7 +33,7 @@ const IndexCreatedActivityRow: FC<IndexCreatedActivityRowProps> = ({
 
   const { timestamp, token, transactionHash } = keyEvent;
 
-  const tokenQuery = subgraphApi.useTokenQuery({
+  const tokenQuery = useTokenQuery({
     chainId: network.id,
     id: token,
   });

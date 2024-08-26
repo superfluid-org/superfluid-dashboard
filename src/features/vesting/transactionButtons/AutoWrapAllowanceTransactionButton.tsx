@@ -1,21 +1,17 @@
 import { Typography } from "@mui/material";
-import { TransactionTitle } from "@superfluid-finance/sdk-redux";
 import { constants } from "ethers";
 import { FC, memo } from "react";
 import { useSimulateContract, useWalletClient } from "wagmi";
-import { rpcApi, subgraphApi } from "../../redux/store";
+import { rpcApi } from "../../redux/store";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
-import { VestingToken } from "../CreateVestingSection";
-import useGetTransactionOverrides from "../../../hooks/useGetTransactionOverrides";
-import { convertOverridesForWagmi } from "../../../utils/convertOverridesForWagmi";
 import { erc20Abi } from "../../../generated";
 import { Network } from "../../network/networks";
-
-const TX_TITLE: TransactionTitle = "Approve Allowance";
+import { SuperTokenMinimal } from "../../redux/endpoints/tokenTypes";
+import { useTokenQuery } from "../../../hooks/useSuperToken";
 
 const AutoWrapAllowanceTransactionButton: FC<{
-  token: VestingToken;
+  token: SuperTokenMinimal;
   isVisible: boolean;
   isDisabled: boolean;
   network: Network;
@@ -42,9 +38,9 @@ const AutoWrapAllowanceTransactionButton: FC<{
 
   const [write, mutationResult] = rpcApi.useWriteContractMutation();
 
-  const underlyingTokenQuery = subgraphApi.useTokenQuery({
+  const underlyingTokenQuery = useTokenQuery({
     chainId: network.id,
-    id: token.underlyingAddress,
+    id: token.underlyingAddress!, // TODO: Get rid of the bang
   });
   const underlyingToken = underlyingTokenQuery.data;
 

@@ -21,6 +21,7 @@ import Amount from "../token/Amount";
 import TokenIcon from "../token/TokenIcon";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import ActivityIcon from "./ActivityIcon";
+import { useTokenQuery } from "../../hooks/useSuperToken";
 
 interface IndexUpdatedActivityRowProps extends Activity<IndexUpdatedEvent> {
   dateFormat?: string;
@@ -46,7 +47,7 @@ const IndexUpdatedActivityRow: FC<IndexUpdatedActivityRowProps> = ({
     transactionHash,
   } = keyEvent;
 
-  const tokenQuery = subgraphApi.useTokenQuery({
+  const tokenQuery = useTokenQuery({
     chainId: network.id,
     id: token,
   });

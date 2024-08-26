@@ -14,7 +14,6 @@ import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import AddressName from "../../components/AddressName/AddressName";
 import Amount from "../token/Amount";
-import { subgraphApi } from "../redux/store";
 import { UnitOfTime, timeUnitShortFormMap } from "../send/FlowRateInput";
 import { BigNumber } from "ethers";
 import { Network } from "../network/networks";
@@ -25,7 +24,6 @@ import {
 import { flowOperatorPermissionsToString } from "../../utils/flowOperatorPermissionsToString";
 import { useTheme } from "@mui/material/styles";
 import UpsertTokenAccessFormProvider, {
-  AccessToken,
   UpsertTokenAccessFormProviderProps,
 } from "./dialog/UpsertTokenAccessFormProvider";
 import { Add } from "@mui/icons-material";
@@ -33,6 +31,8 @@ import ResponsiveDialog from "../common/ResponsiveDialog";
 import { UpsertTokenAccessForm } from "./dialog/UpsertTokenAccessForm";
 import TooltipWithIcon from "../common/TooltipWithIcon";
 import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
+import { useTokenQuery } from "../../hooks/useSuperToken";
+import { SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
 
 interface Props {
   address: Address;
@@ -86,7 +86,7 @@ export const UpsertTokenAccessButton: FC<{
 const TokenAccessRow: FC<Props> = ({
   address,
   network,
-  token,
+  token: tokenAddress,
   tokenAllowance,
   flowOperatorPermissions,
   flowRateAllowance,
@@ -103,10 +103,11 @@ const TokenAccessRow: FC<Props> = ({
     },
   });
 
-  const { data: tokenInfo, isLoading: isTokenLoading } =
-    subgraphApi.useTokenQuery({
-      id: token,
+  const { data: superToken, isLoading: isTokenLoading } =
+    useTokenQuery({
+      id: tokenAddress,
       chainId: network.id,
+      onlySuperToken: true
     });
 
   useEffect(() => {
@@ -121,7 +122,7 @@ const TokenAccessRow: FC<Props> = ({
   }, [
     address,
     network,
-    tokenInfo,
+    superToken,
     tokenAllowance,
     flowOperatorPermissions,
     flowRateAllowance,
@@ -130,20 +131,8 @@ const TokenAccessRow: FC<Props> = ({
   const initialFormValues = useMemo(() => {
     return {
       network: network,
-      token: tokenInfo
-        ? ({
-            ...tokenInfo,
-            type: getSuperTokenType({
-              ...tokenInfo,
-              network: network!,
-              address: tokenInfo.id,
-            }),
-            address: tokenInfo.id,
-            name: tokenInfo.name,
-            symbol: tokenInfo.symbol,
-            decimals: 18,
-            isListed: tokenInfo.isListed,
-          } as AccessToken)
+      token: superToken
+        ? superToken
         : undefined,
       operatorAddress: address,
       flowOperatorPermissions: initialAccess.flowOperatorPermissions,
@@ -155,7 +144,7 @@ const TokenAccessRow: FC<Props> = ({
   return (
     <>
       {isBelowMd ? (
-        <TableRow data-cy={`${tokenInfo?.symbol}-${address}-row`}>
+        <TableRow data-cy={`${superToken?.symbol}-${address}-row`}>
           <TableCell>
             <Stack gap={2} sx={{ px: 2, py: 2 }}>
               <Stack
@@ -172,11 +161,11 @@ const TokenAccessRow: FC<Props> = ({
                 >
                   <TokenIcon
                     isSuper
-                    tokenSymbol={tokenInfo?.symbol}
+                    tokenSymbol={superToken?.symbol}
                     isLoading={isTokenLoading}
                   />
                   <Typography variant="h6" data-cy={"token-symbol"}>
-                    {tokenInfo?.symbol}
+                    {superToken?.symbol}
                   </Typography>
                 </Stack>
               </Stack>
@@ -233,7 +222,7 @@ const TokenAccessRow: FC<Props> = ({
                     }}
                   />
                 </Stack>
-                {tokenInfo && (
+                {superToken && (
                   <Stack direction="row" alignItems="center" gap={0.5}>
                     <Typography data-cy="token-allowance" variant="h6">
                       {isCloseToUnlimitedTokenAllowance(
@@ -243,9 +232,9 @@ const TokenAccessRow: FC<Props> = ({
                       ) : (
                         <>
                           <Amount
-                            decimals={tokenInfo?.decimals}
+                            decimals={superToken?.decimals}
                             wei={initialAccess.tokenAllowanceWei}
-                          >{` ${tokenInfo?.symbol}`}</Amount>
+                          >{` ${superToken?.symbol}`}</Amount>
                         </>
                       )}
                     </Typography>
@@ -296,7 +285,7 @@ const TokenAccessRow: FC<Props> = ({
                   />
                 </Stack>
 
-                {tokenInfo && (
+                {superToken && (
                   <Stack direction="row" alignItems="center" gap={0.5}>
                     <Typography data-cy="flow-rate-allowance" variant="h6">
                       {isCloseToUnlimitedFlowRateAllowance(
@@ -306,9 +295,9 @@ const TokenAccessRow: FC<Props> = ({
                       ) : (
                         <>
                           <Amount
-                            decimals={tokenInfo?.decimals}
+                            decimals={superToken?.decimals}
                             wei={initialAccess.flowRateAllowance.amountWei}
-                          >{` ${tokenInfo?.symbol}/${
+                          >{` ${superToken?.symbol}/${
                             timeUnitShortFormMap[
                               initialAccess.flowRateAllowance.unitOfTime
                             ]
@@ -329,7 +318,7 @@ const TokenAccessRow: FC<Props> = ({
           </TableCell>
         </TableRow>
       ) : (
-        <TableRow data-cy={`${tokenInfo?.symbol}-${address}-row`}>
+        <TableRow data-cy={`${superToken?.symbol}-${address}-row`}>
           <TableCell align="left">
             <Stack
               data-cy={"token-header"}
@@ -339,11 +328,11 @@ const TokenAccessRow: FC<Props> = ({
             >
               <TokenIcon
                 isSuper
-                tokenSymbol={tokenInfo?.symbol}
+                tokenSymbol={superToken?.symbol}
                 isLoading={isTokenLoading}
               />
               <Typography variant="h6" data-cy={"token-symbol"}>
-                {tokenInfo?.symbol}
+                {superToken?.symbol}
               </Typography>
             </Stack>
           </TableCell>
@@ -364,7 +353,7 @@ const TokenAccessRow: FC<Props> = ({
             </Stack>
           </TableCell>
           <TableCell sx={{ overflowWrap: "anywhere" }} align="left">
-            {tokenInfo && (
+            {superToken && (
               <Stack direction="row" alignItems="center" gap={0.5}>
                 <Typography variant="h6" data-cy="token-allowance">
                   {isCloseToUnlimitedTokenAllowance(
@@ -375,9 +364,9 @@ const TokenAccessRow: FC<Props> = ({
                     <span>–</span>
                   ) : (
                     <Amount
-                      decimals={tokenInfo?.decimals}
+                      decimals={superToken?.decimals}
                       wei={initialAccess.tokenAllowanceWei}
-                    >{` ${tokenInfo?.symbol}`}</Amount>
+                    >{` ${superToken?.symbol}`}</Amount>
                   )}
                 </Typography>
               </Stack>
@@ -391,7 +380,7 @@ const TokenAccessRow: FC<Props> = ({
             </Typography>
           </TableCell>
           <TableCell align="left" sx={{ overflowWrap: "anywhere" }}>
-            {tokenInfo && (
+            {superToken && (
               <Stack direction="row" alignItems="center" gap={0.5}>
                 <Typography variant="h6" data-cy="flow-rate-allowance">
                   {isCloseToUnlimitedFlowRateAllowance(
@@ -402,9 +391,9 @@ const TokenAccessRow: FC<Props> = ({
                     <span>–</span>
                   ) : (
                     <Amount
-                      decimals={tokenInfo?.decimals}
+                      decimals={superToken?.decimals}
                       wei={initialAccess.flowRateAllowance.amountWei}
-                    >{` ${tokenInfo?.symbol}/${
+                    >{` ${superToken?.symbol}/${
                       timeUnitShortFormMap[
                         initialAccess.flowRateAllowance.unitOfTime
                       ]

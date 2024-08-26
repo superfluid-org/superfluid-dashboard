@@ -24,6 +24,7 @@ import Amount from "../token/Amount";
 import TokenIcon from "../token/TokenIcon";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import ActivityIcon from "./ActivityIcon";
+import { useTokenQuery } from "../../hooks/useSuperToken";
 
 interface SubscriptionApprovedActivityRowProps
   extends SubscriptionApprovedActivity {
@@ -52,7 +53,7 @@ const SubscriptionApprovedActivityRow: FC<
     blockNumber,
   } = keyEvent;
 
-  const tokenQuery = subgraphApi.useTokenQuery({
+  const tokenQuery = useTokenQuery({
     chainId: network.id,
     id: token,
   });

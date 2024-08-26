@@ -17,8 +17,8 @@ import FiatAmount from "../tokenPrice/FiatAmount";
 import FlowingFiatBalance from "../tokenPrice/FlowingFiatBalance";
 import useTokenPrice from "../tokenPrice/useTokenPrice";
 import { VestingSchedule } from "./types";
-import { useVestingToken } from "./useVestingToken";
 import { VestingDataCardContent } from "./VestingDataCard";
+import { useTokenQuery } from "../../hooks/useSuperToken";
 
 interface VestingTokenAggregationRowProps {
   tokenAddress: Address;
@@ -32,7 +32,7 @@ const VestingTokenAggregationRow: FC<VestingTokenAggregationRowProps> = ({
   network,
 }) => {
   const theme = useTheme();
-  const tokenQuery = useVestingToken(network, tokenAddress);
+  const tokenQuery = useTokenQuery({ chainId: network.id, id: tokenAddress });
   const tokenPrice = useTokenPrice(network.id, tokenAddress);
   const token = tokenQuery.data;
 

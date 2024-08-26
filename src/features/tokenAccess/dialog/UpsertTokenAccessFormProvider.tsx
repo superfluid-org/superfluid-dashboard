@@ -7,15 +7,12 @@ import { testAddress, testWeiAmount } from "../../../utils/yupUtils";
 import { Network } from "../../network/networks";
 import { CommonFormEffects } from "../../common/CommonFormEffects";
 import { BigNumber } from "ethers";
-import { Token } from "@superfluid-finance/sdk-core";
 import { SuperTokenMinimal } from "../../redux/endpoints/tokenTypes";
-
-export type AccessToken = Token & SuperTokenMinimal;
 
 export type ValidUpsertTokenAccessForm = {
   data: {
     network: Network;
-    token: AccessToken;
+    token: SuperTokenMinimal;
     operatorAddress: string;
     tokenAllowanceWei: BigNumber;
     flowRateAllowance: {
@@ -56,7 +53,7 @@ export interface UpsertTokenAccessFormProviderProps {
 
 const formSchema: ObjectSchema<ValidUpsertTokenAccessForm> = object({
   data: object({
-    token: mixed<AccessToken>().required(),
+    token: mixed<SuperTokenMinimal>().required(),
     operatorAddress: string().required().test(testAddress()),
     network: mixed<Network>().required(),
     tokenAllowanceWei: mixed<BigNumber>()

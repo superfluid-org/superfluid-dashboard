@@ -36,6 +36,7 @@ import FlowingFiatBalance from "../tokenPrice/FlowingFiatBalance";
 import useTokenPrice from "../tokenPrice/useTokenPrice";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import ActivityIcon from "./ActivityIcon";
+import { useTokenQuery } from "../../hooks/useSuperToken";
 
 interface FlowUpdatedActivityRowProps extends Activity<FlowUpdatedEvent> {
   dateFormat?: string;
@@ -56,7 +57,7 @@ const FlowUpdatedActivityRow: FC<FlowUpdatedActivityRowProps> = ({
     receiver,
     sender,
     timestamp,
-    token,
+    token: tokenAddress,
     transactionHash,
     id,
   } = keyEvent;
@@ -78,9 +79,9 @@ const FlowUpdatedActivityRow: FC<FlowUpdatedActivityRowProps> = ({
     }
   );
 
-  const tokenQuery = subgraphApi.useTokenQuery({
+  const tokenQuery = useTokenQuery({
     chainId: network.id,
-    id: token,
+    id: tokenAddress,
   });
 
   const isOutgoing = useMemo(
@@ -88,7 +89,7 @@ const FlowUpdatedActivityRow: FC<FlowUpdatedActivityRowProps> = ({
     [visibleAddress, sender]
   );
 
-  const tokenPrice = useTokenPrice(network.id, token);
+  const tokenPrice = useTokenPrice(network.id, tokenAddress);
 
   const { title, icon } = useMemo(() => {
     switch (type) {

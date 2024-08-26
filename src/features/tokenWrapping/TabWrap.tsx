@@ -18,7 +18,6 @@ import {
 } from "../redux/endpoints/tokenTypes";
 import { rpcApi, subgraphApi } from "../redux/store";
 import TokenIcon from "../token/TokenIcon";
-import { useTokenIsListed } from "../token/useTokenIsListed";
 import FiatAmount from "../tokenPrice/FiatAmount";
 import useTokenPrice from "../tokenPrice/useTokenPrice";
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
@@ -41,6 +40,7 @@ import { TokenDialogButton } from "./TokenDialogButton";
 import { useTokenPairQuery } from "./useTokenPairQuery";
 import { WrapInputCard } from "./WrapInputCard";
 import { ValidWrappingForm, WrappingForm } from "./WrappingFormProvider";
+import { useTokenQuery } from "../../hooks/useSuperToken";
 
 const underlyingIbAlluoTokenOverrides = [
   // StIbAlluoEth
@@ -215,10 +215,15 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
     }
   );
 
-  const [isListed, isListedLoading] = useTokenIsListed(
-    network.id,
-    tokenPair?.superTokenAddress
+  const superTokenQuery = useTokenQuery(
+    tokenPair?.superTokenAddress ? {
+      chainId: network.id,
+      id: tokenPair.superTokenAddress
+    } : skipToken
   );
+
+  const isListed = Boolean(superTokenQuery.data?.isListed);
+  const isListedLoading = superTokenQuery.isLoading
 
   return (
     <Stack data-cy={"wrap-screen"} direction="column" alignItems="center">

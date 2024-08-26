@@ -8,17 +8,17 @@ import { TransactionBoundary } from "../../transactionBoundary/TransactionBounda
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
 import useGetTransactionOverrides from "../../../hooks/useGetTransactionOverrides";
 import { convertOverridesForWagmi } from "../../../utils/convertOverridesForWagmi";
-import { Token } from "@superfluid-finance/sdk-core";
-import { toVestingToken } from "../useVestingToken";
 import { erc20Abi } from "../../../generated";
 import { Network } from "../../network/networks";
 import { ConnectionBoundaryButtonProps } from "../../transactionBoundary/ConnectionBoundaryButton";
 import { useQuery } from "@tanstack/react-query";
+import { SuperTokenMinimal } from "../../redux/endpoints/tokenTypes";
+import { useTokenQuery } from "../../../hooks/useSuperToken";
 
 const TX_TITLE: TransactionTitle = "Disable Auto-Wrap";
 
 const DisableAutoWrapTransactionButton: FC<{
-  token: Token;
+  token: SuperTokenMinimal;
   isVisible: boolean;
   isDisabled: boolean;
   ButtonProps?: ButtonProps;
@@ -26,8 +26,8 @@ const DisableAutoWrapTransactionButton: FC<{
   ConnectionBoundaryButtonProps?: Partial<ConnectionBoundaryButtonProps>
 }> = ({ token, isVisible, ButtonProps = {}, ConnectionBoundaryButtonProps, network, ...props }) => {
   const { data: walletClient } = useWalletClient();
-  const vestingToken = toVestingToken(token, network);
   const getGasOverrides = useGetTransactionOverrides();
+  
   const { data: overrides } = useQuery({
     queryKey: ["gasOverrides", TX_TITLE, network.id],
     queryFn: async () => convertOverridesForWagmi(await getGasOverrides(network))
@@ -43,7 +43,7 @@ const DisableAutoWrapTransactionButton: FC<{
       ? {
           abi: erc20Abi,
           functionName: "approve",
-          address: vestingToken.underlyingAddress as `0x${string}`,
+          address: token.underlyingAddress as `0x${string}`,
           chainId: network.id,
           args: [primaryArgs.spender, primaryArgs.amount],
           // TODO: overrides
@@ -53,9 +53,9 @@ const DisableAutoWrapTransactionButton: FC<{
 
   const [write, mutationResult] = rpcApi.useWriteContractMutation();
 
-  const underlyingTokenQuery = subgraphApi.useTokenQuery({
+  const underlyingTokenQuery = useTokenQuery({
     chainId: network.id,
-    id: vestingToken.underlyingAddress,
+    id: token.underlyingAddress!, // TODO: get rid of bang?
   });
   const underlyingToken = underlyingTokenQuery.data;
 

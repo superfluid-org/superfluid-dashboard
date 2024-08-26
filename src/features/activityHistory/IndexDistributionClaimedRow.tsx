@@ -18,11 +18,11 @@ import { IndexDistributionClaimedActivity } from "../../utils/activityUtils";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import TxHashLink from "../common/TxHashLink";
 import NetworkBadge from "../network/NetworkBadge";
-import { subgraphApi } from "../redux/store";
 import Amount from "../token/Amount";
 import TokenIcon from "../token/TokenIcon";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import ActivityIcon from "./ActivityIcon";
+import { useTokenQuery } from "../../hooks/useSuperToken";
 
 interface IndexDistributionClaimedRowProps
   extends IndexDistributionClaimedActivity {
@@ -43,7 +43,7 @@ const IndexDistributionClaimedRow: FC<IndexDistributionClaimedRowProps> = ({
   const { timestamp, amount, token, transactionHash, publisher, subscriber } =
     keyEvent;
 
-  const tokenQuery = subgraphApi.useTokenQuery({
+  const tokenQuery = useTokenQuery({
     chainId: network.id,
     id: token,
   });

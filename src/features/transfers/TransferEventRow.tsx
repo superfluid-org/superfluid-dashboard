@@ -21,6 +21,7 @@ import AddressName from "../../components/AddressName/AddressName";
 import { subgraphApi } from "../redux/store";
 import { Network } from "../network/networks";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
+import { useTokenQuery } from "../../hooks/useSuperToken";
 
 export const TransferEventLoadingRow = () => {
   const theme = useTheme();
@@ -80,7 +81,7 @@ const TransferEventRow: FC<TransferEventRowProps> = ({
   const { from, to, value, timestamp, token: tokenAddress } = transferEvent;
   const isOutgoing = from === visibleAddress.toLowerCase();
 
-  const tokenQuery = subgraphApi.useTokenQuery({
+  const tokenQuery = useTokenQuery({
     chainId: network.id,
     id: tokenAddress,
   });

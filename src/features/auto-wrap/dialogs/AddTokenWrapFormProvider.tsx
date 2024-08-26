@@ -8,7 +8,6 @@ import { formRestorationOptions } from "../../transactionRestoration/transaction
 import { CommonFormEffects } from "../../common/CommonFormEffects";
 import { SuperTokenMinimal } from "../../redux/endpoints/tokenTypes";
 
-
 export type AutoWrapToken = Token & SuperTokenMinimal;
 
 export type ValidAddTokenWrapForm = {

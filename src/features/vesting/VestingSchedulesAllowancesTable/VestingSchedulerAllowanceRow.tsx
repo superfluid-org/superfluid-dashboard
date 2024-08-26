@@ -20,7 +20,7 @@ import {
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { BigNumber } from "ethers";
-import { FC, useCallback, useMemo, useState } from "react";
+import { FC, useCallback, useState } from "react";
 import { useAccount } from "wagmi";
 import OpenIcon from "../../../components/OpenIcon/OpenIcon";
 import { flowOperatorPermissionsToString } from "../../../utils/flowOperatorPermissionsToString";
@@ -29,7 +29,7 @@ import {
   isCloseToUnlimitedTokenAllowance,
 } from "../../../utils/isCloseToUnlimitedAllowance";
 import { Network } from "../../network/networks";
-import { rpcApi, subgraphApi } from "../../redux/store";
+import { rpcApi } from "../../redux/store";
 import Amount from "../../token/Amount";
 import TokenIcon from "../../token/TokenIcon";
 import RemoveCircleRoundedIcon from "@mui/icons-material/RemoveCircleRounded";
@@ -38,10 +38,9 @@ import useActiveAutoWrap from "../useActiveAutoWrap";
 import { getSuperTokenType } from "../../redux/endpoints/adHocSubgraphEndpoints";
 import { TokenType } from "../../redux/endpoints/tokenTypes";
 import DisableAutoWrapTransactionButton from "../transactionButtons/DisableAutoWrapTransactionButton";
-import { VestingToken } from "../CreateVestingSection";
 import AutoWrapEnableDialog from "../dialogs/AutoWrapEnableDialog";
 import ConnectionBoundaryButton from "../../transactionBoundary/ConnectionBoundaryButton";
-import { useVestingVersion } from "../../../hooks/useVestingVersion";
+import { useTokenQuery } from "../../../hooks/useSuperToken";
 
 export const EditIconWrapper = styled(Avatar)(({ theme }) => ({
   width: "50px",
@@ -147,9 +146,10 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
     [setEnableAutoWrapDialogOpen]
   );
 
-  const { data: token, isLoading: isTokenLoading } = subgraphApi.useTokenQuery({
+  const { data: token, isLoading: isTokenLoading } = useTokenQuery({
     chainId: network.id,
     id: tokenAddress,
+    onlySuperToken: true
   });
 
   const isAutoWrappable =
@@ -157,7 +157,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
     token &&
     getSuperTokenType({
       network,
-      address: token.id,
+      address: token.address,
       underlyingAddress: token.underlyingAddress,
     }) === TokenType.WrapperSuperToken;
 
@@ -170,8 +170,8 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
       ? {
           chainId: network.id,
           accountAddress: senderAddress,
-          superTokenAddress: token.id,
-          underlyingTokenAddress: token.underlyingAddress,
+          superTokenAddress: token.address,
+          underlyingTokenAddress: token.underlyingAddress!, // TODO: get rid of bang?
         }
       : "skip"
   );
@@ -449,7 +449,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                             isDisabled={false}
                             isVisible={true}
                             network={network}
-                            token={token as VestingToken}
+                            token={token}
                             ButtonProps={{
                               color: "primary",
                               variant: "textContained",
@@ -649,7 +649,7 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                           isDisabled={false}
                           isVisible={true}
                           network={network}
-                          token={token as VestingToken}
+                          token={token}
                           ButtonProps={{
                             fullWidth: false,
                             color: "primary",

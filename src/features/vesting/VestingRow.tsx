@@ -22,13 +22,13 @@ import Amount from "../token/Amount";
 import TokenIcon from "../token/TokenIcon";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { VestingSchedule } from "./types";
-import { useVestingToken } from "./useVestingToken";
 import VestedBalance from "./VestedBalance";
 import VestingStatus from "./VestingStatus";
 import Link from "next/link";
 import { usePendingVestingScheduleClaim } from "../pendingUpdates/PendingVestingScheduleClaim";
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import { ClaimVestingScheduleTransactionButton } from "./transactionButtons/ClaimVestingScheduleTransactionButton";
+import { useTokenQuery } from "../../hooks/useSuperToken";
 
 interface VestingRowProps {
   network: Network;
@@ -42,7 +42,7 @@ const VestingRow: FC<VestingRowProps> = ({
   onClick,
 }) => {
   const {
-    superToken,
+    superToken: superTokenAddress,
     receiver,
     sender,
     cliffAmount,
@@ -61,7 +61,7 @@ const VestingRow: FC<VestingRowProps> = ({
   const pendingDelete = usePendingVestingScheduleDelete(
     {
       chainId: network.id,
-      superTokenAddress: superToken,
+      superTokenAddress: superTokenAddress,
       receiverAddress: receiver,
       senderAddress: sender,
       version
@@ -74,7 +74,7 @@ const VestingRow: FC<VestingRowProps> = ({
   const pendingClaim = usePendingVestingScheduleClaim(
     {
       chainId: network.id,
-      superTokenAddress: superToken,
+      superTokenAddress: superTokenAddress,
       receiverAddress: receiver,
       senderAddress: sender,
       version
@@ -86,7 +86,7 @@ const VestingRow: FC<VestingRowProps> = ({
 
   const { visibleAddress } = useVisibleAddress();
 
-  const tokenQuery = useVestingToken(network, superToken);
+  const superTokenQuery = useTokenQuery({ chainId: network.id, id: superTokenAddress, onlySuperToken: true });
 
   const totalAmount = useMemo(() => {
     return BigNumber.from(endDate - cliffAndFlowDate)
@@ -163,11 +163,11 @@ const VestingRow: FC<VestingRowProps> = ({
               <TokenIcon
                 isSuper
                 size={26}
-                tokenSymbol={tokenQuery.data?.symbol}
-                isLoading={tokenQuery.isLoading}
+                tokenSymbol={superTokenQuery.data?.symbol}
+                isLoading={superTokenQuery.isLoading}
               />
               <Typography variant="body1mono">
-                <Amount wei={totalAmount} /> {tokenQuery.data?.symbol}
+                <Amount wei={totalAmount} /> {superTokenQuery.data?.symbol}
               </Typography>
             </Stack>
           </TableCell>
@@ -175,7 +175,7 @@ const VestingRow: FC<VestingRowProps> = ({
             <Typography variant="body1mono">
               <VestedBalance vestingSchedule={vestingSchedule}>
                 {" "}
-                {tokenQuery.data?.symbol}
+                {superTokenQuery.data?.symbol}
               </VestedBalance>
             </Typography>
           </TableCell>
@@ -203,7 +203,7 @@ const VestingRow: FC<VestingRowProps> = ({
                 {showClaim ? (
                   <ConnectionBoundary expectedNetwork={network}>
                     <ClaimVestingScheduleTransactionButton
-                      superTokenAddress={superToken}
+                      superTokenAddress={superTokenAddress}
                       senderAddress={sender}
                       receiverAddress={receiver}
                       version={vestingSchedule.version}
@@ -212,7 +212,7 @@ const VestingRow: FC<VestingRowProps> = ({
                   </ConnectionBoundary>
                 ) : showUnwrap ? (
                   <Link
-                    href={`/wrap?downgrade&token=${superToken}&network=${network.slugName}`}
+                    href={`/wrap?downgrade&token=${superTokenAddress}&network=${network.slugName}`}
                   >
                     <Button variant="outlined" color="primary" size="small">
                       Unwrap
@@ -236,15 +236,15 @@ const VestingRow: FC<VestingRowProps> = ({
                 <VestedBalance vestingSchedule={vestingSchedule} />
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                {tokenQuery.data?.symbol}
+                {superTokenQuery.data?.symbol}
               </Typography>
             </Stack>
 
             <TokenIcon
               isSuper
               size={26}
-              tokenSymbol={tokenQuery.data?.symbol}
-              isLoading={tokenQuery.isLoading}
+              tokenSymbol={superTokenQuery.data?.symbol}
+              isLoading={superTokenQuery.isLoading}
             />
           </Stack>
         </TableCell>

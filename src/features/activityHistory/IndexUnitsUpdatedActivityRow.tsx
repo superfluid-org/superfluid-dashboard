@@ -24,6 +24,7 @@ import { subgraphApi } from "../redux/store";
 import TokenIcon from "../token/TokenIcon";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import ActivityIcon from "./ActivityIcon";
+import { useTokenQuery } from "../../hooks/useSuperToken";
 
 interface IndexUnitsUpdatedActivityRowProps extends IndexUnitsUpdatedActivity {
   dateFormat?: string;
@@ -52,7 +53,7 @@ const IndexUnitsUpdatedActivityRow: FC<IndexUnitsUpdatedActivityRowProps> = ({
     blockNumber,
   } = keyEvent;
 
-  const tokenQuery = subgraphApi.useTokenQuery({
+  const tokenQuery = useTokenQuery({
     chainId: network.id,
     id: token,
   });
