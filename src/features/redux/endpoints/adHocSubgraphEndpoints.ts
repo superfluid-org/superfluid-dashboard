@@ -261,11 +261,13 @@ export const adHocSubgraphEndpoints = {
               return { ...network.nativeCurrency.superToken, decimals: 18 };
             }
 
+            const tokenFromTokenList = findTokenFromTokenList({ chainId: arg.chainId, address: x.token.address });
+
             return {
               type: TokenType.WrapperSuperToken,
               address: x.token.address,
-              name: x.token.name,
-              symbol: x.token.symbol,
+              name: tokenFromTokenList?.name ?? x.token.name,
+              symbol: tokenFromTokenList?.symbol ?? x.token.symbol,
               decimals: 18,
             };
           }),
