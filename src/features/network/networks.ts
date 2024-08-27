@@ -79,7 +79,7 @@ export type Network = Chain & {
     nftAddress: `0x${string}`;
   };
   metadata: NetworkMetadata;
-  blockExplorers: Chain["blockExplorers"] & Record<string, any>; // TODO: wagmi migration (ChainBlockExplorer)
+  blockExplorers: Chain["blockExplorers"];
 };
 
 const blockExplorers = {
