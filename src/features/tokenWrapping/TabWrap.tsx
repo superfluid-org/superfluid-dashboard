@@ -76,7 +76,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
     resetField,
     formState,
     getValues,
-    setValue,
+    setValue
   } = useFormContext<WrappingForm>();
 
   // The reason to set the type and clear errors is that a single form context is used both for wrapping and unwrapping.
@@ -93,8 +93,8 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
     "data.amountDecimal",
   ]);
 
-  const [amountWei, setAmountWei] = useState<BigNumber>( // The wei is based on the underlying token, so be careful with decimals.
-    ethers.BigNumber.from(0)
+  const [amountWei, setAmountWei] = useState<string>( // The wei is based on the underlying token, so be careful with decimals.
+    "0"
   );
 
   const { data: tokenPairs, isFetching: tokenPairsIsFetching } = useTokenPairsQuery({ network });
@@ -112,10 +112,10 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
         parseAmountOrZero({
           value: amountDecimal,
           decimals: underlyingToken.decimals,
-        })
+        }).toString()
       );
     } else {
-      setAmountWei(BigNumber.from("0"));
+      setAmountWei("0");
     }
   }, [amountDecimal, underlyingToken]);
 
@@ -139,7 +139,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
   const missingAllowance = currentAllowance
     ? currentAllowance.gt(amountWei)
       ? ethers.BigNumber.from(0)
-      : amountWei.sub(currentAllowance)
+      : BigNumber.from(amountWei).sub(currentAllowance)
     : ethers.BigNumber.from(0);
 
   const [approveTrigger, approveResult] = rpcApi.useApproveMutation();
@@ -148,7 +148,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
   const isApproveAllowanceVisible = !!(
     underlyingToken &&
     tokenPair &&
-    !amountWei.isZero() &&
+    !BigNumber.from(amountWei).isZero() &&
     currentAllowance &&
     missingAllowance &&
     missingAllowance.gt(0)
@@ -192,7 +192,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
         return allowedTokenPairs.concat([tokenPair]);
       }, [] as SuperTokenPair[])
       .map((x) => x.underlyingToken);
-  }, [tokenPairs]);
+  }, [tokenPairs.length]);
 
   const { underlyingBalance } = rpcApi.useUnderlyingBalanceQuery(
     tokenPair && visibleAddress

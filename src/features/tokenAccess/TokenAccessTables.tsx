@@ -54,7 +54,7 @@ const TokenAccessTables: FC<{}> = () => {
         ...currentStatuses,
         [networkId]: fetchingStatus,
       })),
-    [visibleAddress, setFetchingStatuses]
+    [setFetchingStatuses]
   );
 
   const hasContent = useMemo(

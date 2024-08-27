@@ -1,3 +1,5 @@
+import "../wdyr";
+
 import { CacheProvider, EmotionCache } from "@emotion/react";
 import { NextPage } from "next";
 import { AppProps } from "next/app";
@@ -27,7 +29,6 @@ import WagmiManager from "../features/wallet/WagmiManager";
 import { initializeSuperfluidDashboardGlobalObject } from "../global";
 import { IsCypress } from "../utils/SSRUtils";
 import config from "../utils/config";
-import { useStore } from "react-redux";
 import { useAppDispatch } from "../features/redux/store";
 
 // Client-side cache, shared for the whole session of the user in the browser.

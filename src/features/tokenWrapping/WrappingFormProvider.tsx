@@ -58,7 +58,7 @@ const WrappingFormProvider: FC<
       | undefined;
   }>
 > = ({ restoration, children }) => {
-  const { network, stopAutoSwitchToWalletNetwork } = useExpectedNetwork();
+  const { network } = useExpectedNetwork();
   const router = useRouter();
   const { token: tokenQueryParam } = router.query;
   const [queryRealtimeBalance] = rpcApi.useLazyRealtimeBalanceQuery();

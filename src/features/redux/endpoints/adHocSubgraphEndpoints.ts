@@ -19,6 +19,7 @@ import {
   TokenType,
   UnderlyingTokenType,
 } from "./tokenTypes";
+import { findTokenFromTokenList } from "../../../hooks/useSuperToken";
 
 export type TokenBalance = {
   balance: string;
@@ -431,7 +432,23 @@ export const adHocSubgraphEndpoints = {
               x.superToken.address !==
               "0x84b2e92e08008c0081c8c21a35fda4ddc5d21ac6" // Filter out a neglected token.
           )
-        );
+        ).map(x => {
+          const underlyingTokenFromTokenList = findTokenFromTokenList({ chainId: arg.chainId, address: x.superToken.address });
+          const superTokenFromTokenList = findTokenFromTokenList({ chainId: arg.chainId, address: x.underlyingToken.address });
+
+          return {
+            superToken: {
+              ...x.superToken,
+              symbol: superTokenFromTokenList?.symbol ?? x.superToken.symbol,
+              name: superTokenFromTokenList?.name ?? x.superToken.name,
+            },
+            underlyingToken: {
+              ...x.underlyingToken,
+              symbol: underlyingTokenFromTokenList?.symbol ?? x.underlyingToken.symbol,
+              name: underlyingTokenFromTokenList?.name ?? x.underlyingToken.name,
+            }
+          }
+        });
 
         return {
           data: result,

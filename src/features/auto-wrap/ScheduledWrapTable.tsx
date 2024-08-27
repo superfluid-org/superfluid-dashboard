@@ -67,14 +67,9 @@ const ScheduledWrapTable: FC<TokenSnapshotTableProps> = ({
       }
     );
 
-    console.log({
-      wrapSchedules,
-      network: network.name,
-    })
-
   const paginatedWrapSchedules = useMemo(
     () => wrapSchedules.slice(page * rowsPerPage, (page + 1) * rowsPerPage),
-    [page, rowsPerPage, wrapSchedules]
+    [page, rowsPerPage, wrapSchedules.length]
   );
 
   const { isPlatformWhitelisted_, isLoading: isWhitelistLoading } =

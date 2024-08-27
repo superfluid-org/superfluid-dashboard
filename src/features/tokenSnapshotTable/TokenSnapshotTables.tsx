@@ -49,7 +49,7 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
         ...currentStatuses,
         [networkId]: fetchingStatus,
       })),
-    []
+    [setFetchingStatuses]
   );
 
   const hasContent = useMemo(

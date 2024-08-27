@@ -75,8 +75,7 @@ const TokenAccessTable: FC<Props> = ({
     });
   }, [
     network.id,
-    flowOperatorsQuery.isLoading,
-    flowOperators.length,
+    flowOperators,
     fetchingCallback,
   ]);
 

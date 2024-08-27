@@ -93,10 +93,12 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
 
   const tokenSnapshots = useMemo(
     () =>
-      listedTokensSnapshotsQuery.listedTokenSnapshots.concat(
-        unlistedTokensSnapshotsQuery.unlistedTokenSnapshots
-      ),
-    [listedTokensSnapshotsQuery, unlistedTokensSnapshotsQuery]
+      {
+        return listedTokensSnapshotsQuery.listedTokenSnapshots.concat(
+          unlistedTokensSnapshotsQuery.unlistedTokenSnapshots
+        );
+      },
+    [network, listedTokensSnapshotsQuery.data?.items?.length ?? 0, unlistedTokensSnapshotsQuery.data?.items?.length ?? 0]
   );
 
   const { setCosmetics } = useMinigame();

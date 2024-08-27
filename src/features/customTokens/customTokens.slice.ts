@@ -21,7 +21,6 @@ const adapter = createEntityAdapter<NetworkCustomToken>({
   selectId: ({ chainId, customToken }) => getCustomTokenId(chainId, customToken)
 });
 
-
 export const customTokensSlice = createSlice({
   name: "customTokens",
   initialState: adapter.getInitialState(),

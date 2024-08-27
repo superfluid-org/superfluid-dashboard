@@ -65,11 +65,11 @@ export default memo(function TokenDialog({
 
   const underlyingTokens = useMemo(
     () => tokenPairsQuery.data?.filter(isUnderlying) ?? [],
-    [tokenPairsQuery.data]
+    [network.id, tokenPairsQuery.data?.length ?? 0]
   );
   const superTokens = useMemo(
     () => tokenPairsQuery.data?.filter(isSuper) ?? [],
-    [tokenPairsQuery.data]
+    [network.id, tokenPairsQuery.data?.length ?? 0]
   );
   const tokens = useMemo(
     () => [...superTokens, ...underlyingTokens],
@@ -115,7 +115,7 @@ export default memo(function TokenDialog({
             superTokenBalancesQuery.currentData.items.map((x) => [x.token, x])
           )
         : {},
-    [superTokenBalancesQuery.currentData]
+    [network.id, superTokenBalancesQuery.currentData?.items.length ?? 0]
   );
 
   const tokenOrdered = useMemo(
@@ -139,8 +139,7 @@ export default memo(function TokenDialog({
         }
         return 0;
       }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [open, tokens.length] // Don't depend on balances query to avoid UI hopping.
+    [open, tokens] // Don't depend on balances query to avoid UI hopping.
   );
 
   const [searchTerm, setSearchTerm] = useState(""); // No need to debounce here because it's all client-side.
