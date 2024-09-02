@@ -60,7 +60,7 @@ export const getTokenPagePath = ({
 
 const TokenPageContainer: FC<
   PropsWithChildren<{
-    tokenSymbol?: string;
+    tokenSymbol?: string | undefined;
   }>
 > = ({ tokenSymbol = "Super Token", children }) => (
   <SEO
@@ -181,7 +181,7 @@ const TokenPageContent: FC<{
     setGraphFilter(newGraphFilter);
 
   const {
-    tokenSymbol,
+    token,    
     balanceUntilUpdatedAt,
     totalNetFlowRate,
     totalInflowRate,
@@ -195,6 +195,8 @@ const TokenPageContent: FC<{
     balanceTimestamp: balanceTimestamp = updatedAtTimestamp,
     flowRate = totalNetFlowRate,
   } = realTimeBalanceQuery.data || {};
+
+  const tokenSymbol = superTokenQuery.data?.symbol;
 
   return (
     <TokenPageContainer tokenSymbol={tokenSymbol}>

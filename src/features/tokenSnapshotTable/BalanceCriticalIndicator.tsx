@@ -8,7 +8,7 @@ import Link from "../common/Link";
 
 interface BalanceCriticalIndicatorProps {
   tokenAddress: Address;
-  tokenSymbol: string;
+  tokenSymbol: string | undefined;
   network: Network;
   criticalDate: Date;
   onClick: (e: MouseEvent) => void;
@@ -36,7 +36,7 @@ const BalanceCriticalIndicator: FC<BalanceCriticalIndicatorProps> = ({
       title={
         <Stack gap={1.5}>
           <Typography variant="tooltip" color="text.primary" textAlign="center">
-            Your {tokenSymbol} balance is running low and will run out on{" "}
+            Your {tokenSymbol ?? "token"} balance is running low and will run out on{" "}
             <Typography variant="tooltip" color="error">
               {`${format(criticalDate, "MM/dd/yy")} at ${format(
                 criticalDate,

@@ -326,7 +326,7 @@ export const networkDefinition = {
       address: NATIVE_ASSET_ADDRESS,
       type: TokenType.NativeAssetUnderlyingToken,
       superToken: ensureDefined(findNativeAssetSuperTokenFromTokenList({ chainId: chain.optimism.id, address: "0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d" })),
-      logoURI: "https://raw.githubusercontent.com/superfluid-finance/assets/master/public/tokens/op/icon.svg",
+      logoURI: "https://raw.githubusercontent.com/superfluid-finance/assets/master/public/tokens/eth/icon.svg",
       isSuperToken: false,
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.optimism,

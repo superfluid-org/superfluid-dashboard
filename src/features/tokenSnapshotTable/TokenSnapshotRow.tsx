@@ -38,6 +38,7 @@ import FlowingFiatBalance from "../tokenPrice/FlowingFiatBalance";
 import useTokenPrice from "../tokenPrice/useTokenPrice";
 import BalanceCriticalIndicator from "./BalanceCriticalIndicator";
 import { isDefined } from "../../utils/ensureDefined";
+import { useTokenQuery } from "../../hooks/useSuperToken";
 
 interface SnapshotRowProps {
   lastElement?: boolean;
@@ -97,20 +98,22 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
 
   const {
     account,
-    token,
-    tokenSymbol,
+    token: tokenAddress,
     totalInflowRate,
     totalOutflowRate,
     totalNumberOfActiveStreams,
     totalNumberOfClosedStreams,
   } = snapshot;
 
-  const tokenPrice = useTokenPrice(network.id, token);
+  const token = useTokenQuery({ chainId: network.id, id: tokenAddress });
+  const tokenSymbol = token?.data?.symbol;
+
+  const tokenPrice = useTokenPrice(network.id, tokenAddress);
 
   const { data: balanceData } = rpcApi.useRealtimeBalanceQuery({
     chainId: network.id,
     accountAddress: account,
-    tokenAddress: token,
+    tokenAddress: tokenAddress,
   });
 
   const hasStreams =
@@ -122,7 +125,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
     router.push(
       getTokenPagePath({
         network: network.slugName,
-        token: token,
+        token: tokenAddress,
       })
     );
 
@@ -173,7 +176,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
               <TokenIcon
                 isSuper
                 chainId={network.id}
-                tokenAddress={token}
+                tokenAddress={tokenAddress}
                 isUnlisted={!snapshot.isListed}
               />
             </ListItemAvatar>
@@ -206,7 +209,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                   <ListItemIcon sx={{ mr: 1 }}>
                     <BalanceCriticalIndicator
                       network={network}
-                      tokenAddress={token}
+                      tokenAddress={tokenAddress}
                       tokenSymbol={tokenSymbol}
                       criticalDate={criticalDate}
                       onClick={stopPropagation}
@@ -319,7 +322,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                 <ListItemIcon sx={{ mr: 1 }}>
                   <BalanceCriticalIndicator
                     network={network}
-                    tokenAddress={token}
+                    tokenAddress={tokenAddress}
                     tokenSymbol={tokenSymbol}
                     criticalDate={criticalDate}
                     onClick={stopPropagation}

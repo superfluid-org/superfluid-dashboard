@@ -358,6 +358,12 @@ const StreamPageContent: FC<{
     }
   );
 
+  const superTokenQuery = useTokenQuery({
+    chainId: network.id,
+    id: tokenAddress,
+    onlySuperToken: true,
+  });
+
   const { streamCreationEvent } = subgraphApi.useFlowUpdatedEventsQuery(
     {
       chainId: network.id,
@@ -458,7 +464,6 @@ const StreamPageContent: FC<{
   const {
     streamedUntilUpdatedAt,
     currentFlowRate,
-    tokenSymbol,
     receiver,
     sender,
     createdAtTimestamp,
@@ -471,6 +476,7 @@ const StreamPageContent: FC<{
 
   const isActive = currentFlowRate !== "0";
   const isOutgoing = visibleAddress?.toLowerCase() === sender.toLowerCase();
+  const tokenSymbol = superTokenQuery.data?.symbol;
 
   // TODO: This container max width should be configured in theme. Something between small and medium
   return (
