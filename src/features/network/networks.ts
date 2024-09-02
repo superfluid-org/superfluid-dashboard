@@ -150,15 +150,14 @@ const blockExplorers = {
 
 export const networkDefinition = {
   gnosis: {
-    name: "Gnosis Chain",
-    id: chainIds.gnosis,
+    ...chain.gnosis,
     supportsGDA: getSupportsGDA(chainIds.gnosis),
     metadata: ensureDefined(
       sfMeta.getNetworkByChainId(chainIds.gnosis),
       chainIds.gnosis
     ),
     blockExplorers: {
-      etherscan: undefined!,
+      ...chain.gnosis.blockExplorers,
       default: blockExplorers.blockscout.gnosis,
     },
     slugName: "gnosis",
@@ -168,18 +167,15 @@ export const networkDefinition = {
     icon: "/icons/network/gnosis.svg",
     color: "#04795b",
     rpcUrls: {
-      superfluid: { http: [superfluidRpcUrls.gnosis] },
-      default: { http: ["https://rpc.gnosischain.com/"] },
-      public: { http: ["https://rpc.gnosischain.com/"] },
+      ...chain.gnosis.rpcUrls,
+      superfluid: { http: [superfluidRpcUrls.gnosis] }
     },
     getLinkForTransaction: (txHash: string): string =>
       `https://blockscout.com/xdai/mainnet/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
       `https://blockscout.com/xdai/mainnet/address/${address}`,
     nativeCurrency: {
-      name: "xDai",
-      symbol: "XDAI",
-      decimals: 18,
+      ...ensureDefined(chain.gnosis.nativeCurrency),
       address: NATIVE_ASSET_ADDRESS,
       type: TokenType.NativeAssetUnderlyingToken,
       superToken: ensureDefined(findNativeAssetSuperTokenFromTokenList({ chainId: chain.gnosis.id, address: "0x59988e47a3503aafaa0368b9def095c818fdca01" })),
@@ -202,7 +198,6 @@ export const networkDefinition = {
   },
   polygon: {
     ...chain.polygon,
-    id: chainIds.polygon,
     supportsGDA: getSupportsGDA(chainIds.polygon),
     metadata: ensureDefined(
       sfMeta.getNetworkByChainId(chainIds.polygon),
@@ -248,8 +243,7 @@ export const networkDefinition = {
     },
   },
   avalancheFuji: {
-    name: "Fuji (C-Chain)",
-    id: chainIds.avalancheFuji,
+    ...chain.avalancheFuji,
     supportsGDA: getSupportsGDA(chainIds.avalancheFuji),
     metadata: ensureDefined(
       sfMeta.getNetworkByChainId(chainIds.avalancheFuji),
@@ -261,23 +255,19 @@ export const networkDefinition = {
     bufferTimeInMinutes: 60,
     color: "#2b374b",
     rpcUrls: {
-      superfluid: { http: [superfluidRpcUrls.avalancheFuji] },
-      default: { http: ["https://api.avax-test.network/ext/C/rpc"] },
-      public: { http: ["https://api.avax-test.network/ext/C/rpc"] },
+      ...chain.avalancheFuji.rpcUrls,
+      superfluid: { http: [superfluidRpcUrls.avalancheFuji] }
     },
     getLinkForTransaction: (txHash: string): string =>
       `https://testnet.snowtrace.io/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
       `https://testnet.snowtrace.io/address/${address}`,
     blockExplorers: {
-      etherscan: undefined!,
-      snowtrace: blockExplorers.snowtrace.avalancheFuji,
+      ...chain.avalancheFuji.blockExplorers,
       default: blockExplorers.snowtrace.avalancheFuji,
     },
     nativeCurrency: {
-      name: "AVAX",
-      symbol: "AVAX",
-      decimals: 18,
+      ...ensureDefined(chain.avalancheFuji.nativeCurrency),
       address: NATIVE_ASSET_ADDRESS,
       type: TokenType.NativeAssetUnderlyingToken,
       superToken: ensureDefined(findNativeAssetSuperTokenFromTokenList({ chainId: chain.avalancheFuji.id, address: "0xfFD0f6d73ee52c68BF1b01C8AfA2529C97ca17F3" })),
@@ -301,7 +291,6 @@ export const networkDefinition = {
   },
   optimism: {
     ...chain.optimism,
-    id: chainIds.optimism,
     supportsGDA: getSupportsGDA(chainIds.optimism),
     metadata: ensureDefined(
       sfMeta.getNetworkByChainId(chainIds.optimism),
@@ -345,7 +334,6 @@ export const networkDefinition = {
   },
   arbitrum: {
     ...chain.arbitrum,
-    id: chainIds.arbitrum,
     supportsGDA: getSupportsGDA(chainIds.arbitrum),
     metadata: ensureDefined(
       sfMeta.getNetworkByChainId(chainIds.arbitrum),
@@ -388,8 +376,7 @@ export const networkDefinition = {
     },
   },
   avalancheC: {
-    name: "Avalanche C",
-    id: chainIds.avalanche,
+    ...chain.avalanche,
     supportsGDA: getSupportsGDA(chainIds.avalanche),
     metadata: ensureDefined(
       sfMeta.getNetworkByChainId(chainIds.avalanche),
@@ -402,24 +389,19 @@ export const networkDefinition = {
     icon: "/icons/network/avalanche.svg",
     color: "#e84142",
     rpcUrls: {
+      ...chain.avalanche.rpcUrls,
       superfluid: { http: [superfluidRpcUrls.avalancheC] },
-      default: { http: ["https://api.avax.network/ext/bc/C/rpc"] },
-      public: { http: ["https://api.avax.network/ext/bc/C/rpc"] },
     },
     getLinkForTransaction: (txHash: string): string =>
       `https://avascan.info/blockchain/c/tx/${txHash}`,
     getLinkForAddress: (address: string): string =>
       `https://avascan.info/blockchain/c/address/${address}`,
     blockExplorers: {
-      etherscan: undefined!,
-      snowtrace: blockExplorers.snowtrace.avalancheC,
-      avascan: blockExplorers.avascan.avalancheC,
-      default: blockExplorers.avascan.avalancheC,
+      ...chain.avalanche.blockExplorers,
+      default: blockExplorers.avascan.avalancheC
     },
     nativeCurrency: {
-      name: "AVAX",
-      symbol: "AVAX",
-      decimals: 18,
+      ...ensureDefined(chain.avalanche.nativeCurrency),
       address: NATIVE_ASSET_ADDRESS,
       type: TokenType.NativeAssetUnderlyingToken,
       superToken: ensureDefined(findNativeAssetSuperTokenFromTokenList({ chainId: chain.avalanche.id, address: "0xBE916845D8678b5d2F7aD79525A62D7c08ABba7e" })),
@@ -442,7 +424,6 @@ export const networkDefinition = {
   },
   bsc: {
     ...chain.bsc,
-    id: chainIds.bsc,
     supportsGDA: getSupportsGDA(chainIds.bsc),
     metadata: ensureDefined(
       sfMeta.getNetworkByChainId(chainIds.bsc),
@@ -455,9 +436,8 @@ export const networkDefinition = {
     icon: "/icons/network/bnb.svg",
     color: "#F0B90B",
     rpcUrls: {
+      ...chain.bsc.rpcUrls,
       superfluid: { http: [superfluidRpcUrls.bnbSmartChain] },
-      default: { http: ["https://bsc-dataseed1.binance.org"] },
-      public: { http: ["https://bsc-dataseed1.binance.org"] },
     },
     getLinkForTransaction: (txHash: string): string =>
       `https://bscscan.com/tx/${txHash}`,
@@ -468,9 +448,7 @@ export const networkDefinition = {
       default: blockExplorers.bscscan.bnbSmartChain,
     },
     nativeCurrency: {
-      name: "Binance Chain Native Token",
-      symbol: "BNB",
-      decimals: 18,
+      ...ensureDefined(chain.bsc.nativeCurrency),
       address: NATIVE_ASSET_ADDRESS,
       type: TokenType.NativeAssetUnderlyingToken,
       superToken: ensureDefined(findNativeAssetSuperTokenFromTokenList({ chainId: chain.bsc.id, address: "0x529a4116f160c833c61311569d6b33dff41fd657" })),
@@ -493,7 +471,6 @@ export const networkDefinition = {
   },
   ethereum: {
     ...chain.mainnet,
-    id: chainIds.mainnet,
     supportsGDA: getSupportsGDA(chainIds.mainnet),
     metadata: ensureDefined(
       sfMeta.getNetworkByChainId(chainIds.mainnet),
@@ -537,7 +514,6 @@ export const networkDefinition = {
   },
   celoMainnet: {
     ...chain.celo,
-    id: chainIds.celo,
     supportsGDA: getSupportsGDA(chainIds.celo),
     metadata: ensureDefined(
       sfMeta.getNetworkByChainId(chainIds.celo),
@@ -575,15 +551,14 @@ export const networkDefinition = {
     platformUrl: undefined,
   },
   degenChain: {
-    name: 'Degen Chain',
-    id: 666666666,
+    ...chain.degen,
     supportsGDA: getSupportsGDA(chainIds.degen),
     metadata: ensureDefined(
       sfMeta.getNetworkByChainId(chainIds.degen),
       chainIds.degen
     ),
     blockExplorers: {
-      degenscan: blockExplorers.degenscan.mainnet,
+      ...chain.degen.blockExplorers,
       default: blockExplorers.degenscan.mainnet,
     },
     slugName: "degen",
@@ -592,10 +567,7 @@ export const networkDefinition = {
     icon: "/icons/network/degen.svg",
     color: "#A46EFD",
     rpcUrls: {
-        default: { http: ['https://rpc.degen.tips'] },
-        public: {
-          http: ['https://rpc.degen.tips'],
-      },
+      ...chain.degen.rpcUrls,
       superfluid: { http: [superfluidRpcUrls["degenChain"]] },
     },
     fallbackSubgraphUrl:
@@ -605,9 +577,7 @@ export const networkDefinition = {
     getLinkForAddress: (address: string): string =>
       `https://explorer.degen.tips/address/${address}`,
     nativeCurrency: {
-      name: 'Degen',
-      symbol: 'DEGEN', 
-      decimals: 18 ,
+      ...ensureDefined(chain.degen.nativeCurrency),
       address: NATIVE_ASSET_ADDRESS,
       type: TokenType.NativeAssetUnderlyingToken,
       superToken: ensureDefined(findNativeAssetSuperTokenFromTokenList({ chainId: chain.degen.id, address: "0xda58FA9bfc3D3960df33ddD8D4d762Cf8Fa6F7ad" })),
@@ -622,7 +592,6 @@ export const networkDefinition = {
   },
   sepolia: {
     ...chain.sepolia,
-    id: chainIds.sepolia,
     supportsGDA: getSupportsGDA(chainIds.sepolia),
     metadata: ensureDefined(
       sfMeta.getNetworkByChainId(chainIds.sepolia),
@@ -657,7 +626,6 @@ export const networkDefinition = {
   },
   base: {
     ...chain.base,
-    id: chainIds.base,
     supportsGDA: getSupportsGDA(chainIds.base),
     metadata: ensureDefined(
       sfMeta.getNetworkByChainId(chainIds.base),
@@ -701,7 +669,6 @@ export const networkDefinition = {
   },
   scroll: {
     ...chain.scroll,
-    id: chainIds.scroll,
     supportsGDA: getSupportsGDA(chainIds.scroll),
     metadata: ensureDefined(
       sfMeta.getNetworkByChainId(chainIds.scroll),
@@ -737,7 +704,6 @@ export const networkDefinition = {
   },
   scrollSepolia: {
     ...chain.scrollSepolia,
-    id: chainIds.scrollSepolia,
     supportsGDA: getSupportsGDA(chainIds.scrollSepolia),
     metadata: ensureDefined(
       sfMeta.getNetworkByChainId(chainIds.scrollSepolia),
@@ -772,7 +738,6 @@ export const networkDefinition = {
   },
   optimismSepolia: {
     ...chain.optimismSepolia,
-    id: chainIds.optimismSepolia,
     supportsGDA: getSupportsGDA(chainIds.optimismSepolia),
     metadata: ensureDefined(
       sfMeta.getNetworkByChainId(chainIds.optimismSepolia),
