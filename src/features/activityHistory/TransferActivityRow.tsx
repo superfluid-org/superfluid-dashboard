@@ -51,6 +51,7 @@ const TransferActivityRow: FC<TransferActivityRowProps> = ({
       ? {
           chainId: network.id,
           id: token,
+          onlySuperToken: true,
         }
       : skipToken
   );

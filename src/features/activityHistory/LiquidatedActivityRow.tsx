@@ -47,6 +47,7 @@ const LiquidatedActivityRow: FC<LiquidatedActivityRowProps> = ({
       ? {
           chainId: network.id,
           id: token,
+          onlySuperToken: true,
         }
       : skipToken
   );

@@ -56,6 +56,7 @@ const SubscriptionApprovedActivityRow: FC<
   const tokenQuery = useTokenQuery({
     chainId: network.id,
     id: token,
+    onlySuperToken: true
   });
 
   const oldSubQuery = subgraphApi.useIndexSubscriptionQuery({

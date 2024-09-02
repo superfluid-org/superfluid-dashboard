@@ -13,6 +13,7 @@
     "coverage:test": "cd tests && pnpm cypress run --env network=opsepolia,dev=false,coverage=true",
     "generate": "npm-run-all -s generate:*",
     "generate:eth-sdk": "del-cli ./src/eth-sdk/client && del-cli ./src/eth-sdk/abis && eth-sdk -p ./src/eth-sdk",
+    "generate:platform-api-template": "npx @rtk-query/codegen-openapi ./src/features/redux/platformApi/platformApiCodegenConfig.ts",
     "generate:vesting-graphql": "graphclient build --dir ./src/vesting-subgraph",
     "generate:auto-wrap-graphql": "graphclient build --dir ./src/auto-wrap-subgraph",
     "generate:scheduling-graphql": "graphclient build --dir ./src/scheduling-subgraph",
@@ -83,6 +84,7 @@
   "devDependencies": {
     "@dethcrypto/eth-sdk": "^0.3.4",
     "@graphprotocol/client-cli": "^2.2.22",
+    "@rtk-query/codegen-openapi": "^1.2.0",
     "@superfluid-finance/ethereum-contracts": "^1.11.0",
     "@types/lodash": "^4.17.7",
     "@types/papaparse": "^5.3.14",

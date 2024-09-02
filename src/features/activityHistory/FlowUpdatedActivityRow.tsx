@@ -82,6 +82,7 @@ const FlowUpdatedActivityRow: FC<FlowUpdatedActivityRowProps> = ({
   const tokenQuery = useTokenQuery({
     chainId: network.id,
     id: tokenAddress,
+    onlySuperToken: true,
   });
 
   const isOutgoing = useMemo(

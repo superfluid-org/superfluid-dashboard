@@ -15,15 +15,50 @@ export type SuperTokenType =
   | TokenType.WrapperSuperToken
   | TokenType.PureSuperToken;
 
-export type TokenMinimal = {
+export interface TokenMinimal {
   type: TokenType;
   address: string;
   name: string;
   symbol: string;
   decimals: number;
-  isListed?: boolean;
+  isSuperToken: boolean;
+  logoURI?: string;
+}
+
+export interface SuperTokenMinimal extends TokenMinimal {
+  type: SuperTokenType;
+  decimals: 18;
+  isListed: boolean;
+  isSuperToken: true;
+  underlyingAddress: string | undefined | null;
+}
+
+export interface ERC20TokenMinimal extends TokenMinimal {
+  type: TokenType.ERC20UnderlyingToken;
+  isSuperToken: false;
+}
+
+/**
+ * A dummy address to signal that the token is the blockchain's coin (native asset).
+ */
+export const NATIVE_ASSET_ADDRESS = "native-asset";
+// TODO: This might not be such a good idea.
+
+export interface NativeAsset extends TokenMinimal {
+  type: TokenType.NativeAssetUnderlyingToken;
+  address: typeof NATIVE_ASSET_ADDRESS;
+  decimals: 18;
+  isSuperToken: false;
+}
+
+export type UnderlyingTokenMinimal = ERC20TokenMinimal | NativeAsset;
+
+export type SuperTokenPair = {
+  superToken: SuperTokenMinimal;
+  underlyingToken: UnderlyingTokenMinimal;
 };
 
+// Helper functions
 export const isUnderlying = (
   x: TokenMinimal
 ): x is ERC20TokenMinimal | NativeAsset =>
@@ -36,53 +71,3 @@ export const isWrappable = (x: { type: TokenType }): boolean =>
 
 export const isSuper = (x: TokenMinimal): x is SuperTokenMinimal =>
   isWrappable(x) || x.type === TokenType.PureSuperToken;
-
-export type SuperTokenMinimal = {
-  type: SuperTokenType;
-  address: string;
-  name: string;
-  symbol: string;
-  isListed?: boolean;
-  decimals: number;
-  underlyingAddress?: string | null; // TODO: map this
-};
-
-export type ERC20TokenMinimal = {
-  type: TokenType.ERC20UnderlyingToken;
-  address: string;
-  name: string;
-  symbol: string;
-  isListed?: boolean;
-  decimals: number;
-};
-
-/**
- * A dummy address to signal that the token is the blockchain's coin (native asset).
- */
-export const NATIVE_ASSET_ADDRESS = "native-asset";
-// TODO: This might not be such a good idea.
-
-export type NativeAsset = {
-  type: TokenType.NativeAssetUnderlyingToken;
-  address: typeof NATIVE_ASSET_ADDRESS;
-  name: string;
-  symbol: string;
-  decimals: number;
-};
-
-export type PureSuperToken = {
-  address: string;
-  name: string;
-  symbol: string;
-};
-
-export type UnderlyingToken = {
-  address: string;
-  name: string;
-  symbol: string;
-};
-
-export type SuperTokenPair = {
-  superToken: SuperTokenMinimal;
-  underlyingToken: ERC20TokenMinimal | NativeAsset;
-};

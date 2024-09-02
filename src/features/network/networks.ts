@@ -5,8 +5,9 @@ import { Chain } from "wagmi/chains";
 import ensureDefined from "../../utils/ensureDefined";
 import {
   NATIVE_ASSET_ADDRESS,
+  NativeAsset,
+  SuperTokenMinimal,
   SuperTokenPair,
-  TokenMinimal,
   TokenType,
 } from "../redux/endpoints/tokenTypes";
 import sfMeta from "@superfluid-finance/metadata";
@@ -25,6 +26,7 @@ import {
 } from "./networkConstants";
 import { BigNumber, BigNumberish } from "ethers";
 import { UnitOfTime } from "../send/FlowRateInput";
+import { extendedSuperTokenList } from "@superfluid-finance/tokenlist";
 
 const getMetadata = memoize((chainId: number) => {
   const metadata = sfMeta.getNetworkByChainId(chainId);
@@ -38,6 +40,31 @@ const getSupportsGDA = (chainId: number) => {
   const metadata = getMetadata(chainId);
   return Boolean(metadata.contractsV1.gdaV1);
 };
+
+const findNativeAssetSuperTokenFromTokenList = (input: { chainId: number, address: string }) => {
+  // Note: there's also a generic function similar to this in the project. The problem with that one is that I got into circular dependency issue.
+
+  const token = extendedSuperTokenList.tokens.find(x => x.chainId === input.chainId && x.address === input.address.toLowerCase());
+  if (!token) {
+    throw new Error(`No native asset super token found for chainId ${input.chainId} and address ${input.address}`);
+  }
+
+  const superTokenInfo = token.extensions?.superTokenInfo;
+  if (!superTokenInfo) {
+    throw new Error(`No super token info found for token ${token.address}`);
+  }
+
+  return {
+    address: token.address,
+    name: token.name,
+    symbol: token.symbol,
+    decimals: token.decimals,
+    isSuperToken: true,
+    type: TokenType.NativeAssetSuperToken,
+    underlyingAddress: (superTokenInfo as { underlyingTokenAddress?: `0x${string}` }).underlyingTokenAddress,
+    logoURI: token.logoURI
+  } as SuperTokenMinimal;
+}
 
 type NetworkMetadata = (typeof sfMeta.networks)[number];
 
@@ -53,12 +80,8 @@ export type Network = Chain & {
   color: string;
   bufferTimeInMinutes: number; // Hard-code'ing this per network is actually incorrect approach. It's token-based and can be governed.
   rpcUrls: Chain["rpcUrls"] & { superfluid: { http: readonly string[] } };
-  nativeCurrency: Chain["nativeCurrency"] & {
-    type: TokenType.NativeAssetUnderlyingToken;
-    address: typeof NATIVE_ASSET_ADDRESS;
-    superToken: {
-      type: TokenType.NativeAssetSuperToken;
-    } & TokenMinimal;
+  nativeCurrency: Chain["nativeCurrency"] & NativeAsset & {
+    superToken: SuperTokenMinimal;
     logoURI: string;
   };
   supportsGDA: boolean;
@@ -159,14 +182,9 @@ export const networkDefinition = {
       decimals: 18,
       address: NATIVE_ASSET_ADDRESS,
       type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: "xDAIx",
-        address: "0x59988e47a3503aafaa0368b9def095c818fdca01",
-        name: "Super xDAI",
-        decimals: 18,
-      },
+      superToken: ensureDefined(findNativeAssetSuperTokenFromTokenList({ chainId: chain.gnosis.id, address: "0x59988e47a3503aafaa0368b9def095c818fdca01" })),
       logoURI: "https://raw.githubusercontent.com/superfluid-finance/assets/master/public/tokens/xdai/icon.svg",
+      isSuperToken: false,
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.gnosis,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.gnosis,
@@ -208,14 +226,9 @@ export const networkDefinition = {
       ...ensureDefined(chain.polygon.nativeCurrency),
       address: NATIVE_ASSET_ADDRESS,
       type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: "MATICx",
-        address: "0x3ad736904e9e65189c3000c7dd2c8ac8bb7cd4e3",
-        name: "Super MATIC",
-        decimals: 18,
-      },
+      superToken: ensureDefined(findNativeAssetSuperTokenFromTokenList({ chainId: chain.polygon.id, address: "0x3aD736904E9e65189c3000c7DD2c8AC8bB7cD4e3" })),
       logoURI: "https://raw.githubusercontent.com/superfluid-finance/assets/master/public/tokens/matic/icon.svg",
+      isSuperToken: false,
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.polygon,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.polygon,
@@ -267,14 +280,9 @@ export const networkDefinition = {
       decimals: 18,
       address: NATIVE_ASSET_ADDRESS,
       type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: "AVAXx",
-        address: "0xffd0f6d73ee52c68bf1b01c8afa2529c97ca17f3",
-        name: "Super AVAX",
-        decimals: 18,
-      },
+      superToken: ensureDefined(findNativeAssetSuperTokenFromTokenList({ chainId: chain.avalancheFuji.id, address: "0xfFD0f6d73ee52c68BF1b01C8AfA2529C97ca17F3" })),
       logoURI: "https://raw.githubusercontent.com/superfluid-finance/assets/master/public/tokens/avax/icon.svg",
+      isSuperToken: false,
     },
     flowSchedulerContractAddress: undefined,
     flowSchedulerSubgraphUrl: undefined,
@@ -317,14 +325,9 @@ export const networkDefinition = {
       ...ensureDefined(chain.optimism.nativeCurrency),
       address: NATIVE_ASSET_ADDRESS,
       type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: "ETHx",
-        address: "0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d",
-        name: "Super ETH",
-        decimals: 18,
-      },
+      superToken: ensureDefined(findNativeAssetSuperTokenFromTokenList({ chainId: chain.optimism.id, address: "0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d" })),
       logoURI: "https://raw.githubusercontent.com/superfluid-finance/assets/master/public/tokens/op/icon.svg",
+      isSuperToken: false,
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.optimism,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.optimism,
@@ -366,14 +369,9 @@ export const networkDefinition = {
       ...ensureDefined(chain.arbitrum.nativeCurrency),
       address: NATIVE_ASSET_ADDRESS,
       type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: "ETHx",
-        address: "0xe6c8d111337d0052b9d88bf5d7d55b7f8385acd3",
-        name: "Super ETH",
-        decimals: 18,
-      },
+      superToken: ensureDefined(findNativeAssetSuperTokenFromTokenList({ chainId: chain.arbitrum.id, address: "0xe6c8d111337d0052b9d88bf5d7d55b7f8385acd3" })),
       logoURI: "https://raw.githubusercontent.com/superfluid-finance/assets/master/public/tokens/eth/icon.svg",
+      isSuperToken: false,
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.arbitrum,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.arbitrum,
@@ -424,14 +422,9 @@ export const networkDefinition = {
       decimals: 18,
       address: NATIVE_ASSET_ADDRESS,
       type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: "AVAXx",
-        address: "0xBE916845D8678b5d2F7aD79525A62D7c08ABba7e",
-        name: "Super AVAX",
-        decimals: 18,
-      },
+      superToken: ensureDefined(findNativeAssetSuperTokenFromTokenList({ chainId: chain.avalanche.id, address: "0xBE916845D8678b5d2F7aD79525A62D7c08ABba7e" })),
       logoURI: "https://raw.githubusercontent.com/superfluid-finance/assets/master/public/tokens/avax/icon.svg",
+      isSuperToken: false,
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.avalancheC,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.avalancheC,
@@ -480,14 +473,9 @@ export const networkDefinition = {
       decimals: 18,
       address: NATIVE_ASSET_ADDRESS,
       type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: "BNBx",
-        address: "0x529a4116f160c833c61311569d6b33dff41fd657",
-        name: "Super BNB",
-        decimals: 18,
-      },
+      superToken: ensureDefined(findNativeAssetSuperTokenFromTokenList({ chainId: chain.bsc.id, address: "0x529a4116f160c833c61311569d6b33dff41fd657" })),
       logoURI: "https://raw.githubusercontent.com/superfluid-finance/assets/master/public/tokens/bnb/icon.svg",
+      isSuperToken: false,
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.bnbSmartChain,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.bnbSmartChain,
@@ -529,14 +517,9 @@ export const networkDefinition = {
       ...ensureDefined(chain.mainnet.nativeCurrency),
       address: NATIVE_ASSET_ADDRESS,
       type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: "ETHx",
-        address: "0xC22BeA0Be9872d8B7B3933CEc70Ece4D53A900da",
-        name: "Super ETH",
-        decimals: 18,
-      },
-      logoURI: "https://raw.githubusercontent.com/superfluid-finance/assets/master/public/tokens/eth/icon.svg"
+      superToken: ensureDefined(findNativeAssetSuperTokenFromTokenList({ chainId: chain.mainnet.id, address: "0xC22BeA0Be9872d8B7B3933CEc70Ece4D53A900da" })),
+      logoURI: "https://raw.githubusercontent.com/superfluid-finance/assets/master/public/tokens/eth/icon.svg",
+      isSuperToken: false,
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.ethereum,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.ethereum,
@@ -581,14 +564,9 @@ export const networkDefinition = {
       ...ensureDefined(chain.celo.nativeCurrency),
       address: NATIVE_ASSET_ADDRESS,
       type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: "CELOx",
-        address: "0x671425ae1f272bc6f79bec3ed5c4b00e9c628240",
-        name: "Super Celo",
-        decimals: 18,
-      },
+      superToken: ensureDefined(findNativeAssetSuperTokenFromTokenList({ chainId: chain.celo.id, address: "0x671425Ae1f272Bc6F79beC3ed5C4b00e9c628240" })),
       logoURI: "https://raw.githubusercontent.com/superfluid-finance/assets/master/public/tokens/celo/icon.svg",
+      isSuperToken: false,
     },
     vestingContractAddress_v1: undefined,
     vestingContractAddress_v2: undefined,
@@ -632,14 +610,9 @@ export const networkDefinition = {
       decimals: 18 ,
       address: NATIVE_ASSET_ADDRESS,
       type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: "DEGENx",
-        address: "0xda58FA9bfc3D3960df33ddD8D4d762Cf8Fa6F7ad",
-        name: "Super DEGEN",
-        decimals: 18,
-      },
+      superToken: ensureDefined(findNativeAssetSuperTokenFromTokenList({ chainId: chain.degen.id, address: "0xda58FA9bfc3D3960df33ddD8D4d762Cf8Fa6F7ad" })),
       logoURI: "https://raw.githubusercontent.com/superfluid-finance/assets/master/public/tokens/degen/icon.png",
+      isSuperToken: false,
     },
     vestingContractAddress_v1: undefined,
     vestingContractAddress_v2: undefined,
@@ -672,14 +645,9 @@ export const networkDefinition = {
       ...ensureDefined(chain.sepolia.nativeCurrency),
       address: NATIVE_ASSET_ADDRESS,
       type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: "ETHx",
-        address: "0x30a6933Ca9230361972E413a15dC8114c952414e",
-        name: "Super ETH",
-        decimals: 18,
-      },
+      superToken: ensureDefined(findNativeAssetSuperTokenFromTokenList({ chainId: chain.sepolia.id, address: "0x30a6933Ca9230361972E413a15dC8114c952414e" })),
       logoURI: "https://raw.githubusercontent.com/superfluid-finance/assets/master/public/tokens/eth/icon.svg",
+      isSuperToken: false,
     },
     vestingContractAddress_v1: undefined,
     vestingContractAddress_v2: undefined,
@@ -713,14 +681,9 @@ export const networkDefinition = {
       ...ensureDefined(chain.base.nativeCurrency),
       address: NATIVE_ASSET_ADDRESS,
       type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: "ETHx",
-        address: "0x46fd5cfB4c12D87acD3a13e92BAa53240C661D93",
-        name: "Super ETH",
-        decimals: 18,
-      },
+      superToken: ensureDefined(findNativeAssetSuperTokenFromTokenList({ chainId: chain.base.id, address: "0x46fd5cfB4c12D87acD3a13e92BAa53240C661D93" })),
       logoURI: "https://raw.githubusercontent.com/superfluid-finance/assets/master/public/tokens/eth/icon.svg",
+      isSuperToken: false,
     },
     vestingContractAddress_v1: vestingContractAddresses_v1.base,
     vestingContractAddress_v2: undefined,
@@ -762,14 +725,9 @@ export const networkDefinition = {
       ...ensureDefined(chain.scroll.nativeCurrency),
       address: NATIVE_ASSET_ADDRESS,
       type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: "ETHx",
-        address: "0x483C1716b6133cdA01237ebBF19c5a92898204B7",
-        name: "Super ETH",
-        decimals: 18,
-      },
+      superToken: ensureDefined(findNativeAssetSuperTokenFromTokenList({ chainId: chain.scroll.id, address: "0x483C1716b6133cdA01237ebBF19c5a92898204B7" })),
       logoURI: "https://raw.githubusercontent.com/superfluid-finance/assets/master/public/tokens/eth/icon.svg",
+      isSuperToken: false,
     },
     vestingContractAddress_v1: undefined,
     vestingContractAddress_v2: undefined,
@@ -802,14 +760,9 @@ export const networkDefinition = {
       ...ensureDefined(chain.scrollSepolia.nativeCurrency),
       address: NATIVE_ASSET_ADDRESS,
       type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: "ETHx",
-        address: "0x58f0A7c6c143074f5D824c2f27a85f6dA311A6FB",
-        name: "Super ETH",
-        decimals: 18,
-      },
+      superToken: ensureDefined(findNativeAssetSuperTokenFromTokenList({ chainId: chain.scrollSepolia.id, address: "0x58f0A7c6c143074f5D824c2f27a85f6dA311A6FB" })),
       logoURI: "https://raw.githubusercontent.com/superfluid-finance/assets/master/public/tokens/eth/icon.svg",
+      isSuperToken: false,
     },
     vestingContractAddress_v1: undefined,
     vestingContractAddress_v2: undefined,
@@ -843,14 +796,9 @@ export const networkDefinition = {
       ...ensureDefined(chain.optimismSepolia.nativeCurrency),
       address: NATIVE_ASSET_ADDRESS,
       type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: "ETHx",
-        address: "0x0043d7c85C8b96a49A72A92C0B48CdC4720437d7",
-        name: "Super ETH",
-        decimals: 18,
-      },
+      superToken: ensureDefined(findNativeAssetSuperTokenFromTokenList({ chainId: chain.optimismSepolia.id, address: "0x0043d7c85C8b96a49A72A92C0B48CdC4720437d7" })),
       logoURI: "https://raw.githubusercontent.com/superfluid-finance/assets/master/public/tokens/eth/icon.svg",
+      isSuperToken: false,
     },
     vestingContractAddress_v1: vestingContractAddresses_v1.optimismSepolia,
     vestingContractAddress_v2: vestingContractAddresses_v2.optimismSepolia,
@@ -943,14 +891,8 @@ export const findNetworkOrThrow = (
 
 export const getNetworkDefaultTokenPair = memoize(
   (network: Network): SuperTokenPair => ({
-    superToken: { ...network.nativeCurrency.superToken, decimals: 18 },
-    underlyingToken: {
-      type: network.nativeCurrency.type,
-      address: network.nativeCurrency.address,
-      name: network.nativeCurrency.name,
-      symbol: network.nativeCurrency.symbol,
-      decimals: network.nativeCurrency.decimals,
-    },
+    superToken: network.nativeCurrency.superToken,
+    underlyingToken: network.nativeCurrency,
   })
 );
 

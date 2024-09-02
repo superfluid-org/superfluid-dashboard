@@ -36,6 +36,7 @@ const IndexCreatedActivityRow: FC<IndexCreatedActivityRowProps> = ({
   const tokenQuery = useTokenQuery({
     chainId: network.id,
     id: token,
+    onlySuperToken: true
   });
 
   return (

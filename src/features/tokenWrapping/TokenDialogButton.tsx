@@ -26,9 +26,9 @@ export const TokenDialogButton: FC<{
   network,
 }) => {
     const [open, setOpen] = useState(false);
-    const isUnderlyingToken = token && isUnderlying(token);
+    const isUnderlyingToken = !token?.isSuperToken;
     const isSuperToken = token && isSuper(token);
-    const isListed = Boolean(token?.isListed);
+    const isListed = isSuperToken ? token.isListed : false;
 
     return (
       <>

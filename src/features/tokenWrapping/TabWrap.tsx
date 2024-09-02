@@ -9,14 +9,13 @@ import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { inputPropsForEtherAmount } from "../../utils/inputPropsForEtherAmount";
 import { parseAmountOrZero } from "../../utils/tokenUtils";
 import { useAnalytics } from "../analytics/useAnalytics";
-import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
 import { useLayoutContext } from "../layout/LayoutContext";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import {
   NATIVE_ASSET_ADDRESS,
   SuperTokenPair,
 } from "../redux/endpoints/tokenTypes";
-import { rpcApi, subgraphApi } from "../redux/store";
+import { rpcApi } from "../redux/store";
 import TokenIcon from "../token/TokenIcon";
 import FiatAmount from "../tokenPrice/FiatAmount";
 import useTokenPrice from "../tokenPrice/useTokenPrice";
@@ -212,7 +211,8 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
   const superTokenQuery = useTokenQuery(
     tokenPair?.superTokenAddress ? {
       chainId: network.id,
-      id: tokenPair.superTokenAddress
+      id: tokenPair.superTokenAddress,
+      onlySuperToken: true
     } : skipToken
   );
 

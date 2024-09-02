@@ -46,6 +46,7 @@ const IndexDistributionClaimedRow: FC<IndexDistributionClaimedRowProps> = ({
   const tokenQuery = useTokenQuery({
     chainId: network.id,
     id: token,
+    onlySuperToken: true,
   });
 
   const isPublisher = visibleAddress?.toLowerCase() === publisher.toLowerCase();

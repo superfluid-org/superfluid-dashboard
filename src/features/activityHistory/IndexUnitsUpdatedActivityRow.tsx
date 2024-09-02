@@ -56,6 +56,7 @@ const IndexUnitsUpdatedActivityRow: FC<IndexUnitsUpdatedActivityRowProps> = ({
   const tokenQuery = useTokenQuery({
     chainId: network.id,
     id: token,
+    onlySuperToken: true,
   });
 
   const indexQuery = subgraphApi.useIndexQuery({

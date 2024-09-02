@@ -3,7 +3,7 @@ import { defaultWagmiConfig } from '@web3modal/wagmi/react/config'
 import { defaultAppDescription } from '../../components/SEO/StaticSEO';
 import { allNetworks, findNetworkOrThrow } from '../network/networks';
 import appConfig from "../../utils/config";
-import { safe, mock } from 'wagmi/connectors';
+import { safe } from 'wagmi/connectors';
 import { createWeb3Modal } from "@web3modal/wagmi/react";
 import { getPublicClient, GetPublicClientReturnType } from "wagmi/actions"
 import { Address, createWalletClient } from "viem";

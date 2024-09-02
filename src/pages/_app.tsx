@@ -1,5 +1,6 @@
 import "../wdyr";
 
+import { allNetworks as _importNetworksForInitialization } from "../features/network/networks";
 import { CacheProvider, EmotionCache } from "@emotion/react";
 import { NextPage } from "next";
 import { AppProps } from "next/app";
