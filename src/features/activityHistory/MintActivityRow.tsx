@@ -62,11 +62,6 @@ const MintActivityRow: FC<MintActivityRowProps> = ({
   );
   const underlyingToken = underlyingTokenQuery.data;
 
-  console.log({
-    superToken,
-    underlyingToken
-  })
-
   const isSuperTokenListed = Boolean(superToken?.isListed);
 
   return (
