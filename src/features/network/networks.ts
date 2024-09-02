@@ -61,7 +61,7 @@ const findNativeAssetSuperTokenFromTokenList = (input: { chainId: number, addres
     decimals: token.decimals,
     isSuperToken: true,
     type: TokenType.NativeAssetSuperToken,
-    underlyingAddress: (superTokenInfo as { underlyingTokenAddress?: `0x${string}` }).underlyingTokenAddress,
+    underlyingAddress: NATIVE_ASSET_ADDRESS,
     logoURI: token.logoURI
   } as SuperTokenMinimal;
 }

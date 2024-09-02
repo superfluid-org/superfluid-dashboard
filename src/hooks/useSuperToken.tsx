@@ -22,10 +22,14 @@ export const mapSubgraphTokenToTokenMinimal = <T extends boolean = false>(chainI
     if (tokenFromTokenList) {
         return tokenFromTokenList as TReturn;
     }
-
-    const network = findNetworkOrThrow(allNetworks, chainId);
-
+    
     if (subgraphToken.isSuperToken) {
+
+        const network = findNetworkOrThrow(allNetworks, chainId);
+        if (subgraphToken.id.toLowerCase() === network.nativeCurrency.superToken.address.toLowerCase()) {
+            return network.nativeCurrency.superToken as TReturn;
+        }
+
         return {
             address: subgraphToken.id,
             name: subgraphToken.name,
@@ -57,13 +61,18 @@ export const mapSubgraphTokenToTokenMinimal = <T extends boolean = false>(chainI
 export const findTokenFromTokenList = memoize((input: { chainId: number, address: string }): TokenMinimal | undefined => {
     const tokenAddressLowerCased = input.address.toLowerCase();
 
+    if (input.address === NATIVE_ASSET_ADDRESS) {
+        const network = findNetworkOrThrow(allNetworks, input.chainId);
+        return network.nativeCurrency;
+    }
+
     const tokenListToken = extendedSuperTokenList.tokens.find(x => x.chainId === input.chainId && x.address === tokenAddressLowerCased);
-
-    // TODO: How to handle native asset here?
-
     if (tokenListToken) {
         const superTokenInfo = tokenListToken.extensions?.superTokenInfo;
         if (superTokenInfo) {
+            const superTokenType = superTokenInfo.type === "Native Asset" ? TokenType.NativeAssetSuperToken : superTokenInfo.type === "Wrapper" ? TokenType.WrapperSuperToken : TokenType.PureSuperToken;
+            const underlyingAddress = superTokenInfo.type === "Native Asset" ? NATIVE_ASSET_ADDRESS : superTokenInfo.type === "Wrapper" ? superTokenInfo.underlyingTokenAddress : null;
+
             return {
                 address: tokenListToken.address,
                 name: tokenListToken.name,
@@ -71,8 +80,8 @@ export const findTokenFromTokenList = memoize((input: { chainId: number, address
                 decimals: 18,
                 isSuperToken: true,
                 isListed: true,
-                underlyingAddress: superTokenInfo.type === "Wrapper" ? superTokenInfo.underlyingTokenAddress : null,
-                type: superTokenInfo.type === "Native Asset" ? TokenType.NativeAssetSuperToken : superTokenInfo.type === "Wrapper" ? TokenType.WrapperSuperToken : TokenType.PureSuperToken,
+                underlyingAddress: underlyingAddress,
+                type: superTokenType,
                 logoURI: tokenListToken.logoURI
             } as SuperTokenMinimal;
         } else {
@@ -87,12 +96,6 @@ export const findTokenFromTokenList = memoize((input: { chainId: number, address
                 }),
                 logoURI: tokenListToken.logoURI
             } as UnderlyingTokenMinimal;
-        }
-    } else {
-        // TODO: Not super happy with this, I wish it was more explicit.
-        if (input.address === "0x0000000000000000000000000000000000000000" || input.address === NATIVE_ASSET_ADDRESS) {
-            const network = findNetworkOrThrow(allNetworks, input.chainId);
-            return network.nativeCurrency;
         }
     }
 }, ({ chainId, address }) => `${chainId}-${address.toLowerCase()}`);

@@ -36,10 +36,10 @@ const MintActivityRow: FC<MintActivityRowProps> = ({
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
-  const { amount, transactionHash, timestamp, token } = keyEvent;
+  const { amount, transactionHash, timestamp } = keyEvent;
   const { token: superTokenAddress } = transferEvent || {};
 
-  const tokenPrice = useTokenPrice(network.id, token);
+  const tokenPrice = useTokenPrice(network.id, superTokenAddress);
 
   const superTokenQuery = useTokenQuery(
     superTokenAddress
@@ -61,6 +61,11 @@ const MintActivityRow: FC<MintActivityRowProps> = ({
       : skipToken
   );
   const underlyingToken = underlyingTokenQuery.data;
+
+  console.log({
+    superToken,
+    underlyingToken
+  })
 
   const isSuperTokenListed = Boolean(superToken?.isListed);
 
@@ -92,7 +97,7 @@ const MintActivityRow: FC<MintActivityRowProps> = ({
               <ListItemAvatar>
                 <TokenIcon
                   chainId={network.id}
-                  tokenAddress={token}
+                  tokenAddress={underlyingToken?.address}
                   isLoading={underlyingTokenQuery.isLoading}
                 />
               </ListItemAvatar>
