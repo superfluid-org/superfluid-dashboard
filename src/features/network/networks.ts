@@ -253,7 +253,7 @@ export const networkDefinition = {
     v1ShortName: "avalanche-fuji",
     testnet: true,
     bufferTimeInMinutes: 60,
-    color: "#2b374b",
+    color: "#e84142",
     rpcUrls: {
       ...chain.avalancheFuji.rpcUrls,
       superfluid: { http: [superfluidRpcUrls.avalancheFuji] }
@@ -601,7 +601,7 @@ export const networkDefinition = {
     slugName: "sepolia",
     v1ShortName: "sepolia",
     bufferTimeInMinutes: 60,
-    color: "#68B1D5",
+    color: "#627EEA",
     rpcUrls: {
       ...chain.sepolia.rpcUrls,
       superfluid: { http: [superfluidRpcUrls.sepolia] },
@@ -635,7 +635,7 @@ export const networkDefinition = {
     slugName: "base",
     v1ShortName: "base",
     bufferTimeInMinutes: 240,
-    color: "#68B1D5",
+    color: "#0057F7",
     icon: "/icons/network/base.svg",
     rpcUrls: {
       ...chain.base.rpcUrls,
@@ -667,6 +667,44 @@ export const networkDefinition = {
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.base,
     platformUrl: superfluidPlatformUrls.base,
   },
+  baseSepolia: {
+    ...chain.baseSepolia,
+    supportsGDA: getSupportsGDA(chainIds.baseSepolia),
+    metadata: ensureDefined(
+      sfMeta.getNetworkByChainId(chainIds.baseSepolia),
+      chainIds.baseSepolia
+    ),
+    blockExplorers: ensureDefined(chain.baseSepolia.blockExplorers),
+    slugName: "base-sepolia",
+    v1ShortName: "base-sepolia",
+    bufferTimeInMinutes: 60,
+    color: "#0057F7",
+    icon: "/icons/network/base.svg",
+    rpcUrls: {
+      ...chain.baseSepolia.rpcUrls,
+      superfluid: { http: [superfluidRpcUrls["base-sepolia"]] },
+    },
+    getLinkForTransaction: (txHash: string): string =>
+      `https://sepolia.basescan.org/tx/${txHash}`,
+    getLinkForAddress: (address: string): string =>
+      `https://sepolia.basescan.org/address/${address}`,
+    nativeCurrency: {
+      ...ensureDefined(chain.baseSepolia.nativeCurrency),
+      address: NATIVE_ASSET_ADDRESS,
+      type: TokenType.NativeAssetUnderlyingToken,
+      superToken: ensureDefined(findNativeAssetSuperTokenFromTokenList({ chainId: chain.baseSepolia.id, address: "0x143ea239159155b408e71cdbe836e8cfd6766732" })),
+      logoURI: "https://raw.githubusercontent.com/superfluid-finance/assets/master/public/tokens/eth/icon.svg",
+      isSuperToken: false,
+    },
+    vestingContractAddress_v1: undefined,
+    vestingContractAddress_v2: undefined,
+    vestingSubgraphUrl: undefined,
+    autoWrapSubgraphUrl: undefined,
+    autoWrap: undefined,
+    flowSchedulerContractAddress: undefined,
+    flowSchedulerSubgraphUrl: undefined,
+    platformUrl: undefined,
+  },
   scroll: {
     ...chain.scroll,
     supportsGDA: getSupportsGDA(chainIds.scroll),
@@ -678,7 +716,7 @@ export const networkDefinition = {
     slugName: "scroll",
     v1ShortName: "scroll",
     bufferTimeInMinutes: 240,
-    color: "#fdf1e6",
+    color: "#EECDA6",
     icon: "/icons/network/scroll.svg",
     rpcUrls: {
       ...chain.scroll.rpcUrls,
@@ -713,7 +751,7 @@ export const networkDefinition = {
     slugName: "scrsepolia",
     v1ShortName: "scrsepolia",
     bufferTimeInMinutes: 60,
-    color: "#fdf1e6",
+    color: "#EECDA6",
     rpcUrls: {
       ...chain.scrollSepolia.rpcUrls,
       superfluid: { http: [superfluidRpcUrls["scroll-sepolia"]] },
@@ -796,6 +834,7 @@ export const allNetworks: [Network, ...Network[]] = orderBy(
       networkDefinition.celoMainnet,
       networkDefinition.sepolia,
       networkDefinition.base,
+      networkDefinition.baseSepolia,
       networkDefinition.scroll,
       networkDefinition.scrollSepolia,
       networkDefinition.degenChain,
