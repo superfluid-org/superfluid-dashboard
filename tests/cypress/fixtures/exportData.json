@@ -4970,16 +4970,10 @@
       "startedAtEvent": "0x2026840312d64277db37e453fcb40e7b0093a9015abc92f9de0542e572c36b1c",
       "virtualPeriods": [
         {
-          "startTime": 1672527600,
-          "endTime": 1672531199,
-          "amount": "13885030862909",
-          "amountFiat": "0.000013884247575750981943"
-        },
-        {
           "startTime": 1672531200,
-          "endTime": 1675205999,
-          "amount": "10319440585462109",
-          "amountFiat": "0.01032518822340134338"
+          "endTime": 1675209599,
+          "amount": "10333329474349709",
+          "amountFiat": "0.01033901115075521634"
         }
       ]
     },
@@ -5004,15 +4998,9 @@
       "stoppedAtEvent": "0x08fff49cad8f374edc7d5b888d7fda24a0b3a47464fc0b75de467897cdb6ecc9",
       "virtualPeriods": [
         {
-          "startTime": 1672527600,
-          "endTime": 1672531199,
-          "amount": "-138849420",
-          "amountFiat": "0"
-        },
-        {
           "startTime": 1672531200,
-          "endTime": 1675205999,
-          "amount": "-103193745420",
+          "endTime": 1675209599,
+          "amount": "-103332633420",
           "amountFiat": "0"
         }
       ]
@@ -5038,15 +5026,9 @@
       "stoppedAtEvent": "0x08fff49cad8f374edc7d5b888d7fda24a0b3a47464fc0b75de467897cdb6ecc9",
       "virtualPeriods": [
         {
-          "startTime": 1672527600,
-          "endTime": 1672531199,
-          "amount": "-138849420",
-          "amountFiat": "0"
-        },
-        {
           "startTime": 1672531200,
-          "endTime": 1675205999,
-          "amount": "-103193745420",
+          "endTime": 1675209599,
+          "amount": "-103332633420",
           "amountFiat": "0"
         }
       ]
@@ -5071,15 +5053,9 @@
       "startedAtEvent": "0xc4839d1078a09bb44b976eb0a481b7537195d0eef247eb75ceaaac9c715fa211",
       "virtualPeriods": [
         {
-          "startTime": 1672527600,
-          "endTime": 1672531199,
-          "amount": "13885030862909",
-          "amountFiat": "0"
-        },
-        {
           "startTime": 1672531200,
-          "endTime": 1675205999,
-          "amount": "10319440585462109",
+          "endTime": 1675209599,
+          "amount": "10333329474349709",
           "amountFiat": "0"
         }
       ]
@@ -5104,15 +5080,9 @@
       "startedAtEvent": "0xf85a5812e3ac6af52c9da09c324e9a77eaf845da567c79f0b38ef5bb858144c7",
       "virtualPeriods": [
         {
-          "startTime": 1672527600,
-          "endTime": 1672531199,
-          "amount": "27770061725818",
-          "amountFiat": "0"
-        },
-        {
           "startTime": 1672531200,
-          "endTime": 1675205999,
-          "amount": "20638881170924218",
+          "endTime": 1675209599,
+          "amount": "20666658948699418",
           "amountFiat": "0"
         }
       ]
@@ -5137,15 +5107,9 @@
       "startedAtEvent": "0x439d496a7bf74e157184e7a13d1600ba7f71c4cf91d1dc012c4a1bf7758e9682",
       "virtualPeriods": [
         {
-          "startTime": 1672527600,
-          "endTime": 1672531199,
-          "amount": "13885030862909",
-          "amountFiat": "0"
-        },
-        {
           "startTime": 1672531200,
-          "endTime": 1675205999,
-          "amount": "10319440585462109",
+          "endTime": 1675209599,
+          "amount": "10333329474349709",
           "amountFiat": "0"
         }
       ]
@@ -5171,16 +5135,10 @@
       "stoppedAtEvent": "0xc9364a527560c09392b9da6e989a739cb72202f307b2aa635bf252884300220e",
       "virtualPeriods": [
         {
-          "startTime": 1672527600,
-          "endTime": 1672531199,
-          "amount": "27770061725818",
-          "amountFiat": "0.000027685997249130822507"
-        },
-        {
           "startTime": 1672531200,
-          "endTime": 1675205999,
-          "amount": "20638881170924218",
-          "amountFiat": "0.020637385759681477375"
+          "endTime": 1675209599,
+          "amount": "20666658948699418",
+          "amountFiat": "0.020664821179859302256"
         }
       ]
     },
@@ -5204,15 +5162,9 @@
       "startedAtEvent": "0x8a2731b024f01f17478f6a5ba817fc88cd0e75d45b4e7ff8ab79246a2cb6d1c1",
       "virtualPeriods": [
         {
-          "startTime": 1672527600,
-          "endTime": 1672531199,
-          "amount": "13885030862909",
-          "amountFiat": "0"
-        },
-        {
           "startTime": 1672531200,
-          "endTime": 1675205999,
-          "amount": "10319440585462109",
+          "endTime": 1675209599,
+          "amount": "10333329474349709",
           "amountFiat": "0"
         }
       ]
@@ -5238,15 +5190,9 @@
       "stoppedAtEvent": "0xb7b8a1c30830d5077dcdc6ff00aff727dd427e7a91775ac2b9e11d2ffc07893f",
       "virtualPeriods": [
         {
-          "startTime": 1672527600,
-          "endTime": 1672531199,
-          "amount": "55748509967609",
-          "amountFiat": "0"
-        },
-        {
           "startTime": 1672531200,
-          "endTime": 1675205999,
-          "amount": "41432636485926809",
+          "endTime": 1675209599,
+          "amount": "41488400485894409",
           "amountFiat": "0"
         }
       ]
@@ -5301,9 +5247,9 @@
       "virtualPeriods": [
         {
           "startTime": 1674746190,
-          "endTime": 1675205999,
-          "amount": "-6842395832895420",
-          "amountFiat": "-0.0076826367852102477"
+          "endTime": 1675209599,
+          "amount": "-6895967261463420",
+          "amountFiat": "-0.0077414067867252673247"
         }
       ]
     },
@@ -5329,8 +5275,8 @@
       "virtualPeriods": [
         {
           "startTime": 1674745952,
-          "endTime": 1675205999,
-          "amount": "-684549936",
+          "endTime": 1675209599,
+          "amount": "-689906736",
           "amountFiat": "0"
         }
       ]
@@ -5356,15 +5302,9 @@
       "stoppedAtEvent": "0xa4fcf2f93b80de41a7c52e4ba2d6fcb1b0821400158a6115c17dd2dada1e2346",
       "virtualPeriods": [
         {
-          "startTime": 1672527600,
-          "endTime": 1672531199,
-          "amount": "-13885030864197442",
-          "amountFiat": "0"
-        },
-        {
           "startTime": 1672531200,
-          "endTime": 1675205999,
-          "amount": "-10319440586419687042",
+          "endTime": 1675209599,
+          "amount": "-10333329475308575842",
           "amountFiat": "0"
         }
       ]
@@ -5391,8 +5331,8 @@
       "virtualPeriods": [
         {
           "startTime": 1674746130,
-          "endTime": 1675205999,
-          "amount": "-6843288690038220",
+          "endTime": 1675209599,
+          "amount": "-6896860118606220",
           "amountFiat": "0"
         }
       ]
@@ -5447,9 +5387,9 @@
       "virtualPeriods": [
         {
           "startTime": 1674746190,
-          "endTime": 1675205999,
-          "amount": "-6842395832895420",
-          "amountFiat": "-0.0076826367852102477"
+          "endTime": 1675209599,
+          "amount": "-6895967261463420",
+          "amountFiat": "-0.0077414067867252673247"
         }
       ]
     },
@@ -5475,8 +5415,8 @@
       "virtualPeriods": [
         {
           "startTime": 1674745952,
-          "endTime": 1675205999,
-          "amount": "-684549936",
+          "endTime": 1675209599,
+          "amount": "-689906736",
           "amountFiat": "0"
         }
       ]
@@ -5502,15 +5442,9 @@
       "stoppedAtEvent": "0xa4fcf2f93b80de41a7c52e4ba2d6fcb1b0821400158a6115c17dd2dada1e2346",
       "virtualPeriods": [
         {
-          "startTime": 1672527600,
-          "endTime": 1672531199,
-          "amount": "-13885030864197442",
-          "amountFiat": "0"
-        },
-        {
           "startTime": 1672531200,
-          "endTime": 1675205999,
-          "amount": "-10319440586419687042",
+          "endTime": 1675209599,
+          "amount": "-10333329475308575842",
           "amountFiat": "0"
         }
       ]
@@ -5537,8 +5471,8 @@
       "virtualPeriods": [
         {
           "startTime": 1674746130,
-          "endTime": 1675205999,
-          "amount": "-6843288690038220",
+          "endTime": 1675209599,
+          "amount": "-6896860118606220",
           "amountFiat": "0"
         }
       ]
@@ -5593,8 +5527,8 @@
       "virtualPeriods": [
         {
           "startTime": 1674746068,
-          "endTime": 1675205999,
-          "amount": "-6844211309085780",
+          "endTime": 1675209599,
+          "amount": "-6897782737653780",
           "amountFiat": "0"
         }
       ]
@@ -5619,15 +5553,9 @@
       "startedAtEvent": "0x1758a89d8e1a7552a84ba6cb6859447b20536d460c78877e613f34a8a04a5603",
       "virtualPeriods": [
         {
-          "startTime": 1672527600,
-          "endTime": 1672531199,
-          "amount": "13885030862909",
-          "amountFiat": "0"
-        },
-        {
           "startTime": 1672531200,
-          "endTime": 1675205999,
-          "amount": "10319440585462109",
+          "endTime": 1675209599,
+          "amount": "10333329474349709",
           "amountFiat": "0"
         }
       ]
@@ -5652,16 +5580,10 @@
       "startedAtEvent": "0xf8f290499086b9100688fa1fce2460c2ba5e8d52a0b4752c3f7cc614bf689af7",
       "virtualPeriods": [
         {
-          "startTime": 1672527600,
-          "endTime": 1672531199,
-          "amount": "13885030862909",
-          "amountFiat": "0.000010521894264731465385"
-        },
-        {
           "startTime": 1672531200,
-          "endTime": 1675205999,
-          "amount": "10319440585462109",
-          "amountFiat": "0.0097161750967200524483"
+          "endTime": 1675209599,
+          "amount": "10333329474349709",
+          "amountFiat": "0.0097314117637790631646"
         }
       ]
     },
@@ -5686,15 +5608,9 @@
       "stoppedAtEvent": "0x3320d5e3c0435f42c7db035e23d700932ecb4a67f961202d91c74ec341bfd29f",
       "virtualPeriods": [
         {
-          "startTime": 1672527600,
-          "endTime": 1672531199,
-          "amount": "138850305354",
-          "amountFiat": "0"
-        },
-        {
           "startTime": 1672531200,
-          "endTime": 1675205999,
-          "amount": "103194403420554",
+          "endTime": 1675209599,
+          "amount": "103333292306154",
           "amountFiat": "0"
         }
       ]
@@ -5719,15 +5635,9 @@
       "startedAtEvent": "0x66b14cbb73de063eaa064acdf69c39910867b7b366fa201221e32a6e650c8fa0",
       "virtualPeriods": [
         {
-          "startTime": 1672527600,
-          "endTime": 1672531199,
-          "amount": "13885030862909",
-          "amountFiat": "0"
-        },
-        {
           "startTime": 1672531200,
-          "endTime": 1675205999,
-          "amount": "10319440585462109",
+          "endTime": 1675209599,
+          "amount": "10333329474349709",
           "amountFiat": "0"
         }
       ]
@@ -5752,15 +5662,9 @@
       "startedAtEvent": "0xb5f94f7e8750e002f4ee0905827c474d1f7464b86d7dd992d5c824cfbf47aa8e",
       "virtualPeriods": [
         {
-          "startTime": 1672527600,
-          "endTime": 1672531199,
-          "amount": "13885030862909",
-          "amountFiat": "0"
-        },
-        {
           "startTime": 1672531200,
-          "endTime": 1675205999,
-          "amount": "10319440585462109",
+          "endTime": 1675209599,
+          "amount": "10333329474349709",
           "amountFiat": "0"
         }
       ]
@@ -5788,15 +5692,9 @@
       "stoppedAtEvent": "0x08fff49cad8f374edc7d5b888d7fda24a0b3a47464fc0b75de467897cdb6ecc9",
       "virtualPeriods": [
         {
-          "startTime": 1672527600,
-          "endTime": 1672531199,
-          "amount": "-138849420",
-          "amountFiat": "0"
-        },
-        {
           "startTime": 1672531200,
-          "endTime": 1675205999,
-          "amount": "-103193745420",
+          "endTime": 1675209599,
+          "amount": "-103332633420",
           "amountFiat": "0"
         }
       ]
@@ -5851,9 +5749,9 @@
       "virtualPeriods": [
         {
           "startTime": 1674746190,
-          "endTime": 1675205999,
-          "amount": "-6842395832895420",
-          "amountFiat": "-0.0076826367852102477"
+          "endTime": 1675209599,
+          "amount": "-6895967261463420",
+          "amountFiat": "-0.0077414067867252673247"
         }
       ]
     },
@@ -5879,8 +5777,8 @@
       "virtualPeriods": [
         {
           "startTime": 1674745952,
-          "endTime": 1675205999,
-          "amount": "-684549936",
+          "endTime": 1675209599,
+          "amount": "-689906736",
           "amountFiat": "0"
         }
       ]
@@ -5906,15 +5804,9 @@
       "stoppedAtEvent": "0xa4fcf2f93b80de41a7c52e4ba2d6fcb1b0821400158a6115c17dd2dada1e2346",
       "virtualPeriods": [
         {
-          "startTime": 1672527600,
-          "endTime": 1672531199,
-          "amount": "-13885030864197442",
-          "amountFiat": "0"
-        },
-        {
           "startTime": 1672531200,
-          "endTime": 1675205999,
-          "amount": "-10319440586419687042",
+          "endTime": 1675209599,
+          "amount": "-10333329475308575842",
           "amountFiat": "0"
         }
       ]
@@ -5941,8 +5833,8 @@
       "virtualPeriods": [
         {
           "startTime": 1674746130,
-          "endTime": 1675205999,
-          "amount": "-6843288690038220",
+          "endTime": 1675209599,
+          "amount": "-6896860118606220",
           "amountFiat": "0"
         }
       ]
@@ -7005,7 +6897,7 @@
       "@elvijs",
       "0xEb85888b31FADF79CB264d065EdcB4a14551c28d"
     ],
-    "amount": ["$0", "$0.02", "$0.01", "$0.01", "$0", "$0", "$0", "$0.01"],
+    "amount": ["$0", "$0.02", "$0", "$0.01", "$0", "$0", "$0", "$0.01"],
     "startDate": [
       "2023/01/01",
       "2023/01/01",
