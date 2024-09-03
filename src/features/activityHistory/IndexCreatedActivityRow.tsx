@@ -17,7 +17,7 @@ import TxHashLink from "../common/TxHashLink";
 import NetworkBadge from "../network/NetworkBadge";
 import TokenIcon from "../token/TokenIcon";
 import ActivityIcon from "./ActivityIcon";
-import { useTokenQuery } from "../../hooks/useSuperToken";
+import { useTokenQuery } from "../../hooks/useTokenQuery";
 
 interface IndexCreatedActivityRowProps extends Activity<IndexCreatedEvent> {
   dateFormat?: string;

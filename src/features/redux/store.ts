@@ -2,7 +2,6 @@ import {
   autoBatchEnhancer,
   configureStore,
   createListenerMiddleware,
-  Dispatch,
   EntityState,
   isRejected,
   isRejectedWithValue,
@@ -52,7 +51,6 @@ import { networkPreferencesSlice, NetworkPreferencesState } from "../network/net
 import { pushApi } from "../notifications/pushApi.slice";
 import { pendingUpdateSlice } from "../pendingUpdates/pendingUpdate.slice";
 import appSettingsReducer from "../settings/appSettings.slice";
-import { assetApiSlice } from "../token/tokenManifestSlice";
 import tokenPriceApi from "../tokenPrice/tokenPriceApi.slice";
 import { adHocRpcEndpoints } from "./endpoints/adHocRpcEndpoints";
 import { adHocSubgraphEndpoints } from "./endpoints/adHocSubgraphEndpoints";
@@ -256,7 +254,6 @@ export const reduxStore = configureStore({
     [rpcApi.reducerPath]: rpcApi.reducer,
     [subgraphApi.reducerPath]: subgraphApi.reducer,
     [transactionTracker.reducerPath]: transactionTrackerPersistedReducer,
-    [assetApiSlice.reducerPath]: assetApiSlice.reducer,
     [ensApi.reducerPath]: ensApi.reducer,
     [lensApi.reducerPath]: lensApi.reducer,
     [gasApi.reducerPath]: gasApi.reducer,
@@ -301,7 +298,6 @@ export const reduxStore = configureStore({
       .concat(autoWrapSubgraphApi.middleware)
       .concat(schedulingSubgraphApi.middleware)
       .concat(subgraphApi.middleware)
-      .concat(assetApiSlice.middleware)
       .concat(ensApi.middleware)
       .concat(lensApi.middleware)
       .concat(gasApi.middleware)

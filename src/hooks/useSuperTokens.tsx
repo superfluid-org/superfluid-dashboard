@@ -4,7 +4,7 @@ import { Network } from "../features/network/networks";
 import { subgraphApi } from "../features/redux/store";
 import { useMemo } from "react";
 import { getSuperTokenType } from "../features/redux/endpoints/adHocSubgraphEndpoints";
-import { findTokenFromTokenList } from "./useSuperToken";
+import { findTokenFromTokenList } from "./useTokenQuery";
 
 export const useSuperTokens = ({ network, onlyWrappable }: { network: Network, onlyWrappable?: boolean }) => {
     const networkCustomTokens = useNetworkCustomTokens(network.id);

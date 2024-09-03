@@ -22,7 +22,7 @@ import { useRouter } from "next/router";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useVestingVersion } from "../../hooks/useVestingVersion";
 import { useAccount } from "wagmi";
-import { useTokenQuery } from "../../hooks/useSuperToken";
+import { useTokenQuery } from "../../hooks/useTokenQuery";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
 

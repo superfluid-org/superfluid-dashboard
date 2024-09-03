@@ -20,7 +20,7 @@ import {
   TokenType,
   UnderlyingTokenType,
 } from "./tokenTypes";
-import { findTokenFromTokenList, mapSubgraphTokenToTokenMinimal } from "../../../hooks/useSuperToken";
+import { findTokenFromTokenList, mapSubgraphTokenToTokenMinimal } from "../../../hooks/useTokenQuery";
 
 export type TokenBalance = {
   balance: string;

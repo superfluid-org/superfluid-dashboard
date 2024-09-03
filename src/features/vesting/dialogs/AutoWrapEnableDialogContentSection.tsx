@@ -7,7 +7,7 @@ import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
 import { SuperTokenMinimal, TokenType } from "../../redux/endpoints/tokenTypes";
 import useActiveAutoWrap from "../useActiveAutoWrap";
 import ConnectionBoundaryButton from "../../transactionBoundary/ConnectionBoundaryButton";
-import { useTokenQuery } from "../../../hooks/useSuperToken";
+import { useTokenQuery } from "../../../hooks/useTokenQuery";
 
 const AutoWrapEnableDialogContentSection: FC<{
   closeEnableAutoWrapDialog: () => void;

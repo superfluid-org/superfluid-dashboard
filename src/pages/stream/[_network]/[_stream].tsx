@@ -64,7 +64,7 @@ import Link from "../../../features/common/Link";
 import { HumaFinanceLink } from "../../../features/streamsTable/StreamRow";
 import { getVestingPagePath } from "../../../utils/URLUtils";
 import LockClockRoundedIcon from "@mui/icons-material/LockClockRounded";
-import { useTokenQuery } from "../../../hooks/useSuperToken";
+import { useTokenQuery } from "../../../hooks/useTokenQuery";
 
 const TEXT_TO_SHARE = (up?: boolean) =>
   encodeURIComponent(`I’m streaming money every second with @Superfluid_HQ! 🌊

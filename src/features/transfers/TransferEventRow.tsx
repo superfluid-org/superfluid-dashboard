@@ -21,7 +21,7 @@ import AddressName from "../../components/AddressName/AddressName";
 import { subgraphApi } from "../redux/store";
 import { Network } from "../network/networks";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
-import { useTokenQuery } from "../../hooks/useSuperToken";
+import { useTokenQuery } from "../../hooks/useTokenQuery";
 
 export const TransferEventLoadingRow = () => {
   const theme = useTheme();

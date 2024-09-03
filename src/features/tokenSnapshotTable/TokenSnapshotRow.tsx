@@ -38,7 +38,7 @@ import FlowingFiatBalance from "../tokenPrice/FlowingFiatBalance";
 import useTokenPrice from "../tokenPrice/useTokenPrice";
 import BalanceCriticalIndicator from "./BalanceCriticalIndicator";
 import { isDefined } from "../../utils/ensureDefined";
-import { useTokenQuery } from "../../hooks/useSuperToken";
+import { useTokenQuery } from "../../hooks/useTokenQuery";
 
 interface SnapshotRowProps {
   lastElement?: boolean;
@@ -105,7 +105,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
     totalNumberOfClosedStreams,
   } = snapshot;
 
-  const token = useTokenQuery({ chainId: network.id, id: tokenAddress });
+  const token = useTokenQuery({ chainId: network.id, id: tokenAddress, onlySuperToken: true });
   const tokenSymbol = token?.data?.symbol;
 
   const tokenPrice = useTokenPrice(network.id, tokenAddress);

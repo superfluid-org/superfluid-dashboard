@@ -28,7 +28,7 @@ import Link from "next/link";
 import { usePendingVestingScheduleClaim } from "../pendingUpdates/PendingVestingScheduleClaim";
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import { ClaimVestingScheduleTransactionButton } from "./transactionButtons/ClaimVestingScheduleTransactionButton";
-import { useTokenQuery } from "../../hooks/useSuperToken";
+import { useTokenQuery } from "../../hooks/useTokenQuery";
 
 interface VestingRowProps {
   network: Network;

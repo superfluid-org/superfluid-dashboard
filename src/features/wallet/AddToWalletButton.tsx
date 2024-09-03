@@ -4,11 +4,10 @@ import { Address } from "@superfluid-finance/sdk-core";
 import { FC, useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { useAccount, useSwitchChain, useWatchAsset } from "wagmi";
-import config from "../../utils/config";
 import { addTokenAddedFlag } from "../flags/flags.slice";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
-import { assetApiSlice } from "../token/tokenManifestSlice";
 import { useConnectionBoundary } from "../transactionBoundary/ConnectionBoundary";
+import { useTokenQuery } from "../../hooks/useTokenQuery";
 
 interface AddToWalletButtonProps {
   token: Address;
@@ -17,7 +16,7 @@ interface AddToWalletButtonProps {
 }
 
 const AddToWalletButton: FC<AddToWalletButtonProps> = ({
-  token,
+  token: tokenAddress,
   symbol,
   decimals,
 }) => {
@@ -25,25 +24,17 @@ const AddToWalletButton: FC<AddToWalletButtonProps> = ({
   const { expectedNetwork, isCorrectNetwork } = useConnectionBoundary();
   const { address: accountAddress, connector } = useAccount();
   const dispatch = useDispatch();
-  const [tokenManifestTrigger] = assetApiSlice.useLazyTokenManifestQuery();
+  const { data: token } = useTokenQuery({ chainId: network.id, id: tokenAddress });
   const { watchAssetAsync } = useWatchAsset();
 
   const addToWallet = useCallback(async () => {
     if (connector && connector.watchAsset && accountAddress) {
-      const tokenImage = await tokenManifestTrigger({
-        tokenSymbol: symbol,
-      })
-        .then((response) =>
-          response.data?.svgIconPath
-            ? `${config.tokenIconUrl}${response.data?.svgIconPath}`
-            : undefined
-        )
-        .catch(() => undefined);
+      const tokenImage = token?.logoURI;
 
       watchAssetAsync({
         type: "ERC20",
         options: {
-          address: token,
+          address: tokenAddress,
           symbol,
           decimals,
           image: tokenImage,
@@ -54,7 +45,7 @@ const AddToWalletButton: FC<AddToWalletButtonProps> = ({
             addTokenAddedFlag({
               account: accountAddress,
               chainId: network.id,
-              token,
+              token: tokenAddress,
               walletId: connector.id,
             })
           )
@@ -65,13 +56,13 @@ const AddToWalletButton: FC<AddToWalletButtonProps> = ({
     }
   }, [
     accountAddress,
-    token,
+    tokenAddress,
     symbol,
     decimals,
     network,
     connector,
     dispatch,
-    tokenManifestTrigger,
+    token
   ]);
 
   const { switchChain } = useSwitchChain({

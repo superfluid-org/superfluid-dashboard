@@ -40,7 +40,7 @@ import { TokenType } from "../../redux/endpoints/tokenTypes";
 import DisableAutoWrapTransactionButton from "../transactionButtons/DisableAutoWrapTransactionButton";
 import AutoWrapEnableDialog from "../dialogs/AutoWrapEnableDialog";
 import ConnectionBoundaryButton from "../../transactionBoundary/ConnectionBoundaryButton";
-import { useTokenQuery } from "../../../hooks/useSuperToken";
+import { useTokenQuery } from "../../../hooks/useTokenQuery";
 
 export const EditIconWrapper = styled(Avatar)(({ theme }) => ({
   width: "50px",

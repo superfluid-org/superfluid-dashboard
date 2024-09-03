@@ -1,7 +1,7 @@
 import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
 import { Avatar, Skeleton, styled, Tooltip, useTheme } from "@mui/material";
 import { FC } from "react";
-import { findTokenFromTokenList } from "../../hooks/useSuperToken";
+import { findTokenFromTokenList } from "../../hooks/useTokenQuery";
 import { isSuper } from "../redux/endpoints/tokenTypes";
 
 const BorderSvg = styled("svg")(() => ({

@@ -31,7 +31,7 @@ import ResponsiveDialog from "../common/ResponsiveDialog";
 import { UpsertTokenAccessForm } from "./dialog/UpsertTokenAccessForm";
 import TooltipWithIcon from "../common/TooltipWithIcon";
 import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
-import { useTokenQuery } from "../../hooks/useSuperToken";
+import { useTokenQuery } from "../../hooks/useTokenQuery";
 import { SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
 
 interface Props {
