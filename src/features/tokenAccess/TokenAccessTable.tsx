@@ -21,6 +21,7 @@ import { subgraphApi } from "../redux/store";
 import NetworkHeadingRow from "../../components/Table/NetworkHeadingRow";
 import TokenAccessLoadingTable from "./TokenAccessLoadingTable";
 import TooltipWithIcon from "../common/TooltipWithIcon";
+import { EMPTY_ARRAY } from "../../utils/constants";
 
 interface Props {
   address: Address;
@@ -63,7 +64,7 @@ const TokenAccessTable: FC<Props> = ({
         refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
         selectFromResult: (result) => ({
           ...result,
-          flowOperators: result.data?.items ?? [],
+          flowOperators: result.data?.items ?? EMPTY_ARRAY,
         }),
       }
     );

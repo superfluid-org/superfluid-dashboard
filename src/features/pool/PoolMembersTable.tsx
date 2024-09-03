@@ -18,6 +18,7 @@ import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { PoolMemberRowLoading } from "./PoolMemberRowLoading";
 import PoolMemberRow from "./PoolMemberRow";
 import _ from "lodash";
+import { EMPTY_ARRAY } from "../../utils/constants";
 
 type Props = {
     tokenAddress: Address;
@@ -50,7 +51,7 @@ const PoolMembersTable: FC<Props> = ({
     }, {
         selectFromResult: (result) => {
             return ({
-                poolMembers: (result.currentData?.items || []),
+                poolMembers: (result.currentData?.items || EMPTY_ARRAY),
                 isPoolMemberLoading: result.isLoading || result.isUninitialized
             });
         },

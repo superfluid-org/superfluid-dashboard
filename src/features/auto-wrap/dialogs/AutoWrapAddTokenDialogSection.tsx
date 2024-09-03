@@ -40,7 +40,7 @@ const AutoWrapAddTokenForm: FC<{
   const { network: userNetwork } = useExpectedNetwork();
   const network = formNetwork ?? userNetwork;
 
-  const { listedSuperTokensQuery, customSuperTokensQuery, superTokens } = useSuperTokens({ network, onlyWrappable: true });
+  const { superTokens, isFetching } = useSuperTokens({ network, onlyWrappable: true });
 
   return (
     <>
@@ -117,15 +117,9 @@ const AutoWrapAddTokenForm: FC<{
                   <TokenDialogButton
                     token={token}
                     network={network}
-                    tokenSelection={{
-                      showUpgrade: true,
-                      tokenPairsQuery: {
-                        data: superTokens,
-                        isFetching:
-                          listedSuperTokensQuery.isFetching ||
-                          customSuperTokensQuery.isFetching,
-                      },
-                    }}
+                    tokens={superTokens}
+                    isTokensFetching={isFetching}
+                    showUpgrade={true}
                     onTokenSelect={onChange}
                     onBlur={onBlur}
                     ButtonProps={{

@@ -2,8 +2,8 @@ import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { allNetworks, findNetworkOrThrow } from "../features/network/networks";
 import { subgraphApi } from "../features/redux/store";
 import { getSuperTokenType, getUnderlyingTokenType } from "../features/redux/endpoints/adHocSubgraphEndpoints";
-import { NATIVE_ASSET_ADDRESS, SuperTokenMinimal, TokenMinimal, TokenType, UnderlyingTokenMinimal } from "../features/redux/endpoints/tokenTypes";
-import { extendedSuperTokenList } from "@superfluid-finance/tokenlist"
+import { NATIVE_ASSET_ADDRESS, SuperTokenMinimal, SuperTokenPair, TokenMinimal, TokenType, UnderlyingTokenMinimal } from "../features/redux/endpoints/tokenTypes";
+import { extendedSuperTokenList, SuperTokenExtensions, TokenInfo } from "@superfluid-finance/tokenlist"
 import { useMemo } from "react";
 import { memoize } from 'lodash';
 
@@ -82,37 +82,67 @@ export const findTokenFromTokenList = memoize((input: { chainId: number, address
 
     const tokenListToken = extendedSuperTokenList.tokens.find(x => x.chainId === input.chainId && x.address === tokenAddressLowerCased);
     if (tokenListToken) {
-        const superTokenInfo = tokenListToken.extensions?.superTokenInfo;
-        if (superTokenInfo) {
-            const superTokenType = superTokenInfo.type === "Native Asset" ? TokenType.NativeAssetSuperToken : superTokenInfo.type === "Wrapper" ? TokenType.WrapperSuperToken : TokenType.PureSuperToken;
-            const underlyingAddress = superTokenInfo.type === "Native Asset" ? NATIVE_ASSET_ADDRESS : superTokenInfo.type === "Wrapper" ? superTokenInfo.underlyingTokenAddress : null;
-
-            return {
-                address: tokenListToken.address,
-                name: tokenListToken.name,
-                symbol: tokenListToken.symbol,
-                decimals: 18,
-                isSuperToken: true,
-                isListed: true,
-                underlyingAddress: underlyingAddress,
-                type: superTokenType,
-                logoURI: tokenListToken.logoURI
-            } as SuperTokenMinimal;
-        } else {
-            return {
-                address: tokenListToken.address,
-                name: tokenListToken.name,
-                symbol: tokenListToken.symbol,
-                decimals: tokenListToken.decimals,
-                isSuperToken: false,
-                type: getUnderlyingTokenType({
-                    address: tokenListToken.address
-                }),
-                logoURI: tokenListToken.logoURI
-            } as UnderlyingTokenMinimal;
-        }
+        return mapTokenListTokenToTokenMinimal(tokenListToken);
     }
 }, ({ chainId, address }) => `${chainId}-${address.toLowerCase()}`);
+
+export const getTokensFromTokenList = memoize((chainId: number) => {
+    return extendedSuperTokenList.tokens.filter(x => x.chainId === chainId).map(mapTokenListTokenToTokenMinimal);
+}, (chainId) => chainId);
+
+export const getSuperTokensFromTokenList = memoize((chainId: number, onlyWrappable?: boolean) => {
+    return getTokensFromTokenList(chainId).filter(x => x.isSuperToken).filter(x => onlyWrappable ? x.type === TokenType.WrapperSuperToken || x.type === TokenType.NativeAssetSuperToken : true);
+}, (chainId) => chainId);
+
+export const getTokenPairsFromTokenList = memoize((chainId: number) => {
+    return getSuperTokensFromTokenList(chainId, true /* onlyWrappable */)
+        .map(superToken => {
+            if (superToken.type === TokenType.NativeAssetSuperToken) {
+                const network = findNetworkOrThrow(allNetworks, chainId);
+                return ({
+                    superToken,
+                    underlyingToken: network.nativeCurrency
+                }) as SuperTokenPair;
+            }
+
+            return ({
+                superToken,
+                underlyingToken: findTokenFromTokenList({ chainId, address: superToken.underlyingAddress! })!
+            }) as SuperTokenPair;
+        });
+}, (chainId) => chainId);
+
+export const mapTokenListTokenToTokenMinimal = (tokenListToken: TokenInfo & SuperTokenExtensions) => {
+    const superTokenInfo = tokenListToken.extensions?.superTokenInfo;
+    if (superTokenInfo) {
+        const superTokenType = superTokenInfo.type === "Native Asset" ? TokenType.NativeAssetSuperToken : superTokenInfo.type === "Wrapper" ? TokenType.WrapperSuperToken : TokenType.PureSuperToken;
+        const underlyingAddress = superTokenInfo.type === "Native Asset" ? NATIVE_ASSET_ADDRESS : superTokenInfo.type === "Wrapper" ? superTokenInfo.underlyingTokenAddress : null;
+
+        return {
+            address: tokenListToken.address,
+            name: tokenListToken.name,
+            symbol: tokenListToken.symbol,
+            decimals: 18,
+            isSuperToken: true,
+            isListed: true,
+            underlyingAddress: underlyingAddress,
+            type: superTokenType,
+            logoURI: tokenListToken.logoURI
+        } as SuperTokenMinimal;
+    } else {
+        return {
+            address: tokenListToken.address,
+            name: tokenListToken.name,
+            symbol: tokenListToken.symbol,
+            decimals: tokenListToken.decimals,
+            isSuperToken: false,
+            type: getUnderlyingTokenType({
+                address: tokenListToken.address
+            }),
+            logoURI: tokenListToken.logoURI
+        } as UnderlyingTokenMinimal;
+    }
+}
 
 export const mapSubgraphTokenToTokenMinimal = <T extends boolean = false>(chainId: number, subgraphToken: {
     id: string

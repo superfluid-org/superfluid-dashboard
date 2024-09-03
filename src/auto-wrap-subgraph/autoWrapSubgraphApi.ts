@@ -2,6 +2,7 @@ import { miniSerializeError } from "@reduxjs/toolkit";
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { getSerializeQueryArgs } from "@superfluid-finance/sdk-redux";
 import { allNetworks, tryFindNetwork } from "../features/network/networks";
+import { EMPTY_ARRAY } from "../utils/constants";
 
 import {
   getBuiltGraphSDK,
@@ -65,7 +66,7 @@ export const autoWrapSubgraphApi = createApi({
         const sdk = tryGetBuiltGraphSdkForNetwork(chainId);
         const subgraphWrapSchedules = sdk
           ? (await sdk.getWrapSchedules(variables)).wrapSchedules
-          : [];
+          : EMPTY_ARRAY;
         return {
           data: {
             wrapSchedules: subgraphWrapSchedules.map(mapSubgraphWrapSchedule),

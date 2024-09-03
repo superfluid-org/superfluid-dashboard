@@ -3,20 +3,12 @@ import { useNetworkCustomTokens } from "../features/customTokens/customTokens.sl
 import { Network } from "../features/network/networks";
 import { subgraphApi } from "../features/redux/store";
 import { useMemo } from "react";
-import { getSuperTokenType } from "../features/redux/endpoints/adHocSubgraphEndpoints";
-import { findTokenFromTokenList } from "./useTokenQuery";
+import { getSuperTokensFromTokenList, mapSubgraphTokenToTokenMinimal } from "./useTokenQuery";
 
 export const useSuperTokens = ({ network, onlyWrappable }: { network: Network, onlyWrappable?: boolean }) => {
     const networkCustomTokens = useNetworkCustomTokens(network.id);
 
-    const listedSuperTokensQuery = subgraphApi.useTokensQuery({
-        chainId: network.id,
-        filter: {
-            isSuperToken: true,
-            isListed: true,
-            ...(onlyWrappable ? { underlyingAddress_not: "0x0000000000000000000000000000000000000000" } : {})
-        },
-    });
+    const listedSuperTokens = getSuperTokensFromTokenList(network.id, onlyWrappable);
 
     const customSuperTokensQuery = subgraphApi.useTokensQuery(
         networkCustomTokens.length > 0
@@ -34,36 +26,17 @@ export const useSuperTokens = ({ network, onlyWrappable }: { network: Network, o
 
     const superTokens = useMemo(
         () => {
-            const subgraphTokens = (listedSuperTokensQuery.data?.items || []).concat(customSuperTokensQuery.data?.items || []);
-            return subgraphTokens.map((x) => {
-                const tokenListToken = findTokenFromTokenList({ chainId: network.id, address: x.id });
-                if (tokenListToken) {
-                    return ({
-                        ...x,
-                        address: x.id,
-                        symbol: tokenListToken.symbol,
-                        name: tokenListToken.name,
-                        type: getSuperTokenType({ ...x, network, address: x.id }),
-                        decimals: 18
-                    });
-                } else {
-                    return ({
-                        ...x,
-                        address: x.id,
-                        type: getSuperTokenType({ ...x, network, address: x.id }),
-                        decimals: 18,
-                    });
-                }
-            });
+            const customSuperTokens = (customSuperTokensQuery.data?.items || []).map(token => mapSubgraphTokenToTokenMinimal(network.id, token as typeof token & { isSuperToken: true}));
+            return listedSuperTokens.concat(customSuperTokens);
         },
-        [network, listedSuperTokensQuery.data, customSuperTokensQuery.data]
+        [network, listedSuperTokens, customSuperTokensQuery.data]
     );
 
     return {
-        listedSuperTokensQuery,
+        listedSuperTokens,
         customSuperTokensQuery,
         superTokens,
-        isLoading: listedSuperTokensQuery.isLoading || customSuperTokensQuery.isLoading,
-        isFetching: listedSuperTokensQuery.isFetching || customSuperTokensQuery.isFetching,
+        isLoading: customSuperTokensQuery.isLoading,
+        isFetching: customSuperTokensQuery.isFetching,
     };
 }

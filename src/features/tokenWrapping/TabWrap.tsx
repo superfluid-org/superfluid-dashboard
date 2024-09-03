@@ -120,6 +120,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
 
   const isUnderlyingBlockchainNativeAsset =
     tokenPair?.underlyingTokenAddress === NATIVE_ASSET_ADDRESS;
+
   const { data: _discard, ...allowanceQuery } =
     rpcApi.useSuperTokenUpgradeAllowanceQuery(
       tokenPair && !isUnderlyingBlockchainNativeAsset && visibleAddress
@@ -255,12 +256,8 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
               <TokenDialogButton
                 network={network}
                 token={underlyingToken}
-                tokenSelection={{
-                  tokenPairsQuery: {
-                    data: tokenSelection,
-                    isFetching: tokenPairsIsFetching,
-                  },
-                }}
+                tokens={tokenSelection}
+                isTokensFetching={tokenPairsIsFetching}
                 onTokenSelect={(token) => {
                   resetField("data.amountDecimal");
                   const tokenPair = tokenPairs?.find(

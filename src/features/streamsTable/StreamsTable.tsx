@@ -38,6 +38,7 @@ import { subgraphApi } from "../redux/store";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import StreamRow, { StreamRowLoading } from "./StreamRow";
 import { StreamScheduling } from "./StreamScheduling";
+import { EMPTY_ARRAY } from "../../utils/constants";
 
 enum StreamTypeFilter {
   All,
@@ -149,11 +150,11 @@ const StreamsTable: FC<StreamsTableProps> = ({
         const unixNow = getUnixTime(new Date());
 
         return {
-          activeTasks: (response.data?.tasks ?? []).filter(
+          activeTasks: response.data?.tasks?.filter(
             (task) =>
               (!task.expirationAt && Number(task.executionAt) > unixNow) ||
               Number(task.expirationAt) > unixNow
-          ),
+          ) ?? EMPTY_ARRAY,
         };
       },
     }

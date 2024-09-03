@@ -893,11 +893,11 @@ export const findNetworkOrThrow = (
   return network;
 };
 
-export const getNetworkDefaultTokenPair = memoize(
-  (network: Network): SuperTokenPair => ({
+export const getNetworkDefaultTokenPairs = memoize(
+  (network: Network): SuperTokenPair[] => ([{
     superToken: network.nativeCurrency.superToken,
     underlyingToken: network.nativeCurrency,
-  })
+  }])
 );
 
 export const vestingSupportedNetworks = allNetworks

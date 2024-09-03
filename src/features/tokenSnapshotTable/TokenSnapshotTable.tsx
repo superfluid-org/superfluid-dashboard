@@ -19,6 +19,7 @@ import { Network } from "../network/networks";
 import { subgraphApi } from "../redux/store";
 import TokenSnapshotRow from "./TokenSnapshotRow";
 import { FetchingStatus } from "./TokenSnapshotTables";
+import { EMPTY_ARRAY } from "../../utils/constants";
 
 interface TokenSnapshotTableProps {
   address: Address;
@@ -86,7 +87,7 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
                 ...snapshot,
                 isListed: false,
               }))
-              .sort(tokenSnapshotsDefaultSort) || [],
+              .sort(tokenSnapshotsDefaultSort) || EMPTY_ARRAY,
         }),
       }
     );

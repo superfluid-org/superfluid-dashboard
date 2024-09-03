@@ -82,7 +82,7 @@ export default memo(function SendTransfer() {
   );
 
   const { data: superToken } = useTokenQuery(tokenAddress ? { chainId: network.id, id: tokenAddress, onlySuperToken: true } : skipToken);
-  const { listedSuperTokensQuery, customSuperTokensQuery, superTokens } = useSuperTokens({ network });
+  const { superTokens, isFetching } = useSuperTokens({ network });
 
   const TokenController = (
     <Controller
@@ -92,15 +92,9 @@ export default memo(function SendTransfer() {
         <TokenDialogButton
           token={superToken}
           network={network}
-          tokenSelection={{
-            showUpgrade: true,
-            tokenPairsQuery: {
-              data: superTokens,
-              isFetching:
-                listedSuperTokensQuery.isFetching ||
-                customSuperTokensQuery.isFetching,
-            },
-          }}
+          tokens={superTokens}
+          isTokensFetching={isFetching}
+          showUpgrade={true}
           onTokenSelect={(x) => onChange(x.address)}
           onBlur={onBlur}
           ButtonProps={{ variant: "input" }}

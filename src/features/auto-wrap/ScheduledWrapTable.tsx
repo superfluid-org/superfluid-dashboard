@@ -25,6 +25,7 @@ import { AutoWrapContractInfo } from "../vesting/VestingScheduleTables";
 import { PlatformWhitelistedStatus } from "./ScheduledWrapTables";
 import { platformApi } from "../redux/platformApi/platformApi";
 import ScheduledWrapLoadingTable from "./ScheduledWrapLoadingTable";
+import { EMPTY_ARRAY } from "../../utils/constants";
 
 interface TokenSnapshotTableProps {
   address: Address;
@@ -62,7 +63,7 @@ const ScheduledWrapTable: FC<TokenSnapshotTableProps> = ({
         selectFromResult: (result) => ({
           ...result,
           wrapSchedules:
-            result.data?.wrapSchedules ?? [],
+            result.data?.wrapSchedules ?? EMPTY_ARRAY,
         }),
       }
     );

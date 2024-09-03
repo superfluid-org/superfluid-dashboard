@@ -20,7 +20,7 @@ import {
   TokenType,
   UnderlyingTokenType,
 } from "./tokenTypes";
-import { findTokenFromTokenList, mapSubgraphTokenToTokenMinimal } from "../../../hooks/useTokenQuery";
+import { findTokenFromTokenList, getTokenPairsFromTokenList, mapSubgraphTokenToTokenMinimal } from "../../../hooks/useTokenQuery";
 
 export type TokenBalance = {
   balance: string;
@@ -40,17 +40,6 @@ type WrapperSuperTokenSubgraphResult = {
     decimals: number;
   };
 };
-
-type NativeAssetSuperTokenSubgraphResult = {
-  id: string;
-  name: string;
-  symbol: string;
-  isListed: boolean;
-};
-
-const nativeAssetSuperTokenSymbols = uniq(
-  allNetworks.map((x) => x.nativeCurrency.superToken.symbol)
-);
 
 export const adHocSubgraphEndpoints = {
   endpoints: (builder: SubgraphEndpointBuilder) => ({
@@ -295,31 +284,10 @@ export const adHocSubgraphEndpoints = {
         const subgraphClient = await getSubgraphClient(arg.chainId);
 
         const subgraphResult = await subgraphClient.request<{
-          listedWrapperSuperTokens: WrapperSuperTokenSubgraphResult[];
           unlistedWrapperSuperTokens: WrapperSuperTokenSubgraphResult[];
-          nativeAssetSuperTokens: NativeAssetSuperTokenSubgraphResult[];
         }>(
           gql`
             query UpgradeDowngradePairs($unlistedTokenIDs:[ID!]) {
-              listedWrapperSuperTokens: tokens(
-                first: 1000
-                where: {
-                  isSuperToken: true
-                  isListed: true
-                  underlyingAddress_not: "0x0000000000000000000000000000000000000000"
-                }
-              ) {
-                id
-                name
-                symbol
-                isListed
-                underlyingToken {
-                  id
-                  name
-                  symbol
-                  decimals
-                }
-              }
               unlistedWrapperSuperTokens: tokens(
                 first: 1000
                 where: {
@@ -340,20 +308,6 @@ export const adHocSubgraphEndpoints = {
                   decimals
                 }
               }
-              nativeAssetSuperTokens: tokens(
-                first: 1000
-                where: {
-                  isSuperToken: true
-                  isListed: true
-                  isNativeAssetSuperToken: true
-                }
-              ) {
-                id
-                name
-                symbol
-                underlyingAddress
-                isListed
-              }
             }
           `,
           {
@@ -364,83 +318,38 @@ export const adHocSubgraphEndpoints = {
         );
 
         const {
-          listedWrapperSuperTokens,
           unlistedWrapperSuperTokens,
-          nativeAssetSuperTokens,
         } = subgraphResult;
 
-        const network = findNetworkOrThrow(allNetworks, arg.chainId);
-
-        const nativeAssetSuperTokenPairs: SuperTokenPair[] =
-          nativeAssetSuperTokens.map((x) => ({
-            superToken: mapSubgraphTokenToTokenMinimal(arg.chainId, {
-              ...x,
-              isSuperToken: true,
-              isListed: true,
-              decimals: 18,
-              underlyingAddress: network.nativeCurrency.address,
-            }),
-            underlyingToken: network.nativeCurrency,
-          }));
-
-        const nativeAssetSuperTokenAddress =
-          network.nativeCurrency.superToken.address.toLowerCase();
-
         const wrapperSuperTokenPairs: SuperTokenPair[] =
-          listedWrapperSuperTokens
-            .concat(unlistedWrapperSuperTokens)
-            .map((x) => {
-              // Handle exceptional legacy native asset coins first:
-              if (x.id === nativeAssetSuperTokenAddress) {
-                return {
-                  superToken: network.nativeCurrency.superToken,
-                  underlyingToken: network.nativeCurrency,
-                };
-              }
+          unlistedWrapperSuperTokens
+            .map((wrappableToken) => {
+              const superToken = mapSubgraphTokenToTokenMinimal(arg.chainId, {
+                ...wrappableToken,
+                isSuperToken: true,
+                decimals: 18
+              });
+
+              const underlyingToken = mapSubgraphTokenToTokenMinimal(arg.chainId, {
+                ...wrappableToken.underlyingToken,
+                isSuperToken: false
+              });
 
               return {
-                superToken: mapSubgraphTokenToTokenMinimal(arg.chainId, {
-                  ...x,
-                  isSuperToken: true,
-                  isListed: true,
-                  decimals: 18,
-                  underlyingAddress: x.underlyingToken.id,
-                }),
-                underlyingToken: mapSubgraphTokenToTokenMinimal(arg.chainId, {
-                  id: x.underlyingToken.id,
-                  symbol: x.underlyingToken.symbol,
-                  name: x.underlyingToken.name,
-                  decimals: x.underlyingToken.decimals,
-                  isSuperToken: false,
-                  isListed: x.isListed,
-                  underlyingAddress: null
-                }),
+                superToken,
+                underlyingToken
               };
             });
 
-        const result: SuperTokenPair[] = nativeAssetSuperTokenPairs.concat(
-          wrapperSuperTokenPairs.filter(
-            (x) =>
-              x.superToken.address !==
-              "0x84b2e92e08008c0081c8c21a35fda4ddc5d21ac6" // Filter out a neglected token.
-          )
-        ).map(x => {
-          const underlyingTokenFromTokenList = findTokenFromTokenList({ chainId: arg.chainId, address: x.underlyingToken.address });
-          const superTokenFromTokenList = findTokenFromTokenList({ chainId: arg.chainId, address: x.superToken.address });
-
-          return {
-            superToken: {
-              ...x.superToken,
-              symbol: superTokenFromTokenList?.symbol ?? x.superToken.symbol,
-              name: superTokenFromTokenList?.name ?? x.superToken.name,
-            },
-            underlyingToken: {
-              ...x.underlyingToken,
-              symbol: underlyingTokenFromTokenList?.symbol ?? x.underlyingToken.symbol,
-              name: underlyingTokenFromTokenList?.name ?? x.underlyingToken.name,
-            }
-          }
-        });
+        const result: SuperTokenPair[] =
+          getTokenPairsFromTokenList(arg.chainId)
+            .concat(
+              wrapperSuperTokenPairs.filter(
+                (x) =>
+                  x.superToken.address !==
+                  "0x84b2e92e08008c0081c8c21a35fda4ddc5d21ac6" // Filter out a neglected token.
+              )
+            );
 
         return {
           data: result,

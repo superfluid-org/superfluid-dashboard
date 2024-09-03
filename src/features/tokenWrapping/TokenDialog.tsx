@@ -26,28 +26,25 @@ import { rpcApi, subgraphApi } from "../redux/store";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { TokenListItem } from "./TokenListItem";
 import { Network } from "../network/networks";
-
-export type TokenSelectionProps = {
-  showUpgrade?: boolean;
-  tokenPairsQuery: {
-    data: TokenMinimal[] | undefined;
-    isFetching: boolean;
-  };
-};
+import { EMPTY_ARRAY } from "../../utils/constants";
 
 interface TokenDialogProps {
   open: boolean;
   onClose: () => void;
   onSelect: (token: TokenMinimal) => void;
-  tokenSelection: TokenSelectionProps;
   network: Network;
+  showUpgrade?: boolean;
+  tokens: TokenMinimal[] | undefined;
+  isTokensFetching: boolean;
 }
 
 export default memo(function TokenDialog({
   open,
   onClose,
   onSelect,
-  tokenSelection: { tokenPairsQuery, showUpgrade = false },
+  tokens = EMPTY_ARRAY,
+  isTokensFetching,
+  showUpgrade = false,
   network,
 }: TokenDialogProps) {
   const theme = useTheme();
@@ -64,16 +61,12 @@ export default memo(function TokenDialog({
   }, [open]);
 
   const underlyingTokens = useMemo(
-    () => tokenPairsQuery.data?.filter(isUnderlying) ?? [],
-    [network.id, tokenPairsQuery.data?.length ?? 0]
+    () => tokens.filter(isUnderlying) ?? [],
+    [network.id, tokens?.length ?? 0]
   );
   const superTokens = useMemo(
-    () => tokenPairsQuery.data?.filter(isSuper) ?? [],
-    [network.id, tokenPairsQuery.data?.length ?? 0]
-  );
-  const tokens = useMemo(
-    () => [...superTokens, ...underlyingTokens],
-    [superTokens, underlyingTokens]
+    () => tokens?.filter(isSuper) ?? [],
+    [network.id, tokens?.length ?? 0]
   );
 
   const { data: _discard, ...underlyingTokenBalancesQuery } =
@@ -94,7 +87,7 @@ export default memo(function TokenDialog({
 
   const { data: _discard2, ...superTokenBalancesQuery } =
     subgraphApi.useAccountTokenSnapshotsQuery(
-      tokenPairsQuery.data && visibleAddress
+      tokens && visibleAddress
         ? {
             chainId: network.id,
             filter: {
@@ -197,7 +190,7 @@ export default memo(function TokenDialog({
       <Divider />
       <DialogContent sx={{ p: 0 }}>
         <List>
-          {tokenPairsQuery.isFetching && (
+          {isTokensFetching && (
             <Stack
               direction="row"
               justifyContent="center"
@@ -208,7 +201,7 @@ export default memo(function TokenDialog({
             </Stack>
           )}
 
-          {!tokenPairsQuery.isFetching && !searchedTokens.length && (
+          {!isTokensFetching && !searchedTokens.length && (
             <Stack
               data-cy={"token-search-no-results"}
               component={ListItem}

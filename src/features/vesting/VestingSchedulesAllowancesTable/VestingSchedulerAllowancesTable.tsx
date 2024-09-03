@@ -26,6 +26,7 @@ import VestingSchedulerAllowanceRow, {
 } from "./VestingSchedulerAllowanceRow";
 import { VestingTooltips } from "../CreateVestingForm";
 import { useVestingVersion } from "../../../hooks/useVestingVersion";
+import { EMPTY_ARRAY } from "../../../utils/constants";
 
 const VestingSchedulerAllowancesTable: FC = () => {
   const theme = useTheme();
@@ -53,7 +54,7 @@ const VestingSchedulerAllowancesTable: FC = () => {
     {
       selectFromResult: (result) => ({
         ...result,
-        data: uniq(result.data?.vestingSchedules ?? []),
+        data: result.data?.vestingSchedules ?? EMPTY_ARRAY,
       }),
     }
   );

@@ -31,6 +31,7 @@ import VestingScheduleTable from "./VestingScheduleTable";
 import Link from "../common/Link";
 import { uniqBy } from "lodash";
 import { useVestingVersion } from "../../hooks/useVestingVersion";
+import { EMPTY_ARRAY } from "../../utils/constants";
 
 interface ExecutionWhitelistInfoProps {
   whitelisted: boolean;
@@ -239,7 +240,7 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({ }) => {
       refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
       selectFromResult: (result) => ({
         ...result,
-        vestingSchedules: result.data?.vestingSchedules ?? [],
+        vestingSchedules: result.data?.vestingSchedules ?? EMPTY_ARRAY,
       }),
     }
   );
@@ -259,7 +260,7 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({ }) => {
     {
       selectFromResult: (result) => ({
         ...result,
-        vestingSchedules: result.data?.vestingSchedules ?? [],
+        vestingSchedules: result.data?.vestingSchedules ?? EMPTY_ARRAY,
       }),
     }
   );

@@ -17,6 +17,7 @@ import {
   PollQuery,
   PollQueryVariables,
 } from "./.graphclient";
+import { EMPTY_ARRAY } from "../utils/constants";
 
 const tryGetBuiltGraphSdkForNetwork = (chainId: number) => {
   const network = tryFindNetwork(allNetworks, chainId);
@@ -71,7 +72,7 @@ export const vestingSubgraphApi = createApi({
 
         const subgraphVestingSchedules = sdk
           ? (await sdk.getVestingSchedules(variables)).vestingSchedules
-          : [];
+          : EMPTY_ARRAY;
 
         return {
           data: {

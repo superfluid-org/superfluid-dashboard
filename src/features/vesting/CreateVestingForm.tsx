@@ -124,13 +124,9 @@ const CreateVestingForm: FC<{
         <TokenDialogButton
           token={token}
           network={network}
-          tokenSelection={{
-            showUpgrade: true,
-            tokenPairsQuery: {
-              data: superTokens,
-              isFetching: isFetching
-            }
-          }}
+          tokens={superTokens}
+          isTokensFetching={isFetching}
+          showUpgrade={true}
           onTokenSelect={(x) => onChange(x.address)}
           onBlur={onBlur}
           ButtonProps={{ variant: "input" }}
