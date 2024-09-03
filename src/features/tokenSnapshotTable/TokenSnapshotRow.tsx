@@ -105,7 +105,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
     totalNumberOfClosedStreams,
   } = snapshot;
 
-  const token = useTokenQuery({ chainId: network.id, id: tokenAddress });
+  const token = useTokenQuery({ chainId: network.id, id: tokenAddress, onlySuperToken: true });
   const tokenSymbol = token?.data?.symbol;
 
   const tokenPrice = useTokenPrice(network.id, tokenAddress);

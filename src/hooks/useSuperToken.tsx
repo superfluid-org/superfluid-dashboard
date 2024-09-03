@@ -22,9 +22,8 @@ export const mapSubgraphTokenToTokenMinimal = <T extends boolean = false>(chainI
     if (tokenFromTokenList) {
         return tokenFromTokenList as TReturn;
     }
-    
-    if (subgraphToken.isSuperToken) {
 
+    if (subgraphToken.isSuperToken) {
         const network = findNetworkOrThrow(allNetworks, chainId);
         if (subgraphToken.id.toLowerCase() === network.nativeCurrency.superToken.address.toLowerCase()) {
             return network.nativeCurrency.superToken as TReturn;
@@ -120,10 +119,10 @@ export const useTokenQuery = <T extends boolean = false>(input: {
         return findTokenFromTokenList({ chainId: inputParsed.chainId, address: inputParsed.id });
     }, [inputParsed.isSkip, inputParsed.chainId, inputParsed.id]);
 
-    const skipSubgraphQuery = (inputParsed.isSkip || !tokenListToken);
+    const skipSubgraphQuery = inputParsed.isSkip || !!tokenListToken;
     const { data: subgraphToken, isLoading: isSubgraphTokenLoading } = subgraphApi.useTokenQuery(skipSubgraphQuery ? skipToken : {
         chainId: inputParsed.chainId,
-        id: inputParsed.id
+        id: inputParsed.id.toLowerCase()
     });
 
     const returnCandidate = useMemo(() => {
