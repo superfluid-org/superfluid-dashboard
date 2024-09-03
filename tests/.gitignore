@@ -6,3 +6,4 @@ cypress/videos
 cypress/downloads
 cypress.env.json
 cypress/results/*
+cypress/fixtures/newData/*

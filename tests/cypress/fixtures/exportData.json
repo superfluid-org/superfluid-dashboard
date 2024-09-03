@@ -90,13 +90,13 @@
           "startTime": 1672524000,
           "endTime": 1672531199,
           "amount": "27773919750509",
-          "amountFiat": "0.000027779970320187889468"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672531200,
           "endTime": 1675202399,
           "amount": "10305551696574509",
-          "amountFiat": "0.010311324357936757742"
+          "amountFiat": "0"
         }
       ]
     },
@@ -123,13 +123,13 @@
           "startTime": 1672524000,
           "endTime": 1672531199,
           "amount": "55547839501018",
-          "amountFiat": "0.000055559940640375778936"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672531200,
           "endTime": 1675202399,
           "amount": "20611103393149018",
-          "amountFiat": "0.020622648715873515484"
+          "amountFiat": "0"
         }
       ]
     },
@@ -156,13 +156,13 @@
           "startTime": 1672524000,
           "endTime": 1672531199,
           "amount": "27773919750509",
-          "amountFiat": "0.000027779970320187889468"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672531200,
           "endTime": 1675202399,
           "amount": "10305551696574509",
-          "amountFiat": "0.010311324357936757742"
+          "amountFiat": "0"
         }
       ]
     },
@@ -257,7 +257,7 @@
           "startTime": 1674745990,
           "endTime": 1675168503,
           "amount": "-6287395832930940",
-          "amountFiat": "-0.0062909177217208422798"
+          "amountFiat": "0"
         }
       ]
     },
@@ -458,13 +458,13 @@
           "startTime": 1672524000,
           "endTime": 1672531199,
           "amount": "27773919750509",
-          "amountFiat": "0.000027779970320187889468"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672531200,
           "endTime": 1675202399,
           "amount": "10305551696574509",
-          "amountFiat": "0.010311324357936757742"
+          "amountFiat": "0"
         }
       ]
     },
@@ -525,13 +525,13 @@
           "startTime": 1672524000,
           "endTime": 1672531199,
           "amount": "27773919750509",
-          "amountFiat": "0.000027779970320187889468"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672531200,
           "endTime": 1675202399,
           "amount": "10305551696574509",
-          "amountFiat": "0.010311324357936757742"
+          "amountFiat": "0"
         }
       ]
     },
@@ -558,13 +558,13 @@
           "startTime": 1672524000,
           "endTime": 1672531199,
           "amount": "27773919750509",
-          "amountFiat": "0.000027779970320187889468"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672531200,
           "endTime": 1675202399,
           "amount": "10305551696574509",
-          "amountFiat": "0.010311324357936757742"
+          "amountFiat": "0"
         }
       ]
     }
@@ -1020,193 +1020,193 @@
           "startTime": 1672524000,
           "endTime": 1672531199,
           "amount": "27773919750509",
-          "amountFiat": "0.000027779970320187889468"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672531200,
           "endTime": 1672617599,
           "amount": "333329475277709",
-          "amountFiat": "0.00033353268029124600863"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672617600,
           "endTime": 1672703999,
           "amount": "333329475277709",
-          "amountFiat": "0.00033341130181311806282"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672704000,
           "endTime": 1672790399,
           "amount": "333329475277709",
-          "amountFiat": "0.00033339706671556206436"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672790400,
           "endTime": 1672876799,
           "amount": "333329475277709",
-          "amountFiat": "0.0003334725110383979755"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672876800,
           "endTime": 1672963199,
           "amount": "333329475277709",
-          "amountFiat": "0.0003333973941442057734"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672963200,
           "endTime": 1673049599,
           "amount": "333329475277709",
-          "amountFiat": "0.0003333719252947109994"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673049600,
           "endTime": 1673135999,
           "amount": "333329475277709",
-          "amountFiat": "0.00033349553075983289445"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673136000,
           "endTime": 1673222399,
           "amount": "333329475277709",
-          "amountFiat": "0.00033353034116174259719"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673222400,
           "endTime": 1673308799,
           "amount": "333329475277709",
-          "amountFiat": "0.00033353424947079055251"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673308800,
           "endTime": 1673395199,
           "amount": "333329475277709",
-          "amountFiat": "0.00033360528895710150006"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673395200,
           "endTime": 1673481599,
           "amount": "333329475277709",
-          "amountFiat": "0.00033343303624435288387"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673481600,
           "endTime": 1673567999,
           "amount": "333329475277709",
-          "amountFiat": "0.00033341729671400504314"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673568000,
           "endTime": 1673654399,
           "amount": "333329475277709",
-          "amountFiat": "0.00033342265066605469145"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673654400,
           "endTime": 1673740799,
           "amount": "333329475277709",
-          "amountFiat": "0.00033331350577349874593"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673740800,
           "endTime": 1673827199,
           "amount": "333329475277709",
-          "amountFiat": "0.00033345026379613835018"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673827200,
           "endTime": 1673913599,
           "amount": "333329475277709",
-          "amountFiat": "0.00033351334421672191882"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673913600,
           "endTime": 1673999999,
           "amount": "333329475277709",
-          "amountFiat": "0.00033334717900119944507"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674000000,
           "endTime": 1674086399,
           "amount": "333329475277709",
-          "amountFiat": "0.00033467053435703994379"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674086400,
           "endTime": 1674172799,
           "amount": "333329475277709",
-          "amountFiat": "0.00033363879118777033696"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674172800,
           "endTime": 1674259199,
           "amount": "333329475277709",
-          "amountFiat": "0.00033422979109964206297"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674259200,
           "endTime": 1674345599,
           "amount": "333329475277709",
-          "amountFiat": "0.00033345558464865230248"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674345600,
           "endTime": 1674431999,
           "amount": "333329475277709",
-          "amountFiat": "0.00033350864456941161728"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674432000,
           "endTime": 1674518399,
           "amount": "333329475277709",
-          "amountFiat": "0.00033350285747290331323"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674518400,
           "endTime": 1674604799,
           "amount": "333329475277709",
-          "amountFiat": "0.00033357377835240878496"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674604800,
           "endTime": 1674691199,
           "amount": "333329475277709",
-          "amountFiat": "0.0003333401077128922299"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674691200,
           "endTime": 1674777599,
           "amount": "333329475277709",
-          "amountFiat": "0.0003335229851687477064"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674777600,
           "endTime": 1674863999,
           "amount": "333329475277709",
-          "amountFiat": "0.00033332448997736176598"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674864000,
           "endTime": 1674950399,
           "amount": "333329475277709",
-          "amountFiat": "0.00033333159672823986001"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674950400,
           "endTime": 1675036799,
           "amount": "333329475277709",
-          "amountFiat": "0.00033339213391284244033"
+          "amountFiat": "0"
         },
         {
           "startTime": 1675036800,
           "endTime": 1675123199,
           "amount": "333329475277709",
-          "amountFiat": "0.00033345830958290199371"
+          "amountFiat": "0"
         },
         {
           "startTime": 1675123200,
           "endTime": 1675202399,
           "amount": "305551697502509",
-          "amountFiat": "0.00030561761328547686516"
+          "amountFiat": "0"
         }
       ]
     },
@@ -1233,193 +1233,193 @@
           "startTime": 1672524000,
           "endTime": 1672531199,
           "amount": "55547839501018",
-          "amountFiat": "0.000055559940640375778936"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672531200,
           "endTime": 1672617599,
           "amount": "666658950555418",
-          "amountFiat": "0.00066706536058249201726"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672617600,
           "endTime": 1672703999,
           "amount": "666658950555418",
-          "amountFiat": "0.00066682260362623612563"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672704000,
           "endTime": 1672790399,
           "amount": "666658950555418",
-          "amountFiat": "0.00066679413343112412872"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672790400,
           "endTime": 1672876799,
           "amount": "666658950555418",
-          "amountFiat": "0.00066694502207679595099"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672876800,
           "endTime": 1672963199,
           "amount": "666658950555418",
-          "amountFiat": "0.0006667947882884115468"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672963200,
           "endTime": 1673049599,
           "amount": "666658950555418",
-          "amountFiat": "0.00066674385058942199879"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673049600,
           "endTime": 1673135999,
           "amount": "666658950555418",
-          "amountFiat": "0.0006669910615196657889"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673136000,
           "endTime": 1673222399,
           "amount": "666658950555418",
-          "amountFiat": "0.00066706068232348519439"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673222400,
           "endTime": 1673308799,
           "amount": "666658950555418",
-          "amountFiat": "0.00066706849894158110503"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673308800,
           "endTime": 1673395199,
           "amount": "666658950555418",
-          "amountFiat": "0.00066721057791420300012"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673395200,
           "endTime": 1673481599,
           "amount": "666658950555418",
-          "amountFiat": "0.00066686607248870576775"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673481600,
           "endTime": 1673567999,
           "amount": "666658950555418",
-          "amountFiat": "0.00066683459342801008627"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673568000,
           "endTime": 1673654399,
           "amount": "666658950555418",
-          "amountFiat": "0.00066684530133210938291"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673654400,
           "endTime": 1673740799,
           "amount": "666658950555418",
-          "amountFiat": "0.00066662701154699749186"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673740800,
           "endTime": 1673827199,
           "amount": "666658950555418",
-          "amountFiat": "0.00066690052759227670035"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673827200,
           "endTime": 1673913599,
           "amount": "666658950555418",
-          "amountFiat": "0.00066702668843344383764"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673913600,
           "endTime": 1673999999,
           "amount": "666658950555418",
-          "amountFiat": "0.00066669435800239889015"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674000000,
           "endTime": 1674086399,
           "amount": "666658950555418",
-          "amountFiat": "0.00066934106871407988758"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674086400,
           "endTime": 1674172799,
           "amount": "666658950555418",
-          "amountFiat": "0.00066727758237554067391"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674172800,
           "endTime": 1674259199,
           "amount": "666658950555418",
-          "amountFiat": "0.00066845958219928412594"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674259200,
           "endTime": 1674345599,
           "amount": "666658950555418",
-          "amountFiat": "0.00066691116929730460495"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674345600,
           "endTime": 1674431999,
           "amount": "666658950555418",
-          "amountFiat": "0.00066701728913882323456"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674432000,
           "endTime": 1674518399,
           "amount": "666658950555418",
-          "amountFiat": "0.00066700571494580662647"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674518400,
           "endTime": 1674604799,
           "amount": "666658950555418",
-          "amountFiat": "0.00066714755670481756992"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674604800,
           "endTime": 1674691199,
           "amount": "666658950555418",
-          "amountFiat": "0.00066668021542578445981"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674691200,
           "endTime": 1674777599,
           "amount": "666658950555418",
-          "amountFiat": "0.0006670459703374954128"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674777600,
           "endTime": 1674863999,
           "amount": "666658950555418",
-          "amountFiat": "0.00066664897995472353195"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674864000,
           "endTime": 1674950399,
           "amount": "666658950555418",
-          "amountFiat": "0.00066666319345647972003"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674950400,
           "endTime": 1675036799,
           "amount": "666658950555418",
-          "amountFiat": "0.00066678426782568488067"
+          "amountFiat": "0"
         },
         {
           "startTime": 1675036800,
           "endTime": 1675123199,
           "amount": "666658950555418",
-          "amountFiat": "0.00066691661916580398743"
+          "amountFiat": "0"
         },
         {
           "startTime": 1675123200,
           "endTime": 1675202399,
           "amount": "611103395005018",
-          "amountFiat": "0.00061123522657095373031"
+          "amountFiat": "0"
         }
       ]
     },
@@ -1446,193 +1446,193 @@
           "startTime": 1672524000,
           "endTime": 1672531199,
           "amount": "27773919750509",
-          "amountFiat": "0.000027779970320187889468"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672531200,
           "endTime": 1672617599,
           "amount": "333329475277709",
-          "amountFiat": "0.00033353268029124600863"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672617600,
           "endTime": 1672703999,
           "amount": "333329475277709",
-          "amountFiat": "0.00033341130181311806282"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672704000,
           "endTime": 1672790399,
           "amount": "333329475277709",
-          "amountFiat": "0.00033339706671556206436"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672790400,
           "endTime": 1672876799,
           "amount": "333329475277709",
-          "amountFiat": "0.0003334725110383979755"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672876800,
           "endTime": 1672963199,
           "amount": "333329475277709",
-          "amountFiat": "0.0003333973941442057734"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672963200,
           "endTime": 1673049599,
           "amount": "333329475277709",
-          "amountFiat": "0.0003333719252947109994"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673049600,
           "endTime": 1673135999,
           "amount": "333329475277709",
-          "amountFiat": "0.00033349553075983289445"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673136000,
           "endTime": 1673222399,
           "amount": "333329475277709",
-          "amountFiat": "0.00033353034116174259719"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673222400,
           "endTime": 1673308799,
           "amount": "333329475277709",
-          "amountFiat": "0.00033353424947079055251"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673308800,
           "endTime": 1673395199,
           "amount": "333329475277709",
-          "amountFiat": "0.00033360528895710150006"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673395200,
           "endTime": 1673481599,
           "amount": "333329475277709",
-          "amountFiat": "0.00033343303624435288387"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673481600,
           "endTime": 1673567999,
           "amount": "333329475277709",
-          "amountFiat": "0.00033341729671400504314"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673568000,
           "endTime": 1673654399,
           "amount": "333329475277709",
-          "amountFiat": "0.00033342265066605469145"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673654400,
           "endTime": 1673740799,
           "amount": "333329475277709",
-          "amountFiat": "0.00033331350577349874593"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673740800,
           "endTime": 1673827199,
           "amount": "333329475277709",
-          "amountFiat": "0.00033345026379613835018"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673827200,
           "endTime": 1673913599,
           "amount": "333329475277709",
-          "amountFiat": "0.00033351334421672191882"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673913600,
           "endTime": 1673999999,
           "amount": "333329475277709",
-          "amountFiat": "0.00033334717900119944507"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674000000,
           "endTime": 1674086399,
           "amount": "333329475277709",
-          "amountFiat": "0.00033467053435703994379"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674086400,
           "endTime": 1674172799,
           "amount": "333329475277709",
-          "amountFiat": "0.00033363879118777033696"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674172800,
           "endTime": 1674259199,
           "amount": "333329475277709",
-          "amountFiat": "0.00033422979109964206297"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674259200,
           "endTime": 1674345599,
           "amount": "333329475277709",
-          "amountFiat": "0.00033345558464865230248"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674345600,
           "endTime": 1674431999,
           "amount": "333329475277709",
-          "amountFiat": "0.00033350864456941161728"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674432000,
           "endTime": 1674518399,
           "amount": "333329475277709",
-          "amountFiat": "0.00033350285747290331323"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674518400,
           "endTime": 1674604799,
           "amount": "333329475277709",
-          "amountFiat": "0.00033357377835240878496"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674604800,
           "endTime": 1674691199,
           "amount": "333329475277709",
-          "amountFiat": "0.0003333401077128922299"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674691200,
           "endTime": 1674777599,
           "amount": "333329475277709",
-          "amountFiat": "0.0003335229851687477064"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674777600,
           "endTime": 1674863999,
           "amount": "333329475277709",
-          "amountFiat": "0.00033332448997736176598"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674864000,
           "endTime": 1674950399,
           "amount": "333329475277709",
-          "amountFiat": "0.00033333159672823986001"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674950400,
           "endTime": 1675036799,
           "amount": "333329475277709",
-          "amountFiat": "0.00033339213391284244033"
+          "amountFiat": "0"
         },
         {
           "startTime": 1675036800,
           "endTime": 1675123199,
           "amount": "333329475277709",
-          "amountFiat": "0.00033345830958290199371"
+          "amountFiat": "0"
         },
         {
           "startTime": 1675123200,
           "endTime": 1675202399,
           "amount": "305551697502509",
-          "amountFiat": "0.00030561761328547686516"
+          "amountFiat": "0"
         }
       ]
     },
@@ -2087,37 +2087,37 @@
           "startTime": 1674745990,
           "endTime": 1674777599,
           "amount": "-470372023779420",
-          "amountFiat": "-0.00047064509185716313363"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674777600,
           "endTime": 1674863999,
           "amount": "-1285699404679620",
-          "amountFiat": "-0.0012856801756639944007"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674864000,
           "endTime": 1674950399,
           "amount": "-1285699404679620",
-          "amountFiat": "-0.0012857075874173821243"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674950400,
           "endTime": 1675036799,
           "amount": "-1285699404679620",
-          "amountFiat": "-0.0012859410879865702303"
+          "amountFiat": "0"
         },
         {
           "startTime": 1675036800,
           "endTime": 1675123199,
           "amount": "-1285699404679620",
-          "amountFiat": "-0.0012861963369996644303"
+          "amountFiat": "0"
         },
         {
           "startTime": 1675123200,
           "endTime": 1675168503,
           "amount": "-674151785671140",
-          "amountFiat": "-0.00067429721848383557575"
+          "amountFiat": "0"
         }
       ]
     },
@@ -2654,193 +2654,193 @@
           "startTime": 1672524000,
           "endTime": 1672531199,
           "amount": "27773919750509",
-          "amountFiat": "0.000027779970320187889468"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672531200,
           "endTime": 1672617599,
           "amount": "333329475277709",
-          "amountFiat": "0.00033353268029124600863"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672617600,
           "endTime": 1672703999,
           "amount": "333329475277709",
-          "amountFiat": "0.00033341130181311806282"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672704000,
           "endTime": 1672790399,
           "amount": "333329475277709",
-          "amountFiat": "0.00033339706671556206436"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672790400,
           "endTime": 1672876799,
           "amount": "333329475277709",
-          "amountFiat": "0.0003334725110383979755"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672876800,
           "endTime": 1672963199,
           "amount": "333329475277709",
-          "amountFiat": "0.0003333973941442057734"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672963200,
           "endTime": 1673049599,
           "amount": "333329475277709",
-          "amountFiat": "0.0003333719252947109994"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673049600,
           "endTime": 1673135999,
           "amount": "333329475277709",
-          "amountFiat": "0.00033349553075983289445"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673136000,
           "endTime": 1673222399,
           "amount": "333329475277709",
-          "amountFiat": "0.00033353034116174259719"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673222400,
           "endTime": 1673308799,
           "amount": "333329475277709",
-          "amountFiat": "0.00033353424947079055251"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673308800,
           "endTime": 1673395199,
           "amount": "333329475277709",
-          "amountFiat": "0.00033360528895710150006"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673395200,
           "endTime": 1673481599,
           "amount": "333329475277709",
-          "amountFiat": "0.00033343303624435288387"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673481600,
           "endTime": 1673567999,
           "amount": "333329475277709",
-          "amountFiat": "0.00033341729671400504314"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673568000,
           "endTime": 1673654399,
           "amount": "333329475277709",
-          "amountFiat": "0.00033342265066605469145"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673654400,
           "endTime": 1673740799,
           "amount": "333329475277709",
-          "amountFiat": "0.00033331350577349874593"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673740800,
           "endTime": 1673827199,
           "amount": "333329475277709",
-          "amountFiat": "0.00033345026379613835018"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673827200,
           "endTime": 1673913599,
           "amount": "333329475277709",
-          "amountFiat": "0.00033351334421672191882"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673913600,
           "endTime": 1673999999,
           "amount": "333329475277709",
-          "amountFiat": "0.00033334717900119944507"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674000000,
           "endTime": 1674086399,
           "amount": "333329475277709",
-          "amountFiat": "0.00033467053435703994379"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674086400,
           "endTime": 1674172799,
           "amount": "333329475277709",
-          "amountFiat": "0.00033363879118777033696"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674172800,
           "endTime": 1674259199,
           "amount": "333329475277709",
-          "amountFiat": "0.00033422979109964206297"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674259200,
           "endTime": 1674345599,
           "amount": "333329475277709",
-          "amountFiat": "0.00033345558464865230248"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674345600,
           "endTime": 1674431999,
           "amount": "333329475277709",
-          "amountFiat": "0.00033350864456941161728"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674432000,
           "endTime": 1674518399,
           "amount": "333329475277709",
-          "amountFiat": "0.00033350285747290331323"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674518400,
           "endTime": 1674604799,
           "amount": "333329475277709",
-          "amountFiat": "0.00033357377835240878496"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674604800,
           "endTime": 1674691199,
           "amount": "333329475277709",
-          "amountFiat": "0.0003333401077128922299"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674691200,
           "endTime": 1674777599,
           "amount": "333329475277709",
-          "amountFiat": "0.0003335229851687477064"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674777600,
           "endTime": 1674863999,
           "amount": "333329475277709",
-          "amountFiat": "0.00033332448997736176598"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674864000,
           "endTime": 1674950399,
           "amount": "333329475277709",
-          "amountFiat": "0.00033333159672823986001"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674950400,
           "endTime": 1675036799,
           "amount": "333329475277709",
-          "amountFiat": "0.00033339213391284244033"
+          "amountFiat": "0"
         },
         {
           "startTime": 1675036800,
           "endTime": 1675123199,
           "amount": "333329475277709",
-          "amountFiat": "0.00033345830958290199371"
+          "amountFiat": "0"
         },
         {
           "startTime": 1675123200,
           "endTime": 1675202399,
           "amount": "305551697502509",
-          "amountFiat": "0.00030561761328547686516"
+          "amountFiat": "0"
         }
       ]
     },
@@ -3081,193 +3081,193 @@
           "startTime": 1672524000,
           "endTime": 1672531199,
           "amount": "27773919750509",
-          "amountFiat": "0.000027779970320187889468"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672531200,
           "endTime": 1672617599,
           "amount": "333329475277709",
-          "amountFiat": "0.00033353268029124600863"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672617600,
           "endTime": 1672703999,
           "amount": "333329475277709",
-          "amountFiat": "0.00033341130181311806282"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672704000,
           "endTime": 1672790399,
           "amount": "333329475277709",
-          "amountFiat": "0.00033339706671556206436"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672790400,
           "endTime": 1672876799,
           "amount": "333329475277709",
-          "amountFiat": "0.0003334725110383979755"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672876800,
           "endTime": 1672963199,
           "amount": "333329475277709",
-          "amountFiat": "0.0003333973941442057734"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672963200,
           "endTime": 1673049599,
           "amount": "333329475277709",
-          "amountFiat": "0.0003333719252947109994"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673049600,
           "endTime": 1673135999,
           "amount": "333329475277709",
-          "amountFiat": "0.00033349553075983289445"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673136000,
           "endTime": 1673222399,
           "amount": "333329475277709",
-          "amountFiat": "0.00033353034116174259719"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673222400,
           "endTime": 1673308799,
           "amount": "333329475277709",
-          "amountFiat": "0.00033353424947079055251"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673308800,
           "endTime": 1673395199,
           "amount": "333329475277709",
-          "amountFiat": "0.00033360528895710150006"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673395200,
           "endTime": 1673481599,
           "amount": "333329475277709",
-          "amountFiat": "0.00033343303624435288387"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673481600,
           "endTime": 1673567999,
           "amount": "333329475277709",
-          "amountFiat": "0.00033341729671400504314"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673568000,
           "endTime": 1673654399,
           "amount": "333329475277709",
-          "amountFiat": "0.00033342265066605469145"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673654400,
           "endTime": 1673740799,
           "amount": "333329475277709",
-          "amountFiat": "0.00033331350577349874593"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673740800,
           "endTime": 1673827199,
           "amount": "333329475277709",
-          "amountFiat": "0.00033345026379613835018"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673827200,
           "endTime": 1673913599,
           "amount": "333329475277709",
-          "amountFiat": "0.00033351334421672191882"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673913600,
           "endTime": 1673999999,
           "amount": "333329475277709",
-          "amountFiat": "0.00033334717900119944507"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674000000,
           "endTime": 1674086399,
           "amount": "333329475277709",
-          "amountFiat": "0.00033467053435703994379"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674086400,
           "endTime": 1674172799,
           "amount": "333329475277709",
-          "amountFiat": "0.00033363879118777033696"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674172800,
           "endTime": 1674259199,
           "amount": "333329475277709",
-          "amountFiat": "0.00033422979109964206297"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674259200,
           "endTime": 1674345599,
           "amount": "333329475277709",
-          "amountFiat": "0.00033345558464865230248"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674345600,
           "endTime": 1674431999,
           "amount": "333329475277709",
-          "amountFiat": "0.00033350864456941161728"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674432000,
           "endTime": 1674518399,
           "amount": "333329475277709",
-          "amountFiat": "0.00033350285747290331323"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674518400,
           "endTime": 1674604799,
           "amount": "333329475277709",
-          "amountFiat": "0.00033357377835240878496"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674604800,
           "endTime": 1674691199,
           "amount": "333329475277709",
-          "amountFiat": "0.0003333401077128922299"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674691200,
           "endTime": 1674777599,
           "amount": "333329475277709",
-          "amountFiat": "0.0003335229851687477064"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674777600,
           "endTime": 1674863999,
           "amount": "333329475277709",
-          "amountFiat": "0.00033332448997736176598"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674864000,
           "endTime": 1674950399,
           "amount": "333329475277709",
-          "amountFiat": "0.00033333159672823986001"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674950400,
           "endTime": 1675036799,
           "amount": "333329475277709",
-          "amountFiat": "0.00033339213391284244033"
+          "amountFiat": "0"
         },
         {
           "startTime": 1675036800,
           "endTime": 1675123199,
           "amount": "333329475277709",
-          "amountFiat": "0.00033345830958290199371"
+          "amountFiat": "0"
         },
         {
           "startTime": 1675123200,
           "endTime": 1675202399,
           "amount": "305551697502509",
-          "amountFiat": "0.00030561761328547686516"
+          "amountFiat": "0"
         }
       ]
     },
@@ -3294,193 +3294,193 @@
           "startTime": 1672524000,
           "endTime": 1672531199,
           "amount": "27773919750509",
-          "amountFiat": "0.000027779970320187889468"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672531200,
           "endTime": 1672617599,
           "amount": "333329475277709",
-          "amountFiat": "0.00033353268029124600863"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672617600,
           "endTime": 1672703999,
           "amount": "333329475277709",
-          "amountFiat": "0.00033341130181311806282"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672704000,
           "endTime": 1672790399,
           "amount": "333329475277709",
-          "amountFiat": "0.00033339706671556206436"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672790400,
           "endTime": 1672876799,
           "amount": "333329475277709",
-          "amountFiat": "0.0003334725110383979755"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672876800,
           "endTime": 1672963199,
           "amount": "333329475277709",
-          "amountFiat": "0.0003333973941442057734"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672963200,
           "endTime": 1673049599,
           "amount": "333329475277709",
-          "amountFiat": "0.0003333719252947109994"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673049600,
           "endTime": 1673135999,
           "amount": "333329475277709",
-          "amountFiat": "0.00033349553075983289445"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673136000,
           "endTime": 1673222399,
           "amount": "333329475277709",
-          "amountFiat": "0.00033353034116174259719"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673222400,
           "endTime": 1673308799,
           "amount": "333329475277709",
-          "amountFiat": "0.00033353424947079055251"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673308800,
           "endTime": 1673395199,
           "amount": "333329475277709",
-          "amountFiat": "0.00033360528895710150006"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673395200,
           "endTime": 1673481599,
           "amount": "333329475277709",
-          "amountFiat": "0.00033343303624435288387"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673481600,
           "endTime": 1673567999,
           "amount": "333329475277709",
-          "amountFiat": "0.00033341729671400504314"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673568000,
           "endTime": 1673654399,
           "amount": "333329475277709",
-          "amountFiat": "0.00033342265066605469145"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673654400,
           "endTime": 1673740799,
           "amount": "333329475277709",
-          "amountFiat": "0.00033331350577349874593"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673740800,
           "endTime": 1673827199,
           "amount": "333329475277709",
-          "amountFiat": "0.00033345026379613835018"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673827200,
           "endTime": 1673913599,
           "amount": "333329475277709",
-          "amountFiat": "0.00033351334421672191882"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673913600,
           "endTime": 1673999999,
           "amount": "333329475277709",
-          "amountFiat": "0.00033334717900119944507"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674000000,
           "endTime": 1674086399,
           "amount": "333329475277709",
-          "amountFiat": "0.00033467053435703994379"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674086400,
           "endTime": 1674172799,
           "amount": "333329475277709",
-          "amountFiat": "0.00033363879118777033696"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674172800,
           "endTime": 1674259199,
           "amount": "333329475277709",
-          "amountFiat": "0.00033422979109964206297"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674259200,
           "endTime": 1674345599,
           "amount": "333329475277709",
-          "amountFiat": "0.00033345558464865230248"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674345600,
           "endTime": 1674431999,
           "amount": "333329475277709",
-          "amountFiat": "0.00033350864456941161728"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674432000,
           "endTime": 1674518399,
           "amount": "333329475277709",
-          "amountFiat": "0.00033350285747290331323"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674518400,
           "endTime": 1674604799,
           "amount": "333329475277709",
-          "amountFiat": "0.00033357377835240878496"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674604800,
           "endTime": 1674691199,
           "amount": "333329475277709",
-          "amountFiat": "0.0003333401077128922299"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674691200,
           "endTime": 1674777599,
           "amount": "333329475277709",
-          "amountFiat": "0.0003335229851687477064"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674777600,
           "endTime": 1674863999,
           "amount": "333329475277709",
-          "amountFiat": "0.00033332448997736176598"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674864000,
           "endTime": 1674950399,
           "amount": "333329475277709",
-          "amountFiat": "0.00033333159672823986001"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674950400,
           "endTime": 1675036799,
           "amount": "333329475277709",
-          "amountFiat": "0.00033339213391284244033"
+          "amountFiat": "0"
         },
         {
           "startTime": 1675036800,
           "endTime": 1675123199,
           "amount": "333329475277709",
-          "amountFiat": "0.00033345830958290199371"
+          "amountFiat": "0"
         },
         {
           "startTime": 1675123200,
           "endTime": 1675202399,
           "amount": "305551697502509",
-          "amountFiat": "0.00030561761328547686516"
+          "amountFiat": "0"
         }
       ]
     }
@@ -3624,37 +3624,37 @@
           "startTime": 1672524000,
           "endTime": 1672531199,
           "amount": "27773919750509",
-          "amountFiat": "0.000027779970320187889468"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672531200,
           "endTime": 1673135999,
           "amount": "2333329475092109",
-          "amountFiat": "0.002334102921897319212"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673136000,
           "endTime": 1673740799,
           "amount": "2333329475092109",
-          "amountFiat": "0.0023342795265608238083"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673740800,
           "endTime": 1674345599,
           "amount": "2333329475092109",
-          "amountFiat": "0.0023363286662092408868"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674345600,
           "endTime": 1674950399,
           "amount": "2333329475092109",
-          "amountFiat": "0.0023341276160481894103"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674950400,
           "endTime": 1675202399,
           "amount": "972218364107309",
-          "amountFiat": "0.00097247744188357717233"
+          "amountFiat": "0"
         }
       ]
     },
@@ -3681,37 +3681,37 @@
           "startTime": 1672524000,
           "endTime": 1672531199,
           "amount": "55547839501018",
-          "amountFiat": "0.000055559940640375778936"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672531200,
           "endTime": 1673135999,
           "amount": "4666658950184218",
-          "amountFiat": "0.004668205843794638424"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673136000,
           "endTime": 1673740799,
           "amount": "4666658950184218",
-          "amountFiat": "0.0046685590531216476166"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673740800,
           "endTime": 1674345599,
           "amount": "4666658950184218",
-          "amountFiat": "0.0046726573324184817737"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674345600,
           "endTime": 1674950399,
           "amount": "4666658950184218",
-          "amountFiat": "0.0046682552320963788206"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674950400,
           "endTime": 1675202399,
           "amount": "1944436728214618",
-          "amountFiat": "0.0019449548837671543447"
+          "amountFiat": "0"
         }
       ]
     },
@@ -3738,37 +3738,37 @@
           "startTime": 1672524000,
           "endTime": 1672531199,
           "amount": "27773919750509",
-          "amountFiat": "0.000027779970320187889468"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672531200,
           "endTime": 1673135999,
           "amount": "2333329475092109",
-          "amountFiat": "0.002334102921897319212"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673136000,
           "endTime": 1673740799,
           "amount": "2333329475092109",
-          "amountFiat": "0.0023342795265608238083"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673740800,
           "endTime": 1674345599,
           "amount": "2333329475092109",
-          "amountFiat": "0.0023363286662092408868"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674345600,
           "endTime": 1674950399,
           "amount": "2333329475092109",
-          "amountFiat": "0.0023341276160481894103"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674950400,
           "endTime": 1675202399,
           "amount": "972218364107309",
-          "amountFiat": "0.00097247744188357717233"
+          "amountFiat": "0"
         }
       ]
     },
@@ -3911,13 +3911,13 @@
           "startTime": 1674745990,
           "endTime": 1674950399,
           "amount": "-3041800595043420",
-          "amountFiat": "-0.0030428410763218035761"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674950400,
           "endTime": 1675168503,
           "amount": "-3245580356935140",
-          "amountFiat": "-0.0032464452426157828387"
+          "amountFiat": "0"
         }
       ]
     },
@@ -4172,37 +4172,37 @@
           "startTime": 1672524000,
           "endTime": 1672531199,
           "amount": "27773919750509",
-          "amountFiat": "0.000027779970320187889468"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672531200,
           "endTime": 1673135999,
           "amount": "2333329475092109",
-          "amountFiat": "0.002334102921897319212"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673136000,
           "endTime": 1673740799,
           "amount": "2333329475092109",
-          "amountFiat": "0.0023342795265608238083"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673740800,
           "endTime": 1674345599,
           "amount": "2333329475092109",
-          "amountFiat": "0.0023363286662092408868"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674345600,
           "endTime": 1674950399,
           "amount": "2333329475092109",
-          "amountFiat": "0.0023341276160481894103"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674950400,
           "endTime": 1675202399,
           "amount": "972218364107309",
-          "amountFiat": "0.00097247744188357717233"
+          "amountFiat": "0"
         }
       ]
     },
@@ -4287,37 +4287,37 @@
           "startTime": 1672524000,
           "endTime": 1672531199,
           "amount": "27773919750509",
-          "amountFiat": "0.000027779970320187889468"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672531200,
           "endTime": 1673135999,
           "amount": "2333329475092109",
-          "amountFiat": "0.002334102921897319212"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673136000,
           "endTime": 1673740799,
           "amount": "2333329475092109",
-          "amountFiat": "0.0023342795265608238083"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673740800,
           "endTime": 1674345599,
           "amount": "2333329475092109",
-          "amountFiat": "0.0023363286662092408868"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674345600,
           "endTime": 1674950399,
           "amount": "2333329475092109",
-          "amountFiat": "0.0023341276160481894103"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674950400,
           "endTime": 1675202399,
           "amount": "972218364107309",
-          "amountFiat": "0.00097247744188357717233"
+          "amountFiat": "0"
         }
       ]
     },
@@ -4344,37 +4344,37 @@
           "startTime": 1672524000,
           "endTime": 1672531199,
           "amount": "27773919750509",
-          "amountFiat": "0.000027779970320187889468"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672531200,
           "endTime": 1673135999,
           "amount": "2333329475092109",
-          "amountFiat": "0.002334102921897319212"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673136000,
           "endTime": 1673740799,
           "amount": "2333329475092109",
-          "amountFiat": "0.0023342795265608238083"
+          "amountFiat": "0"
         },
         {
           "startTime": 1673740800,
           "endTime": 1674345599,
           "amount": "2333329475092109",
-          "amountFiat": "0.0023363286662092408868"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674345600,
           "endTime": 1674950399,
           "amount": "2333329475092109",
-          "amountFiat": "0.0023341276160481894103"
+          "amountFiat": "0"
         },
         {
           "startTime": 1674950400,
           "endTime": 1675202399,
           "amount": "972218364107309",
-          "amountFiat": "0.00097247744188357717233"
+          "amountFiat": "0"
         }
       ]
     }
@@ -4470,13 +4470,13 @@
           "startTime": 1672524000,
           "endTime": 1672531199,
           "amount": "27773919750509",
-          "amountFiat": "0.000027779970320187889468"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672531200,
           "endTime": 1675202399,
           "amount": "10305551696574509",
-          "amountFiat": "0.010311324357936757742"
+          "amountFiat": "0"
         }
       ]
     },
@@ -4503,13 +4503,13 @@
           "startTime": 1672524000,
           "endTime": 1672531199,
           "amount": "55547839501018",
-          "amountFiat": "0.000055559940640375778936"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672531200,
           "endTime": 1675202399,
           "amount": "20611103393149018",
-          "amountFiat": "0.020622648715873515484"
+          "amountFiat": "0"
         }
       ]
     },
@@ -4536,13 +4536,13 @@
           "startTime": 1672524000,
           "endTime": 1672531199,
           "amount": "27773919750509",
-          "amountFiat": "0.000027779970320187889468"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672531200,
           "endTime": 1675202399,
           "amount": "10305551696574509",
-          "amountFiat": "0.010311324357936757742"
+          "amountFiat": "0"
         }
       ]
     },
@@ -4637,7 +4637,7 @@
           "startTime": 1674745990,
           "endTime": 1675168503,
           "amount": "-6287395832930940",
-          "amountFiat": "-0.0062909177217208422798"
+          "amountFiat": "0"
         }
       ]
     },
@@ -4838,13 +4838,13 @@
           "startTime": 1672524000,
           "endTime": 1672531199,
           "amount": "27773919750509",
-          "amountFiat": "0.000027779970320187889468"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672531200,
           "endTime": 1675202399,
           "amount": "10305551696574509",
-          "amountFiat": "0.010311324357936757742"
+          "amountFiat": "0"
         }
       ]
     },
@@ -4905,13 +4905,13 @@
           "startTime": 1672524000,
           "endTime": 1672531199,
           "amount": "27773919750509",
-          "amountFiat": "0.000027779970320187889468"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672531200,
           "endTime": 1675202399,
           "amount": "10305551696574509",
-          "amountFiat": "0.010311324357936757742"
+          "amountFiat": "0"
         }
       ]
     },
@@ -4938,13 +4938,13 @@
           "startTime": 1672524000,
           "endTime": 1672531199,
           "amount": "27773919750509",
-          "amountFiat": "0.000027779970320187889468"
+          "amountFiat": "0"
         },
         {
           "startTime": 1672531200,
           "endTime": 1675202399,
           "amount": "10305551696574509",
-          "amountFiat": "0.010311324357936757742"
+          "amountFiat": "0"
         }
       ]
     }
@@ -5056,7 +5056,7 @@
           "startTime": 1672531200,
           "endTime": 1675209599,
           "amount": "10333329474349709",
-          "amountFiat": "0.01033901115075521634"
+          "amountFiat": "0"
         }
       ]
     },
@@ -5083,7 +5083,7 @@
           "startTime": 1672531200,
           "endTime": 1675209599,
           "amount": "20666658948699418",
-          "amountFiat": "0.020678022301510432679"
+          "amountFiat": "0"
         }
       ]
     },
@@ -5110,7 +5110,7 @@
           "startTime": 1672531200,
           "endTime": 1675209599,
           "amount": "10333329474349709",
-          "amountFiat": "0.01033901115075521634"
+          "amountFiat": "0"
         }
       ]
     },
@@ -5221,7 +5221,7 @@
           "startTime": 1674745990,
           "endTime": 1675168503,
           "amount": "-6287395832930940",
-          "amountFiat": "-0.0062883372243566727133"
+          "amountFiat": "0"
         }
       ]
     },
@@ -5361,7 +5361,7 @@
           "startTime": 1674745990,
           "endTime": 1675168503,
           "amount": "-6287395832930940",
-          "amountFiat": "-0.0062883372243566727133"
+          "amountFiat": "0"
         }
       ]
     },
@@ -5556,7 +5556,7 @@
           "startTime": 1672531200,
           "endTime": 1675209599,
           "amount": "10333329474349709",
-          "amountFiat": "0.01033901115075521634"
+          "amountFiat": "0"
         }
       ]
     },
@@ -5638,7 +5638,7 @@
           "startTime": 1672531200,
           "endTime": 1675209599,
           "amount": "10333329474349709",
-          "amountFiat": "0.01033901115075521634"
+          "amountFiat": "0"
         }
       ]
     },
@@ -5665,7 +5665,7 @@
           "startTime": 1672531200,
           "endTime": 1675209599,
           "amount": "10333329474349709",
-          "amountFiat": "0.01033901115075521634"
+          "amountFiat": "0"
         }
       ]
     }
@@ -5723,7 +5723,7 @@
           "startTime": 1674745990,
           "endTime": 1675168503,
           "amount": "-6287395832930940",
-          "amountFiat": "-0.0062883372243566727133"
+          "amountFiat": "0"
         }
       ]
     },
@@ -6897,7 +6897,7 @@
       "@elvijs",
       "0xEb85888b31FADF79CB264d065EdcB4a14551c28d"
     ],
-    "amount": ["$0", "$0.02", "$0.01", "$0.01", "$0", "$0", "$0", "$0.01"],
+    "amount": ["$0", "$0.02", "$0", "$0.01", "$0", "$0", "$0", "$0.01"],
     "startDate": [
       "2023/01/01",
       "2023/01/01",

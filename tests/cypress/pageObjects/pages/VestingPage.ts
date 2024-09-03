@@ -763,11 +763,11 @@ export class VestingPage extends BasePage {
         .toString()
         .substring(0, 8);
       this.hasText(
-        `[data-cy=${stream.token.symbol}-total-allocated]`,
+        `[data-cy="${stream.token.symbol}-total-allocated"]`,
         `${schedule.totalAllocated}${stream.token.symbol}`
       );
       this.containsText(
-        `[data-cy=${stream.token.symbol}-total-vested]`,
+        `[data-cy="${stream.token.symbol}-total-vested"]`,
         totalVestedAmount
       );
     });
