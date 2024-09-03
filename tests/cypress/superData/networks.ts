@@ -303,7 +303,7 @@ export const networkDefinition: {
     },
   },
   avalancheC: {
-    name: 'Avalanche C',
+    name: 'Avalanche',
     slugName: 'avalanche',
     v1ShortName: 'avalanche-c',
     network: 'avalanche-c',
