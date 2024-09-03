@@ -8,7 +8,7 @@ import { TransactionButton } from "../../transactionBoundary/TransactionButton";
 import { erc20Abi } from "../../../generated";
 import { Network } from "../../network/networks";
 import { SuperTokenMinimal } from "../../redux/endpoints/tokenTypes";
-import { useTokenQuery } from "../../../hooks/useSuperToken";
+import { useTokenQuery } from "../../../hooks/useTokenQuery";
 
 const AutoWrapAllowanceTransactionButton: FC<{
   token: SuperTokenMinimal;

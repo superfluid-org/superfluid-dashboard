@@ -18,7 +18,7 @@ import FlowingFiatBalance from "../tokenPrice/FlowingFiatBalance";
 import useTokenPrice from "../tokenPrice/useTokenPrice";
 import { VestingSchedule } from "./types";
 import { VestingDataCardContent } from "./VestingDataCard";
-import { useTokenQuery } from "../../hooks/useSuperToken";
+import { useTokenQuery } from "../../hooks/useTokenQuery";
 
 interface VestingTokenAggregationRowProps {
   tokenAddress: Address;

@@ -27,7 +27,7 @@ import { TransactionBoundary } from "../../transactionBoundary/TransactionBounda
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
 import { parseEtherOrZero } from "../../../utils/tokenUtils";
 import { useSuperTokens } from "../../../hooks/useSuperTokens";
-import { useTokenQuery } from "../../../hooks/useSuperToken";
+import { useTokenQuery } from "../../../hooks/useTokenQuery";
 import { SendBalance } from "../stream/SendStream";
 import { inputPropsForEtherAmount } from "../../../utils/inputPropsForEtherAmount";
 import { Address } from "@superfluid-finance/sdk-core";

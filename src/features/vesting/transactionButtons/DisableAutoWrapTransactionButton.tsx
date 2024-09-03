@@ -13,7 +13,7 @@ import { Network } from "../../network/networks";
 import { ConnectionBoundaryButtonProps } from "../../transactionBoundary/ConnectionBoundaryButton";
 import { useQuery } from "@tanstack/react-query";
 import { SuperTokenMinimal } from "../../redux/endpoints/tokenTypes";
-import { useTokenQuery } from "../../../hooks/useSuperToken";
+import { useTokenQuery } from "../../../hooks/useTokenQuery";
 
 const TX_TITLE: TransactionTitle = "Disable Auto-Wrap";
 

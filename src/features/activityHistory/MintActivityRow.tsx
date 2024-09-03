@@ -21,7 +21,7 @@ import TokenIcon from "../token/TokenIcon";
 import FiatAmount from "../tokenPrice/FiatAmount";
 import useTokenPrice from "../tokenPrice/useTokenPrice";
 import ActivityIcon from "./ActivityIcon";
-import { useTokenQuery } from "../../hooks/useSuperToken";
+import { useTokenQuery } from "../../hooks/useTokenQuery";
 
 interface MintActivityRowProps extends MintedActivity {
   dateFormat?: string;

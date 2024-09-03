@@ -26,7 +26,7 @@ import Amount from "../token/Amount";
 import { BigNumber, BigNumberish } from "ethers";
 import TooltipWithIcon from "../common/TooltipWithIcon";
 import ConnectionBoundaryButton from "../transactionBoundary/ConnectionBoundaryButton";
-import { useTokenQuery } from "../../hooks/useSuperToken";
+import { useTokenQuery } from "../../hooks/useTokenQuery";
 
 interface ScheduledWrapRowProps {
   network: Network;

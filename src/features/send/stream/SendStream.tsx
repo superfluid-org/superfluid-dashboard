@@ -82,7 +82,7 @@ import {
 } from "./StreamingFormProvider";
 import { useSuperTokens } from "../../../hooks/useSuperTokens";
 import { SuperTokenMinimal, isWrappable } from "../../redux/endpoints/tokenTypes";
-import { useTokenQuery } from "../../../hooks/useSuperToken";
+import { useTokenQuery } from "../../../hooks/useTokenQuery";
 
 export const SendBalance: FC<{
   network: Network;

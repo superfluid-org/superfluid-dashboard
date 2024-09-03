@@ -36,7 +36,7 @@ import FlowingFiatBalance from "../tokenPrice/FlowingFiatBalance";
 import useTokenPrice from "../tokenPrice/useTokenPrice";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import ActivityIcon from "./ActivityIcon";
-import { useTokenQuery } from "../../hooks/useSuperToken";
+import { useTokenQuery } from "../../hooks/useTokenQuery";
 
 interface FlowUpdatedActivityRowProps extends Activity<FlowUpdatedEvent> {
   dateFormat?: string;

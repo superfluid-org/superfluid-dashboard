@@ -21,7 +21,7 @@ import NetworkBadge from "../network/NetworkBadge";
 import TokenIcon from "../token/TokenIcon";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import ActivityIcon from "./ActivityIcon";
-import { useTokenQuery } from "../../hooks/useSuperToken";
+import { useTokenQuery } from "../../hooks/useTokenQuery";
 
 interface SubscriptionRevokedActivityRowProps
   extends SubscriptionRevokedActivity {

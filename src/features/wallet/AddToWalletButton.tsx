@@ -7,7 +7,7 @@ import { useAccount, useSwitchChain, useWatchAsset } from "wagmi";
 import { addTokenAddedFlag } from "../flags/flags.slice";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { useConnectionBoundary } from "../transactionBoundary/ConnectionBoundary";
-import { useTokenQuery } from "../../hooks/useSuperToken";
+import { useTokenQuery } from "../../hooks/useTokenQuery";
 
 interface AddToWalletButtonProps {
   token: Address;

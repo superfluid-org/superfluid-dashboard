@@ -38,7 +38,7 @@ import FlowingFiatBalance from "../tokenPrice/FlowingFiatBalance";
 import useTokenPrice from "../tokenPrice/useTokenPrice";
 import BalanceCriticalIndicator from "./BalanceCriticalIndicator";
 import { isDefined } from "../../utils/ensureDefined";
-import { useTokenQuery } from "../../hooks/useSuperToken";
+import { useTokenQuery } from "../../hooks/useTokenQuery";
 
 interface SnapshotRowProps {
   lastElement?: boolean;
