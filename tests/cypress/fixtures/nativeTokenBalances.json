@@ -7,7 +7,7 @@
       }
     },
     "gnosis": {
-      "XDAI": {
+      "xDAI": {
         "underlyingBalance": "0.9886",
         "superTokenBalance": "5"
       }

@@ -46,7 +46,7 @@
       {
         "timestamp": 1621595390,
         "activity": "Wrap",
-        "amount": "-4 XDAI",
+        "amount": "-4 xDAI",
         "amountToFrom": "+4 xDAIx",
         "txHash": "0xc106a26f7d4ff845b550f562819d4b8b79414273422572a985edc64b99677597"
       },
@@ -62,43 +62,43 @@
       {
         "timestamp": 1628852826,
         "activity": "Stream Cancelled",
-        "amount": "0 USDCx/mo",
+        "amount": "0 USDC.ex/mo",
         "amountToFrom": "To0xF9Ce...3Ff2",
         "txHash": "0x62d190d13c0d619b1e8019c356e1afcc13b5c66a72a9992557b636eca4bef5d0"
       },
       {
         "timestamp": 1628852734,
         "activity": "Stream Updated",
-        "amount": "1 USDCx/mo",
+        "amount": "1 USDC.ex/mo",
         "amountToFrom": "To0xF9Ce...3Ff2",
         "txHash": "0x67cf1464f2621178fcd2bfc0c33ad9fa0c9f4906b1de0986454b5afbfbd96a40"
       },
       {
         "timestamp": 1628852654,
         "activity": "Send Stream",
-        "amount": "2 USDCx/mo",
+        "amount": "2 USDC.ex/mo",
         "amountToFrom": "To0xF9Ce...3Ff2",
         "txHash": "0x384bec1faf849929dcce6b293f7bee432f2a299cc9afc6750179dc96dd81b8ff"
       },
       {
         "timestamp": 1628850103,
         "activity": "Receive Transfer",
-        "amount": "5 USDCx",
+        "amount": "5 USDC.ex",
         "amountToFrom": "From0xB0d6...2cb4",
         "txHash": "0xfdfa7846780ed5d9da5f0140e00414a8bd17d43a0c4019640d88a963d8c89718"
       },
       {
         "timestamp": 1628849995,
         "activity": "Send Transfer",
-        "amount": "5 USDCx",
+        "amount": "5 USDC.ex",
         "amountToFrom": "To0xB0d6...2cb4",
         "txHash": "0x5124a5f0cdeb66065e8e5a2beae89d08352eea7522b6f0e2ba7574ef58747608"
       },
       {
         "timestamp": 1628849953,
         "activity": "Wrap",
-        "amount": "-5 USDC",
-        "amountToFrom": "+5 USDCx",
+        "amount": "-5 USDC.e",
+        "amountToFrom": "+5 USDC.ex",
         "txHash": "0x781cb7eb413577aee984a4ba43c980dbf392bc0edf2575ec21c648b3cc4f0363"
       },
       {
@@ -111,21 +111,21 @@
       {
         "timestamp": 1622189300,
         "activity": "Receive Transfer",
-        "amount": "0.000000000005 USDCx",
+        "amount": "0.000000000005 USDC.ex",
         "amountToFrom": "From0xF9Ce...3Ff2",
         "txHash": "0x3c787f384a6fbc45ca0559c727f8df9b7fced52d70a5a5a829c8c3f351be4032"
       },
       {
         "timestamp": 1621839474,
         "activity": "Receive Transfer",
-        "amount": "0.000000000005 USDCx",
+        "amount": "0.000000000005 USDC.ex",
         "amountToFrom": "From0xF9Ce...3Ff2",
         "txHash": "0x764436391ca32f61598d119c9f7c7493f2664f07dd805ef0041e7f28e9a73a26"
       },
       {
         "timestamp": 1621839302,
         "activity": "Receive Transfer",
-        "amount": "0.000000000005 USDCx",
+        "amount": "0.000000000005 USDC.ex",
         "amountToFrom": "From0xF9Ce...3Ff2",
         "txHash": "0x4ab68ee5fa1dfe080725ecaad33fe3d1a22badde161c0419d69e2b2ace96fcd3"
       }

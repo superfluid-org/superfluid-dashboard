@@ -153,14 +153,11 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
     return null;
   }, [balanceData]);
 
-  const flowRateMonthly = useMemo(
-    () => {
-      if (balanceData) {
-        return BigNumber.from(balanceData.flowRate).mul(UnitOfTime.Month);
-      }
-    },
-    [balanceData]
-  );
+  const flowRateMonthly = useMemo(() => {
+    if (balanceData) {
+      return BigNumber.from(balanceData.flowRate).mul(UnitOfTime.Month);
+    }
+  }, [balanceData]);
 
   return (
     <>
@@ -218,18 +215,18 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                 )}
 
                 <ListItemText
-                  primary={
-                    <FlowingBalance
-                      data={balanceData}
-                    />
-                  }
+                  primary={<FlowingBalance data={balanceData} />}
                   secondary={
                     tokenPrice && (
                       <FlowingFiatBalance
-                        data={balanceData ? {
-                          ...balanceData,
-                          price: tokenPrice
-                        } : undefined}
+                        data={
+                          balanceData
+                            ? {
+                                ...balanceData,
+                                price: tokenPrice,
+                              }
+                            : undefined
+                        }
                       />
                     )
                   }
@@ -239,7 +236,6 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                     color: "text.secondary",
                   }}
                 />
-                
               </ListItem>
             </TableCell>
 
@@ -248,11 +244,14 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                 <ListItemText
                   data-cy="net-flow-value"
                   primary={
-                    balanceData && isDefined(flowRateMonthly) ? 
-                    <>
-                      {balanceData.flowRate.charAt(0) !== "-" && "+"}
-                      <Amount wei={flowRateMonthly}>/mo</Amount>
-                    </> : <Skeleton />
+                    balanceData && isDefined(flowRateMonthly) ? (
+                      <>
+                        {balanceData.flowRate.charAt(0) !== "-" && "+"}
+                        <Amount wei={flowRateMonthly}>/mo</Amount>
+                      </>
+                    ) : (
+                      <Skeleton />
+                    )
                   }
                   secondary={
                     tokenPrice && isDefined(flowRateMonthly) ? (
@@ -263,7 +262,9 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                         {" "}
                         /mo
                       </FiatAmount>
-                    ) : <></>
+                    ) : (
+                      <></>
+                    )
                   }
                   primaryTypographyProps={{ variant: "body2mono" }}
                   secondaryTypographyProps={{
@@ -336,7 +337,9 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                   />
                 }
                 secondary={
-                  totalNumberOfActiveStreams > 0 && isDefined(balanceData) && isDefined(flowRateMonthly) ? (
+                  totalNumberOfActiveStreams > 0 &&
+                  isDefined(balanceData) &&
+                  isDefined(flowRateMonthly) ? (
                     <>
                       {balanceData.flowRate.charAt(0) !== "-" && "+"}
                       <Amount wei={flowRateMonthly}>/mo</Amount>
@@ -384,7 +387,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
           }}
         >
           <Collapse
-            data-cy={`${token}-streams-table`}
+            data-cy={`${tokenAddress}-streams-table`}
             in={open}
             timeout={theme.transitions.duration.standard}
             unmountOnExit

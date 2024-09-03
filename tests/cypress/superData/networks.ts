@@ -130,7 +130,7 @@ export const networkDefinition: {
   degenChain: Network;
 } = {
   gnosis: {
-    name: 'Gnosis Chain',
+    name: 'Gnosis',
     slugName: 'gnosis',
     v1ShortName: 'xdai',
     network: 'xdai',
@@ -200,7 +200,7 @@ export const networkDefinition: {
     },
   },
   avalancheFuji: {
-    name: 'Fuji (C-Chain)',
+    name: 'Avalanche Fuji',
     slugName: 'avalanche-fuji',
     v1ShortName: 'avalanche-fuji',
     network: 'avalanche-fuji',

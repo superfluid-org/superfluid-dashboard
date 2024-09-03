@@ -19,7 +19,7 @@
   },
   "arbitrum-one": {
     "TokenOne": "DAI",
-    "TokenTwo": "USDC.e",
+    "TokenTwo": "USDC",
     "TokenThree": "RPL",
     "TokenGas": "ETH"
   },
