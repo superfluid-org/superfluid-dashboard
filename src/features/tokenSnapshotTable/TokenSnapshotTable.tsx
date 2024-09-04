@@ -104,12 +104,12 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
 
   const { setCosmetics } = useMinigame();
 
+  const isLoading = listedTokensSnapshotsQuery.isLoading || unlistedTokensSnapshotsQuery.isLoading;
+  const hasContent = !!tokenSnapshots.length;
   useEffect(() => {
     fetchingCallback(network.id, {
-      isLoading:
-        listedTokensSnapshotsQuery.isLoading ||
-        unlistedTokensSnapshotsQuery.isLoading,
-      hasContent: !!tokenSnapshots.length,
+      isLoading,
+      hasContent,
     });
 
     if (!network.testnet && tokenSnapshots.length) {
@@ -130,8 +130,9 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
   }, [
     network,
     setCosmetics,
-    tokenSnapshots,
-    fetchingCallback
+    fetchingCallback,
+    isLoading,
+    hasContent
   ]);
 
   if (
