@@ -283,43 +283,49 @@ export const adHocSubgraphEndpoints = {
       queryFn: async (arg) => {
         const subgraphClient = await getSubgraphClient(arg.chainId);
 
-        const subgraphResult = await subgraphClient.request<{
-          unlistedWrapperSuperTokens: WrapperSuperTokenSubgraphResult[];
-        }>(
-          gql`
-            query UpgradeDowngradePairs($unlistedTokenIDs:[ID!]) {
-              unlistedWrapperSuperTokens: tokens(
-                first: 1000
-                where: {
-                  isSuperToken: true
-                  isListed: false
-                  id_in: $unlistedTokenIDs
-                  underlyingAddress_not: "0x0000000000000000000000000000000000000000"
-                }
-              ) {
-                id
-                name
-                symbol
-                isListed
-                underlyingToken {
+        const getUnlistedWrapperSuperTokens = async (unlistedTokenIDs: Address[]) => {
+          if (unlistedTokenIDs.length === 0) {
+            return [];
+          }
+
+          const subgraphResult = await subgraphClient.request<{
+            unlistedWrapperSuperTokens: WrapperSuperTokenSubgraphResult[];
+          }>(
+            gql`
+              query UpgradeDowngradePairs($unlistedTokenIDs:[ID!]) {
+                unlistedWrapperSuperTokens: tokens(
+                  first: 1000
+                  where: {
+                    isSuperToken: true
+                    isListed: false
+                    id_in: $unlistedTokenIDs
+                    underlyingAddress_not: "0x0000000000000000000000000000000000000000"
+                  }
+                ) {
                   id
                   name
                   symbol
-                  decimals
+                  isListed
+                  underlyingToken {
+                    id
+                    name
+                    symbol
+                    decimals
+                  }
                 }
               }
+            `,
+            {
+              unlistedTokenIDs: (arg.unlistedTokenIDs || []).map((address) =>
+                address.toLowerCase()
+              ),
             }
-          `,
-          {
-            unlistedTokenIDs: (arg.unlistedTokenIDs || []).map((address) =>
-              address.toLowerCase()
-            ),
-          }
-        );
+          );
 
-        const {
-          unlistedWrapperSuperTokens,
-        } = subgraphResult;
+          return subgraphResult.unlistedWrapperSuperTokens;
+        }
+
+        const unlistedWrapperSuperTokens = await getUnlistedWrapperSuperTokens(arg.unlistedTokenIDs || []);
 
         const wrapperSuperTokenPairs: SuperTokenPair[] =
           unlistedWrapperSuperTokens
