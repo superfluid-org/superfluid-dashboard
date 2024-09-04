@@ -91,12 +91,13 @@ const ScheduledWrapTable: FC<TokenSnapshotTableProps> = ({
     );
   const isPlatformWhitelisted = Boolean(isPlatformWhitelisted_ || network?.testnet);
 
+  const hasContent = !!wrapSchedules.length;
   useEffect(() => {
     fetchingCallback(network.id, {
-      isLoading: isLoading,
-      hasContent: !!wrapSchedules.length,
+      isLoading,
+      hasContent,
     });
-  }, [network.id, isLoading, wrapSchedules.length, fetchingCallback]);
+  }, [network.id, isLoading, hasContent, fetchingCallback]);
 
   useEffect(() => {
     whitelistedCallback(network.id, {

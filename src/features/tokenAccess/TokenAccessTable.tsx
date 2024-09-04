@@ -69,14 +69,17 @@ const TokenAccessTable: FC<Props> = ({
       }
     );
 
+  const isLoading = flowOperatorsQuery.isLoading;
+  const hasContent = flowOperators.length > 0;
   useEffect(() => {
     fetchingCallback(network.id, {
-      isLoading: flowOperatorsQuery.isLoading,
-      hasContent: flowOperators.length > 0,
+      isLoading,
+      hasContent,
     });
   }, [
     network.id,
-    flowOperators,
+    isLoading,
+    hasContent,
     fetchingCallback,
   ]);
 
