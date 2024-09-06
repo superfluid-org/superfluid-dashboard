@@ -37,6 +37,9 @@ const config = {
   walletConnectProjectId:
     process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID ??
     "8fcff23b035b115b5c1324ad717589ab",
+  allowlistApiUrl:
+    process.env.NEXT_PUBLIC_ALLOWLIST_API ??
+    "https://allowlist-api.preview.superfluid.finance",
 } as const;
 
 export default Object.freeze(config);

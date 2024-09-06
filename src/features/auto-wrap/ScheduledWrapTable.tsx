@@ -78,7 +78,6 @@ const ScheduledWrapTable: FC<TokenSnapshotTableProps> = ({
       address && network?.platformUrl
         ? {
           chainId: network.id,
-          baseUrl: network.platformUrl,
           account: address?.toLowerCase(),
         }
         : skipToken,

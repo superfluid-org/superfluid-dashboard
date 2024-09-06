@@ -270,7 +270,6 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({ }) => {
       visibleAddress && network?.platformUrl
         ? {
           chainId: network.id,
-          baseUrl: network.platformUrl,
           account: visibleAddress?.toLowerCase(),
         }
         : skipToken,

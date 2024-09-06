@@ -3,6 +3,7 @@ import {
   IsAccountWhitelistedApiArg,
   IsAccountWhitelistedApiResponse,
 } from "./platformApiTemplate";
+import config from "../../../utils/config";
 
 // NOTE: This is the actual platform API slice, manually edited. A "template" is also generated for types and ideas.
 export const platformApi = createApi({
@@ -14,10 +15,10 @@ export const platformApi = createApi({
   endpoints: (build) => ({
     isAccountWhitelisted: build.query<
       IsAccountWhitelistedApiResponse,
-      IsAccountWhitelistedApiArg & { chainId: number; baseUrl: string }
+      IsAccountWhitelistedApiArg & { chainId: number; }
     >({
       query: (queryArg) => ({
-        url: `${queryArg.baseUrl}/api/v2/users/is_whitelist/${queryArg.account}`,
+        url: `${config.allowlistApiUrl}/api/allowlist/${queryArg.account}/${queryArg.chainId}`,
       }),
     }),
   }),

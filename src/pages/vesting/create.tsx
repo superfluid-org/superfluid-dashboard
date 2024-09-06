@@ -22,7 +22,6 @@ const CreateVestingSchedulePage: NextPageWithLayout = () => {
       accountAddress && network?.platformUrl
         ? {
           chainId: network.id,
-          baseUrl: network.platformUrl,
           account: accountAddress?.toLowerCase(),
         }
         : skipToken,
