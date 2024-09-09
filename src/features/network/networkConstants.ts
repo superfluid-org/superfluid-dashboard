@@ -147,15 +147,13 @@ export const superfluidRpcUrls = {
   "optimism-sepolia": "https://rpc-endpoints.superfluid.dev/optimism-sepolia",
 } as const;
 
-export const superfluidPlatformUrls = {
-  gnosis: "https://prod-xdai-mainnet-platform-service.prod.superfluid.dev",
-  polygon: "https://prod-polygon-mainnet-platform-service.prod.superfluid.dev",
-  arbitrum: "https://prod-arbitrum-one-platform-service.prod.superfluid.dev",
-  optimism:
-    "https://prod-optimism-mainnet-platform-service.prod.superfluid.dev",
-  avalancheC: "https://prod-avalanche-c-platform-service.prod.superfluid.dev",
-  bnbSmartChain:
-    "https://prod-bsc-mainnet-platform-service.prod.superfluid.dev",
-  ethereum: "https://prod-eth-mainnet-platform-service.prod.superfluid.dev",
-  base: "https://prod-polygon-mainnet-platform-service.prod.superfluid.dev",
-} as const;
+export const superfluidPlatformUrls = [
+  chainIds.gnosis,
+  chainIds.polygon,
+  chainIds.arbitrum,
+  chainIds.optimism,
+  chainIds.avalanche,
+  chainIds.bsc,
+  chainIds.mainnet,
+  chainIds.base,
+] as const;

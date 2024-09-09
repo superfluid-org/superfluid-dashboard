@@ -19,7 +19,7 @@ const CreateVestingSchedulePage: NextPageWithLayout = () => {
 
   const { isPlatformWhitelisted_, isLoading: isWhitelistLoading } =
     platformApi.useIsAccountWhitelistedQuery(
-      accountAddress && network?.platformUrl
+      accountAddress
         ? {
           chainId: network.id,
           account: accountAddress?.toLowerCase(),

@@ -39,7 +39,7 @@ const config = {
     "8fcff23b035b115b5c1324ad717589ab",
   allowlistApiUrl:
     process.env.NEXT_PUBLIC_ALLOWLIST_API ??
-    "https://allowlist-api.preview.superfluid.finance",
+    "https://allowlist.superfluid.dev",
 } as const;
 
 export default Object.freeze(config);

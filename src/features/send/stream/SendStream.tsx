@@ -910,7 +910,7 @@ export default memo(function SendStream() {
   }, [activeFlow, scheduledStream]);
 
   const { isPlatformWhitelisted_ } = platformApi.useIsAccountWhitelistedQuery(
-    visibleAddress && network?.platformUrl
+    visibleAddress
       ? {
         chainId: network.id,
         account: visibleAddress?.toLowerCase(),

@@ -18,7 +18,6 @@ import {
   chainIds,
   flowSchedulerContractAddresses,
   flowSchedulerSubgraphUrls,
-  superfluidPlatformUrls,
   superfluidRpcUrls,
   vestingContractAddresses_v1,
   vestingContractAddresses_v2,
@@ -91,7 +90,6 @@ export type Network = Chain & {
   vestingContractAddress_v2: `0x${string}` | undefined;
   vestingSubgraphUrl: `https://${string}` | undefined;
   autoWrapSubgraphUrl: `https://${string}` | undefined;
-  platformUrl: string | undefined;
   autoWrap?: {
     managerContractAddress: `0x${string}`;
     strategyContractAddress: `0x${string}`;
@@ -188,7 +186,6 @@ export const networkDefinition = {
     vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: vestingSubgraphUrls.gnosis,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.gnosis,
-    platformUrl: superfluidPlatformUrls.gnosis,
     autoWrap: {
       managerContractAddress: autoWrapManagerAddresses[chain.gnosis.id],
       strategyContractAddress: autoWrapStrategyAddresses[chain.gnosis.id],
@@ -231,7 +228,6 @@ export const networkDefinition = {
     vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: vestingSubgraphUrls.polygon,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.polygon,
-    platformUrl: superfluidPlatformUrls.polygon,
     autoWrap: {
       managerContractAddress: autoWrapManagerAddresses[chain.polygon.id],
       strategyContractAddress: autoWrapStrategyAddresses[chain.polygon.id],
@@ -280,7 +276,6 @@ export const networkDefinition = {
     vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: undefined,
     autoWrapSubgraphUrl: undefined,
-    platformUrl: undefined,
     autoWrap: {
       managerContractAddress: autoWrapManagerAddresses[chain.avalancheFuji.id],
       strategyContractAddress:
@@ -324,7 +319,6 @@ export const networkDefinition = {
     vestingContractAddress_v2: vestingContractAddresses_v2.optimism,
     vestingSubgraphUrl: vestingSubgraphUrls.optimism,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.optimism,
-    platformUrl: superfluidPlatformUrls.optimism,
     autoWrap: {
       managerContractAddress: autoWrapManagerAddresses[chain.optimism.id],
       strategyContractAddress: autoWrapStrategyAddresses[chain.optimism.id],
@@ -367,7 +361,6 @@ export const networkDefinition = {
     vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: vestingSubgraphUrls.arbitrum,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.arbitrum,
-    platformUrl: superfluidPlatformUrls.arbitrum,
     autoWrap: {
       managerContractAddress: autoWrapManagerAddresses[chain.arbitrum.id],
       strategyContractAddress: autoWrapStrategyAddresses[chain.arbitrum.id],
@@ -414,7 +407,6 @@ export const networkDefinition = {
     vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: vestingSubgraphUrls.avalancheC,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.avalancheC,
-    platformUrl: superfluidPlatformUrls.avalancheC,
     autoWrap: {
       managerContractAddress: autoWrapManagerAddresses[chain.avalanche.id],
       strategyContractAddress: autoWrapStrategyAddresses[chain.avalanche.id],
@@ -461,7 +453,6 @@ export const networkDefinition = {
     vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: vestingSubgraphUrls.bnbSmartChain,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.bnbSmartChain,
-    platformUrl: superfluidPlatformUrls.bnbSmartChain,
     autoWrap: {
       managerContractAddress: autoWrapManagerAddresses[chain.bsc.id],
       strategyContractAddress: autoWrapStrategyAddresses[chain.bsc.id],
@@ -504,7 +495,6 @@ export const networkDefinition = {
     vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: vestingSubgraphUrls.ethereum,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.ethereum,
-    platformUrl: superfluidPlatformUrls.ethereum,
     autoWrap: {
       managerContractAddress: autoWrapManagerAddresses[chain.mainnet.id],
       strategyContractAddress: autoWrapStrategyAddresses[chain.mainnet.id],
@@ -548,7 +538,6 @@ export const networkDefinition = {
     vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: undefined,
     autoWrapSubgraphUrl: undefined,
-    platformUrl: undefined,
   },
   degenChain: {
     ...chain.degen,
@@ -588,7 +577,6 @@ export const networkDefinition = {
     vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: undefined,
     autoWrapSubgraphUrl: undefined,
-    platformUrl: undefined,
   },
   sepolia: {
     ...chain.sepolia,
@@ -622,7 +610,6 @@ export const networkDefinition = {
     vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: undefined,
     autoWrapSubgraphUrl: undefined,
-    platformUrl: undefined,
   },
   base: {
     ...chain.base,
@@ -665,7 +652,6 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.base,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.base,
-    platformUrl: superfluidPlatformUrls.base,
   },
   baseSepolia: {
     ...chain.baseSepolia,
@@ -703,7 +689,6 @@ export const networkDefinition = {
     autoWrap: undefined,
     flowSchedulerContractAddress: undefined,
     flowSchedulerSubgraphUrl: undefined,
-    platformUrl: undefined,
   },
   scroll: {
     ...chain.scroll,
@@ -738,7 +723,6 @@ export const networkDefinition = {
     vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: undefined,
     autoWrapSubgraphUrl: undefined,
-    platformUrl: undefined,
   },
   scrollSepolia: {
     ...chain.scrollSepolia,
@@ -772,7 +756,6 @@ export const networkDefinition = {
     vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: undefined,
     autoWrapSubgraphUrl: undefined,
-    platformUrl: undefined,
   },
   optimismSepolia: {
     ...chain.optimismSepolia,
@@ -815,7 +798,6 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.optimismSepolia,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.optimismSepolia,
-    platformUrl: undefined,
   },
 } as const satisfies Record<string, Network>;
 

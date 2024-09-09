@@ -91,7 +91,6 @@ export type Network = {
     upperLimit: BigNumberish;
   };
   flowSchedulerContractAddress?: `0x${string}`;
-  platformUrl?: string;
 };
 
 export const superfluidRpcUrls = {
@@ -461,7 +460,6 @@ export const networkDefinition: {
         decimals: 18,
       },
     },
-    platformUrl: undefined,
   },
   base: {
     ...chain.base,
@@ -488,7 +486,6 @@ export const networkDefinition: {
         decimals: 18,
       },
     },
-    platformUrl: undefined,
   },
   scroll: {
     id: 534352,
