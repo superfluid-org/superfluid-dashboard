@@ -35,10 +35,6 @@ export const platformApi = createApi({
         try {
           const response = await fetch(`${config.allowlistApiUrl}/api/allowlist/${account}/${chainId}`);
           const data = await response.json() as IsAccountWhitelistedApiResponse;
-
-          console.log({
-            data
-          })
           return { data: data };
         } catch (error) {
           console.error("Error fetching whitelist status:", error);
