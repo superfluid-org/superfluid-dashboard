@@ -1,17 +1,17 @@
-const fs = require("fs");
-const axios = require("axios");
+const fs = require('fs');
+const axios = require('axios');
 const webhookURL = process.env.CI_SLACK_WEBHOOK;
-const moneyIcon = "https://cdn-icons-png.flaticon.com/512/639/639364.png";
-const graphIcon = "https://cdn-icons-png.flaticon.com/512/10466/10466245.png";
-const rpcIcon = "https://cdn-icons-png.flaticon.com/512/1349/1349733.png";
-const snailIcon = "https://cdn-icons-png.flaticon.com/512/826/826908.png";
+const moneyIcon = 'https://cdn-icons-png.flaticon.com/512/639/639364.png';
+const graphIcon = 'https://cdn-icons-png.flaticon.com/512/10466/10466245.png';
+const rpcIcon = 'https://cdn-icons-png.flaticon.com/512/1349/1349733.png';
+const snailIcon = 'https://cdn-icons-png.flaticon.com/512/826/826908.png';
 
 let messageToSend = {
   blocks: [
     {
-      type: "header",
+      type: 'header',
       text: {
-        type: "plain_text",
+        type: 'plain_text',
         text: `Cypress hourly test run ${process.env.CI_RUN_NUMBER} has failed`,
         emoji: true,
       },
@@ -20,7 +20,7 @@ let messageToSend = {
 };
 
 if (process.argv.length < 3) {
-  console.log("Please provide a file path as an argument.");
+  console.log('Please provide a file path as an argument.');
   process.exit(1);
 }
 
@@ -28,28 +28,28 @@ const filePath = process.argv[2];
 
 function addNewSection(text, image) {
   messageToSend.blocks.push({
-    type: "section",
+    type: 'section',
     text: {
-      type: "mrkdwn",
+      type: 'mrkdwn',
       text: text,
     },
     accessory: {
-      type: "image",
+      type: 'image',
       image_url: image,
-      alt_text: "why u no work :(",
+      alt_text: 'why u no work :(',
     },
   });
   messageToSend.blocks.push({
-    type: "divider",
+    type: 'divider',
   });
 }
 
 function addContext() {
   messageToSend.blocks.push({
-    type: "context",
+    type: 'context',
     elements: [
       {
-        type: "mrkdwn",
+        type: 'mrkdwn',
         text: `<${process.env.CI_ACTION_URL}|See the Github action here>`,
       },
     ],
@@ -61,28 +61,28 @@ async function sendSlackMessage() {
   try {
     const response = await axios.post(webhookURL, message, {
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     });
   } catch (error) {
-    console.error("Error sending Slack message:", error.message);
+    console.error('Error sending Slack message:', error.message);
     console.log(error);
   }
 }
 
 async function parseTestResultsAndSendMessage(json) {
-  let finalRPCMessage = "";
-  let finalGraphMessage = "";
-  let faucetMessage = "";
-  let finalUIMessage = "";
+  let finalRPCMessage = '';
+  let finalGraphMessage = '';
+  let faucetMessage = '';
+  let finalUIMessage = '';
   let UISectionAdded = false;
   let tests = JSON.parse(json).results[0].suites[0].tests;
   let failingTests = tests.filter((test) => test.fail);
   failingTests.forEach((element) => {
     const regex = /\s*\(example #\d+\)$/;
-    const titleWithoutExample = element.title.replace(regex, "");
-    const network = titleWithoutExample.split("on ")[1];
-    if (element.title.includes("Wrap page")) {
+    const titleWithoutExample = element.title.replace(regex, '');
+    const network = titleWithoutExample.split('on ')[1];
+    if (element.title.includes('Wrap page')) {
       if (!UISectionAdded) {
         finalUIMessage += `Cypress had trouble choosing the native token in the dashboard on *${network}*`;
         UISectionAdded = true;
@@ -90,33 +90,44 @@ async function parseTestResultsAndSendMessage(json) {
         finalUIMessage += `, *${network}*`;
       }
     }
-    if (element.title.includes("Superfluid RPCS are not behind")) {
-      const behindInMinutes = element.err.message
-        .split("AssertionError: ")[1]
-        .split("\n")[0];
-      const lastBlockRegex = /Latest block number: \d+/;
-      const lastBlockMessage = element.err.message.match(lastBlockRegex)[0];
-      finalRPCMessage += `*${behindInMinutes}*\n ${lastBlockMessage}\n\n`;
+    if (element.title.includes('Superfluid RPCS are not behind')) {
+      if (
+        element.err.message.includes(
+          'Your callback function returned a promise that never resolved'
+        )
+      ) {
+        finalRPCMessage += `*Requests to RPC failed on ${network}*\n\n`;
+      } else {
+        const behindInMinutes = element.err.message
+          .split('AssertionError: ')[1]
+          .split('\n')[0];
+        const lastBlockRegex = /Latest block number: \d+/;
+        const lastBlockMessage = element.err.message.match(lastBlockRegex)[0];
+        finalRPCMessage += `*${behindInMinutes}*\n ${lastBlockMessage}\n\n`;
+      }
     }
-    if (element.title.includes("The graph is not behind")) {
+    if (element.title.includes('The graph is not behind')) {
       if (
         element.err.message.includes(
           "Cannot read properties of undefined (reading '_meta')"
+        ) ||
+        element.err.message.includes(
+          'No response was received within the timeout.'
         )
       ) {
         finalGraphMessage += `*There was an issue getting the graphs metadata of ${network} network*\n\n Please have a look at this ASAP\n\n`;
       } else {
         const behindInMinutes = element.err.message
-          .split("AssertionError: ")[1]
-          .split("\n")[0];
+          .split('AssertionError: ')[1]
+          .split('\n')[0];
         const lastBlockRegex = /Last synced block number: \d+/;
         const lastBlockMessage = element.err.message.match(lastBlockRegex)[0];
         finalGraphMessage += `*${behindInMinutes}*\n ${lastBlockMessage}\n\n`;
       }
     }
-    if (element.title.includes("Testnet faucet fund check")) {
+    if (element.title.includes('Testnet faucet fund check')) {
       faucetMessage +=
-        "Faucet has got less than *10 MATIC* left , please add some more to *0x74CDF863b00789c29734F8dFd9F83423Bc55E4cE* or *0x2e043853CC01ccc8275A3913B82F122C20Bc1256*";
+        'Faucet has got less than *10 MATIC* left , please add some more to *0x74CDF863b00789c29734F8dFd9F83423Bc55E4cE* or *0x2e043853CC01ccc8275A3913B82F122C20Bc1256*';
     }
   });
 
@@ -126,13 +137,13 @@ async function parseTestResultsAndSendMessage(json) {
       snailIcon
     );
   }
-  if (finalGraphMessage !== "") {
+  if (finalGraphMessage !== '') {
     addNewSection(finalGraphMessage, graphIcon);
   }
-  if (finalRPCMessage !== "") {
+  if (finalRPCMessage !== '') {
     addNewSection(finalRPCMessage, rpcIcon);
   }
-  if (faucetMessage !== "") {
+  if (faucetMessage !== '') {
     addNewSection(faucetMessage, moneyIcon);
   }
 
@@ -140,7 +151,7 @@ async function parseTestResultsAndSendMessage(json) {
   sendSlackMessage();
 }
 
-fs.readFile(filePath, "utf8", async (err, data) => {
+fs.readFile(filePath, 'utf8', async (err, data) => {
   if (err) {
     console.error(err);
     return;
