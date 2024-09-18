@@ -110,7 +110,7 @@ export const getTokenPairsFromTokenList = memoize((chainId: number) => {
                 underlyingToken: findTokenFromTokenList({ chainId, address: superToken.underlyingAddress! })!
             }) as SuperTokenPair;
         });
-}, (chainId) => chainId);
+}, (chainId) => `${chainId}-${extendedSuperTokenList.version}`);
 
 export const mapTokenListTokenToTokenMinimal = (tokenListToken: TokenInfo & SuperTokenExtensions) => {
     const superTokenInfo = tokenListToken.extensions?.superTokenInfo;
