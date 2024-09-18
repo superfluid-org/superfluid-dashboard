@@ -84,15 +84,15 @@ export const findTokenFromTokenList = memoize((input: { chainId: number, address
     if (tokenListToken) {
         return mapTokenListTokenToTokenMinimal(tokenListToken);
     }
-}, ({ chainId, address }) => `${chainId}-${address.toLowerCase()}`);
+}, ({ chainId, address }) => `${chainId}-${address.toLowerCase()}-${extendedSuperTokenList.version}`);
 
 export const getTokensFromTokenList = memoize((chainId: number) => {
     return extendedSuperTokenList.tokens.filter(x => x.chainId === chainId).map(mapTokenListTokenToTokenMinimal);
-}, (chainId) => chainId);
+}, (chainId) => `${chainId}-${extendedSuperTokenList.version}`);
 
 export const getSuperTokensFromTokenList = memoize((chainId: number, onlyWrappable?: boolean) => {
     return getTokensFromTokenList(chainId).filter(x => x.isSuperToken).filter(x => onlyWrappable ? x.type === TokenType.WrapperSuperToken || x.type === TokenType.NativeAssetSuperToken : true);
-}, (chainId) => chainId);
+}, (chainId) => `${chainId}-${extendedSuperTokenList.version}`);
 
 export const getTokenPairsFromTokenList = memoize((chainId: number) => {
     return getSuperTokensFromTokenList(chainId, true /* onlyWrappable */)
