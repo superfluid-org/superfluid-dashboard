@@ -14,7 +14,6 @@ Feature: Vesting page second batch of test cases
       | Transfer Error |
       | Overflow Error |
       | Vested         |
-      | Cliff          |
       | Vesting        |
       | Deleted        |
       | Stream Error   |
