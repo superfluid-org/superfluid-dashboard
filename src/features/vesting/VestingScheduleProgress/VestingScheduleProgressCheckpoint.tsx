@@ -5,16 +5,16 @@ import { FC, memo, useMemo } from "react";
 interface VestingScheduleProgressCheckpointProps {
   titles: string[];
   targetDate: Date;
-  dateNow: Date;
+  measureDate: Date;
   nth: number;
   dataCy?: string;
 }
 
 const VestingScheduleProgressCheckpoint: FC<
   VestingScheduleProgressCheckpointProps
-> = ({ titles, targetDate, dateNow, nth, dataCy }) => {
+> = ({ titles, targetDate, measureDate, nth, dataCy }) => {
   const theme = useTheme();
-  const isActive = useMemo(() => targetDate <= dateNow, [targetDate, dateNow]);
+  const isActive = useMemo(() => targetDate <= measureDate, [targetDate, measureDate]);
 
   return (
     <Stack

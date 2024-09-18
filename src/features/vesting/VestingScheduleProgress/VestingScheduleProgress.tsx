@@ -107,11 +107,13 @@ const VestingScheduleProgress: FC<VestingScheduleProgressProps> = ({
     cliffAndFlowDate: unixCliffAndFlowDate,
     claimValidityDate: unixClaimValidityDate,
     cliffAndFlowExecutedAt: unixCliffAndFlowExecutedAt,
+    deletedAt: unixDeletedAt,
   } = vestingSchedule;
 
   const unixClaimedAt = (unixClaimValidityDate && unixCliffAndFlowExecutedAt) ? unixCliffAndFlowExecutedAt : 0; 
 
   const dateNow = useTimer(UnitOfTime.Minute);
+  const deletedAt = useMemo(() => unixDeletedAt ? new Date(unixDeletedAt * 1000) : null, [unixDeletedAt]);
 
   function* generateProgressDataPoints() {
     // We generate data points first based on which we create the progress slices. We want them to be sequential without breaks.
@@ -125,6 +127,9 @@ const VestingScheduleProgress: FC<VestingScheduleProgressProps> = ({
     }
     if (unixClaimedAt) {
       yield unixClaimedAt;
+    }
+    if (unixDeletedAt) {
+      yield unixDeletedAt;
     }
     yield unixEndDate;
     if (unixClaimValidityDate) {
@@ -189,6 +194,13 @@ const VestingScheduleProgress: FC<VestingScheduleProgressProps> = ({
       targetDate: unixEndDate,
       dataCy: "vesting-end",
     };
+    if (unixDeletedAt) {
+      yield {
+        title: "Schedule Deleted",
+        targetDate: unixDeletedAt,
+        dataCy: "vesting-deleted",
+      };
+    }
     if (!unixClaimedAt && unixClaimValidityDate) {
       yield {
         title: "Claiming Ends",
@@ -217,7 +229,7 @@ const VestingScheduleProgress: FC<VestingScheduleProgressProps> = ({
         <VestingProgress
           key={index}
           nth={index + 1}
-          dateNow={dateNow}
+          dateNow={deletedAt ?? dateNow}
           start={fromUnixTime(props.start)}
           end={fromUnixTime(props.end)}
         />
@@ -229,7 +241,7 @@ const VestingScheduleProgress: FC<VestingScheduleProgressProps> = ({
           <VestingScheduleProgressCheckpoint
             key={checkpointDataIterator}
             nth={checkpointDataIterator}
-            dateNow={dateNow}
+            measureDate={deletedAt ?? dateNow}
             targetDate={fromUnixTime(group[0].targetDate)}
             titles={group.map(x => x.title)}
             dataCy={group[0].dataCy}
