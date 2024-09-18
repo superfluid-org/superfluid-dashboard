@@ -22,6 +22,7 @@ import { Network } from "../network/networks";
 import { PendingVestingSchedule } from "../pendingUpdates/PendingVestingSchedule";
 import { VestingSchedule } from "./types";
 import VestingRow from "./VestingRow";
+import { dateNowSeconds } from "../../utils/dateUtils";
 
 const VestingScheduleRowSkeleton = () => {
   const theme = useTheme();
@@ -90,15 +91,18 @@ const VestingScheduleRowSkeleton = () => {
 
 enum VestingStatusFilter {
   All,
-  Cliff,
-  Vesting,
+  Scheduled,
+  Ongoing,
+  Claimable,
   Vested,
-  Deleted,
+  Deleted
 }
+
 const StatusFilterOptions = [
   { title: "All", value: VestingStatusFilter.All },
-  { title: "Cliff", value: VestingStatusFilter.Cliff },
-  { title: "Vesting", value: VestingStatusFilter.Vesting },
+  { title: "Scheduled", value: VestingStatusFilter.Scheduled },
+  { title: "Ongoing", value: VestingStatusFilter.Ongoing },
+  { title: "Claimable", value: VestingStatusFilter.Claimable },
   { title: "Vested", value: VestingStatusFilter.Vested },
   { title: "Deleted", value: VestingStatusFilter.Deleted },
 ];
@@ -154,14 +158,22 @@ const VestingScheduleTable: FC<VestingScheduleTableProps> = ({
   };
 
   const filteredVestingSchedules = useMemo(() => {
+    const nowInSeconds = dateNowSeconds();
     switch (statusFilter) {
-      case VestingStatusFilter.Cliff:
+      case VestingStatusFilter.Scheduled:
         return vestingSchedules.filter(
-          (vestingSchedule) => vestingSchedule.status.isCliff
+          (vestingSchedule) => !vestingSchedule.status.isDeleted && vestingSchedule.startDate > nowInSeconds
         );
-      case VestingStatusFilter.Vesting:
+      case VestingStatusFilter.Ongoing:
         return vestingSchedules.filter(
-          (vestingSchedule) => vestingSchedule.status.isStreaming
+          (vestingSchedule) =>
+            (
+              vestingSchedule.status.isCliff
+              || vestingSchedule.status.isStreaming
+              || vestingSchedule.status.canClaim
+            )
+            && !vestingSchedule.status.isFinished
+            && !vestingSchedule.status.isDeleted
         );
       case VestingStatusFilter.Vested:
         return vestingSchedules.filter(
@@ -169,14 +181,19 @@ const VestingScheduleTable: FC<VestingScheduleTableProps> = ({
             vestingSchedule.status.isFinished &&
             !vestingSchedule.status.isDeleted
         );
+      case VestingStatusFilter.Claimable:
+        return vestingSchedules.filter(
+          (vestingSchedule) =>
+            vestingSchedule.status.canClaim
+            && !vestingSchedule.status.isFinished
+            && !vestingSchedule.status.isDeleted
+        );
       case VestingStatusFilter.Deleted:
         return vestingSchedules.filter(
           (vestingSchedule) => vestingSchedule.status.isDeleted
         );
       default:
-        return vestingSchedules.filter(
-          (vestingSchedule) => !vestingSchedule.status.isDeleted
-        );
+        return vestingSchedules
     }
   }, [statusFilter, vestingSchedules]);
 
@@ -258,27 +275,27 @@ const VestingScheduleTable: FC<VestingScheduleTableProps> = ({
       </Table>
       {(filteredVestingSchedules.length > 5 ||
         (!isBelowMd && filteredVestingSchedules.length <= 5)) && (
-        <TablePagination
-          rowsPerPageOptions={[
-            5,
-            10,
-            25,
-            { value: filteredVestingSchedules.length, label: "All" },
-          ]}
-          component="div"
-          count={filteredVestingSchedules.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-          sx={{
-            "> *": {
-              visibility:
-                filteredVestingSchedules.length <= 5 ? "hidden" : "visible",
-            },
-          }}
-        />
-      )}
+          <TablePagination
+            rowsPerPageOptions={[
+              5,
+              10,
+              25,
+              { value: filteredVestingSchedules.length, label: "All" },
+            ]}
+            component="div"
+            count={filteredVestingSchedules.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+            sx={{
+              "> *": {
+                visibility:
+                  filteredVestingSchedules.length <= 5 ? "hidden" : "visible",
+              },
+            }}
+          />
+        )}
     </TableContainer>
   );
 };

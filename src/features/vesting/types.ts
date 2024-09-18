@@ -2,6 +2,7 @@ import { getUnixTime } from "date-fns";
 import {
   GetVestingScheduleQuery
 } from "../../vesting-subgraph/.graphclient";
+import { dateNowSeconds } from "../../utils/dateUtils";
 
 interface VestingStatus {
   title: string;
@@ -209,7 +210,7 @@ const getVestingStatus = (vestingSchedule: Omit<VestingSchedule, "status">) => {
     didEarlyEndCompensationFail,
     claimValidityDate,
   } = vestingSchedule;
-  const nowUnix = getUnixTime(new Date());
+  const nowInSeconds = dateNowSeconds();
   const cliffAndFlowDate = cliffDate ? cliffDate : startDate;
 
   if (deletedAt) {
@@ -241,24 +242,28 @@ const getVestingStatus = (vestingSchedule: Omit<VestingSchedule, "status">) => {
   }
 
   if (claimValidityDate) {
-    if (nowUnix > claimValidityDate) {
+    if (nowInSeconds > claimValidityDate) {
       return vestingStatuses.ClaimExpired;
     }
 
-    if (nowUnix > cliffAndFlowDate && nowUnix < claimValidityDate) {
+    if (nowInSeconds > cliffAndFlowDate && nowInSeconds < claimValidityDate) {
       return vestingStatuses.Claimable;
     }
   }
 
-  if (nowUnix > cliffAndFlowExpirationAt) {
+  if (nowInSeconds > cliffAndFlowExpirationAt) {
     return vestingStatuses.CliffAndFlowExpired;
   }
 
   if (cliffDate) {
-    if (nowUnix > cliffDate) {
+    if (startDate < nowInSeconds && nowInSeconds < cliffDate) {
       return vestingStatuses.CliffPeriod;
     }
   }
+
+  console.log({
+    vestingSchedule
+  })
 
   return vestingStatuses.ScheduledStart;
 };
