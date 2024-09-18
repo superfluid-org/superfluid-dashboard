@@ -29,6 +29,7 @@ import { usePendingVestingScheduleClaim } from "../pendingUpdates/PendingVesting
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import { ClaimVestingScheduleTransactionButton } from "./transactionButtons/ClaimVestingScheduleTransactionButton";
 import { useTokenQuery } from "../../hooks/useTokenQuery";
+import { isDefined } from "../../utils/ensureDefined";
 
 interface VestingRowProps {
   network: Network;
@@ -106,20 +107,14 @@ const VestingRow: FC<VestingRowProps> = ({
 
   const VestingStatusOrPendingProgress = (
     <>
-      {pendingDelete ? (
+      {pendingDelete || pendingCreate || pendingClaim ? (
         <PendingProgress
-          pendingUpdate={pendingDelete}
-          transactingText="Deleting..."
-        />
-      ) : pendingCreate ? (
-        <PendingProgress
-          pendingUpdate={pendingDelete}
-          transactingText="Creating..."
-        />
-      ) ? pendingClaim : (
-        <PendingProgress
-          pendingUpdate={pendingDelete}
-          transactingText="Claiming..."
+          pendingUpdate={pendingDelete || pendingCreate || pendingClaim}
+          transactingText={
+            pendingDelete ? "Deleting..." :
+            pendingCreate ? "Creating..." :
+            "Claiming..."
+          }
         />
       ) : (
         <VestingStatus
