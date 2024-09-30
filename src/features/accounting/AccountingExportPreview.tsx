@@ -25,6 +25,7 @@ import accountingApi, {
   VirtualStreamPeriod,
 } from "./accountingApi.slice";
 import { ValidAccountingExportForm } from "./AccountingExportFormProvider";
+import { findTokenFromTokenList } from "../../hooks/useTokenQuery";
 
 const CustomToolbar = () => {
   const gridApiContext = useGridApiContext();
@@ -52,6 +53,19 @@ type MappedVirtualStreamPeriod = VirtualStreamPeriod &
   Omit<AccountingStreamPeriod, "virtualPeriods">;
 
 interface AccountingExportPreviewProps { }
+
+const mapVirtualizationPeriods = (
+  streamPeriod: AccountingStreamPeriod
+): MappedVirtualStreamPeriod[] => {
+  const { virtualPeriods, ...streamPeriodData } = streamPeriod;
+
+  return virtualPeriods
+    .map((virtualPeriod) => ({
+      ...streamPeriodData,
+      ...virtualPeriod,
+      id: `${streamPeriodData.id}-${virtualPeriod.startTime}`,
+    }));
+};
 
 const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({ }) => {
   const { formState, getValues } = useFormContext<ValidAccountingExportForm>();
@@ -89,18 +103,6 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({ }) => {
       : skipToken
   );
 
-  const mapVirtualizationPeriods = (
-    streamPeriod: AccountingStreamPeriod
-  ): MappedVirtualStreamPeriod[] => {
-    const { virtualPeriods, ...streamPeriodData } = streamPeriod;
-
-    return virtualPeriods.map((virtualPeriod) => ({
-      ...streamPeriodData,
-      ...virtualPeriod,
-      id: `${streamPeriodData.id}-${virtualPeriod.startTime}`,
-    }));
-  };
-
   const virtualStreamPeriods = useMemo(
     () =>
       (streamPeriodsResponse.data || []).reduce(
@@ -109,7 +111,21 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({ }) => {
           period: AccountingStreamPeriod
         ) => [...allPeriods, ...mapVirtualizationPeriods(period)],
         []
-      ),
+      ).map(x => {
+        const tokenFromTokenList = findTokenFromTokenList({
+          chainId: x.chainId,
+          address: x.token.id
+        });
+
+        return {
+          ...x,
+          token: {
+            ...x.token,
+            symbol: tokenFromTokenList?.symbol || x.token.symbol,
+            name: tokenFromTokenList?.name || x.token.name
+          }
+        }
+      }),
     [streamPeriodsResponse.data]
   );
 
