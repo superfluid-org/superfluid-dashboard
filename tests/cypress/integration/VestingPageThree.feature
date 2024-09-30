@@ -108,8 +108,8 @@ Feature: Vesting page third batch of test cases
     Given "Dashboard page" is open using view mode to look at "accountWithLotsOfData"
     And User changes their network to "polygon"
     And User clicks on the "vesting" navigation button
-    And User opens "MATICx" permission table row
-    Then Auto-wrap icon for "MATICx" is "not existing"
+    And User opens "POLx" permission table row
+    Then Auto-wrap icon for "POLx" is "not existing"
 
   Scenario: Permissions table - Change network button - enabling auto-wrap
     Given "Dashboard Page" is open with "john" connected on "polygon"

@@ -42,7 +42,7 @@ Feature: Dashboard Page test cases
     And "optimism" "DAIx" flow rates are shown with the correct values
     Then "optimism" streams are shown with the correct values in dashboard page
     And Cancel and Edit buttons are visible
-    And User clicks on "polygon" "MATICx" row
+    And User clicks on "polygon" "POLx" row
     And Cancel button is disabled on all streams on "polygon"
     And User hovers on the first "polygon" stream cancel button
     Then A tooltip asking user to switch to "polygon" is shown
@@ -60,7 +60,7 @@ Feature: Dashboard Page test cases
   Scenario: View mode warnings in dashboard page
     Given "Dashboard Page" is open using view mode to look at "ongoingStreamAccount"
     And User waits for balances to load
-    And User clicks on "polygon" "MATICx" row
+    And User clicks on "polygon" "POLx" row
     Then There are no cancel or modify buttons in the last stream row
 
   # Scenario: Testnet faucet message in the dashboard page for user with no super tokens

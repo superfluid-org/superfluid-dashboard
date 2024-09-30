@@ -12,11 +12,11 @@ Feature: Wrap page test cases
   @skip
   Scenario: Token balances shown for a user with a connected wallet
     Given "Wrap Page" is open with "staticBalanceAccount" connected on "polygon"
-    Then The "MATIC" balance is shown correctly on "polygon"
+    Then The "POL" balance is shown correctly on "polygon"
     And User opens the token selection in the wrap page
     Then The underlying token balances in the wrap token dialog are shown correctly on "polygon"
     And None of the tokens shown have got an animation around them
-    And User chooses "MATIC" to wrap
+    And User chooses "POL" to wrap
     And User switches to unwrap tab
     And User opens the token selection in the wrap page
     Then The super token balances in the unwrap token dialog are shown correctly on "polygon"

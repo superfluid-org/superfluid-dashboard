@@ -30,14 +30,14 @@ Feature: Send Page test cases
     And User opens the token selection screen
     Then Super token balances are shown correctly for "staticBalanceAccount" on "polygon"
     And All of the tokens shown have an animation around them
-    And The user clicks on the "MATICx" wrap button
-    Then The user is redirected to the wrap page and "MATICx" is selected
+    And The user clicks on the "POLx" wrap button
+    Then The user is redirected to the wrap page and "POLx" is selected
     And User clicks on the "send" navigation button
     And Send page is open and the send container is visible
-    And User selects "MATICx" as the super token to use for the stream
+    And User selects "POLx" as the super token to use for the stream
     Then Token balance is shown correctly in the send stream page with a wrap button next to it
     And User clicks on the wrap button in the send stream page
-    Then The user is redirected to the wrap page and "MATICx" is selected
+    Then The user is redirected to the wrap page and "POLx" is selected
     And User clicks on the "send" navigation button
     And Send page is open and the send container is visible
     And User opens the token selection screen
@@ -48,11 +48,11 @@ Feature: Send Page test cases
   Scenario: Searching for a token in the token selection screen
     Given "Send Page" is open with "staticBalanceAccount" connected on "polygon"
     And User opens the token selection screen
-    And User searches for "MATIC" in the select token search field
-    Then The "MATIC" is only shown as a token search result
+    And User searches for "POL" in the select token search field
+    Then The "POL" is only shown as a token search result
     And User clears the token search field
-    And User searches for "matic" in the select token search field
-    Then The "MATIC" is only shown as a token search result
+    And User searches for "POL" in the select token search field
+    Then The "POL" is only shown as a token search result
     And User clears the token search field
     And User searches for "YOLO420" in the select token search field
     Then The could not find any tokens message is shown

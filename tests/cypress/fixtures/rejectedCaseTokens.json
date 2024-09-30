@@ -9,7 +9,7 @@
     "TokenOne": "DAI",
     "TokenTwo": "USDC.e",
     "TokenThree": "TDL",
-    "TokenGas": "MATIC"
+    "TokenGas": "POL"
   },
   "optimism": {
     "TokenOne": "DAI",

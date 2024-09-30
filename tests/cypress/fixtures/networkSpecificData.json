@@ -51,13 +51,13 @@
       "tokenValues": [
         {
           "tokenAddress": "0x3aD736904E9e65189c3000c7DD2c8AC8bB7cD4e3",
-          "token": "MATICx",
-          "tokenName": "Super MATIC",
-          "id": "matic-network",
+          "token": "POLx",
+          "tokenName": "Super POL",
+          "id": "polygon-network",
           "balance": "4",
           "underlyingBalance": "0.998914208450974000",
-          "underlyingTokenName": "MATIC",
-          "underlyingTokenSymbol": "MATIC"
+          "underlyingTokenName": "POL",
+          "underlyingTokenSymbol": "POL"
         },
         {
           "tokenAddress": "0xCAa7349CEA390F89641fe306D93591f87595dc1F",
@@ -73,7 +73,7 @@
     },
     "ongoingStreamsAccount": {
       "tokenValues": {
-        "token": "MATICx",
+        "token": "POLx",
         "netFlowRate": "-0.005/mo",
         "inFlow": "+0.005/mo",
         "outFlow": "-0.010139/mo",

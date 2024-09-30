@@ -185,9 +185,9 @@ export const networkDefinition: {
       type: TokenType.NativeAssetUnderlyingToken,
       superToken: {
         type: TokenType.NativeAssetSuperToken,
-        symbol: 'MATICx',
+        symbol: 'POLx',
         address: '0x3ad736904e9e65189c3000c7dd2c8ac8bb7cd4e3',
-        name: 'Super MATIC',
+        name: 'Super POL',
         decimals: 18,
       },
     },

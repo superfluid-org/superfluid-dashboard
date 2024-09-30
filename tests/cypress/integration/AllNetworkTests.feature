@@ -14,7 +14,7 @@ Feature: Test cases that run indefinitely on all supported networks
       | network        | token |
       | avalanche-fuji | AVAX  |
       | gnosis         | xDAI  |
-      | polygon        | MATIC |
+      | polygon        | POL   |
       | optimism       | ETH   |
       | arbitrum-one   | ETH   |
       | avalanche      | AVAX  |

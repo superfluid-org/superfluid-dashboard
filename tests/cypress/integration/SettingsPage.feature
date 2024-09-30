@@ -73,7 +73,7 @@ Feature: Settings page test cases
 
     Given "Settings Page" is open with "dan" connected on "opsepolia"
     And No loading skeletons are visible in the page
-    Then Permission row for "vijay.eth" to use "MATICx" on "opsepolia" does not exist
+    Then Permission row for "vijay.eth" to use "POLx" on "opsepolia" does not exist
 
   Scenario: Vesting form being auto-completed for existing permissions
     Given HDWallet transactions are rejected
