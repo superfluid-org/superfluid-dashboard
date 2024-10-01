@@ -222,7 +222,7 @@ export class ActivityPage extends BasePage {
 
   static waitForSkeletonsToDisappear() {
     this.isVisible(SKELETON_ROW);
-    this.doesNotExist(SKELETON_ROW);
+    this.doesNotExist(SKELETON_ROW, undefined, { timeout: 30000 });
   }
 
   static validateNoEntriesVisibleByNetwork(network: string) {

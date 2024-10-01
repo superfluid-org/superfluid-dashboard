@@ -1,38 +1,38 @@
-import { BasePage, UnitOfTime } from "../BasePage";
+import { BasePage, UnitOfTime } from '../BasePage';
 
-const ADDRESS_BUTTONS = "[data-cy=address-button]";
-const ADDRESS_INPUT = "[data-cy=address-dialog-input]";
-const ADDRESS_BOOK_ENTRIES = "[data-cy=address-book-entry]";
-const SEARCH_ENTRIES = "[data-cy=search-entry]";
-const REMOVE_ADDRESS_BUTTON = "[data-cy=remove-address-btn]";
-const SELECTED_ADDRESSES = "[data-cy=list-selected-address]";
-const SELECTED_FORM_ADDRESSES = "[data-cy=selected-address]";
-const OK_BUTTON = "[data-cy=ok-button]";
-const SEARCH_ADDRESSES = "[data-cy=list-search-address]";
-const DATE_RANGES = "[data-cy=date-ranges] input";
-const PRICE_GRANULARITY = "[data-cy=price-granularity]";
-const ACCOUNTING_PERIOD = "[data-cy=accounting-period]";
-const CURRENCY_BUTTON = "[data-cy=currency-button]";
-const EXPORT_PREVIEW = "[data-cy=export-preview-button]";
-const COLUMN_HEADERS = ".MuiDataGrid-columnHeaderTitleContainer";
-const HEADER_TRIPLE_DOTS = "[data-testid=TripleDotsVerticalIcon]";
-const FILTER_OPTIONS = "[role=tooltip] li";
+const ADDRESS_BUTTONS = '[data-cy=address-button]';
+const ADDRESS_INPUT = '[data-cy=address-dialog-input]';
+const ADDRESS_BOOK_ENTRIES = '[data-cy=address-book-entry]';
+const SEARCH_ENTRIES = '[data-cy=search-entry]';
+const REMOVE_ADDRESS_BUTTON = '[data-cy=remove-address-btn]';
+const SELECTED_ADDRESSES = '[data-cy=list-selected-address]';
+const SELECTED_FORM_ADDRESSES = '[data-cy=selected-address]';
+const OK_BUTTON = '[data-cy=ok-button]';
+const SEARCH_ADDRESSES = '[data-cy=list-search-address]';
+const DATE_RANGES = '[data-cy=date-ranges] input';
+const PRICE_GRANULARITY = '[data-cy=price-granularity]';
+const ACCOUNTING_PERIOD = '[data-cy=accounting-period]';
+const CURRENCY_BUTTON = '[data-cy=currency-button]';
+const EXPORT_PREVIEW = '[data-cy=export-preview-button]';
+const COLUMN_HEADERS = '.MuiDataGrid-columnHeaderTitleContainer';
+const HEADER_TRIPLE_DOTS = '[data-testid=TripleDotsVerticalIcon]';
+const FILTER_OPTIONS = '[role=tooltip] li';
 const COLUMN_CHECKBOXES =
-  ".MuiDataGrid-panelWrapper input.PrivateSwitchBase-input";
-const DATE_PICKER_YEAR_BUTTONS = ".PrivatePickersYear-yearButton";
-const DATE_PICKER_MONTH_BUTTONS = ".PrivatePickersMonth-root";
-const DATE_PICKER_ICONS = "[data-testid=CalendarIcon]";
-const EXPORT_CSV = "[data-cy=export-csv-button]";
-const AMOUNT_CELLS = ".MuiDataGrid-cell[data-field=amount]";
-const COUNTERPARTY_CELLS = ".MuiDataGrid-cell[data-field=counterparty]";
-const DATE_CELLS = ".MuiDataGrid-cell[data-field=date]";
-const FILTER_SELECT_FIELDS = ".MuiFormControl-root .MuiInputBase-root select";
-const FILTER_INPUT_FIELDS = ".MuiFormControl-root .MuiInputBase-root input";
+  '.MuiDataGrid-panelWrapper input.PrivateSwitchBase-input';
+const DATE_PICKER_YEAR_BUTTONS = '.PrivatePickersYear-yearButton';
+const DATE_PICKER_MONTH_BUTTONS = '.PrivatePickersMonth-root';
+const DATE_PICKER_ICONS = '[data-testid=CalendarIcon]';
+const EXPORT_CSV = '[data-cy=export-csv-button]';
+const AMOUNT_CELLS = '.MuiDataGrid-cell[data-field=amount]';
+const COUNTERPARTY_CELLS = '.MuiDataGrid-cell[data-field=counterparty]';
+const DATE_CELLS = '.MuiDataGrid-cell[data-field=date]';
+const FILTER_SELECT_FIELDS = '.MuiFormControl-root .MuiInputBase-root select';
+const FILTER_INPUT_FIELDS = '.MuiFormControl-root .MuiInputBase-root input';
 
 const EXPORTING_ENDPOINT =
-  "https://accounting.superfluid.dev/v1/stream-periods**";
-const TESTING_ACCOUNT1 = "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40";
-const TESTING_ACCOUNT2 = "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2";
+  'https://accounting.superfluid.dev/v1/stream-periods**';
+const TESTING_ACCOUNT1 = '0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40';
+const TESTING_ACCOUNT2 = '0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2';
 
 const GranularityWordMap: Record<string, UnitOfTime> = {
   Hourly: UnitOfTime.Hour,
@@ -43,27 +43,27 @@ const GranularityWordMap: Record<string, UnitOfTime> = {
 };
 
 const ApiWordMap: Record<string, string> = {
-  Hourly: "hour",
-  Daily: "day",
-  Weekly: "week",
-  Monthly: "month",
-  Yearly: "year",
+  Hourly: 'hour',
+  Daily: 'day',
+  Weekly: 'week',
+  Monthly: 'month',
+  Yearly: 'year',
 };
 
 const allColumns = [
-  "date",
-  "startDate",
-  "amount",
-  "counterparty",
-  "counterpartyAddress",
-  "tokenSymbol",
-  "network",
-  "transaction",
-  "sender",
-  "receiver",
-  "transactionHash",
-  "tokenAddress",
-  "tokenName",
+  'date',
+  'startDate',
+  'amount',
+  'counterparty',
+  'counterpartyAddress',
+  'tokenSymbol',
+  'network',
+  'transaction',
+  'sender',
+  'receiver',
+  'transactionHash',
+  'tokenAddress',
+  'tokenName',
 ];
 
 export class ExportPage extends BasePage {
@@ -77,8 +77,8 @@ export class ExportPage extends BasePage {
   }
 
   static validateSelectedAddress(address: string) {
-    cy.get(SELECTED_ADDRESSES).contains(address).should("be.visible");
-    cy.get(SEARCH_ENTRIES).contains(address).should("be.visible");
+    cy.get(SELECTED_ADDRESSES).contains(address).should('be.visible');
+    cy.get(SEARCH_ENTRIES).contains(address).should('be.visible');
   }
 
   static removeLastSelectedAddressFromSearchList() {
@@ -92,7 +92,7 @@ export class ExportPage extends BasePage {
 
   static validateSelectedAddressAmount(amount: string) {
     let expectedText =
-      amount === "0" ? "Select address(es)" : `${amount} address(es) selected`;
+      amount === '0' ? 'Select address(es)' : `${amount} address(es) selected`;
     this.hasText(ADDRESS_BUTTONS, expectedText, 0);
   }
 
@@ -115,21 +115,21 @@ export class ExportPage extends BasePage {
   }
 
   static validateAPIResultsFor(period: string) {
-    cy.intercept("GET", EXPORTING_ENDPOINT, (req) => {
-      req.query.start = "1672524000";
-      req.query.end = "1675202399";
+    cy.intercept('GET', EXPORTING_ENDPOINT, (req) => {
+      req.query.start = '1672524000';
+      req.query.end = '1675202399';
       expect(req.query.priceGranularity).to.eq(ApiWordMap[period].toString());
       expect(req.query.virtualization).to.eq(ApiWordMap[period].toString());
       req.continue((res) => {});
-    }).as("exportRequest");
+    }).as('exportRequest');
 
     this.clickExportPreview();
-    cy.wait("@exportRequest").then((req) => {
+    cy.wait('@exportRequest').then((req) => {
       cy.writeFile(
         `cypress/fixtures/newData/${period}.json`,
         JSON.parse(req.response?.body)
       );
-      cy.fixture("exportData.json").then((data) => {
+      cy.fixture('exportData.json').then((data) => {
         expect(JSON.parse(req.response?.body)).to.deep.eq(data[period]);
       });
     });
@@ -142,35 +142,35 @@ export class ExportPage extends BasePage {
 
   static validateCorrectlyExportedData(type: string) {
     switch (type) {
-      case "multiple accounts":
-        cy.intercept("GET", EXPORTING_ENDPOINT, (req) => {
+      case 'multiple accounts':
+        cy.intercept('GET', EXPORTING_ENDPOINT, (req) => {
           expect(req.query.addresses).to.eq(
             `${TESTING_ACCOUNT1},${TESTING_ACCOUNT2}`
           );
-        }).as("exportRequest");
+        }).as('exportRequest');
         this.clickExportPreview();
-        cy.wait("@exportRequest").then((req) => {
+        cy.wait('@exportRequest').then((req) => {
           cy.writeFile(
             `cypress/fixtures/newData/${type}.json`,
             JSON.parse(req.response?.body)
           );
-          cy.fixture("exportData.json").then((data) => {
+          cy.fixture('exportData.json').then((data) => {
             expect(JSON.parse(req.response?.body)).to.deep.eq(data[type]);
           });
         });
         this.isVisible(AMOUNT_CELLS);
         break;
-      case "counterparty":
-        cy.intercept("GET", EXPORTING_ENDPOINT, (req) => {
+      case 'counterparty':
+        cy.intercept('GET', EXPORTING_ENDPOINT, (req) => {
           expect(req.query.counterparties).to.eq(TESTING_ACCOUNT1);
-        }).as("exportRequest");
+        }).as('exportRequest');
         this.clickExportPreview();
-        cy.wait("@exportRequest").then((req) => {
+        cy.wait('@exportRequest').then((req) => {
           cy.writeFile(
             `cypress/fixtures/newData/${type}.json`,
             JSON.parse(req.response?.body)
           );
-          cy.fixture("exportData.json").then((data) => {
+          cy.fixture('exportData.json').then((data) => {
             expect(JSON.parse(req.response?.body)).to.deep.eq(data[type]);
           });
         });
@@ -179,26 +179,26 @@ export class ExportPage extends BasePage {
         });
         this.isVisible(AMOUNT_CELLS);
         break;
-      case "custom dates":
-        cy.intercept("GET", EXPORTING_ENDPOINT, (req) => {
-          expect(req.query.start).to.eq("1640995200");
-          expect(req.query.end).to.eq("1646092799");
-        }).as("exportRequest");
+      case 'custom dates':
+        cy.intercept('GET', EXPORTING_ENDPOINT, (req) => {
+          expect(req.query.start).to.eq('1640995200');
+          expect(req.query.end).to.eq('1646092799');
+        }).as('exportRequest');
         this.click(EXPORT_PREVIEW);
-        cy.wait("@exportRequest").then((req) => {
+        cy.wait('@exportRequest').then((req) => {
           cy.writeFile(
             `cypress/fixtures/newData/${type}.json`,
             JSON.parse(req.response?.body)
           );
-          cy.fixture("exportData.json").then((data) => {
+          cy.fixture('exportData.json').then((data) => {
             expect(JSON.parse(req.response?.body)).to.deep.eq(data[type]);
           });
         });
         cy.get(DATE_CELLS).each((row) => {
-          expect(row).to.contain.text("2022/01/");
+          expect(row).to.contain.text('2022/01/');
         });
         break;
-      case "all columns":
+      case 'all columns':
         //Reversing because the first columns aren't rendered when looking from the last
         let json = {};
         allColumns.reverse().forEach((column) => {
@@ -208,12 +208,12 @@ export class ExportPage extends BasePage {
             0
           ).scrollIntoView();
           cy.get(`.MuiDataGrid-cell[data-field=${column}]`).each((row, i) => {
-            cy.fixture("exportData.json").then((data) => {
+            cy.fixture('exportData.json').then((data) => {
               json[column][i] = row.text();
+              cy.writeFile('cypress/fixtures/newData/allColumns.json', json);
               expect(row).to.have.text(data[type][column][i]);
             });
           });
-          cy.writeFile("cypress/fixtures/newData/allColumns.json", json);
         });
         break;
 
@@ -240,18 +240,18 @@ export class ExportPage extends BasePage {
     cy.wait(2000);
     this.forceClick(HEADER_TRIPLE_DOTS, 0);
     this.clickFirstVisible(HEADER_TRIPLE_DOTS);
-    cy.get(FILTER_OPTIONS).contains("Show columns").click();
+    cy.get(FILTER_OPTIONS).contains('Show columns').click();
     cy.get(COLUMN_CHECKBOXES).each((checkbox) => {
-      if (!checkbox.attr("checked")) {
+      if (!checkbox.attr('checked')) {
         cy.wrap(checkbox).click();
       }
       this.get(
-        `.MuiDataGrid-cell[data-field=${checkbox.attr("name")}]`,
+        `.MuiDataGrid-cell[data-field=${checkbox.attr('name')}]`,
         0
       ).scrollIntoView();
-      this.isVisible(`.MuiDataGrid-cell[data-field=${checkbox.attr("name")}]`);
+      this.isVisible(`.MuiDataGrid-cell[data-field=${checkbox.attr('name')}]`);
       this.hasLength(
-        `.MuiDataGrid-cell[data-field=${checkbox.attr("name")}]`,
+        `.MuiDataGrid-cell[data-field=${checkbox.attr('name')}]`,
         8
       );
     });
@@ -279,7 +279,7 @@ export class ExportPage extends BasePage {
 
     cy.wrap(actualArray).then((array) => {
       let expectedArray = [...array].sort(function (a, b) {
-        return ascdesc === "ascending" ? a - b : b - a;
+        return ascdesc === 'ascending' ? a - b : b - a;
       });
       expect(expectedArray).to.deep.eq(array);
     });
@@ -288,7 +288,7 @@ export class ExportPage extends BasePage {
   static addCustomFilter(column: string, operator: string, value: string) {
     this.forceClick(HEADER_TRIPLE_DOTS, 0);
     this.clickFirstVisible(HEADER_TRIPLE_DOTS);
-    cy.get(FILTER_OPTIONS).contains("Filter").click();
+    cy.get(FILTER_OPTIONS).contains('Filter').click();
     this.select(FILTER_SELECT_FIELDS, column, 1);
     this.select(FILTER_SELECT_FIELDS, operator, -1);
     this.type(FILTER_INPUT_FIELDS, value);
@@ -296,14 +296,14 @@ export class ExportPage extends BasePage {
 
   static validateFilteredRows(column: string, value: string) {
     cy.get(`.MuiDataGrid-cell[data-field=${column}]`).should(
-      "have.length.below",
+      'have.length.below',
       11
     );
     //Lazy fix , not really anything else to assert on
     //The small loading spinner disapears too fast and getting the whole table during filtering might re-render the values
     cy.wait(1000);
     cy.get(`.MuiDataGrid-cell[data-field=${column}]`).each((row) => {
-      cy.wrap(row).should("contain.text", value);
+      cy.wrap(row).should('contain.text', value);
     });
   }
 
@@ -333,8 +333,8 @@ export class ExportPage extends BasePage {
   }
 
   static validateDownloadedCSV() {
-    cy.fixture("streamPeriodExportExample.csv").then((csv) => {
-      cy.readFile("cypress/downloads/Stream periods export.csv").then(
+    cy.fixture('streamPeriodExportExample.csv').then((csv) => {
+      cy.readFile('cypress/downloads/Stream periods export.csv').then(
         (downloadedCSV) => {
           expect(csv).to.eq(downloadedCSV);
         }
@@ -343,11 +343,11 @@ export class ExportPage extends BasePage {
   }
 
   static validateSelectedAddressBookEntry(nameOrAddress: string) {
-    cy.get(SELECTED_ADDRESSES).contains(nameOrAddress).should("be.visible");
+    cy.get(SELECTED_ADDRESSES).contains(nameOrAddress).should('be.visible');
     cy.get(ADDRESS_BOOK_ENTRIES)
       .contains(nameOrAddress)
       .scrollIntoView()
-      .should("be.visible");
+      .should('be.visible');
   }
 
   static validateSelectedAddressInForm(nameOrAddress: string, index = 0) {

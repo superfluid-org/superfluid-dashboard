@@ -1,4 +1,4 @@
-@numTestsKeptInMemory(0)
+@numTestsKeptInMemory(1)
 Feature: Export Stream Data page test cases
 
   Scenario: Selecting and removing an address from the list
