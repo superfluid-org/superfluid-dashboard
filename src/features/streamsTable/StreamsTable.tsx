@@ -275,7 +275,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
         const stream2Active = s2.currentFlowRate !== "0";
 
         if (stream1Active && !stream2Active) return -1;
-        if (!stream2Active && stream2Active) return 1;
+        if (!stream1Active && stream2Active) return 1;
         return 0;
       });
   }, [incomingStreams, outgoingStreams, allTasks]);
