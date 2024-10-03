@@ -282,10 +282,10 @@ const TokenPageContent: FC<{
                   color="text.secondary"
                 >
                   <FlowingFiatBalance
-                    balance={balance!}
-                    flowRate={flowRate!}
-                    balanceTimestamp={balanceTimestamp!}
-                    price={tokenPrice!}
+                    balance={balance}
+                    flowRate={flowRate}
+                    balanceTimestamp={balanceTimestamp}
+                    price={tokenPrice}
                   />
                 </Typography>
               )}
