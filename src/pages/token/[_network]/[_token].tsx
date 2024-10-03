@@ -20,7 +20,7 @@ import { BigNumber } from "ethers";
 import { isString } from "lodash";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
-import { FC, PropsWithChildren, useEffect, useState } from "react";
+import { FC, PropsWithChildren, useEffect, useMemo, useState } from "react";
 import SEO from "../../../components/SEO/SEO";
 import withStaticSEO from "../../../components/SEO/withStaticSEO";
 import TimeUnitFilter, {
@@ -49,6 +49,7 @@ import Page404 from "../../404";
 import PoolMembersTable from "../../../features/pool/PoolMembersTable";
 import { useAccount } from "wagmi";
 import { useTokenQuery } from "../../../hooks/useTokenQuery";
+import { BIG_NUMBER_ZERO, calculateMaybeCriticalAtTimestamp } from "../../../utils/tokenUtils";
 
 export const getTokenPagePath = ({
   network,
@@ -166,6 +167,31 @@ const TokenPageContent: FC<{
   const onShowForecastChange = (_e: unknown, checked: boolean) =>
     setShowForecast(checked);
 
+  const onTabChange = (_e: unknown, newTab: TokenDetailsTabs) =>
+    setActiveTab(newTab);
+
+  const onGraphFilterChange = (newGraphFilter: TimeUnitFilterType) =>
+    setGraphFilter(newGraphFilter);
+
+  const maybeCriticalAtTimestamp = useMemo(() => {
+    if (!realTimeBalanceQuery.data) {
+      return null;
+    }
+
+    const criticalTimestamp = calculateMaybeCriticalAtTimestamp({
+      balanceUntilUpdatedAtWei: realTimeBalanceQuery.data.balance,
+      updatedAtTimestamp: realTimeBalanceQuery.data.balanceTimestamp,
+      totalNetFlowRateWei: realTimeBalanceQuery.data.flowRate,
+    });
+
+    if (criticalTimestamp.gt(BIG_NUMBER_ZERO)) {
+      return criticalTimestamp.toNumber();
+    }
+
+    return null;
+  }, [realTimeBalanceQuery.data]);
+
+
   if (superTokenQuery.isLoading || tokenSnapshotQuery.isLoading) {
     return <TokenPageContainer />;
   }
@@ -174,20 +200,12 @@ const TokenPageContent: FC<{
     return <Page404 />;
   }
 
-  const onTabChange = (_e: unknown, newTab: TokenDetailsTabs) =>
-    setActiveTab(newTab);
-
-  const onGraphFilterChange = (newGraphFilter: TimeUnitFilterType) =>
-    setGraphFilter(newGraphFilter);
-
   const {
-    token,    
     balanceUntilUpdatedAt,
     totalNetFlowRate,
     totalInflowRate,
     totalOutflowRate,
-    updatedAtTimestamp,
-    maybeCriticalAtTimestamp,
+    updatedAtTimestamp
   } = tokenSnapshotQuery.data;
 
   const {
@@ -264,10 +282,10 @@ const TokenPageContent: FC<{
                   color="text.secondary"
                 >
                   <FlowingFiatBalance
-                    balance={balance}
-                    flowRate={flowRate}
-                    balanceTimestamp={balanceTimestamp}
-                    price={tokenPrice}
+                    balance={balance!}
+                    flowRate={flowRate!}
+                    balanceTimestamp={balanceTimestamp!}
+                    price={tokenPrice!}
                   />
                 </Typography>
               )}
