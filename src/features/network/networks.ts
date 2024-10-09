@@ -641,7 +641,7 @@ export const networkDefinition = {
       isSuperToken: false,
     },
     vestingContractAddress_v1: vestingContractAddresses_v1.base,
-    vestingContractAddress_v2: undefined,
+    vestingContractAddress_v2: vestingContractAddresses_v2.base,
     vestingSubgraphUrl: vestingSubgraphUrls.base,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.base,
     autoWrap: {
