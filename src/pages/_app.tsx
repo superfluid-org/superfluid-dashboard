@@ -1,4 +1,5 @@
 import "../wdyr";
+import '../BigInt.toJson';
 
 import { allNetworks as _importNetworksForInitialization } from "../features/network/networks";
 import { CacheProvider, EmotionCache } from "@emotion/react";
