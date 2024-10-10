@@ -243,7 +243,7 @@ const StreamingFormProvider: FC<
     mode: "onChange",
   });
 
-  const { formState, setValue, trigger, clearErrors, setError, watch } =
+  const { setValue, clearErrors, setError, watch } =
     formMethods;
 
   const [

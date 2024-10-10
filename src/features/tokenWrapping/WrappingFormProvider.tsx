@@ -251,7 +251,7 @@ The chain ID was: ${network.id}`);
     resolver: yupResolver(formSchema as ObjectSchema<WrappingForm>),
   });
 
-  const { formState, setValue, trigger, clearErrors, setError, watch } =
+  const { setValue, clearErrors, setError } =
     formMethods;
 
   const [hasRestored, setHasRestored] = useState(!restoration);

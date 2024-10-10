@@ -84,7 +84,6 @@ export default function MyApp(props: AppPropsWithLayout) {
                                 <AnalyticsProvider>
                                   <ToastProvider />
                                   <IntercomProvider>
-                                    <MonitorContext />
                                     <Layout>
                                       <MinigameProvider>
                                         {getLayout(
@@ -92,6 +91,7 @@ export default function MyApp(props: AppPropsWithLayout) {
                                         )}
                                       </MinigameProvider>
                                     </Layout>
+                                    <MonitorContext />
                                   </IntercomProvider>
                                 </AnalyticsProvider>
                               </LayoutContextProvider>

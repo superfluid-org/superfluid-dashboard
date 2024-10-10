@@ -91,7 +91,7 @@ const AccountingExportFormProvider: FC<
     mode: "onChange",
   });
 
-  const { formState, setValue, trigger, clearErrors } = formMethods;
+  const { setValue, clearErrors } = formMethods;
 
   const [isInitialized, setIsInitialized] = useState(!initialFormValues);
 

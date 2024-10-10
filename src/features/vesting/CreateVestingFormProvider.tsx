@@ -304,7 +304,7 @@ const CreateVestingFormProvider: FC<{
     mode: "onChange",
   });
 
-  const { clearErrors, setError, control } = formMethods;
+  const { clearErrors, setError } = formMethods;
 
   const [isInitialized, setIsInitialized] = useState(false);
 
