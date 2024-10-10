@@ -43,7 +43,20 @@ const moduleExports = {
   reactStrictMode: true,
   images: {
     loader: "custom",
-    domains: ["raw.githubusercontent.com"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "raw.githubusercontent.com",
+        port: "",
+        pathname: "/superfluid-finance/**/*",
+      },
+      {
+        protocol: "https",
+        hostname: "superfluid-finance.github.io",
+        port: "",
+        pathname: "/**/*",
+      },
+    ],
   },
   env: {
     NEXT_PUBLIC_APP_URL: process.env.URL,
