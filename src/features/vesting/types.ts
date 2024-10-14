@@ -1,4 +1,3 @@
-import { getUnixTime } from "date-fns";
 import {
   GetVestingScheduleQuery
 } from "../../vesting-subgraph/.graphclient";
@@ -260,10 +259,6 @@ const getVestingStatus = (vestingSchedule: Omit<VestingSchedule, "status">) => {
       return vestingStatuses.CliffPeriod;
     }
   }
-
-  console.log({
-    vestingSchedule
-  })
 
   return vestingStatuses.ScheduledStart;
 };

@@ -1,4 +1,4 @@
-import "../wdyr";
+// import "../wdyr"; // Un-comment if you want Why-Did-You-Render support
 import '../BigInt.toJson';
 
 import { allNetworks as _importNetworksForInitialization } from "../features/network/networks";

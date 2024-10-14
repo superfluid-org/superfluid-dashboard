@@ -19,16 +19,13 @@ import {
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { skipToken } from "@reduxjs/toolkit/query";
 import { add } from "date-fns";
-import { FC, memo, useMemo } from "react";
-import { Controller, useFormContext } from "react-hook-form";
+import { FC, memo, useEffect, useMemo, useState } from "react";
+import { Control, Controller, useForm, useFormContext, useFormState, useWatch } from "react-hook-form";
 import { inputPropsForEtherAmount } from "../../utils/inputPropsForEtherAmount";
 import TooltipWithIcon from "../common/TooltipWithIcon";
-import { useNetworkCustomTokens } from "../customTokens/customTokens.slice";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { getSuperTokenType } from "../redux/endpoints/adHocSubgraphEndpoints";
-import { subgraphApi } from "../redux/store";
 import AddressSearch from "../send/AddressSearch";
 import {
   timeUnitWordMap,
@@ -44,6 +41,7 @@ import useActiveAutoWrap from "./useActiveAutoWrap";
 import { SuperTokenMinimal, TokenType } from "../redux/endpoints/tokenTypes";
 import { useVestingVersion } from "../../hooks/useVestingVersion";
 import { useSuperTokens } from "../../hooks/useSuperTokens";
+import { Network } from "../network/networks";
 
 export enum VestingFormLabels {
   Receiver = "Receiver",
@@ -67,332 +65,15 @@ const CreateVestingForm: FC<{
   token: SuperTokenMinimal | null | undefined;
   setView: (value: CreateVestingCardView) => void;
 }> = ({ token, setView }) => {
+
+  const { network } = useExpectedNetwork();
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
-  const { network } = useExpectedNetwork();
+  const { data: { cliffEnabled, setupAutoWrap } } = useWatch();
 
-  const { watch, control, formState, setValue } =
-    useFormContext<PartialVestingForm>();
-
-  const minVestingStartDate = useMemo(
-    () =>
-      add(new Date(), {
-        minutes: 15,
-      }),
-    []
-  );
-
-  const maxVestingStartDate = useMemo(
-    () =>
-      add(new Date(), {
-        years: 1,
-      }),
-    []
-  );
-
-  const [cliffEnabled, vestingPeriod, setupAutoWrap] = watch([
-    "data.cliffEnabled",
-    "data.vestingPeriod",
-    "data.setupAutoWrap",
-    "data.claimEnabled"
-  ]);
-
-  const ReceiverController = (
-    <Controller
-      control={control}
-      name="data.receiverAddress"
-      render={({ field: { value, onChange, onBlur } }) => (
-        <AddressSearch
-          address={value}
-          onChange={onChange}
-          onBlur={onBlur}
-          addressLength={isBelowMd ? "medium" : "long"}
-          ButtonProps={{ fullWidth: true }}
-        />
-      )}
-    />
-  );
-
-  const { superTokens, isFetching } = useSuperTokens({ network });
-
-  const TokenController = (
-    <Controller
-      control={control}
-      name="data.superTokenAddress"
-      render={({ field: { onChange, onBlur } }) => (
-        <TokenDialogButton
-          token={token}
-          network={network}
-          tokens={superTokens}
-          isTokensFetching={isFetching}
-          showUpgrade={true}
-          onTokenSelect={(x) => onChange(x.address)}
-          onBlur={onBlur}
-          ButtonProps={{ variant: "input" }}
-        />
-      )}
-    />
-  );
-
-  const VestingAmountController = (
-    <Controller
-      control={control}
-      name="data.totalAmountEther"
-      render={({ field: { value, onChange, onBlur } }) => (
-        <TextField
-          data-cy={"total-amount-input"}
-          value={value}
-          onChange={onChange}
-          onBlur={onBlur}
-          InputProps={{
-            endAdornment: (
-              <Typography component="span" color={"text.secondary"}>
-                {token?.symbol ?? ""}
-              </Typography>
-            ),
-          }}
-        />
-      )}
-    />
-  );
-
-  const StartDateController = (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <Controller
-        control={control}
-        name="data.startDate"
-        render={({ field: { value, onChange, onBlur } }) => (
-          <DateTimePicker
-            renderInput={(props) => (
-              <TextField
-                data-cy={"date-input"}
-                fullWidth
-                {...props}
-                onBlur={onBlur}
-              />
-            )}
-            value={value}
-            ampm={false}
-            onChange={onChange}
-            disablePast
-            minDateTime={minVestingStartDate}
-            maxDateTime={maxVestingStartDate}
-          />
-        )}
-      />
-    </LocalizationProvider>
-  );
-
-  const CliffAmountController = (
-    <Controller
-      control={control}
-      name="data.cliffAmountEther"
-      render={({ field: { value, onChange, onBlur } }) => (
-        <TextField
-          data-cy={"cliff-amount-input"}
-          value={value}
-          onChange={onChange}
-          onBlur={onBlur}
-          InputProps={{
-            endAdornment: (
-              <Typography component="span" color={"text.secondary"}>
-                {token?.symbol ?? ""}
-              </Typography>
-            ),
-          }}
-          inputProps={{
-            ...inputPropsForEtherAmount,
-          }}
-        />
-      )}
-    />
-  );
-
-  const CliffPeriodController = (
-    <Controller
-      control={control}
-      name="data.cliffPeriod"
-      render={({ field: { value, onChange, onBlur } }) => (
-        <Box sx={{ display: "grid", gridTemplateColumns: "2fr 1fr" }}>
-          <TextField
-            data-cy={"cliff-period-input"}
-            value={value.numerator}
-            onChange={(e) =>
-              onChange({
-                numerator: e.target.value,
-                denominator: value.denominator,
-              })
-            }
-            onBlur={onBlur}
-            InputProps={{
-              sx: {
-                borderTopRightRadius: 0,
-                borderBottomRightRadius: 0,
-              },
-            }}
-            type="number"
-            inputMode="numeric"
-          />
-          <Select
-            data-cy={"cliff-period-unit"}
-            value={value.denominator}
-            onChange={(e) =>
-              onChange({
-                numerator: value.numerator,
-                denominator: e.target.value,
-              })
-            }
-            onBlur={onBlur}
-            sx={{
-              borderTopLeftRadius: 0,
-              borderBottomLeftRadius: 0,
-            }}
-          >
-            {unitOfTimeList
-              .filter(
-                (x) =>
-                  x >= (network.testnet ? UnitOfTime.Minute : UnitOfTime.Day) &&
-                  x <= UnitOfTime.Year
-              )
-              .map((unitOfTime) => (
-                <MenuItem key={unitOfTime} value={unitOfTime} onBlur={onBlur}>
-                  {timeUnitWordMap[unitOfTime]}(s)
-                </MenuItem>
-              ))}
-          </Select>
-        </Box>
-      )}
-    />
-  );
-
-  const VestingPeriodController = (
-    <Controller
-      control={control}
-      name="data.vestingPeriod"
-      render={({ field: { value, onChange, onBlur } }) => {
-        return (
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: "2fr 1fr",
-              alignItems: "stretch",
-            }}
-          >
-            <TextField
-              data-cy={"total-period-input"}
-              value={value.numerator}
-              onChange={(e) => {
-                onChange({
-                  numerator: e.target.value,
-                  denominator: value.denominator,
-                });
-              }}
-              onBlur={onBlur}
-              InputProps={{
-                sx: {
-                  borderTopRightRadius: 0,
-                  borderBottomRightRadius: 0,
-                },
-              }}
-              type="number"
-              inputMode="numeric"
-            />
-            <Select
-              data-cy={"total-period-unit"}
-              value={value.denominator}
-              onChange={(e) =>
-                onChange({
-                  numerator: value.numerator,
-                  denominator: e.target.value,
-                })
-              }
-              onBlur={onBlur}
-              sx={{
-                borderTopLeftRadius: 0,
-                borderBottomLeftRadius: 0,
-              }}
-            >
-              {unitOfTimeList
-                .filter(
-                  (x) =>
-                    x >=
-                    (network.testnet ? UnitOfTime.Minute : UnitOfTime.Day) &&
-                    x <= UnitOfTime.Year
-                )
-                .map((unitOfTime) => (
-                  <MenuItem key={unitOfTime} value={unitOfTime} onBlur={onBlur}>
-                    {timeUnitWordMap[unitOfTime]}(s)
-                  </MenuItem>
-                ))}
-            </Select>
-          </Box>
-        );
-      }}
-    />
-  );
-
-  const CliffEnabledController = (
-    <Controller
-      control={control}
-      name="data.cliffEnabled"
-      render={({ field: { value, onChange, onBlur } }) => (
-        <FormControlLabel
-          data-cy={"cliff-toggle"}
-          control={
-            <Switch
-              checked={value}
-              onChange={(_event, checked) => {
-                onChange(checked);
-                if (!checked) {
-                  setValue("data.cliffAmountEther", "", {
-                    shouldDirty: true,
-                    shouldValidate: true,
-                  });
-                  setValue(
-                    "data.cliffPeriod",
-                    {
-                      numerator: "",
-                      denominator: vestingPeriod.denominator,
-                    },
-                    { shouldDirty: true, shouldValidate: true }
-                  );
-                }
-              }}
-              onBlur={onBlur}
-            />
-          }
-          label="Add Cliff"
-        />
-      )}
-    />
-  );
-
-  
   const { vestingVersion } = useVestingVersion();
   const isClaimFeatureEnabled = vestingVersion === "v2";
-
-  const ClaimController = (
-    <Controller
-      control={control}
-      name="data.claimEnabled"
-      render={({ field: { value, onChange, onBlur } }) => (
-        <FormControlLabel
-          data-cy={"claim-toggle"}
-          control={
-            <Switch
-              checked={value}
-              onChange={(_event, checked) => {
-                onChange(checked);
-              }}
-              onBlur={onBlur}
-            />
-          }
-          label={VestingFormLabels.Claim}
-        />
-      )}
-    />
-  );
 
   const { visibleAddress } = useVisibleAddress();
 
@@ -427,54 +108,10 @@ const CreateVestingForm: FC<{
     !activeAutoWrapSchedule &&
     !isAutoWrapAllowanceSufficient;
 
-  const AutoWrapController = (
-    <Controller
-      control={control}
-      name="data.setupAutoWrap"
-      render={({ field: { value, onChange, onBlur } }) => (
-        <FormControlLabel
-          data-cy="auto-wrap-switch"
-          label={VestingFormLabels.AutoWrap}
-          control={
-            <Switch checked={!!value} onChange={onChange} onBlur={onBlur} />
-          }
-        />
-      )}
-    />
-  );
-
-  const PreviewVestingScheduleButton = (
-    <Button
-      data-cy={"preview-schedule-button"}
-      {...transactionButtonDefaultProps}
-      disabled={!formState.isValid || formState.isValidating}
-      onClick={() => setView(CreateVestingCardView.Preview)}
-    >
-      Preview Vesting Schedule
-    </Button>
-  );
-
-  const ValidationSummary = (
-    <ErrorMessage
-      name="data"
-      // ErrorMessage has a bug and current solution is to pass in errors via props.
-      // TODO: keep eye on this issue: https://github.com/react-hook-form/error-message/issues/91
-      errors={formState.errors}
-      render={({ message }) =>
-        !!message && (
-          <Alert severity="error" sx={{ mb: 1 }}>
-            {message}
-          </Alert>
-        )
-      }
-    />
-  );
-
   return (
     <Stack component={"form"} gap={4}>
       <Stack gap={2.5}>
-        {ValidationSummary}
-
+        <ValidationSummary />
         <FormGroup>
           <Stack
             direction="row"
@@ -484,13 +121,13 @@ const CreateVestingForm: FC<{
             <FormLabel>{VestingFormLabels.Receiver}</FormLabel>
             <TooltipWithIcon title="Must not be an exchange address" />
           </Stack>
-          {ReceiverController}
+          <ReceiverController isBelowMd={isBelowMd} />
         </FormGroup>
 
         {
           isClaimFeatureEnabled && (
             <Stack data-cy="claim-switch-and-tooltip" direction="row" alignItems="center">
-              {ClaimController}
+              <ClaimController />
               <TooltipWithIcon title={VestingTooltips.Claim} />
             </Stack>
           )
@@ -505,11 +142,11 @@ const CreateVestingForm: FC<{
         >
           <FormGroup>
             <FormLabel>{VestingFormLabels.SuperToken}</FormLabel>
-            {TokenController}
+            <TokenController token={token} network={network} />
           </FormGroup>
           <FormGroup>
             <FormLabel>{VestingFormLabels.VestingStartDate}</FormLabel>
-            {StartDateController}
+            <StartDateController />
           </FormGroup>
         </Box>
 
@@ -529,7 +166,7 @@ const CreateVestingForm: FC<{
               <FormLabel>{VestingFormLabels.TotalVestedAmount}</FormLabel>
               <TooltipWithIcon title="Set the total amount to be vested" />
             </Stack>
-            {VestingAmountController}
+            <VestingAmountController token={token} />
           </FormGroup>
 
           <FormGroup>
@@ -541,12 +178,12 @@ const CreateVestingForm: FC<{
               <FormLabel>{VestingFormLabels.TotalVestingPeriod}</FormLabel>
               <TooltipWithIcon title="Set the total length of time for vesting" />
             </Stack>
-            {VestingPeriodController}
+            <VestingPeriodController network={network} />
           </FormGroup>
         </Box>
 
         <Stack direction="row" alignItems="center">
-          {CliffEnabledController}
+          <CliffEnabledController />
           <TooltipWithIcon title="Set the cliff date and amount to be granted." />
         </Stack>
 
@@ -567,7 +204,7 @@ const CreateVestingForm: FC<{
                 <FormLabel>{VestingFormLabels.CliffAmount}</FormLabel>
                 <TooltipWithIcon title="Set the amount to be vested at the cliff" />
               </Stack>
-              {CliffAmountController}
+              <CliffAmountController token={token} />
             </FormGroup>
 
             <FormGroup>
@@ -579,14 +216,14 @@ const CreateVestingForm: FC<{
                 <FormLabel>{VestingFormLabels.CliffPeriod}</FormLabel>
                 <TooltipWithIcon title="Set the time until the cliff from the start date" />
               </Stack>
-              {CliffPeriodController}
+              <CliffPeriodController network={network} />
             </FormGroup>
           </Box>
         )}
 
         {isAutoWrapInputVisible && (
           <Stack data-cy="auto-wrap-switch-and-tooltip" direction="row" alignItems="center">
-            {AutoWrapController}
+            <AutoWrapController />
             <TooltipWithIcon title={VestingTooltips.AutoWrap} />
           </Stack>
         )}
@@ -631,9 +268,409 @@ const CreateVestingForm: FC<{
         )}
       </Stack>
 
-      <Stack gap={1}>{PreviewVestingScheduleButton}</Stack>
+      <Stack gap={1}>
+        <PreviewVestingScheduleButton setView={setView} />
+      </Stack>
     </Stack>
   );
 };
 
 export default memo(CreateVestingForm);
+
+// # Sub-components
+const ReceiverController = memo(function ReceiverController(props: {
+  isBelowMd: boolean
+}) {
+  const { control } = useFormContext<PartialVestingForm>();
+
+  return (
+    <Controller
+      control={control}
+      name="data.receiverAddress"
+      render={({ field: { value, onChange, onBlur } }) => (
+        <AddressSearch
+          address={value}
+          onChange={onChange}
+          onBlur={onBlur}
+          addressLength={props.isBelowMd ? "medium" : "long"}
+          ButtonProps={{ fullWidth: true }} />
+      )} />
+  );
+})
+
+const TokenController = memo(function TokenController(props: {
+  token: SuperTokenMinimal | null | undefined,
+  network: Network,
+}) {
+  const { control } = useFormContext<PartialVestingForm>();
+  const { superTokens, isFetching } = useSuperTokens({ network: props.network });
+
+  return (
+    <Controller
+      control={control}
+      name="data.superTokenAddress"
+      render={({ field: { onChange, onBlur } }) => (
+        <TokenDialogButton
+          token={props.token}
+          network={props.network}
+          tokens={superTokens}
+          isTokensFetching={isFetching}
+          showUpgrade={true}
+          onTokenSelect={(x) => onChange(x.address)}
+          onBlur={onBlur}
+          ButtonProps={{ variant: "input" }} />
+      )} />
+  );
+});
+
+const VestingAmountController = memo(function VestingAmountController(props: {
+  token: SuperTokenMinimal | null | undefined,
+}) {
+  const { control } = useFormContext<PartialVestingForm>();
+
+  return (
+    <Controller
+      control={control}
+      name="data.totalAmountEther"
+      render={({ field: { value, onChange, onBlur } }) => (
+        <TextField
+          data-cy={"total-amount-input"}
+          value={value}
+          onChange={onChange}
+          onBlur={onBlur}
+          InputProps={{
+            endAdornment: (
+              <Typography component="span" color={"text.secondary"}>
+                {props.token?.symbol ?? ""}
+              </Typography>
+            ),
+          }}
+        />
+      )}
+    />
+  );
+});
+
+const StartDateController = memo(function StartDateController() {
+  const { control } = useFormContext<PartialVestingForm>();
+
+  const minVestingStartDate = useMemo(
+    () =>
+      add(new Date(), {
+        minutes: 15,
+      }),
+    []
+  );
+
+  const maxVestingStartDate = useMemo(
+    () =>
+      add(new Date(), {
+        years: 1,
+      }),
+    []
+  );
+
+  return (
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <Controller
+        control={control}
+        name="data.startDate"
+        render={({ field: { value, onChange, onBlur } }) => (
+          <DateTimePicker
+            renderInput={(props) => (
+              <TextField
+                data-cy={"date-input"}
+                fullWidth
+                {...props}
+                onBlur={onBlur} />
+            )}
+            value={value}
+            ampm={false}
+            onChange={onChange}
+            disablePast
+            minDateTime={minVestingStartDate}
+            maxDateTime={maxVestingStartDate} />
+        )} />
+    </LocalizationProvider>
+  );
+});
+
+const CliffAmountController = memo(function CliffAmountController(props: {
+  token: SuperTokenMinimal | null | undefined,
+}) {
+  const { control } = useFormContext<PartialVestingForm>();
+
+  return (
+    <Controller
+      control={control}
+      name="data.cliffAmountEther"
+      render={({ field: { value, onChange, onBlur } }) => (
+        <TextField
+          data-cy={"cliff-amount-input"}
+          value={value}
+          onChange={onChange}
+          onBlur={onBlur}
+          InputProps={{
+            endAdornment: (
+              <Typography component="span" color={"text.secondary"}>
+                {props.token?.symbol ?? ""}
+              </Typography>
+            ),
+          }}
+          inputProps={{
+            ...inputPropsForEtherAmount,
+          }} />
+      )} />
+  );
+});
+
+const CliffPeriodController = memo(function CliffPeriodController(props: {
+  network: Network,
+}) {
+  const { control } = useFormContext<PartialVestingForm>();
+
+  return (
+    <Controller
+      control={control}
+      name="data.cliffPeriod"
+      render={({ field: { value, onChange, onBlur } }) => (
+        <Box sx={{ display: "grid", gridTemplateColumns: "2fr 1fr" }}>
+          <TextField
+            data-cy={"cliff-period-input"}
+            value={value.numerator}
+            onChange={(e) => onChange({
+              numerator: e.target.value,
+              denominator: value.denominator,
+            })}
+            onBlur={onBlur}
+            InputProps={{
+              sx: {
+                borderTopRightRadius: 0,
+                borderBottomRightRadius: 0,
+              },
+            }}
+            type="number"
+            inputMode="numeric" />
+          <Select
+            data-cy={"cliff-period-unit"}
+            value={value.denominator}
+            onChange={(e) => onChange({
+              numerator: value.numerator,
+              denominator: e.target.value,
+            })}
+            onBlur={onBlur}
+            sx={{
+              borderTopLeftRadius: 0,
+              borderBottomLeftRadius: 0,
+            }}
+          >
+            {unitOfTimeList
+              .filter(
+                (x) => x >= (props.network.testnet ? UnitOfTime.Minute : UnitOfTime.Day) &&
+                  x <= UnitOfTime.Year
+              )
+              .map((unitOfTime) => (
+                <MenuItem key={unitOfTime} value={unitOfTime} onBlur={onBlur}>
+                  {timeUnitWordMap[unitOfTime]}(s)
+                </MenuItem>
+              ))}
+          </Select>
+        </Box>
+      )} />
+  );
+});
+
+const VestingPeriodController = memo(function VestingPeriodController(props: {
+  network: Network,
+}) {
+  const { control } = useFormContext<PartialVestingForm>();
+
+  return (
+    <Controller
+      control={control}
+      name="data.vestingPeriod"
+      render={({ field: { value, onChange, onBlur } }) => {
+        return (
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: "2fr 1fr",
+              alignItems: "stretch",
+            }}
+          >
+            <TextField
+              data-cy={"total-period-input"}
+              value={value.numerator}
+              onChange={(e) => {
+                onChange({
+                  numerator: e.target.value,
+                  denominator: value.denominator,
+                });
+              }}
+              onBlur={onBlur}
+              InputProps={{
+                sx: {
+                  borderTopRightRadius: 0,
+                  borderBottomRightRadius: 0,
+                },
+              }}
+              type="number"
+              inputMode="numeric" />
+            <Select
+              data-cy={"total-period-unit"}
+              value={value.denominator}
+              onChange={(e) => onChange({
+                numerator: value.numerator,
+                denominator: e.target.value,
+              })}
+              onBlur={onBlur}
+              sx={{
+                borderTopLeftRadius: 0,
+                borderBottomLeftRadius: 0,
+              }}
+            >
+              {unitOfTimeList
+                .filter(
+                  (x) => x >=
+                    (props.network.testnet ? UnitOfTime.Minute : UnitOfTime.Day) &&
+                    x <= UnitOfTime.Year
+                )
+                .map((unitOfTime) => (
+                  <MenuItem key={unitOfTime} value={unitOfTime} onBlur={onBlur}>
+                    {timeUnitWordMap[unitOfTime]}(s)
+                  </MenuItem>
+                ))}
+            </Select>
+          </Box>
+        );
+      }} />
+  );
+});
+
+const CliffEnabledController = memo(function CliffEnabledController() {
+  const { control, setValue } = useFormContext<PartialVestingForm>();
+  const { data: { vestingPeriod } } = useWatch();
+
+  return (
+    <Controller
+      control={control}
+      name="data.cliffEnabled"
+      render={({ field: { value, onChange, onBlur } }) => {
+        return (
+          <FormControlLabel
+            data-cy={"cliff-toggle"}
+            control={<Switch
+              checked={!!value}
+              onChange={(_event, checked) => {
+                onChange(checked);
+                if (!checked) {
+                  setValue("data.cliffAmountEther", "", {
+                    shouldDirty: true,
+                    shouldValidate: true,
+                  });
+                  setValue(
+                    "data.cliffPeriod",
+                    {
+                      numerator: "",
+                      denominator: vestingPeriod.denominator,
+                    },
+                    { shouldDirty: true, shouldValidate: true }
+                  );
+                }
+              }}
+              onBlur={onBlur} />}
+            label="Add Cliff" />
+        );
+      }} />
+  );
+});
+
+const ClaimController = memo(function ClaimController() {
+  const { control } = useFormContext<PartialVestingForm>();
+
+  return (
+    <Controller
+      control={control}
+      name="data.claimEnabled"
+      render={({ field: { value, onChange, onBlur } }) => (
+        <FormControlLabel
+          data-cy={"claim-toggle"}
+          control={
+            <Switch
+              checked={value}
+              onChange={(_event, checked) => {
+                onChange(checked);
+              }}
+              onBlur={onBlur}
+            />
+          }
+          label={VestingFormLabels.Claim}
+        />
+      )}
+    />
+  );
+});
+
+const AutoWrapController = memo(function AutoWrapController() {
+  const { control } = useFormContext<PartialVestingForm>();
+
+  return (
+    <Controller
+      control={control}
+      name="data.setupAutoWrap"
+      render={({ field: { value, onChange, onBlur } }) => (
+        <FormControlLabel
+          data-cy="auto-wrap-switch"
+          label={VestingFormLabels.AutoWrap}
+          control={
+            <Switch checked={!!value} onChange={onChange} onBlur={onBlur} />
+          }
+        />
+      )}
+    />
+  );
+});
+
+const PreviewVestingScheduleButton = memo(function PreviewVestingScheduleButton(props: {
+  setView: (value: CreateVestingCardView) => void;
+}) {
+  const { control } = useFormContext<PartialVestingForm>();
+  const { isValid, isValidating } = useFormState({ control });
+
+  // A work-around for react-hook-form bug which causes the "cannot update a component while rendering another" error
+  // https://github.com/orgs/react-hook-form/discussions/11760
+  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+  useEffect(() => {
+    setIsButtonDisabled(!isValid || isValidating);
+  }, [isValid, isValidating]);
+
+  return (
+    <Button
+      data-cy={"preview-schedule-button"}
+      {...transactionButtonDefaultProps}
+      disabled={isButtonDisabled}
+      onClick={() => props.setView(CreateVestingCardView.Preview)}
+    >
+      Preview Vesting Schedule
+    </Button>
+  );
+});
+
+const ValidationSummary = memo(function ValidationSummary() {
+  const { control } = useFormContext<PartialVestingForm>();
+  const { errors } = useFormState({ control });
+
+  return (
+    <ErrorMessage
+      name="data"
+      errors={errors}
+      render={({ message }) =>
+        !!message && (
+          <Alert severity="error" sx={{ mb: 1 }}>
+            {message}
+          </Alert>
+        )
+      }
+    />
+  );
+});
