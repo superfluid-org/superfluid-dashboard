@@ -15,7 +15,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { endOfMonth, startOfMonth, sub } from "date-fns";
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import MultiAddressSearch from "../../components/AddressSearch/MultiAddressSearch";
 import CurrencySelect from "../../components/CurrencySelect/CurrencySelect";
@@ -58,7 +58,7 @@ interface AccountingExportFormProps {
 const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
   const theme = useTheme();
 
-  const { watch, control, formState, getValues } =
+  const { watch, control, formState: { isValid, isValidating, errors }, getValues } =
     useFormContext<PartialAccountingExportForm>();
 
   const [addresses = [], counterparties = [], startDate, endDate] = watch([
@@ -73,7 +73,11 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
     onSubmit(data);
   };
 
-  const isFormValid = !formState.isValidating && formState.isValid;
+  // Work-around for react-hook-issue
+  const [isFormValid, setIsFormValid] = useState(false);
+  useEffect(() => {
+    setIsFormValid(!isValidating && isValid);
+  }, [isValid, isValidating])
 
   return (
     <Card
@@ -103,7 +107,7 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
           name="data"
           // ErrorMessage has a bug and current solution is to pass in errors via props.
           // TODO: keep eye on this issue: https://github.com/react-hook-form/error-message/issues/91
-          errors={formState.errors}
+          errors={errors}
           render={({ message }) =>
             !!message && (
               <Alert severity="error" sx={{ mb: 1 }}>
@@ -137,7 +141,7 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
                 onChange={onChange}
                 disabledAddresses={counterparties || []}
               />
-           )}
+            )}
           />
         </Stack>
 

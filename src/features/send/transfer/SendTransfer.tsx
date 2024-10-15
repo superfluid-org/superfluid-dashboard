@@ -10,10 +10,8 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { memo, useCallback } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
-import useGetTransactionOverrides from "../../../hooks/useGetTransactionOverrides";
-import { useAnalytics } from "../../analytics/useAnalytics";
 import TooltipWithIcon from "../../common/TooltipWithIcon";
 import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
 import { rpcApi } from "../../redux/store";
@@ -33,21 +31,19 @@ import { inputPropsForEtherAmount } from "../../../utils/inputPropsForEtherAmoun
 import { Address } from "@superfluid-finance/sdk-core";
 import { RestorationType, SendTransferRestoration } from "../../transactionRestoration/transactionRestorations";
 import { skipToken } from "@reduxjs/toolkit/dist/query/react";
+import { Network } from "../../network/networks";
+import { TokenMinimal } from "../../redux/endpoints/tokenTypes";
 
 export default memo(function SendTransfer() {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { network } = useExpectedNetwork();
   const { visibleAddress } = useVisibleAddress();
-  const getTransactionOverrides = useGetTransactionOverrides();
-  const { txAnalytics } = useAnalytics();
 
   const {
     watch,
-    control,
-    formState,
+    formState: { isValid, isValidating, errors },
     getValues,
-    setValue,
     reset: resetFormData,
   } = useFormContext<PartialTransferForm>();
 
@@ -65,94 +61,29 @@ export default memo(function SendTransfer() {
     "data.amountEther",
   ]);
 
-  const ReceiverAddressController = (
-    <Controller
-      control={control}
-      name="data.receiverAddress"
-      render={({ field: { onChange, onBlur } }) => (
-        <AddressSearch
-          address={receiverAddress}
-          onChange={onChange}
-          onBlur={onBlur}
-          addressLength={isBelowMd ? "medium" : "long"}
-          ButtonProps={{ fullWidth: true }}
-        />
-      )}
-    />
-  );
-
   const { data: superToken } = useTokenQuery(tokenAddress ? { chainId: network.id, id: tokenAddress, onlySuperToken: true } : skipToken);
-  const { superTokens, isFetching } = useSuperTokens({ network });
-
-  const TokenController = (
-    <Controller
-      control={control}
-      name="data.tokenAddress"
-      render={({ field: { onChange, onBlur } }) => (
-        <TokenDialogButton
-          token={superToken}
-          network={network}
-          tokens={superTokens}
-          isTokensFetching={isFetching}
-          showUpgrade={true}
-          onTokenSelect={(x) => onChange(x.address)}
-          onBlur={onBlur}
-          ButtonProps={{ variant: "input" }}
-        />
-      )}
-    />
-  )
-
-  const AmountController = (
-    <Controller
-      control={control}
-      name="data.amountEther"
-      render={({ field: { value, onChange, onBlur } }) => (
-        <TextField
-          data-cy={"amount-input"}
-          value={value}
-          onChange={onChange}
-          onBlur={onBlur}
-          autoComplete="off"
-          autoCorrect="off"
-          placeholder="0.0"
-          InputProps={{
-            endAdornment: (
-              <Typography component="span" color={"text.secondary"}>
-                {superToken?.symbol ?? ""}
-              </Typography>
-            ),
-          }}
-          inputProps={{
-            ...inputPropsForEtherAmount,
-          }}
-        />
-      )}
-    />
-  );
 
   const [transfer, transferResult] =
     rpcApi.useTransferMutation();
 
-  const isSendDisabled =
-    formState.isValidating ||
-    !formState.isValid;
+  const [isSendDisabled, setIsSendDisabled] = useState(true);
+  useEffect(() => {
+    setIsSendDisabled(
+      isValidating ||
+      !isValid
+    );
+  }, [isValid, isValidating]);
 
   const SendTransactionBoundary = (
     <TransactionBoundary mutationResult={transferResult}>
-      {({ setDialogLoadingInfo }) =>
+      {({ setDialogLoadingInfo, getOverrides, txAnalytics }) =>
       (<TransactionButton
         disabled={isSendDisabled}
         dataCy={"transfer-button"}
         onClick={async (signer) => {
           if (isSendDisabled) {
             throw Error(
-              `This should never happen. Form state: ${JSON.stringify(
-                formState,
-                null,
-                2
-              )}`
-            );
+              `This should never happen.`);
           }
 
           setDialogLoadingInfo(
@@ -184,7 +115,7 @@ export default memo(function SendTransfer() {
           transfer({
             ...primaryArgs,
             signer,
-            overrides: await getTransactionOverrides(network),
+            overrides: await getOverrides(),
             transactionExtraData: {
               restoration: transactionRestoration,
             }
@@ -207,7 +138,7 @@ export default memo(function SendTransfer() {
         name="data"
         // ErrorMessage has a bug and current solution is to pass in errors via props.
         // TODO: keep eye on this issue: https://github.com/react-hook-form/error-message/issues/91
-        errors={formState.errors}
+        errors={errors}
         render={({ message }) =>
           !!message && (
             <Alert severity="error" sx={{ mb: 1 }}>
@@ -226,7 +157,7 @@ export default memo(function SendTransfer() {
           <FormLabel>Receiver Wallet Address</FormLabel>
           <TooltipWithIcon title="Must not be an exchange address" />
         </Stack>
-        {ReceiverAddressController}
+        <ReceiverAddressController isBelowMd={isBelowMd} />
       </Box>
       <Box
         sx={{
@@ -240,11 +171,11 @@ export default memo(function SendTransfer() {
       >
         <Stack justifyContent="stretch">
           <FormLabel>Super Token</FormLabel>
-          {TokenController}
+          <TokenController network={network} superToken={superToken} />
         </Stack>
         <Stack justifyContent="stretch">
           <FormLabel>Amount</FormLabel>
-          {AmountController}
+          <AmountController superToken={superToken} />
         </Stack>
       </Box>
 
@@ -267,5 +198,89 @@ export default memo(function SendTransfer() {
       </ConnectionBoundary>
 
     </Stack>
+  );
+});
+
+// # Controllers
+const ReceiverAddressController = memo(function ReceiverAddressController(props: {
+  isBelowMd: boolean;
+}) {
+  const { control, watch } = useFormContext<PartialTransferForm>();
+  const receiverAddress = watch("data.receiverAddress");
+
+  return (
+    <Controller
+      control={control}
+      name="data.receiverAddress"
+      render={({ field: { onChange, onBlur } }) => (
+        <AddressSearch
+          address={receiverAddress}
+          onChange={onChange}
+          onBlur={onBlur}
+          addressLength={props.isBelowMd ? "medium" : "long"}
+          ButtonProps={{ fullWidth: true }}
+        />
+      )}
+    />
+  );
+});
+
+const TokenController = memo(function TokenController(
+  props: { network: Network, superToken: TokenMinimal | null | undefined }
+) {
+  const { control } = useFormContext<PartialTransferForm>();
+  const { superTokens, isFetching } = useSuperTokens({ network: props.network });
+
+  return (
+    <Controller
+      control={control}
+      name="data.tokenAddress"
+      render={({ field: { onChange, onBlur } }) => (
+        <TokenDialogButton
+          token={props.superToken}
+          network={props.network}
+          tokens={superTokens}
+          isTokensFetching={isFetching}
+          showUpgrade={true}
+          onTokenSelect={(x) => onChange(x.address)}
+          onBlur={onBlur}
+          ButtonProps={{ variant: "input" }}
+        />
+      )}
+    />
+  )
+});
+
+const AmountController = memo(function AmountController(props: {
+  superToken: TokenMinimal | null | undefined
+}) {
+  const { control } = useFormContext<PartialTransferForm>();
+
+  return (
+    <Controller
+      control={control}
+      name="data.amountEther"
+      render={({ field: { value, onChange, onBlur } }) => (
+        <TextField
+          data-cy={"amount-input"}
+          value={value}
+          onChange={onChange}
+          onBlur={onBlur}
+          autoComplete="off"
+          autoCorrect="off"
+          placeholder="0.0"
+          InputProps={{
+            endAdornment: (
+              <Typography component="span" color={"text.secondary"}>
+                {props.superToken?.symbol ?? ""}
+              </Typography>
+            ),
+          }}
+          inputProps={{
+            ...inputPropsForEtherAmount,
+          }}
+        />
+      )}
+    />
   );
 });

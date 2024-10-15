@@ -15,7 +15,7 @@ import {
   UpsertTokenAccessFormProviderProps,
   PartialUpsertTokenAccessForm,
 } from "./UpsertTokenAccessFormProvider";
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, memo, useEffect, useMemo, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import UnsavedChangesConfirmationDialog from "./UnsavedChangesConfirmationDialog";
 import EditDialogTitle from "./DialogTitle";
@@ -44,10 +44,14 @@ export type TokenAccessProps = {
   tokenAllowanceWei: BigNumber;
 };
 
-export const UpsertTokenAccessForm: FC<{
-  closeDialog: () => void;
-  initialFormValues: UpsertTokenAccessFormProviderProps["initialFormData"];
-}> = ({ initialFormValues, closeDialog }) => {
+export const UpsertTokenAccessForm = memo(function UpsertTokenAccessForm(
+  props: {
+    closeDialog: () => void;
+    initialFormValues: UpsertTokenAccessFormProviderProps["initialFormData"];
+  }
+) {
+  const { closeDialog, initialFormValues } = props;
+
   const {
     control,
     formState: { isDirty, isValid, isValidating },
@@ -133,26 +137,31 @@ export const UpsertTokenAccessForm: FC<{
       },
     });
   }, [initialFormValues]);
-
+  
   const onSuccessCallback = () => {
     isNewEntry
-      ? reset({
-          data: {
-            network: initialFormValues.network || null,
-            token: initialFormValues.token || null,
-            operatorAddress: initialFormValues.operatorAddress || "",
-            flowRateAllowance: initialFormValues.flowRateAllowance || {
-              amountWei: BigNumber.from(0),
-              unitOfTime: UnitOfTime.Second,
-            },
-            flowOperatorPermissions:
-              initialFormValues.flowOperatorPermissions || 0,
-            tokenAllowanceWei:
-              initialFormValues.tokenAllowanceWei || BigNumber.from(0),
-          },
-        })
-      : () => {};
+    ? reset({
+      data: {
+        network: initialFormValues.network || null,
+        token: initialFormValues.token || null,
+        operatorAddress: initialFormValues.operatorAddress || "",
+        flowRateAllowance: initialFormValues.flowRateAllowance || {
+          amountWei: BigNumber.from(0),
+          unitOfTime: UnitOfTime.Second,
+        },
+        flowOperatorPermissions:
+        initialFormValues.flowOperatorPermissions || 0,
+        tokenAllowanceWei:
+        initialFormValues.tokenAllowanceWei || BigNumber.from(0),
+      },
+    })
+    : () => {};
   };
+
+  const [isSaveButtonDisabled, setIsSaveButtonDisabled] = useState(true);
+  useEffect(() => {
+    setIsSaveButtonDisabled(!isValid || isValidating || !isAnyFieldChanged);
+  }, [isValid, isValidating, isAnyFieldChanged]);
 
   const SaveButtonComponent = (
     <SaveButton
@@ -174,7 +183,7 @@ export const UpsertTokenAccessForm: FC<{
       network={network}
       operatorAddress={operatorAddress}
       superToken={token}
-      disabled={!isValid || isValidating || !isAnyFieldChanged}
+      disabled={isSaveButtonDisabled}
       title={isNewEntry ? "Add" : "Save changes"}
     />
   );
@@ -434,7 +443,7 @@ export const UpsertTokenAccessForm: FC<{
       )}
     </ConnectionBoundary>
   );
-};
+});
 
 function removeTrailingZero(str: string): string {
   return str.replace(/\.0$/, "");

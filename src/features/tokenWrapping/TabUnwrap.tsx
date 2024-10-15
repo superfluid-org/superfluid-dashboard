@@ -1,15 +1,13 @@
 import { Button, Input, Stack, Typography, useTheme } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { formatEther, parseEther } from "ethers/lib/utils";
-import { FC, useEffect, useMemo, useRef } from "react";
+import { FC, memo, useEffect, useMemo, useRef, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
-import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { inputPropsForEtherAmount } from "../../utils/inputPropsForEtherAmount";
 import {
   calculateCurrentBalance,
   parseAmountOrZero,
 } from "../../utils/tokenUtils";
-import { useAnalytics } from "../analytics/useAnalytics";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { rpcApi } from "../redux/store";
 import TokenIcon from "../token/TokenIcon";
@@ -32,26 +30,25 @@ import { WrapInputCard } from "./WrapInputCard";
 import { ValidWrappingForm, WrappingForm } from "./WrappingFormProvider";
 import { BigNumber } from "ethers";
 import { useTokenPairsQuery } from "./useTokenPairsQuery";
+import { SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
+import { Network } from "../network/networks";
+import { RealtimeBalance } from "../redux/endpoints/balanceFetcher";
 
 interface TabUnwrapProps {
   onSwitchMode: () => void;
 }
 
-export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
+export const TabUnwrap = memo(function TabUnwrap(props: TabUnwrapProps) {
   const theme = useTheme();
   const { network } = useExpectedNetwork();
   const { visibleAddress } = useVisibleAddress();
-  const getTransactionOverrides = useGetTransactionOverrides();
-  const { txAnalytics } = useAnalytics();
 
   const {
     watch,
-    control,
-    formState,
+    formState: { isValid, isValidating },
     getValues,
     setValue,
     reset: resetForm,
-    resetField,
   } = useFormContext<WrappingForm>();
 
   // The reason to set the type and clear errors is that a single form context is used both for wrapping and unwrapping.
@@ -65,31 +62,19 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
 
   const [tokenPair, amount] = watch(["data.tokenPair", "data.amountDecimal"]);
 
-  const tokenPairsQuery = useTokenPairsQuery({
-    network
-  })
-
-  const superTokens = useMemo(() => tokenPairsQuery.data?.map((x) => x.superToken), [tokenPairsQuery.data?.length ?? 0])
-
   const { superToken, underlyingToken } = useTokenPairQuery({
     network,
     tokenPair,
   });
 
   const [unwrapTrigger, unwrapResult] = rpcApi.useSuperTokenDowngradeMutation();
-  const isDowngradeDisabled =
-    !superToken ||
-    !underlyingToken ||
-    formState.isValidating ||
-    !formState.isValid;
 
-  const amountInputRef = useRef<HTMLInputElement>(undefined!);
+  const [isDowngradeDisabled, setIsDowngradeDisabled] = useState(true);
+  useEffect(() => {
+    setIsDowngradeDisabled(!superToken || !underlyingToken || isValidating || !isValid);
+  }, [superToken, underlyingToken, isValidating, isValid]);
 
   const tokenPrice = useTokenPrice(network.id, tokenPair?.superTokenAddress);
-
-  useEffect(() => {
-    amountInputRef.current.focus();
-  }, [amountInputRef, tokenPair]);
 
   const { data: _discard, ...realtimeBalanceQuery } =
     rpcApi.useRealtimeBalanceQuery(
@@ -111,67 +96,8 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
     <Stack direction="column" alignItems="center">
       <WrapInputCard>
         <Stack direction="row" spacing={2}>
-          <Controller
-            control={control}
-            name="data.amountDecimal"
-            render={({ field: { onChange, onBlur } }) => (
-              <Input
-                data-cy={"unwrap-input"}
-                fullWidth
-                disableUnderline
-                type="text"
-                placeholder="0.0"
-                inputRef={amountInputRef}
-                value={amount}
-                onChange={onChange}
-                onBlur={onBlur}
-                inputProps={{
-                  ...inputPropsForEtherAmount,
-                  sx: {
-                    ...theme.typography.largeInput,
-                    p: 0,
-                  },
-                }}
-                sx={{ background: "transparent" }}
-              />
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="data.tokenPair"
-            render={({ field: { onChange, onBlur } }) => (
-              <TokenDialogButton
-                network={network}
-                token={superToken}
-                tokens={superTokens}
-                isTokensFetching={tokenPairsQuery.isFetching}
-                onTokenSelect={(token) => {
-                  resetField("data.amountDecimal");
-                  const tokenPair = tokenPairsQuery?.data?.find(
-                    (x) =>
-                      x.superToken.address.toLowerCase() ===
-                      token.address.toLowerCase()
-                  );
-                  if (tokenPair) {
-                    onChange({
-                      superTokenAddress: tokenPair.superToken.address,
-                      underlyingTokenAddress: tokenPair.underlyingToken.address,
-                    } as WrappingForm["data"]["tokenPair"]);
-                  } else {
-                    console.error(
-                      "Token not selected for downgrade. This should never happen!"
-                    );
-                  }
-                }}
-                onBlur={onBlur}
-                ButtonProps={{
-                  variant:
-                    theme.palette.mode === "light" ? "outlined" : "token",
-                }}
-              />
-            )}
-          />
+          <UnwrapInputController />
+          <UnwrapTokenController network={network} superToken={superToken} />
         </Stack>
         {tokenPair && visibleAddress && (
           <Stack direction="row" justifyContent="space-between" gap={0.5}>
@@ -195,44 +121,14 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
                 TypographyProps={{ color: "text.secondary" }}
               />
               {realtimeBalance && (
-                <Controller
-                  control={control}
-                  name="data.amountDecimal"
-                  render={({ field: { onChange, onBlur } }) => (
-                    <Button
-                      data-cy={"max-button"}
-                      variant="textContained"
-                      size="xxs"
-                      onClick={() => {
-                        // If the balance is flowing, subtract 3 minutes from the balance to account for the time it takes to send the transaction and also the clock skew.
-                        // Note: 0 multiplied by 3 minutes is still 0.
-                        const flowingBalanceSkew = BigNumber.from(
-                          realtimeBalance.flowRate
-                        )
-                          .abs()
-                          .mul(180);
-
-                        const maxBalance = calculateCurrentBalance({
-                          flowRateWei: realtimeBalance.flowRate,
-                          balanceWei: realtimeBalance.balance,
-                          balanceTimestamp: realtimeBalance.balanceTimestamp,
-                        }).sub(flowingBalanceSkew);
-
-                        return onChange(formatEther(maxBalance));
-                      }}
-                      onBlur={onBlur}
-                    >
-                      MAX
-                    </Button>
-                  )}
-                />
+                <MaxAmountController realtimeBalance={realtimeBalance} />
               )}
             </Stack>
           </Stack>
         )}
       </WrapInputCard>
 
-      <SwitchWrapModeBtn onClick={onSwitchMode} />
+      <SwitchWrapModeBtn onClick={props.onSwitchMode} />
 
       {underlyingToken && (
         <WrapInputCard>
@@ -307,18 +203,14 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
 
       <ConnectionBoundary>
         <TransactionBoundary mutationResult={unwrapResult}>
-          {({ setDialogLoadingInfo }) => (
+          {({ setDialogLoadingInfo, getOverrides, txAnalytics }) => (
             <TransactionButton
               dataCy={"downgrade-button"}
               disabled={isDowngradeDisabled}
               onClick={async (signer) => {
                 if (isDowngradeDisabled) {
                   throw Error(
-                    `This should never happen. Form state: ${JSON.stringify(
-                      formState,
-                      null,
-                      2
-                    )}`
+                    `This should never happen.`
                   );
                 }
 
@@ -332,14 +224,14 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
                   amountWei: parseEther(formData.amountDecimal).toString(),
                 };
 
-                const overrides = await getTransactionOverrides(network);
+                const overrides = await getOverrides();
 
                 setDialogLoadingInfo(
                   <UnwrapPreview
                     {...{
                       amountWei: parseEther(formData.amountDecimal).toString(),
-                      superTokenSymbol: superToken.symbol,
-                      underlyingTokenSymbol: underlyingToken.symbol,
+                      superTokenSymbol: superToken!.symbol,
+                      underlyingTokenSymbol: underlyingToken!.symbol,
                     }}
                   />
                 );
@@ -370,7 +262,7 @@ export const TabUnwrap: FC<TabUnwrapProps> = ({ onSwitchMode }) => {
       </ConnectionBoundary>
     </Stack>
   );
-};
+})
 
 const UnwrapPreview: FC<{
   amountWei: string;
@@ -393,3 +285,135 @@ const UnwrapPreview: FC<{
     </Typography>
   );
 };
+
+const UnwrapInputController = memo(function UnwrapInputController() {
+  const theme = useTheme();
+  const { control, watch } = useFormContext<WrappingForm>();
+  const [tokenPair, amount] = watch(["data.tokenPair", "data.amountDecimal"]);
+
+  const amountInputRef = useRef<HTMLInputElement>(undefined!);
+
+  useEffect(() => {
+    amountInputRef.current.focus();
+  }, [amountInputRef, tokenPair]);
+
+  return (
+    <Controller
+      control={control}
+      name="data.amountDecimal"
+      render={({ field: { onChange, onBlur } }) => (
+        <Input
+          data-cy={"unwrap-input"}
+          fullWidth
+          disableUnderline
+          type="text"
+          placeholder="0.0"
+          inputRef={amountInputRef}
+          value={amount}
+          onChange={onChange}
+          onBlur={onBlur}
+          inputProps={{
+            ...inputPropsForEtherAmount,
+            sx: {
+              ...theme.typography.largeInput,
+              p: 0,
+            },
+          }}
+          sx={{ background: "transparent" }}
+        />
+      )}
+    />
+  )
+})
+
+const UnwrapTokenController = memo(function UnwrapTokenController(props: {
+  network: Network;
+  superToken: SuperTokenMinimal | null | undefined;
+}) {
+  const theme = useTheme();
+  const { control, resetField } = useFormContext<WrappingForm>();
+
+  const tokenPairsQuery = useTokenPairsQuery({
+    network: props.network
+  })
+
+  const superTokens = useMemo(() => tokenPairsQuery.data?.map((x) => x.superToken), [tokenPairsQuery.data?.length ?? 0])
+
+  return (
+    <Controller
+      control={control}
+      name="data.tokenPair"
+      render={({ field: { onChange, onBlur } }) => (
+        <TokenDialogButton
+          network={props.network}
+          token={props.superToken}
+          tokens={superTokens}
+          isTokensFetching={tokenPairsQuery.isFetching}
+          onTokenSelect={(token) => {
+            resetField("data.amountDecimal");
+            const tokenPair = tokenPairsQuery?.data?.find(
+              (x) =>
+                x.superToken.address.toLowerCase() ===
+                token.address.toLowerCase()
+            );
+            if (tokenPair) {
+              onChange({
+                superTokenAddress: tokenPair.superToken.address,
+                underlyingTokenAddress: tokenPair.underlyingToken.address,
+              } as WrappingForm["data"]["tokenPair"]);
+            } else {
+              console.error(
+                "Token not selected for downgrade. This should never happen!"
+              );
+            }
+          }}
+          onBlur={onBlur}
+          ButtonProps={{
+            variant:
+              theme.palette.mode === "light" ? "outlined" : "token",
+          }}
+        />
+      )}
+    />
+  )
+})
+
+const MaxAmountController = memo(function MaxAmountController(props: {
+  realtimeBalance: RealtimeBalance;
+}) {
+  const { control } = useFormContext<WrappingForm>();
+
+  return (
+    <Controller
+      control={control}
+      name="data.amountDecimal"
+      render={({ field: { onChange, onBlur } }) => (
+        <Button
+          data-cy={"max-button"}
+          variant="textContained"
+          size="xxs"
+          onClick={() => {
+            // If the balance is flowing, subtract 3 minutes from the balance to account for the time it takes to send the transaction and also the clock skew.
+            // Note: 0 multiplied by 3 minutes is still 0.
+            const flowingBalanceSkew = BigNumber.from(
+              props.realtimeBalance.flowRate
+            )
+              .abs()
+              .mul(180);
+
+            const maxBalance = calculateCurrentBalance({
+              flowRateWei: props.realtimeBalance.flowRate,
+              balanceWei: props.realtimeBalance.balance,
+              balanceTimestamp: props.realtimeBalance.balanceTimestamp,
+            }).sub(flowingBalanceSkew);
+
+            return onChange(formatEther(maxBalance));
+          }}
+          onBlur={onBlur}
+        >
+          MAX
+        </Button>
+      )}
+    />
+  )
+})

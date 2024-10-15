@@ -1,6 +1,6 @@
 import { Typography } from "@mui/material";
 import NextLink from "next/link";
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { useAnalytics } from "../../analytics/useAnalytics";
 import { rpcApi } from "../../redux/store";
@@ -43,8 +43,12 @@ export const CreateVestingTransactionButton: FC<Props> = ({
 
   const mutationResult = isVestingV2Enabled ? createVestingScheduleFromAmountAndDurationResult : createVestingScheduleResult;
 
-  const { formState, handleSubmit } = useFormContext<ValidVestingForm>();
-  const isDisabled = !formState.isValid || formState.isValidating;
+  const { formState: { isValid, isValidating }, handleSubmit } = useFormContext<ValidVestingForm>();
+
+  const [isDisabled, setIsDisabled] = useState(true);
+  useEffect(() => {
+    setIsDisabled(!isValid || isValidating);
+  }, [isValid, isValidating]);
 
   const isVisible = !mutationResult.isSuccess && isVisible_;
 

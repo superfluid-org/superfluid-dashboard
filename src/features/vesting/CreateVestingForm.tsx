@@ -21,7 +21,7 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { add } from "date-fns";
 import { FC, memo, useEffect, useMemo, useState } from "react";
-import { Control, Controller, useForm, useFormContext, useFormState, useWatch } from "react-hook-form";
+import { Controller, useFormContext, useFormState, useWatch } from "react-hook-form";
 import { inputPropsForEtherAmount } from "../../utils/inputPropsForEtherAmount";
 import TooltipWithIcon from "../common/TooltipWithIcon";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
@@ -61,16 +61,17 @@ export enum VestingTooltips {
   Claim = "Recipients will need to actively claim the vesting schedule with an on-chain transaction to receive the funds. This mitigate funds loss in case they can’t access their wallet."
 }
 
-const CreateVestingForm: FC<{
+const CreateVestingForm = memo(function CreateVestingForm(props: {
   token: SuperTokenMinimal | null | undefined;
   setView: (value: CreateVestingCardView) => void;
-}> = ({ token, setView }) => {
-
+}) {
+  const { token, setView } = props;
   const { network } = useExpectedNetwork();
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
-  const { data: { cliffEnabled, setupAutoWrap } } = useWatch();
+  const { watch } = useFormContext<PartialVestingForm>();
+  const [ cliffEnabled, setupAutoWrap ] = watch(["data.cliffEnabled", "data.setupAutoWrap"]);
 
   const { vestingVersion } = useVestingVersion();
   const isClaimFeatureEnabled = vestingVersion === "v2";
@@ -273,9 +274,9 @@ const CreateVestingForm: FC<{
       </Stack>
     </Stack>
   );
-};
+});
 
-export default memo(CreateVestingForm);
+export default CreateVestingForm;
 
 // # Sub-components
 const ReceiverController = memo(function ReceiverController(props: {

@@ -27,13 +27,12 @@ import Decimal from "decimal.js";
 import { BigNumber, BigNumberish } from "ethers";
 import { formatEther, parseEther } from "ethers/lib/utils";
 import NextLink from "next/link";
-import { FC, memo, useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import {
   mapCreateTaskToScheduledStream,
   mapStreamScheduling,
 } from "../../../hooks/streamSchedulingHooks";
-import useGetTransactionOverrides from "../../../hooks/useGetTransactionOverrides";
 import { getTokenPagePath } from "../../../pages/token/[_network]/[_token]";
 import { CreateTask } from "../../../scheduling-subgraph/.graphclient";
 import { dateNowSeconds, getTimeInSeconds } from "../../../utils/dateUtils";
@@ -43,7 +42,6 @@ import {
   getPrettyEtherFlowRate,
   parseEtherOrZero,
 } from "../../../utils/tokenUtils";
-import { useAnalytics } from "../../analytics/useAnalytics";
 import Link from "../../common/Link";
 import TooltipWithIcon from "../../common/TooltipWithIcon";
 import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
@@ -83,53 +81,6 @@ import {
 import { useSuperTokens } from "../../../hooks/useSuperTokens";
 import { SuperTokenMinimal, isWrappable } from "../../redux/endpoints/tokenTypes";
 import { useTokenQuery } from "../../../hooks/useTokenQuery";
-
-export const SendBalance: FC<{
-  network: Network;
-  visibleAddress: string | undefined;
-  token: SuperTokenMinimal | undefined | null
-}> = ({ network, visibleAddress, token }) => {
-  if (!visibleAddress || !token) {
-    return null;
-  }
-
-  const isWrappableSuperToken = token ? isWrappable(token) : false;
-
-  return (
-    <Stack
-      direction="row"
-      alignItems="center"
-      justifyContent="center"
-      gap={1}
-    >
-      <Stack direction="row" alignItems="center" gap={0.5}>
-        <BalanceSuperToken
-          showFiat
-          data-cy={"balance"}
-          chainId={network.id}
-          accountAddress={visibleAddress}
-          tokenAddress={token.address}
-          symbol={token.symbol}
-          TypographyProps={{ variant: "h7mono" }}
-          SymbolTypographyProps={{ variant: "h7" }}
-        />
-      </Stack>
-      {isWrappableSuperToken && (
-        <Tooltip title="Wrap more">
-          <IconButton
-            LinkComponent={Link}
-            href={`/wrap?upgrade&token=${token.address}&network=${network.slugName}`}
-            data-cy={"balance-wrap-button"}
-            color="primary"
-            size="small"
-          >
-            <AddRounded />
-          </IconButton>
-        </Tooltip>
-      )}
-    </Stack>
-  )
-}
 
 // Minimum start and end date difference in seconds.
 export const SCHEDULE_START_END_MIN_DIFF_S = 15 * UnitOfTime.Minute;
@@ -178,55 +129,11 @@ function getEndTimestamp(
     .toNumber();
 }
 
-const WhitelistTransparentBox = () => (
-  <Stack
-    sx={{
-      position: "absolute",
-      width: "calc(100% + 10px)",
-      height: "calc(100% + 10px)",
-      marginTop: "-5px",
-      marginLeft: "-5px",
-      alignItems: "center",
-      justifyContent: "center",
-      backdropFilter: "blur(5px)",
-      backfaceVisibility: "hidden",
-    }}
-  >
-    <Box sx={{ px: 4, pb: 3, textAlign: "center" }}>
-      <Typography data-cy="allowlist-message" variant="h5">
-        You are not on the allow list.
-      </Typography>
-      <Typography
-        data-cy="allowlist-message"
-        sx={{ maxWidth: "410px" }}
-        variant="body1"
-      >
-        If you want to set start and end dates for your streams,{" "}
-        <Link
-          data-cy={"allowlist-link"}
-          href="https://use.superfluid.finance/schedulestreams"
-          target="_blank"
-        >
-          Apply for access
-        </Link>{" "}
-        or try it out on{" "}
-        <NetworkSwitchLink
-          title={networkDefinition.optimismSepolia.name}
-          network={networkDefinition.optimismSepolia}
-        />
-        .
-      </Typography>
-    </Box>
-  </Stack>
-);
-
 export default memo(function SendStream() {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { network } = useExpectedNetwork();
   const { visibleAddress } = useVisibleAddress();
-  const getTransactionOverrides = useGetTransactionOverrides();
-  const { txAnalytics } = useAnalytics();
 
   const [MIN_DATE, MAX_DATE] = useMemo(
     () => [
@@ -242,7 +149,6 @@ export default memo(function SendStream() {
 
   const {
     watch,
-    control,
     formState,
     getValues,
     setValue,
@@ -287,43 +193,7 @@ export default memo(function SendStream() {
       : skipToken
   );
 
-  const ReceiverAddressController = (
-    <Controller
-      control={control}
-      name="data.receiverAddress"
-      render={({ field: { onChange, onBlur } }) => (
-        <AddressSearch
-          address={receiverAddress}
-          onChange={onChange}
-          onBlur={onBlur}
-          addressLength={isBelowMd ? "medium" : "long"}
-          ButtonProps={{ fullWidth: true }}
-        />
-      )}
-    />
-  );
-
   const { data: superToken } = useTokenQuery(tokenAddress ? { chainId: network.id, id: tokenAddress, onlySuperToken: true } : skipToken);
-  const { customSuperTokensQuery, superTokens, isFetching } = useSuperTokens({ network });
-
-  const TokenController = (
-    <Controller
-      control={control}
-      name="data.tokenAddress"
-      render={({ field: { onChange, onBlur } }) => (
-        <TokenDialogButton
-          token={superToken}
-          network={network}
-          tokens={superTokens}
-          isTokensFetching={isFetching}
-          showUpgrade={true}
-          onTokenSelect={(x) => onChange(x.address)}
-          onBlur={onBlur}
-          ButtonProps={{ variant: "input" }}
-        />
-      )}
-    />
-  );
 
   const flowRateWei = useMemo<BigNumber>(
     () =>
@@ -334,35 +204,8 @@ export default memo(function SendStream() {
     [flowRateEther.amountEther, flowRateEther.unitOfTime]
   );
 
-  const FlowRateController = (
-    <Controller
-      control={control}
-      name="data.flowRate"
-      render={({ field: { onChange, onBlur } }) => (
-        <FlowRateInput
-          flowRateEther={flowRateEther}
-          onChange={onChange}
-          onBlur={onBlur}
-        />
-      )}
-    />
-  );
-
   const [streamScheduling, setStreamScheduling] = useState<boolean>(
     !!endTimestamp || !!startTimestamp
-  );
-
-  const StreamSchedulingController = (
-    <Switch
-      checked={streamScheduling}
-      onChange={(_event, value) => {
-        if (!value) {
-          setValue("data.startTimestamp", null);
-          setValue("data.endTimestamp", null);
-        }
-        setStreamScheduling(value);
-      }}
-    />
   );
 
   const {
@@ -492,68 +335,6 @@ export default memo(function SendStream() {
     };
   }, [startDate, endDate, MIN_DATE, MAX_DATE]);
 
-  const StartDateController = (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <Controller
-        control={control}
-        name="data.startTimestamp"
-        render={({ field: { onChange, onBlur } }) => (
-          <DateTimePicker
-            renderInput={(props) => (
-              <TextField
-                data-cy={"start-date"}
-                fullWidth
-                autoComplete="off"
-                {...props}
-                onBlur={onBlur}
-              />
-            )}
-            value={startDate}
-            minDateTime={MIN_DATE}
-            maxDateTime={startDateMax}
-            ampm={false}
-            onChange={(date: Date | null) =>
-              onChange(date ? getUnixTime(date) : null)
-            }
-            disablePast
-            disabled={!!activeFlow}
-          />
-        )}
-      />
-    </LocalizationProvider>
-  );
-
-  const EndDateController = (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <Controller
-        control={control}
-        name="data.endTimestamp"
-        render={({ field: { onChange, onBlur } }) => (
-          <DateTimePicker
-            renderInput={(props) => (
-              <TextField
-                data-cy={"end-date"}
-                fullWidth
-                autoComplete="off"
-                {...props}
-                onBlur={onBlur}
-              />
-            )}
-            value={endDate}
-            minDateTime={endDateMin}
-            maxDateTime={MAX_DATE}
-            ampm={false}
-            onChange={(date: Date | null) => {
-              const endTimestamp = date ? getTimeInSeconds(date) : null;
-              onChange(endTimestamp);
-            }}
-            disablePast
-          />
-        )}
-      />
-    </LocalizationProvider>
-  );
-
   const TotalStreamedController = (
     <TextField
       data-cy={"total-stream"}
@@ -608,29 +389,6 @@ export default memo(function SendStream() {
     />
   );
 
-  const UnderstandLiquidationRiskController = (
-    <Controller
-      control={control}
-      name="data.understandLiquidationRisk"
-      render={({ field: { onChange, onBlur, value } }) => (
-        <FormControlLabel
-          control={
-            <Checkbox
-              data-cy={"risk-checkbox"}
-              checked={value}
-              onChange={onChange}
-              onBlur={onBlur}
-              sx={{ color: "inherit" }}
-            />
-          }
-          label={
-            <Typography variant="body2">Yes, I understand the risk.</Typography>
-          }
-        />
-      )}
-    />
-  );
-
   const [showBufferAlert, setShowBufferAlert] = useState(false);
 
   useEffect(() => {
@@ -659,22 +417,6 @@ export default memo(function SendStream() {
     );
   }, [network, flowRateEther, tokenBufferQuery.data]);
 
-  const BufferAlert = (
-    <Alert data-cy="buffer-warning" severity="error">
-      If you do not cancel this stream before your balance reaches zero,{" "}
-      <b>
-        you will lose your{" "}
-        {bufferAmount && superToken ? (
-          <span translate="no">
-            <Amount wei={bufferAmount.toString()}> {superToken.symbol}</Amount>
-          </span>
-        ) : null}{" "}
-        buffer.
-      </b>
-      <FormGroup>{UnderstandLiquidationRiskController}</FormGroup>
-    </Alert>
-  );
-
   const hasAnythingChanged =
     existingEndTimestamp !== endTimestamp ||
     existingStartTimestamp !== startTimestamp ||
@@ -683,19 +425,24 @@ export default memo(function SendStream() {
       scheduledStream.currentFlowRate !== flowRateWei.toString()) ||
     (!activeFlow && !scheduledStream && flowRateEther.amountEther !== "");
 
-  const isSendDisabled =
-    formState.isValidating ||
-    !formState.isValid ||
-    !hasAnythingChanged ||
-    isFlowScheduleFetching ||
-    isActiveFlowFetching;
+  // These shenanigans are because of react-hook-form's issue ()
+  const [isSendDisabled, setIsSendDisabled] = useState(true);
+  useEffect(() => {
+    setIsSendDisabled(
+      formState.isValidating ||
+      !formState.isValid ||
+      !hasAnythingChanged ||
+      isFlowScheduleFetching ||
+      isActiveFlowFetching
+    );
+  }, [formState.isValid, formState.isValidating, hasAnythingChanged, isFlowScheduleFetching, isActiveFlowFetching]);
 
   const [upsertFlow, upsertFlowResult] =
     rpcApi.useUpsertFlowWithSchedulingMutation();
 
   const SendTransactionBoundary = (
     <TransactionBoundary mutationResult={upsertFlowResult}>
-      {({ closeDialog, setDialogSuccessActions, setDialogLoadingInfo }) => (
+      {({ closeDialog, setDialogSuccessActions, setDialogLoadingInfo, getOverrides, txAnalytics }) => (
         <TransactionButton
           dataCy={"send-transaction-button"}
           disabled={isSendDisabled}
@@ -759,7 +506,7 @@ export default memo(function SendStream() {
                 restoration: transactionRestoration,
               },
               signer,
-              overrides: await getTransactionOverrides(network),
+              overrides: await getOverrides(),
             })
               .unwrap()
               .then(
@@ -844,7 +591,7 @@ export default memo(function SendStream() {
 
   const DeleteFlowBoundary = (
     <TransactionBoundary mutationResult={flowDeleteResult}>
-      {({ setDialogLoadingInfo }) =>
+      {({ setDialogLoadingInfo, txAnalytics, getOverrides }) =>
         (activeFlow || scheduledStream) && (
           <TransactionButton
             dataCy={"cancel-stream-button"}
@@ -875,7 +622,7 @@ export default memo(function SendStream() {
               flowDeleteTrigger({
                 ...primaryArgs,
                 signer,
-                overrides: await getTransactionOverrides(network),
+                overrides: await getOverrides(),
               })
                 .unwrap()
                 .then(...txAnalytics("Cancel Stream", primaryArgs))
@@ -955,7 +702,7 @@ export default memo(function SendStream() {
           <FormLabel>Receiver Wallet Address</FormLabel>
           <TooltipWithIcon title="Must not be an exchange address" />
         </Stack>
-        {ReceiverAddressController}
+        <ReceiverAddressController isBelowMd={isBelowMd} />
       </Box>
       <Box
         sx={{
@@ -969,7 +716,7 @@ export default memo(function SendStream() {
       >
         <Stack justifyContent="stretch">
           <FormLabel>Super Token</FormLabel>
-          {TokenController}
+          <TokenController network={network} superToken={superToken} />
         </Stack>
         <Box>
           <Stack
@@ -981,14 +728,14 @@ export default memo(function SendStream() {
             <FormLabel>Flow Rate</FormLabel>
             <TooltipWithIcon title="Flow rate is the velocity of tokens being streamed." />
           </Stack>
-          {FlowRateController}
+          <FlowRateController />
         </Box>
       </Box>
       {doesNetworkSupportScheduling && (
         <>
           <FormControlLabel
             data-cy={"scheduling-tooltip"}
-            control={StreamSchedulingController}
+            control={<StreamSchedulingController streamScheduling={streamScheduling} setStreamScheduling={setStreamScheduling} />}
             label={
               <Stack direction="row" alignItems="center" gap={0.75}>
                 Stream Scheduling
@@ -1023,7 +770,7 @@ export default memo(function SendStream() {
                     <FormLabel>Start Date</FormLabel>
                     <TooltipWithIcon title="The date when stream scheduler tries to start the stream." />
                   </Stack>
-                  {StartDateController}
+                  <StartDateController disabled={!!activeFlow} MIN_DATE={MIN_DATE} startDate={startDate} startDateMax={startDateMax} />
                 </Stack>
                 <Stack>
                   <Stack
@@ -1036,7 +783,7 @@ export default memo(function SendStream() {
                     <FormLabel>End Date</FormLabel>
                     <TooltipWithIcon title="The date when stream scheduler tries to cancel the stream." />
                   </Stack>
-                  {EndDateController}
+                  <EndDateController MAX_DATE={MAX_DATE} endDateMin={endDateMin} endDate={endDate} />
                 </Stack>
               </Stack>
 
@@ -1082,7 +829,7 @@ export default memo(function SendStream() {
         />
       )}
 
-      {showBufferAlert && BufferAlert}
+      {showBufferAlert && <BufferAlert bufferAmount={bufferAmount} superToken={superToken} />}
 
       <ConnectionBoundary>
         <ConnectionBoundaryButton
@@ -1101,3 +848,314 @@ export default memo(function SendStream() {
     </Stack>
   );
 });
+
+// # Sub-components
+
+const WhitelistTransparentBox = memo(function WhitelistTransparentBox() {
+  return (
+    <Stack
+      sx={{
+        position: "absolute",
+        width: "calc(100% + 10px)",
+        height: "calc(100% + 10px)",
+        marginTop: "-5px",
+        marginLeft: "-5px",
+        alignItems: "center",
+        justifyContent: "center",
+        backdropFilter: "blur(5px)",
+        backfaceVisibility: "hidden",
+      }}
+    >
+      <Box sx={{ px: 4, pb: 3, textAlign: "center" }}>
+        <Typography data-cy="allowlist-message" variant="h5">
+          You are not on the allow list.
+        </Typography>
+        <Typography
+          data-cy="allowlist-message"
+          sx={{ maxWidth: "410px" }}
+          variant="body1"
+        >
+          If you want to set start and end dates for your streams,{" "}
+          <Link
+            data-cy={"allowlist-link"}
+            href="https://use.superfluid.finance/schedulestreams"
+            target="_blank"
+          >
+            Apply for access
+          </Link>{" "}
+          or try it out on{" "}
+          <NetworkSwitchLink
+            title={networkDefinition.optimismSepolia.name}
+            network={networkDefinition.optimismSepolia}
+          />
+          .
+        </Typography>
+      </Box>
+    </Stack>
+  );
+});
+
+export const SendBalance = memo(function SendBalance(props: {
+  network: Network;
+  visibleAddress: string | undefined;
+  token: SuperTokenMinimal | undefined | null
+}) {
+  if (!props.visibleAddress || !props.token) {
+    return null;
+  }
+
+  const isWrappableSuperToken = props.token ? isWrappable(props.token) : false;
+
+  return (
+    <Stack
+      direction="row"
+      alignItems="center"
+      justifyContent="center"
+      gap={1}
+    >
+      <Stack direction="row" alignItems="center" gap={0.5}>
+        <BalanceSuperToken
+          showFiat
+          data-cy={"balance"}
+          chainId={props.network.id}
+          accountAddress={props.visibleAddress}
+          tokenAddress={props.token.address}
+          symbol={props.token.symbol}
+          TypographyProps={{ variant: "h7mono" }}
+          SymbolTypographyProps={{ variant: "h7" }}
+        />
+      </Stack>
+      {isWrappableSuperToken && (
+        <Tooltip title="Wrap more">
+          <IconButton
+            LinkComponent={Link}
+            href={`/wrap?upgrade&token=${props.token.address}&network=${props.network.slugName}`}
+            data-cy={"balance-wrap-button"}
+            color="primary"
+            size="small"
+          >
+            <AddRounded />
+          </IconButton>
+        </Tooltip>
+      )}
+    </Stack>
+  );
+});
+
+const BufferAlert = memo(function BufferAlert(
+  props: { bufferAmount: BigNumber | undefined, superToken: SuperTokenMinimal | undefined | null }
+) {
+  return (
+    <Alert data-cy="buffer-warning" severity="error">
+      If you do not cancel this stream before your balance reaches zero,{" "}
+      <b>
+        you will lose your{" "}
+        {props.bufferAmount && props.superToken ? (
+          <span translate="no">
+            <Amount wei={props.bufferAmount.toString()}> {props.superToken.symbol}</Amount>
+          </span>
+        ) : null}{" "}
+        buffer.
+      </b>
+      <FormGroup><UnderstandLiquidationRiskController /></FormGroup>
+    </Alert>
+  );
+});
+
+// ## Controllers
+const ReceiverAddressController = memo(function ReceiverAddressController(
+  props: { isBelowMd: boolean }
+) {
+  const { control, watch } = useFormContext<PartialStreamingForm>();
+  const receiverAddress = watch("data.receiverAddress");
+  return (
+    <Controller
+      control={control}
+      name="data.receiverAddress"
+      render={({ field: { onChange, onBlur } }) => (
+        <AddressSearch
+          address={receiverAddress}
+          onChange={onChange}
+          onBlur={onBlur}
+          addressLength={props.isBelowMd ? "medium" : "long"}
+          ButtonProps={{ fullWidth: true }}
+        />
+      )}
+    />
+  );
+});
+
+const UnderstandLiquidationRiskController = memo(function UnderstandLiquidationRiskController() {
+  const { control } = useFormContext<PartialStreamingForm>();
+  return (
+    <Controller
+      control={control}
+      name="data.understandLiquidationRisk"
+      render={({ field: { onChange, onBlur, value } }) => (
+        <FormControlLabel
+          control={
+            <Checkbox
+              data-cy={"risk-checkbox"}
+              checked={value}
+              onChange={onChange}
+              onBlur={onBlur}
+              sx={{ color: "inherit" }}
+            />
+          }
+          label={
+            <Typography variant="body2">Yes, I understand the risk.</Typography>
+          }
+        />
+      )}
+    />
+  );
+});
+
+const TokenController = memo(function TokenController(props: { network: Network, superToken: SuperTokenMinimal | null | undefined }) {
+  const { control } = useFormContext<PartialStreamingForm>();
+  const { superTokens, isFetching } = useSuperTokens({ network: props.network });
+
+  return (
+    <Controller
+      control={control}
+      name="data.tokenAddress"
+      render={({ field: { onChange, onBlur } }) => (
+        <TokenDialogButton
+          token={props.superToken}
+          network={props.network}
+          tokens={superTokens}
+          isTokensFetching={isFetching}
+          showUpgrade={true}
+          onTokenSelect={(x) => onChange(x.address)}
+          onBlur={onBlur}
+          ButtonProps={{ variant: "input" }}
+        />
+      )}
+    />
+  );
+});
+
+const FlowRateController = memo(function FlowRateController() {
+  const { control, watch } = useFormContext<PartialStreamingForm>();
+  const [
+    flowRateEther
+  ] = watch([
+    "data.flowRate"
+  ]);
+
+  return (
+    <Controller
+      control={control}
+      name="data.flowRate"
+      render={({ field: { onChange, onBlur } }) => (
+        <FlowRateInput
+          flowRateEther={flowRateEther}
+          onChange={onChange}
+          onBlur={onBlur}
+        />
+      )}
+    />
+  )
+});
+
+const StreamSchedulingController = memo(function StreamSchedulingController(
+  props: { streamScheduling: boolean, setStreamScheduling: (value: boolean) => void }
+) {
+  const { setValue } = useFormContext<PartialStreamingForm>();
+
+  return (
+    <Switch
+      checked={props.streamScheduling}
+      onChange={(_event, value) => {
+        if (!value) {
+          setValue("data.startTimestamp", null);
+          setValue("data.endTimestamp", null);
+        }
+        props.setStreamScheduling(value);
+      }}
+    />
+  );
+});
+
+const StartDateController = memo(function StartDateController(
+  props: {
+    disabled: boolean,
+    MIN_DATE: Date,
+    startDateMax: Date,
+    startDate: Date | null,
+  }
+) {
+  const { control } = useFormContext<PartialStreamingForm>();
+
+  return (
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <Controller
+        control={control}
+        name="data.startTimestamp"
+        render={({ field: { onChange, onBlur } }) => (
+          <DateTimePicker
+            renderInput={(props) => (
+              <TextField
+                data-cy={"start-date"}
+                fullWidth
+                autoComplete="off"
+                {...props}
+                onBlur={onBlur}
+              />
+            )}
+            value={props.startDate}
+            minDateTime={props.MIN_DATE}
+            maxDateTime={props.startDateMax}
+            ampm={false}
+            onChange={(date: Date | null) =>
+              onChange(date ? getUnixTime(date) : null)
+            }
+            disablePast
+            disabled={props.disabled}
+          />
+        )}
+      />
+    </LocalizationProvider>
+  );
+});
+
+const EndDateController = memo(function EndDateController(
+  props: {
+    MAX_DATE: Date,
+    endDateMin: Date,
+    endDate: Date | null,
+  }
+) {
+  const { control } = useFormContext<PartialStreamingForm>();
+
+  return (
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+    <Controller
+      control={control}
+      name="data.endTimestamp"
+      render={({ field: { onChange, onBlur } }) => (
+        <DateTimePicker
+          renderInput={(props) => (
+            <TextField
+              data-cy={"end-date"}
+              fullWidth
+              autoComplete="off"
+              {...props}
+              onBlur={onBlur}
+            />
+          )}
+          value={props.endDate}
+          minDateTime={props.endDateMin}
+          maxDateTime={props.MAX_DATE}
+          ampm={false}
+          onChange={(date: Date | null) => {
+            const endTimestamp = date ? getTimeInSeconds(date) : null;
+            onChange(endTimestamp);
+          }}
+          disablePast
+        />
+      )}
+    />
+  </LocalizationProvider>
+  )
+})
