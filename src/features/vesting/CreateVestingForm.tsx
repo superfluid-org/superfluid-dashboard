@@ -549,8 +549,8 @@ const VestingPeriodController = memo(function VestingPeriodController(props: {
 });
 
 const CliffEnabledController = memo(function CliffEnabledController() {
-  const { control, setValue } = useFormContext<PartialVestingForm>();
-  const { data: { vestingPeriod } } = useWatch();
+  const { control, setValue, watch } = useFormContext<PartialVestingForm>();
+  const vestingPeriod = watch("data.vestingPeriod");
 
   return (
     <Controller
@@ -635,8 +635,7 @@ const AutoWrapController = memo(function AutoWrapController() {
 const PreviewVestingScheduleButton = memo(function PreviewVestingScheduleButton(props: {
   setView: (value: CreateVestingCardView) => void;
 }) {
-  const { control } = useFormContext<PartialVestingForm>();
-  const { isValid, isValidating } = useFormState({ control });
+  const { formState: { isValid, isValidating } } = useFormContext<PartialVestingForm>();
 
   // A work-around for react-hook-form bug which causes the "cannot update a component while rendering another" error
   // https://github.com/orgs/react-hook-form/discussions/11760
@@ -658,8 +657,7 @@ const PreviewVestingScheduleButton = memo(function PreviewVestingScheduleButton(
 });
 
 const ValidationSummary = memo(function ValidationSummary() {
-  const { control } = useFormContext<PartialVestingForm>();
-  const { errors } = useFormState({ control });
+  const { formState: { errors } } = useFormContext<PartialVestingForm>();
 
   return (
     <ErrorMessage
