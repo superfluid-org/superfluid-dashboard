@@ -1189,6 +1189,7 @@ export class Common extends BasePage {
           'dashboard page': '/',
           'wrap page': '/wrap',
           'send page': '/send',
+          'transfer page': '/transfer',
           'ecosystem page': '/ecosystem',
           'address book page': '/address-book',
           'activity history page': '/history',
