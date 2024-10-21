@@ -7,3 +7,25 @@ Given(
     TransferPage.inputTransferTestData(isConnected);
   }
 );
+
+Then(/^User clicks on the wrap button in the transfer page$/, () => {
+  TransferPage.clickBalancePreviewWrapButton();
+});
+
+Then(
+  /^Token balance is shown correctly in the transfer page with a wrap button next to it$/,
+  () => {
+    TransferPage.validateTransferPagePreviewBalance();
+  }
+);
+
+Given(
+  /^User inputs all the details to send "([^"]*)" "([^"]*)" to "([^"]*)"$/,
+  (amount: string, token: string, address: string) => {
+    TransferPage.inputTransferDetails(amount, token, address);
+  }
+);
+
+Given(/^User clicks the send transfer button$/, function () {
+  TransferPage.clickTransferButton();
+});

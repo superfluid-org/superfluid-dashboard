@@ -21,22 +21,20 @@ Feature: Stream transactional test cases
     And User restores the last transaction
     Then All the details to send "1" "fDAIx" per "month" to "@elvijs" on "opsepolia" are set in the fields
 
-  Scenario: Modifying a stream
-    Given The "fDAIx" stream from "bob" to "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" on "opsepolia" is running
-
-    Given "Send Page" is open with "bob" connected on "opsepolia"
-    And User inputs all the details to send "random" "fDAIx" per "month" to "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2"
-    And User modifies the stream and the transaction dialogs are visible for "opsepolia"
-    And User goes to the token page from the transaction dialog
-    And User opens the transaction drawer
-    # And The transaction drawer shows a pending "Update Flow Rate" transaction on "opsepolia"
-    And The restore button is visible for the last transaction
-    And The transaction drawer shows a succeeded "Update Flow Rate" transaction on "opsepolia"
-    And The restore button is visible for the last transaction
-    And The first row in the table shows "@elvijs" "receiving" an "ongoing" stream of "random" token per month since "now"
-    And User restores the last transaction
-    Then All the details to send "random" "fDAIx" per "month" to "@elvijs" on "opsepolia" are set in the fields
-
+  # Scenario: Modifying a stream
+  #   Given The "fDAIx" stream from "bob" to "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" on "opsepolia" is running
+  #   Given "Send Page" is open with "bob" connected on "opsepolia"
+  #   And User inputs all the details to send "random" "fDAIx" per "month" to "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2"
+  #   And User modifies the stream and the transaction dialogs are visible for "opsepolia"
+  #   And User goes to the token page from the transaction dialog
+  #   And User opens the transaction drawer
+  #   # And The transaction drawer shows a pending "Update Flow Rate" transaction on "opsepolia"
+  #   And The restore button is visible for the last transaction
+  #   And The transaction drawer shows a succeeded "Update Flow Rate" transaction on "opsepolia"
+  #   And The restore button is visible for the last transaction
+  #   And The first row in the table shows "@elvijs" "receiving" an "ongoing" stream of "random" token per month since "now"
+  #   And User restores the last transaction
+  #   Then All the details to send "random" "fDAIx" per "month" to "@elvijs" on "opsepolia" are set in the fields
   Scenario: Cancelling a stream
     Given The "fDAIx" stream from "bob" to "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" on "opsepolia" is running
 

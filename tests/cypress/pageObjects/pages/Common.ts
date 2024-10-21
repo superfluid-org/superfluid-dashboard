@@ -255,6 +255,9 @@ export class Common extends BasePage {
   }
 
   static openPage(page: string, account?: string, network?: string) {
+    console.log(`Page: ${page}`);
+    console.log(`Account: ${account}`);
+    console.log(`Network: ${network}`);
     this.getPageUrlByName(page.toLowerCase()).then((url) => {
       this.visitPage(url, account, network);
     });

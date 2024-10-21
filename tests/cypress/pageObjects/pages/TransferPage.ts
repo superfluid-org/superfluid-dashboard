@@ -13,6 +13,10 @@ const ADDRESS_BUTTON_TEXT = '[data-cy=address-button]';
 const TOKEN_SELECT_SYMBOL = '[data-cy=token-symbol-and-name] h6';
 const PREVIEW_BALANCE = '[data-cy=balance]';
 const DIALOG = '[role=dialog]';
+const TOKEN_SEARCH_INPUT = '[data-cy=token-search-input] input';
+const BALANCE_WRAP_BUTTON = '[data-cy=balance-wrap-button]';
+const TRANSFER_BUTTON = '[data-cy=transfer-button]';
+const RECENT_ENTRIES = '[data-cy=recents-entry]';
 
 export class TransferPage extends BasePage {
   static inputTransferTestData(isConnected: string) {
@@ -49,5 +53,52 @@ export class TransferPage extends BasePage {
     this.isVisible(CONNECT_WALLET_BUTTON);
     this.isNotDisabled(CONNECT_WALLET_BUTTON);
     this.hasText(`main ${CONNECT_WALLET_BUTTON}`, 'Connect Wallet');
+  }
+
+  static validateTransferPagePreviewBalance() {
+    cy.fixture('networkSpecificData').then((networkSpecificData) => {
+      let selectedValues =
+        networkSpecificData.polygon.staticBalanceAccount.tokenValues[0].balance;
+
+      this.hasText(PREVIEW_BALANCE, `${selectedValues} `);
+
+      this.isVisible(BALANCE_WRAP_BUTTON);
+    });
+  }
+
+  static clickBalancePreviewWrapButton() {
+    this.doesNotExist(TOKEN_SEARCH_INPUT);
+    this.click(BALANCE_WRAP_BUTTON);
+  }
+
+  static inputTransferDetails(amount: string, token: string, address: string) {
+    this.getSelectedToken(token).then((selectedToken) => {
+      this.click(RECEIVER_BUTTON);
+      // this.isVisible(RECENT_ENTRIES, undefined, { timeout: 30000 });
+      this.type(ADDRESS_DIALOG_INPUT, address);
+      cy.wait(2000);
+      cy.get('body').then((body) => {
+        if (body.find('[role=presentation]').length > 0) {
+          body.find('[role=presentation]').click();
+        }
+      });
+      this.doesNotExist('[role=dialog]');
+      const amountToPutIn =
+        amount === 'random' ? RANDOM_VALUE_DURING_TEST : amount;
+      this.type(AMOUNT_INPUT, amountToPutIn);
+      this.click(SELECT_TOKEN_BUTTON);
+      this.click(`[data-cy="${selectedToken}-list-item"]`, 0, {
+        timeout: 60000,
+      });
+      this.hasText(SELECT_TOKEN_BUTTON, selectedToken, undefined, {
+        timeout: 30000,
+      });
+    });
+  }
+
+  static clickTransferButton() {
+    cy.get(TRANSFER_BUTTON).as('transferButton');
+    this.isNotDisabled('@transferButton', undefined, { timeout: 45000 });
+    this.click('@transferButton');
   }
 }
