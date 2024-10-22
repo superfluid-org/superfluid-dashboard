@@ -26,6 +26,42 @@ Given(
   }
 );
 
-Given(/^User clicks the send transfer button$/, function () {
-  TransferPage.clickTransferButton();
+Given(
+  /^User sends the transfer and the transaction dialogs are visible for "([^"]*)"$/,
+  (network: string) => {
+    TransferPage.clickTransferButton();
+    TransferPage.validateTransferTxMessage(network);
+    TransferPage.validateBroadcastedTransactionTxMessage();
+    TransferPage.clickOkButton();
+  }
+);
+
+Given(
+  /^The first row does not have a pending transfer transaction status$/,
+  () => {
+    TransferPage.validateNoPendingStatusForFirstTransferRow();
+  }
+);
+
+Then(
+  /^All the details to send "([^"]*)" "([^"]*)" to "([^"]*)" on "([^"]*)" are set in the fields$/,
+  (amount: string, token: string, address: string, network: string) => {
+    TransferPage.validateRestoredTransferTransaction(
+      amount,
+      token,
+      address,
+      network
+    );
+  }
+);
+
+Then(
+  /^Transfer button is enabled and asks user to Connect their wallet$/,
+  () => {
+    TransferPage.checkConnectWalletButton();
+  }
+);
+
+Then(/^Validate "([^"]*)" error$/, (error: string) => {
+  TransferPage.validateFormError(error);
 });
