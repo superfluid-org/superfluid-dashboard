@@ -45,7 +45,6 @@ const TOKEN_SELECT_SYMBOL = '[data-cy=token-symbol-and-name] h6';
 const TOKEN_SELECT_BALANCE = `${TOKEN_BALANCE} span`;
 const BALANCE_WRAP_BUTTON = '[data-cy=balance-wrap-button]';
 const PREVIEW_BALANCE = '[data-cy=balance]';
-const TOKEN_NO_SEARCH_RESULTS = '[data-cy=token-search-no-results]';
 const DIALOG = '[role=dialog]';
 const DIALOG_CONTENT = '[data-cy=dialog-content]';
 const APPROVAL_MESSAGE = '[data-cy=approval-message]';
@@ -108,32 +107,9 @@ export class SendPage extends BasePage {
     );
   }
 
-  static searchForTokenInTokenList(token: string) {
-    this.type(TOKEN_SEARCH_INPUT, token);
-  }
-
-  static validateSendPagePreviewBalance() {
-    cy.fixture('networkSpecificData').then((networkSpecificData) => {
-      let selectedValues =
-        networkSpecificData.polygon.staticBalanceAccount.tokenValues[0].balance;
-
-      this.hasText(PREVIEW_BALANCE, `${selectedValues} `);
-    });
-  }
-
   static clickBalancePreviewWrapButton() {
     this.doesNotExist(TOKEN_SEARCH_INPUT);
     this.click(BALANCE_WRAP_BUTTON);
-  }
-
-  static recentReceiversAreShown(network: string) {
-    cy.fixture('networkSpecificData').then((networkSpecificData) => {
-      networkSpecificData[network].staticBalanceAccount.recentReceivers.forEach(
-        (receiver: any, index: number) => {
-          this.hasText(RECENT_ENTRIES, receiver.address, index);
-        }
-      );
-    });
   }
 
   static checkIfSendContainerIsVisible() {
@@ -195,18 +171,6 @@ export class SendPage extends BasePage {
     this.click(RISK_CHECKBOX);
   }
 
-  static checkConnectWalletButton() {
-    this.isVisible(CONNECT_WALLET_BUTTON);
-    this.isNotDisabled(CONNECT_WALLET_BUTTON);
-    this.hasText(`main ${CONNECT_WALLET_BUTTON}`, 'Connect Wallet');
-  }
-
-  static searchForReceiver(ensNameOrAddress: string, index = 0) {
-    this.click(RECEIVER_BUTTON, index);
-    this.type(ADDRESS_DIALOG_INPUT, ensNameOrAddress);
-    cy.wrap(ensNameOrAddress).as('ensNameOrAddress');
-  }
-
   static recipientEnsResultsContain(result: string) {
     cy.get('@ensNameOrAddress').then((ensNameOrAddress) => {
       this.hasText(ENS_ENTRY_NAMES, ensNameOrAddress);
@@ -234,10 +198,6 @@ export class SendPage extends BasePage {
     this.hasText(RECEIVER_BUTTON, 'Public Address, ENS or Lens');
   }
 
-  static receiverDialog() {
-    this.click(RECEIVER_BUTTON);
-  }
-
   static closeDialog() {
     this.clickFirstVisible(CLOSE_DIALOG_BUTTON);
   }
@@ -261,11 +221,6 @@ export class SendPage extends BasePage {
     cy.get('@lastChosenReceiver').then((lastChosenReceiver) => {
       this.hasText(ADDRESS_BUTTON_TEXT, lastChosenReceiver);
     });
-  }
-
-  static openTokenSelection() {
-    this.click(SELECT_TOKEN_BUTTON);
-    this.exists(TOKEN_SEARCH_RESULTS, undefined, { timeout: 45000 });
   }
 
   static validateTokenBalancesInSelectionScreen(
@@ -328,21 +283,6 @@ export class SendPage extends BasePage {
 
   static selectTokenFromTokenList(token: string) {
     this.click(`[data-cy=${token}-list-item]`);
-  }
-
-  static tokenSearchResultsOnlyContain(token: string) {
-    cy.get(`[data-cy*=-list-item] ${TOKEN_SELECT_SYMBOL}`).each((el) => {
-      cy.wrap(el).should('contain', token);
-    });
-  }
-
-  static tokenSearchNoResultsMessageIsShown() {
-    this.isVisible(TOKEN_NO_SEARCH_RESULTS);
-    this.hasText(TOKEN_NO_SEARCH_RESULTS, 'Could not find any tokens. :(');
-  }
-
-  static clearTokenSearchField() {
-    this.clear(TOKEN_SEARCH_INPUT);
   }
 
   static changeTimeUnit(unit: string) {

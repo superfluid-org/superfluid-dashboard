@@ -1,5 +1,6 @@
 import { Given, Then } from '@badeball/cypress-cucumber-preprocessor';
 import { TransferPage } from '../../pageObjects/pages/TransferPage';
+import { Common } from '../../pageObjects/pages/Common';
 
 Given(
   /^User fills all transfer inputs "([^"]*)" a wallet connected$/,
@@ -58,7 +59,7 @@ Then(
 Then(
   /^Transfer button is enabled and asks user to Connect their wallet$/,
   () => {
-    TransferPage.checkConnectWalletButton();
+    Common.checkConnectWalletButton();
   }
 );
 

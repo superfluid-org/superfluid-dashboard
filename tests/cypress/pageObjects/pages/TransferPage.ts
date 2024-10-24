@@ -57,12 +57,6 @@ export class TransferPage extends BasePage {
     });
   }
 
-  static checkConnectWalletButton() {
-    this.isVisible(CONNECT_WALLET_BUTTON);
-    this.isNotDisabled(CONNECT_WALLET_BUTTON);
-    this.hasText(`main ${CONNECT_WALLET_BUTTON}`, 'Connect Wallet');
-  }
-
   static validateTransferPagePreviewBalance() {
     cy.fixture('networkSpecificData').then((networkSpecificData) => {
       let selectedValues =

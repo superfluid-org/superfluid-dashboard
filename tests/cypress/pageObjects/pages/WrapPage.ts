@@ -106,13 +106,6 @@ export class WrapPage extends BasePage {
     this.isNotDisabled(DOWNGRADE_BUTTON);
   }
 
-  static changeNetworkButtonShowsCorrectNetwork(network: string) {
-    this.hasText(
-      CHANGE_NETWORK_BUTTON,
-      `Change Network to ${networksBySlug.get(network)?.name}`
-    );
-  }
-
   static isStopViewingButtonVisible() {
     this.isVisible(STOP_VIEWING_BUTTON);
   }
