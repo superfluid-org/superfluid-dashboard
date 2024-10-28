@@ -856,7 +856,6 @@ export class VestingPage extends BasePage {
 
   static switchToV2() {
     this.click(VERSION_V2);
-    cy.wait(5000);
   }
 
   static requireReceiverToClaim() {
