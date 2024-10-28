@@ -205,6 +205,7 @@ export class SendPage extends BasePage {
     this.click(RECEIVER_BUTTON, index);
     this.type(ADDRESS_DIALOG_INPUT, ensNameOrAddress);
     cy.wrap(ensNameOrAddress).as('ensNameOrAddress');
+    cy.wait(10000);
   }
 
   static recipientEnsResultsContain(result: string) {
