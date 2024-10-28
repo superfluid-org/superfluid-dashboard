@@ -20,7 +20,6 @@ Feature: Transfer Page test cases
   Scenario: Wrong network warnings in the transfer page
     Given "Transfer Page" is open with "staticBalanceAccount" connected on "polygon"
     And User changes their network to "gnosis"
-    And User clicks on the "transfer" navigation button
     And Change network button is visible with a message asking user to switch to "gnosis"
 
   Scenario: Error message is shown to a user who is trying to send a transfer to himself
