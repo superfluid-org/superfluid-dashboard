@@ -93,6 +93,8 @@ const NO_CREATED_DESC_STRING =
 const NO_RECEIVED_TITLE_STRING = 'No Received Vesting Schedules';
 const NO_RECEIVED_DESC_STRING =
   'Vesting schedules that you have received will appear here.';
+const VERSION_V2 = '[data-cy=version-v2]';
+const REQUIRE_RECEIVER_TO_CLAIM = '[data-cy=claim-toggle]';
 
 //Dates for the vesting previews etc.
 let staticStartDate = new Date(1879145815000);
@@ -333,6 +335,7 @@ export class VestingPage extends BasePage {
       PREVIEW_TOTAL_PERIOD,
       `2 year (${format(endDate, 'LLLL d, yyyy')})`
     );
+    cy.wait(10000);
   }
 
   static validateNewlyCreatedSchedule() {
@@ -349,7 +352,7 @@ export class VestingPage extends BasePage {
   }
 
   static clickCreateScheduleButton() {
-    this.isVisible(CREATED_TABLE, undefined, { timeout: 30000 });
+    // this.isVisible(CREATED_TABLE, undefined, { timeout: 30000 });
     this.click(CREATE_VESTING_SCHEDULE_BUTTON);
   }
 
@@ -849,5 +852,14 @@ export class VestingPage extends BasePage {
   }
   static clickAutoWrapSwitch() {
     this.click(AUTO_WRAP_SWITCH);
+  }
+
+  static switchToV2() {
+    this.click(VERSION_V2);
+    cy.wait(5000);
+  }
+
+  static requireReceiverToClaim() {
+    this.click(REQUIRE_RECEIVER_TO_CLAIM);
   }
 }

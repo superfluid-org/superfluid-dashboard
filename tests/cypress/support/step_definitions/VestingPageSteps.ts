@@ -1,6 +1,6 @@
-import { Given, Then } from "@badeball/cypress-cucumber-preprocessor";
-import { VestingPage } from "../../pageObjects/pages/VestingPage";
-import { SendPage } from "../../pageObjects/pages/SendPage";
+import { Given, Then } from '@badeball/cypress-cucumber-preprocessor';
+import { VestingPage } from '../../pageObjects/pages/VestingPage';
+import { SendPage } from '../../pageObjects/pages/SendPage';
 
 Then(/^No received vesting schedules message is shown$/, function () {
   VestingPage.validateNoReceivedVestingScheduleMessage();
@@ -44,12 +44,12 @@ Given(
 Given(
   /^User inputs valid vesting schedule details in the form and proceeds to the preview$/,
   function () {
-    VestingPage.inputFutureDateInVestingStartDateField(1, "year");
+    VestingPage.inputFutureDateInVestingStartDateField(1, 'year');
     VestingPage.inputTotalVestedAmount(2);
-    VestingPage.inputTotalVestingPeriod(2, "year");
+    VestingPage.inputTotalVestingPeriod(2, 'year');
     VestingPage.clickCliffToggle();
     VestingPage.inputCliffAmount(1);
-    VestingPage.inputCliffPeriod(1, "year");
+    VestingPage.inputCliffPeriod(1, 'year');
     VestingPage.clickPreviewButton();
   }
 );
@@ -340,3 +340,11 @@ Then(
     });
   }
 );
+
+Then(/^User clicks on switch to v2$/, () => {
+  VestingPage.switchToV2();
+});
+
+Then(/^User click on the require receiver to claim toggle$/, () => {
+  VestingPage.requireReceiverToClaim();
+});

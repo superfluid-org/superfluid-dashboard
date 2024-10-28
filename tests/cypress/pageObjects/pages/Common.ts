@@ -252,6 +252,7 @@ export class Common extends BasePage {
 
   static clickNavBarButton(button: string) {
     this.click(`${NAVIGATION_BUTTON_PREFIX + button}]`);
+    cy.wait(5000);
   }
 
   static openPage(page: string, account?: string, network?: string) {
