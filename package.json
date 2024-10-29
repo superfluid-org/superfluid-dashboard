@@ -21,7 +21,6 @@
     "tsc": "pnpm exec tsc --noEmit"
   },
   "dependencies": {
-    "@adrastia-oracle/ethers-fallback-provider": "1.2.0",
     "@emotion/cache": "^11.13.1",
     "@emotion/react": "^11.13.3",
     "@emotion/server": "^11.11.0",
