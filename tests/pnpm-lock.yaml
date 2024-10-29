@@ -12,8 +12,8 @@ importers:
         specifier: ^0.8.0
         version: 0.8.0(@openzeppelin/test-helpers@0.5.16(bn.js@5.2.1)(bufferutil@4.0.8)(utf-8-validate@5.0.10))(bufferutil@4.0.8)(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(graphql@16.9.0)(typescript@5.5.4)(utf-8-validate@5.0.10)
       '@superfluid-finance/tokenlist':
-        specifier: 5.3.0
-        version: 5.3.0
+        specifier: 5.8.1
+        version: 5.8.1
       '@truffle/encoder':
         specifier: ^1.0.27
         version: 1.0.27(bufferutil@4.0.8)(utf-8-validate@5.0.10)
@@ -1354,6 +1354,7 @@ packages:
 
   '@openzeppelin/test-helpers@0.5.16':
     resolution: {integrity: sha512-T1EvspSfH1qQO/sgGlskLfYVBbqzJR23SZzYl/6B2JnT4EhThcI85UpvDk0BkLWKaDScQTabGHt4GzHW+3SfZg==}
+    deprecated: Package no longer maintained. Consider using @nomicfoundation/hardhat-chai-matchers and @nomicfoundation/hardhat-network-helpers instead.
 
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
@@ -1427,8 +1428,8 @@ packages:
       ethers: ^5.7.2
       graphql: ^16.0.0
 
-  '@superfluid-finance/tokenlist@5.3.0':
-    resolution: {integrity: sha512-hv0LjDCfCRPuSZS0Z7F4W1xU9w716CZo3zUcTRX+SHG+H4QzrFEJ/WqqW81zw0uy5fTg6ezxTwcOxmZu1Vvk4w==}
+  '@superfluid-finance/tokenlist@5.8.1':
+    resolution: {integrity: sha512-nVI4jiA7LiU/xQwVWwvST4nm9E6Sv/4ielvDxTNTz84OoviOuLQvctZaPFYeQT4IVo472N8eDce/ngtMEFUI+Q==}
 
   '@szmarczak/http-timer@4.0.6':
     resolution: {integrity: sha512-4BAffykYOgO+5nzBWYwE3W90sBgLJoUPRWWcL8wlyiM8IB8ipJz3UMJ9KXQd1RKQXpKp8Tutn80HZtWsu2u76w==}
@@ -7952,7 +7953,7 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@superfluid-finance/tokenlist@5.3.0':
+  '@superfluid-finance/tokenlist@5.8.1':
     dependencies:
       '@uniswap/token-lists': 1.0.0-beta.34
 
