@@ -62,6 +62,9 @@ Given(/^Preview of the vesting schedule is shown correctly$/, function () {
 Given(/^User creates the vesting schedule$/, function () {
   VestingPage.createNewVestingSchedule();
 });
+Given(/^User creates the vesting schedule v2$/, function () {
+  VestingPage.createNewVestingSchedulev2();
+});
 Given(
   /^The newly created vesting schedule is visible in the table$/,
   function () {
