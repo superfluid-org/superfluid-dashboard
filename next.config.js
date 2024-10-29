@@ -9,7 +9,7 @@ const SENTRY_ENVIRONMENT =
   process.env.SENTRY_ENVIRONMENT || process.env.CONTEXT;
 
 const netlifyContext = process.env.NEXT_PUBLIC_NETLIFY_CONTEXT;
-export const isProduction = netlifyContext === "production";
+const isProduction = netlifyContext === "production";
 
 function withSentryIfNecessary(nextConfig) {
   const SENTRY_AUTH_TOKEN = process.env.SENTRY_AUTH_TOKEN;
