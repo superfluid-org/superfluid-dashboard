@@ -9,7 +9,7 @@ const SENTRY_ENVIRONMENT =
   process.env.SENTRY_ENVIRONMENT || process.env.CONTEXT;
 
 const netlifyContext = process.env.NEXT_PUBLIC_NETLIFY_CONTEXT;
-const isProduction = netlifyContext === "production";
+const isOnNetlify = !!netlifyContext;
 
 function withSentryIfNecessary(nextConfig) {
   const SENTRY_AUTH_TOKEN = process.env.SENTRY_AUTH_TOKEN;
@@ -74,7 +74,7 @@ const moduleExports = {
     forceSwcTransforms: !shouldInstrumentCode, // .babelrc.js existence is because of code instrumentation.
   },
   eslint: {
-    ignoreDuringBuilds: isProduction,
+    ignoreDuringBuilds: isOnNetlify,
   }
 };
 
