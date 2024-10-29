@@ -74,7 +74,7 @@ const moduleExports = {
     forceSwcTransforms: !shouldInstrumentCode, // .babelrc.js existence is because of code instrumentation.
   },
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: isOnNetlify,
   }
 };
 
