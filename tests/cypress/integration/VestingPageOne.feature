@@ -152,7 +152,7 @@ Feature: Vesting page first batch of test cases
     Given Transactional account john is connected to the dashboard on opsepolia
     And User clicks on the "vesting" navigation button
     And The created vesting schedule is shown correctly in the table
-    And User opens the last vesting schedule they have created
+    And User opens the vesting schedule they have created
     And Vesting details page is shown correctly for the created schedule
 
   #  Scenario: Vesting schedules only available on Mainnet,Polygon,BNB and opsepolia

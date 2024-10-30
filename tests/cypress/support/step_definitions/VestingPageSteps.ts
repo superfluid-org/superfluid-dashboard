@@ -80,6 +80,9 @@ Then(
 Given(/^User opens the last vesting schedule they have created$/, function () {
   VestingPage.openLastCreatedSchedule();
 });
+Given(/^User opens the vesting schedule they have created$/, function () {
+  VestingPage.openCreatedSchedule();
+});
 Given(/^User deletes the vesting schedule$/, function () {
   VestingPage.deleteVestingSchedule();
 });

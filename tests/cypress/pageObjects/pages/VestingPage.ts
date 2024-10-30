@@ -368,6 +368,13 @@ export class VestingPage extends BasePage {
     this.clickFirstVisible(VESTING_ROWS);
   }
 
+  static openCreatedSchedule() {
+    this.doesNotExist(`${CREATED_TABLE} ${LOADING_SKELETONS}`, undefined, {
+      timeout: 45000,
+    });
+    this.click(VESTING_ROWS, 1);
+  }
+
   static deleteVestingSchedule() {
     this.click(DELETE_SCHEDULE_BUTTON, undefined, { timeout: 30000 });
   }
@@ -395,23 +402,23 @@ export class VestingPage extends BasePage {
   }
 
   static validateCreatedVestingSchedule() {
-    this.hasText(TABLE_VESTING_STATUS, 'Scheduled', 0);
+    this.hasText(TABLE_VESTING_STATUS, 'Scheduled', 1);
     this.hasText(
       TABLE_RECEIVER_SENDER,
       this.shortenHex('0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2'),
-      0
+      1
     );
-    this.hasText(TABLE_ALLOCATED_AMOUNT, '60.87 fTUSDx', 0, { timeout: 30000 });
-    this.hasText(VESTED_AMOUNT, '0  fTUSDx', 0);
+    this.hasText(TABLE_ALLOCATED_AMOUNT, '60.87 fTUSDx', 1, { timeout: 30000 });
+    this.hasText(VESTED_AMOUNT, '0  fTUSDx', 1);
     this.containsText(
       TABLE_START_END_DATES,
       format(staticStartDate, 'LLL d, yyyy'),
-      0
+      1
     );
     this.containsText(
       TABLE_START_END_DATES,
       format(staticEndDate, 'LLL d, yyyy'),
-      0
+      1
     );
   }
 
