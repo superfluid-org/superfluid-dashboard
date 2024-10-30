@@ -1,7 +1,7 @@
-import { Given, Then } from "@badeball/cypress-cucumber-preprocessor";
-import { WrapPage } from "../../pageObjects/pages/WrapPage";
-import { Common } from "../../pageObjects/pages/Common";
-import { SendPage } from "../../pageObjects/pages/SendPage";
+import { Given, Then } from '@badeball/cypress-cucumber-preprocessor';
+import { WrapPage } from '../../pageObjects/pages/WrapPage';
+import { Common } from '../../pageObjects/pages/Common';
+import { SendPage } from '../../pageObjects/pages/SendPage';
 
 Given(/^User inputs "([^"]*)" into the wrap field$/, (amount: string) => {
   WrapPage.clearAndInputWrapAmount(amount);
@@ -40,13 +40,6 @@ Then(
 Then(/^User switches to wrap tab$/, () => {
   WrapPage.switchToWrapTab();
 });
-
-Given(
-  /^Change network button is visible with a message asking user to switch to "([^"]*)"$/,
-  (network: string) => {
-    WrapPage.changeNetworkButtonShowsCorrectNetwork(network);
-  }
-);
 
 Then(/^User clicks on the stop viewing as an address button$/, () => {
   WrapPage.clickStopViewingButton();
