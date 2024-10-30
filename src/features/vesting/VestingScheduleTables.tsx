@@ -32,6 +32,7 @@ import Link from "../common/Link";
 import { uniqBy } from "lodash";
 import { useVestingVersion } from "../../hooks/useVestingVersion";
 import { EMPTY_ARRAY } from "../../utils/constants";
+import { useWhitelist } from "../../hooks/useWhitelist";
 
 interface ExecutionWhitelistInfoProps {
   whitelisted: boolean;
@@ -265,22 +266,7 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({ }) => {
     }
   );
 
-  const { isPlatformWhitelisted_, isLoading: isWhitelistLoading } =
-    platformApi.useIsAccountWhitelistedQuery(
-      visibleAddress
-        ? {
-          chainId: network.id,
-          account: visibleAddress?.toLowerCase(),
-        }
-        : skipToken,
-      {
-        selectFromResult: (queryResult) => ({
-          ...queryResult,
-          isPlatformWhitelisted_: !!queryResult.data,
-        }),
-      }
-    );
-  const isPlatformWhitelisted = Boolean(isPlatformWhitelisted_ || network?.testnet);
+  const { isPlatformWhitelisted, isWhitelistLoading } = useWhitelist({ accountAddress: visibleAddress, network });
 
   const pendingVestingSchedules =
     useAddressPendingVestingSchedules(visibleAddress);

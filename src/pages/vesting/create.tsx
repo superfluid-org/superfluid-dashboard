@@ -1,4 +1,4 @@
-import { Box, Card, Container, useTheme, ToggleButton, ToggleButtonGroup, Stack } from "@mui/material";
+import { Box, Card, Container, useTheme } from "@mui/material";
 import { ReactElement } from "react";
 import withStaticSEO from "../../components/SEO/withStaticSEO";
 import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
@@ -8,32 +8,15 @@ import CreateVestingFormProvider from "../../features/vesting/CreateVestingFormP
 import { CreateVestingSection } from "../../features/vesting/CreateVestingSection";
 import VestingLayout from "../../features/vesting/VestingLayout";
 import { NextPageWithLayout } from "../_app";
-import { platformApi } from "../../features/redux/platformApi/platformApi";
-import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { useAccount } from "wagmi";
+import { useWhitelist } from "../../hooks/useWhitelist";
 
 const CreateVestingSchedulePage: NextPageWithLayout = () => {
   const theme = useTheme();
   const { network } = useExpectedNetwork();
   const { address: accountAddress } = useAccount();
 
-  const { isPlatformWhitelisted_, isLoading: isWhitelistLoading } =
-    platformApi.useIsAccountWhitelistedQuery(
-      accountAddress
-        ? {
-          chainId: network.id,
-          account: accountAddress?.toLowerCase(),
-        }
-        : skipToken,
-      {
-        selectFromResult: (queryResult) => ({
-          ...queryResult,
-          isPlatformWhitelisted_: !!queryResult.data,
-        }),
-      }
-    );
-
-  const isPlatformWhitelisted = Boolean(isPlatformWhitelisted_ || network?.testnet);
+  const { isPlatformWhitelisted, isWhitelistLoading } = useWhitelist({ accountAddress, network });
 
   return (
     <Container key={`${network.slugName}`} maxWidth="md">
