@@ -8,6 +8,9 @@ const { withSentryConfig } = require("@sentry/nextjs");
 const SENTRY_ENVIRONMENT =
   process.env.SENTRY_ENVIRONMENT || process.env.CONTEXT;
 
+const netlifyContext = process.env.CONTEXT;
+const isOnNetlify = !!netlifyContext;
+
 function withSentryIfNecessary(nextConfig) {
   const SENTRY_AUTH_TOKEN = process.env.SENTRY_AUTH_TOKEN;
 
@@ -69,6 +72,9 @@ const moduleExports = {
   // modularizeImports: // It's enabled automatically for many packages in use: https://nextjs.org/docs/app/api-reference/next-config-js/optimizePackageImports
   experimental: {
     forceSwcTransforms: !shouldInstrumentCode, // .babelrc.js existence is because of code instrumentation.
+  },
+  eslint: {
+    ignoreDuringBuilds: isOnNetlify,
   }
 };
 

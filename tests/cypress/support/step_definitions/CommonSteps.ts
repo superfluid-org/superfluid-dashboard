@@ -512,3 +512,51 @@ Given(
     }
   }
 );
+
+Given(/^User opens the token selection screen$/, () => {
+  Common.openTokenSelection();
+});
+
+Given(
+  /^User searches for "([^"]*)" in the select token search field$/,
+  (token: string) => {
+    Common.searchForTokenInTokenList(token);
+  }
+);
+
+Then(
+  /^The "([^"]*)" is only shown as a token search result$/,
+  (token: string) => {
+    Common.tokenSearchResultsOnlyContain(token);
+  }
+);
+
+Then(/^User clears the token search field$/, () => {
+  Common.clearTokenSearchField();
+});
+
+Then(/^The could not find any tokens message is shown$/, () => {
+  Common.tokenSearchNoResultsMessageIsShown();
+});
+
+Given(/^User opens the receiver dialog$/, () => {
+  Common.receiverDialog();
+});
+
+Then(/^The recent receivers are shown on "([^"]*)"$/, (network: string) => {
+  Common.recentReceiversAreShown(network);
+});
+
+Given(
+  /^User searches for "([^"]*)" as a receiver$/,
+  (ensNameOrAddress: string) => {
+    Common.searchForReceiver(ensNameOrAddress);
+  }
+);
+
+Given(
+  /^Change network button is visible with a message asking user to switch to "([^"]*)"$/,
+  (network: string) => {
+    Common.changeNetworkButtonShowsCorrectNetwork(network);
+  }
+);

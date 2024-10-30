@@ -1,0 +1,1 @@
+1.2.0 from https://github.com/adrastia-oracle/ethers-fallback-provider

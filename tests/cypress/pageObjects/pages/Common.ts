@@ -106,6 +106,12 @@ const TRY_SUPERFLUID_ONBOARDING_CARD =
   '[data-cy=try-out-superfluid-onboarding-card]';
 const MINIGAME_WARNING = '[data-cy=superfluid-runner-game-alert-text]';
 const MINIGAME_COMPONENT = '[data-cy=minigame-component]';
+const RECEIVER_BUTTON = '[data-cy=address-button]';
+const RECENT_ENTRIES = '[data-cy=recents-entry]';
+const TOKEN_SELECT_SYMBOL = '[data-cy=token-symbol-and-name] h6';
+const TOKEN_SEARCH_INPUT = '[data-cy=token-search-input] input';
+const TOKEN_NO_SEARCH_RESULTS = '[data-cy=token-search-no-results]';
+const PREVIEW_BALANCE = '[data-cy=balance]';
 
 const NEW_NOTIF_DATE = new Date(Date.now());
 const NEW_NOTIF_STRING_DATE =
@@ -1189,6 +1195,7 @@ export class Common extends BasePage {
           'dashboard page': '/',
           'wrap page': '/wrap',
           'send page': '/send',
+          'transfer page': '/transfer',
           'ecosystem page': '/ecosystem',
           'address book page': '/address-book',
           'activity history page': '/history',
@@ -1238,5 +1245,71 @@ export class Common extends BasePage {
 
   static clearReceiverField() {
     this.clear(ADDRESS_DIALOG_INPUT);
+  }
+
+  static checkConnectWalletButton() {
+    this.isVisible(CONNECT_WALLET_BUTTON);
+    this.isNotDisabled(CONNECT_WALLET_BUTTON);
+    this.hasText(`main ${CONNECT_WALLET_BUTTON}`, 'Connect Wallet');
+  }
+
+  static openTokenSelection() {
+    this.click(SELECT_TOKEN_BUTTON);
+    this.exists(TOKEN_SEARCH_RESULTS, undefined, { timeout: 45000 });
+  }
+
+  static searchForTokenInTokenList(token: string) {
+    this.type(TOKEN_SEARCH_INPUT, token);
+  }
+
+  static validateSendPagePreviewBalance() {
+    cy.fixture('networkSpecificData').then((networkSpecificData) => {
+      let selectedValues =
+        networkSpecificData.polygon.staticBalanceAccount.tokenValues[0].balance;
+
+      this.hasText(PREVIEW_BALANCE, `${selectedValues} `);
+    });
+  }
+
+  static receiverDialog() {
+    this.click(RECEIVER_BUTTON);
+  }
+
+  static recentReceiversAreShown(network: string) {
+    cy.fixture('networkSpecificData').then((networkSpecificData) => {
+      networkSpecificData[network].staticBalanceAccount.recentReceivers.forEach(
+        (receiver: any, index: number) => {
+          this.hasText(RECENT_ENTRIES, receiver.address, index);
+        }
+      );
+    });
+  }
+
+  static searchForReceiver(ensNameOrAddress: string, index = 0) {
+    this.click(RECEIVER_BUTTON, index);
+    this.type(ADDRESS_DIALOG_INPUT, ensNameOrAddress);
+    cy.wrap(ensNameOrAddress).as('ensNameOrAddress');
+  }
+
+  static tokenSearchResultsOnlyContain(token: string) {
+    cy.get(`[data-cy*=-list-item] ${TOKEN_SELECT_SYMBOL}`).each((el) => {
+      cy.wrap(el).should('contain', token);
+    });
+  }
+
+  static clearTokenSearchField() {
+    this.clear(TOKEN_SEARCH_INPUT);
+  }
+
+  static tokenSearchNoResultsMessageIsShown() {
+    this.isVisible(TOKEN_NO_SEARCH_RESULTS);
+    this.hasText(TOKEN_NO_SEARCH_RESULTS, 'Could not find any tokens. :(');
+  }
+
+  static changeNetworkButtonShowsCorrectNetwork(network: string) {
+    this.hasText(
+      CHANGE_NETWORK_BUTTON,
+      `Change Network to ${networksBySlug.get(network)?.name}`
+    );
   }
 }
