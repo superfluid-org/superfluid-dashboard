@@ -370,6 +370,10 @@ export class VestingPage extends BasePage {
 
   static deleteVestingSchedule() {
     this.click(DELETE_SCHEDULE_BUTTON, undefined, { timeout: 30000 });
+  }
+
+  static deleteVestingSchedulev2() {
+    this.click(DELETE_SCHEDULE_BUTTON, undefined, { timeout: 30000 });
     cy.wait(1000);
     this.hasText(APPROVAL_MESSAGE, 'Waiting for transaction approval...');
   }

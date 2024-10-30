@@ -19,7 +19,7 @@ Feature: Vesting page require receiver to claim test cases
     Given Transactional account bob is connected to the dashboard on opsepolia
     And User clicks on the "vesting" navigation button
     And User opens the last vesting schedule they have created
-    And User deletes the vesting schedule
+    And User deletes the vesting schedule v2
 
   Scenario: Creation form - Top up the vesting schedule
     Given Transactional account bob is connected to the dashboard on opsepolia

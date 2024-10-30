@@ -83,6 +83,9 @@ Given(/^User opens the last vesting schedule they have created$/, function () {
 Given(/^User deletes the vesting schedule$/, function () {
   VestingPage.deleteVestingSchedule();
 });
+Given(/^User deletes the vesting schedule v2$/, function () {
+  VestingPage.deleteVestingSchedulev2();
+});
 Given(/^Delete vesting schedule button is not visible$/, function () {
   VestingPage.deleteVestingButtonDoesNotExist();
 });
