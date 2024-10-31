@@ -1,17 +1,20 @@
-import { Typography, Box, FormControlLabel, FormGroup, Switch, FormLabel, Stack, useMediaQuery, useTheme, Input } from "@mui/material";
+import { Box, FormControlLabel, FormGroup, Switch, FormLabel, Stack, useMediaQuery, useTheme, Input } from "@mui/material";
 import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
 import { SuperTokenMinimal } from "../../redux/endpoints/tokenTypes";
 import { CreateVestingCardView } from "../CreateVestingSection";
 import { PartialBatchVestingForm } from "./BatchVestingFormProvider";
 import { Controller, useFormContext } from "react-hook-form";
 import { PreviewButton } from "../PreviewButton";
-import { memo } from "react";
+import { memo, useRef } from "react";
 import { UnitOfTime } from "../../send/FlowRateInput";
 import { ClaimController, CliffPeriodController, StartDateController, TokenController, VestingFormLabels, VestingPeriodController, VestingTooltips } from "../CreateVestingForm";
 import TooltipWithIcon from "../../common/TooltipWithIcon";
 import { ValidationSummary } from "../ValidationSummary";
 import Papa from "papaparse";
 import { csvSchema, headerSchema } from "./types";
+import { LoadingButton } from "@mui/lab";
+import { transactionButtonDefaultProps } from "../../transactionBoundary/TransactionButton";
+import { BatchReceiversTable } from "./BatchReceiversTable";
 
 export function BatchVestingForm(props: {
     token: SuperTokenMinimal | null | undefined;
@@ -31,62 +34,34 @@ export function BatchVestingForm(props: {
             <Stack gap={2.5}>
                 <ValidationSummary />
 
-                <Stack data-cy="claim-switch-and-tooltip" direction="row" alignItems="center">
-                    <ClaimController />
-                    <TooltipWithIcon title={VestingTooltips.Claim} />
-                </Stack>
+                <FormGroup>
+                    <FormLabel>{VestingFormLabels.SuperToken}</FormLabel>
+                    <TokenController token={token} network={network} />
+                </FormGroup>
+                <FormGroup>
+                    <FormLabel>{VestingFormLabels.VestingStartDate}</FormLabel>
+                    <StartDateController />
+                </FormGroup>
 
-                <Box
-                    sx={{
-                        display: "grid",
-                        gridTemplateColumns: isBelowMd ? "1fr" : "1fr 1fr",
-                        gap: 2.5,
-                    }}
-                >
-                    <FormGroup>
-                        <FormLabel>{VestingFormLabels.SuperToken}</FormLabel>
-                        <TokenController token={token} network={network} />
-                    </FormGroup>
-                    <FormGroup>
-                        <FormLabel>{VestingFormLabels.VestingStartDate}</FormLabel>
-                        <StartDateController />
-                    </FormGroup>
-                </Box>
-
-                <Box
-                    sx={{
-                        display: "grid",
-                        gridTemplateColumns: isBelowMd ? "1fr" : "1fr 1fr",
-                        gap: 2.5,
-                    }}
-                >
-
-                    <FormGroup>
-                        <Stack
-                            direction="row"
-                            alignItems="center"
-                            justifyContent="space-between"
-                        >
-                            <FormLabel>{VestingFormLabels.TotalVestingPeriod}</FormLabel>
-                            <TooltipWithIcon title="Set the total length of time for vesting" />
-                        </Stack>
-                        <VestingPeriodController network={network} />
-                    </FormGroup>
-                </Box>
-
-                <Stack direction="row" alignItems="center">
-                    <CliffEnabledController />
-                    <TooltipWithIcon title="Set the cliff date and amount to be granted." />
-                </Stack>
-
-                {cliffEnabled && (
-                    <Box
-                        sx={{
-                            display: "grid",
-                            gridTemplateColumns: isBelowMd ? "1fr" : "1fr 1fr",
-                            gap: 2,
-                        }}
+                <FormGroup>
+                    <Stack
+                        direction="row"
+                        alignItems="center"
+                        justifyContent="space-between"
                     >
+                        <FormLabel>{VestingFormLabels.TotalVestingPeriod}</FormLabel>
+                        <TooltipWithIcon title="Set the total length of time for vesting" />
+                    </Stack>
+                    <VestingPeriodController network={network} />
+                </FormGroup>
+
+                <Stack gap={2}>
+                    <Stack direction="row" alignItems="center">
+                        <CliffEnabledController />
+                        <TooltipWithIcon title="Set the cliff date and amount to be granted." />
+                    </Stack>
+
+                    {cliffEnabled && (
                         <FormGroup>
                             <Stack
                                 direction="row"
@@ -98,20 +73,23 @@ export function BatchVestingForm(props: {
                             </Stack>
                             <CliffPeriodController network={network} />
                         </FormGroup>
-                    </Box>
-                )}
+                    )}
+                </Stack>
+
+                <Stack data-cy="claim-switch-and-tooltip" direction="row" alignItems="center">
+                    <ClaimController />
+                    <TooltipWithIcon title={VestingTooltips.Claim} />
+                </Stack>
+
             </Stack>
 
-            <FileController />
 
-            {schedules.length > 0 && schedules.map((schedule) => (
-                <Stack key={schedule.receiverAddress} direction="row" justifyContent="space-between">
-                    <Typography>{schedule.receiverAddress}</Typography>
-                    <Typography>{schedule.totalAmountEther}</Typography>
-                </Stack>
-            ))}
+            {schedules.length > 0 && <BatchReceiversTable token={token} schedules={schedules} />}
 
-            <PreviewButton setView={setView} />
+            <Stack gap={1}>
+                {schedules.length > 0 && <PreviewButton setView={setView} />}
+                <FileController />
+            </Stack>
         </Stack>
     )
 }
@@ -163,8 +141,10 @@ const CliffEnabledController = memo(function CliffEnabledController() {
 });
 
 const FileController = memo(function FileController() {
-    const { control } = useFormContext<PartialBatchVestingForm>();
-    // const [fileName, setFileName] = useState<string>("");
+    const { control, watch } = useFormContext<PartialBatchVestingForm>();
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const schedules = watch("data.schedules");
+    const hasSchedules = schedules.length > 0;
 
     return (
         <Controller
@@ -172,34 +152,40 @@ const FileController = memo(function FileController() {
             name={"data.schedules"}
             render={({ field: { value, onChange, ...field } }) => {
                 return (
-                    <Input
-                        {...field}
-                        inputProps={{ accept: ".csv" }}
-                        value={""}
-                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                            const file = event.target.files?.[0] ?? null;
-                            // setFileName(file?.name ?? "");
+                    <>
+                        <LoadingButton {...transactionButtonDefaultProps} variant={hasSchedules ? "outlined" : "contained"} onClick={() => fileInputRef.current?.click()}>
+                            {hasSchedules ? "Change CSV" : "Upload CSV"}
+                        </LoadingButton>
+                        <Input
+                            {...field}
+                            style={{ display: 'none' }}
+                            inputRef={fileInputRef}
+                            inputProps={{ accept: ".csv" }}
+                            value={""}
+                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                const file = event.target.files?.[0] ?? null;
 
-                            if (file) {
-                                Papa.parse(file, {
-                                    header: true,
-                                    complete: (results) => {
-                                        headerSchema.validateSync(results.meta.fields);
-                                        onChange(csvSchema.cast(results.data)?.map(x => ({
-                                            receiverAddress: x.receiver,
-                                            totalAmountEther: x["total-vested-amount"].toString(),
-                                        })) ?? []);
-                                    },
-                                    error: (error) => {
-                                        console.error('Error parsing CSV:', error);
-                                    }
-                                });
-                            } else {
-                                // TODO
-                            }
-                        }}
-                        type="file"
-                    />
+                                if (file) {
+                                    Papa.parse(file, {
+                                        header: true,
+                                        complete: (results) => {
+                                            headerSchema.validateSync(results.meta.fields);
+                                            onChange(csvSchema.cast(results.data)?.map(x => ({
+                                                receiverAddress: x.receiver,
+                                                totalAmountEther: x["total-vested-amount"].toString(),
+                                            })) ?? []);
+                                        },
+                                        error: (error) => {
+                                            console.error('Error parsing CSV:', error);
+                                        }
+                                    });
+                                } else {
+                                    // TODO
+                                }
+                            }}
+                            type="file"
+                        />
+                    </>
                 );
             }}
         />

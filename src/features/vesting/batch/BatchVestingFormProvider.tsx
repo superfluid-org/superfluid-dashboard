@@ -7,6 +7,14 @@ import { testAddress } from "../../../utils/yupUtils";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { FormProvider, useForm } from "react-hook-form";
 import { CreateVestingFormEffects } from "../CreateVestingFormEffects";
+import { vestingSupportedNetworks } from "../../network/networks";
+import { rpcApi } from "../../redux/store";
+import { createHandleHigherOrderValidationErrorFunc } from "../../../utils/createHandleHigherOrderValidationErrorFunc";
+import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
+import { parseEtherOrZero } from "../../../utils/tokenUtils";
+import { MAX_VESTING_DURATION_IN_SECONDS, MAX_VESTING_DURATION_IN_YEARS } from "../../redux/endpoints/vestingSchedulerEndpoints";
+import { add } from "date-fns";
+import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
 
 export type ValidBatchVestingForm = {
     data: {
@@ -97,6 +105,156 @@ export function BatchVestingFormProvider(props: {
         []
     );
 
+    const { network } = useExpectedNetwork();
+  const { visibleAddress: senderAddress } = useVisibleAddress();
+
+    const { data: vestingSchedulerConstants } =
+    rpcApi.useGetVestingSchedulerConstantsQuery({
+      chainId: network.id,
+      version: "v2"
+    });
+
+    const formSchema = useMemo(
+        () =>
+          object().test(async (values, context) => {
+            clearErrors("data");
+    
+            const handleHigherOrderValidationError =
+              createHandleHigherOrderValidationErrorFunc(
+                setError,
+                context.createError
+              );
+    
+            const networkSupported = !!vestingSupportedNetworks.some(
+              (supportedNetwork) => supportedNetwork.id === network.id
+            );
+    
+            if (!networkSupported) {
+              handleHigherOrderValidationError({
+                message: `The feature is not available on this network.`,
+              });
+            }
+    
+            const {
+              data: {
+                startDate,
+                superTokenAddress,
+                cliffPeriod,
+                cliffEnabled,
+                vestingPeriod,
+                schedules
+              },
+            } = (await primarySchema.validate(values, {
+              context: {
+                cliffEnabled: (values as PartialBatchVestingForm).data.cliffEnabled,
+              },
+            })) as ValidBatchVestingForm;
+    
+            const cliffAndFlowDate = add(
+              startDate,
+              {
+                seconds: (cliffPeriod.numerator || 0) * cliffPeriod.denominator,
+              },
+            );
+    
+            const endDate = add(
+              startDate,
+              {
+                seconds: vestingPeriod.numerator * vestingPeriod.denominator,
+              },
+            );
+    
+            if (!vestingSchedulerConstants) {
+              throw new Error(
+                "Haven't fetched VestingScheduler contract constants. This hopefully never happens. If it does, probably should refresh the application."
+              );
+            }
+            const {
+              MIN_VESTING_DURATION_IN_DAYS,
+              MIN_VESTING_DURATION_IN_MINUTES,
+              MIN_VESTING_DURATION_IN_SECONDS,
+              END_DATE_VALID_BEFORE_IN_SECONDS,
+              START_DATE_VALID_AFTER_IN_SECONDS,
+            } = vestingSchedulerConstants;
+    
+            const durationFromCliffAndFlowDateToEndDate = Math.floor(
+              (endDate.getTime() - cliffAndFlowDate.getTime()) / 1000
+            );
+    
+            if (
+              durationFromCliffAndFlowDateToEndDate <
+              MIN_VESTING_DURATION_IN_SECONDS
+            ) {
+              handleHigherOrderValidationError({
+                message: `The vesting end date has to be at least ${network.testnet
+                  ? `${MIN_VESTING_DURATION_IN_MINUTES} minutes`
+                  : `${MIN_VESTING_DURATION_IN_DAYS} days`
+                  } from the start or the cliff.`,
+              });
+            }
+    
+            const vestingDuration =
+              vestingPeriod.numerator * vestingPeriod.denominator;
+    
+            if (vestingDuration > MAX_VESTING_DURATION_IN_SECONDS) {
+              handleHigherOrderValidationError({
+                message: `The vesting period has to be less than ${MAX_VESTING_DURATION_IN_YEARS} years.`,
+              });
+            }
+    
+            const secondsFromStartToEnd = Math.floor(
+              (endDate.getTime() - cliffAndFlowDate.getTime()) / 1000
+            );
+            if (
+              secondsFromStartToEnd <
+              START_DATE_VALID_AFTER_IN_SECONDS + END_DATE_VALID_BEFORE_IN_SECONDS
+            ) {
+              handleHigherOrderValidationError({
+                message: `Invalid vesting schedule time frame.`,
+              });
+            }
+    
+            // const cliffAmount = parseEtherOrZero(cliffAmountEther || "0");
+            // const totalAmount = parseEtherOrZero(totalAmountEther);
+    
+            // if (cliffAmount.gte(totalAmount)) {
+            //   handleHigherOrderValidationError({
+            //     message: `Cliff amount has to be less than total amount.`,
+            //   });
+            // }
+    
+            if (schedules.length > 0) {
+              if (schedules.some(({ receiverAddress }) => receiverAddress.toLowerCase() === senderAddress?.toLowerCase())) {
+                handleHigherOrderValidationError({
+                  message: `You can’t vest to yourself. Choose a different wallet.`,
+                });
+              }
+    
+            //   const { data: vestingSchedule } = await getActiveVestingSchedule({
+            //     chainId: network.id,
+            //     superTokenAddress,
+            //     senderAddress,
+            //     receiverAddress,
+            //     version
+            //   });
+    
+            //   if (vestingSchedule) {
+            //     handleHigherOrderValidationError({
+            //       message: `There already exists a vesting schedule between the accounts for the token. To create a new schedule, the active schedule needs to end or be deleted.`,
+            //     });
+            //   }
+            }
+    
+            return true;
+          }),
+        [
+          network,
+        //   getActiveVestingSchedule,
+          senderAddress,
+          vestingSchedulerConstants,
+        ]
+      );
+
     const formMethods = useForm<PartialBatchVestingForm, undefined, ValidBatchVestingForm>({
         defaultValues: {
             data: {
@@ -115,9 +273,11 @@ export function BatchVestingFormProvider(props: {
                 claimEnabled: false
             }
         },
-        resolver: yupResolver(primarySchema as ObjectSchema<PartialBatchVestingForm>),
+        resolver: yupResolver(formSchema as ObjectSchema<PartialBatchVestingForm>),
         mode: "onChange",
     });
+
+    const { clearErrors, setError } = formMethods;
 
     const [isInitialized, setIsInitialized] = useState(false);
     useEffect(() => setIsInitialized(true), []);
