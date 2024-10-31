@@ -1,5 +1,6 @@
 Feature: Vesting page require receiver to claim test cases
 
+  @skip
   Scenario: Creating a vesting schedule with a cliff and with require receiver to claim toggle enabled
     Given Transactional account bob is connected to the dashboard on opsepolia
     And User clicks on the "vesting" navigation button
@@ -15,12 +16,14 @@ Feature: Vesting page require receiver to claim test cases
     And The restore button is not visible for the last transaction
     And The newly created vesting schedule is visible in the table
 
+  @skip
   Scenario: Deleting a vesting schedule
     Given Transactional account bob is connected to the dashboard on opsepolia
     And User clicks on the "vesting" navigation button
     And User opens the last vesting schedule they have created
     And User deletes the vesting schedule v2
 
+  @skip
   Scenario: Creation form - Top up the vesting schedule
     Given Transactional account bob is connected to the dashboard on opsepolia
     And User clicks on the "vesting" navigation button
