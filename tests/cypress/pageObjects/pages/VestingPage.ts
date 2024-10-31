@@ -563,7 +563,7 @@ export class VestingPage extends BasePage {
       req.continue((res) => {
         console.log(req.body);
         if (req.body.variables.where.sender) {
-          let schedule = res.body.data.vestingSchedules[0];
+          let schedule = res.body.data.vestingSchedules[1];
           switch (status) {
             case 'Cancel Error':
               schedule.failedAt = today;
@@ -606,7 +606,7 @@ export class VestingPage extends BasePage {
       cy.get(TABLE_VESTING_STATUS).should('be.visible');
       cy.contains('Deleted').click();
     }
-    this.hasText(TABLE_VESTING_STATUS, status, 0);
+    this.hasText(TABLE_VESTING_STATUS, status, 1);
   }
 
   static validateScheduleBarElements(

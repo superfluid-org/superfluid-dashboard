@@ -2,7 +2,7 @@ Feature: Vesting page require receiver to claim test cases
 
   Scenario: Creating a vesting schedule with a cliff and with require receiver to claim toggle enabled
     Given HDWallet transactions are rejected
-    And Transactional account elvijs is connected to the dashboard on opsepolia
+    And Transactional account alice is connected to the dashboard on opsepolia
     And User clicks on the "vesting" navigation button
     Then No received vesting schedules message is shown
     And User clicks on the create vesting schedule button
@@ -19,13 +19,13 @@ Feature: Vesting page require receiver to claim test cases
 
   @skip
   Scenario: Deleting a vesting schedule
-    Given Transactional account bob is connected to the dashboard on opsepolia
+    Given Transactional account alice is connected to the dashboard on opsepolia
     And User clicks on the "vesting" navigation button
     And User opens the last vesting schedule they have created
     And User deletes the vesting schedule v2
 
   Scenario: Creation form - Top up the vesting schedule
-    Given Transactional account elvijs is connected to the dashboard on opsepolia
+    Given Transactional account alice is connected to the dashboard on opsepolia
     And User clicks on the "vesting" navigation button
     And User clicks on the create vesting schedule button
     And User clicks on switch to v2
