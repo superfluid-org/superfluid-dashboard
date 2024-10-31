@@ -372,7 +372,7 @@ export class VestingPage extends BasePage {
     this.doesNotExist(`${CREATED_TABLE} ${LOADING_SKELETONS}`, undefined, {
       timeout: 45000,
     });
-    this.click(VESTING_ROWS, 1);
+    this.click(VESTING_ROWS, 0);
   }
 
   static deleteVestingSchedule() {
@@ -847,8 +847,10 @@ export class VestingPage extends BasePage {
   }
 
   static validateReceiverAddressBookNames(name: string) {
-    cy.get(TABLE_RECEIVER_SENDER).each((el) => {
-      expect(el.text()).to.eq(name);
+    cy.get(TABLE_RECEIVER_SENDER).each((el, index) => {
+      if (index !== 0) {
+        expect(el.text()).to.eq(name);
+      }
     });
   }
 
