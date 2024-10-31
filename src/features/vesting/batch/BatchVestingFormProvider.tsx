@@ -15,6 +15,7 @@ import { parseEtherOrZero } from "../../../utils/tokenUtils";
 import { MAX_VESTING_DURATION_IN_SECONDS, MAX_VESTING_DURATION_IN_YEARS } from "../../redux/endpoints/vestingSchedulerEndpoints";
 import { add } from "date-fns";
 import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
+import { convertPeriodToSeconds } from "./convertPeriod";
 
 export type ValidBatchVestingForm = {
     data: {
@@ -153,14 +154,14 @@ export function BatchVestingFormProvider(props: {
             const cliffAndFlowDate = add(
               startDate,
               {
-                seconds: (cliffPeriod.numerator || 0) * cliffPeriod.denominator,
+                seconds: convertPeriodToSeconds(cliffPeriod),
               },
             );
     
             const endDate = add(
               startDate,
               {
-                seconds: vestingPeriod.numerator * vestingPeriod.denominator,
+                seconds: convertPeriodToSeconds(vestingPeriod),
               },
             );
     
@@ -193,8 +194,7 @@ export function BatchVestingFormProvider(props: {
               });
             }
     
-            const vestingDuration =
-              vestingPeriod.numerator * vestingPeriod.denominator;
+            const vestingDuration = convertPeriodToSeconds(vestingPeriod);
     
             if (vestingDuration > MAX_VESTING_DURATION_IN_SECONDS) {
               handleHigherOrderValidationError({

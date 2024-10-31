@@ -151,7 +151,7 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
               >
                 <CopyIconBtn
                   TooltipProps={{ placement: "top" }}
-                  copyText={getAddress(network.vestingContractAddress_v1)}
+                  copyText={getAddress(network.vestingContractAddress_v1.address)}
                   description="Copy address to clipboard"
                   IconButtonProps={{ size: "small" }}
                 />
@@ -162,7 +162,7 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
                 >
                   <IconButton
                     LinkComponent={Link}
-                    href={network.getLinkForAddress(network.vestingContractAddress_v1)}
+                    href={network.getLinkForAddress(network.vestingContractAddress_v1.address)}
                     target="_blank"
                     size="small"
                   >
@@ -187,7 +187,7 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
               >
                 <CopyIconBtn
                   TooltipProps={{ placement: "top" }}
-                  copyText={getAddress(network.vestingContractAddress_v2)}
+                  copyText={getAddress(network.vestingContractAddress_v2.address)}
                   description="Copy address to clipboard"
                   IconButtonProps={{ size: "small" }}
                 />
@@ -198,7 +198,7 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
                 >
                   <IconButton
                     LinkComponent={Link}
-                    href={network.getLinkForAddress(network.vestingContractAddress_v2)}
+                    href={network.getLinkForAddress(network.vestingContractAddress_v2.address)}
                     target="_blank"
                     size="small"
                   >

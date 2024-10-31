@@ -21,6 +21,7 @@ import {
 } from "./flowSchedulerEndpoints";
 import { getUnixTime } from "date-fns";
 import { getMaximumNeededTokenAllowance } from "../../vesting/VestingSchedulesAllowancesTable/calculateRequiredAccessForActiveVestingSchedule";
+import { allNetworks, findNetworkOrThrow } from "../../network/networks";
 
 export const MAX_VESTING_DURATION_IN_YEARS = 10;
 export const MAX_VESTING_DURATION_IN_SECONDS =
@@ -112,20 +113,24 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
         ? arg.endDateTimestamp
         : undefined;
 
+      const network = findNetworkOrThrow(allNetworks, chainId);
+      const contractInfo = version === 'v2' ? network.vestingContractAddress_v2 : network.vestingContractAddress_v1;
+      if (!contractInfo) {
+        throw new Error("Vesting contract not supported on this network");
+      }
+      const END_DATE_VALID_BEFORE_IN_SECONDS = contractInfo.END_DATE_VALID_BEFORE_IN_SECONDS;
+      const START_DATE_VALID_AFTER_IN_SECONDS = contractInfo.START_DATE_VALID_AFTER_IN_SECONDS;
+
       const [
         flowOperatorData,
         existingTokenAllowance,
-        END_DATE_VALID_BEFORE_IN_SECONDS,
-        START_DATE_VALID_AFTER_IN_SECONDS,
       ] = await Promise.all([
         superToken.getFlowOperatorData({
           flowOperator: vestingScheduler.address,
           sender: senderAddress,
           providerOrSigner: signer,
         }),
-        superTokenContract.allowance(senderAddress, vestingScheduler.address),
-        vestingScheduler.END_DATE_VALID_BEFORE(),
-        vestingScheduler.START_DATE_VALID_AFTER(),
+        superTokenContract.allowance(senderAddress, vestingScheduler.address)
       ]);
 
       const cliffAndFlowDate = arg.cliffDateTimestamp
@@ -727,21 +732,14 @@ export const vestingSchedulerQueryEndpoints = {
         maxRetries: 10,
       },
       queryFn: async ({ chainId, version }) => {
-        const framework = await getFramework(chainId);
-        const vestingScheduler = getVestingScheduler(
-          chainId,
-          framework.settings.provider,
-          version
-        );
-        const [
-          MIN_VESTING_DURATION_IN_SECONDS,
-          START_DATE_VALID_AFTER_IN_SECONDS,
-          END_DATE_VALID_BEFORE_IN_SECONDS,
-        ] = await Promise.all([
-          vestingScheduler.MIN_VESTING_DURATION(),
-          vestingScheduler.START_DATE_VALID_AFTER(),
-          vestingScheduler.END_DATE_VALID_BEFORE(),
-        ]);
+        const network = findNetworkOrThrow(allNetworks, chainId);
+        const contractInfo = version === 'v2' ? network.vestingContractAddress_v2 : network.vestingContractAddress_v1;
+        if (!contractInfo) {
+          throw new Error("Vesting contract not supported on this network");
+        }
+        const MIN_VESTING_DURATION_IN_SECONDS = contractInfo.MIN_VESTING_DURATION_IN_SECONDS;
+        const END_DATE_VALID_BEFORE_IN_SECONDS = contractInfo.END_DATE_VALID_BEFORE_IN_SECONDS;
+        const START_DATE_VALID_AFTER_IN_SECONDS = contractInfo.START_DATE_VALID_AFTER_IN_SECONDS;
         return {
           data: {
             MIN_VESTING_DURATION_IN_SECONDS,

@@ -13,6 +13,7 @@ import { ValidBatchVestingForm } from "./BatchVestingFormProvider";
 import { calculateAdditionalDataFromValidVestingForm } from "../calculateAdditionalDataFromValidVestingForm";
 import { BigNumber } from "ethers";
 import { formatEther } from "ethers/lib/utils";
+import { convertPeriodToSeconds } from "./convertPeriod";
 
 interface BatchVestingPreviewProps extends VestingTransactionSectionProps { }
 
@@ -60,7 +61,6 @@ const BatchVestingPreview: FC<BatchVestingPreviewProps> = ({
                     receiverAddress: schedule.receiverAddress,
                     totalAmountEther: schedule.totalAmountEther.toString(), // TODO: Find out why I need to do .toString here
                     cliffAmountEther: cliffEnabled ? formatEther(cliffAmount) : undefined,
-                    setupAutoWrap: false
                 }
             });
         });
@@ -76,7 +76,7 @@ const BatchVestingPreview: FC<BatchVestingPreviewProps> = ({
         ? add(
             startDate,
             {
-                seconds: cliffNumerator * cliffDenominator,
+                seconds: convertPeriodToSeconds(cliffPeriod),
             },
         )
         : undefined;
@@ -84,7 +84,7 @@ const BatchVestingPreview: FC<BatchVestingPreviewProps> = ({
     const endDate = add(
         startDate,
         {
-            seconds: vestingPeriod.numerator * vestingPeriod.denominator,
+            seconds: convertPeriodToSeconds(vestingPeriod)
         },
     );
 

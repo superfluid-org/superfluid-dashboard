@@ -2,6 +2,7 @@ import { getUnixTime } from "date-fns";
 import { BigNumber } from "ethers";
 import { parseEtherOrZero } from "../../utils/tokenUtils";
 import { ValidVestingForm } from "./CreateVestingFormProvider";
+import { convertPeriodToSeconds } from "./batch/convertPeriod";
 
 // Terrible name, for now... but better to move this form data transformation logic somewhere.
 export const calculateAdditionalDataFromValidVestingForm = ({
@@ -13,7 +14,7 @@ export const calculateAdditionalDataFromValidVestingForm = ({
     cliffAmountEther,
     vestingPeriod
   },
-}: ValidVestingForm) => {
+}: Omit<ValidVestingForm, "superTokenAddress" | "receiverAddress">) => {
   const startDateTimestamp = getUnixTime(startDate);
   const cliffDateTimestamp = cliffEnabled
     ? startDateTimestamp +
@@ -25,9 +26,7 @@ export const calculateAdditionalDataFromValidVestingForm = ({
     : startDateTimestamp;
 
   // Has to be rounded because of decimals
-  const endDateTimestamp =
-    startDateTimestamp +
-    Math.round(vestingPeriod.numerator * vestingPeriod.denominator);
+  const endDateTimestamp = startDateTimestamp + convertPeriodToSeconds(vestingPeriod);
 
   const timeToFlow = endDateTimestamp - cliffAndFlowTimestamp;
 

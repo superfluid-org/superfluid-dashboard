@@ -67,6 +67,13 @@ const findNativeAssetSuperTokenFromTokenList = (input: { chainId: number, addres
 
 type NetworkMetadata = (typeof sfMeta.networks)[number];
 
+const DEFAULT_MAINNET_MIN_VESTING_DURATION_IN_SECONDS = 604800; // 7 days
+const DEFAULT_MAINNET_START_DATE_VALID_AFTER_IN_SECONDS = 259200; // 3 days
+const DEFAULT_MAINNET_END_DATE_VALID_BEFORE_IN_SECONDS = 86400; // 1 day
+const DEFAULT_TESTNET_MIN_VESTING_DURATION_IN_SECONDS = 25200; // 7 hours
+const DEFAULT_TESTNET_START_DATE_VALID_AFTER_IN_SECONDS = 10800; // 3 hours
+const DEFAULT_TESTNET_END_DATE_VALID_BEFORE_IN_SECONDS = 3600; // 1 hour
+
 // id == chainId
 // name == displayName
 export type Network = Chain & {
@@ -86,8 +93,18 @@ export type Network = Chain & {
   supportsGDA: boolean;
   flowSchedulerContractAddress?: `0x${string}`;
   flowSchedulerSubgraphUrl?: `https://${string}` | undefined;
-  vestingContractAddress_v1: `0x${string}` | undefined;
-  vestingContractAddress_v2: `0x${string}` | undefined;
+  vestingContractAddress_v1: {
+    address: `0x${string}`,
+    MIN_VESTING_DURATION_IN_SECONDS: number,
+    START_DATE_VALID_AFTER_IN_SECONDS: number,
+    END_DATE_VALID_BEFORE_IN_SECONDS: number
+  } | undefined;
+  vestingContractAddress_v2: {
+    address: `0x${string}`,
+    MIN_VESTING_DURATION_IN_SECONDS: number,
+    START_DATE_VALID_AFTER_IN_SECONDS: number,
+    END_DATE_VALID_BEFORE_IN_SECONDS: number
+  } | undefined;
   vestingSubgraphUrl: `https://${string}` | undefined;
   autoWrapSubgraphUrl: `https://${string}` | undefined;
   autoWrap?: {
@@ -182,7 +199,12 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.gnosis,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.gnosis,
-    vestingContractAddress_v1: vestingContractAddresses_v1.gnosis,
+    vestingContractAddress_v1: {
+      address: vestingContractAddresses_v1.gnosis,
+      MIN_VESTING_DURATION_IN_SECONDS: DEFAULT_MAINNET_MIN_VESTING_DURATION_IN_SECONDS,
+      START_DATE_VALID_AFTER_IN_SECONDS: DEFAULT_MAINNET_START_DATE_VALID_AFTER_IN_SECONDS,
+      END_DATE_VALID_BEFORE_IN_SECONDS: DEFAULT_MAINNET_END_DATE_VALID_BEFORE_IN_SECONDS
+    },
     vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: vestingSubgraphUrls.gnosis,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.gnosis,
@@ -224,7 +246,12 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.polygon,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.polygon,
-    vestingContractAddress_v1: vestingContractAddresses_v1.polygon,
+    vestingContractAddress_v1: {
+      address: vestingContractAddresses_v1.polygon,
+      MIN_VESTING_DURATION_IN_SECONDS: DEFAULT_MAINNET_MIN_VESTING_DURATION_IN_SECONDS,
+      START_DATE_VALID_AFTER_IN_SECONDS: DEFAULT_MAINNET_START_DATE_VALID_AFTER_IN_SECONDS,
+      END_DATE_VALID_BEFORE_IN_SECONDS: DEFAULT_MAINNET_END_DATE_VALID_BEFORE_IN_SECONDS
+    },
     vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: vestingSubgraphUrls.polygon,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.polygon,
@@ -315,8 +342,18 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.optimism,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.optimism,
-    vestingContractAddress_v1: vestingContractAddresses_v1.optimism,
-    vestingContractAddress_v2: vestingContractAddresses_v2.optimism,
+    vestingContractAddress_v1: {
+      address: vestingContractAddresses_v1.optimism,
+      MIN_VESTING_DURATION_IN_SECONDS: DEFAULT_MAINNET_MIN_VESTING_DURATION_IN_SECONDS,
+      START_DATE_VALID_AFTER_IN_SECONDS: DEFAULT_MAINNET_START_DATE_VALID_AFTER_IN_SECONDS,
+      END_DATE_VALID_BEFORE_IN_SECONDS: DEFAULT_MAINNET_END_DATE_VALID_BEFORE_IN_SECONDS
+    },
+    vestingContractAddress_v2: {
+      address: vestingContractAddresses_v2.optimism,
+      MIN_VESTING_DURATION_IN_SECONDS: DEFAULT_MAINNET_MIN_VESTING_DURATION_IN_SECONDS,
+      START_DATE_VALID_AFTER_IN_SECONDS: DEFAULT_MAINNET_START_DATE_VALID_AFTER_IN_SECONDS,
+      END_DATE_VALID_BEFORE_IN_SECONDS: DEFAULT_MAINNET_END_DATE_VALID_BEFORE_IN_SECONDS
+    },
     vestingSubgraphUrl: vestingSubgraphUrls.optimism,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.optimism,
     autoWrap: {
@@ -357,7 +394,12 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.arbitrum,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.arbitrum,
-    vestingContractAddress_v1: vestingContractAddresses_v1.arbitrum,
+    vestingContractAddress_v1: {
+      address: vestingContractAddresses_v1.arbitrum,
+      MIN_VESTING_DURATION_IN_SECONDS: DEFAULT_MAINNET_MIN_VESTING_DURATION_IN_SECONDS,
+      START_DATE_VALID_AFTER_IN_SECONDS: DEFAULT_MAINNET_START_DATE_VALID_AFTER_IN_SECONDS,
+      END_DATE_VALID_BEFORE_IN_SECONDS: DEFAULT_MAINNET_END_DATE_VALID_BEFORE_IN_SECONDS
+    },
     vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: vestingSubgraphUrls.arbitrum,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.arbitrum,
@@ -403,7 +445,12 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.avalancheC,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.avalancheC,
-    vestingContractAddress_v1: vestingContractAddresses_v1.avalancheC,
+    vestingContractAddress_v1: {
+      address: vestingContractAddresses_v1.avalancheC,
+      MIN_VESTING_DURATION_IN_SECONDS: DEFAULT_MAINNET_MIN_VESTING_DURATION_IN_SECONDS,
+      START_DATE_VALID_AFTER_IN_SECONDS: DEFAULT_MAINNET_START_DATE_VALID_AFTER_IN_SECONDS,
+      END_DATE_VALID_BEFORE_IN_SECONDS: DEFAULT_MAINNET_END_DATE_VALID_BEFORE_IN_SECONDS
+    },
     vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: vestingSubgraphUrls.avalancheC,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.avalancheC,
@@ -449,7 +496,12 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.bnbSmartChain,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.bnbSmartChain,
-    vestingContractAddress_v1: vestingContractAddresses_v1.bnbSmartChain,
+    vestingContractAddress_v1: {
+      address: vestingContractAddresses_v1.bnbSmartChain,
+      MIN_VESTING_DURATION_IN_SECONDS: DEFAULT_MAINNET_MIN_VESTING_DURATION_IN_SECONDS,
+      START_DATE_VALID_AFTER_IN_SECONDS: DEFAULT_MAINNET_START_DATE_VALID_AFTER_IN_SECONDS,
+      END_DATE_VALID_BEFORE_IN_SECONDS: DEFAULT_MAINNET_END_DATE_VALID_BEFORE_IN_SECONDS
+    },
     vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: vestingSubgraphUrls.bnbSmartChain,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.bnbSmartChain,
@@ -491,7 +543,12 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.ethereum,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.ethereum,
-    vestingContractAddress_v1: vestingContractAddresses_v1.ethereum,
+    vestingContractAddress_v1: {
+      address: vestingContractAddresses_v1.ethereum,
+      MIN_VESTING_DURATION_IN_SECONDS: DEFAULT_MAINNET_MIN_VESTING_DURATION_IN_SECONDS,
+      START_DATE_VALID_AFTER_IN_SECONDS: DEFAULT_MAINNET_START_DATE_VALID_AFTER_IN_SECONDS,
+      END_DATE_VALID_BEFORE_IN_SECONDS: DEFAULT_MAINNET_END_DATE_VALID_BEFORE_IN_SECONDS
+    },
     vestingContractAddress_v2: undefined,
     vestingSubgraphUrl: vestingSubgraphUrls.ethereum,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.ethereum,
@@ -640,8 +697,18 @@ export const networkDefinition = {
       logoURI: "https://superfluid-finance.github.io/tokenlist/icons/eth.svg",
       isSuperToken: false,
     },
-    vestingContractAddress_v1: vestingContractAddresses_v1.base,
-    vestingContractAddress_v2: vestingContractAddresses_v2.base,
+    vestingContractAddress_v1: {
+      address: vestingContractAddresses_v1.base,
+      MIN_VESTING_DURATION_IN_SECONDS: DEFAULT_MAINNET_MIN_VESTING_DURATION_IN_SECONDS,
+      START_DATE_VALID_AFTER_IN_SECONDS: DEFAULT_MAINNET_START_DATE_VALID_AFTER_IN_SECONDS,
+      END_DATE_VALID_BEFORE_IN_SECONDS: DEFAULT_MAINNET_END_DATE_VALID_BEFORE_IN_SECONDS
+    },
+    vestingContractAddress_v2: {
+      address: vestingContractAddresses_v2.base,
+      MIN_VESTING_DURATION_IN_SECONDS: DEFAULT_MAINNET_MIN_VESTING_DURATION_IN_SECONDS,
+      START_DATE_VALID_AFTER_IN_SECONDS: DEFAULT_MAINNET_START_DATE_VALID_AFTER_IN_SECONDS,
+      END_DATE_VALID_BEFORE_IN_SECONDS: DEFAULT_MAINNET_END_DATE_VALID_BEFORE_IN_SECONDS
+    },
     vestingSubgraphUrl: vestingSubgraphUrls.base,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.base,
     autoWrap: {
@@ -786,8 +853,18 @@ export const networkDefinition = {
       logoURI: "https://superfluid-finance.github.io/tokenlist/icons/eth.svg",
       isSuperToken: false,
     },
-    vestingContractAddress_v1: vestingContractAddresses_v1.optimismSepolia,
-    vestingContractAddress_v2: vestingContractAddresses_v2.optimismSepolia,
+    vestingContractAddress_v1: {
+      address: vestingContractAddresses_v1.optimismSepolia,
+      MIN_VESTING_DURATION_IN_SECONDS: DEFAULT_TESTNET_MIN_VESTING_DURATION_IN_SECONDS,
+      START_DATE_VALID_AFTER_IN_SECONDS: DEFAULT_TESTNET_START_DATE_VALID_AFTER_IN_SECONDS,
+      END_DATE_VALID_BEFORE_IN_SECONDS: DEFAULT_TESTNET_END_DATE_VALID_BEFORE_IN_SECONDS
+    },
+    vestingContractAddress_v2: {
+      address: vestingContractAddresses_v2.optimismSepolia,
+      MIN_VESTING_DURATION_IN_SECONDS: DEFAULT_TESTNET_MIN_VESTING_DURATION_IN_SECONDS,
+      START_DATE_VALID_AFTER_IN_SECONDS: DEFAULT_TESTNET_START_DATE_VALID_AFTER_IN_SECONDS,
+      END_DATE_VALID_BEFORE_IN_SECONDS: DEFAULT_TESTNET_END_DATE_VALID_BEFORE_IN_SECONDS
+    },
     vestingSubgraphUrl: vestingSubgraphUrls.optimismSepolia,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.optimismSepolia,
     autoWrap: {
