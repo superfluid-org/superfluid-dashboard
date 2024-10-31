@@ -131,7 +131,7 @@ Feature: Vesting page first batch of test cases
 
     Given Transactional account john is connected to the dashboard on opsepolia
     And User clicks on the "vesting" navigation button
-    And User opens the last vesting schedule they have created
+    And User opens the vesting schedule they have created
     And User deletes the vesting schedule
     And Transaction rejected error is shown
 

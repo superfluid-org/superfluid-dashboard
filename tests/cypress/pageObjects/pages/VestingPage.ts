@@ -372,7 +372,7 @@ export class VestingPage extends BasePage {
     this.doesNotExist(`${CREATED_TABLE} ${LOADING_SKELETONS}`, undefined, {
       timeout: 45000,
     });
-    this.click(VESTING_ROWS, 0);
+    this.click(VESTING_ROWS, 1);
   }
 
   static deleteVestingSchedule() {
