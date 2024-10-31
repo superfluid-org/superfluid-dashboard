@@ -80,10 +80,12 @@ export function VestingTransactionButtonSection({
           isDisabled={isAutoWrapLoading}
           network={network}
         />
+
         <CreateVestingTransactionButton
           setView={setView}
           isVisible={activeStep == 2}
         />
+        
       </Stack>
     );
   }

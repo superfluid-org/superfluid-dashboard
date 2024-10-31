@@ -171,7 +171,9 @@ const CreateVestingPreview: FC<CreateVestingPreviewProps> = ({
           </Box>
         )}
       </Stack>
+
       <VestingTransactionButtonSection network={network} token={token} setView={setView} />
+      
     </Stack>
   );
 };

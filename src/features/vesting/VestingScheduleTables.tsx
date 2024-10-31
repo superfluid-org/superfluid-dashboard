@@ -23,7 +23,6 @@ import {
   mapPendingToVestingSchedule,
   useAddressPendingVestingSchedules,
 } from "../pendingUpdates/PendingVestingSchedule";
-import { platformApi } from "../redux/platformApi/platformApi";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import AggregatedVestingSchedules from "./AggregatedVestingSchedules";
 import VestingSchedulerAllowancesTable from "./VestingSchedulesAllowancesTable/VestingSchedulerAllowancesTable";
