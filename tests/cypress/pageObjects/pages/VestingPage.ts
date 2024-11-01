@@ -357,7 +357,7 @@ export class VestingPage extends BasePage {
   }
 
   static clickCreateScheduleButton() {
-    // this.isVisible(CREATED_TABLE, undefined, { timeout: 30000 });
+    this.isVisible(CREATED_TABLE, undefined, { timeout: 30000 });
     this.click(CREATE_VESTING_SCHEDULE_BUTTON);
   }
 
@@ -381,7 +381,6 @@ export class VestingPage extends BasePage {
 
   static deleteVestingSchedulev2() {
     this.click(DELETE_SCHEDULE_BUTTON, undefined, { timeout: 30000 });
-    cy.wait(1000);
     this.hasText(APPROVAL_MESSAGE, 'Waiting for transaction approval...');
   }
 
