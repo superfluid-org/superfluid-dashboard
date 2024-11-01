@@ -22,6 +22,11 @@ import {
 import { getUnixTime } from "date-fns";
 import { getMaximumNeededTokenAllowance } from "../../vesting/VestingSchedulesAllowancesTable/calculateRequiredAccessForActiveVestingSchedule";
 import { allNetworks, findNetworkOrThrow } from "../../network/networks";
+import { resolvedWagmiClients } from "../../wallet/wagmiConfig";
+import { vestingSchedulerAbi } from "../../../abis/vestingSchedulerAbi";
+import { vestingSchedulerV2Abi } from "../../../abis/vestingSchedulerV2Abi";
+import { vestingSchedulerAddress } from "../../../generated";
+import { vestingSchedulerV2Address } from "../../../generated";
 
 export const MAX_VESTING_DURATION_IN_YEARS = 10;
 export const MAX_VESTING_DURATION_IN_SECONDS =
@@ -828,36 +833,33 @@ export const vestingSchedulerQueryEndpoints = {
         receiverAddress,
         version,
       }) => {
-        const framework = await getFramework(chainId);
+        const publicClient = resolvedWagmiClients[chainId]();
 
-        const vestingScheduler = getVestingScheduler(
-          chainId,
-          framework.settings.provider,
-          version
-        );
+        const rpcVestingSchedule = await publicClient.readContract({
+          abi: version === "v2" ? vestingSchedulerV2Abi : vestingSchedulerAbi,
+          address: version === "v2" ? vestingSchedulerV2Address[chainId as keyof typeof vestingSchedulerV2Address] : vestingSchedulerAddress[chainId as keyof typeof vestingSchedulerAddress],
+          functionName: "getVestingSchedule",
+          args: [superTokenAddress as `0x${string}`, senderAddress as `0x${string}`, receiverAddress as `0x${string}`],
+        });
 
         // TODO: Use viem here
-        const rawVestingSchedule = {
-          claimValidityDate: 0,
-          ...(await vestingScheduler.getVestingSchedule(
-            superTokenAddress,
-            senderAddress,
-            receiverAddress
-          )),
+        const rpcVestingScheduleNormalized = {
+          claimValidityDate: 0n,
+          ...(rpcVestingSchedule),
         };
 
-        const unixNow = getUnixTime(new Date());
+        const unixNow = BigInt(getUnixTime(new Date()));
 
         const mappedVestingSchedule =
-          rawVestingSchedule.endDate > 0
+          rpcVestingScheduleNormalized.endDate > 0
             ? {
-                endDateTimestamp: rawVestingSchedule.endDate,
-                claimValidityDate: rawVestingSchedule.claimValidityDate ?? null,
+                endDateTimestamp: rpcVestingScheduleNormalized.endDate,
+                claimValidityDate: Number(rpcVestingScheduleNormalized.claimValidityDate) ?? null,
                 isClaimable:
-                  !!rawVestingSchedule.cliffAndFlowDate &&
-                  !!rawVestingSchedule.claimValidityDate &&
-                  rawVestingSchedule.cliffAndFlowDate < unixNow &&
-                  unixNow < rawVestingSchedule.claimValidityDate,
+                  !!rpcVestingScheduleNormalized.cliffAndFlowDate &&
+                  !!rpcVestingScheduleNormalized.claimValidityDate &&
+                  rpcVestingScheduleNormalized.cliffAndFlowDate < unixNow &&
+                  unixNow < rpcVestingScheduleNormalized.claimValidityDate,
               }
             : null;
 

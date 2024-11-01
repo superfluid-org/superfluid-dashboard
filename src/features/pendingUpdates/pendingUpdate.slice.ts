@@ -466,7 +466,10 @@ export const pendingUpdateSlice = createSlice({
         const transactionStatus = action.payload.changes.status;
         const isSubgraphInSync = action.payload.changes.isSubgraphInSync;
 
-        const entries = pendingUpdateAdapter.getSelectors().selectAll(state).filter(x => x.id === action.payload.id || x.transactionHash === action.payload.id);
+        const entries = pendingUpdateAdapter
+          .getSelectors()
+          .selectAll(state)
+          .filter(x => x.id === action.payload.id || x.transactionHash === action.payload.id);
 
         for (const entry of entries) {
           // Delete the pending update when Subgraph is synced or the transaction fails.

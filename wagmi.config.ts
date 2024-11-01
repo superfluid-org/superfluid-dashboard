@@ -10,6 +10,7 @@ import SuperfluidPoolJSON from "@superfluid-finance/ethereum-contracts/build/tru
 import SuperfluidJSON from "@superfluid-finance/ethereum-contracts/build/truffle/Superfluid.json" assert { type: "json" };
 import { Abi, Address, erc20Abi } from "viem";
 import superfluidMetadata from "@superfluid-finance/metadata";
+import { vestingSchedulerAbi } from "./src/abis/vestingSchedulerAbi";
 
 /** @type {import('@wagmi/cli').Config} */
 export default defineConfig({
@@ -65,7 +66,28 @@ export default defineConfig({
         return acc;
       }, {} as Record<number, Address>),
     },
-
+    {
+      name: "VestingScheduler",
+      abi: vestingSchedulerAbi,
+      address: superfluidMetadata.networks.reduce((acc, current) => {
+        const address = current.contractsV1.vestingScheduler as Address;
+        if (address) {
+          acc[current.chainId] = address;
+        }
+        return acc;
+      }, {} as Record<number, Address>),
+    },
+    {
+      name: "VestingSchedulerV2",
+      abi: vestingSchedulerAbi,
+      address: superfluidMetadata.networks.reduce((acc, current) => {
+        const address = current.contractsV1.vestingSchedulerV2 as Address;
+        if (address) {
+          acc[current.chainId] = address;
+        }
+        return acc;
+      }, {} as Record<number, Address>),
+    },
   ],
   plugins: [
     etherscan({
@@ -79,8 +101,7 @@ export default defineConfig({
       ],
     }),
     react({
-      getHookName: 'legacy', 
-      
-    }),
+      getHookName: 'legacy'
+    })
   ],
 });
