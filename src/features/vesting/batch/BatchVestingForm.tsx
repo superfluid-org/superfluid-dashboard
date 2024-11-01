@@ -15,6 +15,7 @@ import { csvSchema, headerSchema } from "./types";
 import { LoadingButton } from "@mui/lab";
 import { transactionButtonDefaultProps } from "../../transactionBoundary/TransactionButton";
 import { BatchReceiversTable } from "./BatchReceiversTable";
+import { ValidationError } from "yup";
 
 export function BatchVestingForm(props: {
     token: SuperTokenMinimal | null | undefined;
@@ -141,7 +142,7 @@ const CliffEnabledController = memo(function CliffEnabledController() {
 });
 
 const FileController = memo(function FileController() {
-    const { control, watch, setValue } = useFormContext<PartialBatchVestingForm>();
+    const { control, watch, setValue, setError, clearErrors } = useFormContext<PartialBatchVestingForm>();
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const schedules = watch("data.schedules");
     const hasSchedules = schedules.length > 0;
@@ -162,28 +163,57 @@ const FileController = memo(function FileController() {
                             inputRef={fileInputRef}
                             inputProps={{ accept: ".csv" }}
                             value={""}
-                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                            onChange={async (event: React.ChangeEvent<HTMLInputElement>) => {
                                 const file = event.target.files?.[0] ?? null;
+                                clearErrors("data.schedules");
 
                                 if (file) {
                                     Papa.parse(file, {
                                         header: true,
                                         complete: (results) => {
-                                            headerSchema.validateSync(results.meta.fields);
-                                            setValue("data.schedules", csvSchema.cast(results.data)?.map(x => ({
-                                                receiverAddress: x.receiver,
-                                                totalAmountEther: x["total-vested-amount"].toString(),
-                                            })) ?? [], {
-                                                shouldDirty: true,
-                                                shouldValidate: true,
-                                            });
+                                            try {
+                                                headerSchema.validateSync(results.meta.fields);
+
+                                                try {
+                                                    const dataCasted = csvSchema.cast(results.data);
+                                                    setValue("data.schedules", dataCasted.map(x => ({
+                                                        receiverAddress: x.receiver,
+                                                        totalAmountEther: x["total-vested-amount"].toString(),
+                                                    })), {
+                                                        shouldDirty: true,
+                                                        shouldValidate: true,
+                                                        shouldTouch: true,
+                                                    });
+                                                } catch (dataError) {
+                                                    if (dataError instanceof ValidationError) {
+                                                        setError("data.schedules", {
+                                                            message: "CSV data validation error: " + dataError.errors.join(", "),
+                                                        });
+                                                    } else {
+                                                        throw dataError;
+                                                    }
+                                                }
+                                              } catch (headerError) {
+                                                if (headerError instanceof ValidationError) {
+                                                    setError("data.schedules", {
+                                                        message: "CSV header validation error: " + headerError.errors.join(", "),
+                                                    });
+                                                  } else {
+                                                    throw headerError;
+                                                  }
+                                              }
+                                            
                                         },
                                         error: (error) => {
-                                            console.error('Error parsing CSV:', error);
+                                            setError("data.schedules", {
+                                                message: "Error parsing CSV. Error: " + error,
+                                            });
                                         }
                                     });
                                 } else {
-                                    // TODO
+                                    setError("data.schedules", {
+                                        message: "No file selected.",
+                                    });
                                 }
                             }}
                             type="file"

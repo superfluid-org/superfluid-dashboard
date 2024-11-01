@@ -11,7 +11,6 @@ import { vestingSupportedNetworks } from "../../network/networks";
 import { rpcApi } from "../../redux/store";
 import { createHandleHigherOrderValidationErrorFunc } from "../../../utils/createHandleHigherOrderValidationErrorFunc";
 import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
-import { parseEtherOrZero } from "../../../utils/tokenUtils";
 import { MAX_VESTING_DURATION_IN_SECONDS, MAX_VESTING_DURATION_IN_YEARS } from "../../redux/endpoints/vestingSchedulerEndpoints";
 import { add } from "date-fns";
 import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
