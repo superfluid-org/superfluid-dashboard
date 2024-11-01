@@ -19,6 +19,7 @@ import { transactionButtonDefaultProps } from "../../transactionBoundary/Transac
 import JSZip from "jszip";
 import { getTxBuilderInputs_v2 } from "./gnosisSafe";
 import { convertBatchFormToParams } from "./convertBatchFormToParams";
+import { BatchVestingTransactionButton } from "../transactionButtons/BatchVestingTransactionButton";
 
 interface BatchVestingPreviewProps extends VestingTransactionSectionProps { }
 
@@ -189,9 +190,7 @@ const BatchVestingPreview: FC<BatchVestingPreviewProps> = ({
 
 
             <Stack gap={1}>
-                <Button {...transactionButtonDefaultProps}>
-                    Execute Batch Vesting
-                </Button>
+                <BatchVestingTransactionButton setView={setView} isVisible={true} />
 
                 <Button {...transactionButtonDefaultProps} variant="outlined" onClick={async () => {
                     const zip = new JSZip();
