@@ -9,7 +9,7 @@ import {
 } from "@superfluid-finance/sdk-redux";
 import { VestingScheduleFromAmountAndDurationsParams } from "../../vesting/batch/VestingScheduleParams";
 import { getVestingScheduler } from "../../../eth-sdk/getEthSdk";
-import { Operation } from "@superfluid-finance/sdk-core";
+import { Address, Operation } from "@superfluid-finance/sdk-core";
 import { getTxBuilderInputs_v2 } from "../../vesting/batch/gnosisSafe";
 import { allNetworks, findNetworkOrThrow } from "../../network/networks";
 import { SafeTxBuilderInput } from "../../vesting/batch/safeUtils";
@@ -38,6 +38,7 @@ export const batchVestingEndpoints = {
     }),
     executeBatchVesting: builder.mutation<TransactionInfo & {
       subTransactionTitles: TransactionTitle[];
+      signerAddress: string;
     }, ExecuteBatchVesting>({
       queryFn: async ({ params, chainId, superTokenAddress, signer, transactionExtraData }, { dispatch }) => {
         const framework = await getFramework(chainId);
@@ -99,6 +100,7 @@ export const batchVestingEndpoints = {
             chainId,
             hash: transactionResponse.hash,
             subTransactionTitles,
+            signerAddress
           },
         };
       },

@@ -344,6 +344,45 @@ export const pendingUpdateSlice = createSlice({
       }
     );
     builder.addMatcher(
+      rpcApi.endpoints.executeBatchVesting.matchFulfilled,
+      (state, action) => {
+        const { chainId, hash: transactionHash, signerAddress: senderAddress } = action.payload;
+
+        const { params: vestingSchedules } = action.meta.arg.originalArgs;
+        for (const vestingSchedule of vestingSchedules) {
+          const {
+            superToken,
+            claimPeriod,
+            cliffPeriod,
+            startDate,
+            receiver,
+            totalAmount,
+            totalDuration
+          } = vestingSchedule;
+          const endDateTimestamp = startDate + totalDuration;
+          const flowRate = BigNumber.from(totalDuration).div(totalAmount);
+          const pendingUpdate: PendingVestingSchedule = {
+            chainId,
+            transactionHash,
+            senderAddress,
+            receiverAddress: receiver,
+            id: transactionHash,
+            superTokenAddress: superToken,
+            pendingType: "VestingScheduleCreate",
+            timestamp: dateNowSeconds(),
+            cliffDateTimestamp: startDate + cliffPeriod,
+            cliffTransferAmountWei: BigNumber.from(cliffPeriod).mul(flowRate).toString(),
+            startDateTimestamp: startDate,
+            endDateTimestamp,
+            flowRateWei: flowRate.toString(),
+            relevantSubgraph: "Vesting",
+            version: "v2"
+          };
+          pendingUpdateAdapter.addOne(state, pendingUpdate);
+        }
+      }
+    );
+    builder.addMatcher(
       rpcApi.endpoints.deleteVestingSchedule.matchFulfilled,
       (state, action) => {
         const { chainId, hash: transactionHash } = action.payload;
@@ -427,18 +466,18 @@ export const pendingUpdateSlice = createSlice({
         const transactionStatus = action.payload.changes.status;
         const isSubgraphInSync = action.payload.changes.isSubgraphInSync;
 
-        const entry = pendingUpdateAdapter
-          .getSelectors()
-          .selectById(state, action.payload.id);
+        const entries = pendingUpdateAdapter.getSelectors().selectAll(state).filter(x => x.id === action.payload.id || x.transactionHash === action.payload.id);
 
-        // Delete the pending update when Subgraph is synced or the transaction fails.
-        if (
-          (entry?.relevantSubgraph === "Protocol" && isSubgraphInSync) ||
-          transactionStatus === "Failed" ||
-          transactionStatus === "Unknown"
-        ) {
-          const transactionId = action.payload.id;
-          pendingUpdateAdapter.removeOne(state, transactionId);
+        for (const entry of entries) {
+          // Delete the pending update when Subgraph is synced or the transaction fails.
+          if (
+            (entry?.relevantSubgraph === "Protocol" && isSubgraphInSync) ||
+            transactionStatus === "Failed" ||
+            transactionStatus === "Unknown"
+          ) {
+            const transactionId = action.payload.id;
+            pendingUpdateAdapter.removeOne(state, transactionId);
+          }
         }
       }
     );
