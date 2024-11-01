@@ -34,7 +34,7 @@ function withSentryIfNecessary(nextConfig) {
     silent: true, // Suppresses all logs
     // For all available options, see:
     // https://github.com/getsentry/sentry-webpack-plugin#options.
-    hideSourceMaps: false, // If this not specified as `true` then Sentry will expose the production source maps. We've decided to expose the source maps though.
+    hideSourceMaps: true, // If this not specified as `true` then Sentry will expose the production source maps. We've decided to expose the source maps though.
   });
 }
 
@@ -66,7 +66,7 @@ const moduleExports = {
     NEXT_PUBLIC_SENTRY_ENVIRONMENT: SENTRY_ENVIRONMENT,
     NEXT_PUBLIC_NETLIFY_CONTEXT: process.env.CONTEXT, // https://docs.netlify.com/configure-builds/environment-variables/#build-metadata
   },
-  productionBrowserSourceMaps: true, // NOTE: If this is set to `false` then be careful -- Sentry might still override this to `true`...
+  productionBrowserSourceMaps: false, // NOTE: If this is set to `false` then be careful -- Sentry might still override this to `true`...
   // Modularize imports to prevent compilation of unused modules.
   // More info here: https://nextjs.org/docs/advanced-features/compiler
   // modularizeImports: // It's enabled automatically for many packages in use: https://nextjs.org/docs/app/api-reference/next-config-js/optimizePackageImports
