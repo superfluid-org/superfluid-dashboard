@@ -7,7 +7,6 @@ import { CreateVestingCardView } from "../CreateVestingSection";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
 import { Typography } from "@mui/material";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
-import { parseEtherOrZero } from "../../../utils/tokenUtils";
 import { TransactionDialogActions, TransactionDialogButton } from "../../transactionBoundary/TransactionDialog";
 import { convertBatchFormToParams } from "../batch/convertBatchFormToParams";
 import NextLink from "next/link";
@@ -32,71 +31,71 @@ export function BatchVestingTransactionButton({ setView, isVisible: isVisible_ }
 
     const isVisible = !mutationResult.isSuccess && isVisible_;
 
-    return     (<TransactionBoundary mutationResult={mutationResult}>
-    {({
-      network,
-      getOverrides,
-      setDialogLoadingInfo,
-      setDialogSuccessActions,
-      txAnalytics
-    }) =>
-      isVisible && (
-        <TransactionButton
-          dataCy={"batch-vesting-tx-button"}
-          disabled={isDisabled}
-          onClick={async (signer) =>
-            handleSubmit(
-              async (validForm) => {
-                
+    return (<TransactionBoundary mutationResult={mutationResult}>
+        {({
+            network,
+            getOverrides, // Should I use this?
+            setDialogLoadingInfo,
+            setDialogSuccessActions,
+            txAnalytics
+        }) =>
+            isVisible && (
+                <TransactionButton
+                    dataCy={"batch-vesting-tx-button"}
+                    disabled={isDisabled}
+                    onClick={async (signer) =>
+                        handleSubmit(
+                            async (validForm) => {
 
-                setDialogLoadingInfo(
-                  <Typography
-                    variant="h5"
-                    color="text.secondary"
-                    translate="yes"
-                  >
-                    You are creating a batch of vesting schedules.
-                  </Typography>
-                );
 
-                setView(CreateVestingCardView.Approving);
+                                setDialogLoadingInfo(
+                                    <Typography
+                                        variant="h5"
+                                        color="text.secondary"
+                                        translate="yes"
+                                    >
+                                        You are creating a batch of vesting schedules.
+                                    </Typography>
+                                );
 
-                const primaryArgs = {
-                    params: convertBatchFormToParams(validForm),
-                    chainId: network.id,
-                    superTokenAddress: validForm.data.superTokenAddress,
-                    signer,
-                };
+                                setView(CreateVestingCardView.Approving);
 
-                executeBatchVesting(primaryArgs)
-                  .unwrap()
-                  .then(
-                    ...txAnalytics("Create Vesting Schedule", primaryArgs)
-                  )
-                  .then(() => setView(CreateVestingCardView.Success))
-                  .catch(() => setView(CreateVestingCardView.Preview)); // Error is already logged and handled in the middleware & UI.
+                                const primaryArgs = {
+                                    params: convertBatchFormToParams(validForm),
+                                    chainId: network.id,
+                                    superTokenAddress: validForm.data.superTokenAddress,
+                                    signer,
+                                };
 
-                setDialogSuccessActions(
-                  <TransactionDialogActions>
-                    <NextLink href="/vesting" passHref legacyBehavior>
-                      <TransactionDialogButton
-                        data-cy="ok-button"
-                        color="primary"
-                      >
-                        OK
-                      </TransactionDialogButton>
-                    </NextLink>
-                  </TransactionDialogActions>
-                );
-              },
-              () => setView(CreateVestingCardView.Form) // Go back to form on validation errors.
-            )()
-          }
-        >
-          Create Vesting Schedule
-        </TransactionButton>
-      )
-    }
-  </TransactionBoundary>
-);
+                                executeBatchVesting(primaryArgs)
+                                    .unwrap()
+                                    .then(
+                                        ...txAnalytics("Create Batch of Vesting Schedules", primaryArgs)
+                                    )
+                                    .then(() => setView(CreateVestingCardView.Success))
+                                    .catch(() => setView(CreateVestingCardView.Preview)); // Error is already logged and handled in the middleware & UI.
+
+                                setDialogSuccessActions(
+                                    <TransactionDialogActions>
+                                        <NextLink href="/vesting" passHref legacyBehavior>
+                                            <TransactionDialogButton
+                                                data-cy="ok-button"
+                                                color="primary"
+                                            >
+                                                OK
+                                            </TransactionDialogButton>
+                                        </NextLink>
+                                    </TransactionDialogActions>
+                                );
+                            },
+                            () => setView(CreateVestingCardView.Form) // Go back to form on validation errors.
+                        )()
+                    }
+                >
+                    Create Batch of Vesting Schedules
+                </TransactionButton>
+            )
+        }
+    </TransactionBoundary>
+    );
 }

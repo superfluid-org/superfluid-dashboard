@@ -91,7 +91,7 @@ export const batchVestingEndpoints = {
             subTransactionTitles,
             ...(transactionExtraData ?? {}),
           },
-          title: "Create Vesting Schedule", // Use a different title here?
+          title: "Create Batch of Vesting Schedules", // Use a different title here?
         });
 
         return {

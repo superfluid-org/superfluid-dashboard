@@ -69,6 +69,6 @@ BatchCreateVestingSchedulePage.getLayout = (page: ReactElement) => (
 );
 
 export default withStaticSEO(
-  { title: "Create Vesting Schedules | Superfluid" },
+  { title: "Create Batch of Vesting Schedules | Superfluid" },
   BatchCreateVestingSchedulePage
 );
