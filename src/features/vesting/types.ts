@@ -255,7 +255,7 @@ const getVestingStatus = (vestingSchedule: Omit<VestingSchedule, "status">) => {
   }
 
   if (cliffDate) {
-    if (startDate < nowInSeconds && nowInSeconds < cliffDate) {
+    if (startDate < nowInSeconds && nowInSeconds < cliffAndFlowExpirationAt) {
       return vestingStatuses.CliffPeriod;
     }
   }
