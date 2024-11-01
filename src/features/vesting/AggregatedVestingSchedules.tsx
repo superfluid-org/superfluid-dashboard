@@ -161,7 +161,7 @@ const AggregatedVestingSchedules: FC<AggregatedVestingSchedulesProps> = ({
         alignItems="center"
         gap={2}
         sx={{
-          py: 3,
+          py: 2,
           px: 4,
           [theme.breakpoints.down("md")]: {
             p: 2,
