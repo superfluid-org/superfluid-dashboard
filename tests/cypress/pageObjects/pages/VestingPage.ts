@@ -349,10 +349,15 @@ export class VestingPage extends BasePage {
   static validateNewlyCreatedSchedule() {
     cy.get(TABLE_RECEIVER_SENDER).last().should('have.text', 'vijay.eth');
     this.hasText(TABLE_ALLOCATED_AMOUNT, '2 fTUSDx');
-    // Formatting issues
-    // this.hasText(VESTED_AMOUNT, '0 fTUSDx');
-    // this.hasText(TABLE_START_END_DATES, format(startDate, 'LLL d, yyyy'), 0);
-    // this.hasText(TABLE_START_END_DATES, format(endDate, 'LLL d, yyyy'), -1);
+    // this.hasText(VESTED_AMOUNT, '0 fTUSDx'); // Formatting issues
+    this.hasText(
+      TABLE_START_END_DATES,
+      `${format(startDate, 'LLL d, yyyy HH:mm')}${format(
+        endDate,
+        'LLL d, yyyy HH:mm'
+      )}`,
+      0
+    );
     this.hasText(VESTING_STATUS, 'Scheduled');
   }
 
@@ -382,6 +387,7 @@ export class VestingPage extends BasePage {
   static deleteVestingSchedulev2() {
     this.click(DELETE_SCHEDULE_BUTTON, undefined, { timeout: 30000 });
     this.hasText(APPROVAL_MESSAGE, 'Waiting for transaction approval...');
+    cy.get(OK_BUTTON, { timeout: 45000 }).should('be.visible').click();
   }
 
   static deleteVestingButtonDoesNotExist() {
