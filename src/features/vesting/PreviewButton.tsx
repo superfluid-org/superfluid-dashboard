@@ -7,7 +7,7 @@ import { transactionButtonDefaultProps } from "../transactionBoundary/Transactio
 export const PreviewButton = memo(function PreviewButton(props: {
     setView: (value: CreateVestingCardView) => void;
   }) {
-    const { formState: { isValid, isValidating } } = useFormContext();
+    const { watch, formState: { isValid, isValidating } } = useFormContext();
   
     // A work-around for react-hook-form bug which causes the "cannot update a component while rendering another" error
     // https://github.com/orgs/react-hook-form/discussions/11760

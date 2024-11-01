@@ -141,7 +141,7 @@ const CliffEnabledController = memo(function CliffEnabledController() {
 });
 
 const FileController = memo(function FileController() {
-    const { control, watch } = useFormContext<PartialBatchVestingForm>();
+    const { control, watch, setValue } = useFormContext<PartialBatchVestingForm>();
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const schedules = watch("data.schedules");
     const hasSchedules = schedules.length > 0;
@@ -170,10 +170,13 @@ const FileController = memo(function FileController() {
                                         header: true,
                                         complete: (results) => {
                                             headerSchema.validateSync(results.meta.fields);
-                                            onChange(csvSchema.cast(results.data)?.map(x => ({
+                                            setValue("data.schedules", csvSchema.cast(results.data)?.map(x => ({
                                                 receiverAddress: x.receiver,
                                                 totalAmountEther: x["total-vested-amount"].toString(),
-                                            })) ?? []);
+                                            })) ?? [], {
+                                                shouldDirty: true,
+                                                shouldValidate: true,
+                                            });
                                         },
                                         error: (error) => {
                                             console.error('Error parsing CSV:', error);

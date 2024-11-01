@@ -16,6 +16,9 @@ import { MAX_VESTING_DURATION_IN_SECONDS, MAX_VESTING_DURATION_IN_YEARS } from "
 import { add } from "date-fns";
 import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
 import { convertPeriodToSeconds } from "./convertPeriod";
+import { convertVestingScheduleFromAmountAndDurationsToFromAbsolutes } from "./VestingScheduleParams";
+import { convertBatchFormToParams } from "./convertBatchFormToParams";
+import { BigNumber } from "ethers";
 
 export type ValidBatchVestingForm = {
     data: {
@@ -119,6 +122,8 @@ export function BatchVestingFormProvider(props: {
         () =>
           object().test(async (values, context) => {
             clearErrors("data");
+
+            console.log("test")
     
             const handleHigherOrderValidationError =
               createHandleHigherOrderValidationErrorFunc(
@@ -136,6 +141,11 @@ export function BatchVestingFormProvider(props: {
               });
             }
     
+            const validForm = (await primarySchema.validate(values, {
+              context: {
+                cliffEnabled: (values as PartialBatchVestingForm).data.cliffEnabled,
+              },
+            })) as ValidBatchVestingForm;
             const {
               data: {
                 startDate,
@@ -145,11 +155,11 @@ export function BatchVestingFormProvider(props: {
                 vestingPeriod,
                 schedules
               },
-            } = (await primarySchema.validate(values, {
-              context: {
-                cliffEnabled: (values as PartialBatchVestingForm).data.cliffEnabled,
-              },
-            })) as ValidBatchVestingForm;
+            } = validForm;
+
+            console.log({
+              schedules
+            })
     
             const cliffAndFlowDate = add(
               startDate,
@@ -213,17 +223,20 @@ export function BatchVestingFormProvider(props: {
                 message: `Invalid vesting schedule time frame.`,
               });
             }
-    
-            // const cliffAmount = parseEtherOrZero(cliffAmountEther || "0");
-            // const totalAmount = parseEtherOrZero(totalAmountEther);
-    
-            // if (cliffAmount.gte(totalAmount)) {
-            //   handleHigherOrderValidationError({
-            //     message: `Cliff amount has to be less than total amount.`,
-            //   });
-            // }
-    
+
             if (schedules.length > 0) {
+              const scheduleParams = convertBatchFormToParams(validForm);
+              const absoluteScheduleParams = scheduleParams.map(convertVestingScheduleFromAmountAndDurationsToFromAbsolutes);
+      
+              const cliffAmount = absoluteScheduleParams.reduce((acc, x) => acc.add(x.cliffAmount), BigNumber.from(0));
+              const totalAmount = scheduleParams.reduce((acc, x) => acc.add(x.totalAmount), BigNumber.from(0));
+      
+              if (cliffAmount.gte(totalAmount)) {
+                handleHigherOrderValidationError({
+                  message: `Cliff amount has to be less than total amount.`,
+                });
+              }
+
               if (schedules.some(({ receiverAddress }) => receiverAddress.toLowerCase() === senderAddress?.toLowerCase())) {
                 handleHigherOrderValidationError({
                   message: `You can’t vest to yourself. Choose a different wallet.`,
@@ -244,6 +257,8 @@ export function BatchVestingFormProvider(props: {
             //     });
             //   }
             }
+
+            console.log("finished")
     
             return true;
           }),

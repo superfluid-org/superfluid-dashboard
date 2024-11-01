@@ -836,6 +836,7 @@ export const vestingSchedulerQueryEndpoints = {
           version
         );
 
+        // TODO: Use viem here
         const rawVestingSchedule = {
           claimValidityDate: 0,
           ...(await vestingScheduler.getVestingSchedule(

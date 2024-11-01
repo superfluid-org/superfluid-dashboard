@@ -1,5 +1,5 @@
-import { Box, Stack, Typography } from "@mui/material";
-import { FC, memo, useMemo } from "react";
+import { Box, Button, Stack, Typography } from "@mui/material";
+import { FC, memo, useMemo, useRef, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { add, format } from "date-fns";
 import { VestingTransactionSectionProps } from "../transactionButtons/VestingTransactionButtonSection";
@@ -14,6 +14,11 @@ import { calculateAdditionalDataFromValidVestingForm } from "../calculateAdditio
 import { BigNumber } from "ethers";
 import { formatEther } from "ethers/lib/utils";
 import { convertPeriodToSeconds } from "./convertPeriod";
+import { BatchReceiversTable } from "./BatchReceiversTable";
+import { transactionButtonDefaultProps } from "../../transactionBoundary/TransactionButton";
+import JSZip from "jszip";
+import { getTxBuilderInputs_v2 } from "./gnosisSafe";
+import { convertBatchFormToParams } from "./convertBatchFormToParams";
 
 interface BatchVestingPreviewProps extends VestingTransactionSectionProps { }
 
@@ -22,7 +27,7 @@ const BatchVestingPreview: FC<BatchVestingPreviewProps> = ({
     network,
     setView,
 }) => {
-    const { watch } = useFormContext<ValidBatchVestingForm>();
+    const { watch, getValues } = useFormContext<ValidBatchVestingForm>();
 
     const [
         startDate,
@@ -178,7 +183,55 @@ const BatchVestingPreview: FC<BatchVestingPreviewProps> = ({
                         </Stack>
                     </Box>
                 )}
+
+                <BatchReceiversTable schedules={schedules} token={token} />
             </Stack>
+
+
+            <Stack gap={1}>
+                <Button {...transactionButtonDefaultProps}>
+                    Execute Batch Vesting
+                </Button>
+
+                <Button {...transactionButtonDefaultProps} variant="outlined" onClick={async () => {
+                    const zip = new JSZip();
+                    const values = getValues();
+                    const params = convertBatchFormToParams(values);
+
+                    const safeTxBuilderJSONs = await getTxBuilderInputs_v2({
+                        network,
+                        schedules: params
+                    });
+
+                    const batchFolder = zip.folder("batch");
+
+                    safeTxBuilderJSONs.forEach((safeTxBuilderJSON, i) => {
+                        const blob = new Blob([JSON.stringify(safeTxBuilderJSON)], {
+                            type: "application/json",
+                        });
+
+                        batchFolder?.file(`batch-${i}.json`, blob);
+                    });
+
+                    const objectURL = URL.createObjectURL(
+                        (await batchFolder?.generateAsync({ type: "blob" })) as Blob
+                    );
+
+                    const a = document.createElement('a');
+                    a.href = objectURL;
+                    a.download = 'batch.zip'; // Set the file name
+                    document.body.appendChild(a);
+                    a.click();
+
+                    // Clean up by revoking the object URL and removing the link
+                    URL.revokeObjectURL(objectURL);
+                    document.body.removeChild(a);
+
+                }}>
+                    Download Gnosis Safe TX
+                </Button>
+            </Stack>
+
 
         </Stack>
     );

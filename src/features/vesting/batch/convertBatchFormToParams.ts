@@ -17,7 +17,7 @@ export function convertBatchFormToParams(formValues: ValidBatchVestingForm): Ves
             totalDuration,
             startDate: getUnixTime(startDate),
             cliffPeriod: convertPeriodToSeconds(cliffPeriod),
-            claimPeriod: claimEnabled ? totalDuration : undefined,
+            claimPeriod: claimEnabled ? totalDuration : 0,
         } as VestingScheduleFromAmountAndDurationsParams
     });
 }   
