@@ -16,7 +16,7 @@ import { MAX_VESTING_DURATION_IN_SECONDS, MAX_VESTING_DURATION_IN_YEARS } from "
 import { add } from "date-fns";
 import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
 import { convertPeriodToSeconds } from "./convertPeriod";
-import { convertVestingScheduleFromAmountAndDurationsToFromAbsolutes } from "./VestingScheduleParams";
+import { convertVestingScheduleFromAmountAndDurationsToAbsolutes } from "./VestingScheduleParams";
 import { convertBatchFormToParams } from "./convertBatchFormToParams";
 import { BigNumber } from "ethers";
 
@@ -226,7 +226,7 @@ export function BatchVestingFormProvider(props: {
 
             if (schedules.length > 0) {
               const scheduleParams = convertBatchFormToParams(validForm);
-              const absoluteScheduleParams = scheduleParams.map(convertVestingScheduleFromAmountAndDurationsToFromAbsolutes);
+              const absoluteScheduleParams = scheduleParams.map(convertVestingScheduleFromAmountAndDurationsToAbsolutes);
       
               const cliffAmount = absoluteScheduleParams.reduce((acc, x) => acc.add(x.cliffAmount), BigNumber.from(0));
               const totalAmount = scheduleParams.reduce((acc, x) => acc.add(x.totalAmount), BigNumber.from(0));

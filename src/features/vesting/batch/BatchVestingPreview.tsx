@@ -20,6 +20,7 @@ import JSZip from "jszip";
 import { getTxBuilderInputs_v2 } from "./gnosisSafe";
 import { convertBatchFormToParams } from "./convertBatchFormToParams";
 import { BatchVestingTransactionButton } from "../transactionButtons/BatchVestingTransactionButton";
+import { convertVestingScheduleFromAmountAndDurationsToAbsolutes } from "./VestingScheduleParams";
 
 interface BatchVestingPreviewProps extends VestingTransactionSectionProps { }
 
@@ -28,54 +29,28 @@ const BatchVestingPreview: FC<BatchVestingPreviewProps> = ({
     network,
     setView,
 }) => {
-    const { watch, getValues } = useFormContext<ValidBatchVestingForm>();
+    const { watch } = useFormContext<ValidBatchVestingForm>();
 
-    const [
-        startDate,
-        vestingPeriod,
-        cliffPeriod,
-        cliffEnabled,
-        claimEnabled,
-        schedules,
-    ] = watch([
-        "data.startDate",
-        "data.vestingPeriod",
-        "data.cliffPeriod",
-        "data.cliffEnabled",
-        "data.claimEnabled",
-        "data.schedules",
-    ]);
+    const formData = watch("data");
+    const { startDate, vestingPeriod, cliffPeriod, cliffEnabled, claimEnabled, schedules } = formData;
 
-    const { numerator: cliffNumerator = 0, denominator: cliffDenominator } = cliffPeriod;
+    const scheduleParams = useMemo(() => convertBatchFormToParams({
+        data: formData
+    }), [formData]);
 
-    const vestingSchedules = useMemo(() => {
-        return schedules.map((schedule) => {
-            const flowRate = parseEtherOrZero(schedule.totalAmountEther).div(vestingPeriod.numerator * vestingPeriod.denominator);
-            // TODO: Handle cliff period type better?
-            const cliffAmount = flowRate.mul(cliffNumerator * cliffDenominator);
+    const scheduleAbsoluteParams = useMemo(() => scheduleParams.map(convertVestingScheduleFromAmountAndDurationsToAbsolutes), [scheduleParams]);
 
-            console.log(schedule)
+    const { cliffAmount, totalAmount } = useMemo(() => {
+        const totalAmount = scheduleParams.reduce((acc, schedule) => acc.add(schedule.totalAmount), BigNumber.from(0));
+        const cliffAmount = scheduleAbsoluteParams.reduce((acc, schedule) => acc.add(schedule.cliffAmount), BigNumber.from(0));
+        return {
+            cliffAmount,
+            totalAmount
+        }
+    }, [scheduleAbsoluteParams, scheduleParams]);
 
-            return calculateAdditionalDataFromValidVestingForm({
-                data: {
-                    startDate,
-                    vestingPeriod,
-                    cliffPeriod,
-                    cliffEnabled,
-                    claimEnabled,
-                    superTokenAddress: token.address,
-                    receiverAddress: schedule.receiverAddress,
-                    totalAmountEther: schedule.totalAmountEther.toString(), // TODO: Find out why I need to do .toString here
-                    cliffAmountEther: cliffEnabled ? formatEther(cliffAmount) : undefined,
-                }
-            });
-        });
-    }, [schedules, startDate, vestingPeriod, cliffPeriod, cliffEnabled, claimEnabled]);
-
-    const cliffAmount = vestingSchedules.reduce((acc, schedule) => acc.add(schedule.cliffAmount), BigNumber.from(0));
     const cliffAmountEther = formatEther(cliffAmount);
 
-    const totalAmount = vestingSchedules.reduce((acc, schedule) => acc.add(schedule.totalAmount), BigNumber.from(0));
     const totalAmountEther = formatEther(totalAmount);
 
     const cliffDate = cliffEnabled
@@ -194,17 +169,14 @@ const BatchVestingPreview: FC<BatchVestingPreviewProps> = ({
 
                 <Button {...transactionButtonDefaultProps} variant="outlined" onClick={async () => {
                     const zip = new JSZip();
-                    const values = getValues();
-                    const params = convertBatchFormToParams(values);
+                    const batchFolder = zip.folder("batch");
 
                     const safeTxBuilderJSONs = await getTxBuilderInputs_v2({
                         network,
-                        schedules: params
+                        schedules: scheduleParams
                     });
 
-                    const batchFolder = zip.folder("batch");
-
-                    safeTxBuilderJSONs.forEach((safeTxBuilderJSON, i) => {
+                    safeTxBuilderJSONs?.forEach((safeTxBuilderJSON, i) => {
                         const blob = new Blob([JSON.stringify(safeTxBuilderJSON)], {
                             type: "application/json",
                         });

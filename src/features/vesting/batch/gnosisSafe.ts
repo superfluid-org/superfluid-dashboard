@@ -4,7 +4,7 @@ import { Network } from "../../network/networks";
 import { calculateChecksum, getDefaultSafeTxBuilderInput, pipe, SafeTxBuilderInput, Transaction } from "./safeUtils";
 import metadata from "@superfluid-finance/metadata";
 
-import { convertVestingScheduleFromAmountAndDurationsToFromAbsolutes, VestingScheduleFromAmountAndDurationsParams } from "./VestingScheduleParams";
+import { convertVestingScheduleFromAmountAndDurationsToAbsolutes, VestingScheduleFromAmountAndDurationsParams } from "./VestingScheduleParams";
 import { getMaximumNeededTokenAllowance } from "../VestingSchedulesAllowancesTable/calculateRequiredAccessForActiveVestingSchedule";
 import { constantFlowAgreementV1Abi, superfluidAbi, superTokenAbi } from "../../../generated";
 
@@ -112,7 +112,7 @@ export const prependPermissionTxs =
                             claimPeriod,
                         } = curr.contractInputsValues;
 
-                        const params = convertVestingScheduleFromAmountAndDurationsToFromAbsolutes({
+                        const params = convertVestingScheduleFromAmountAndDurationsToAbsolutes({
                             superToken: token as Address,
                             receiver: receiver as Address,
                             totalAmount: totalAmount,

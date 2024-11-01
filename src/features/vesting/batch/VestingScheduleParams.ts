@@ -23,7 +23,7 @@ export type VestingScheduleFromAbsolutesParams = {
     remainderAmount: string;
 }
 
-export function convertVestingScheduleFromAmountAndDurationsToFromAbsolutes(params: VestingScheduleFromAmountAndDurationsParams): VestingScheduleFromAbsolutesParams {
+export function convertVestingScheduleFromAmountAndDurationsToAbsolutes(params: VestingScheduleFromAmountAndDurationsParams): VestingScheduleFromAbsolutesParams {
     const { superToken, receiver, totalAmount, totalDuration, startDate, cliffPeriod, claimPeriod } = params;
 
     const cliffDate = startDate + cliffPeriod;
