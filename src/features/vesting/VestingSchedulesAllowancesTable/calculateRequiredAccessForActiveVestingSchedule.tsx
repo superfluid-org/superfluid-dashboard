@@ -3,7 +3,6 @@ import {
   ACL_CREATE_PERMISSION,
   ACL_DELETE_PERMISSION,
 } from "../../redux/endpoints/flowSchedulerEndpoints";
-import { VestingSchedule } from "../types";
 
 export type RequiredAccessForActiveVestingSchedule = {
   recommendedTokenAllowance: BigNumber;
@@ -12,7 +11,15 @@ export type RequiredAccessForActiveVestingSchedule = {
 }
 
 export function calculateRequiredAccessForActiveVestingSchedule(
-  schedule: VestingSchedule,
+  schedule: {
+    flowRate: string;
+    cliffAndFlowExecutedAt?: number;
+    cliffAndFlowDate: number;
+    endDate: number;
+    cliffAmount: string;
+    remainderAmount: string;
+    claimValidityDate: number;
+  },
   {
     START_DATE_VALID_AFTER_IN_SECONDS,
     END_DATE_VALID_BEFORE_IN_SECONDS,

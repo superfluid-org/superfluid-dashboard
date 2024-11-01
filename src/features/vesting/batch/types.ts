@@ -1,16 +1,20 @@
 import { object, string, number, date, InferType, array } from 'yup';
 import * as yup from 'yup';
+import { testAddress, testEtherAmount } from '../../../utils/yupUtils';
 
 export const headerSchema = yup.array().of(
   yup.mixed().oneOf([
     'receiver',
-    'total-vested-amount'
+    'allocation'
   ])
 ).length(2).required();
 
 export const csvSchema = array(object({
-  'receiver': string().required(),
-  'total-vested-amount': number().required().positive()
+  'receiver': string().required().test(testAddress()),
+  'allocation': string().required().test(testEtherAmount({
+    notNegative: true,
+    notZero: true,
+  }))
 })).min(1).required();
 
 export type CsvData = InferType<typeof csvSchema>;

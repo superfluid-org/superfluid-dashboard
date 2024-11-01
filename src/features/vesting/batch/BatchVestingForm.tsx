@@ -1,4 +1,4 @@
-import { Box, FormControlLabel, FormGroup, Switch, FormLabel, Stack, useMediaQuery, useTheme, Input } from "@mui/material";
+import { Box, FormControlLabel, FormGroup, Switch, FormLabel, Stack, useMediaQuery, useTheme, Input, Button } from "@mui/material";
 import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
 import { SuperTokenMinimal } from "../../redux/endpoints/tokenTypes";
 import { CreateVestingCardView } from "../CreateVestingSection";
@@ -16,6 +16,7 @@ import { LoadingButton } from "@mui/lab";
 import { transactionButtonDefaultProps } from "../../transactionBoundary/TransactionButton";
 import { BatchReceiversTable } from "./BatchReceiversTable";
 import { ValidationError } from "yup";
+import NextLink from "next/link";
 
 export function BatchVestingForm(props: {
     token: SuperTokenMinimal | null | undefined;
@@ -90,6 +91,14 @@ export function BatchVestingForm(props: {
             <Stack gap={1}>
                 {schedules.length > 0 && <PreviewButton setView={setView} />}
                 <FileController />
+                <NextLink
+                    href="/batch-vesting-template.csv"
+                    target="_blank"
+                    passHref
+                    legacyBehavior
+                >
+                    <Button color="info" variant="text">Download CSV Template</Button>
+                </NextLink>
             </Stack>
         </Stack>
     )
@@ -165,7 +174,7 @@ const FileController = memo(function FileController() {
                             value={""}
                             onChange={async (event: React.ChangeEvent<HTMLInputElement>) => {
                                 const file = event.target.files?.[0] ?? null;
-                                clearErrors("data.schedules");
+                                clearErrors("data");
 
                                 if (file) {
                                     Papa.parse(file, {
@@ -178,7 +187,7 @@ const FileController = memo(function FileController() {
                                                     const dataCasted = csvSchema.cast(results.data);
                                                     setValue("data.schedules", dataCasted.map(x => ({
                                                         receiverAddress: x.receiver,
-                                                        totalAmountEther: x["total-vested-amount"].toString(),
+                                                        totalAmountEther: x.allocation
                                                     })), {
                                                         shouldDirty: true,
                                                         shouldValidate: true,
@@ -186,7 +195,7 @@ const FileController = memo(function FileController() {
                                                     });
                                                 } catch (dataError) {
                                                     if (dataError instanceof ValidationError) {
-                                                        setError("data.schedules", {
+                                                        setError("data", {
                                                             message: "CSV data validation error: " + dataError.errors.join(", "),
                                                         });
                                                     } else {
@@ -195,7 +204,7 @@ const FileController = memo(function FileController() {
                                                 }
                                               } catch (headerError) {
                                                 if (headerError instanceof ValidationError) {
-                                                    setError("data.schedules", {
+                                                    setError("data", {
                                                         message: "CSV header validation error: " + headerError.errors.join(", "),
                                                     });
                                                   } else {
