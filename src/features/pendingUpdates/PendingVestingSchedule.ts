@@ -68,7 +68,7 @@ export const mapPendingToVestingSchedule = (
 
   return {
     pendingCreate: pendingVestingSchedule,
-    id: `${superTokenAddress}-${address}-${receiverAddress}-${version}`,
+    id: `${superTokenAddress}-${address}-${receiverAddress}-${version}-${pendingVestingSchedule.transactionHash}`,
     superToken: superTokenAddress,
     sender: address,
     receiver: receiverAddress,
@@ -87,6 +87,7 @@ export const mapPendingToVestingSchedule = (
     status: vestingStatuses.ScheduledStart,
     claimValidityDate: 0,
     remainderAmount: "0",
-    version
+    version,
+    transactionHash: pendingVestingSchedule.transactionHash
   };
 };

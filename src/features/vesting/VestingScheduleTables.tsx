@@ -28,7 +28,7 @@ import AggregatedVestingSchedules from "./AggregatedVestingSchedules";
 import VestingSchedulerAllowancesTable from "./VestingSchedulesAllowancesTable/VestingSchedulerAllowancesTable";
 import VestingScheduleTable from "./VestingScheduleTable";
 import Link from "../common/Link";
-import { uniqBy } from "lodash";
+import { orderBy, uniqBy } from "lodash";
 import { useVestingVersion } from "../../hooks/useVestingVersion";
 import { EMPTY_ARRAY } from "../../utils/constants";
 import { useWhitelist } from "../../hooks/useWhitelist";
@@ -281,7 +281,9 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({ }) => {
   );
 
   const mappedSentVestingSchedules = useMemo(() => {
-    return uniqBy([...(sentVestingSchedules || []), ...mappedPendingVestingSchedules], x => `${x.superToken}-${x.sender}-${x.receiver}-${x.version}`);
+    const uniqueSchedules = uniqBy([...(sentVestingSchedules || []), ...mappedPendingVestingSchedules], x => `${x.superToken}-${x.sender}-${x.receiver}-${x.version}-${x.transactionHash}`.toLowerCase());
+    const orderedSchedules = orderBy(uniqueSchedules, [x => x.status.isDeleted, x => x.createdAt], ['asc', 'desc']);
+    return orderedSchedules;
   }, [mappedPendingVestingSchedules, sentVestingSchedules]);
 
   const notDeletedSentVestingSchedules = useMemo(

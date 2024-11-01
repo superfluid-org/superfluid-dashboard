@@ -91,14 +91,18 @@ export function BatchVestingForm(props: {
             <Stack gap={1}>
                 {schedules.length > 0 && <PreviewButton setView={setView} />}
                 <FileController />
-                <NextLink
-                    href="/batch-vesting-template.csv"
-                    target="_blank"
-                    passHref
-                    legacyBehavior
-                >
-                    <Button color="info" variant="text">Download CSV Template</Button>
-                </NextLink>
+                {
+                    schedules.length === 0 && (
+                        <NextLink
+                            href="/batch-vesting-template.csv"
+                            target="_blank"
+                            passHref
+                            legacyBehavior
+                        >
+                            <Button color="info" variant="text">Download CSV Template</Button>
+                        </NextLink>
+                    )
+                }
             </Stack>
         </Stack>
     )
@@ -202,16 +206,16 @@ const FileController = memo(function FileController() {
                                                         throw dataError;
                                                     }
                                                 }
-                                              } catch (headerError) {
+                                            } catch (headerError) {
                                                 if (headerError instanceof ValidationError) {
                                                     setError("data", {
                                                         message: "CSV header validation error: " + headerError.errors.join(", "),
                                                     });
-                                                  } else {
+                                                } else {
                                                     throw headerError;
-                                                  }
-                                              }
-                                            
+                                                }
+                                            }
+
                                         },
                                         error: (error) => {
                                             setError("data.schedules", {

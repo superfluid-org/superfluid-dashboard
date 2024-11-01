@@ -348,8 +348,9 @@ export const pendingUpdateSlice = createSlice({
       (state, action) => {
         const { chainId, hash: transactionHash, signerAddress: senderAddress } = action.payload;
 
+        const pendingUpdatesToAdd = [];
         const { params: vestingSchedules } = action.meta.arg.originalArgs;
-        for (const vestingSchedule of vestingSchedules) {
+        for (const [index, vestingSchedule] of vestingSchedules.entries()) {
           const {
             superToken,
             claimPeriod,
@@ -366,7 +367,7 @@ export const pendingUpdateSlice = createSlice({
             transactionHash,
             senderAddress,
             receiverAddress: receiver,
-            id: transactionHash,
+            id: transactionHash + "-" + index,
             superTokenAddress: superToken,
             pendingType: "VestingScheduleCreate",
             timestamp: dateNowSeconds(),
@@ -378,7 +379,11 @@ export const pendingUpdateSlice = createSlice({
             relevantSubgraph: "Vesting",
             version: "v2"
           };
-          pendingUpdateAdapter.addOne(state, pendingUpdate);
+          pendingUpdatesToAdd.push(pendingUpdate);
+        }
+
+        if (pendingUpdatesToAdd.length > 0) {
+          pendingUpdateAdapter.addMany(state, pendingUpdatesToAdd);
         }
       }
     );
@@ -425,21 +430,6 @@ export const pendingUpdateSlice = createSlice({
       }
     );
     builder.addMatcher(
-      isAllOf(transactionTracker.actions.updateTransaction),
-      (state, action) => {
-        const transactionStatus = action.payload.changes.status;
-        if (transactionStatus === "Succeeded") {
-          const transactionId = action.payload.id;
-          pendingUpdateAdapter.updateOne(state, {
-            id: transactionId,
-            changes: {
-              hasTransactionSucceeded: true,
-            },
-          });
-        }
-      }
-    );
-    builder.addMatcher(
       rpcApi.endpoints.connectToPool.matchFulfilled,
       (state, action) => {
         const { chainId, hash: transactionHash } = action.payload;
@@ -464,13 +454,42 @@ export const pendingUpdateSlice = createSlice({
       isAllOf(transactionTracker.actions.updateTransaction),
       (state, action) => {
         const transactionStatus = action.payload.changes.status;
+        if (transactionStatus === "Succeeded") {
+          const entries = pendingUpdateAdapter
+            .getSelectors()
+            .selectAll(state)
+            .filter(x => x.id === action.payload.id || x.transactionHash.toLowerCase() === action.payload.id.toString().toLowerCase());
+
+          const idsToUpdate = [];
+          for (const entry of entries) {
+            idsToUpdate.push(entry.id);
+          }
+
+          if (idsToUpdate.length > 0) {
+            pendingUpdateAdapter.updateMany(state,
+              idsToUpdate.map(id => ({
+                id,
+                changes: {
+                  hasTransactionSucceeded: true,
+                },
+              }))
+            );
+          }
+        }
+      }
+    );
+    builder.addMatcher(
+      isAllOf(transactionTracker.actions.updateTransaction),
+      (state, action) => {
+        const transactionStatus = action.payload.changes.status;
         const isSubgraphInSync = action.payload.changes.isSubgraphInSync;
 
         const entries = pendingUpdateAdapter
           .getSelectors()
           .selectAll(state)
-          .filter(x => x.id === action.payload.id || x.transactionHash === action.payload.id);
+          .filter(x => x.id === action.payload.id || x.transactionHash.toLowerCase() === action.payload.id.toString().toLowerCase());
 
+        const idsToRemove = [];
         for (const entry of entries) {
           // Delete the pending update when Subgraph is synced or the transaction fails.
           if (
@@ -478,9 +497,12 @@ export const pendingUpdateSlice = createSlice({
             transactionStatus === "Failed" ||
             transactionStatus === "Unknown"
           ) {
-            const transactionId = action.payload.id;
-            pendingUpdateAdapter.removeOne(state, transactionId);
+            idsToRemove.push(entry.id);
           }
+        }
+
+        if (idsToRemove.length > 0) {
+          pendingUpdateAdapter.removeMany(state, idsToRemove);
         }
       }
     );

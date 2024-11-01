@@ -148,6 +148,7 @@ export interface VestingSchedule {
   claimValidityDate: number;
   remainderAmount: string;
   version: "v1" | "v2";
+  transactionHash: string;
 }
 
 export type SubgraphVestingSchedule = NonNullable<
@@ -189,6 +190,7 @@ export const mapSubgraphVestingSchedule = (
       ? vestingSchedule.remainderAmount
       : "0",
     version: vestingSchedule.contractVersion,
+    transactionHash: vestingSchedule.id.split("-")[0],
   };
   return {
     ...mappedVestingSchedule,
