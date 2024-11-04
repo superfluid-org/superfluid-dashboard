@@ -7,19 +7,21 @@ import { useCallback, useMemo, useState } from "react";
 import { StepLabel, Stepper } from "@mui/material";
 import { Stack } from "@mui/material";
 import { Step } from "@mui/material";
+import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
 
 export type Props = {
     token: SuperTokenMinimal;
     setView: (value: CreateVestingCardView) => void;
 }
 
-const chunkSize = 2;
 
 export function BatchVestingTransactionSection({
     setView,
 }: Props) {
-    const { watch, reset } = useFormContext<ValidBatchVestingForm>();
+    const { network } = useExpectedNetwork();
+    const { watch } = useFormContext<ValidBatchVestingForm>();
     const validForm = watch();
+    const chunkSize = network.testnet ? 2 : 98;
 
     const chunks = useMemo(() => chunkFormData(validForm, chunkSize), [validForm]);
     const hasChunks = chunks.length > 1;
