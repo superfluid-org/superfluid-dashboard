@@ -185,6 +185,7 @@ const FileController = memo(function FileController() {
                                     const csvString = eol.auto(await file.text());
                                     Papa.parse(csvString, {
                                         header: true,
+                                        skipEmptyLines: "greedy",
                                         complete: (results) => {
                                             try {
                                                 headerSchema.validateSync(results.meta.fields);
