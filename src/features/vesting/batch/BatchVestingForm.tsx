@@ -188,6 +188,7 @@ const FileController = memo(function FileController() {
                                                 headerSchema.validateSync(results.meta.fields);
 
                                                 try {
+                                                    csvSchema.validateSync(results.data);
                                                     const dataCasted = csvSchema.cast(results.data);
                                                     setValue("data.schedules", dataCasted.map(x => ({
                                                         receiverAddress: x.receiver,
@@ -203,6 +204,7 @@ const FileController = memo(function FileController() {
                                                             message: "CSV data validation error: " + dataError.errors.join(", "),
                                                         });
                                                     } else {
+                                                        console.log("not data error")
                                                         throw dataError;
                                                     }
                                                 }

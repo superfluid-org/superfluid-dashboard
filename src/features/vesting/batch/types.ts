@@ -7,7 +7,7 @@ export const headerSchema = yup.array().of(
     'receiver',
     'allocation'
   ])
-).length(2).required();
+).length(2).required().strict();
 
 export const csvSchema = array(object({
   'receiver': string().required().test(testAddress()),
@@ -15,6 +15,6 @@ export const csvSchema = array(object({
     notNegative: true,
     notZero: true,
   }))
-})).min(1).required();
+})).min(1).required().strict();
 
 export type CsvData = InferType<typeof csvSchema>;
