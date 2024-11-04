@@ -205,7 +205,8 @@ const BatchVestingPreview: FC<BatchVestingPreviewProps> = ({
                 <FormGroup>
                     <Button {...transactionButtonDefaultProps} variant="outlined" size="medium" onClick={async () => {
                         const zip = new JSZip();
-                        const batchFolder = zip.folder("batch");
+                        const zipName = `vesting-schedules_${scheduleParams.length}_for_safe_tx-builder`;
+                        const batchFolder = zip.folder(zipName);
 
                         const safeTxBuilderJSONs = await getTxBuilderInputs_v2({
                             network,
@@ -226,7 +227,7 @@ const BatchVestingPreview: FC<BatchVestingPreviewProps> = ({
 
                         const a = document.createElement('a');
                         a.href = objectURL;
-                        a.download = 'batch.zip'; // Set the file name
+                        a.download = zipName + ".zip";
                         document.body.appendChild(a);
                         a.click();
 
