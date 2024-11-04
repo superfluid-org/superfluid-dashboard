@@ -21,8 +21,8 @@ export function VestingVersionToggle(props: {
           });
         }}
       >
-        <ToggleButton value="v1">&nbsp;V1&nbsp;</ToggleButton>
-        <ToggleButton value="v2">&nbsp;V2&nbsp;</ToggleButton>
+        <ToggleButton value="v1" data-cy="version-v1">&nbsp;V1&nbsp;</ToggleButton>
+        <ToggleButton value="v2" data-cy="version-v2">&nbsp;V2&nbsp;</ToggleButton>
       </ToggleButtonGroup>
     )
 }

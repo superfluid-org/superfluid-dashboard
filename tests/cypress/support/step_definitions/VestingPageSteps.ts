@@ -1,6 +1,6 @@
-import { Given, Then } from "@badeball/cypress-cucumber-preprocessor";
-import { VestingPage } from "../../pageObjects/pages/VestingPage";
-import { SendPage } from "../../pageObjects/pages/SendPage";
+import { Given, Then } from '@badeball/cypress-cucumber-preprocessor';
+import { VestingPage } from '../../pageObjects/pages/VestingPage';
+import { SendPage } from '../../pageObjects/pages/SendPage';
 
 Then(/^No received vesting schedules message is shown$/, function () {
   VestingPage.validateNoReceivedVestingScheduleMessage();
@@ -44,12 +44,12 @@ Given(
 Given(
   /^User inputs valid vesting schedule details in the form and proceeds to the preview$/,
   function () {
-    VestingPage.inputFutureDateInVestingStartDateField(1, "year");
+    VestingPage.inputFutureDateInVestingStartDateField(1, 'year');
     VestingPage.inputTotalVestedAmount(2);
-    VestingPage.inputTotalVestingPeriod(2, "year");
+    VestingPage.inputTotalVestingPeriod(2, 'year');
     VestingPage.clickCliffToggle();
     VestingPage.inputCliffAmount(1);
-    VestingPage.inputCliffPeriod(1, "year");
+    VestingPage.inputCliffPeriod(1, 'year');
     VestingPage.clickPreviewButton();
   }
 );
@@ -61,6 +61,9 @@ Given(/^Preview of the vesting schedule is shown correctly$/, function () {
 });
 Given(/^User creates the vesting schedule$/, function () {
   VestingPage.createNewVestingSchedule();
+});
+Given(/^User creates the vesting schedule v2$/, function () {
+  VestingPage.createNewVestingSchedulev2();
 });
 Given(
   /^The newly created vesting schedule is visible in the table$/,
@@ -77,8 +80,14 @@ Then(
 Given(/^User opens the last vesting schedule they have created$/, function () {
   VestingPage.openLastCreatedSchedule();
 });
+Given(/^User opens the vesting schedule they have created$/, function () {
+  VestingPage.openCreatedSchedule();
+});
 Given(/^User deletes the vesting schedule$/, function () {
   VestingPage.deleteVestingSchedule();
+});
+Given(/^User deletes the vesting schedule v2$/, function () {
+  VestingPage.deleteVestingSchedulev2();
 });
 Given(/^Delete vesting schedule button is not visible$/, function () {
   VestingPage.deleteVestingButtonDoesNotExist();
@@ -340,3 +349,11 @@ Then(
     });
   }
 );
+
+Then(/^User clicks on switch to v2$/, () => {
+  VestingPage.switchToV2();
+});
+
+Then(/^User click on the require receiver to claim toggle$/, () => {
+  VestingPage.requireReceiverToClaim();
+});

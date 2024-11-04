@@ -26,7 +26,7 @@ Feature: Vesting page second batch of test cases
 
     Given Transactional account john is connected to the dashboard on opsepolia
     And User clicks on the "vesting" navigation button
-    And User opens the last vesting schedule they have created
+    And User opens the vesting schedule they have created
     Then The schedule bar is correctly shown when it is in <state>
 
     Examples:
