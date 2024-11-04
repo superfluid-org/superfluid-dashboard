@@ -17,6 +17,7 @@ import { transactionButtonDefaultProps } from "../../transactionBoundary/Transac
 import { BatchReceiversTable } from "./BatchReceiversTable";
 import { ValidationError } from "yup";
 import NextLink from "next/link";
+import eol from "eol";
 
 export function BatchVestingForm(props: {
     token: SuperTokenMinimal | null | undefined;
@@ -181,7 +182,8 @@ const FileController = memo(function FileController() {
                                 clearErrors("data");
 
                                 if (file) {
-                                    Papa.parse(file, {
+                                    const csvString = eol.auto(await file.text());
+                                    Papa.parse(csvString, {
                                         header: true,
                                         complete: (results) => {
                                             try {
@@ -204,7 +206,6 @@ const FileController = memo(function FileController() {
                                                             message: "CSV data validation error: " + dataError.errors.join(", "),
                                                         });
                                                     } else {
-                                                        console.log("not data error")
                                                         throw dataError;
                                                     }
                                                 }
@@ -217,9 +218,8 @@ const FileController = memo(function FileController() {
                                                     throw headerError;
                                                 }
                                             }
-
                                         },
-                                        error: (error) => {
+                                        error: (error: Error) => {
                                             setError("data.schedules", {
                                                 message: "Error parsing CSV. Error: " + error,
                                             });
