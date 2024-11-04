@@ -358,7 +358,7 @@ export class VestingPage extends BasePage {
       )}`,
       0
     );
-    this.hasText(VESTING_STATUS, 'Scheduled');
+    this.hasText(VESTING_STATUS, 'Scheduled', 0);
   }
 
   static clickCreateScheduleButton() {

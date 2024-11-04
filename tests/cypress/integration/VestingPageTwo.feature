@@ -2,7 +2,6 @@
 Feature: Vesting page second batch of test cases
 
   @mocked
-  @only
   Scenario Outline: Vesting schedule statuses - <status>
     Given Vesting schedule status is mocked to <status>
 

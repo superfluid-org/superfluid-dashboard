@@ -148,7 +148,6 @@ Feature: Vesting page first batch of test cases
     And User clicks on the change network button
     And Delete vesting schedule button is visible
 
-  @only
   Scenario: Sent vesting schedules details
     Given Transactional account john is connected to the dashboard on opsepolia
     And User clicks on the "vesting" navigation button
