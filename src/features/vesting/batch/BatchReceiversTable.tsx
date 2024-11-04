@@ -79,7 +79,7 @@ export const BatchReceiversTable = memo(function ReceiversTable(props: {
                                     </AddressCopyTooltip>
                                 </Stack>
                             </TableCell>
-                            <TableCell>{schedule.totalAmountEther} {token && token?.symbol}</TableCell>
+                            <TableCell>{schedule.totalAmountEther} {token && <Typography variant="caption" color="text.secondary">{token?.symbol}</Typography>}</TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
