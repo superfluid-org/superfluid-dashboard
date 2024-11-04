@@ -53,7 +53,7 @@ export const BatchReceiversTable = memo(function ReceiversTable(props: {
                 <TableHead>
                     <TableRow>
                         <TableCell width="64px">Nr</TableCell>
-                        <TableCell>Receiver</TableCell>
+                        <TableCell>Address</TableCell>
                         <TableCell>Allocation</TableCell>
                     </TableRow>
                 </TableHead>

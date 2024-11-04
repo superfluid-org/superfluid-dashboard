@@ -195,7 +195,12 @@ const BatchVestingPreview: FC<BatchVestingPreviewProps> = ({
                     )
                 }
 
-                <BatchReceiversTable schedules={schedules} token={token} />
+                <Stack>
+                    <Typography color="text.secondary">
+                        {VestingFormLabels.Receivers}
+                    </Typography>
+                    <BatchReceiversTable schedules={schedules} token={token} />
+                </Stack>
             </Stack>
 
 

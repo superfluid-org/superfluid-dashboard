@@ -87,7 +87,12 @@ export function BatchVestingForm(props: {
             </Stack>
 
 
-            {schedules.length > 0 && <BatchReceiversTable token={token} schedules={schedules} />}
+            {schedules.length > 0 && (
+                <FormGroup>
+                    <FormLabel>{VestingFormLabels.Receivers}</FormLabel>
+                    <BatchReceiversTable token={token} schedules={schedules} />
+                </FormGroup>
+            )}
 
             <Stack gap={1}>
                 {schedules.length > 0 && <PreviewButton setView={setView} />}
