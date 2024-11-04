@@ -322,7 +322,7 @@ export const pendingUpdateSlice = createSlice({
           totalAmountWei
         } = action.meta.arg.originalArgs;
         const endDateTimestamp = startDateTimestamp + totalDurationInSeconds;
-        const flowRate = BigNumber.from(totalDurationInSeconds).div(totalAmountWei);
+        const flowRate = BigNumber.from(totalAmountWei).div(totalDurationInSeconds);
         const pendingUpdate: PendingVestingSchedule = {
           chainId,
           transactionHash,
@@ -361,7 +361,7 @@ export const pendingUpdateSlice = createSlice({
             totalDuration
           } = vestingSchedule;
           const endDateTimestamp = startDate + totalDuration;
-          const flowRate = BigNumber.from(totalDuration).div(totalAmount);
+          const flowRate = BigNumber.from(totalAmount).div(totalDuration);
           const pendingUpdate: PendingVestingSchedule = {
             chainId,
             transactionHash,
