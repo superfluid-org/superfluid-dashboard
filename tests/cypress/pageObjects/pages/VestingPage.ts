@@ -852,11 +852,17 @@ export class VestingPage extends BasePage {
   }
 
   static validateReceiverAddressBookNames(name: string) {
-    cy.get(TABLE_RECEIVER_SENDER).each((el, index) => {
-      if (index !== 0) {
-        expect(el.text()).to.eq(name);
-      }
-    });
+    cy.get(TABLE_RECEIVER_SENDER)
+      .should('have.length.greaterThan', 1)
+      .then(($list) => {
+        const lastIndex = $list.length - 1;
+
+        cy.get(TABLE_RECEIVER_SENDER).each((el, index) => {
+          if (index !== 0 && index !== lastIndex) {
+            expect(el.text()).to.eq(name);
+          }
+        });
+      });
   }
 
   static validateDetailsPageSenderReceivers(
