@@ -46,9 +46,11 @@ export function BatchVestingTransactionSection({
         return <BatchVestingTransactionButton setView={setView} validForm={validForm} okBehaviour="redirect" />
     }
 
+    const showVerticalStepper = chunks.length > 6;
+
     return (
         <Stack spacing={3}>
-            <Stepper activeStep={activeStep}>
+            <Stepper activeStep={activeStep} orientation={showVerticalStepper ? "vertical" : "horizontal"} alternativeLabel={!showVerticalStepper}>
                 {chunks.map((_, index) => (
                     <Step key={index}>
                         <StepLabel>{`Batch #${index + 1}`}</StepLabel>
