@@ -15,6 +15,6 @@ export const csvSchema = array(object({
     notNegative: true,
     notZero: true,
   }))
-})).min(1).required().strict();
+})).min(1).max(500).required().strict();
 
 export type CsvData = InferType<typeof csvSchema>;
