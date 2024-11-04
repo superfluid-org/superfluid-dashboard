@@ -348,7 +348,7 @@ export class VestingPage extends BasePage {
 
   static validateNewlyCreatedSchedule() {
     cy.get(TABLE_RECEIVER_SENDER).last().should('have.text', 'vijay.eth');
-    this.hasText(TABLE_ALLOCATED_AMOUNT, '2 fTUSDx');
+    this.hasText(TABLE_ALLOCATED_AMOUNT, '2 fTUSDx', 0);
     // this.hasText(VESTED_AMOUNT, '0 fTUSDx'); // Formatting issues
     this.hasText(
       TABLE_START_END_DATES,
@@ -358,7 +358,7 @@ export class VestingPage extends BasePage {
       )}`,
       0
     );
-    this.hasText(VESTING_STATUS, 'Scheduled');
+    this.hasText(VESTING_STATUS, 'Scheduled', 0);
   }
 
   static clickCreateScheduleButton() {
@@ -377,7 +377,7 @@ export class VestingPage extends BasePage {
     this.doesNotExist(`${CREATED_TABLE} ${LOADING_SKELETONS}`, undefined, {
       timeout: 45000,
     });
-    this.click(VESTING_ROWS, 1);
+    this.click(VESTING_ROWS, 0);
   }
 
   static deleteVestingSchedule() {
@@ -407,23 +407,23 @@ export class VestingPage extends BasePage {
   }
 
   static validateCreatedVestingSchedule() {
-    this.hasText(TABLE_VESTING_STATUS, 'Scheduled', 1);
+    this.hasText(TABLE_VESTING_STATUS, 'Scheduled', 0);
     this.hasText(
       TABLE_RECEIVER_SENDER,
       this.shortenHex('0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2'),
-      1
+      0
     );
-    this.hasText(TABLE_ALLOCATED_AMOUNT, '60.87 fTUSDx', 1, { timeout: 30000 });
-    this.hasText(VESTED_AMOUNT, '0  fTUSDx', 1);
+    this.hasText(TABLE_ALLOCATED_AMOUNT, '60.87 fTUSDx', 0, { timeout: 30000 });
+    this.hasText(VESTED_AMOUNT, '0  fTUSDx', 0);
     this.containsText(
       TABLE_START_END_DATES,
       format(staticStartDate, 'LLL d, yyyy'),
-      1
+      0
     );
     this.containsText(
       TABLE_START_END_DATES,
       format(staticEndDate, 'LLL d, yyyy'),
-      1
+      0
     );
   }
 
@@ -611,7 +611,7 @@ export class VestingPage extends BasePage {
       cy.get(TABLE_VESTING_STATUS).should('be.visible');
       cy.contains('Deleted').click();
     }
-    this.hasText(TABLE_VESTING_STATUS, status, 1);
+    this.hasText(TABLE_VESTING_STATUS, status, 0);
   }
 
   static validateScheduleBarElements(
