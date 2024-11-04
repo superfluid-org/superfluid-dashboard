@@ -30,6 +30,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import OpenIcon from "../../components/OpenIcon/OpenIcon";
 import { allNetworks, tryFindNetwork } from "../network/networks";
 import Link from "../common/Link";
+import { countBy, map } from "lodash";
 
 export const getTransactionStatusColor = (status: TransactionStatus) => {
   switch (status) {
@@ -79,6 +80,15 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
     (transaction.extraData.subTransactionTitles as TransactionTitle[]) ?? [];
   const [expand, setExpand] = useState(false);
 
+  const groupedSubTransactionTitles = map(
+    countBy(subTransactionTitles),
+    (count, name) => ({ name, count })
+  );
+
+  const formattedSubTransactionTitles = groupedSubTransactionTitles.map(
+    ({ name, count }) => count > 3 ? `${name} x${count}` as TransactionTitle : name as TransactionTitle
+  );
+
   return (
     <ListItem data-cy={"transaction"} button sx={{ cursor: "default" }}>
       <ListItemAvatar>
@@ -98,7 +108,7 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
               </Stack>
               <Collapse in={expand}>
                 <List>
-                  {subTransactionTitles.map((subTransactionTitle, index) => (
+                  {formattedSubTransactionTitles.map((subTransactionTitle, index) => (
                     <ListItem disablePadding key={`${subTransactionTitle}-${index}`}>
                       <ListItemAvatar sx={{ mr: 1 }}>
                         <TransactionListSubItemAvatar
