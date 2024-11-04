@@ -99,7 +99,7 @@ export function BatchVestingFormProvider(props: {
             notNegative: true,
             notZero: true,
           })),
-        })
+        }) 
         ).required(),
         setupAutoWrap: boolean().optional(),
         claimEnabled: boolean().optional(),
