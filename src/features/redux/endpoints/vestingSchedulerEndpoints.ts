@@ -21,6 +21,12 @@ import {
 } from "./flowSchedulerEndpoints";
 import { getUnixTime } from "date-fns";
 import { getMaximumNeededTokenAllowance } from "../../vesting/VestingSchedulesAllowancesTable/calculateRequiredAccessForActiveVestingSchedule";
+import { allNetworks, findNetworkOrThrow } from "../../network/networks";
+import { resolvedWagmiClients } from "../../wallet/wagmiConfig";
+import { vestingSchedulerAbi } from "../../../abis/vestingSchedulerAbi";
+import { vestingSchedulerV2Abi } from "../../../abis/vestingSchedulerV2Abi";
+import { vestingSchedulerAddress } from "../../../generated";
+import { vestingSchedulerV2Address } from "../../../generated";
 
 export const MAX_VESTING_DURATION_IN_YEARS = 10;
 export const MAX_VESTING_DURATION_IN_SECONDS =
@@ -112,20 +118,24 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
         ? arg.endDateTimestamp
         : undefined;
 
+      const network = findNetworkOrThrow(allNetworks, chainId);
+      const contractInfo = version === 'v2' ? network.vestingContractAddress_v2 : network.vestingContractAddress_v1;
+      if (!contractInfo) {
+        throw new Error("Vesting contract not supported on this network");
+      }
+      const END_DATE_VALID_BEFORE_IN_SECONDS = contractInfo.END_DATE_VALID_BEFORE_IN_SECONDS;
+      const START_DATE_VALID_AFTER_IN_SECONDS = contractInfo.START_DATE_VALID_AFTER_IN_SECONDS;
+
       const [
         flowOperatorData,
         existingTokenAllowance,
-        END_DATE_VALID_BEFORE_IN_SECONDS,
-        START_DATE_VALID_AFTER_IN_SECONDS,
       ] = await Promise.all([
         superToken.getFlowOperatorData({
           flowOperator: vestingScheduler.address,
           sender: senderAddress,
           providerOrSigner: signer,
         }),
-        superTokenContract.allowance(senderAddress, vestingScheduler.address),
-        vestingScheduler.END_DATE_VALID_BEFORE(),
-        vestingScheduler.START_DATE_VALID_AFTER(),
+        superTokenContract.allowance(senderAddress, vestingScheduler.address)
       ]);
 
       const cliffAndFlowDate = arg.cliffDateTimestamp
@@ -727,21 +737,14 @@ export const vestingSchedulerQueryEndpoints = {
         maxRetries: 10,
       },
       queryFn: async ({ chainId, version }) => {
-        const framework = await getFramework(chainId);
-        const vestingScheduler = getVestingScheduler(
-          chainId,
-          framework.settings.provider,
-          version
-        );
-        const [
-          MIN_VESTING_DURATION_IN_SECONDS,
-          START_DATE_VALID_AFTER_IN_SECONDS,
-          END_DATE_VALID_BEFORE_IN_SECONDS,
-        ] = await Promise.all([
-          vestingScheduler.MIN_VESTING_DURATION(),
-          vestingScheduler.START_DATE_VALID_AFTER(),
-          vestingScheduler.END_DATE_VALID_BEFORE(),
-        ]);
+        const network = findNetworkOrThrow(allNetworks, chainId);
+        const contractInfo = version === 'v2' ? network.vestingContractAddress_v2 : network.vestingContractAddress_v1;
+        if (!contractInfo) {
+          throw new Error("Vesting contract not supported on this network");
+        }
+        const MIN_VESTING_DURATION_IN_SECONDS = contractInfo.MIN_VESTING_DURATION_IN_SECONDS;
+        const END_DATE_VALID_BEFORE_IN_SECONDS = contractInfo.END_DATE_VALID_BEFORE_IN_SECONDS;
+        const START_DATE_VALID_AFTER_IN_SECONDS = contractInfo.START_DATE_VALID_AFTER_IN_SECONDS;
         return {
           data: {
             MIN_VESTING_DURATION_IN_SECONDS,
@@ -830,35 +833,33 @@ export const vestingSchedulerQueryEndpoints = {
         receiverAddress,
         version,
       }) => {
-        const framework = await getFramework(chainId);
+        const publicClient = resolvedWagmiClients[chainId]();
 
-        const vestingScheduler = getVestingScheduler(
-          chainId,
-          framework.settings.provider,
-          version
-        );
+        const rpcVestingSchedule = await publicClient.readContract({
+          abi: version === "v2" ? vestingSchedulerV2Abi : vestingSchedulerAbi,
+          address: version === "v2" ? vestingSchedulerV2Address[chainId as keyof typeof vestingSchedulerV2Address] : vestingSchedulerAddress[chainId as keyof typeof vestingSchedulerAddress],
+          functionName: "getVestingSchedule",
+          args: [superTokenAddress as `0x${string}`, senderAddress as `0x${string}`, receiverAddress as `0x${string}`],
+        });
 
-        const rawVestingSchedule = {
-          claimValidityDate: 0,
-          ...(await vestingScheduler.getVestingSchedule(
-            superTokenAddress,
-            senderAddress,
-            receiverAddress
-          )),
+        // TODO: Use viem here
+        const rpcVestingScheduleNormalized = {
+          claimValidityDate: 0n,
+          ...(rpcVestingSchedule),
         };
 
-        const unixNow = getUnixTime(new Date());
+        const unixNow = BigInt(getUnixTime(new Date()));
 
         const mappedVestingSchedule =
-          rawVestingSchedule.endDate > 0
+          rpcVestingScheduleNormalized.endDate > 0
             ? {
-                endDateTimestamp: rawVestingSchedule.endDate,
-                claimValidityDate: rawVestingSchedule.claimValidityDate ?? null,
+                endDateTimestamp: rpcVestingScheduleNormalized.endDate,
+                claimValidityDate: Number(rpcVestingScheduleNormalized.claimValidityDate) ?? null,
                 isClaimable:
-                  !!rawVestingSchedule.cliffAndFlowDate &&
-                  !!rawVestingSchedule.claimValidityDate &&
-                  rawVestingSchedule.cliffAndFlowDate < unixNow &&
-                  unixNow < rawVestingSchedule.claimValidityDate,
+                  !!rpcVestingScheduleNormalized.cliffAndFlowDate &&
+                  !!rpcVestingScheduleNormalized.claimValidityDate &&
+                  rpcVestingScheduleNormalized.cliffAndFlowDate < unixNow &&
+                  unixNow < rpcVestingScheduleNormalized.claimValidityDate,
               }
             : null;
 

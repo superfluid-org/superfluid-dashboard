@@ -6,7 +6,7 @@ import { CacheProvider, EmotionCache } from "@emotion/react";
 import { NextPage } from "next";
 import { AppProps } from "next/app";
 import Head from "next/head";
-import { ReactElement, ReactNode, useEffect } from "react";
+import { ReactElement, ReactNode, useEffect, useState } from "react";
 import { hotjar } from "react-hotjar";
 import "react-toastify/dist/ReactToastify.css";
 import MonitorContext from "../components/MonitorContext/MonitorContext";
@@ -63,6 +63,11 @@ export default function MyApp(props: AppPropsWithLayout) {
     }
   }, []);
 
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <NextThemesProvider>
       <CacheProvider value={emotionCache}>
@@ -86,9 +91,9 @@ export default function MyApp(props: AppPropsWithLayout) {
                                   <IntercomProvider>
                                     <Layout>
                                       <MinigameProvider>
-                                        {getLayout(
+                                        {mounted ? getLayout(
                                           <Component {...pageProps} />
-                                        )}
+                                        ) : null}
                                       </MinigameProvider>
                                     </Layout>
                                     <MonitorContext />

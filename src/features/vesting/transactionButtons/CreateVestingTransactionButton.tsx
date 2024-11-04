@@ -28,8 +28,6 @@ export const CreateVestingTransactionButton: FC<Props> = ({
   setView,
   isVisible: isVisible_,
 }) => {
-  const { txAnalytics } = useAnalytics();
-
   const { expectedNetwork } = useConnectionBoundary();
   const { vestingVersion } = useVestingVersion({ network: expectedNetwork });
 
@@ -59,6 +57,7 @@ export const CreateVestingTransactionButton: FC<Props> = ({
         getOverrides,
         setDialogLoadingInfo,
         setDialogSuccessActions,
+        txAnalytics
       }) =>
         isVisible && (
           <TransactionButton

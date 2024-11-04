@@ -4,9 +4,13 @@ import { useAccount } from "wagmi";
 
 import { FC } from "react";
 import Link from "../common/Link";
+import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 
 const SimpleVestingHeader: FC = () => {
   const { address: accountAddress } = useAccount();
+  const { network } = useExpectedNetwork();
+
+  const doesNetworkSupportBatchVesting = !!network.vestingContractAddress_v2;
 
   return (
     <Stack
@@ -19,18 +23,33 @@ const SimpleVestingHeader: FC = () => {
         Vesting
       </Typography>
 
-      {accountAddress && (
-        <Button
-          LinkComponent={Link}
-          href="/vesting/create"
-          data-cy="create-schedule-button"
-          color="primary"
-          variant="contained"
-          endIcon={<AddRoundedIcon />}
-        >
-          Create Vesting Schedule
-        </Button>
-      )}
+      <Stack direction="row" gap={1}>
+        {accountAddress && (
+          <Button
+            LinkComponent={Link}
+            href="/vesting/create"
+            data-cy="create-schedule-button"
+            color="primary"
+            variant="contained"
+          >
+            Create Vesting Schedule
+          </Button>
+        )}
+
+        {
+          accountAddress && doesNetworkSupportBatchVesting && (
+            <Button
+              LinkComponent={Link}
+              href="/vesting/batch-create"
+              data-cy="create-batch-schedule-button"
+              color="primary"
+              variant="contained"
+            >
+              Create Batch of Vesting Schedules
+            </Button>
+          )
+        }
+      </Stack>
     </Stack>
   );
 };

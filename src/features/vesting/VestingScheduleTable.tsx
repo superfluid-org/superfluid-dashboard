@@ -193,7 +193,7 @@ const VestingScheduleTable: FC<VestingScheduleTableProps> = ({
           (vestingSchedule) => vestingSchedule.status.isDeleted
         );
       default:
-        return vestingSchedules
+        return vestingSchedules;
     }
   }, [statusFilter, vestingSchedules]);
 

@@ -98,8 +98,8 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
               </Stack>
               <Collapse in={expand}>
                 <List>
-                  {subTransactionTitles.map((subTransactionTitle) => (
-                    <ListItem disablePadding key={subTransactionTitle}>
+                  {subTransactionTitles.map((subTransactionTitle, index) => (
+                    <ListItem disablePadding key={`${subTransactionTitle}-${index}`}>
                       <ListItemAvatar sx={{ mr: 1 }}>
                         <TransactionListSubItemAvatar
                           status={transaction.status}

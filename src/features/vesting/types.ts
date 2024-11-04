@@ -148,6 +148,7 @@ export interface VestingSchedule {
   claimValidityDate: number;
   remainderAmount: string;
   version: "v1" | "v2";
+  transactionHash: string;
 }
 
 export type SubgraphVestingSchedule = NonNullable<
@@ -189,6 +190,7 @@ export const mapSubgraphVestingSchedule = (
       ? vestingSchedule.remainderAmount
       : "0",
     version: vestingSchedule.contractVersion,
+    transactionHash: vestingSchedule.id.split("-")[0],
   };
   return {
     ...mappedVestingSchedule,
@@ -255,7 +257,7 @@ const getVestingStatus = (vestingSchedule: Omit<VestingSchedule, "status">) => {
   }
 
   if (cliffDate) {
-    if (startDate < nowInSeconds && nowInSeconds < cliffDate) {
+    if (startDate < nowInSeconds && nowInSeconds < cliffAndFlowExpirationAt) {
       return vestingStatuses.CliffPeriod;
     }
   }

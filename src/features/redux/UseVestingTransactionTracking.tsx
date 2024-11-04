@@ -62,13 +62,19 @@ export const useVestingTransactionTracking = () => {
                 forever: true,
               }
             ).then((_subgraphEventsQueryResult) => {
-              const pendingUpdate = pendingUpdateSelectors.selectById(
-                state.pendingUpdates,
-                payload.id
-              );
+              const pendingUpdates = pendingUpdateSelectors.selectAll(
+                state.pendingUpdates
+              ).filter(x => x.id === payload.id || x.transactionHash.toLowerCase() === payload.id.toString().toLowerCase());
 
-              if (pendingUpdate?.relevantSubgraph === "Vesting") {
-                dispatch(pendingUpdateSlice.actions.removeOne(payload.id));
+              const pendingUpdateIdsToRemove = [];
+              for (const pendingUpdate of pendingUpdates) {
+                if (pendingUpdate.relevantSubgraph === "Vesting") {
+                  pendingUpdateIdsToRemove.push(pendingUpdate.id);
+                }
+              }
+
+              if (pendingUpdateIdsToRemove.length > 0) {
+                dispatch(pendingUpdateSlice.actions.removeMany(pendingUpdateIdsToRemove));
                 dispatch(
                   vestingSubgraphApi.util.invalidateTags([
                     {

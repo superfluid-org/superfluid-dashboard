@@ -68,6 +68,7 @@ import { gdaEndpoints } from "./endpoints/gdaEndpoints";
 import { deprecatedNetworkChainIds } from "../network/networks";
 import _ from "lodash";
 import { isDefined } from "../../utils/ensureDefined";
+import { batchVestingEndpoints } from "./endpoints/batchVestingEndpoints";
 
 export const rpcApi = initializeRpcApiSlice((options) =>
   createApiWithReactHooks({
@@ -84,8 +85,9 @@ export const rpcApi = initializeRpcApiSlice((options) =>
   .injectEndpoints(tokenAccessMutationEndpoints)
   .injectEndpoints(vestingSchedulerQueryEndpoints)
   .injectEndpoints(autoWrapEndpoints)
-  .injectEndpoints(gdaEndpoints);
-
+  .injectEndpoints(gdaEndpoints)
+  .injectEndpoints(batchVestingEndpoints);
+  
 export const subgraphApi = initializeSubgraphApiSlice((options) =>
   createApiWithReactHooks({
     ...options,

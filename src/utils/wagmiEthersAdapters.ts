@@ -4,8 +4,9 @@ import {
   useConnectorClient,
 } from "wagmi";
 import { providers } from "ethers";
-import { type WalletClient, Client, Chain, Transport, Account } from "viem";
+import { Client, Chain, Transport, Account } from "viem";
 import { useMemo } from "react";
+import FallbackProvider from "../libs/ethers-fallback-provider/FallbackProvider";
 
 // Inspired by: https://wagmi.sh/react/ethers-adapters
 
@@ -17,7 +18,7 @@ export function publicClientToProvider(client: Client<Transport, Chain>) {
     ensAddress: chain.contracts?.ensRegistry?.address,
   }
   if (transport.type === 'fallback')
-    return new providers.FallbackProvider(
+    return new FallbackProvider(
       (transport.transports as ReturnType<Transport>[]).map(
         ({ value }) => new providers.JsonRpcProvider(value?.url, network),
       ),

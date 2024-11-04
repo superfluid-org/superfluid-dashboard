@@ -50,21 +50,31 @@ const NavigationItem: FC<NavigationItemProps> = ({
   icon: Icon,
   isExternal,
   onClick,
-}) => (
-  <ListItemButton
-    LinkComponent={Link}
-    href={href}
-    sx={{ borderRadius: "10px" }}
-    selected={active}
-    onClick={onClick}
-    {...(isExternal && { target: "_blank" })}
-  >
-    <ListItemIcon>
-      <Icon />
-    </ListItemIcon>
-    <ListItemText data-cy={id} primary={<>{title} {isExternal && <OpenInNewRoundedIcon fontSize="inherit" />}</>} />
-  </ListItemButton >
-);
+}) => {
+  const theme = useTheme();
+
+  return (
+    <ListItemButton
+        LinkComponent={Link}
+        href={href}
+        sx={{
+        borderRadius: "10px",
+        transition: theme.transitions.create("background-color", {
+          easing: theme.transitions.easing.easeOut,
+          duration: theme.transitions.duration.short,
+        }),
+      }}
+      selected={active}
+      onClick={onClick}
+      {...(isExternal && { target: "_blank" })}
+      >
+        <ListItemIcon>
+          <Icon />
+        </ListItemIcon>
+        <ListItemText data-cy={id} primary={<>{title} {isExternal && <OpenInNewRoundedIcon fontSize="inherit" />}</>} />
+      </ListItemButton>
+    );
+  };
 
 export default memo(function NavigationDrawer() {
   const theme = useTheme();

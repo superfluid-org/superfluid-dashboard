@@ -40,8 +40,8 @@ export const getVestingScheduler = <T extends Version>(
 ): VestingSchedulerType<T> => {
   const network = findNetworkOrThrow(allNetworks, chainId);
 
-  const networkContractAddress = version === 'v2' ? network.vestingContractAddress_v2 : network.vestingContractAddress_v1;
-  const doesNetworkSupportContract = networkContractAddress;
+  const contractInfo = version === 'v2' ? network.vestingContractAddress_v2 : network.vestingContractAddress_v1;
+  const doesNetworkSupportContract = !!contractInfo;
   if (!doesNetworkSupportContract) {
     throw new Error(
       `Vesting Scheduler not available for network [${chainId}:${network?.name}].`
@@ -50,13 +50,13 @@ export const getVestingScheduler = <T extends Version>(
 
   if (version === 'v2') {
     return VestingScheduler_v2__factory.connect(
-      networkContractAddress,
+      contractInfo.address,
       providerOrSigner
     ) as VestingSchedulerType<T>;
   }
 
   return VestingScheduler__factory.connect(
-    networkContractAddress,
+    contractInfo.address,
     providerOrSigner
   ) as VestingSchedulerType<T>;
 };

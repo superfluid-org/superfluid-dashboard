@@ -48,8 +48,8 @@ export const VestingDataCardContent: FC<VestingDataCardProps> = ({
         >
           {tokenAmount && (
             <Typography
-              variant={isBelowMd ? "h5mono" : "h3mono"}
-              sx={{ lineHeight: isBelowMd ? "20px" : "29px" }}
+              variant={isBelowMd ? "h5mono" : "h4mono"}
+              sx={{ lineHeight: isBelowMd ? "20px" : "25px" }}
             >
               {tokenAmount}
             </Typography>
@@ -57,7 +57,7 @@ export const VestingDataCardContent: FC<VestingDataCardProps> = ({
           <Typography
             variant={isBelowMd ? "h7" : "h6"}
             color="text.secondary"
-            sx={{ lineHeight: "20px", verticalAlign: "end" }}
+            sx={{ lineHeight: "20px" }}
           >
             {tokenSymbol}
           </Typography>

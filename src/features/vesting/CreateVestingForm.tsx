@@ -1,9 +1,7 @@
-import { ErrorMessage } from "@hookform/error-message";
 import {
   Alert,
   AlertTitle,
   Box,
-  Button,
   FormControlLabel,
   FormGroup,
   FormLabel,
@@ -20,8 +18,8 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { add } from "date-fns";
-import { FC, memo, useEffect, useMemo, useState } from "react";
-import { Controller, useFormContext, useFormState, useWatch } from "react-hook-form";
+import { memo, useMemo } from "react";
+import { Controller, useFormContext } from "react-hook-form";
 import { inputPropsForEtherAmount } from "../../utils/inputPropsForEtherAmount";
 import TooltipWithIcon from "../common/TooltipWithIcon";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
@@ -33,7 +31,6 @@ import {
   unitOfTimeList,
 } from "../send/FlowRateInput";
 import { TokenDialogButton } from "../tokenWrapping/TokenDialogButton";
-import { transactionButtonDefaultProps } from "../transactionBoundary/TransactionButton";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { PartialVestingForm } from "./CreateVestingFormProvider";
 import { CreateVestingCardView } from "./CreateVestingSection";
@@ -42,6 +39,8 @@ import { SuperTokenMinimal, TokenType } from "../redux/endpoints/tokenTypes";
 import { useVestingVersion } from "../../hooks/useVestingVersion";
 import { useSuperTokens } from "../../hooks/useSuperTokens";
 import { Network } from "../network/networks";
+import { ValidationSummary } from "./ValidationSummary";
+import { PreviewButton } from "./PreviewButton";
 
 export enum VestingFormLabels {
   Receiver = "Receiver",
@@ -71,7 +70,7 @@ const CreateVestingForm = memo(function CreateVestingForm(props: {
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const { watch } = useFormContext<PartialVestingForm>();
-  const [ cliffEnabled, setupAutoWrap ] = watch(["data.cliffEnabled", "data.setupAutoWrap"]);
+  const [cliffEnabled, setupAutoWrap] = watch(["data.cliffEnabled", "data.setupAutoWrap"]);
 
   const { vestingVersion } = useVestingVersion();
   const isClaimFeatureEnabled = vestingVersion === "v2";
@@ -269,9 +268,7 @@ const CreateVestingForm = memo(function CreateVestingForm(props: {
         )}
       </Stack>
 
-      <Stack gap={1}>
-        <PreviewVestingScheduleButton setView={setView} />
-      </Stack>
+      <PreviewButton setView={setView} />
     </Stack>
   );
 });
@@ -279,10 +276,14 @@ const CreateVestingForm = memo(function CreateVestingForm(props: {
 export default CreateVestingForm;
 
 // # Sub-components
-const ReceiverController = memo(function ReceiverController(props: {
+export const ReceiverController = memo(function ReceiverController(props: {
   isBelowMd: boolean
 }) {
-  const { control } = useFormContext<PartialVestingForm>();
+  const { control } = useFormContext<{
+    data: {
+      receiverAddress: string;
+    };
+  }>();
 
   return (
     <Controller
@@ -299,11 +300,15 @@ const ReceiverController = memo(function ReceiverController(props: {
   );
 })
 
-const TokenController = memo(function TokenController(props: {
+export const TokenController = memo(function TokenController(props: {
   token: SuperTokenMinimal | null | undefined,
   network: Network,
 }) {
-  const { control } = useFormContext<PartialVestingForm>();
+  const { control } = useFormContext<{
+    data: {
+      superTokenAddress: string;
+    };
+  }>();
   const { superTokens, isFetching } = useSuperTokens({ network: props.network });
 
   return (
@@ -352,8 +357,12 @@ const VestingAmountController = memo(function VestingAmountController(props: {
   );
 });
 
-const StartDateController = memo(function StartDateController() {
-  const { control } = useFormContext<PartialVestingForm>();
+export const StartDateController = memo(function StartDateController() {
+  const { control } = useFormContext<{
+    data: {
+      startDate: Date;
+    };
+  }>();
 
   const minVestingStartDate = useMemo(
     () =>
@@ -425,10 +434,17 @@ const CliffAmountController = memo(function CliffAmountController(props: {
   );
 });
 
-const CliffPeriodController = memo(function CliffPeriodController(props: {
+export const CliffPeriodController = memo(function CliffPeriodController(props: {
   network: Network,
 }) {
-  const { control } = useFormContext<PartialVestingForm>();
+  const { control } = useFormContext<{
+    data: {
+      cliffPeriod: {
+        numerator: string;
+        denominator: UnitOfTime;
+      };
+    };
+  }>();
 
   return (
     <Controller
@@ -481,10 +497,17 @@ const CliffPeriodController = memo(function CliffPeriodController(props: {
   );
 });
 
-const VestingPeriodController = memo(function VestingPeriodController(props: {
+export const VestingPeriodController = memo(function VestingPeriodController(props: {
   network: Network,
 }) {
-  const { control } = useFormContext<PartialVestingForm>();
+  const { control } = useFormContext<{
+    data: {
+      vestingPeriod: {
+        numerator: string;
+        denominator: UnitOfTime;
+      };
+    };
+  }>();
 
   return (
     <Controller
@@ -586,8 +609,12 @@ const CliffEnabledController = memo(function CliffEnabledController() {
   );
 });
 
-const ClaimController = memo(function ClaimController() {
-  const { control } = useFormContext<PartialVestingForm>();
+export const ClaimController = memo(function ClaimController() {
+  const { control } = useFormContext<{
+    data: {
+      claimEnabled: boolean;
+    }
+  }>();
 
   return (
     <Controller
@@ -628,48 +655,6 @@ const AutoWrapController = memo(function AutoWrapController() {
           }
         />
       )}
-    />
-  );
-});
-
-const PreviewVestingScheduleButton = memo(function PreviewVestingScheduleButton(props: {
-  setView: (value: CreateVestingCardView) => void;
-}) {
-  const { formState: { isValid, isValidating } } = useFormContext<PartialVestingForm>();
-
-  // A work-around for react-hook-form bug which causes the "cannot update a component while rendering another" error
-  // https://github.com/orgs/react-hook-form/discussions/11760
-  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
-  useEffect(() => {
-    setIsButtonDisabled(!isValid || isValidating);
-  }, [isValid, isValidating]);
-
-  return (
-    <Button
-      data-cy={"preview-schedule-button"}
-      {...transactionButtonDefaultProps}
-      disabled={isButtonDisabled}
-      onClick={() => props.setView(CreateVestingCardView.Preview)}
-    >
-      Preview Vesting Schedule
-    </Button>
-  );
-});
-
-const ValidationSummary = memo(function ValidationSummary() {
-  const { formState: { errors } } = useFormContext<PartialVestingForm>();
-
-  return (
-    <ErrorMessage
-      name="data"
-      errors={errors}
-      render={({ message }) =>
-        !!message && (
-          <Alert severity="error" sx={{ mb: 1 }}>
-            {message}
-          </Alert>
-        )
-      }
     />
   );
 });

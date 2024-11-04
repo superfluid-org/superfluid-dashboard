@@ -25,6 +25,7 @@ import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { CreateVestingFormEffects } from "./CreateVestingFormEffects";
 import { add } from "date-fns";
 import { useVestingVersion } from "../../hooks/useVestingVersion";
+import { convertPeriodToSeconds } from "./batch/convertPeriod";
 
 export type ValidVestingForm = {
   data: {
@@ -176,14 +177,14 @@ const CreateVestingFormProvider: FC<{
         const cliffAndFlowDate = add(
           startDate,
           {
-            seconds: (cliffPeriod.numerator || 0) * cliffPeriod.denominator,
+            seconds: convertPeriodToSeconds(cliffPeriod),
           },
         );
 
         const endDate = add(
           startDate,
           {
-            seconds: vestingPeriod.numerator * vestingPeriod.denominator,
+            seconds: convertPeriodToSeconds(vestingPeriod),
           },
         );
 
@@ -216,8 +217,7 @@ const CreateVestingFormProvider: FC<{
           });
         }
 
-        const vestingDuration =
-          vestingPeriod.numerator * vestingPeriod.denominator;
+        const vestingDuration = convertPeriodToSeconds(vestingPeriod);
 
         if (vestingDuration > MAX_VESTING_DURATION_IN_SECONDS) {
           handleHigherOrderValidationError({

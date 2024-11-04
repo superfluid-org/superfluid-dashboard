@@ -23,9 +23,9 @@ import ScheduledWrapRow from "./ScheduledWrapRow";
 import TooltipWithIcon from "../common/TooltipWithIcon";
 import { AutoWrapContractInfo } from "../vesting/VestingScheduleTables";
 import { PlatformWhitelistedStatus } from "./ScheduledWrapTables";
-import { platformApi } from "../redux/platformApi/platformApi";
 import ScheduledWrapLoadingTable from "./ScheduledWrapLoadingTable";
 import { EMPTY_ARRAY } from "../../utils/constants";
+import { useWhitelist } from "../../hooks/useWhitelist";
 
 interface TokenSnapshotTableProps {
   address: Address;
@@ -73,15 +73,7 @@ const ScheduledWrapTable: FC<TokenSnapshotTableProps> = ({
     [page, rowsPerPage, wrapSchedules.length]
   );
 
-  const { data: isPlatformWhitelisted, isLoading: isWhitelistLoading } =
-    platformApi.useIsAccountWhitelistedQuery(
-      address
-        ? {
-          chainId: network.id,
-          account: address?.toLowerCase(),
-        }
-        : skipToken
-    );
+  const { isPlatformWhitelisted, isWhitelistLoading } = useWhitelist({ accountAddress: address, network });
 
   const hasContent = !!wrapSchedules.length;
   useEffect(() => {

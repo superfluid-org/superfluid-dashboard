@@ -23,15 +23,15 @@ import {
   mapPendingToVestingSchedule,
   useAddressPendingVestingSchedules,
 } from "../pendingUpdates/PendingVestingSchedule";
-import { platformApi } from "../redux/platformApi/platformApi";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import AggregatedVestingSchedules from "./AggregatedVestingSchedules";
 import VestingSchedulerAllowancesTable from "./VestingSchedulesAllowancesTable/VestingSchedulerAllowancesTable";
 import VestingScheduleTable from "./VestingScheduleTable";
 import Link from "../common/Link";
-import { uniqBy } from "lodash";
+import { orderBy, uniqBy } from "lodash";
 import { useVestingVersion } from "../../hooks/useVestingVersion";
 import { EMPTY_ARRAY } from "../../utils/constants";
+import { useWhitelist } from "../../hooks/useWhitelist";
 
 interface ExecutionWhitelistInfoProps {
   whitelisted: boolean;
@@ -151,7 +151,7 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
               >
                 <CopyIconBtn
                   TooltipProps={{ placement: "top" }}
-                  copyText={getAddress(network.vestingContractAddress_v1)}
+                  copyText={getAddress(network.vestingContractAddress_v1.address)}
                   description="Copy address to clipboard"
                   IconButtonProps={{ size: "small" }}
                 />
@@ -162,7 +162,7 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
                 >
                   <IconButton
                     LinkComponent={Link}
-                    href={network.getLinkForAddress(network.vestingContractAddress_v1)}
+                    href={network.getLinkForAddress(network.vestingContractAddress_v1.address)}
                     target="_blank"
                     size="small"
                   >
@@ -187,7 +187,7 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
               >
                 <CopyIconBtn
                   TooltipProps={{ placement: "top" }}
-                  copyText={getAddress(network.vestingContractAddress_v2)}
+                  copyText={getAddress(network.vestingContractAddress_v2.address)}
                   description="Copy address to clipboard"
                   IconButtonProps={{ size: "small" }}
                 />
@@ -198,7 +198,7 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
                 >
                   <IconButton
                     LinkComponent={Link}
-                    href={network.getLinkForAddress(network.vestingContractAddress_v2)}
+                    href={network.getLinkForAddress(network.vestingContractAddress_v2.address)}
                     target="_blank"
                     size="small"
                   >
@@ -265,22 +265,7 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({ }) => {
     }
   );
 
-  const { isPlatformWhitelisted_, isLoading: isWhitelistLoading } =
-    platformApi.useIsAccountWhitelistedQuery(
-      visibleAddress
-        ? {
-          chainId: network.id,
-          account: visibleAddress?.toLowerCase(),
-        }
-        : skipToken,
-      {
-        selectFromResult: (queryResult) => ({
-          ...queryResult,
-          isPlatformWhitelisted_: !!queryResult.data,
-        }),
-      }
-    );
-  const isPlatformWhitelisted = Boolean(isPlatformWhitelisted_ || network?.testnet);
+  const { isPlatformWhitelisted, isWhitelistLoading } = useWhitelist({ accountAddress: visibleAddress, network });
 
   const pendingVestingSchedules =
     useAddressPendingVestingSchedules(visibleAddress);
@@ -296,7 +281,9 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({ }) => {
   );
 
   const mappedSentVestingSchedules = useMemo(() => {
-    return uniqBy([...(sentVestingSchedules || []), ...mappedPendingVestingSchedules], x => `${x.superToken}-${x.sender}-${x.receiver}-${x.version}`);
+    const uniqueSchedules = uniqBy([...(sentVestingSchedules || []), ...mappedPendingVestingSchedules], x => `${x.superToken}-${x.sender}-${x.receiver}-${x.version}-${x.transactionHash}`.toLowerCase());
+    const orderedSchedules = orderBy(uniqueSchedules, [x => x.status.isDeleted, x => x.createdAt], ['asc', 'desc']);
+    return orderedSchedules;
   }, [mappedPendingVestingSchedules, sentVestingSchedules]);
 
   const notDeletedSentVestingSchedules = useMemo(

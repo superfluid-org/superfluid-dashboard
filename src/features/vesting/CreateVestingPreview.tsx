@@ -13,6 +13,7 @@ import { ValidVestingForm } from "./CreateVestingFormProvider";
 import { VestingScheduleGraph } from "./VestingScheduleGraph";
 import { VestingTransactionButtonSection, VestingTransactionSectionProps } from "./transactionButtons/VestingTransactionButtonSection";
 import { add, format } from "date-fns";
+import { convertPeriodToSeconds } from "./batch/convertPeriod";
 
 interface CreateVestingPreviewProps extends VestingTransactionSectionProps { }
 
@@ -41,14 +42,11 @@ const CreateVestingPreview: FC<CreateVestingPreviewProps> = ({
     "data.cliffEnabled"
   ]);
 
-  const { numerator: cliffNumerator = 0, denominator: cliffDenominator } =
-    cliffPeriod;
-
   const cliffDate = cliffEnabled
     ? add(
       startDate,
       {
-        seconds: cliffNumerator * cliffDenominator,
+        seconds: convertPeriodToSeconds(cliffPeriod),
       },
     )
     : undefined;
@@ -56,7 +54,7 @@ const CreateVestingPreview: FC<CreateVestingPreviewProps> = ({
   const endDate = add(
     startDate,
     {
-      seconds: vestingPeriod.numerator * vestingPeriod.denominator,
+      seconds: convertPeriodToSeconds(vestingPeriod),
     },
   );
 
@@ -171,7 +169,9 @@ const CreateVestingPreview: FC<CreateVestingPreviewProps> = ({
           </Box>
         )}
       </Stack>
+
       <VestingTransactionButtonSection network={network} token={token} setView={setView} />
+
     </Stack>
   );
 };

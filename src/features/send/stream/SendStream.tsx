@@ -81,6 +81,7 @@ import {
 import { useSuperTokens } from "../../../hooks/useSuperTokens";
 import { SuperTokenMinimal, isWrappable } from "../../redux/endpoints/tokenTypes";
 import { useTokenQuery } from "../../../hooks/useTokenQuery";
+import { useWhitelist } from "../../../hooks/useWhitelist";
 
 // Minimum start and end date difference in seconds.
 export const SCHEDULE_START_END_MIN_DIFF_S = 15 * UnitOfTime.Minute;
@@ -656,23 +657,7 @@ export default memo(function SendStream() {
     return null;
   }, [activeFlow, scheduledStream]);
 
-  const { isPlatformWhitelisted_ } = platformApi.useIsAccountWhitelistedQuery(
-    visibleAddress
-      ? {
-        chainId: network.id,
-        account: visibleAddress?.toLowerCase(),
-      }
-      : skipToken,
-    {
-      selectFromResult: (queryResult) => ({
-        ...queryResult,
-        isPlatformWhitelisted_: !!queryResult.data,
-      }),
-    }
-  );
-  const isPlatformWhitelisted = Boolean(
-    isPlatformWhitelisted_ || network?.testnet
-  );
+  const { isPlatformWhitelisted, isWhitelistLoading } = useWhitelist({ accountAddress: visibleAddress, network });
 
   // TODO: Remove when The Platform is deployed to Base.
   const doesNetworkSupportScheduling = !!network.flowSchedulerContractAddress || network.id === networkDefinition.base.id;
