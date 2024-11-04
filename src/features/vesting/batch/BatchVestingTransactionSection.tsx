@@ -14,7 +14,6 @@ export type Props = {
     setView: (value: CreateVestingCardView) => void;
 }
 
-
 export function BatchVestingTransactionSection({
     setView,
 }: Props) {

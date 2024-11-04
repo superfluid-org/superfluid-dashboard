@@ -1,5 +1,4 @@
 import {
-  BaseQuery,
   BaseSuperTokenMutation,
   getFramework,
   registerNewTransaction,
@@ -10,15 +9,9 @@ import {
 import { convertVestingScheduleFromAmountAndDurationsToAbsolutes, VestingScheduleFromAmountAndDurationsParams } from "../../vesting/batch/VestingScheduleParams";
 import { getVestingScheduler } from "../../../eth-sdk/getEthSdk";
 import { Operation, SuperToken__factory } from "@superfluid-finance/sdk-core";
-import { getTxBuilderInputs_v2 } from "../../vesting/batch/gnosisSafe";
 import { allNetworks, findNetworkOrThrow } from "../../network/networks";
-import { SafeTxBuilderInput } from "../../vesting/batch/safeUtils";
 import { calculateRequiredAccessForActiveVestingSchedule } from "../../vesting/VestingSchedulesAllowancesTable/calculateRequiredAccessForActiveVestingSchedule";
 import { BigNumber } from "ethers";
-
-interface GetSafeTxBuilderJsons extends BaseQuery<string> {
-  params: VestingScheduleFromAmountAndDurationsParams[];
-}
 
 interface ExecuteBatchVesting extends BaseSuperTokenMutation {
   params: VestingScheduleFromAmountAndDurationsParams[];
@@ -26,18 +19,6 @@ interface ExecuteBatchVesting extends BaseSuperTokenMutation {
 
 export const batchVestingEndpoints = {
   endpoints: (builder: RpcEndpointBuilder) => ({
-    txBuilderInputs: builder.query<SafeTxBuilderInput[], GetSafeTxBuilderJsons>({
-      queryFn: async ({ params, chainId }) => {
-        const network = findNetworkOrThrow(allNetworks, chainId);
-        return ({
-          data: await getTxBuilderInputs_v2({
-            network,
-            schedules: params
-          })
-        });
-      },
-      keepUnusedDataFor: 180
-    }),
     executeBatchVesting: builder.mutation<TransactionInfo & {
       subTransactionTitles: TransactionTitle[];
       signerAddress: string;
