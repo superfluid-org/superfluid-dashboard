@@ -10,7 +10,6 @@ import NetworkIcon from "../../network/NetworkIcon";
 import { timeUnitWordMap } from "../../send/FlowRateInput";
 import TokenIcon from "../../token/TokenIcon";
 import { ValidBatchVestingForm } from "./BatchVestingFormProvider";
-import { calculateAdditionalDataFromValidVestingForm } from "../calculateAdditionalDataFromValidVestingForm";
 import { BigNumber } from "ethers";
 import { formatEther } from "ethers/lib/utils";
 import { convertPeriodToSeconds } from "./convertPeriod";
@@ -19,8 +18,8 @@ import { transactionButtonDefaultProps } from "../../transactionBoundary/Transac
 import JSZip from "jszip";
 import { getTxBuilderInputs_v2 } from "./gnosisSafe";
 import { convertBatchFormToParams } from "./convertBatchFormToParams";
-import { BatchVestingTransactionButton } from "../transactionButtons/BatchVestingTransactionButton";
 import { convertVestingScheduleFromAmountAndDurationsToAbsolutes } from "./VestingScheduleParams";
+import { BatchVestingTransactionSection } from "./BatchVestingTransactionSection";
 
 interface BatchVestingPreviewProps extends VestingTransactionSectionProps { }
 
@@ -31,7 +30,8 @@ const BatchVestingPreview: FC<BatchVestingPreviewProps> = ({
 }) => {
     const { watch } = useFormContext<ValidBatchVestingForm>();
 
-    const formData = watch("data");
+    const validForm = watch();
+    const formData = validForm.data;
     const { startDate, vestingPeriod, cliffPeriod, cliffEnabled, claimEnabled, schedules } = formData;
 
     const scheduleParams = useMemo(() => convertBatchFormToParams({
@@ -165,7 +165,7 @@ const BatchVestingPreview: FC<BatchVestingPreviewProps> = ({
 
 
             <Stack gap={1}>
-                <BatchVestingTransactionButton setView={setView} isVisible={true} />
+                <BatchVestingTransactionSection token={token} setView={setView} />
 
                 <Button {...transactionButtonDefaultProps} variant="outlined" onClick={async () => {
                     const zip = new JSZip();

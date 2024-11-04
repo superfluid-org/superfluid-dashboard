@@ -10,28 +10,27 @@ import { Stack, Step, StepLabel, Stepper } from "@mui/material";
 import useActiveAutoWrap from "../useActiveAutoWrap";
 import { SuperTokenMinimal } from "../../redux/endpoints/tokenTypes";
 
-export interface VestingTransactionSectionProps {
-  network: Network;
-  token: SuperTokenMinimal;
-  setView: (value: CreateVestingCardView) => void;
-}
-
 const autoWrapSteps = [
   { label: "Auto-Wrap" },
   { label: "Allowance" },
   { label: "Create" },
 ] as const;
 
+export interface VestingTransactionSectionProps {
+  network: Network;
+  token: SuperTokenMinimal;
+  setView: (value: CreateVestingCardView) => void;
+}
+
 export function VestingTransactionButtonSection({
   token,
   network,
   setView,
 }: VestingTransactionSectionProps) {
+  const { visibleAddress } = useVisibleAddress();
   const { watch } = useFormContext<ValidVestingForm>();
 
   const [setupAutoWrap] = watch(["data.setupAutoWrap"]);
-
-  const { visibleAddress } = useVisibleAddress();
 
   const {
     isAutoWrapLoading,
