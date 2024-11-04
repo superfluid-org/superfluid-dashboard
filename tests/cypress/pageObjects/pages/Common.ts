@@ -450,6 +450,7 @@ export class Common extends BasePage {
 
   static openNetworkSelectionDropdown() {
     this.click(NETWORK_SELECTION_BUTTON);
+    cy.wait(10000);
   }
 
   static closeDropdown() {
