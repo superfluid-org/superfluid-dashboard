@@ -1,5 +1,5 @@
 import { Box, Stack, Typography } from "@mui/material";
-import { FC, memo } from "react";
+import { FC, memo, useMemo } from "react";
 import { useFormContext } from "react-hook-form";
 import AddressName from "../../components/AddressName/AddressName";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
@@ -32,6 +32,7 @@ const CreateVestingPreview: FC<CreateVestingPreviewProps> = ({
     cliffAmountEther = "0",
     cliffPeriod,
     cliffEnabled,
+    claimEnabled,
   ] = watch([
     "data.receiverAddress",
     "data.totalAmountEther",
@@ -39,7 +40,8 @@ const CreateVestingPreview: FC<CreateVestingPreviewProps> = ({
     "data.vestingPeriod",
     "data.cliffAmountEther",
     "data.cliffPeriod",
-    "data.cliffEnabled"
+    "data.cliffEnabled",
+    "data.claimEnabled"
   ]);
 
   const cliffDate = cliffEnabled
@@ -57,6 +59,15 @@ const CreateVestingPreview: FC<CreateVestingPreviewProps> = ({
       seconds: convertPeriodToSeconds(vestingPeriod),
     },
   );
+
+  const claimingDates = useMemo(() => {
+    if (!claimEnabled) return undefined;
+
+    const claimingStartAt = cliffDate ? cliffDate : startDate;
+    const claimingEndAt = endDate;
+
+    return { claimingStartAt, claimingEndAt };
+  }, [claimEnabled, startDate, cliffDate, endDate]);
 
   return (
     <Stack gap={3}>
@@ -168,6 +179,30 @@ const CreateVestingPreview: FC<CreateVestingPreviewProps> = ({
             </Stack>
           </Box>
         )}
+
+        {
+          claimingDates && (
+            <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+              <Stack>
+                <Typography color="text.secondary">
+                  {VestingFormLabels.ClaimingStartAt}
+                </Typography>
+                <Typography data-cy={"claiming-start-at"}>
+                  {format(claimingDates.claimingStartAt, "LLLL d, yyyy")}
+                </Typography>
+              </Stack>
+
+              <Stack>
+                <Typography color="text.secondary">
+                  {VestingFormLabels.ClaimingEndAt}
+                </Typography>
+                <Typography data-cy="claiming-end-at" color="text.primary">
+                  {format(claimingDates.claimingEndAt, "LLLL d, yyyy")}
+                </Typography>
+              </Stack>
+            </Box>
+          )
+        }
       </Stack>
 
       <VestingTransactionButtonSection network={network} token={token} setView={setView} />

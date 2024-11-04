@@ -1,5 +1,5 @@
-import { Box, Button, FormGroup, FormHelperText, Stack, Tooltip, Typography, useTheme } from "@mui/material";
-import { FC, memo, useMemo, useRef, useState } from "react";
+import { Box, Button, FormGroup, FormHelperText, Stack, Typography, useTheme } from "@mui/material";
+import { FC, memo, useMemo } from "react";
 import { useFormContext } from "react-hook-form";
 import { add, format } from "date-fns";
 import { VestingTransactionSectionProps } from "../transactionButtons/VestingTransactionButtonSection";
@@ -70,6 +70,15 @@ const BatchVestingPreview: FC<BatchVestingPreviewProps> = ({
             seconds: convertPeriodToSeconds(vestingPeriod)
         },
     );
+
+    const claimingDates = useMemo(() => {
+        if (!claimEnabled) return undefined;
+
+        const claimingStartAt = cliffDate ? cliffDate : startDate;
+        const claimingEndAt = endDate;
+
+        return { claimingStartAt, claimingEndAt };
+    }, [claimEnabled, startDate, cliffDate, endDate]);
 
     return (
         <Stack gap={3}>
@@ -161,6 +170,30 @@ const BatchVestingPreview: FC<BatchVestingPreviewProps> = ({
                         </Stack>
                     </Box>
                 )}
+
+                {
+                    claimingDates && (
+                        <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+                            <Stack>
+                                <Typography color="text.secondary">
+                                    {VestingFormLabels.ClaimingStartAt}
+                                </Typography>
+                                <Typography data-cy={"claiming-start-at"}>
+                                    {format(claimingDates.claimingStartAt, "LLLL d, yyyy")}
+                                </Typography>
+                            </Stack>
+
+                            <Stack>
+                                <Typography color="text.secondary">
+                                    {VestingFormLabels.ClaimingEndAt}
+                                </Typography>
+                                <Typography data-cy="claiming-end-at" color="text.primary">
+                                    {format(claimingDates.claimingEndAt, "LLLL d, yyyy")}
+                                </Typography>
+                            </Stack>
+                        </Box>
+                    )
+                }
 
                 <BatchReceiversTable schedules={schedules} token={token} />
             </Stack>
