@@ -20,7 +20,7 @@ export function BatchVestingTransactionSection({
     const { network } = useExpectedNetwork();
     const { watch } = useFormContext<ValidBatchVestingForm>();
     const validForm = watch();
-    const chunkSize = network.testnet ? 2 : 98;
+    const chunkSize = network.testnet ? 5 : 98;
 
     const chunks = useMemo(() => chunkFormData(validForm, chunkSize), [validForm]);
     const hasChunks = chunks.length > 1;

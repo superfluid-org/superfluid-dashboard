@@ -73,7 +73,7 @@ export function BatchVestingTransactionButton({ setView, isVisible: isVisible_ =
                                 ...txAnalytics("Create Batch of Vesting Schedules", primaryArgs)
                             )
                             .then(() => setView(CreateVestingCardView.Success))
-                            .catch(console.error); // Error is already logged and handled in the middleware & UI.
+                            .catch(() => setView(CreateVestingCardView.Preview)); // Error is already logged and handled in the middleware & UI.
 
                         setDialogSuccessActions(
                             <TransactionDialogActions>

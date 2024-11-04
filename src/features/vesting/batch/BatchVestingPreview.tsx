@@ -1,4 +1,4 @@
-import { Box, Button, Stack, Typography } from "@mui/material";
+import { Box, Button, FormGroup, FormHelperText, Stack, Tooltip, Typography, useTheme } from "@mui/material";
 import { FC, memo, useMemo, useRef, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { add, format } from "date-fns";
@@ -20,6 +20,7 @@ import { getTxBuilderInputs_v2 } from "./gnosisSafe";
 import { convertBatchFormToParams } from "./convertBatchFormToParams";
 import { convertVestingScheduleFromAmountAndDurationsToAbsolutes } from "./VestingScheduleParams";
 import { BatchVestingTransactionSection } from "./BatchVestingTransactionSection";
+import Link from "../../common/Link";
 
 interface BatchVestingPreviewProps extends VestingTransactionSectionProps { }
 
@@ -29,6 +30,7 @@ const BatchVestingPreview: FC<BatchVestingPreviewProps> = ({
     setView,
 }) => {
     const { watch } = useFormContext<ValidBatchVestingForm>();
+    const theme = useTheme();
 
     const validForm = watch();
     const formData = validForm.data;
@@ -167,43 +169,49 @@ const BatchVestingPreview: FC<BatchVestingPreviewProps> = ({
             <Stack gap={1}>
                 <BatchVestingTransactionSection token={token} setView={setView} />
 
-                <Button {...transactionButtonDefaultProps} variant="outlined" onClick={async () => {
-                    const zip = new JSZip();
-                    const batchFolder = zip.folder("batch");
+                <FormGroup>
+                    <Button {...transactionButtonDefaultProps} variant="outlined" size="medium" onClick={async () => {
+                        const zip = new JSZip();
+                        const batchFolder = zip.folder("batch");
 
-                    const safeTxBuilderJSONs = await getTxBuilderInputs_v2({
-                        network,
-                        schedules: scheduleParams
-                    });
-
-                    safeTxBuilderJSONs?.forEach((safeTxBuilderJSON, i) => {
-                        const blob = new Blob([JSON.stringify(safeTxBuilderJSON)], {
-                            type: "application/json",
+                        const safeTxBuilderJSONs = await getTxBuilderInputs_v2({
+                            network,
+                            schedules: scheduleParams
                         });
 
-                        batchFolder?.file(`batch-${i}.json`, blob);
-                    });
+                        safeTxBuilderJSONs?.forEach((safeTxBuilderJSON, i) => {
+                            const blob = new Blob([JSON.stringify(safeTxBuilderJSON)], {
+                                type: "application/json",
+                            });
 
-                    const objectURL = URL.createObjectURL(
-                        (await batchFolder?.generateAsync({ type: "blob" })) as Blob
-                    );
+                            batchFolder?.file(`batch-${i}.json`, blob);
+                        });
 
-                    const a = document.createElement('a');
-                    a.href = objectURL;
-                    a.download = 'batch.zip'; // Set the file name
-                    document.body.appendChild(a);
-                    a.click();
+                        const objectURL = URL.createObjectURL(
+                            (await batchFolder?.generateAsync({ type: "blob" })) as Blob
+                        );
 
-                    // Clean up by revoking the object URL and removing the link
-                    URL.revokeObjectURL(objectURL);
-                    document.body.removeChild(a);
+                        const a = document.createElement('a');
+                        a.href = objectURL;
+                        a.download = 'batch.zip'; // Set the file name
+                        document.body.appendChild(a);
+                        a.click();
 
-                }}>
-                    Download Gnosis Safe TX
-                </Button>
+                        // Clean up by revoking the object URL and removing the link
+                        URL.revokeObjectURL(objectURL);
+                        document.body.removeChild(a);
+
+                    }}>
+                        Download Safe Transaction Builder JSON
+                    </Button>
+                    <FormHelperText sx={{ textAlign: "right" }}>
+                        <Link sx={{ color: theme.palette.info.main }} href="https://help.safe.global/en/articles/234052-transaction-builder" target="_blank">
+                            Transaction Builder docs
+                        </Link>
+                    </FormHelperText>
+                </FormGroup>
+
             </Stack>
-
-
         </Stack>
     );
 };
