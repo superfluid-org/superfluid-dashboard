@@ -4,7 +4,7 @@ import { CreateVestingCardView } from "../CreateVestingSection";
 import { ValidBatchVestingForm } from "./BatchVestingFormProvider";
 import { BatchVestingTransactionButton } from "../transactionButtons/BatchVestingTransactionButton";
 import { useCallback, useMemo, useState } from "react";
-import { StepLabel, Stepper } from "@mui/material";
+import { Alert, AlertTitle, StepLabel, Stepper } from "@mui/material";
 import { Stack } from "@mui/material";
 import { Step } from "@mui/material";
 import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
@@ -50,6 +50,9 @@ export function BatchVestingTransactionSection({
 
     return (
         <Stack spacing={3}>
+            <Alert severity="info">
+                Creation of the vesting schedules was divided into multiple transactions to prevent exceeding the transaction size limit.
+            </Alert>
             <Stepper activeStep={activeStep} orientation={showVerticalStepper ? "vertical" : "horizontal"} alternativeLabel={!showVerticalStepper}>
                 {chunks.map((_, index) => (
                     <Step key={index}>
