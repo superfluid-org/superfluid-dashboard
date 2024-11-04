@@ -62,7 +62,7 @@ export const BatchReceiversTable = memo(function ReceiversTable(props: {
                 <TableBody>
                     {schedulesPage.map((schedule, index) => (
                         <TableRow key={index}>
-                            <TableCell width="64px">{index + 1}</TableCell>
+                            <TableCell width="64px">{(page * rowsPerPage) + index + 1}</TableCell>
                             <TableCell>
                                 <Stack direction="row" alignItems="center" gap={1.5}>
                                     <AddressAvatar
