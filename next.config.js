@@ -72,7 +72,7 @@ const moduleExports = {
   // modularizeImports: // It's enabled automatically for many packages in use: https://nextjs.org/docs/app/api-reference/next-config-js/optimizePackageImports
   experimental: {
     forceSwcTransforms: !shouldInstrumentCode, // .babelrc.js existence is because of code instrumentation.
-    cpus: 6
+    cpus: isOnNetlify ? 6 : undefined // Fixes the issue of memory running out on Netlify (error 127)
   },
   eslint: {
     ignoreDuringBuilds: isOnNetlify,
