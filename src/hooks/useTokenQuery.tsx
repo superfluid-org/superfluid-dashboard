@@ -3,9 +3,10 @@ import { allNetworks, findNetworkOrThrow } from "../features/network/networks";
 import { subgraphApi } from "../features/redux/store";
 import { getSuperTokenType, getUnderlyingTokenType } from "../features/redux/endpoints/adHocSubgraphEndpoints";
 import { NATIVE_ASSET_ADDRESS, SuperTokenMinimal, SuperTokenPair, TokenMinimal, TokenType, UnderlyingTokenMinimal } from "../features/redux/endpoints/tokenTypes";
-import { extendedSuperTokenList, SuperTokenExtensions, TokenInfo } from "@superfluid-finance/tokenlist"
+import { SuperTokenExtensions, TokenInfo } from "@superfluid-finance/tokenlist"
 import { useMemo } from "react";
 import { memoize } from 'lodash';
+import { extendedSuperTokenList } from "../tokenlist";
 
 export const useTokenQuery = <T extends boolean = false>(input: {
     chainId: number;

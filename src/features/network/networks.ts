@@ -25,7 +25,7 @@ import {
 } from "./networkConstants";
 import { BigNumber, BigNumberish } from "ethers";
 import { UnitOfTime } from "../send/FlowRateInput";
-import { extendedSuperTokenList } from "@superfluid-finance/tokenlist";
+import { extendedSuperTokenList } from "../../tokenlist";
 
 const getMetadata = memoize((chainId: number) => {
   const metadata = sfMeta.getNetworkByChainId(chainId);
