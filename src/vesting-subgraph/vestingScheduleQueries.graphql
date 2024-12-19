@@ -28,6 +28,7 @@ fragment VestingSchedulePart on VestingSchedule {
   createdAt
   deletedAt
   startDate
+  claimedAt
   cliffDate
   cliffAndFlowExecutedAt
   cliffAndFlowExpirationAt

@@ -146,6 +146,7 @@ export interface VestingSchedule {
   earlyEndCompensation?: string;
   status: VestingStatus;
   claimValidityDate: number;
+  claimedAt?: number;
   remainderAmount: string;
   version: "v1" | "v2";
   transactionHash: string;
@@ -186,6 +187,9 @@ export const mapSubgraphVestingSchedule = (
     claimValidityDate: vestingSchedule.claimValidityDate
       ? Number(vestingSchedule.claimValidityDate)
       : 0,
+    claimedAt: vestingSchedule.claimedAt
+      ? Number(vestingSchedule.claimedAt)
+      : undefined,
     remainderAmount: vestingSchedule.remainderAmount
       ? vestingSchedule.remainderAmount
       : "0",
@@ -210,6 +214,7 @@ const getVestingStatus = (vestingSchedule: Omit<VestingSchedule, "status">) => {
     endExecutedAt,
     didEarlyEndCompensationFail,
     claimValidityDate,
+    claimedAt
   } = vestingSchedule;
   const nowInSeconds = dateNowSeconds();
   const cliffAndFlowDate = cliffDate ? cliffDate : startDate;
@@ -231,8 +236,10 @@ const getVestingStatus = (vestingSchedule: Omit<VestingSchedule, "status">) => {
   }
 
   if (endExecutedAt) {
-    if (endExecutedAt > endDate) {
-      return vestingStatuses.EndOverflowed;
+    if (claimedAt !== endExecutedAt) {
+      if (endExecutedAt > endDate) {
+        return vestingStatuses.EndOverflowed;
+      }
     }
 
     return vestingStatuses.EndExecuted;

@@ -132,7 +132,7 @@ export function mapVestingExpectedDataPoints(
     cliffDate,
     cliffAndFlowDate,
     flowRate,
-    cliffAmount,
+    cliffAmount
   } = vestingSchedule;
   const dates = getDatesBetween(
     fromUnixTime(startDate),
@@ -212,6 +212,7 @@ export function vestingScheduleToTokenBalance(
   const {
     flowRate,
     cliffAmount,
+    endDate,
     endExecutedAt,
     cliffAndFlowExecutedAt,
     cliffAndFlowDate,
@@ -219,12 +220,14 @@ export function vestingScheduleToTokenBalance(
     earlyEndCompensation,
     failedAt,
     deletedAt,
-    remainderAmount
+    remainderAmount,
+    claimedAt
   } = vestingSchedule;
 
   if (failedAt) return null;
 
-  const effectiveEndAt = endExecutedAt || deletedAt;
+  const wasClaimedAfterEndDate = (claimedAt ?? 0) > endDate;
+  const effectiveEndAt = (wasClaimedAfterEndDate ? endDate : undefined) || endExecutedAt || deletedAt;
   if (effectiveEndAt && effectiveEndAt > cliffAndFlowDate) {
     const secondsStreamed = effectiveEndAt - cliffAndFlowDate;
     const balance = BigNumber.from(secondsStreamed)
