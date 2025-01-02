@@ -589,13 +589,15 @@ export class WrapPage extends BasePage {
     network: string
   ) {
     cy.fixture('nativeTokenBalances').then((fixture) => {
+      let formattedToken = token === 'xDAI' ? token.toUpperCase() : token;
+
       let expectedString =
         fixture[account][network][token].underlyingBalance === '0'
           ? fixture[account][network][token].underlyingBalance
           : `~${fixture[account][network][token].underlyingBalance}`;
-      this.get(`[data-cy=${token}-list-item]`).scrollIntoView();
+      this.get(`[data-cy=${formattedToken}-list-item]`).scrollIntoView();
       this.hasText(
-        `[data-cy=${token}-list-item] ${TOKEN_BALANCE}`,
+        `[data-cy=${formattedToken}-list-item] ${TOKEN_BALANCE}`,
         expectedString
       );
     });

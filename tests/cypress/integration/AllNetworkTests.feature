@@ -11,22 +11,22 @@ Feature: Test cases that run indefinitely on all supported networks
     Then The native token "<token>" balance for "staticBalanceAccount" on "<network>" in the token list
 
     Examples:
-      | network | token |
-      # | avalanche-fuji | AVAX  |
-      | gnosis  | xDAI  |
+      | network        | token |
+      | avalanche-fuji | AVAX  |
+      | gnosis         | xDAI  |
+      | polygon        | POL   |
+      | optimism       | ETH   |
+      | arbitrum-one   | ETH   |
+      | avalanche      | AVAX  |
+      | bsc            | BNB   |
+      | celo           | CELO  |
+      | sepolia        | ETH   |
+      | base           | ETH   |
+      | scroll         | ETH   |
+      | scrsepolia     | ETH   |
+      | opsepolia      | ETH   |
+      | degen          | DEGEN |
 
-  # | polygon        | POL   |
-  # | optimism       | ETH   |
-  # | arbitrum-one   | ETH   |
-  # | avalanche      | AVAX  |
-  # | bsc            | BNB   |
-  # | celo           | CELO  |
-  # | sepolia        | ETH   |
-  # | base           | ETH   |
-  # | scroll         | ETH   |
-  # | scrsepolia     | ETH   |
-  # | opsepolia      | ETH   |
-  # | degen          | DEGEN |
   Scenario Outline: Superfluid RPCS are not behind on <network>
     Given Superfluid RPCs are not more then 10 minutes behind on <network>
 
