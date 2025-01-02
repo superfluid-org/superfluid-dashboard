@@ -3,7 +3,7 @@
     "TokenOne": "TDL",
     "TokenTwo": "USDC",
     "TokenThree": "WORK",
-    "TokenGas": "xDAI"
+    "TokenGas": "XDAI"
   },
   "polygon": {
     "TokenOne": "DAI",

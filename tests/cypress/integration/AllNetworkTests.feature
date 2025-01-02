@@ -13,7 +13,7 @@ Feature: Test cases that run indefinitely on all supported networks
     Examples:
       | network        | token |
       | avalanche-fuji | AVAX  |
-      | gnosis         | xDAI  |
+      | gnosis         | XDAI  |
       | polygon        | POL   |
       | optimism       | ETH   |
       | arbitrum-one   | ETH   |
