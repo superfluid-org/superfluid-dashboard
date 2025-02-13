@@ -48,7 +48,6 @@ import gasApi from "../gas/gasApi.slice";
 import { impersonationSlice } from "../impersonation/impersonation.slice";
 import { notificationsSlice } from "../notifications/notifications.slice";
 import { networkPreferencesSlice, NetworkPreferencesState } from "../network/networkPreferences.slice";
-import { pushApi } from "../notifications/pushApi.slice";
 import { pendingUpdateSlice } from "../pendingUpdates/pendingUpdate.slice";
 import appSettingsReducer from "../settings/appSettings.slice";
 import tokenPriceApi from "../tokenPrice/tokenPriceApi.slice";
@@ -265,7 +264,6 @@ export const reduxStore = configureStore({
     [accountingApi.reducerPath]: accountingApi.reducer,
     [vestingSubgraphApi.reducerPath]: vestingSubgraphApi.reducer,
     [autoWrapSubgraphApi.reducerPath]: autoWrapSubgraphApi.reducer,
-    [pushApi.reducerPath]: pushApi.reducer,
     [schedulingSubgraphApi.reducerPath]: schedulingSubgraphApi.reducer,
     [addressBookRpcApi.reducerPath]: addressBookRpcApi.reducer,
 
@@ -307,7 +305,6 @@ export const reduxStore = configureStore({
       .concat(faucetApi.middleware)
       .concat(tokenPriceApi.middleware)
       .concat(accountingApi.middleware)
-      .concat(pushApi.middleware)
       .concat(addressBookRpcApi.middleware),
 });
 

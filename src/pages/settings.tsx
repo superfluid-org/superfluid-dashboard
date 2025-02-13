@@ -25,7 +25,10 @@ const SettingsPage: NextPage = () => {
             Settings
           </Typography>
           <Stack direction="column" gap={"30px"}>
-            <NotificationSettings />
+            {/* 
+            // Notifications hidden until a source of notifications is added.
+            <NotificationSettings /> 
+            */}
             {visibleAddress && <TokenAccessTables />}
           </Stack>
         </>

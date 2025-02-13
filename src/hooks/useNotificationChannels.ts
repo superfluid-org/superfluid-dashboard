@@ -2,7 +2,6 @@ import { addDays, differenceInDays, isAfter } from "date-fns";
 import { useMemo } from "react";
 import { useArchivedNotifications } from "../features/notifications/notificationHooks";
 import { parseNotificationBody } from "../utils/notification";
-import { usePushProtocol } from "./usePushProtocol";
 
 export type NotificationChannelType = "PUSH";
 export type Notification = {
@@ -41,7 +40,7 @@ export type MessageData = {
 };
 
 export type UseNotificationChannels = () => {
-  channels: Record<NotificationChannelType, NotificationChannel>;
+  channels: Record<never, NotificationChannel>;
   notifications: {
     new: Notification[];
     archive: Notification[];
@@ -66,44 +65,42 @@ const isArchived = (
   archivedNotifications[id];
 
 export const useNotificationChannels: UseNotificationChannels = () => {
-  const {
-    toggleSubscribe: toggleSubscribePush,
-    subscription: pushSubscription,
-    notifications: pushNotifcations,
-  } = usePushProtocol();
-
   const archivedNotifications = useArchivedNotifications();
 
-  const push: NotificationChannel = useMemo(
-    () => ({
-      name: "Push Protocol",
-      channelType: "PUSH",
-      subscription: pushSubscription,
-      onToggle: toggleSubscribePush,
-      notifications: pushNotifcations.map(({ epoch, payload }) => ({
-        id: payload.data.sid,
-        title: payload.notification.title.replace("Superfluid - ", ""),
-        message: {
-          raw: payload.notification.body,
-          parsed: parseNotificationBody(payload.notification.body),
-        },
-        epoch: new Date(epoch),
-      })),
-    }),
-    [pushSubscription, toggleSubscribePush, pushNotifcations]
-  );
+  // NOTE: Commented out code left for reference when a new communication channel is added.
+
+  // const push: NotificationChannel = useMemo(
+  //   () => ({
+  //     name: "Push Protocol",
+  //     channelType: "PUSH",
+  //     subscription: pushSubscription,
+  //     onToggle: toggleSubscribePush,
+  //     notifications: pushNotifcations.map(({ epoch, payload }) => ({
+  //       id: payload.data.sid,
+  //       title: payload.notification.title.replace("Superfluid - ", ""),
+  //       message: {
+  //         raw: payload.notification.body,
+  //         parsed: parseNotificationBody(payload.notification.body),
+  //       },
+  //       epoch: new Date(epoch),
+  //     })),
+  //   }),
+  //   [pushSubscription, toggleSubscribePush, pushNotifcations]
+  // );
 
   return {
     channels: {
-      [push.channelType]: push,
+      // [push.channelType]: push,
     },
     notifications: {
-      new: push.notifications.filter(
-        (n) => !isArchived(n, archivedNotifications)
-      ),
-      archive: push.notifications.filter((n) =>
-        isArchived(n, archivedNotifications)
-      ),
+      new: [], 
+      // push.notifications.filter(
+      //   (n) => !isArchived(n, archivedNotifications)
+      // ),
+      archive: []
+      // push.notifications.filter((n) =>
+      //   isArchived(n, archivedNotifications)
+      // ),
     },
   };
 };

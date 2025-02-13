@@ -41,6 +41,8 @@ const NotificationSettings: FC = () => {
               Notifications
             </Typography>
 
+            {/* 
+            
             <LoadingButton
               disabled={isImpersonated}
               data-cy={"notification-button"}
@@ -50,7 +52,7 @@ const NotificationSettings: FC = () => {
             >
               {channels.PUSH.subscription.isSubscribed ? "Disable" : "Enable"}{" "}
               Notifications
-            </LoadingButton>
+            </LoadingButton> */}
           </Stack>
 
           <Typography variant="body1" color="secondary">

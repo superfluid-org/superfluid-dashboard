@@ -125,7 +125,10 @@ export default memo(function TopBar() {
             onChange={onNetworkChange}
             placeholder={"Select Network"}
           />
-          <NotificationsBell />
+          {/* 
+            // Notifications hidden until a source of notifications is added.
+          <NotificationsBell /> 
+          */}
           <TransactionBell />
         </Stack>
       </Stack>
