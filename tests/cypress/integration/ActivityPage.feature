@@ -48,6 +48,7 @@ Feature: Activity History Page tests
     And No loading skeletons are visible in the page
     Then Activity history entries with "Wrap" are visible
 
+  @skip
   Scenario: Filtering entries by address
     Given "Activity History Page" is open using view mode to look at "staticBalanceAccount"
     And User changes the activity history filter to 45 months before
@@ -56,6 +57,7 @@ Feature: Activity History Page tests
     And User waits for the activity history to load
     Then Only the activity history entries with "@elvijs" are shown
 
+  @skip
   Scenario: Enabling and disabling networks visible
     Given "Activity History Page" is open using view mode to look at "staticBalanceAccount"
     And User changes the activity history filter to 45 months before

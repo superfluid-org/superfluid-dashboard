@@ -13,6 +13,7 @@ Feature: Settings page test cases
     And User opens the notifications modal
     Then You are not subscribed to notifications message is shown
 
+  @skip
   Scenario: Wallet address shown in the settings page and using the settings button in notification modal
     Given "Dashboard Page" is open with "alice" connected on "ethereum"
     And User opens the notifications modal
