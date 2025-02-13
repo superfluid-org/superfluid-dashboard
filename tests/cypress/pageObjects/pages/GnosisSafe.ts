@@ -118,7 +118,10 @@ export class GnosisSafe extends BasePage {
 
   static addCustomSuperfluidApp() {
     cy.get(GNOSIS_BUTTONS).contains('Add custom Safe App').click();
-    this.type(CUSTOM_APP_URL_FIELD, Cypress.config('baseUrl'));
+    this.type(
+      CUSTOM_APP_URL_FIELD,
+      'https://deploy-preview-773--superfluid-dashboard.netlify.app/'
+    );
   }
 
   static validateSuperfluidManifestAndAddApp() {
