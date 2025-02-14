@@ -5,13 +5,23 @@
 
 const { withSentryConfig } = require("@sentry/nextjs");
 
-const SENTRY_ENVIRONMENT =
+const sentryEnvironment =
   process.env.SENTRY_ENVIRONMENT || process.env.CONTEXT;
 
 const netlifyContext = process.env.CONTEXT;
 const isOnNetlify = !!netlifyContext;
+const interfaceFeeAddress = process.env.INTERFACE_FEE_ADDRESS;
+const shouldInstrumentCode = "INSTRUMENT_CODE" in process.env;
 
 function withSentryIfNecessary(nextConfig) {
+  console.log({
+    sentryEnvironment,
+    netlifyContext,
+    isOnNetlify,
+    interfaceFeeAddress,
+    shouldInstrumentCode
+  });
+
   const SENTRY_AUTH_TOKEN = process.env.SENTRY_AUTH_TOKEN;
 
   if (!SENTRY_AUTH_TOKEN) {
@@ -30,15 +40,13 @@ function withSentryIfNecessary(nextConfig) {
     // recommended:
     //   release, url, org, project, authToken, configFile, stripPrefix,
     //   urlPrefix, include, ignore
-    env: SENTRY_ENVIRONMENT,
+    env: sentryEnvironment,
     silent: true, // Suppresses all logs
     // For all available options, see:
     // https://github.com/getsentry/sentry-webpack-plugin#options.
     hideSourceMaps: true, // If this not specified as `true` then Sentry will expose the production source maps. We've decided to expose the source maps though.
   });
 }
-
-const shouldInstrumentCode = "INSTRUMENT_CODE" in process.env;
 
 /** @type {import('next').NextConfig} */
 const moduleExports = {
@@ -63,7 +71,7 @@ const moduleExports = {
   },
   env: {
     NEXT_PUBLIC_APP_URL: process.env.URL,
-    NEXT_PUBLIC_SENTRY_ENVIRONMENT: SENTRY_ENVIRONMENT,
+    NEXT_PUBLIC_SENTRY_ENVIRONMENT: sentryEnvironment,
     NEXT_PUBLIC_NETLIFY_CONTEXT: process.env.CONTEXT, // https://docs.netlify.com/configure-builds/environment-variables/#build-metadata
   },
   productionBrowserSourceMaps: false, // NOTE: If this is set to `false` then be careful -- Sentry might still override this to `true`...

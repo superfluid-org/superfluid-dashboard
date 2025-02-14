@@ -422,7 +422,7 @@ export const StreamingPreview: FC<StreamingPreviewProps> = ({
             label="Interface fee"
             TypographyProps={{ variant: "body2mono" }}
           >
-            <Amount wei={network.superfluidBaseFeeInNativeCurrency}> {network.nativeCurrency.symbol}</Amount>
+            <Amount wei={network.interfaceBaseFeeInNativeCurrency}> {network.nativeCurrency.symbol}</Amount>
           </PreviewItem>
         )}
       </Stack>
