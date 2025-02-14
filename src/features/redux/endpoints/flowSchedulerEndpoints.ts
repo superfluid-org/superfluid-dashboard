@@ -20,7 +20,7 @@ import {
 } from "../../network/networks";
 import { UnitOfTime } from "../../send/FlowRateInput";
 import { rpcApi } from "../store";
-import { interfaceFeeAddress } from "../../fees";
+import { interfaceFeeAddress } from "../../interfaceFees";
 
 export const ACL_CREATE_PERMISSION = 1;
 export const ACL_UPDATE_PERMISSION = 2;

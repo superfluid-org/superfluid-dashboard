@@ -26,7 +26,7 @@ import {
 import { BigNumber, BigNumberish } from "ethers";
 import { UnitOfTime } from "../send/FlowRateInput";
 import { extendedSuperTokenList } from "../../tokenlist";
-import { interfaceBaseFeeInNativeCurrency } from "../fees";
+import { interfaceBaseFeeInNativeCurrency } from "../interfaceFees";
 
 const getMetadata = memoize((chainId: number) => {
   const metadata = sfMeta.getNetworkByChainId(chainId);
