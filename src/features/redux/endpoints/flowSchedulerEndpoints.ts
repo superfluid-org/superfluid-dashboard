@@ -278,7 +278,7 @@ export const flowSchedulerEndpoints = {
           // Add fee as the first operation.
           subOperations.unshift({
             operation: feeOperation,
-            title: "Fee"
+            title: "Interface Fee"
           });
 
           if (!shouldScheduleStart) {
