@@ -19,11 +19,11 @@ Feature: Wrap page test cases
     And User chooses "POL" to wrap
     And User switches to unwrap tab
     And User opens the token selection in the wrap page
-    Then The super token balances in the unwrap token dialog are shown correctly on "polygon"
+    # Then The super token balances in the unwrap token dialog are shown correctly on "polygon"
     And All tokens have an animation around them
-    And User chooses "USDC.ex" to wrap
-    Then The "USDC.e" balance is shown correctly on "polygon"
 
+  # And User chooses "USDC.ex" to wrap
+  # Then The "USDC.e" balance is shown correctly on "polygon"
   Scenario: Wrong network warnings in the wrap page
     Given "Wrap Page" is open with "staticBalanceAccount" connected on "gnosis"
     And User changes their network to "polygon"

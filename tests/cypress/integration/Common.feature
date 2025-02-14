@@ -101,6 +101,7 @@ Feature: Common element test cases
   #     And User opens the navigation more menu
   #     And User opens the faucet view from the navigation menu
   #     Then The claim token is disabled and shows Tokens claimed message
+  # Notifications are hidden
   @skip
   Scenario: No new notifications message
     Given "Settings Page" is open with "dan" connected on "ethereum"

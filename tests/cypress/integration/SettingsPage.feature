@@ -1,6 +1,6 @@
 Feature: Settings page test cases
 
-  #Sadly mockBridge does not work with signatures
+  # Sadly mockBridge does not work with signatures
   @skip
   Scenario: Enabling and disabling notifications
     Given "Settings Page" is open with "john" connected on "ethereum"
