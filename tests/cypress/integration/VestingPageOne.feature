@@ -135,17 +135,21 @@ Feature: Vesting page first batch of test cases
     And User deletes the vesting schedule
     And Transaction rejected error is shown
 
-  #Button does not change after update of web3 modal , not a bug
-  @skip
+  # Button does not change after update of web3 modal, not a bug
   Scenario: Change network button showing up if user is not on opsepolia
     Given Transactional account john is connected to the dashboard on opsepolia
     And User clicks on the "vesting" navigation button
     And User opens the last vesting schedule they have created
     And Delete vesting schedule button is visible
     And User changes their network to "polygon"
-    And Delete vesting schedule button is not visible
-    And Change network button is visible in the vesting preview
-    And User clicks on the change network button
+    # And Delete vesting schedule button is not visible
+    # And Change network button is visible in the vesting preview
+    # And User clicks on the change network button
+    # And Delete vesting schedule button is visible
+    And Delete vesting schedule button is visible
+    And The navigation drawer shows that "john" is "Wrong network"
+    And User changes their network to "opsepolia"
+    And The navigation drawer shows that "john" is "Connected"
     And Delete vesting schedule button is visible
 
   Scenario: Sent vesting schedules details

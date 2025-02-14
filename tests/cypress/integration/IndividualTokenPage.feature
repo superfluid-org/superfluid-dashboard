@@ -69,7 +69,7 @@ Feature: Token page test cases
     And User opens the transfers tab
     Then No data row is shown
 
-  #Works locally, leads to dashboard page on netlify builds
+  # Works locally, leads to dashboard page on netlify builds
   @skip
   Scenario: Invalid token page leading to a 404 page
     Given "404 Token Page" is open without connecting a wallet
