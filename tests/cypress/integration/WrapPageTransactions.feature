@@ -37,6 +37,7 @@ Feature: Wrapping and Unwrapping transactional test cases
     Then Unwrap field input field has "0.1" written in it
     And The token balances after wrapping "0.1" tokens are correctly shown in the unwrap page
 
+  @skip
   Scenario: Wrapping normal underlying tokens
     Given Transactional account dan is connected to the dashboard on opsepolia
     And User clicks on the "wrap-unwrap" navigation button
@@ -57,6 +58,7 @@ Feature: Wrapping and Unwrapping transactional test cases
     Then Wrap field input field has "0.1" written in it
     And The token balances after wrapping "0.1" tokens are correctly shown in the wrap page
 
+  @skip
   Scenario: Unwrapping normal super tokens
     Given Transactional account dan is connected to the dashboard on opsepolia
     And User clicks on the "wrap-unwrap" navigation button

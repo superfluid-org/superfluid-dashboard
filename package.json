@@ -38,7 +38,6 @@
     "@mui/utils": "^5.16.6",
     "@mui/x-data-grid": "^5.17.26",
     "@mui/x-date-pickers": "^5.0.20",
-    "@pushprotocol/restapi": "^1.7.29",
     "@reduxjs/toolkit": "1.9.2",
     "@segment/analytics-next": "^1.76.0",
     "@sentry/browser": "^8.38.0",

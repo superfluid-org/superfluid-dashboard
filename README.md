@@ -12,7 +12,7 @@ The Superfluid Dashboard is the primary user-facing window into the Superfluid p
 
 It allows users to send and receive streaming payments as well as see their various flows visualised. </br>
 It provides a jumping-off point for users in the Superfluid ecosystem to access value-add products. </br>
-It teaches end-users and developers the fundamental principles of streaming
+It teaches end-users and developers the fundamental principles of streaming 
 
 This repository implements the Superfluid Dashboard v2 as a Next.js web app built on Superfluid's SDK-CORE and SDK-REDUX. 
 

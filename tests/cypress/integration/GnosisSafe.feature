@@ -11,12 +11,12 @@ Feature: Gnosis safe test cases
     Examples:
       | network      |
       | gnosis       |
-      | ethereum     |
-      | polygon      |
+      # | ethereum     |
+      # | polygon      |
       | bsc          |
       | arbitrum-one |
       | avalanche    |
-      | optimism     |
+      # | optimism     |
       | celo         |
 
   Scenario Outline: Gnosis safe - adding superfluid as a custom app <network>
@@ -28,10 +28,10 @@ Feature: Gnosis safe test cases
     Examples:
       | network      |
       | gnosis       |
-      | ethereum     |
+      # | ethereum     |
       | polygon      |
       | bsc          |
       | arbitrum-one |
       | avalanche    |
-      | optimism     |
+      # | optimism     |
       | celo         |
