@@ -418,8 +418,8 @@ export const StreamingPreview: FC<StreamingPreviewProps> = ({
 
         {isStreamCreated && (
           <PreviewItem
-            dataCy="preview-fee"
-            label="Stream creation fee"
+            dataCy="preview-interface-fee"
+            label="Interface fee"
             TypographyProps={{ variant: "body2mono" }}
           >
             <Amount wei={network.superfluidBaseFeeInNativeCurrency}> {network.nativeCurrency.symbol}</Amount>
