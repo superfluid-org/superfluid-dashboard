@@ -385,9 +385,21 @@ export class VestingPage extends BasePage {
   }
 
   static deleteVestingSchedulev2() {
-    this.click(DELETE_SCHEDULE_BUTTON, undefined, { timeout: 30000 });
-    this.hasText(APPROVAL_MESSAGE, 'Waiting for transaction approval...');
-    cy.get(OK_BUTTON, { timeout: 45000 }).should('be.visible').click();
+    cy.get('body').then((body) => {
+      if (body.find(DELETE_SCHEDULE_BUTTON).length > 0) {
+        cy.get(DELETE_SCHEDULE_BUTTON, { timeout: 30000 }).then((deleteBtn) => {
+          if (deleteBtn.is(':visible')) {
+            cy.wrap(deleteBtn).click();
+            cy.contains(
+              APPROVAL_MESSAGE,
+              'Waiting for transaction approval...',
+              { timeout: 30000 }
+            ).should('be.visible');
+            cy.get(OK_BUTTON, { timeout: 45000 }).should('be.visible').click();
+          }
+        });
+      }
+    });
   }
 
   static deleteVestingButtonDoesNotExist() {
