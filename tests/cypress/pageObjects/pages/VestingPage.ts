@@ -257,14 +257,6 @@ export class VestingPage extends BasePage {
     // WrapPage.validatePendingTransaction("Create Vesting Schedule" , "avalanche-fuji")
   }
 
-  static createNewVestingSchedulev2() {
-    SendPage.overrideNextGasPrice();
-    this.click(CREATE_SCHEDULE_TX_BUTTON);
-    this.hasText(APPROVAL_MESSAGE, 'Waiting for transaction approval...');
-    cy.get(OK_BUTTON, { timeout: 45000 }).should('be.visible').click();
-    this.click(TX_DRAWER_BUTTON);
-  }
-
   static validateFormError(error: string) {
     this.hasText(FORM_ERROR, error, 0);
     this.isDisabled(PREVIEW_SCHEDULE_BUTTON);
@@ -346,6 +338,21 @@ export class VestingPage extends BasePage {
     );
   }
 
+  static validateVestingSchedulePreviewv2() {
+    this.hasText(PREVIEW_RECEIVER, '@elvijs');
+    this.validateSchedulePreviewDetails(cliffDate, startDate, endDate);
+    this.hasText(PREVIEW_TOTAL_AMOUNT, '2 fTUSDx');
+    this.hasText(PREVIEW_CLIFF_AMOUNT, '1 fTUSDx');
+    this.containsText(
+      PREVIEW_CLIFF_PERIOD,
+      `1 year (${format(cliffDate, 'LLLL d, yyyy')})`
+    );
+    this.containsText(
+      PREVIEW_TOTAL_PERIOD,
+      `2 year (${format(endDate, 'LLLL d, yyyy')})`
+    );
+  }
+
   static validateNewlyCreatedSchedule() {
     cy.get(TABLE_RECEIVER_SENDER).last().should('have.text', 'vijay.eth');
     this.hasText(TABLE_ALLOCATED_AMOUNT, '2 fTUSDx', 0);
@@ -382,24 +389,6 @@ export class VestingPage extends BasePage {
 
   static deleteVestingSchedule() {
     this.click(DELETE_SCHEDULE_BUTTON, undefined, { timeout: 30000 });
-  }
-
-  static deleteVestingSchedulev2() {
-    cy.get('body').then((body) => {
-      if (body.find(DELETE_SCHEDULE_BUTTON).length > 0) {
-        cy.get(DELETE_SCHEDULE_BUTTON, { timeout: 30000 }).then((deleteBtn) => {
-          if (deleteBtn.is(':visible')) {
-            cy.wrap(deleteBtn).click();
-            cy.contains(
-              APPROVAL_MESSAGE,
-              'Waiting for transaction approval...',
-              { timeout: 30000 }
-            ).should('be.visible');
-            cy.get(OK_BUTTON, { timeout: 45000 }).should('be.visible').click();
-          }
-        });
-      }
-    });
   }
 
   static deleteVestingButtonDoesNotExist() {
