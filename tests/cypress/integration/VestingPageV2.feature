@@ -15,12 +15,6 @@ Feature: Vesting page require receiver to claim test cases
     And The restore button is not visible for the last transaction
     And The newly created vesting schedule is visible in the table
 
-  Scenario: Deleting a vesting schedule
-    Given Transactional account dan is connected to the dashboard on opsepolia
-    And User clicks on the "vesting" navigation button
-    And User opens the last vesting schedule they have created
-    And User deletes the vesting schedule v2
-
   Scenario: Creation form - Top up the vesting schedule
     Given Transactional account dan is connected to the dashboard on opsepolia
     And User clicks on the "vesting" navigation button
@@ -36,3 +30,9 @@ Feature: Vesting page require receiver to claim test cases
     And User inputs "3" as the total vested amount
     And User inputs "4" "year" as the total vesting period
     Then "Don’t forget to top up for the vesting schedule!Remember to top up your Super Token balance in time for the cliff amount and vesting stream." error is shown in the form
+
+  Scenario: Deleting a vesting schedule
+    Given Transactional account dan is connected to the dashboard on opsepolia
+    And User clicks on the "vesting" navigation button
+    And User opens the last vesting schedule they have created
+    And User deletes the vesting schedule v2
