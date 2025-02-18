@@ -1,0 +1,91 @@
+{
+    "$schema": "https://openapi.vercel.sh/vercel.json",
+    "redirects": [
+      {
+        "source": "/streams/:v1Network/:tx/:log/:rest*",
+        "destination": "/streams/:v1Network/:tx/:log/:rest.html",
+        "statusCode": 200
+      },
+      {
+        "source": "/stream/:network/:stream",
+        "destination": "/stream/:network/:stream.html",
+        "statusCode": 200
+      },
+      {
+        "source": "/token/:network/:token",
+        "destination": "/token/:network/:token.html",
+        "statusCode": 200
+      },
+      {
+        "source": "/vesting/:network/:id",
+        "destination": "/vesting/:network/:id.html",
+        "statusCode": 200
+      },
+      {
+        "source": "/dashboard",
+        "destination": "/",
+        "statusCode": 301
+      },
+      {
+        "source": "/currencies",
+        "destination": "/",
+        "statusCode": 301
+      },
+      {
+        "source": "/transactions",
+        "destination": "/",
+        "statusCode": 301
+      },
+      {
+        "source": "/distribution",
+        "destination": "/",
+        "statusCode": 301
+      },
+      {
+        "source": "/activities",
+        "destination": "/",
+        "statusCode": 301
+      },
+      {
+        "source": "/settings",
+        "destination": "/",
+        "statusCode": 301
+      },
+      {
+        "source": "/GT-Walsheim-Pro-Medium.otf",
+        "destination": "/fonts/GT-Walsheim-Pro-Medium.otf",
+        "statusCode": 301
+      },
+      {
+        "source": "/GT-Walsheim-Pro-Regular.otf",
+        "destination": "/fonts/GT-Walsheim-Pro-Regular.otf",
+        "statusCode": 301
+      },
+      {
+        "source": "/static/:splat*",
+        "destination": "https://v1.superfluid.finance/static/:splat",
+        "statusCode": 301
+      },
+      {
+        "source": "/runner",
+        "destination": "/superfluid-runner",
+        "statusCode": 301
+      },
+      {
+        "source": "/ecosystem",
+        "destination": "https://www.superfluid.finance/ecosystem",
+        "statusCode": 301
+      }
+    ],
+    "headers": [
+      {
+        "source": "/manifest.json",
+        "headers": [
+          {
+            "key": "Access-Control-Allow-Origin",
+            "value": "*"
+          }
+        ]
+      }
+    ]
+  }
