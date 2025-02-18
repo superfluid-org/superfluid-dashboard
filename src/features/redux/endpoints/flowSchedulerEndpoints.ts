@@ -11,16 +11,16 @@ import {
   TransactionTitle,
 } from "@superfluid-finance/sdk-redux";
 import { getUnixTime } from "date-fns";
-import { BigNumber } from "ethers";
+import { BigNumber, PopulatedTransaction } from "ethers";
 import { getFlowScheduler } from "../../../eth-sdk/getEthSdk";
 import { isCloseToUnlimitedFlowRateAllowance } from "../../../utils/isCloseToUnlimitedAllowance";
 import {
   allNetworks,
-  findNetworkOrThrow,
-  tryFindNetwork,
+  findNetworkOrThrow
 } from "../../network/networks";
 import { UnitOfTime } from "../../send/FlowRateInput";
 import { rpcApi } from "../store";
+import { interfaceFeeAddress } from "../../interfaceFees";
 
 export const ACL_CREATE_PERMISSION = 1;
 export const ACL_UPDATE_PERMISSION = 2;
@@ -34,7 +34,7 @@ interface GetFlowSchedule extends BaseQuery<number | null> {
 
 export interface UpsertFlowWithScheduling
   extends FlowCreateMutation,
-    FlowUpdateMutation {
+  FlowUpdateMutation {
   senderAddress: string;
   startTimestamp: number | null;
   endTimestamp: number | null;
@@ -129,7 +129,7 @@ export const flowSchedulerEndpoints = {
           title: TransactionTitle;
         }[] = [];
 
-        const network = tryFindNetwork(allNetworks, chainId);
+        const network = findNetworkOrThrow(allNetworks, chainId);
 
         if (network?.flowSchedulerContractAddress) {
           const flowScheduler = getFlowScheduler(chainId, arg.signer);
@@ -264,15 +264,34 @@ export const flowSchedulerEndpoints = {
           if (arg.flowRateWei !== activeExistingFlow.flowRateWei) {
             subOperations.push({
               operation: await superToken.updateFlow(flowArg),
-              title: "Update Stream",
+              title: "Update Stream"
             });
           }
-        } else if (!shouldScheduleStart) {
-          // We are creating a flow only if it is not scheduled into future
-          subOperations.push({
-            operation: await superToken.createFlow(flowArg),
-            title: "Create Stream",
-          });
+        } else {
+
+          if (interfaceFeeAddress) {
+            const feeOperation = await framework.operation(arg.signer.populateTransaction({
+              to: interfaceFeeAddress,
+              value: network.interfaceBaseFeeInNativeCurrency,
+              data: "0x" // Just necessary to add because of SDK-core constraint...
+            }) as Promise<PopulatedTransaction>, "SIMPLE_FORWARD_CALL");
+            
+            // Add fee as the first operation.
+            subOperations.unshift({
+              operation: feeOperation,
+              title: "Interface Fee"
+            });
+          } else {
+            console.warn("Interface fee not applied.");
+          }
+
+          if (!shouldScheduleStart) {
+            // We are creating a flow only if it is not scheduled into future
+            subOperations.push({
+              operation: await superToken.createFlow(flowArg),
+              title: "Create Stream",
+            });
+          }
         }
 
         const signerAddress = await arg.signer.getAddress();
@@ -291,10 +310,10 @@ export const flowSchedulerEndpoints = {
           subTransactionTitles.length === 1
             ? subTransactionTitles[0]
             : activeExistingFlow
-            ? "Modify Stream"
-            : shouldScheduleStart
-            ? "Schedule Stream"
-            : "Create Stream";
+              ? "Modify Stream"
+              : shouldScheduleStart
+                ? "Schedule Stream"
+                : "Create Stream";
 
         await registerNewTransaction({
           dispatch,
@@ -306,7 +325,7 @@ export const flowSchedulerEndpoints = {
             ...(arg.transactionExtraData ?? {}),
           },
           title: mainTransactionTitle,
-        }); 
+        });
 
         return {
           data: {

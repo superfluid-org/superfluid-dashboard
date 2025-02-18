@@ -14,7 +14,7 @@ Feature: Stream transactional test cases
     And The restore button is visible for the last transaction
     And The first row in the table shows "@elvijs" "receiving" an "ongoing" stream of "1" token per month since "now"
     # And The first stream row in the table shows "Sending" pending transaction status
-    And The transaction drawer shows a succeeded "Send Stream" transaction on "opsepolia"
+    And The transaction drawer shows a succeeded "Send StreamInterface FeeSend Stream" transaction on "opsepolia"
     And The restore button is visible for the last transaction
     # And The first stream row in the table shows "Syncing" pending transaction status
     And The first row does not have a pending transaction status

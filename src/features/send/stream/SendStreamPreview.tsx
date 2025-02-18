@@ -49,6 +49,7 @@ import {
   ActiveStreamIcon,
   ScheduledStreamIcon,
 } from "../../streamsTable/StreamIcons";
+import { BigNumber } from "ethers";
 
 interface PreviewItemProps {
   label: string | ReactNode;
@@ -252,6 +253,8 @@ export const StreamingPreview: FC<StreamingPreviewProps> = ({
     [newDateWhenBalanceCritical]
   );
 
+  const isStreamCreated = BigNumber.from(existingFlowRate?.flowRate ?? "0").isZero();
+
   return (
     <Alert
       icon={false}
@@ -410,6 +413,16 @@ export const StreamingPreview: FC<StreamingPreviewProps> = ({
                 newDateWhenBalanceCritical,
                 "p"
               )}`}
+          </PreviewItem>
+        )}
+
+        {isStreamCreated && (
+          <PreviewItem
+            dataCy="preview-interface-fee"
+            label="Interface fee"
+            TypographyProps={{ variant: "body2mono" }}
+          >
+            <Amount wei={network.interfaceBaseFeeInNativeCurrency}> {network.nativeCurrency.symbol}</Amount>
           </PreviewItem>
         )}
       </Stack>
