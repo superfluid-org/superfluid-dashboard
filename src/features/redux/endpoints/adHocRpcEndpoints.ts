@@ -53,6 +53,7 @@ declare module "@superfluid-finance/sdk-redux" {
     "Disable Auto-Wrap": true;
     "Connect to Pool": true;
     "Disconnect from Pool": true;
+    "Interface Fee": true;
   }
 }
 
