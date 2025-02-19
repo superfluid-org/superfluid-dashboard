@@ -9,26 +9,26 @@ jobs:
     if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    outputs:
-      netlify_url: ${{ steps.waitForDeployment.outputs.url }}
+    # outputs:
+    #   netlify_url: ${{ steps.waitForDeployment.outputs.url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
-      - name: Wait for Netlify
-        uses: quantizor/wait-for-netlify-action@3.2.0 # Check the source code before updating version because it uses personal Netlify access token which does not have granular access control.
-        id: waitForDeployment
-        with:
-          site_id: "aa82cf1e-ce5d-432f-99bf-77a0b8c13277"
-        env:
-          NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
+      # - name: Wait for Netlify
+      #   uses: quantizor/wait-for-netlify-action@3.2.0 # Check the source code before updating version because it uses personal Netlify access token which does not have granular access control.
+      #   id: waitForDeployment
+      #   with:
+      #     site_id: "aa82cf1e-ce5d-432f-99bf-77a0b8c13277"
+      #   env:
+      #     NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
 
   ui-tests:
     timeout-minutes: 60
     needs: ["test_setup"]
-    if: ${{ !github.event.pull_request.draft }}
+    if: (!github.event.pull_request.draft && github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success' && github.event.deployment_status.environment == 'Preview')
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -97,12 +97,13 @@ jobs:
           command: pnpm cypress-cloud run --record --parallel --key ${{ secrets.V2_CYPRESS_RECORD_KEY }} --group UI --ci-build-id ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt}} --env TAGS="not @ignoreDuringUI",STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }},TX_ACCOUNT_PRIVATE_KEY1=${{ secrets.TX_ACCOUNT_PRIVATE_KEY1 }},TX_ACCOUNT_PRIVATE_KEY2=${{ secrets.TX_ACCOUNT_PRIVATE_KEY2 }},TX_ACCOUNT_PRIVATE_KEY3=${{ secrets.TX_ACCOUNT_PRIVATE_KEY3 }},TX_ACCOUNT_PRIVATE_KEY4=${{ secrets.TX_ACCOUNT_PRIVATE_KEY4 }}
           working-directory: tests
         env:
-          CYPRESS_baseUrl: ${{ needs.test_setup.outputs.netlify_url }}
+          CYPRESS_baseUrl: ${{ github.event.deployment_status.environment_url }}
 
   rejected-tests:
     timeout-minutes: 45
     needs: ["test_setup"]
-    if: ${{ !github.event.pull_request.draft }}
+    if: (!github.event.pull_request.draft && github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success' && github.event.deployment_status.environment == 'Preview')
+
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -162,12 +163,12 @@ jobs:
           command: pnpm cypress-cloud run --record --parallel --key ${{ secrets.V2_CYPRESS_RECORD_KEY }} --group rejected-${{ matrix.network }} --ci-build-id ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt}} --env network=${{ matrix.network }},TAGS=@rejected,STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }},TX_ACCOUNT_PRIVATE_KEY1=${{ secrets.TX_ACCOUNT_PRIVATE_KEY1 }},TX_ACCOUNT_PRIVATE_KEY2=${{ secrets.TX_ACCOUNT_PRIVATE_KEY2 }},TX_ACCOUNT_PRIVATE_KEY3=${{ secrets.TX_ACCOUNT_PRIVATE_KEY3 }},TX_ACCOUNT_PRIVATE_KEY4=${{ secrets.TX_ACCOUNT_PRIVATE_KEY4 }}
           working-directory: tests
         env:
-          CYPRESS_baseUrl: ${{ needs.test_setup.outputs.netlify_url }}
+          CYPRESS_baseUrl: ${{ github.event.deployment_status.environment_url }}
 
   gnosis-safe-tests:
     timeout-minutes: 30
     needs: ["test_setup"]
-    if: ${{ !github.event.pull_request.draft }}
+    if: (!github.event.pull_request.draft && github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success' && github.event.deployment_status.environment == 'Preview')
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -212,4 +213,4 @@ jobs:
           working-directory: tests
           command: pnpm cypress-cloud run --browser chrome --config chromeWebSecurity=false --record --parallel --key ${{ secrets.V2_CYPRESS_RECORD_KEY }} --group Gnosis --ci-build-id ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt}} --env TAGS=@Gnosis
         env:
-          CYPRESS_baseUrl: ${{ needs.test_setup.outputs.netlify_url }}
+          CYPRESS_baseUrl: ${{ github.event.deployment_status.environment_url }}
