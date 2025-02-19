@@ -112,7 +112,7 @@ export class GnosisSafe extends BasePage {
     cy.visit(
       `${GNOSIS_SAFE_BASEURL}${GnosisSafePrefixByNetworkSlug[network]}${GnosisSafeAddressesPerNetwork[network]}/apps/custom`
     );
-    Cypress.config('baseUrl', 'https://app.superfluid.finance');
+    Cypress.config('baseUrl', 'https://app.superfluid.org');
     cy.get(GNOSIS_BUTTONS, { timeout: 30000 }).contains('Accept all').click();
   }
 

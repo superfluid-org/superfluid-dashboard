@@ -97,7 +97,7 @@ jobs:
           command: pnpm cypress-cloud run --record --parallel --key ${{ secrets.V2_CYPRESS_RECORD_KEY }} --group UI --ci-build-id ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt}} --env TAGS="not @ignoreDuringUI",STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }},TX_ACCOUNT_PRIVATE_KEY1=${{ secrets.TX_ACCOUNT_PRIVATE_KEY1 }},TX_ACCOUNT_PRIVATE_KEY2=${{ secrets.TX_ACCOUNT_PRIVATE_KEY2 }},TX_ACCOUNT_PRIVATE_KEY3=${{ secrets.TX_ACCOUNT_PRIVATE_KEY3 }},TX_ACCOUNT_PRIVATE_KEY4=${{ secrets.TX_ACCOUNT_PRIVATE_KEY4 }}
           working-directory: tests
         env:
-          CYPRESS_baseUrl: ${{ needs.test_setup.outputs.netlify_url }}
+          CYPRESS_baseUrl: "https://app.superfluid.org"
 
   rejected-tests:
     timeout-minutes: 45
@@ -162,7 +162,7 @@ jobs:
           command: pnpm cypress-cloud run --record --parallel --key ${{ secrets.V2_CYPRESS_RECORD_KEY }} --group rejected-${{ matrix.network }} --ci-build-id ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt}} --env network=${{ matrix.network }},TAGS=@rejected,STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }},TX_ACCOUNT_PRIVATE_KEY1=${{ secrets.TX_ACCOUNT_PRIVATE_KEY1 }},TX_ACCOUNT_PRIVATE_KEY2=${{ secrets.TX_ACCOUNT_PRIVATE_KEY2 }},TX_ACCOUNT_PRIVATE_KEY3=${{ secrets.TX_ACCOUNT_PRIVATE_KEY3 }},TX_ACCOUNT_PRIVATE_KEY4=${{ secrets.TX_ACCOUNT_PRIVATE_KEY4 }}
           working-directory: tests
         env:
-          CYPRESS_baseUrl: ${{ needs.test_setup.outputs.netlify_url }}
+          CYPRESS_baseUrl: "https://app.superfluid.org"
 
   gnosis-safe-tests:
     timeout-minutes: 30
@@ -212,4 +212,4 @@ jobs:
           working-directory: tests
           command: pnpm cypress-cloud run --browser chrome --config chromeWebSecurity=false --record --parallel --key ${{ secrets.V2_CYPRESS_RECORD_KEY }} --group Gnosis --ci-build-id ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt}} --env TAGS=@Gnosis
         env:
-          CYPRESS_baseUrl: ${{ needs.test_setup.outputs.netlify_url }}
+          CYPRESS_baseUrl: "https://app.superfluid.org"
