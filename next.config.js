@@ -12,6 +12,7 @@ const netlifyContext = process.env.CONTEXT;
 const isOnNetlify = !!netlifyContext;
 const interfaceFeeAddress = process.env.INTERFACE_FEE_ADDRESS;
 const shouldInstrumentCode = "INSTRUMENT_CODE" in process.env;
+const appUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : process.env.URL;
 
 function withSentryIfNecessary(nextConfig) {
   console.log({
@@ -19,7 +20,8 @@ function withSentryIfNecessary(nextConfig) {
     netlifyContext,
     isOnNetlify,
     interfaceFeeAddress,
-    shouldInstrumentCode
+    shouldInstrumentCode,
+    appUrl
   });
 
   const SENTRY_AUTH_TOKEN = process.env.SENTRY_AUTH_TOKEN;
@@ -70,7 +72,7 @@ const moduleExports = {
     ],
   },
   env: {
-    NEXT_PUBLIC_APP_URL: process.env.URL,
+    NEXT_PUBLIC_APP_URL: appUrl,
     NEXT_PUBLIC_SENTRY_ENVIRONMENT: sentryEnvironment,
     NEXT_PUBLIC_NETLIFY_CONTEXT: process.env.CONTEXT, // https://docs.netlify.com/configure-builds/environment-variables/#build-metadata
   },
