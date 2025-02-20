@@ -1,24 +1,26 @@
 {
     "$schema": "https://openapi.vercel.sh/vercel.json",
-    "rewrites": [
+    "redirects": [
       {
         "source": "/streams/:v1Network/:tx/:log/:rest*",
-        "destination": "/streams/[_v1Network]/[_tx]/[_log]/[[..._rest]].html"
+        "destination": "/streams/[_v1Network]/[_tx]/[_log]/[[..._rest]].html",
+        "statusCode": 200
       },
       {
         "source": "/stream/:network/:stream",
-        "destination": "/stream/[_network]/[_stream].html"
+        "destination": "/stream/[_network]/[_stream].html",
+        "statusCode": 200
       },
       {
         "source": "/token/:network/:token",
-        "destination": "/token/[_network]/[_token].html"
+        "destination": "/token/[_network]/[_token].html",
+        "statusCode": 200
       },
       {
         "source": "/vesting/:network/:id",
-        "destination": "/vesting/[_network]/[_id].html"
-      }
-    ],
-    "redirects": [
+        "destination": "/vesting/[_network]/[_id].html",
+        "statusCode": 200
+      },
       {
         "source": "/dashboard",
         "destination": "/",
