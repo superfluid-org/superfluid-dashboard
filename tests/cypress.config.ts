@@ -82,8 +82,7 @@ export default defineConfig({
       },
     },
     projectId: '2aaadn',
-    baseUrl:
-      'https://superfluid-dashboard-git-update-workflow-superfluid-foundation.vercel.app',
+    baseUrl: 'http://localhost:3000',
     reporter: 'mochawesome',
     reporterOptions: {
       reportDir: 'cypress/results',
