@@ -1,30 +1,15 @@
 name: Dev CI/CD
 
 on:
-  # pull_request:
-  #   types: [opened, reopened, ready_for_review, synchronize]
   deployment_status:
 
 jobs:
   test_setup:
-    # if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    # outputs:
-    #   netlify_url: ${{ steps.waitForDeployment.outputs.url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        # with:
-        #   ref: ${{ github.event.pull_request.head.sha }}
-
-      # - name: Wait for Netlify
-      #   uses: quantizor/wait-for-netlify-action@3.2.0 # Check the source code before updating version because it uses personal Netlify access token which does not have granular access control.
-      #   id: waitForDeployment
-      #   with:
-      #     site_id: "aa82cf1e-ce5d-432f-99bf-77a0b8c13277"
-      #   env:
-      #     NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
 
   ui-tests:
     timeout-minutes: 60
@@ -59,10 +44,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        #In order to change the default behaviour and checkout the triggering commit ,
-        #e.g. don't show Merge 23452345234523452345 into 34563456345634563456 but the actual commit that triggered the workflow in the test results
-        # with:
-        #   ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -72,7 +53,7 @@ jobs:
         with:
           node-version: 20.x
 
-      #A workaround for Cypress to work with Currents https://github.com/currents-dev/gh-actions-example/blob/main/.github/workflows/currents.yml
+      # A workaround for Cypress to work with Currents https://github.com/currents-dev/gh-actions-example/blob/main/.github/workflows/currents.yml
       # Install Currents
       - name: Install dependencies
         run: |
@@ -127,8 +108,6 @@ jobs:
           ]
     steps:
       - uses: actions/checkout@v4
-        # with:
-        #   ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Use Node.js 20.x
         uses: actions/setup-node@v4
@@ -138,7 +117,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
 
-      #A workaround for Cypress to work with Currents https://github.com/currents-dev/gh-actions-example/blob/main/.github/workflows/currents.yml
+      # A workaround for Cypress to work with Currents https://github.com/currents-dev/gh-actions-example/blob/main/.github/workflows/currents.yml
       # Install Currents
       - name: Install dependencies
         run: |
@@ -176,10 +155,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        #In order to change the default behaviour and checkout the triggering commit ,
-        #e.g. don't show Merge 23452345234523452345 into 34563456345634563456 but the actual commit that triggered the workflow in the test results
-        # with:
-        #   ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Use Node.js 20.x
         uses: actions/setup-node@v4
@@ -188,7 +163,8 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-      #A workaround for Cypress to work with Currents https://github.com/currents-dev/gh-actions-example/blob/main/.github/workflows/currents.yml
+      
+      # A workaround for Cypress to work with Currents https://github.com/currents-dev/gh-actions-example/blob/main/.github/workflows/currents.yml
       # Install Currents
       - name: Install dependencies
         run: |
