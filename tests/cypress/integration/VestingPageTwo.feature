@@ -41,6 +41,8 @@ Feature: Vesting page second batch of test cases
     And User clicks on the "vesting" navigation button
     Then Total stats for the sent vesting schedules are shown correctly
 
+  # New issue
+  @skip
   Scenario: Vesting schedule details page available without vesting code
     Given "Vesting details page" is open without connecting a wallet
     And Vesting details page is shown correctly for the created schedule

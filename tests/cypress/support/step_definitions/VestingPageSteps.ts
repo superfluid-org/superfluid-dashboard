@@ -59,9 +59,6 @@ Given(/^User deletes the vesting schedule if necessary$/, function () {
 Given(/^Preview of the vesting schedule is shown correctly$/, function () {
   VestingPage.validateVestingSchedulePreview();
 });
-Given(/^Preview of the vesting schedule is shown correctly v2$/, function () {
-  VestingPage.validateVestingSchedulePreviewv2();
-});
 Given(/^User creates the vesting schedule$/, function () {
   VestingPage.createNewVestingSchedule();
 });

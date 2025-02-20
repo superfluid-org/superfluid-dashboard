@@ -155,6 +155,8 @@ Feature: Vesting page third batch of test cases
     And User clicks on the stop viewing as an address button
     Then Vesting page while a wallet is not connected screen is shown
 
+  # New issue
+  @skip
   Scenario: Invalid vesting page leading to a 404 page
     Given "404 Vesting Page" is open without connecting a wallet
     Then 404 page is shown

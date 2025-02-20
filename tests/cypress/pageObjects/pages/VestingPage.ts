@@ -338,21 +338,6 @@ export class VestingPage extends BasePage {
     );
   }
 
-  static validateVestingSchedulePreviewv2() {
-    this.hasText(PREVIEW_RECEIVER, '@elvijs');
-    this.validateSchedulePreviewDetails(cliffDate, startDate, endDate);
-    this.hasText(PREVIEW_TOTAL_AMOUNT, '2 fTUSDx');
-    this.hasText(PREVIEW_CLIFF_AMOUNT, '1 fTUSDx');
-    this.containsText(
-      PREVIEW_CLIFF_PERIOD,
-      `1 year (${format(cliffDate, 'LLLL d, yyyy')})`
-    );
-    this.containsText(
-      PREVIEW_TOTAL_PERIOD,
-      `2 year (${format(endDate, 'LLLL d, yyyy')})`
-    );
-  }
-
   static validateNewlyCreatedSchedule() {
     cy.get(TABLE_RECEIVER_SENDER).last().should('have.text', 'vijay.eth');
     this.hasText(TABLE_ALLOCATED_AMOUNT, '2 fTUSDx', 0);
