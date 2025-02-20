@@ -67,7 +67,7 @@ Feature: Settings page test cases
   Scenario: Lens names showing up in the ACL table
     Given "Settings Page" is open with "dan" connected on "opsepolia"
     And No loading skeletons are visible in the page
-    Then "fTUSDx" permission row with "@elvijs" as an operator on "opsepolia" is visible
+    Then "fTUSDx" permission row with "elvijs.eth" as an operator on "opsepolia" is visible
 
   Scenario: Revoked Allowances and Permissions not showing up in the table
     Given HDWallet transactions are rejected

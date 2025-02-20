@@ -55,7 +55,7 @@ Feature: Activity History Page tests
     And User closes the dropdown
     And User searches for "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" as a receiver
     And User waits for the activity history to load
-    Then Only the activity history entries with "@elvijs" are shown
+    Then Only the activity history entries with "elvijs.eth" are shown
 
   @skip
   Scenario: Enabling and disabling networks visible
