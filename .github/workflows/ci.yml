@@ -1,13 +1,13 @@
 name: Dev CI/CD
 
 on:
-  pull_request:
-    types: [opened, reopened, ready_for_review, synchronize]
+  # pull_request:
+  #   types: [opened, reopened, ready_for_review, synchronize]
   deployment_status:
 
 jobs:
   test_setup:
-    if: ${{ !github.event.pull_request.draft }}
+    # if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     # outputs:
@@ -15,8 +15,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
+        # with:
+        #   ref: ${{ github.event.pull_request.head.sha }}
 
       # - name: Wait for Netlify
       #   uses: quantizor/wait-for-netlify-action@3.2.0 # Check the source code before updating version because it uses personal Netlify access token which does not have granular access control.
@@ -28,7 +28,7 @@ jobs:
 
   ui-tests:
     timeout-minutes: 60
-    needs: ["test_setup"]
+    needs: test_setup
     if: (github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success')
     runs-on: ubuntu-latest
     strategy:
@@ -61,8 +61,8 @@ jobs:
         uses: actions/checkout@v4
         #In order to change the default behaviour and checkout the triggering commit ,
         #e.g. don't show Merge 23452345234523452345 into 34563456345634563456 but the actual commit that triggered the workflow in the test results
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
+        # with:
+        #   ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -102,8 +102,8 @@ jobs:
 
   rejected-tests:
     timeout-minutes: 45
-    needs: ["test_setup"]
-    if: (github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success')
+    needs: test_setup
+    if: (github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success' && github.event.deployment_status.environment == 'Preview')
 
     runs-on: ubuntu-latest
     strategy:
@@ -127,8 +127,8 @@ jobs:
           ]
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
+        # with:
+        #   ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Use Node.js 20.x
         uses: actions/setup-node@v4
@@ -168,8 +168,8 @@ jobs:
 
   gnosis-safe-tests:
     timeout-minutes: 30
-    needs: ["test_setup"]
-    if: (github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success')
+    needs: test_setup
+    if: (github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success' && github.event.deployment_status.environment == 'Preview')
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -178,8 +178,8 @@ jobs:
         uses: actions/checkout@v4
         #In order to change the default behaviour and checkout the triggering commit ,
         #e.g. don't show Merge 23452345234523452345 into 34563456345634563456 but the actual commit that triggered the workflow in the test results
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
+        # with:
+        #   ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Use Node.js 20.x
         uses: actions/setup-node@v4
