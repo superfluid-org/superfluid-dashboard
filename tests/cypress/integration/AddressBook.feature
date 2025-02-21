@@ -99,8 +99,6 @@ Feature: Address Book test cases
     And No loading skeletons are visible in the page
     Then The receivers shown in the vesting page are named "Multiple networks test"
 
-  # New issue
-  @skip
   Scenario: Address book name showing up in - Vesting details page
     Given Address book test data is set up
 
@@ -126,8 +124,6 @@ Feature: Address Book test cases
     And User opens "opsepolia" "fTUSDx" individual token page
     Then "alice,dan,bob" are visible in the table as the receivers or senders of streams
 
-  # New issue
-  @skip
   Scenario: Address book name showing up in - Stream details page
     Given Address book test data is set up
 

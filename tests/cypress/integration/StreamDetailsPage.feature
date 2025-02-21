@@ -1,15 +1,11 @@
 Feature: Stream details page test cases
 
-  # New issue
-  @skip
   Scenario: Stream details page for an ongoing stream
     Given "Ongoing stream details page" is open without connecting a wallet
     Then The token icon has got an animation around it
     And The streamed amount is flowing
     And Ongoing stream data is shown correctly
 
-  # New issue
-  @skip
   Scenario: Stream details page for an ended stream
     Given "Ended stream details page" is open without connecting a wallet
     And The token icon has got an animation around it
@@ -17,14 +13,10 @@ Feature: Stream details page test cases
     Then Ended stream data is shown correctly
     And Cancelled stream message is visible
 
-  # New issue
-  @skip
   Scenario: 404 page showing up for a stream that doesn't exist
     Given "Invalid stream details page" is open without connecting a wallet
     Then 404 page is shown
 
-  # New issue
-  @skip
   Scenario: Stream details page back button
     Given "Ongoing stream details page" is open without connecting a wallet
     And User clicks on the back button
@@ -49,8 +41,6 @@ Feature: Stream details page test cases
     Given "v1 Ended stream details page" is open without connecting a wallet
     Then Ended stream data is shown correctly
 
-  # New issue
-  @skip
   Scenario: Stream details page hyperlinks
     Given "Ended stream details page" is open without connecting a wallet
     And The token icon has got an animation around it
@@ -63,16 +53,12 @@ Feature: Stream details page test cases
     And The stream copy button tooltips show up when user clicks on them
     And The social network tooltips show up and have the correct links
 
-  # New issue
-  @skip
   Scenario: Scheduled stream showing correct details
     Given "Close-ended stream details page" is open without connecting a wallet
     Then The token icon has got an animation around it
     And The streamed amount is flowing
     And Close-ended stream data is shown correctly
 
-  # New issue
-  @skip
   Scenario: Vesting stream details page
     Given "Vesting stream details page" is open without connecting a wallet
     Then The token icon has got an animation around it
