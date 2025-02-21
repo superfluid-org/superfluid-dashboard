@@ -2,7 +2,6 @@
 @rejected
 @retries(3)
 @numTestsKeptInMemory(0)
-@skip
 Feature: ACL and Auto-Wrap related rejected test cases
 
   @platformNeeded
