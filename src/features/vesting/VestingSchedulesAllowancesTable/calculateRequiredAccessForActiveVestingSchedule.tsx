@@ -70,7 +70,7 @@ export function getMaximumNeededTokenAllowance(input: { schedule: {
   const cliffAmount = BigInt(input.schedule.cliffAmount);
   const remainderAmount = BigInt(input.schedule.remainderAmount);
 
-  const maxFlowDelayCompensationAmount = cliffAndFlowDate === 0
+  const maxFlowDelayCompensationAmount = cliffAndFlowDate === 0 || Number(cliffAndFlowExecutedAt) > 0
     ? 0n
     : BigInt(START_DATE_VALID_AFTER_IN_SECONDS) * flowRate;
 
