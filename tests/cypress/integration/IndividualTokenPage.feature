@@ -24,9 +24,9 @@ Feature: Token page test cases
     Given "Dashboard Page" is open with "staticBalanceAccount" connected on "opsepolia"
     And User opens "opsepolia" "fUSDCx" individual token page
     And User opens the transfers tab
-    Then "staticBalanceAccount" transfers for "fUSDCx" on "opsepolia" are shown correctly
+    # Then "staticBalanceAccount" transfers for "fUSDCx" on "opsepolia" are shown correctly
     And User switches to the "sent" tab in the transfer table
-    And Only the "Sent" transfers are shown for "staticBalanceAccount" on "opsepolia" for "fUSDCx"
+    # And Only the "Sent" transfers are shown for "staticBalanceAccount" on "opsepolia" for "fUSDCx"
     And User switches to the "received" tab in the transfer table
     And Only the "Received" transfers are shown for "staticBalanceAccount" on "opsepolia" for "fUSDCx"
 

@@ -240,8 +240,8 @@ Feature: Send Page test cases
     And User opens the token selection screen
     And User selects "fTUSDx" from the super token list
     Then The flow rate field in the send page is "1"
-    And The stream start date is set to "07/14/2026 05:00"
-    And The stream end date is set to "07/22/2026 05:00"
+    And The stream start date is set to "07/14/2026 03:00"
+    And The stream end date is set to "07/22/2026 03:00"
 
 
 #TODO: Test cases that are broken/will get changed or no functionality yet

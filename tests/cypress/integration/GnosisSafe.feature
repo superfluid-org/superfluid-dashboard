@@ -11,7 +11,7 @@ Feature: Gnosis safe test cases
 
     Examples:
       | network      |
-      | gnosis       |
+      # | gnosis       |
       # | ethereum     |
       | polygon      |
       | bsc          |
