@@ -2,25 +2,25 @@
     "$schema": "https://openapi.vercel.sh/vercel.json",
     "redirects": [
       {
-        "source": "/streams/:v1Network/:tx/:log/:rest*",
+        "source": "/streams/:splat*",
         "destination": "/streams/[_v1Network]/[_tx]/[_log]/[[..._rest]].html",
         "statusCode": 200,
         "permanent": true
       },
       {
-        "source": "/stream/:network/:stream",
+        "source": "/stream/:splat*",
         "destination": "/stream/[_network]/[_stream].html",
         "statusCode": 200,
         "permanent": true
       },
       {
-        "source": "/token/:network/:token",
+        "source": "/token/:splat*",
         "destination": "/token/[_network]/[_token].html",
         "statusCode": 200,
         "permanent": true
       },
       {
-        "source": "/vesting/:network/:id",
+        "source": "/vesting/:splat*",
         "destination": "/vesting/[_network]/[_id].html",
         "statusCode": 200,
         "permanent": true

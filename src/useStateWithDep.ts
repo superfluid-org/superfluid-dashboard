@@ -9,4 +9,4 @@ export function useStateWithDep<T>(defaultValue: T) {
   }, [defaultValue]);
 
   return [value, setValue] as const;
-}
+} 
