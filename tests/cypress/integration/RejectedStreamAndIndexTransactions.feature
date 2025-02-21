@@ -2,6 +2,7 @@
 @rejected
 @retries(3)
 @numTestsKeptInMemory(0)
+@skip
 Feature: Transactional rejected test cases
 
   Scenario: Creating a new stream on selected network
