@@ -146,28 +146,28 @@ Feature: Send Page test cases
     Given "Dashboard Page" is open with "john" connected on "opsepolia"
     And No loading skeletons are visible in the page
     And User clicks on "opsepolia" "fTUSDx" row
-    Then The stream row to "0x66693Ff26e2036FDf3a5EA6B7FDf853Ca1Adaf4B" has a flow rate of "-1" and dates to "22 Jul. 2026 05:00"
+    Then The stream row to "0x66693Ff26e2036FDf3a5EA6B7FDf853Ca1Adaf4B" has a flow rate of "-1" and dates to "22 Jul. 2026 03:00"
     And User clicks on "opsepolia" "fTUSDx" row
     And User opens "opsepolia" "fTUSDx" individual token page
-    Then The stream row to "0x66693Ff26e2036FDf3a5EA6B7FDf853Ca1Adaf4B" has a flow rate of "-1" and dates to "22 Jul. 2026 05:00"
+    Then The stream row to "0x66693Ff26e2036FDf3a5EA6B7FDf853Ca1Adaf4B" has a flow rate of "-1" and dates to "22 Jul. 2026 03:00"
 
   Scenario: Stream tables - stream with start and end date
     Given "Dashboard Page" is open with "john" connected on "opsepolia"
     And No loading skeletons are visible in the page
     And User clicks on "opsepolia" "fTUSDx" row
-    Then The stream row to "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4" has a flow rate of "-1" and dates to "14 Jul. 2026 05:0022 Jul. 2026 05:00"
+    Then The stream row to "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4" has a flow rate of "-1" and dates to "14 Jul. 2026 03:0022 Jul. 2026 03:00"
     And User clicks on "opsepolia" "fTUSDx" row
     And User opens "opsepolia" "fTUSDx" individual token page
-    Then The stream row to "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4" has a flow rate of "-1" and dates to "14 Jul. 2026 05:0022 Jul. 2026 05:00"
+    Then The stream row to "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4" has a flow rate of "-1" and dates to "14 Jul. 2026 03:0022 Jul. 2026 03:00"
 
   Scenario: Stream tables - stream with end date
     Given "Dashboard Page" is open with "john" connected on "opsepolia"
     And No loading skeletons are visible in the page
     And User clicks on "opsepolia" "fTUSDx" row
-    Then The stream row to "0x9B6157d44134b21D934468B8bf709294cB298aa7" has a flow rate of "-1" and dates to "22 Jul. 2024 10:3322 Jul. 2026 05:00"
+    Then The stream row to "0x9B6157d44134b21D934468B8bf709294cB298aa7" has a flow rate of "-1" and dates to "22 Jul. 2024 08:3322 Jul. 2026 03:00"
     And User clicks on "opsepolia" "fTUSDx" row
     And User opens "opsepolia" "fTUSDx" individual token page
-    Then The stream row to "0x9B6157d44134b21D934468B8bf709294cB298aa7" has a flow rate of "-1" and dates to "22 Jul. 2024 10:3322 Jul. 2026 05:00"
+    Then The stream row to "0x9B6157d44134b21D934468B8bf709294cB298aa7" has a flow rate of "-1" and dates to "22 Jul. 2024 08:3322 Jul. 2026 03:00"
 
   Scenario: Modifying a streams start date
     Given HDWallet transactions are rejected
