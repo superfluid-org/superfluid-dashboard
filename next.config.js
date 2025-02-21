@@ -52,7 +52,6 @@ function withSentryIfNecessary(nextConfig) {
 
 /** @type {import('next').NextConfig} */
 const moduleExports = {
-  output: "export",
   reactStrictMode: true,
   images: {
     loader: "custom",
