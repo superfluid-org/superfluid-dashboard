@@ -4,22 +4,26 @@
       {
         "source": "/streams/:v1Network/:tx/:log/:rest*",
         "destination": "/streams/[_v1Network]/[_tx]/[_log]/[[..._rest]].html",
-        "statusCode": 200
+        "statusCode": 200,
+        "permanent": true
       },
       {
         "source": "/stream/:network/:stream",
         "destination": "/stream/[_network]/[_stream].html",
-        "statusCode": 200
+        "statusCode": 200,
+        "permanent": true
       },
       {
         "source": "/token/:network/:token",
         "destination": "/token/[_network]/[_token].html",
-        "statusCode": 200
+        "statusCode": 200,
+        "permanent": true
       },
       {
         "source": "/vesting/:network/:id",
         "destination": "/vesting/[_network]/[_id].html",
-        "statusCode": 200
+        "statusCode": 200,
+        "permanent": true
       },
       {
         "source": "/dashboard",
