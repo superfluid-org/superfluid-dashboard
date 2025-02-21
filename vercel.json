@@ -4,22 +4,22 @@
       {
         "source": "/streams/:splat*",
         "destination": "/streams/[_v1Network]/[_tx]/[_log]/[[..._rest]].html",
-        "permanent": true
+        "statusCode": 200
       },
       {
         "source": "/stream/:splat*",
         "destination": "/stream/[_network]/[_stream].html",
-        "permanent": true
+        "statusCode": 200
       },
       {
         "source": "/token/:splat*",
         "destination": "/token/[_network]/[_token].html",
-        "permanent": true
+        "statusCode": 200
       },
       {
         "source": "/vesting/:splat*",
         "destination": "/vesting/[_network]/[_id].html",
-        "permanent": true
+        "statusCode": 200
       },
       {
         "source": "/dashboard",
