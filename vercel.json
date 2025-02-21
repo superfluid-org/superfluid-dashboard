@@ -1,23 +1,5 @@
 {
     "$schema": "https://openapi.vercel.sh/vercel.json",
-    "rewrites": [
-      {
-        "source": "/streams/:splat*",
-        "destination": "/streams/[_v1Network]/[_tx]/[_log]/[[..._rest]].html"
-      },
-      {
-        "source": "/stream/:splat*",
-        "destination": "/stream/[_network]/[_stream].html"
-      },
-      {
-        "source": "/token/:splat*",
-        "destination": "/token/[_network]/[_token].html"
-      },
-      {
-        "source": "/vesting/:splat*",
-        "destination": "/vesting/[_network]/[_id].html"
-      }
-    ],
     "redirects": [
       {
         "source": "/dashboard",
