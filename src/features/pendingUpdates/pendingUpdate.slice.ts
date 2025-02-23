@@ -451,6 +451,27 @@ export const pendingUpdateSlice = createSlice({
       }
     );
     builder.addMatcher(
+      rpcApi.endpoints.cancelDistributionStream.matchFulfilled,
+      (state, action) => {
+        const { chainId, hash: transactionHash } = action.payload;
+        const { poolAddress, superTokenAddress, senderAddress } = action.meta.arg.originalArgs;
+
+        const pendingDistributionStreamCancellation: PendingStreamCancellation = {
+          chainId,
+          transactionHash,
+          senderAddress,
+          receiverAddress: poolAddress,
+          id: transactionHash,
+          tokenAddress: superTokenAddress,
+          pendingType: "FlowDelete",
+          timestamp: dateNowSeconds(),
+          relevantSubgraph: "Protocol",
+        };
+
+        pendingUpdateAdapter.addOne(state, pendingDistributionStreamCancellation);
+      }
+    );
+    builder.addMatcher(
       isAllOf(transactionTracker.actions.updateTransaction),
       (state, action) => {
         const transactionStatus = action.payload.changes.status;

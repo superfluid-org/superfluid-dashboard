@@ -9,6 +9,7 @@ import { rpcApi, subgraphApi } from "../features/redux/store";
 import { StreamScheduling } from "../features/streamsTable/StreamScheduling";
 import { CreateTask } from "../scheduling-subgraph/.graphclient";
 import { vestingSubgraphApi } from "../vesting-subgraph/vestingSubgraphApi";
+import { PoolDistributionStream } from "../features/streamsTable/StreamsTable";
 
 export interface ScheduledStream
   extends Omit<
@@ -121,6 +122,7 @@ export const mapStreamScheduling = <
   | PendingOutgoingStream
   | ScheduledStream
   | PendingScheduledStream
+  | PoolDistributionStream
 >(
   stream: T,
   scheduledUnixStart?: number | null,

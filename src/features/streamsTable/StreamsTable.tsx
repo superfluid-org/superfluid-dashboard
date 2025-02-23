@@ -14,7 +14,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
-import { Address, Stream } from "@superfluid-finance/sdk-core";
+import { Address, PoolDistributor, Stream } from "@superfluid-finance/sdk-core";
 import { getUnixTime } from "date-fns";
 import { FC, memo, useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -46,7 +46,15 @@ enum StreamTypeFilter {
   Outgoing,
 }
 
-type StreamType = (Stream | PendingOutgoingStream | ScheduledStream) &
+export type PoolDistributionStream = PoolDistributor & {
+  currentFlowRate: string;
+  sender: string;
+  token: string;
+  receiver: string;
+  streamedUntilUpdatedAt: string;
+};
+
+type StreamType = (Stream | PendingOutgoingStream | ScheduledStream | PoolDistributionStream) &
   StreamScheduling;
 
 interface StreamFilter {
@@ -106,6 +114,38 @@ const StreamsTable: FC<StreamsTableProps> = ({
       refetchOnFocus: refetchOnFocus, // Re-fetch list view more often where there might be something incoming.
     }
   );
+
+  const outgoingPoolDistributionStreamsQuery = subgraphApi.usePoolDistributorsQuery(
+    {
+      chainId: network.id,
+      filter: {
+        account: visibleAddress,
+        pool_: {
+          token: tokenAddress,
+        }
+      },
+      pagination: {
+        take: Infinity
+      }
+    }
+  );
+
+  const outgoingPoolDistributionStreams = useMemo<PoolDistributionStream[]>(() => {
+    if (!outgoingPoolDistributionStreamsQuery.data) {
+      return [];
+    }
+
+    return outgoingPoolDistributionStreamsQuery.data.items.map((item) => {
+      return {
+        ...item,
+        currentFlowRate: item.flowRate,
+        sender: item.account,
+        token: item.token,
+        receiver: item.pool,
+        streamedUntilUpdatedAt: item.totalAmountDistributedUntilUpdatedAt
+      }
+    })
+  }, [outgoingPoolDistributionStreamsQuery.data])
 
   const outgoingStreamsQuery = subgraphApi.useStreamsQuery(
     {
@@ -224,18 +264,20 @@ const StreamsTable: FC<StreamsTableProps> = ({
   );
 
   const outgoingStreams = useMemo<
-    (Stream | PendingOutgoingStream | ScheduledStream)[]
+    (Stream | PendingOutgoingStream | ScheduledStream | PoolDistributionStream)[]
   >(() => {
     const queriedOutgoingStreams = outgoingStreamsQuery.data?.items ?? [];
     return [
       ...queriedOutgoingStreams,
+      ...outgoingPoolDistributionStreams,
       ...pendingOutgoingStreams,
-      ...scheduledOutgoingStreams,
+      ...scheduledOutgoingStreams
     ];
   }, [
     outgoingStreamsQuery.data,
+    outgoingPoolDistributionStreams,
     pendingOutgoingStreams,
-    scheduledOutgoingStreams,
+    scheduledOutgoingStreams
   ]);
 
   const streams = useMemo<StreamType[]>(() => {

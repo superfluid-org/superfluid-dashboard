@@ -19,4 +19,5 @@ export type AnalyticsTransactionNames =
   | "Updated Permissions & Allowances"
   | "Disable Auto-Wrap"
   | "Connect to GDA Pool"
-  | "Disconnect from GDA Pool";
+  | "Disconnect from GDA Pool"
+  | "Cancel Distribution Stream";

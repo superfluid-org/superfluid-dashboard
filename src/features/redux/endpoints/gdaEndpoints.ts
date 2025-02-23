@@ -1,8 +1,9 @@
-import { Address } from "@superfluid-finance/sdk-core";
+import { Address, Operation } from "@superfluid-finance/sdk-core";
 import {
   BaseSuperTokenMutation,
   RpcEndpointBuilder,
   TransactionInfo,
+  TransactionTitle,
   getFramework,
   registerNewTransaction,
 } from "@superfluid-finance/sdk-redux";
@@ -15,6 +16,11 @@ interface ConnectToPool extends BaseSuperTokenMutation {
 interface DisconnectFromPool extends BaseSuperTokenMutation {
   poolAddress: Address;
   //   accountAddress: Address;
+}
+
+interface CancelDistributionStream extends BaseSuperTokenMutation {
+  poolAddress: Address;
+  senderAddress: Address;
 }
 
 export const gdaEndpoints = {
@@ -95,6 +101,64 @@ export const gdaEndpoints = {
           data: {
             chainId,
             hash: transactionResponse.hash,
+          },
+        };
+      },
+    }),
+    cancelDistributionStream: builder.mutation<
+      TransactionInfo & { subTransactionTitles: TransactionTitle[] },
+      CancelDistributionStream
+    >({
+      async queryFn({ chainId, ...arg }, { dispatch }) {
+        const framework = await getFramework(chainId);
+
+        const subOperations: {
+          operation: Operation;
+          title: TransactionTitle;
+        }[] = [];
+
+        const superToken = await framework.loadSuperToken(arg.superTokenAddress);
+
+        subOperations.push({
+          operation: await superToken.distributeFlow({
+            pool: arg.poolAddress,
+            overrides: arg.overrides,
+            from: arg.senderAddress,
+            requestedFlowRate: "0"
+          }),
+          title: "Cancel Distribution Stream",
+        });
+
+        const executableOperationOrBatchCall =
+          subOperations.length === 1
+            ? subOperations[0].operation
+            : framework.batchCall(subOperations.map((x) => x.operation));
+
+        const transactionResponse = await executableOperationOrBatchCall.exec(
+          arg.signer
+        );
+
+        const subTransactionTitles = subOperations.map((x) => x.title);
+
+        const signerAddress = await arg.signer.getAddress();
+
+        await registerNewTransaction({
+          dispatch,
+          chainId,
+          transactionResponse,
+          signerAddress,
+          extraData: {
+            subTransactionTitles,
+            ...(arg.transactionExtraData ?? {}),
+          },
+          title: "Cancel Distribution Stream",
+        });
+
+        return {
+          data: {
+            chainId,
+            hash: transactionResponse.hash,
+            subTransactionTitles,
           },
         };
       },
