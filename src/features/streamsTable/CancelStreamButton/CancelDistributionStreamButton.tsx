@@ -35,7 +35,7 @@ const CancelDistributionStreamButton: FC<CancelDistributionStreamButtonProps> = 
   const { address: accountAddress } = useAccount();
 
   const { token, sender, receiver } = stream;
-  const [cancelDistributionStream, distributionStreamCancellationMutation] =
+  const [cancelDistributionStream_, distributionStreamCancellationMutation] =
     rpcApi.useCancelDistributionStreamMutation();
 
   const getTransactionOverrides = useGetTransactionOverrides();
@@ -47,14 +47,14 @@ const CancelDistributionStreamButton: FC<CancelDistributionStreamButtonProps> = 
 
   const { txAnalytics } = useAnalytics();
 
-  const deleteStream = async (signer: Signer) => {
+  const cancelDistributionStream = async (signer: Signer) => {
     const primaryArgs = {
       chainId: network.id,
       superTokenAddress: stream.token,
       senderAddress: sender,
       poolAddress: stream.pool
     };
-    cancelDistributionStream({
+    cancelDistributionStream_({
       ...primaryArgs,
       signer,
       overrides: await getTransactionOverrides(network),
@@ -110,27 +110,17 @@ const CancelDistributionStreamButton: FC<CancelDistributionStreamButtonProps> = 
                             "Signer should always be present here."
                           );
 
-                        const signerAddress = await signer.getAddress();
+                        setDialogLoadingInfo(
+                          <Typography
+                            variant="h5"
+                            color="text.secondary"
+                            translate="yes"
+                          >
+                            You are canceling an outgoing distribution stream.
+                          </Typography>
+                        );
 
-                        const streamDirection = signerAddress.toLowerCase() === receiver.toLowerCase()
-                          ? "incoming"
-                          : "outgoing";
-
-                        switch (streamDirection) {
-                          case "outgoing":
-                            setDialogLoadingInfo(
-                              <Typography
-                                variant="h5"
-                                color="text.secondary"
-                                translate="yes"
-                              >
-                                You are canceling an outgoing distribution stream.
-                              </Typography>
-                            );
-                            break;
-                        }
-
-                        deleteStream(signer);
+                        cancelDistributionStream(signer);
                       }}
                       disabled={!(isConnected && signer && isCorrectNetwork)}
                       {...IconButtonProps}
