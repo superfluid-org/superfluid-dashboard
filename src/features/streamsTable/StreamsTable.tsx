@@ -272,12 +272,14 @@ const StreamsTable: FC<StreamsTableProps> = ({
       ...outgoingPoolDistributionStreams,
       ...pendingOutgoingStreams,
       ...scheduledOutgoingStreams,
+      ...outgoingPoolDistributionStreams,
     ];
   }, [
     outgoingStreamsQuery.data,
     outgoingPoolDistributionStreams,
     pendingOutgoingStreams,
     scheduledOutgoingStreams,
+    outgoingPoolDistributionStreams
   ]);
 
   const streams = useMemo<StreamType[]>(() => {
