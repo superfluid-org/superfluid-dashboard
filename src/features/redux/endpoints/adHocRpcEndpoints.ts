@@ -54,6 +54,7 @@ declare module "@superfluid-finance/sdk-redux" {
     "Connect to Pool": true;
     "Disconnect from Pool": true;
     "Interface Fee": true;
+    "Cancel Distribution Stream": true;
   }
 }
 
