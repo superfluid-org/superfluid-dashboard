@@ -113,4 +113,4 @@ Feature: Export Stream Data page test cases
     And User opens the navigation more menu
     And User clicks on the "export" button in the more menu
     #John address
-    And "0x9Be85A79D847dFa90584F3FD40cC1f6D4026E2B9" is selected for the export
+    And "0x46Bdc58eDF8837841A1eBb944e0cb53afCf627d2" is selected for the export
