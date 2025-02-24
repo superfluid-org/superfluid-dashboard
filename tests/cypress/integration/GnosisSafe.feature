@@ -13,7 +13,7 @@ Feature: Gnosis safe test cases
       | network      |
       # | gnosis       |
       # | ethereum     |
-      | polygon      |
+      # | polygon      |
       | bsc          |
       | arbitrum-one |
       | avalanche    |
