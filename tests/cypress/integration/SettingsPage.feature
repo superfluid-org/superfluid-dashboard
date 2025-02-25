@@ -19,7 +19,7 @@ Feature: Settings page test cases
     Given "Dashboard Page" is open with "alice" connected on "ethereum"
     And User opens the notifications modal
     And User clicks on the notification settings button
-    Then "0x66693Ff26e2036FDf3a5EA6B7FDf853Ca1Adaf4B" is visible in the settings page
+    Then "0xD60e9B498b731370850F240E57d265eCdd97fbCd" is visible in the settings page
 
   Scenario: Wallet Not connected screen in settings page
     Given "Settings page" is open without connecting a wallet

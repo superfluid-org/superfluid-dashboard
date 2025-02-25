@@ -146,10 +146,10 @@ Feature: Send Page test cases
     Given "Dashboard Page" is open with "john" connected on "opsepolia"
     And No loading skeletons are visible in the page
     And User clicks on "opsepolia" "fTUSDx" row
-    Then The stream row to "0x66693Ff26e2036FDf3a5EA6B7FDf853Ca1Adaf4B" has a flow rate of "-1" and dates to "22 Jul. 2026 03:00"
+    Then The stream row to "0xD60e9B498b731370850F240E57d265eCdd97fbCd" has a flow rate of "-1" and dates to "22 Jul. 2026 03:00"
     And User clicks on "opsepolia" "fTUSDx" row
     And User opens "opsepolia" "fTUSDx" individual token page
-    Then The stream row to "0x66693Ff26e2036FDf3a5EA6B7FDf853Ca1Adaf4B" has a flow rate of "-1" and dates to "22 Jul. 2026 03:00"
+    Then The stream row to "0xD60e9B498b731370850F240E57d265eCdd97fbCd" has a flow rate of "-1" and dates to "22 Jul. 2026 03:00"
 
   Scenario: Stream tables - stream with start and end date
     Given "Dashboard Page" is open with "john" connected on "opsepolia"
@@ -173,7 +173,7 @@ Feature: Send Page test cases
     Given HDWallet transactions are rejected
 
     Given "Send Page" is open with "john" connected on "opsepolia"
-    And User inputs all the details to send "2" "fTUSDx" per "month" to "0x66693Ff26e2036FDf3a5EA6B7FDf853Ca1Adaf4B"
+    And User inputs all the details to send "2" "fTUSDx" per "month" to "0xD60e9B498b731370850F240E57d265eCdd97fbCd"
     And User inputs a date "1" "year" into the future into the stream start date
     #Race condition
     And User waits for 2 seconds
@@ -222,7 +222,7 @@ Feature: Send Page test cases
     Given HDWallet transactions are rejected
 
     Given "Send Page" is open with "john" connected on "opsepolia"
-    And User inputs all the details to send "1" "fTUSDx" per "month" to "0x66693Ff26e2036FDf3a5EA6B7FDf853Ca1Adaf4B"
+    And User inputs all the details to send "1" "fTUSDx" per "month" to "0xD60e9B498b731370850F240E57d265eCdd97fbCd"
     And User tries to cancel the stream and the first transaction dialogs are visible on "opsepolia"
     And Transaction rejected error is shown
 
