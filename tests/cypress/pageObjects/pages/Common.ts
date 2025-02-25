@@ -838,8 +838,8 @@ export class Common extends BasePage {
                     data: {
                       app: 'Superfluid',
                       sid: '40196540',
-                      url: 'https://app.superfluid.finance',
-                      acta: 'https://app.superfluid.finance/',
+                      url: 'https://app.superfluid.org',
+                      acta: 'https://app.superfluid.org/',
                       aimg: '',
                       amsg: `Your TDLx(TDLx) on network Polygon was liquidated (at ${NEW_NOTIF_STRING_DATE}).[timestamp: ${
                         NEW_NOTIF_DATE.getTime() / 100
@@ -882,8 +882,8 @@ export class Common extends BasePage {
                     data: {
                       app: 'Superfluid',
                       sid: '40196540',
-                      url: 'https://app.superfluid.finance',
-                      acta: 'https://app.superfluid.finance/',
+                      url: 'https://app.superfluid.org',
+                      acta: 'https://app.superfluid.org/',
                       aimg: '',
                       amsg: `Your TDLx(TDLx) on network Polygon is about to be liquidated in less than 7 days(at ${OLD_DATE_STRING}).[timestamp: ${
                         OLD_NOTIF_DATE.getTime() / 100
@@ -926,8 +926,8 @@ export class Common extends BasePage {
                     data: {
                       app: 'Superfluid',
                       sid: '40196540',
-                      url: 'https://app.superfluid.finance',
-                      acta: 'https://app.superfluid.finance/',
+                      url: 'https://app.superfluid.org',
+                      acta: 'https://app.superfluid.org/',
                       aimg: '',
                       amsg: `Your TDLx(TDLx) on network Polygon is about to be liquidated in less than 7 days(at ${NEW_NOTIF_STRING_DATE}).[timestamp: ${
                         NEW_NOTIF_DATE.getTime() / 100
@@ -970,8 +970,8 @@ export class Common extends BasePage {
                     data: {
                       app: 'Superfluid',
                       sid: '40196540',
-                      url: 'https://app.superfluid.finance',
-                      acta: 'https://app.superfluid.finance/',
+                      url: 'https://app.superfluid.org',
+                      acta: 'https://app.superfluid.org/',
                       aimg: '',
                       amsg: `Your TDLx(TDLx) on network Polygon is about to be liquidated in less than 7 days(at ${NEW_NOTIF_STRING_DATE}).[timestamp: ${
                         NEW_NOTIF_DATE.getTime() / 100
@@ -1014,8 +1014,8 @@ export class Common extends BasePage {
                     data: {
                       app: 'Superfluid',
                       sid: '40196540',
-                      url: 'https://app.superfluid.finance',
-                      acta: 'https://app.superfluid.finance/',
+                      url: 'https://app.superfluid.org',
+                      acta: 'https://app.superfluid.org/',
                       aimg: '',
                       amsg: `Some Test message`,
                       asub: 'What happens with outdated formats?',

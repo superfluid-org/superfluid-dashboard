@@ -257,14 +257,6 @@ export class VestingPage extends BasePage {
     // WrapPage.validatePendingTransaction("Create Vesting Schedule" , "avalanche-fuji")
   }
 
-  static createNewVestingSchedulev2() {
-    SendPage.overrideNextGasPrice();
-    this.click(CREATE_SCHEDULE_TX_BUTTON);
-    this.hasText(APPROVAL_MESSAGE, 'Waiting for transaction approval...');
-    cy.get(OK_BUTTON, { timeout: 45000 }).should('be.visible').click();
-    this.click(TX_DRAWER_BUTTON);
-  }
-
   static validateFormError(error: string) {
     this.hasText(FORM_ERROR, error, 0);
     this.isDisabled(PREVIEW_SCHEDULE_BUTTON);
@@ -382,12 +374,6 @@ export class VestingPage extends BasePage {
 
   static deleteVestingSchedule() {
     this.click(DELETE_SCHEDULE_BUTTON, undefined, { timeout: 30000 });
-  }
-
-  static deleteVestingSchedulev2() {
-    this.click(DELETE_SCHEDULE_BUTTON, undefined, { timeout: 30000 });
-    this.hasText(APPROVAL_MESSAGE, 'Waiting for transaction approval...');
-    cy.get(OK_BUTTON, { timeout: 45000 }).should('be.visible').click();
   }
 
   static deleteVestingButtonDoesNotExist() {
