@@ -187,7 +187,7 @@ Feature: Common element test cases
     Given "Address book page" is open with "alice" connected on "polygon"
     And User opens the connected account modal
     And User uses view mode to look at "john"
-    Then View mode chip shows "0x9Be8...E2B9"
+    Then View mode chip shows "0x46Bd...27d2"
 
   Scenario: Close view mode from the account modal
     Given "Address book page" is open with "alice" connected on "polygon"
