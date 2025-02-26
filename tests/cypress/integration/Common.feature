@@ -175,7 +175,7 @@ Feature: Common element test cases
   Scenario: Using view mode from the Connect or Impersonate screen
     Given "Vesting page" is open without connecting a wallet
     And User uses view mode to look at "john"
-    Then View mode chip shows "0x9Be8...E2B9"
+    Then View mode chip shows "0x46Bd...27d2"
 
   Scenario: Close view mode from the Connect or Impersonate screen
     Given "Vesting page" is open without connecting a wallet

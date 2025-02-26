@@ -36,6 +36,7 @@ Feature: Vesting page second batch of test cases
       | Cliff vested    |
       | Vesting ended   |
 
+  @only
   Scenario: Vesting schedule aggregate stats
     Given Transactional account john is connected to the dashboard on polygon
     And User clicks on the "vesting" navigation button
