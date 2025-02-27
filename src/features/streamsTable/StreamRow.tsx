@@ -177,16 +177,16 @@ const StreamRow: FC<StreamRowProps> = ({
     .hasTransactionSucceeded;
 
   const isActive = !isPending && !startDateScheduled && currentFlowRate !== "0";
+  const isDistributionStream = !!(stream as PoolDistributionStream).pool;
 
   const tableCellProps: Partial<TableCellProps> =
-    isPending || startDateScheduled
+    isPending || startDateScheduled || isDistributionStream
       ? {}
       : {
         onClick: openStreamDetails,
         sx: { cursor: "pointer" },
       };
 
-  const isDistributionStream = !!(stream as PoolDistributionStream).pool;
 
   return (
     <TableRow hover data-cy={"stream-row"}>
