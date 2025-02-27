@@ -101,7 +101,7 @@ jobs:
             "avalanche-fuji",
             # "bsc",
             # "ethereum",
-            # "sepolia",
+            "sepolia",
             "opsepolia",
             "scrsepolia",
             "base",
