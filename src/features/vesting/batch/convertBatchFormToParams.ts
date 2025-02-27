@@ -3,8 +3,9 @@ import { parseEtherOrZero } from "../../../utils/tokenUtils";
 import { ValidBatchVestingForm } from "./BatchVestingFormProvider";
 import { VestingScheduleFromAmountAndDurationsParams } from "./VestingScheduleParams";
 import { convertPeriodToSeconds } from "./convertPeriod";
+import { getClaimPeriodInSeconds } from "../claimPeriod";
 
-export function convertBatchFormToParams(formValues: ValidBatchVestingForm): VestingScheduleFromAmountAndDurationsParams[] {
+export function convertBatchFormToParams(formValues: ValidBatchVestingForm, chainId: number): VestingScheduleFromAmountAndDurationsParams[] {
     const { superTokenAddress, startDate, cliffPeriod, claimEnabled, vestingPeriod, schedules } = formValues.data;
 
     const totalDuration = convertPeriodToSeconds(vestingPeriod);
@@ -17,7 +18,11 @@ export function convertBatchFormToParams(formValues: ValidBatchVestingForm): Ves
             totalDuration,
             startDate: getUnixTime(startDate),
             cliffPeriod: convertPeriodToSeconds(cliffPeriod),
-            claimPeriod: claimEnabled ? totalDuration : 0,
+            claimPeriod: getClaimPeriodInSeconds({
+                claimEnabled: claimEnabled ?? false,
+                totalDurationInSeconds: totalDuration,
+                chainId,
+            }),
         } as VestingScheduleFromAmountAndDurationsParams
     });
 }   

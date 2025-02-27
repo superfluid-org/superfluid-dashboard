@@ -221,7 +221,7 @@ export function BatchVestingFormProvider(props: {
         }
 
         if (schedules.length > 0) {
-          const scheduleParams = convertBatchFormToParams(validForm);
+          const scheduleParams = convertBatchFormToParams(validForm, network.id);
           const absoluteScheduleParams = scheduleParams.map(convertVestingScheduleFromAmountAndDurationsToAbsolutes);
 
           const cliffAmount = absoluteScheduleParams.reduce((acc, x) => acc.add(x.cliffAmount), BigNumber.from(0));

@@ -27,6 +27,7 @@ import { vestingSchedulerAbi } from "../../../abis/vestingSchedulerAbi";
 import { vestingSchedulerV2Abi } from "../../../abis/vestingSchedulerV2Abi";
 import { vestingSchedulerAddress } from "../../../generated";
 import { vestingSchedulerV2Address } from "../../../generated";
+import { getClaimPeriodInSeconds, getClaimValidityDate } from "../../vesting/claimPeriod";
 
 export const MAX_VESTING_DURATION_IN_YEARS = 10;
 export const MAX_VESTING_DURATION_IN_SECONDS =
@@ -114,9 +115,11 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
         signer
       );
 
-      const claimValidityDate = arg.claimEnabled
-        ? arg.endDateTimestamp
-        : undefined;
+      const claimValidityDate = getClaimValidityDate({
+        claimEnabled: arg.claimEnabled,
+        endDateTimestamp: arg.endDateTimestamp,
+        chainId,
+      });
 
       const network = findNetworkOrThrow(allNetworks, chainId);
       const contractInfo = version === 'v2' ? network.vestingContractAddress_v2 : network.vestingContractAddress_v1;
@@ -310,9 +313,12 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
         signer
       );
 
-      const claimPeriodInSeconds = arg.claimEnabled
-        ? arg.totalDurationInSeconds
-        : 0;
+      const claimPeriodInSeconds = getClaimPeriodInSeconds({
+        claimEnabled: arg.claimEnabled,
+        totalDurationInSeconds: arg.totalDurationInSeconds,
+        chainId,
+      });
+
       const [flowOperatorData, existingTokenAllowance, params] =
         await Promise.all([
           superToken.getFlowOperatorData({
