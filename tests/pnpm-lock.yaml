@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@superfluid-finance/sdk-core':
-        specifier: ^0.8.0
-        version: 0.8.0(@openzeppelin/test-helpers@0.5.16(bn.js@5.2.1)(bufferutil@4.0.8)(utf-8-validate@5.0.10))(bufferutil@4.0.8)(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(graphql@16.9.0)(typescript@5.6.3)(utf-8-validate@5.0.10)
+        specifier: ^0.9.0
+        version: 0.9.0(@openzeppelin/test-helpers@0.5.16(bn.js@5.2.1)(bufferutil@4.0.8)(utf-8-validate@5.0.10))(browserify@17.0.0)(bufferutil@4.0.8)(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(graphql@16.9.0)(typescript@5.6.3)(utf-8-validate@5.0.10)
       '@superfluid-finance/tokenlist':
         specifier: 5.8.1
         version: 5.8.1
@@ -1421,16 +1421,16 @@ packages:
     resolution: {integrity: sha512-t09vSN3MdfsyCHoFcTRCH/iUtG7OJ0CsjzB8cjAmKc/va/kIgeDI/TxsigdncE/4be734m0cvIYwNaV4i2XqAw==}
     engines: {node: '>=10'}
 
-  '@superfluid-finance/ethereum-contracts@1.11.0':
-    resolution: {integrity: sha512-/eeDf66Lu6PE8pw6Gvi0nzt0PxjBrxfsYRTlwy1f/QC2Ghpyz7E/znbkssdr79NefzzHO4MA1zYi38eHcgZXGw==}
+  '@superfluid-finance/ethereum-contracts@1.12.0':
+    resolution: {integrity: sha512-wXF8+uh32zUdPcVhCTHdla/1hCvQ808lHhYH4OiWxhIdu5caYikDzxX5AFsQ8cKdCIeHpntN1y7Z8M6EoZ4F4g==}
     peerDependencies:
       ethers: ^5.7.2
 
-  '@superfluid-finance/metadata@1.4.1':
-    resolution: {integrity: sha512-5CXnKQfOXj8w/PoK26VpMNgKxc6sRgPtsWfXVEYOYPIdEiTdXVUETqBUTZn8Nkeeeq/U3S2VpUNEnzOK5IDV6Q==}
+  '@superfluid-finance/metadata@1.5.2':
+    resolution: {integrity: sha512-0QrW4KeETnanTOQfAafUoVoCGRI4hy79V/Q48rIzwkWxk/ujfXStVdsy1eAXzBBUpUXkLzfOU3R6lqTugqECAg==}
 
-  '@superfluid-finance/sdk-core@0.8.0':
-    resolution: {integrity: sha512-fgPg1TGOIWJ1keeIxnKyB/9pwxB+8kIiCXKeVJa0Kqpo8o0S0zFUeDQdt5FuesTZWDE1GNgRbGfKPUlg/SYB2A==}
+  '@superfluid-finance/sdk-core@0.9.0':
+    resolution: {integrity: sha512-l4WTXhhrkDPiJxzHdcnL2/Q+mZi86QpJYecQlChZRQ0bonVhc4F6gFYFPWZ7O3611tOHnc0xTs6O0zc8wLRxMA==}
     engines: {node: '>=12'}
     peerDependencies:
       ethers: ^5.7.2
@@ -3320,8 +3320,8 @@ packages:
     engines: {node: '>=6'}
     deprecated: this library is no longer supported
 
-  hardhat@2.22.8:
-    resolution: {integrity: sha512-hPh2feBGRswkXkoXUFW6NbxgiYtEzp/3uvVFjYROy6fA9LH8BobUyxStlyhSKj4+v1Y23ZoUBOVWL84IcLACrA==}
+  hardhat@2.22.9:
+    resolution: {integrity: sha512-sWiuI/yRdFUPfndIvL+2H18Vs2Gav0XacCFYY5msT5dHOWkhLxESJySIk9j83mXL31aXL8+UMA9OgViFLexklg==}
     hasBin: true
     peerDependencies:
       ts-node: '*'
@@ -7809,10 +7809,10 @@ snapshots:
       '@nomicfoundation/solidity-analyzer-linux-x64-musl': 0.1.2
       '@nomicfoundation/solidity-analyzer-win32-x64-msvc': 0.1.2
 
-  '@nomiclabs/hardhat-ethers@2.2.3(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(hardhat@2.22.8(bufferutil@4.0.8)(typescript@5.6.3)(utf-8-validate@5.0.10))':
+  '@nomiclabs/hardhat-ethers@2.2.3(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(hardhat@2.22.9(bufferutil@4.0.8)(typescript@5.6.3)(utf-8-validate@5.0.10))':
     dependencies:
       ethers: 5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      hardhat: 2.22.8(bufferutil@4.0.8)(typescript@5.6.3)(utf-8-validate@5.0.10)
+      hardhat: 2.22.9(bufferutil@4.0.8)(typescript@5.6.3)(utf-8-validate@5.0.10)
 
   '@openzeppelin/contract-loader@0.6.3':
     dependencies:
@@ -7942,16 +7942,16 @@ snapshots:
 
   '@sindresorhus/is@4.6.0': {}
 
-  '@superfluid-finance/ethereum-contracts@1.11.0(@openzeppelin/test-helpers@0.5.16(bn.js@5.2.1)(bufferutil@4.0.8)(utf-8-validate@5.0.10))(bufferutil@4.0.8)(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(typescript@5.6.3)(utf-8-validate@5.0.10)':
+  '@superfluid-finance/ethereum-contracts@1.12.0(@openzeppelin/test-helpers@0.5.16(bn.js@5.2.1)(bufferutil@4.0.8)(utf-8-validate@5.0.10))(bufferutil@4.0.8)(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(typescript@5.6.3)(utf-8-validate@5.0.10)':
     dependencies:
       '@decentral.ee/web3-helpers': 0.5.3(@openzeppelin/test-helpers@0.5.16(bn.js@5.2.1)(bufferutil@4.0.8)(utf-8-validate@5.0.10))
-      '@nomiclabs/hardhat-ethers': 2.2.3(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(hardhat@2.22.8(bufferutil@4.0.8)(typescript@5.6.3)(utf-8-validate@5.0.10))
+      '@nomiclabs/hardhat-ethers': 2.2.3(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(hardhat@2.22.9(bufferutil@4.0.8)(typescript@5.6.3)(utf-8-validate@5.0.10))
       '@openzeppelin/contracts': 4.9.6
       '@truffle/contract': 4.6.31(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       ethereumjs-tx: 2.1.2
       ethereumjs-util: 7.1.5
       ethers: 5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      hardhat: 2.22.8(bufferutil@4.0.8)(typescript@5.6.3)(utf-8-validate@5.0.10)
+      hardhat: 2.22.9(bufferutil@4.0.8)(typescript@5.6.3)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - '@openzeppelin/test-helpers'
       - bufferutil
@@ -7962,13 +7962,12 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@superfluid-finance/metadata@1.4.1': {}
+  '@superfluid-finance/metadata@1.5.2': {}
 
-  '@superfluid-finance/sdk-core@0.8.0(@openzeppelin/test-helpers@0.5.16(bn.js@5.2.1)(bufferutil@4.0.8)(utf-8-validate@5.0.10))(bufferutil@4.0.8)(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(graphql@16.9.0)(typescript@5.6.3)(utf-8-validate@5.0.10)':
+  '@superfluid-finance/sdk-core@0.9.0(@openzeppelin/test-helpers@0.5.16(bn.js@5.2.1)(bufferutil@4.0.8)(utf-8-validate@5.0.10))(browserify@17.0.0)(bufferutil@4.0.8)(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(graphql@16.9.0)(typescript@5.6.3)(utf-8-validate@5.0.10)':
     dependencies:
-      '@superfluid-finance/ethereum-contracts': 1.11.0(@openzeppelin/test-helpers@0.5.16(bn.js@5.2.1)(bufferutil@4.0.8)(utf-8-validate@5.0.10))(bufferutil@4.0.8)(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(typescript@5.6.3)(utf-8-validate@5.0.10)
-      '@superfluid-finance/metadata': 1.4.1
-      browserify: 17.0.0
+      '@superfluid-finance/ethereum-contracts': 1.12.0(@openzeppelin/test-helpers@0.5.16(bn.js@5.2.1)(bufferutil@4.0.8)(utf-8-validate@5.0.10))(bufferutil@4.0.8)(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(typescript@5.6.3)(utf-8-validate@5.0.10)
+      '@superfluid-finance/metadata': 1.5.2
       ethers: 5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       graphql: 16.9.0
       graphql-request: 6.1.0(graphql@16.9.0)
@@ -7976,6 +7975,7 @@ snapshots:
       tsify: 5.0.4(browserify@17.0.0)(typescript@5.6.3)
     transitivePeerDependencies:
       - '@openzeppelin/test-helpers'
+      - browserify
       - bufferutil
       - c-kzg
       - encoding
@@ -10537,7 +10537,7 @@ snapshots:
       ajv: 6.12.6
       har-schema: 2.0.0
 
-  hardhat@2.22.8(bufferutil@4.0.8)(typescript@5.6.3)(utf-8-validate@5.0.10):
+  hardhat@2.22.9(bufferutil@4.0.8)(typescript@5.6.3)(utf-8-validate@5.0.10):
     dependencies:
       '@ethersproject/abi': 5.7.0
       '@metamask/eth-sig-util': 4.0.1
@@ -10547,7 +10547,7 @@ snapshots:
       '@nomicfoundation/ethereumjs-util': 9.0.4
       '@nomicfoundation/solidity-analyzer': 0.1.2
       '@sentry/node': 5.30.0
-      '@types/bn.js': 5.1.5
+      '@types/bn.js': 5.1.6
       '@types/lru-cache': 5.1.1
       adm-zip: 0.4.16
       aggregate-error: 3.1.0

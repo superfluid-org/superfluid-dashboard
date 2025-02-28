@@ -2,7 +2,7 @@
   "gnosis": {
     "TokenOne": "TDL",
     "TokenTwo": "USDC",
-    "TokenThree": "WORK",
+    "TokenThree": "AC",
     "TokenGas": "XDAI"
   },
   "polygon": {

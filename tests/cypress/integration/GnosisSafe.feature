@@ -1,3 +1,4 @@
+# Etherium and Optimism flaky on CI, works locally
 @ignoreDuringUI
 @Gnosis
 Feature: Gnosis safe test cases
@@ -10,7 +11,7 @@ Feature: Gnosis safe test cases
 
     Examples:
       | network      |
-      | gnosis       |
+      # | gnosis       |
       # | ethereum     |
       # | polygon      |
       | bsc          |

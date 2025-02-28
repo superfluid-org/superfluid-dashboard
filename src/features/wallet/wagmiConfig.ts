@@ -13,8 +13,8 @@ type Web3ModalMetadata = Parameters<typeof defaultWagmiConfig>[0]["metadata"];
 const metadata: Web3ModalMetadata = {
   name: 'Superfluid Dashboard',
   description: defaultAppDescription,
-  url: 'https://app.superfluid.finance',
-  icons: ['https://app.superfluid.finance/icons/icon-96x96.png']
+  url: 'https://app.superfluid.org',
+  icons: ['https://app.superfluid.org/icons/icon-96x96.png']
 }
 
 const projectId = appConfig.walletConnectProjectId;
