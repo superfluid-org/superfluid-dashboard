@@ -36,7 +36,7 @@ const LiquidatedActivityRow: FC<LiquidatedActivityRowProps> = ({
   dateFormat = "HH:mm",
 }) => {
   const { token, timestamp, transactionHash } = keyEvent;
-  const { sender = "", receiver = "" } = flowUpdatedEvent || {};
+  const { sender, receiver } = flowUpdatedEvent || {};
 
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
@@ -45,10 +45,10 @@ const LiquidatedActivityRow: FC<LiquidatedActivityRowProps> = ({
   const tokenQuery = useTokenQuery(
     token
       ? {
-          chainId: network.id,
-          id: token,
-          onlySuperToken: true,
-        }
+        chainId: network.id,
+        id: token,
+        onlySuperToken: true,
+      }
       : skipToken
   );
 
@@ -56,6 +56,8 @@ const LiquidatedActivityRow: FC<LiquidatedActivityRowProps> = ({
     () => visibleAddress?.toLowerCase() === sender?.toLowerCase(),
     [visibleAddress, sender]
   );
+
+  const hasSenderAndReceiver = sender && receiver;
 
   return (
     <TableRow data-cy={`${network.slugName}-row`}>
@@ -110,34 +112,38 @@ const LiquidatedActivityRow: FC<LiquidatedActivityRowProps> = ({
             </ListItem>
           </TableCell>
           <TableCell>
-            <ListItem sx={{ p: 0 }}>
-              <ListItemAvatar>
-                <AddressAvatar
-                  address={isOutgoing ? receiver : sender}
-                  AvatarProps={{ variant: "rounded" }}
-                />
-              </ListItemAvatar>
-              <ListItemText
-                data-cy={"amountToFrom"}
-                primary={isOutgoing ? "To" : "From"}
-                secondary={
-                  <AddressCopyTooltip address={isOutgoing ? receiver : sender}>
-                    <Typography
-                      variant="h6"
-                      color="text.primary"
-                      component="span"
-                    >
-                      <AddressName address={isOutgoing ? receiver : sender} />
-                    </Typography>
-                  </AddressCopyTooltip>
-                }
-                primaryTypographyProps={{
-                  translate: "yes",
-                  variant: "body2mono",
-                  color: "text.secondary",
-                }}
-              />
-            </ListItem>
+            {
+              hasSenderAndReceiver && (
+                <ListItem sx={{ p: 0 }}>
+                  <ListItemAvatar>
+                    <AddressAvatar
+                      address={isOutgoing ? receiver : sender}
+                      AvatarProps={{ variant: "rounded" }}
+                    />
+                  </ListItemAvatar>
+                  <ListItemText
+                    data-cy={"amountToFrom"}
+                    primary={isOutgoing ? "To" : "From"}
+                    secondary={
+                      <AddressCopyTooltip address={isOutgoing ? receiver : sender}>
+                        <Typography
+                          variant="h6"
+                          color="text.primary"
+                          component="span"
+                        >
+                          <AddressName address={isOutgoing ? receiver : sender} />
+                        </Typography>
+                      </AddressCopyTooltip>
+                    }
+                    primaryTypographyProps={{
+                      translate: "yes",
+                      variant: "body2mono",
+                      color: "text.secondary",
+                    }}
+                  />
+                </ListItem>
+              )
+            }
           </TableCell>
           <TableCell sx={{ position: "relative" }}>
             <TxHashLink txHash={transactionHash} network={network} />
