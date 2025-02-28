@@ -38,7 +38,7 @@ const BatchVestingPreview: FC<BatchVestingPreviewProps> = ({
 
     const scheduleParams = useMemo(() => convertBatchFormToParams({
         data: formData
-    }), [formData]);
+    }, network.id), [formData, network.id]);
 
     const scheduleAbsoluteParams = useMemo(() => scheduleParams.map(convertVestingScheduleFromAmountAndDurationsToAbsolutes), [scheduleParams]);
 

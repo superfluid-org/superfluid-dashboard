@@ -40,6 +40,8 @@ import { ActiveStreamIcon, ScheduledStreamIcon } from "./StreamIcons";
 import { StreamScheduling } from "./StreamScheduling";
 import Image from "next/legacy/image";
 import Link from "../common/Link";
+import { PoolDistributionStream } from "./StreamsTable";
+import CancelDistributionStreamButton from "./CancelStreamButton/CancelDistributionStreamButton";
 
 export const HumaFinanceLink: FC<{ width?: number; height?: number }> = ({
   width = 24,
@@ -127,8 +129,9 @@ interface StreamRowProps {
     | PendingOutgoingStream
     | ScheduledStream
     | PendingScheduledStream
+    | PoolDistributionStream
   ) &
-    StreamScheduling;
+  StreamScheduling;
   network: Network;
   isHumaFinanceOperatedStream: Boolean;
 }
@@ -174,14 +177,16 @@ const StreamRow: FC<StreamRowProps> = ({
     .hasTransactionSucceeded;
 
   const isActive = !isPending && !startDateScheduled && currentFlowRate !== "0";
+  const isDistributionStream = !!(stream as PoolDistributionStream).pool;
 
   const tableCellProps: Partial<TableCellProps> =
-    isPending || startDateScheduled
+    isPending || startDateScheduled || isDistributionStream
       ? {}
       : {
-          onClick: openStreamDetails,
-          sx: { cursor: "pointer" },
-        };
+        onClick: openStreamDetails,
+        sx: { cursor: "pointer" },
+      };
+
 
   return (
     <TableRow hover data-cy={"stream-row"}>
@@ -301,28 +306,40 @@ const StreamRow: FC<StreamRowProps> = ({
                   {isPendingAndWaitingForSubgraph
                     ? "Syncing..."
                     : pendingType === "CreateTaskCreate"
-                    ? "Scheduling..."
-                    : "Sending..."}
+                      ? "Scheduling..."
+                      : "Sending..."}
                 </Typography>
               </>
             )}
             {!isPending && (isActive || !!startDateScheduled) && (
               <>
                 {isHumaFinanceOperatedStream && <HumaFinanceLink />}
-                {isOutgoing && (
+                {isOutgoing && !isDistributionStream && (
                   <ModifyStreamButton
                     stream={stream as Stream}
                     network={network}
                     size="small"
                   />
                 )}
-                <CancelStreamButton
-                  stream={
-                    stream as (Stream | ScheduledStream) & StreamScheduling
-                  }
-                  network={network}
-                  IconButtonProps={{ size: "small" }}
-                />
+                {
+                  isDistributionStream ? (
+                    <CancelDistributionStreamButton
+                      stream={
+                        stream as PoolDistributionStream
+                      }
+                      network={network}
+                      IconButtonProps={{ size: "small" }}
+                    />
+                  ) : (
+                    <CancelStreamButton
+                      stream={
+                        stream as (Stream | ScheduledStream) & StreamScheduling
+                      }
+                      network={network}
+                      IconButtonProps={{ size: "small" }}
+                    />
+                  )
+                }
               </>
             )}
           </Stack>

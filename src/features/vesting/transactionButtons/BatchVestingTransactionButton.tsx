@@ -61,7 +61,7 @@ export function BatchVestingTransactionButton({ setView, isVisible: isVisible_ =
                         setView(CreateVestingCardView.Approving);
 
                         const primaryArgs = {
-                            params: convertBatchFormToParams(validForm),
+                            params: convertBatchFormToParams(validForm, network.id),
                             chainId: network.id,
                             superTokenAddress: validForm.data.superTokenAddress,
                             signer,
