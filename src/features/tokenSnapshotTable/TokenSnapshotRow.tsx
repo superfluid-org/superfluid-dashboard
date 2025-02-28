@@ -159,6 +159,8 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
     }
   }, [balanceData]);
 
+  const hasNetFlow = balanceData && balanceData.flowRate !== "0";
+
   return (
     <>
       <SnapshotRow
@@ -240,7 +242,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
             </TableCell>
 
             <TableCell data-cy={"net-flow"} onClick={openTokenPage}>
-              {totalNumberOfActiveStreams > 0 ? (
+              {hasNetFlow ? (
                 <ListItemText
                   data-cy="net-flow-value"
                   primary={
