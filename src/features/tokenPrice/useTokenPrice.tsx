@@ -33,19 +33,19 @@ const useTokenPrice = (chainId: number, token?: Address) => {
   );
 
   return useMemo(() => {
-    const price = tokenPriceResponse.data?.price;
+    const price = tokenPriceResponse.currentData?.price;
 
     if (price) {
       if (currency === Currency.USD) return price;
 
       const exchangeRate =
-        exchangeRatesResponse.data &&
-        exchangeRatesResponse.data[currency.toString()];
+        exchangeRatesResponse.currentData &&
+        exchangeRatesResponse.currentData[currency.toString()];
       if (exchangeRate) return price * exchangeRate;
     }
 
     return undefined;
-  }, [currency, tokenPriceResponse.data, exchangeRatesResponse.data]);
+  }, [currency, tokenPriceResponse.currentData, exchangeRatesResponse.currentData]);
 };
 
 export default useTokenPrice;
