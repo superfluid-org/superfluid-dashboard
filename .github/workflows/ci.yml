@@ -93,8 +93,8 @@ jobs:
         container: [1,2]
         network:
           [
-            # "gnosis",
-            # "polygon",
+            "gnosis",
+            "polygon",
             "optimism",
             "arbitrum-one",
             "avalanche",
