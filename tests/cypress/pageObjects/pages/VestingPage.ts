@@ -98,8 +98,8 @@ const REQUIRE_RECEIVER_TO_CLAIM = '[data-cy=claim-toggle]';
 const VESTING_STATUS = '[data-cy=vesting-status]';
 
 //Dates for the vesting previews etc.
-let staticStartDate = new Date(1879145815000);
-let staticEndDate = new Date(2036912215000);
+let staticStartDate = new Date(1898252700000);
+let staticEndDate = new Date(2056021500000);
 let currentTime = new Date();
 let startDate = new Date(
   currentTime.getTime() + wordTimeUnitMap['year'] * 1000
@@ -401,16 +401,16 @@ export class VestingPage extends BasePage {
     );
     this.hasText(TABLE_ALLOCATED_AMOUNT, '60.87 fTUSDx', 0, { timeout: 30000 });
     this.hasText(VESTED_AMOUNT, '0  fTUSDx', 0);
-    // this.containsText(
-    //   TABLE_START_END_DATES,
-    //   format(staticStartDate, 'LLL d, yyyy'),
-    //   0
-    // );
-    // this.containsText(
-    //   TABLE_START_END_DATES,
-    //   format(staticEndDate, 'LLL d, yyyy'),
-    //   0
-    // );
+    this.containsText(
+      TABLE_START_END_DATES,
+      format(staticStartDate, 'LLL d, yyyy'),
+      0
+    );
+    this.containsText(
+      TABLE_START_END_DATES,
+      format(staticEndDate, 'LLL d, yyyy'),
+      0
+    );
   }
 
   static validateSchedulePreviewDetails(
