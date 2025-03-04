@@ -64,15 +64,20 @@ export class GnosisSafe extends BasePage {
   static continueDisclaimer() {
     //The disclaimer is quite annoying and messes up when cypress quickly clicks on it
     //Waiting for other stuff to be visible / not be visible / exist / not exist didn't help here :(
+    cy.get(GNOSIS_BUTTONS, { timeout: 30000 }).contains('I understand').click();
+    cy.get(GNOSIS_BUTTONS).contains('I understand').should('not.exist');
+    cy.wait(1000);
     cy.get(GNOSIS_BUTTONS, { timeout: 30000 }).contains('Accept all').click();
     cy.get(GNOSIS_BUTTONS).contains('Accept all').should('not.exist');
     cy.wait(1000);
     cy.get(GNOSIS_BUTTONS, { timeout: 30000 }).contains('Continue').click();
     cy.wait(1000);
-    cy.get('.MuiTypography-root > .MuiBox-root').should('not.be.visible');
-    this.click(GNOSIS_WARNING_CHECKBOX);
+    cy.get(GNOSIS_BUTTONS, { timeout: 30000 }).contains('Continue').click();
     cy.wait(1000);
-    cy.get(GNOSIS_BUTTONS).contains('Continue').click();
+    // cy.get('.MuiTypography-root > .MuiBox-root').should('not.be.visible');
+    // this.click(GNOSIS_WARNING_CHECKBOX);
+    // cy.wait(1000);
+    // cy.get(GNOSIS_BUTTONS).contains('Continue').click();
     this.isVisible(LOADING_SPINNER);
     this.doesNotExist(LOADING_SPINNER, undefined, { timeout: 45000 });
   }
