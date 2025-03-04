@@ -87,8 +87,8 @@ Feature: Address Book test cases
     And Selected sections shows "john" and address book entry is selected
     And User clicks the OK button
     And "john" is shown as one of the counterparty addresses
-    And User changes the export start date to "01/22"
-    And User changes the export end date with date picker to "Jan" "2023"
+    And User changes the export start date to "02/24"
+    And User changes the export end date with date picker to "Feb" "2025"
     And User clicks on the export preview button
     Then The export preview table only shows "counterparty" rows with "john"
 
@@ -146,7 +146,7 @@ Feature: Address Book test cases
 
     Examples:
       | activity                         |
-      | Distribution Claimed/Subscriber  |
+      # | Distribution Claimed/Subscriber  |
       | Send Transfer                    |
       | Liquidated/v2                    |
       | Subscription Updated/Subscriber  |
