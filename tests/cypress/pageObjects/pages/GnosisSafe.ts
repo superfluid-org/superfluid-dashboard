@@ -115,9 +115,12 @@ export class GnosisSafe extends BasePage {
 
   static openCustomAppPage(network) {
     cy.visit(
-      `${GNOSIS_SAFE_BASEURL}${GnosisSafePrefixByNetworkSlug[network]}${GnosisSafeAddressesPerNetwork[network]}/apps/custom`
+      `${GNOSIS_SAFE_BASEURL}${GnosisSafePrefixByNetworkSlug[network]}${GnosisSafeAddressesPerNetwork[network]}/apps/custom`,
+      { failOnStatusCode: false }
     );
     Cypress.config('baseUrl', 'https://app.superfluid.org');
+    cy.wait(1000);
+    cy.get(GNOSIS_BUTTONS, { timeout: 30000 }).contains('I understand').click();
     cy.get(GNOSIS_BUTTONS, { timeout: 30000 }).contains('Accept all').click();
   }
 
