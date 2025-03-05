@@ -48,6 +48,7 @@
     "@superfluid-finance/sdk-redux": "^0.6.1",
     "@superfluid-finance/tokenlist": "^5.11.0",
     "@tanstack/react-query": "^5.59.20",
+    "@vercel/functions": "^2.0.0",
     "@web3modal/wagmi": "^5.1.11",
     "await-timeout": "^1.1.1",
     "axios": "^1.7.7",

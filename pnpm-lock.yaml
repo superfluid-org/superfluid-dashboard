@@ -89,6 +89,9 @@ importers:
       '@tanstack/react-query':
         specifier: ^5.59.20
         version: 5.59.20(react@18.3.1)
+      '@vercel/functions':
+        specifier: ^2.0.0
+        version: 2.0.0
       '@web3modal/wagmi':
         specifier: ^5.1.11
         version: 5.1.11(mqvuibrd7idmxpjutbv6oabaou)
@@ -3893,6 +3896,15 @@ packages:
   '@uniswap/token-lists@1.0.0-beta.34':
     resolution: {integrity: sha512-Hc3TfrFaupg0M84e/Zv7BoF+fmMWDV15mZ5s8ZQt2qZxUcNw2GQW+L6L/2k74who31G+p1m3GRYbJpAo7d1pqA==}
     engines: {node: '>=10'}
+
+  '@vercel/functions@2.0.0':
+    resolution: {integrity: sha512-BSwIihLHoV18gerKZJyGuqd3rtaYM6rJvET1kOwKktshucyaHXTJel7Cxegs+sdX0NZqsX4LO2MFnMU2jG01Cw==}
+    engines: {node: '>= 18'}
+    peerDependencies:
+      '@aws-sdk/credential-provider-web-identity': '*'
+    peerDependenciesMeta:
+      '@aws-sdk/credential-provider-web-identity':
+        optional: true
 
   '@wagmi/cli@2.1.18':
     resolution: {integrity: sha512-1Vqz3Kj0WY/p6vUq1a2m8NH+64wAcoV+fUC8j5BrEgaeCDbQrWdZ2nMLbz/I6ao2oPNvv1eNWCjR6r8QiscXlA==}
@@ -16218,6 +16230,8 @@ snapshots:
   '@ungap/structured-clone@1.2.0': {}
 
   '@uniswap/token-lists@1.0.0-beta.34': {}
+
+  '@vercel/functions@2.0.0': {}
 
   '@wagmi/cli@2.1.18(bufferutil@4.0.8)(typescript@5.6.3)(utf-8-validate@5.0.10)':
     dependencies:
