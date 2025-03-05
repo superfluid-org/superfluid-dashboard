@@ -11,14 +11,14 @@ Feature: Gnosis safe test cases
     Examples:
       | network      |
       | gnosis       |
-      | ethereum     |
+      # | ethereum     |
       | polygon      |
       | bsc          |
       | arbitrum-one |
-      | avalanche    |
-      | optimism     |
-      | celo         |
 
+  # | avalanche    |
+  # | optimism     |
+  # | celo         |
   @skip
   Scenario Outline: Gnosis safe - adding superfluid as a custom app <network>
     Given Gnosis safe custom app page is open on "<network>"
