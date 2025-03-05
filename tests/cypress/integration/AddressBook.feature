@@ -82,15 +82,15 @@ Feature: Address Book test cases
     And Selected sections shows "Multiple networks test" and address book entry is selected
     And User clicks the OK button
     And "Multiple networks test" is selected for the export
-    And User searches for "john" as the counterparty account
-    And User selects "john" from the address book section
-    And Selected sections shows "john" and address book entry is selected
+    And User searches for "oldjohn" as the counterparty account
+    And User selects "oldjohn" from the address book section
+    And Selected sections shows "oldjohn" and address book entry is selected
     And User clicks the OK button
-    And "john" is shown as one of the counterparty addresses
+    And "oldjohn" is shown as one of the counterparty addresses
     And User changes the export start date to "02/24"
     And User changes the export end date with date picker to "Feb" "2025"
     And User clicks on the export preview button
-    Then The export preview table only shows "counterparty" rows with "john"
+    Then The export preview table only shows "counterparty" rows with "oldjohn"
 
   Scenario: Address book name showing up in - Vesting page
     Given Address book test data is set up

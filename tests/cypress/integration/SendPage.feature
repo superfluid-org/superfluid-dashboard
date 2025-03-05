@@ -155,19 +155,19 @@ Feature: Send Page test cases
     Given "Dashboard Page" is open with "john" connected on "opsepolia"
     And No loading skeletons are visible in the page
     And User clicks on "opsepolia" "fTUSDx" row
-    Then The stream row to "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4" has a flow rate of "-1" and dates to "4 Mar. 2025 10:404 Mar. 2025 10:55"
+    Then The stream row to "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4" has a flow rate of "-1" and dates to "22 Jul. 2026 03:001 Jan. 2027 00:00"
     And User clicks on "opsepolia" "fTUSDx" row
     And User opens "opsepolia" "fTUSDx" individual token page
-    Then The stream row to "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4" has a flow rate of "-1" and dates to "4 Mar. 2025 10:404 Mar. 2025 10:55"
+    Then The stream row to "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4" has a flow rate of "-1" and dates to "22 Jul. 2026 03:001 Jan. 2027 00:00"
 
   Scenario: Stream tables - stream with end date
     Given "Dashboard Page" is open with "john" connected on "opsepolia"
     And No loading skeletons are visible in the page
     And User clicks on "opsepolia" "fTUSDx" row
-    Then The stream row to "0x9B6157d44134b21D934468B8bf709294cB298aa7" has a flow rate of "-1" and dates to "4 Mar. 2025 09:444 Mar. 2025 10:25"
+    Then The stream row to "0x9B6157d44134b21D934468B8bf709294cB298aa7" has a flow rate of "-1" and dates to "5 Mar. 2025 13:101 Jan. 2027 00:00"
     And User clicks on "opsepolia" "fTUSDx" row
     And User opens "opsepolia" "fTUSDx" individual token page
-    Then The stream row to "0x9B6157d44134b21D934468B8bf709294cB298aa7" has a flow rate of "-1" and dates to "4 Mar. 2025 09:444 Mar. 2025 10:25"
+    Then The stream row to "0x9B6157d44134b21D934468B8bf709294cB298aa7" has a flow rate of "-1" and dates to "5 Mar. 2025 13:101 Jan. 2027 00:00"
 
   Scenario: Modifying a streams start date
     Given HDWallet transactions are rejected
@@ -242,8 +242,8 @@ Feature: Send Page test cases
     And User opens the token selection screen
     And User selects "fTUSDx" from the super token list
     Then The flow rate field in the send page is "1"
-    And The stream start date is set to "07/14/2026 03:00"
-    And The stream end date is set to "07/22/2026 03:00"
+    And The stream start date is set to "07/22/2026 03:00"
+    And The stream end date is set to "01/01/2027 00:00"
 
 
 #TODO: Test cases that are broken/will get changed or no functionality yet
