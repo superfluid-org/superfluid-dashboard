@@ -62,8 +62,8 @@
     "TokenGas": "ETH"
   },
   "scroll": {
-    "TokenOne": "changeThisWhenTokensListed",
-    "TokenTwo": "changeThisWhenTokensListed",
+    "TokenOne": "fDAI",
+    "TokenTwo": "fUSDC",
     "TokenGas": "ETH"
   },
   "scrsepolia": {

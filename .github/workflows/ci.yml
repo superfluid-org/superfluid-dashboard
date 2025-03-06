@@ -103,7 +103,7 @@ jobs:
             # "ethereum",
             "sepolia",
             "opsepolia",
-            # "scrsepolia",
+            "scrsepolia",
             "base",
           ]
     steps:
