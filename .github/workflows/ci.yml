@@ -99,7 +99,7 @@ jobs:
             "arbitrum-one",
             "avalanche",
             "avalanche-fuji",
-            # "bsc",
+            "bsc",
             # "ethereum",
             "sepolia",
             "opsepolia",
