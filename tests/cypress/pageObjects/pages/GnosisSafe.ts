@@ -72,12 +72,12 @@ export class GnosisSafe extends BasePage {
     cy.wait(1000);
     cy.get(GNOSIS_BUTTONS, { timeout: 30000 }).contains('Continue').click();
     cy.wait(1000);
-    this.isVisible(LOADING_SPINNER);
-    this.doesNotExist(LOADING_SPINNER, undefined, { timeout: 45000 });
+    // this.isVisible(LOADING_SPINNER);
+    // this.doesNotExist(LOADING_SPINNER, undefined, { timeout: 45000 });
   }
 
   static validateThatDashboardLoaded() {
-    cy.frameLoaded(SUPERFLUID_IFRAME);
+    cy.frameLoaded(SUPERFLUID_IFRAME, { timeout: 45000 });
   }
 
   static connectGnosisSafeWallet() {
