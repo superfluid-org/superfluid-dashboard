@@ -773,16 +773,17 @@ export class VestingPage extends BasePage {
         schedule.cliffAmount / 1e18 +
         ((Date.now() - stream.startedAtUnix) * stream.flowRate) / 1e21
       )
+        .toFixed(0)
         .toString()
         .substring(0, 8);
-      // this.hasText(
-      //   `[data-cy="${stream.token.symbol}-total-allocated"]`,
-      //   `${schedule.totalAllocated}${stream.token.symbol}`
-      // );
-      // this.containsText(
-      //   `[data-cy="${stream.token.symbol}-total-vested"]`,
-      //   totalVestedAmount
-      // );
+      this.hasText(
+        `[data-cy="${stream.token.symbol}-total-allocated"]`,
+        `${schedule.totalAllocated}${stream.token.symbol}`
+      );
+      this.containsText(
+        `[data-cy="${stream.token.symbol}-total-vested"]`,
+        totalVestedAmount
+      );
     });
     this.hasText(`[data-cy=DAIx-total-allocated]`, `60.87DAIx`);
     this.containsText(`[data-cy=DAIx-total-vested]`, '0');
