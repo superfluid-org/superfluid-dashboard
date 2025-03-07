@@ -441,11 +441,11 @@ export class VestingPage extends BasePage {
       timeout: 30000,
     });
     cy.fixture('vestingData').then((data) => {
-      // let schedule = data['opsepolia'].fTUSDx.schedule;
-      // this.hasText(
-      //   DETAILS_SCHEDULED_DATE,
-      //   format(schedule.createdAt * 1000, 'MMM do, yyyy HH:mm')
-      // );
+      let schedule = data['opsepolia'].fTUSDx.schedule;
+      this.hasText(
+        DETAILS_SCHEDULED_DATE,
+        format(schedule.createdAt * 1000, 'MMM do, yyyy HH:mm')
+      );
       // this.hasText(
       //   DETAILS_CLIFF_START,
       //   format(schedule.startDate * 1000, "MMM do, yyyy HH:mm")
@@ -454,10 +454,10 @@ export class VestingPage extends BasePage {
       //   DETAILS_CLIFF_END,
       //   format(schedule.cliffDate * 1000, "MMM do, yyyy HH:mm")
       // );
-      // this.hasText(
-      //   DETAILS_VESTING_END,
-      //   format(schedule.endDate * 1000, 'MMM do, yyyy HH:mm')
-      // );
+      this.hasText(
+        DETAILS_VESTING_END,
+        format(schedule.endDate * 1000, 'MMM do, yyyy HH:mm')
+      );
     });
   }
 
