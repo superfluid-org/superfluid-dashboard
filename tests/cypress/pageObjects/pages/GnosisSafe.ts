@@ -10,7 +10,7 @@ import {
 
 const GNOSIS_BUTTONS = '.MuiButton-contained';
 const GNOSIS_SAFE_WALLET_OPTION = '[data-testid=wallet-selector-external-safe]';
-const SUPERFLUID_IFRAME = 'iframe[title="Superfluid Dashboard"]';
+const SUPERFLUID_IFRAME = 'iframe[title="unknown"]';
 const LOADING_SPINNER = '.MuiCircularProgress-root';
 const GNOSIS_WARNING_CHECKBOX = '.PrivateSwitchBase-input';
 const CUSTOM_APP_URL_FIELD = 'input[name=appUrl]';
@@ -72,12 +72,15 @@ export class GnosisSafe extends BasePage {
     cy.wait(1000);
     cy.get(GNOSIS_BUTTONS, { timeout: 30000 }).contains('Continue').click();
     cy.wait(1000);
-    // this.isVisible(LOADING_SPINNER);
-    // this.doesNotExist(LOADING_SPINNER, undefined, { timeout: 45000 });
+    cy.get(GNOSIS_BUTTONS, { timeout: 30000 }).contains('Continue').click();
+    cy.get(GNOSIS_BUTTONS).contains('Continue').should('not.exist');
+    cy.wait(1000);
+    this.isVisible(LOADING_SPINNER);
+    this.doesNotExist(LOADING_SPINNER, undefined, { timeout: 45000 });
   }
 
   static validateThatDashboardLoaded() {
-    cy.frameLoaded(SUPERFLUID_IFRAME, { timeout: 45000 });
+    cy.frameLoaded(SUPERFLUID_IFRAME);
   }
 
   static connectGnosisSafeWallet() {
