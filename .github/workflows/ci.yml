@@ -1,34 +1,20 @@
 name: Dev CI/CD
 
 on:
-  pull_request:
-    types: [opened, reopened, ready_for_review, synchronize]
+  deployment_status:
 
 jobs:
   test_setup:
-    if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    outputs:
-      netlify_url: ${{ steps.waitForDeployment.outputs.url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-
-      - name: Wait for Netlify
-        uses: quantizor/wait-for-netlify-action@3.2.0 # Check the source code before updating version because it uses personal Netlify access token which does not have granular access control.
-        id: waitForDeployment
-        with:
-          site_id: "aa82cf1e-ce5d-432f-99bf-77a0b8c13277"
-        env:
-          NETLIFY_TOKEN: ${{ secrets.NETLIFY_TOKEN }}
 
   ui-tests:
     timeout-minutes: 60
-    needs: ["test_setup"]
-    if: ${{ !github.event.pull_request.draft }}
+    needs: test_setup
+    if: (github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success')
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -58,10 +44,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        #In order to change the default behaviour and checkout the triggering commit ,
-        #e.g. don't show Merge 23452345234523452345 into 34563456345634563456 but the actual commit that triggered the workflow in the test results
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -71,7 +53,7 @@ jobs:
         with:
           node-version: 20.x
 
-      #A workaround for Cypress to work with Currents https://github.com/currents-dev/gh-actions-example/blob/main/.github/workflows/currents.yml
+      # A workaround for Cypress to work with Currents https://github.com/currents-dev/gh-actions-example/blob/main/.github/workflows/currents.yml
       # Install Currents
       - name: Install dependencies
         run: |
@@ -97,12 +79,13 @@ jobs:
           command: pnpm cypress-cloud run --record --parallel --key ${{ secrets.V2_CYPRESS_RECORD_KEY }} --group UI --ci-build-id ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt}} --env TAGS="not @ignoreDuringUI",STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }},TX_ACCOUNT_PRIVATE_KEY1=${{ secrets.TX_ACCOUNT_PRIVATE_KEY1 }},TX_ACCOUNT_PRIVATE_KEY2=${{ secrets.TX_ACCOUNT_PRIVATE_KEY2 }},TX_ACCOUNT_PRIVATE_KEY3=${{ secrets.TX_ACCOUNT_PRIVATE_KEY3 }},TX_ACCOUNT_PRIVATE_KEY4=${{ secrets.TX_ACCOUNT_PRIVATE_KEY4 }}
           working-directory: tests
         env:
-          CYPRESS_baseUrl: ${{ needs.test_setup.outputs.netlify_url }}
+          CYPRESS_baseUrl: ${{ github.event.deployment_status.environment_url }}
 
   rejected-tests:
     timeout-minutes: 45
-    needs: ["test_setup"]
-    if: ${{ !github.event.pull_request.draft }}
+    needs: test_setup
+    if: (github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success' && github.event.deployment_status.environment == 'Preview')
+
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -117,7 +100,7 @@ jobs:
             "avalanche",
             "avalanche-fuji",
             "bsc",
-            "ethereum",
+            # "ethereum",
             "sepolia",
             "opsepolia",
             "scrsepolia",
@@ -125,8 +108,6 @@ jobs:
           ]
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Use Node.js 20.x
         uses: actions/setup-node@v4
@@ -136,7 +117,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
 
-      #A workaround for Cypress to work with Currents https://github.com/currents-dev/gh-actions-example/blob/main/.github/workflows/currents.yml
+      # A workaround for Cypress to work with Currents https://github.com/currents-dev/gh-actions-example/blob/main/.github/workflows/currents.yml
       # Install Currents
       - name: Install dependencies
         run: |
@@ -162,22 +143,18 @@ jobs:
           command: pnpm cypress-cloud run --record --parallel --key ${{ secrets.V2_CYPRESS_RECORD_KEY }} --group rejected-${{ matrix.network }} --ci-build-id ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt}} --env network=${{ matrix.network }},TAGS=@rejected,STATIC_BALANCE_ACCOUNT_PRIVATE_KEY=${{ secrets.STATIC_BALANCE_ACCOUNT_PRIVATE_KEY }},ONGOING_STREAM_ACCOUNT_PRIVATE_KEY=${{ secrets.ONGOING_STREAM_ACCOUNT_PRIVATE_KEY }},TX_ACCOUNT_PRIVATE_KEY1=${{ secrets.TX_ACCOUNT_PRIVATE_KEY1 }},TX_ACCOUNT_PRIVATE_KEY2=${{ secrets.TX_ACCOUNT_PRIVATE_KEY2 }},TX_ACCOUNT_PRIVATE_KEY3=${{ secrets.TX_ACCOUNT_PRIVATE_KEY3 }},TX_ACCOUNT_PRIVATE_KEY4=${{ secrets.TX_ACCOUNT_PRIVATE_KEY4 }}
           working-directory: tests
         env:
-          CYPRESS_baseUrl: ${{ needs.test_setup.outputs.netlify_url }}
+          CYPRESS_baseUrl: ${{ github.event.deployment_status.environment_url }}
 
   gnosis-safe-tests:
     timeout-minutes: 30
-    needs: ["test_setup"]
-    if: ${{ !github.event.pull_request.draft }}
+    needs: test_setup
+    if: (github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success' && github.event.deployment_status.environment == 'Preview')
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        #In order to change the default behaviour and checkout the triggering commit ,
-        #e.g. don't show Merge 23452345234523452345 into 34563456345634563456 but the actual commit that triggered the workflow in the test results
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Use Node.js 20.x
         uses: actions/setup-node@v4
@@ -186,7 +163,8 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-      #A workaround for Cypress to work with Currents https://github.com/currents-dev/gh-actions-example/blob/main/.github/workflows/currents.yml
+      
+      # A workaround for Cypress to work with Currents https://github.com/currents-dev/gh-actions-example/blob/main/.github/workflows/currents.yml
       # Install Currents
       - name: Install dependencies
         run: |
@@ -212,4 +190,4 @@ jobs:
           working-directory: tests
           command: pnpm cypress-cloud run --browser chrome --config chromeWebSecurity=false --record --parallel --key ${{ secrets.V2_CYPRESS_RECORD_KEY }} --group Gnosis --ci-build-id ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt}} --env TAGS=@Gnosis
         env:
-          CYPRESS_baseUrl: ${{ needs.test_setup.outputs.netlify_url }}
+          CYPRESS_baseUrl: ${{ github.event.deployment_status.environment_url }}

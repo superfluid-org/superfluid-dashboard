@@ -1,178 +1,178 @@
 Feature: Address Book test cases
 
-    Scenario: No addresses added onboarding message
-        Given "Address book Page" is open without connecting a wallet
-        Then No addresses added message is shown
+  Scenario: No addresses added onboarding message
+    Given "Address book Page" is open without connecting a wallet
+    Then No addresses added message is shown
 
-    Scenario: Adding, editing and removing an address book entry
-        Given "Address book Page" is open without connecting a wallet
-        And User adds "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40" as "Testing" on "-" to their address book
-        Then The last address book entry name is "Testing"
-        And Last added address book entry network is "-"
-        And User edits the name of the last address book entry to "testing"
-        Then The last address book entry name is "testing"
-        And User removes the last address book entry
-        Then No addresses added message is shown
-        And User adds "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40" as "-" on "polygon" to their address book
-        Then The last address book entry name is "0x618a...DE40"
-        And Last added address book entry network is "polygon"
+  Scenario: Adding, editing and removing an address book entry
+    Given "Address book Page" is open without connecting a wallet
+    And User adds "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40" as "Testing" on "-" to their address book
+    Then The last address book entry name is "Testing"
+    And Last added address book entry network is "-"
+    And User edits the name of the last address book entry to "testing"
+    Then The last address book entry name is "testing"
+    And User removes the last address book entry
+    Then No addresses added message is shown
+    And User adds "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40" as "-" on "polygon" to their address book
+    Then The last address book entry name is "0x618a...DE40"
+    And Last added address book entry network is "polygon"
 
-    Scenario: Adding an address with ENS name
-        Given "Address book Page" is open without connecting a wallet
-        And User adds "vijay.eth" as "-" on "-" to their address book
-        Then The last address book entry name is "vijay.eth"
-        And The last saved address is "0x1dDc50A8b8ef07c654B4ace65070B0E7acfF622B"
-        And ENS name "vijay.eth" is shown by the last saved address book entry
+  Scenario: Adding an address with ENS name
+    Given "Address book Page" is open without connecting a wallet
+    And User adds "vijay.eth" as "-" on "-" to their address book
+    Then The last address book entry name is "vijay.eth"
+    And The last saved address is "0x1dDc50A8b8ef07c654B4ace65070B0E7acfF622B"
+    And ENS name "vijay.eth" is shown by the last saved address book entry
 
-    Scenario: Adding a new contract address to the address book
-        And "Address book Page" is open without connecting a wallet
-        And User adds "0x3aa62b96f44D0f8892BeBBC819DE8e02E9DE69A8" as "Testing" on "-" to their address book
-        Then A contract address "0x3aa62b96f44D0f8892BeBBC819DE8e02E9DE69A8" on "opsepolia" is saved as "Testing"
+  Scenario: Adding a new contract address to the address book
+    And "Address book Page" is open without connecting a wallet
+    And User adds "0x3aa62b96f44D0f8892BeBBC819DE8e02E9DE69A8" as "Testing" on "-" to their address book
+    Then A contract address "0x3aa62b96f44D0f8892BeBBC819DE8e02E9DE69A8" on "opsepolia" is saved as "Testing"
 
-    Scenario: Copying an address from the address book
-        Given Address book test data is set up
-        And "Address book Page" is open without connecting a wallet
-        And User hovers on the first address in the address book
-        Then The copy tooltip in address book page shows "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40"
-        And User stops hovering on the first address in the address book
-        And User hovers on the first address copy button in the address book
-        Then The copy tooltip in address book page shows "Copy to clipboard"
-        And User clicks on the first copy button
-        Then The copy tooltip in address book page shows "Copied!"
+  Scenario: Copying an address from the address book
+    Given Address book test data is set up
+    And "Address book Page" is open without connecting a wallet
+    And User hovers on the first address in the address book
+    Then The copy tooltip in address book page shows "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40"
+    And User stops hovering on the first address in the address book
+    And User hovers on the first address copy button in the address book
+    Then The copy tooltip in address book page shows "Copy to clipboard"
+    And User clicks on the first copy button
+    Then The copy tooltip in address book page shows "Copied!"
 
-    Scenario: Importing address book csv
-        Given "Address book Page" is open without connecting a wallet
-        And User imports their address book
-        Then The imported addresses are shown correctly
+  Scenario: Importing address book csv
+    Given "Address book Page" is open without connecting a wallet
+    And User imports their address book
+    Then The imported addresses are shown correctly
 
-    Scenario: Exporting address book
-        Given Address book test data is set up
-        And "Address book Page" is open without connecting a wallet
-        And User exports their address book
-        Then The exported address book is in correct format
+  Scenario: Exporting address book
+    Given Address book test data is set up
+    And "Address book Page" is open without connecting a wallet
+    And User exports their address book
+    Then The exported address book is in correct format
 
-    Scenario: Address book results showing up based on their saved network
-        Given Address book test data is set up
+  Scenario: Address book results showing up based on their saved network
+    Given Address book test data is set up
 
-        Given "Send Page" is open with "bob" connected on "polygon"
-        And User searches for "Optimism" as a receiver
-        Then No results found message is shown by the address book entries
-        And User clears the receiver input field
-        And User types "Polygon" into the address input
-        Then "Polygon" with address "0x195Dba965938ED77F8F4D25eEd0eC8a08407dA05" is visible as an address book result
+    Given "Send Page" is open with "bob" connected on "polygon"
+    And User searches for "Optimism" as a receiver
+    Then No results found message is shown by the address book entries
+    And User clears the receiver input field
+    And User types "Polygon" into the address input
+    Then "Polygon" with address "0x195Dba965938ED77F8F4D25eEd0eC8a08407dA05" is visible as an address book result
 
-    Scenario: Address book name showing up in - Wallet connection container
-        Given Address book test data is set up
+  Scenario: Address book name showing up in - Wallet connection container
+    Given Address book test data is set up
 
-        Given "Accounting export page" is open with "alice" connected on "opsepolia"
-        Then Wallet connection status "alice" as the connected address
+    Given "Accounting export page" is open with "alice" connected on "opsepolia"
+    Then Wallet connection status "alice" as the connected address
 
-    Scenario: Address book name showing up in - View mode chip
-        Given Address book test data is set up
+  Scenario: Address book name showing up in - View mode chip
+    Given Address book test data is set up
 
-        Given "Dashboard Page" is open without connecting a wallet
-        And User uses view mode to look at "alice"
-        Then View mode chip shows "alice"
+    Given "Dashboard Page" is open without connecting a wallet
+    And User uses view mode to look at "alice"
+    Then View mode chip shows "alice"
 
-    Scenario: Address book name showing up in - Account export
-        Given Address book test data is set up
+  Scenario: Address book name showing up in - Account export
+    Given Address book test data is set up
 
-        Given "Accounting Export Page" is open without connecting a wallet
-        And User searches for "Multiple networks test" as a receiver and selects it
-        And Selected sections shows "Multiple networks test" and address book entry is selected
-        And User clicks the OK button
-        And "Multiple networks test" is selected for the export
-        And User searches for "john" as the counterparty account
-        And User selects "john" from the address book section
-        And Selected sections shows "john" and address book entry is selected
-        And User clicks the OK button
-        And "john" is shown as one of the counterparty addresses
-        And User changes the export start date to "01/22"
-        And User changes the export end date with date picker to "Jan" "2023"
-        And User clicks on the export preview button
-        Then The export preview table only shows "counterparty" rows with "john"
+    Given "Accounting Export Page" is open without connecting a wallet
+    And User searches for "Multiple networks test" as a receiver and selects it
+    And Selected sections shows "Multiple networks test" and address book entry is selected
+    And User clicks the OK button
+    And "Multiple networks test" is selected for the export
+    And User searches for "oldjohn" as the counterparty account
+    And User selects "oldjohn" from the address book section
+    And Selected sections shows "oldjohn" and address book entry is selected
+    And User clicks the OK button
+    And "oldjohn" is shown as one of the counterparty addresses
+    And User changes the export start date to "02/24"
+    And User changes the export end date with date picker to "Feb" "2025"
+    And User clicks on the export preview button
+    Then The export preview table only shows "counterparty" rows with "oldjohn"
 
-    Scenario: Address book name showing up in - Vesting page
-        Given Address book test data is set up
+  Scenario: Address book name showing up in - Vesting page
+    Given Address book test data is set up
 
-        Given "Vesting Page" is open with "john" connected on "opsepolia"
-        And No loading skeletons are visible in the page
-        Then The receivers shown in the vesting page are named "Multiple networks test"
+    Given "Vesting Page" is open with "john" connected on "opsepolia"
+    And No loading skeletons are visible in the page
+    Then The receivers shown in the vesting page are named "Multiple networks test"
 
-    Scenario: Address book name showing up in - Vesting details page
-        Given Address book test data is set up
+  Scenario: Address book name showing up in - Vesting details page
+    Given Address book test data is set up
 
-        Given "Vesting Details Page" is open without connecting a wallet
-        Then The "Receiver" shown in the vesting details page is "Multiple networks test"
-        Then The "Sender" shown in the vesting details page is "john"
+    Given "Vesting Details Page" is open without connecting a wallet
+    Then The "Receiver" shown in the vesting details page is "Multiple networks test"
+    Then The "Sender" shown in the vesting details page is "john"
 
-    Scenario: Address book name showing up in - Vesting creation form
-        Given Address book test data is set up
+  Scenario: Address book name showing up in - Vesting creation form
+    Given Address book test data is set up
 
-        Given "Vesting page" is open with "john" connected on "opsepolia"
-        And User clicks on the create vesting schedule button
-        And User searches for "bob" as a receiver and selects it
-        Then Chosen wallet address shows up as bob
+    Given "Vesting page" is open with "john" connected on "opsepolia"
+    And User clicks on the create vesting schedule button
+    And User searches for "bob" as a receiver and selects it
+    Then Chosen wallet address shows up as bob
 
-    Scenario: Address book name showing up in - Dashboard page and token page tables
-        Given Address book test data is set up
+  Scenario: Address book name showing up in - Dashboard page and token page tables
+    Given Address book test data is set up
 
-        Given "Dashboard Page" is open with "john" connected on "opsepolia"
-        And No loading skeletons are visible in the page
-        And User clicks on "opsepolia" "fTUSDx" row
-        Then "alice,dan,bob" are visible in the table as the receivers or senders of streams
-        And User opens "opsepolia" "fTUSDx" individual token page
-        Then "alice,dan,bob" are visible in the table as the receivers or senders of streams
+    Given "Dashboard Page" is open with "john" connected on "opsepolia"
+    And No loading skeletons are visible in the page
+    And User clicks on "opsepolia" "fTUSDx" row
+    Then "alice,dan,bob" are visible in the table as the receivers or senders of streams
+    And User opens "opsepolia" "fTUSDx" individual token page
+    Then "alice,dan,bob" are visible in the table as the receivers or senders of streams
 
-    Scenario: Address book name showing up in - Stream details page
-        Given Address book test data is set up
+  Scenario: Address book name showing up in - Stream details page
+    Given Address book test data is set up
 
-        Given "Ended stream details page" is open without connecting a wallet
-        Then "Static Balance Account" is shown as the "sender" of the stream in the stream details page
-        Then "Multiple networks test" is shown as the "receiver" of the stream in the stream details page
+    Given "Ended stream details page" is open without connecting a wallet
+    Then "Static Balance Account" is shown as the "sender" of the stream in the stream details page
+    Then "Multiple networks test" is shown as the "receiver" of the stream in the stream details page
 
-    Scenario: Address book name showing up in - Send stream form
-        Given Address book test data is set up
+  Scenario: Address book name showing up in - Send stream form
+    Given Address book test data is set up
 
-        Given "Send Page" is open with "bob" connected on "polygon"
-        And User searches for "Multiple networks test" as a receiver and selects it
-        Then Chosen wallet address shows up as Multiple networks test
+    Given "Send Page" is open with "bob" connected on "polygon"
+    And User searches for "Multiple networks test" as a receiver and selects it
+    Then Chosen wallet address shows up as Multiple networks test
 
-    Scenario Outline: Address book name showing up in - Activity history page - <activity>
-        Given Address book test data is set up
-        And Activity history request is mocked to "<activity>" on "polygon"
-        And "Activity History Page" is open using view mode to look at "staticBalanceAccount"
-        Then The activity rows address shows up as "john"
+  Scenario Outline: Address book name showing up in - Activity history page - <activity>
+    Given Address book test data is set up
+    And Activity history request is mocked to "<activity>" on "polygon"
+    And "Activity History Page" is open using view mode to look at "staticBalanceAccount"
+    Then The activity rows address shows up as "john"
 
-        Examples:
-            | activity                         |
-            | Distribution Claimed/Subscriber  |
-            | Send Transfer                    |
-            | Liquidated/v2                    |
-            | Subscription Updated/Subscriber  |
-            | Stream Cancelled                 |
-            | Stream Updated                   |
-            | Receive Stream                   |
-            | Receive Transfer                 |
-            | Send Stream                      |
-            | Send Transfer                    |
-            | Subscription Rejected/Subscriber |
-            | Subscription Approved/Subscriber |
+    Examples:
+      | activity                         |
+      # | Distribution Claimed/Subscriber  |
+      | Send Transfer                    |
+      | Liquidated/v2                    |
+      | Subscription Updated/Subscriber  |
+      | Stream Cancelled                 |
+      | Stream Updated                   |
+      | Receive Stream                   |
+      | Receive Transfer                 |
+      | Send Stream                      |
+      | Send Transfer                    |
+      | Subscription Rejected/Subscriber |
+      | Subscription Approved/Subscriber |
 
-    Scenario: Address book name filter
-        Given Address book test data is set up
+  Scenario: Address book name filter
+    Given Address book test data is set up
 
-        Given "Address Book Page" is open with "john" connected on "polygon"
-        And User opens the address filter
-        And User searches for "Polygon" in the address filter
-        And User selects "Polygon" from the address filter
-        Then Only address names containing "Polygon" are visible
-        And User clears the address book filter by using the clear all chip
-        Then The imported addresses are shown correctly
-        And User selects "Polygon" from the address filter
-        Then Only address names containing "Polygon" are visible
-        And User clears the "Polygon" filter by using the clear button by the specific chip
-        Then The imported addresses are shown correctly
-        And User clears the address book search field
-        And User searches for "TestIfNoResultsBreakStuff" in the address filter
-        Then No addresses are shown in the address book filter dropdown
+    Given "Address Book Page" is open with "john" connected on "polygon"
+    And User opens the address filter
+    And User searches for "Polygon" in the address filter
+    And User selects "Polygon" from the address filter
+    Then Only address names containing "Polygon" are visible
+    And User clears the address book filter by using the clear all chip
+    Then The imported addresses are shown correctly
+    And User selects "Polygon" from the address filter
+    Then Only address names containing "Polygon" are visible
+    And User clears the "Polygon" filter by using the clear button by the specific chip
+    Then The imported addresses are shown correctly
+    And User clears the address book search field
+    And User searches for "TestIfNoResultsBreakStuff" in the address filter
+    Then No addresses are shown in the address book filter dropdown

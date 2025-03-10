@@ -48,15 +48,15 @@ Feature: Activity History Page tests
     And No loading skeletons are visible in the page
     Then Activity history entries with "Wrap" are visible
 
-  @skip
   Scenario: Filtering entries by address
     Given "Activity History Page" is open using view mode to look at "staticBalanceAccount"
     And User changes the activity history filter to 45 months before
     And User closes the dropdown
     And User searches for "0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2" as a receiver
     And User waits for the activity history to load
-    Then Only the activity history entries with "@elvijs" are shown
+    Then Only the activity history entries with "elvijs.eth" are shown
 
+  # Flaky on CI, works locally
   @skip
   Scenario: Enabling and disabling networks visible
     Given "Activity History Page" is open using view mode to look at "staticBalanceAccount"

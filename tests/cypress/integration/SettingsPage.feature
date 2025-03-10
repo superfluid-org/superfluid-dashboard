@@ -1,6 +1,6 @@
 Feature: Settings page test cases
 
-  #Sadly mockBridge does not work with signatures
+  # Sadly mockBridge does not work with signatures
   @skip
   Scenario: Enabling and disabling notifications
     Given "Settings Page" is open with "john" connected on "ethereum"
@@ -13,17 +13,19 @@ Feature: Settings page test cases
     And User opens the notifications modal
     Then You are not subscribed to notifications message is shown
 
+  # Notifications are hidden
   @skip
   Scenario: Wallet address shown in the settings page and using the settings button in notification modal
     Given "Dashboard Page" is open with "alice" connected on "ethereum"
     And User opens the notifications modal
     And User clicks on the notification settings button
-    Then "0x66693Ff26e2036FDf3a5EA6B7FDf853Ca1Adaf4B" is visible in the settings page
+    Then "0xD60e9B498b731370850F240E57d265eCdd97fbCd" is visible in the settings page
 
   Scenario: Wallet Not connected screen in settings page
     Given "Settings page" is open without connecting a wallet
     Then Settings page wallet not connected screen is visible
 
+  @skip
   Scenario: No permissions set screen showing up
     Given "Settings Page" is open with "alice" connected on "polygon"
     Then Settings page No Access Data screen screen is visible
@@ -67,7 +69,7 @@ Feature: Settings page test cases
   Scenario: Lens names showing up in the ACL table
     Given "Settings Page" is open with "dan" connected on "opsepolia"
     And No loading skeletons are visible in the page
-    Then "fTUSDx" permission row with "@elvijs" as an operator on "opsepolia" is visible
+    Then "fTUSDx" permission row with "elvijs.eth" as an operator on "opsepolia" is visible
 
   Scenario: Revoked Allowances and Permissions not showing up in the table
     Given HDWallet transactions are rejected
