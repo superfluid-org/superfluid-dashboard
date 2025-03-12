@@ -27,6 +27,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { ens_beautify } from "@adraffy/ens-normalize";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
 import useAddressName from "../../hooks/useAddressName";
@@ -214,7 +215,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
               variant="tooltip"
               sx={{ fontSize: 12 }}
             >
-              {ensName}
+              {ens_beautify(ensName)}
             </Typography>
           )}
 

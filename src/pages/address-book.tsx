@@ -48,9 +48,9 @@ import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 import { LoadingButton } from "@mui/lab";
 import { publicClientToProvider } from "../utils/wagmiEthersAdapters";
 import { resolvedWagmiClients } from "../features/wallet/WagmiManager";
-import { PublicClient } from "viem";
 import { efpApi } from "../features/efp/efpApi.slice";
 import { useAccount } from "wagmi";
+import Link from "next/link";
 
 const AddressBook: NextPage = () => {
   const dispatch = useAppDispatch();
@@ -282,7 +282,7 @@ const AddressBook: NextPage = () => {
       outgoingStreamsQuery.data?.items || []
     );
 
-    return following?.map((entry) => {
+    return following ? following?.map((entry) => {
       return {
         ...entry,
         streams: allStreams.filter((stream) =>
@@ -291,7 +291,7 @@ const AddressBook: NextPage = () => {
           )
         ),
       };
-    });
+    }) : [];
   }, [
     incomingStreamsQuery.data,
     outgoingStreamsQuery.data,
@@ -328,7 +328,7 @@ const AddressBook: NextPage = () => {
   const filteredFollowing = useMemo(
     () =>
       mappedFollowing
-        ?.filter(
+        .filter(
           (entry) =>
             addressesFilter.length === 0 ||
             addressesFilter.includes(entry.address)
@@ -769,7 +769,26 @@ const AddressBook: NextPage = () => {
           </>
         )}
 
-        {filteredFollowing && filteredFollowing.length > 0 && (
+        {filteredFollowing.length === 0 && (
+          <Paper elevation={1} sx={{ px: 12, py: 7 }} translate="yes">
+            <Typography
+              data-cy={"no-address-title"}
+              variant="h4"
+              textAlign="center"
+            >
+              You don&apos;t follow anyone yet
+            </Typography>
+            <Typography
+              data-cy={"no-address-message"}
+              color="text.secondary"
+              textAlign="center"
+            >
+              Follow people on <Link href="https://efp.app" target="_blank" rel="noopener noreferrer">EFP (Ethereum Follow Protocol)</Link> to see them here.
+            </Typography>
+          </Paper>
+        )}
+
+        {filteredFollowing.length > 0 && (
           <>
             <Typography
               sx={{ marginBottom: isBelowMd ? -1.5 : -3.5 }}

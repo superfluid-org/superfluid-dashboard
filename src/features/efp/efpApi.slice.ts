@@ -34,7 +34,7 @@ export const efpApi = createApi({
 					}
 
 					const following = await fetch(
-						`${EFP_API_URL}/users/${address}/following?offset=${offset}&limit=${limit}`
+						`${EFP_API_URL}/users/${address}/following?offset=${offset}&limit=${limit}&sort=followers`
 					)
 					const data = await following.json()
 					return { data: data.following }
