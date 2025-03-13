@@ -40,6 +40,7 @@ import { vestingSubgraphApi } from "../../vesting-subgraph/vestingSubgraphApi";
 import accountingApi from "../accounting/accountingApi.slice";
 import { addressBookSlice, AddressBookState } from "../addressBook/addressBook.slice";
 import { customTokensSlice, getCustomTokenId, NetworkCustomTokenState } from "../customTokens/customTokens.slice";
+import { efpApi } from "../efp/efpApi.slice";
 import { ensApi } from "../ens/ensApi.slice";
 import { lensApi } from "../lens/lensApi.slice";
 import faucetApi from "../faucet/faucetApi.slice";
@@ -255,6 +256,7 @@ export const reduxStore = configureStore({
     [rpcApi.reducerPath]: rpcApi.reducer,
     [subgraphApi.reducerPath]: subgraphApi.reducer,
     [transactionTracker.reducerPath]: transactionTrackerPersistedReducer,
+    [efpApi.reducerPath]: efpApi.reducer,
     [ensApi.reducerPath]: ensApi.reducer,
     [lensApi.reducerPath]: lensApi.reducer,
     [gasApi.reducerPath]: gasApi.reducer,
@@ -298,6 +300,7 @@ export const reduxStore = configureStore({
       .concat(autoWrapSubgraphApi.middleware)
       .concat(schedulingSubgraphApi.middleware)
       .concat(subgraphApi.middleware)
+      .concat(efpApi.middleware)
       .concat(ensApi.middleware)
       .concat(lensApi.middleware)
       .concat(gasApi.middleware)

@@ -27,6 +27,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { ens_beautify } from "@adraffy/ens-normalize";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
 import useAddressName from "../../hooks/useAddressName";
@@ -48,6 +49,7 @@ interface AddressBookRowProps {
   chainIds?: number[];
   isContract?: boolean;
   onSelect: (isSelected: boolean) => void;
+  canEdit?: boolean;
 }
 
 const WideTooltip = styled(({ className, ...props }: TooltipProps) => (
@@ -68,6 +70,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
   chainIds,
   isContract = false,
   onSelect,
+  canEdit = true,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -92,7 +95,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
     setIsEditing(false);
   }, [trimmedName, address, dispatch]);
 
-  const startEditing = () => setIsEditing(true);
+  const startEditing = () => canEdit && setIsEditing(true);
 
   const cancelEditing = useCallback(() => {
     setIsEditing(false);
@@ -149,7 +152,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
               </Typography>
             )}
 
-            {(isEditing || isHovering) && (
+            {canEdit && (isEditing || isHovering) && (
               <>
                 <Tooltip
                   placement="top"
@@ -212,7 +215,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
               variant="tooltip"
               sx={{ fontSize: 12 }}
             >
-              {ensName}
+              {ens_beautify(ensName)}
             </Typography>
           )}
 
