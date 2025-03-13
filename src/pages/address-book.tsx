@@ -776,15 +776,15 @@ const AddressBook: NextPage = () => {
               variant="h4"
               textAlign="center"
             >
-              You don&apos;t follow anyone yet
+              {accountAddress ? "You don't follow anyone yet" : "Connect your wallet to see your friends"}
             </Typography>
-            <Typography
+            {accountAddress && <Typography
               data-cy={"no-address-message"}
               color="text.secondary"
               textAlign="center"
             >
               Follow people on <Link href="https://efp.app" target="_blank" rel="noopener noreferrer">EFP (Ethereum Follow Protocol)</Link> to see them here.
-            </Typography>
+            </Typography>}
           </Paper>
         )}
 
