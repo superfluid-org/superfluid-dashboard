@@ -14,7 +14,7 @@ import { FC, useMemo } from "react";
 import AddressName from "../../components/AddressName/AddressName";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
-import { Network } from "../network/networks";
+import { doesNetworkSupportVestingV2orV3, Network } from "../network/networks";
 import { PendingProgress } from "../pendingUpdates/PendingProgress";
 import { PendingVestingSchedule } from "../pendingUpdates/PendingVestingSchedule";
 import { usePendingVestingScheduleDelete } from "../pendingUpdates/PendingVestingScheduleDelete";
@@ -103,7 +103,7 @@ const VestingRow: FC<VestingRowProps> = ({
   const showClaim = isReceiver && !!vestingSchedule.claimValidityDate && !vestingSchedule.cliffAndFlowExecutedAt; // Note: we show only for receiver in the table.
   const showUnwrap = isReceiver && (vestingSchedule.status.isStreaming || vestingSchedule.status.isFinished);
 
-  const showVestingVersion = !isBelowMd && isSender && !!network.vestingContractAddress_v2;
+  const showVestingVersion = !isBelowMd && isSender && doesNetworkSupportVestingV2orV3(network);
 
   const VestingStatusOrPendingProgress = (
     <>

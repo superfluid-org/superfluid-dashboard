@@ -1,6 +1,6 @@
 import { ToggleButtonGroup, ToggleButton } from "@mui/material";
 import { useVestingVersion } from "../../hooks/useVestingVersion";
-import { Network } from "../network/networks";
+import { Network, VestingVersion } from "../network/networks";
 
 export function VestingVersionToggle(props: {
     network: Network
@@ -14,7 +14,7 @@ export function VestingVersionToggle(props: {
         color="primary"
         value={vestingVersion}
         exclusive
-        onChange={(_e, value: "v1" | "v2") => {
+        onChange={(_e, value: VestingVersion) => {
           setVestingVersion({
             chainId: network.id,
             version: value
@@ -22,7 +22,12 @@ export function VestingVersionToggle(props: {
         }}
       >
         <ToggleButton value="v1" data-cy="version-v1">&nbsp;V1&nbsp;</ToggleButton>
-        <ToggleButton value="v2" data-cy="version-v2">&nbsp;V2&nbsp;</ToggleButton>
+        {
+          !!network.vestingContractAddress.v2 && (<ToggleButton value="v2" data-cy="version-v2">&nbsp;V2&nbsp;</ToggleButton>)
+        }
+        {
+          !!network.vestingContractAddress.v3 && (<ToggleButton value="v3" data-cy="version-v3">&nbsp;V3&nbsp;</ToggleButton>)
+        }
       </ToggleButtonGroup>
     )
 }

@@ -1,4 +1,3 @@
-import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import { Button, Stack, Typography } from "@mui/material";
 import { useAccount } from "wagmi";
 
@@ -10,7 +9,7 @@ const SimpleVestingHeader: FC = () => {
   const { address: accountAddress } = useAccount();
   const { network } = useExpectedNetwork();
 
-  const doesNetworkSupportBatchVesting = !!network.vestingContractAddress_v2;
+  const doesNetworkSupportBatchVesting = !!network.vestingContractAddress.v2;
 
   return (
     <Stack

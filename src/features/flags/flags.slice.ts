@@ -10,6 +10,7 @@ import { Address } from "@superfluid-finance/sdk-core";
 import { getAddress } from "../../utils/memoizedEthersUtils";
 import faucetApi from "../faucet/faucetApi.slice";
 import { RootState } from "../redux/store";
+import { VestingVersion } from "../network/networks";
 
 export enum Flag {
   TestTokensReceived = "test-tokens-received",
@@ -40,7 +41,7 @@ export interface VestingSchedulerFlag
   extends BaseFlag<Flag.VestingScheduler> {
   chainId: number;
   account: Address;
-  version: "v1" | "v2";
+  version: VestingVersion;
 }
 
 type FlagType = TestTokensReceivedFlag | TokenAddedFlag | VestingSchedulerFlag;

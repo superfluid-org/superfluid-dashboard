@@ -76,7 +76,7 @@ const CreateVestingForm = memo(function CreateVestingForm(props: {
   const [cliffEnabled, setupAutoWrap] = watch(["data.cliffEnabled", "data.setupAutoWrap"]);
 
   const { vestingVersion } = useVestingVersion();
-  const isClaimFeatureEnabled = vestingVersion === "v2";
+  const isClaimFeatureEnabled = vestingVersion === "v2" || vestingVersion === "v3";
 
   const { visibleAddress } = useVisibleAddress();
 

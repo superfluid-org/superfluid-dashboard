@@ -39,7 +39,8 @@ export type Block_height = {
 
 export type ContractVersion =
   | 'v1'
-  | 'v2';
+  | 'v2'
+  | 'v3';
 
 /**
  * Event: An interface which is shared by all

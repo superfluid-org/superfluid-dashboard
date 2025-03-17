@@ -2,7 +2,7 @@ import { Typography } from "@mui/material";
 import { BigNumber, Signer } from "ethers";
 import { FC, ReactNode, useCallback } from "react";
 import { useAnalytics } from "../../analytics/useAnalytics";
-import { Network } from "../../network/networks";
+import { doesNetworkSupportVesting, Network, VestingVersion } from "../../network/networks";
 import { rpcApi } from "../../redux/store";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
@@ -14,7 +14,7 @@ interface FixVestingPermissionsBtnProps {
   recommendedTokenAllowance: BigNumber;
   requiredFlowOperatorPermissions: number; // Usually 5 (Create or Delete) https://docs.superfluid.finance/superfluid/developers/constant-flow-agreement-cfa/cfa-access-control-list-acl/acl-features
   requiredFlowRateAllowance: BigNumber;
-  version: "v1" | "v2"
+  version: VestingVersion;
 }
 
 const FixVestingPermissionsBtn: FC<FixVestingPermissionsBtnProps> = ({
@@ -34,7 +34,7 @@ const FixVestingPermissionsBtn: FC<FixVestingPermissionsBtnProps> = ({
       signer: Signer,
       setDialogLoadingInfo: (children: ReactNode) => void
     ) => {
-      if (!network.vestingContractAddress_v1 && !network.vestingContractAddress_v2) {
+      if (!doesNetworkSupportVesting(network)) {
         throw new Error(
           "No vesting contract configured for network. Should never happen!"
         );

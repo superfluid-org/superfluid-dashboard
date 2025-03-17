@@ -3,6 +3,7 @@ import { PendingUpdate } from "./PendingUpdate";
 import { pendingUpdateSelectors } from "./pendingUpdate.slice";
 import { useAppSelector } from "../redux/store";
 import { DeleteVestingSchedule } from "../redux/endpoints/vestingSchedulerEndpoints";
+import { VestingVersion } from "../network/networks";
 
 export interface PendingVestingScheduleDeletion
   extends PendingUpdate,
@@ -50,7 +51,7 @@ export const usePendingVestingScheduleDelete = (
     superTokenAddress: string;
     senderAddress: string;
     receiverAddress: string;
-    version: "v1" | "v2"
+    version: VestingVersion;
   },
   options?: { skip: boolean }
 ) => {

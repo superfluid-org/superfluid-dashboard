@@ -2,6 +2,7 @@ import {
   GetVestingScheduleQuery
 } from "../../vesting-subgraph/.graphclient";
 import { dateNowSeconds } from "../../utils/dateUtils";
+import { VestingVersion } from "../network/networks";
 
 interface VestingStatus {
   title: string;
@@ -148,7 +149,7 @@ export interface VestingSchedule {
   claimValidityDate: number;
   claimedAt?: number;
   remainderAmount: string;
-  version: "v1" | "v2";
+  version: VestingVersion;
   transactionHash: string;
 }
 

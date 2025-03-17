@@ -3,7 +3,6 @@ import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { getSerializeQueryArgs } from "@superfluid-finance/sdk-redux";
 import {
   allNetworks,
-  findNetworkOrThrow,
   tryFindNetwork,
 } from "../features/network/networks";
 import {
