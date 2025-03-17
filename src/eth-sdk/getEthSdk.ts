@@ -30,7 +30,7 @@ export const getFlowScheduler = (
 };
 
 // Define a generic type for versions
-type Version = 'v1' | 'v2';
+type Version = 'v1' | 'v2' | 'v3';
 type VestingSchedulerType<T extends Version> = T extends 'v1' ? VestingScheduler : VestingScheduler_v2;
 
 export const getVestingScheduler = <T extends Version>(

@@ -21,6 +21,7 @@ import {
   superfluidRpcUrls,
   vestingContractAddresses_v1,
   vestingContractAddresses_v2,
+  vestingContractAddresses_v3,
   vestingSubgraphUrls,
 } from "./networkConstants";
 import { BigNumber, BigNumberish } from "ethers";
@@ -102,6 +103,12 @@ export type Network = Chain & {
     END_DATE_VALID_BEFORE_IN_SECONDS: number
   } | undefined;
   vestingContractAddress_v2: {
+    address: `0x${string}`,
+    MIN_VESTING_DURATION_IN_SECONDS: number,
+    START_DATE_VALID_AFTER_IN_SECONDS: number,
+    END_DATE_VALID_BEFORE_IN_SECONDS: number
+  } | undefined;
+  vestingContractAddress_v3: {
     address: `0x${string}`,
     MIN_VESTING_DURATION_IN_SECONDS: number,
     START_DATE_VALID_AFTER_IN_SECONDS: number,
@@ -209,6 +216,7 @@ export const networkDefinition = {
       END_DATE_VALID_BEFORE_IN_SECONDS: DEFAULT_MAINNET_END_DATE_VALID_BEFORE_IN_SECONDS
     },
     vestingContractAddress_v2: undefined,
+    vestingContractAddress_v3: undefined,
     vestingSubgraphUrl: vestingSubgraphUrls.gnosis,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.gnosis,
     autoWrap: {
@@ -257,6 +265,7 @@ export const networkDefinition = {
       END_DATE_VALID_BEFORE_IN_SECONDS: DEFAULT_MAINNET_END_DATE_VALID_BEFORE_IN_SECONDS
     },
     vestingContractAddress_v2: undefined,
+    vestingContractAddress_v3: undefined,
     vestingSubgraphUrl: vestingSubgraphUrls.polygon,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.polygon,
     autoWrap: {
@@ -306,6 +315,7 @@ export const networkDefinition = {
     flowSchedulerSubgraphUrl: undefined,
     vestingContractAddress_v1: undefined,
     vestingContractAddress_v2: undefined,
+    vestingContractAddress_v3: undefined,
     vestingSubgraphUrl: undefined,
     autoWrapSubgraphUrl: undefined,
     autoWrap: {
@@ -360,6 +370,7 @@ export const networkDefinition = {
       START_DATE_VALID_AFTER_IN_SECONDS: DEFAULT_MAINNET_START_DATE_VALID_AFTER_IN_SECONDS,
       END_DATE_VALID_BEFORE_IN_SECONDS: DEFAULT_MAINNET_END_DATE_VALID_BEFORE_IN_SECONDS
     },
+    vestingContractAddress_v3: undefined,
     vestingSubgraphUrl: vestingSubgraphUrls.optimism,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.optimism,
     autoWrap: {
@@ -408,6 +419,7 @@ export const networkDefinition = {
       END_DATE_VALID_BEFORE_IN_SECONDS: DEFAULT_MAINNET_END_DATE_VALID_BEFORE_IN_SECONDS
     },
     vestingContractAddress_v2: undefined,
+    vestingContractAddress_v3: undefined,
     vestingSubgraphUrl: vestingSubgraphUrls.arbitrum,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.arbitrum,
     autoWrap: {
@@ -460,6 +472,7 @@ export const networkDefinition = {
       END_DATE_VALID_BEFORE_IN_SECONDS: DEFAULT_MAINNET_END_DATE_VALID_BEFORE_IN_SECONDS
     },
     vestingContractAddress_v2: undefined,
+    vestingContractAddress_v3: undefined,
     vestingSubgraphUrl: vestingSubgraphUrls.avalancheC,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.avalancheC,
     autoWrap: {
@@ -512,6 +525,7 @@ export const networkDefinition = {
       END_DATE_VALID_BEFORE_IN_SECONDS: DEFAULT_MAINNET_END_DATE_VALID_BEFORE_IN_SECONDS
     },
     vestingContractAddress_v2: undefined,
+    vestingContractAddress_v3: undefined,
     vestingSubgraphUrl: vestingSubgraphUrls.bnbSmartChain,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.bnbSmartChain,
     autoWrap: {
@@ -560,6 +574,7 @@ export const networkDefinition = {
       END_DATE_VALID_BEFORE_IN_SECONDS: DEFAULT_MAINNET_END_DATE_VALID_BEFORE_IN_SECONDS
     },
     vestingContractAddress_v2: undefined,
+    vestingContractAddress_v3: undefined,
     vestingSubgraphUrl: vestingSubgraphUrls.ethereum,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.ethereum,
     autoWrap: {
@@ -604,6 +619,7 @@ export const networkDefinition = {
     interfaceBaseFeeInNativeCurrency: interfaceBaseFeeInNativeCurrency.CELO,
     vestingContractAddress_v1: undefined,
     vestingContractAddress_v2: undefined,
+    vestingContractAddress_v3: undefined,
     vestingSubgraphUrl: undefined,
     autoWrapSubgraphUrl: undefined,
   },
@@ -644,6 +660,7 @@ export const networkDefinition = {
     interfaceBaseFeeInNativeCurrency: interfaceBaseFeeInNativeCurrency.DEGEN,
     vestingContractAddress_v1: undefined,
     vestingContractAddress_v2: undefined,
+    vestingContractAddress_v3: undefined,
     vestingSubgraphUrl: undefined,
     autoWrapSubgraphUrl: undefined,
   },
@@ -678,6 +695,7 @@ export const networkDefinition = {
     interfaceBaseFeeInNativeCurrency: interfaceBaseFeeInNativeCurrency.ETH,
     vestingContractAddress_v1: undefined,
     vestingContractAddress_v2: undefined,
+    vestingContractAddress_v3: undefined,
     vestingSubgraphUrl: undefined,
     autoWrapSubgraphUrl: undefined,
   },
@@ -723,6 +741,7 @@ export const networkDefinition = {
       START_DATE_VALID_AFTER_IN_SECONDS: DEFAULT_MAINNET_START_DATE_VALID_AFTER_IN_SECONDS,
       END_DATE_VALID_BEFORE_IN_SECONDS: DEFAULT_MAINNET_END_DATE_VALID_BEFORE_IN_SECONDS
     },
+    vestingContractAddress_v3: undefined,
     vestingSubgraphUrl: vestingSubgraphUrls.base,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.base,
     autoWrap: {
@@ -766,6 +785,7 @@ export const networkDefinition = {
     interfaceBaseFeeInNativeCurrency: interfaceBaseFeeInNativeCurrency.ETH,
     vestingContractAddress_v1: undefined,
     vestingContractAddress_v2: undefined,
+    vestingContractAddress_v3: undefined,
     vestingSubgraphUrl: undefined,
     autoWrapSubgraphUrl: undefined,
     autoWrap: undefined,
@@ -804,6 +824,7 @@ export const networkDefinition = {
     interfaceBaseFeeInNativeCurrency: interfaceBaseFeeInNativeCurrency.ETH,
     vestingContractAddress_v1: undefined,
     vestingContractAddress_v2: undefined,
+    vestingContractAddress_v3: undefined,
     vestingSubgraphUrl: undefined,
     autoWrapSubgraphUrl: undefined,
   },
@@ -838,6 +859,7 @@ export const networkDefinition = {
     interfaceBaseFeeInNativeCurrency: interfaceBaseFeeInNativeCurrency.ETH,
     vestingContractAddress_v1: undefined,
     vestingContractAddress_v2: undefined,
+    vestingContractAddress_v3: undefined,
     vestingSubgraphUrl: undefined,
     autoWrapSubgraphUrl: undefined,
   },
@@ -883,7 +905,13 @@ export const networkDefinition = {
       START_DATE_VALID_AFTER_IN_SECONDS: DEFAULT_TESTNET_START_DATE_VALID_AFTER_IN_SECONDS,
       END_DATE_VALID_BEFORE_IN_SECONDS: DEFAULT_TESTNET_END_DATE_VALID_BEFORE_IN_SECONDS
     },
-    vestingSubgraphUrl: vestingSubgraphUrls.optimismSepolia,
+    vestingContractAddress_v3: {
+      address: vestingContractAddresses_v3.optimismSepolia,
+      MIN_VESTING_DURATION_IN_SECONDS: DEFAULT_TESTNET_MIN_VESTING_DURATION_IN_SECONDS,
+      START_DATE_VALID_AFTER_IN_SECONDS: DEFAULT_TESTNET_START_DATE_VALID_AFTER_IN_SECONDS,
+      END_DATE_VALID_BEFORE_IN_SECONDS: DEFAULT_TESTNET_END_DATE_VALID_BEFORE_IN_SECONDS
+    },
+    vestingSubgraphUrl: "https://api.goldsky.com/api/public/project_clsnd6xsoma5j012qepvucfpp/subgraphs/vesting-v1-optimism-sepolia/1.1.0/gn",
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.optimismSepolia,
     autoWrap: {
       managerContractAddress: autoWrapManagerAddresses[chain.optimismSepolia.id],
