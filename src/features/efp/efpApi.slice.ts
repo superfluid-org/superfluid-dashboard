@@ -5,6 +5,7 @@ export interface getFollowingParams {
 	address?: string
 	offset: number
 	limit: number
+	search?: string
 }
 
 export interface getFollowingResponse {
@@ -28,13 +29,17 @@ export const efpApi = createApi({
 				getFollowingResponse[],
 				getFollowingParams
 			>({
-				queryFn: async ({ address, offset, limit }) => {
+				queryFn: async ({ address, offset, limit, search }) => {
 					if (!address) {
 						return { data: [] }
 					}
 
 					const following = await fetch(
-						`${EFP_API_URL}/users/${address}/following?offset=${offset}&limit=${limit}&sort=followers`
+						`${EFP_API_URL}/users/${address}/${
+							search ? 'searchFollowing' : 'following'
+						}?offset=${offset}&limit=${limit}&sort=followers${
+							search ? `&term=${search}` : ''
+						}`
 					)
 					const data = await following.json()
 					return { data: data.following }

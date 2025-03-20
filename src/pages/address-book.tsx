@@ -51,6 +51,8 @@ import { resolvedWagmiClients } from "../features/wallet/WagmiManager";
 import { efpApi } from "../features/efp/efpApi.slice";
 import { useAccount } from "wagmi";
 import Link from "next/link";
+import AddressBookLoadingRow from "../features/addressBook/AddressBookLoadingRow";
+import AddressBookMobileLoadingRow from "../features/addressBook/AddressBookMobileLoadingRow";
 
 const AddressBook: NextPage = () => {
   const dispatch = useAppDispatch();
@@ -85,6 +87,7 @@ const AddressBook: NextPage = () => {
     limit: rowsPerPage.following,
   });
   const following = followingQuery.data;
+  const isFollowingLoading = followingQuery.isLoading || followingQuery.isFetching;
 
   const incomingStreamsQuery = subgraphApi.useStreamsQuery(
     visibleAddress
@@ -769,7 +772,7 @@ const AddressBook: NextPage = () => {
           </>
         )}
 
-        {filteredFollowing.length === 0 && (
+        {filteredFollowing.length === 0 && !isFollowingLoading && (
           <Paper elevation={1} sx={{ px: 12, py: 7 }} translate="yes">
             <Typography
               data-cy={"no-address-title"}
@@ -788,7 +791,7 @@ const AddressBook: NextPage = () => {
           </Paper>
         )}
 
-        {filteredFollowing.length > 0 && (
+        {(filteredFollowing.length > 0 || isFollowingLoading) && (
           <>
             <Typography
               sx={{ marginBottom: isBelowMd ? -1.5 : -3.5 }}
@@ -824,30 +827,34 @@ const AddressBook: NextPage = () => {
                   </TableHead>
                 )}
                 <TableBody>
-                  {filteredFollowing.map(
-                    ({ address, streams }) =>
-                      isBelowMd ? (
-                        <AddressBookMobileRow
-                          key={address}
-                          address={address}
-                          selected={selectedAddresses.includes(address)}
-                          selectable={false}
-                          onSelect={setRowSelected(address)}
-                        />
-                      ) : (
-                        <AddressBookRow
-                          key={address}
-                          address={address}
-                          selected={selectedAddresses.includes(address)}
-                          selectable={false}
-                          onSelect={setRowSelected(address)}
-                          streams={streams}
-                          streamsLoading={streamsLoading}
-                          chainIds={[1, 10, 8453]}
-                          canEdit={false}
-                        />
-                      )
-                  )}
+                  {isFollowingLoading ?
+                    Array.from({ length: rowsPerPage.following }).map((_, index) => (
+                      isBelowMd ? <AddressBookMobileLoadingRow key={index} /> : <AddressBookLoadingRow key={index} />
+                    ))
+                    : filteredFollowing.map(
+                      ({ address, streams }) =>
+                        isBelowMd ? (
+                          <AddressBookMobileRow
+                            key={address}
+                            address={address}
+                            selected={selectedAddresses.includes(address)}
+                            selectable={false}
+                            onSelect={setRowSelected(address)}
+                          />
+                        ) : (
+                          <AddressBookRow
+                            key={address}
+                            address={address}
+                            selected={selectedAddresses.includes(address)}
+                            selectable={false}
+                            onSelect={setRowSelected(address)}
+                            streams={streams}
+                            streamsLoading={streamsLoading}
+                            chainIds={[1, 10, 8453]}
+                            canEdit={false}
+                          />
+                        )
+                    )}
                 </TableBody>
               </Table>
               <TablePagination
