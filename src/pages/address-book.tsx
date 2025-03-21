@@ -430,6 +430,20 @@ const AddressBook: NextPage = () => {
   const streamsLoading =
     incomingStreamsQuery.isLoading || outgoingStreamsQuery.isLoading;
 
+  const onStarAddress = (address: Address) => {
+    if (addressBookEntries.some((entry) => entry.address.toLowerCase() === address.toLowerCase())) {
+      dispatch(
+        removeAddressBookEntries(
+          filteredEntries
+            .filter((entry) => entry.address.toLowerCase() === address.toLowerCase())
+            .map(adapter.selectId)
+        )
+      );
+    } else {
+      onAddAddress({ address, name: "", associatedNetworks: [1, 10, 8453], isContract: false });
+    }
+  };
+
   return (
     <Container maxWidth="lg">
       <AddressSearchDialog
@@ -840,6 +854,8 @@ const AddressBook: NextPage = () => {
                             selected={selectedAddresses.includes(address)}
                             selectable={false}
                             onSelect={setRowSelected(address)}
+                            isStarred={addressBookEntries.some((entry) => entry.address.toLowerCase() === address.toLowerCase())}
+                            onStarClick={() => onStarAddress(address)}
                           />
                         ) : (
                           <AddressBookRow
@@ -852,6 +868,8 @@ const AddressBook: NextPage = () => {
                             streamsLoading={streamsLoading}
                             chainIds={[1, 10, 8453]}
                             canEdit={false}
+                            isStarred={addressBookEntries.some((entry) => entry.address.toLowerCase() === address.toLowerCase())}
+                            onStarClick={() => onStarAddress(address)}
                           />
                         )
                     )}

@@ -38,6 +38,7 @@ import { allNetworks, tryFindNetwork } from "../network/networks";
 import NetworkIcon from "../network/NetworkIcon";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { CopyIconBtn } from "../common/CopyIconBtn";
+import { Star, StarBorder } from "@mui/icons-material";
 
 interface AddressBookRowProps {
   address: Address;
@@ -50,6 +51,8 @@ interface AddressBookRowProps {
   isContract?: boolean;
   onSelect: (isSelected: boolean) => void;
   canEdit?: boolean;
+  isStarred?: boolean;
+  onStarClick?: () => void;
 }
 
 const WideTooltip = styled(({ className, ...props }: TooltipProps) => (
@@ -71,6 +74,8 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
   isContract = false,
   onSelect,
   canEdit = true,
+  isStarred = false,
+  onStarClick,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -79,6 +84,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
   const [editableName, setEditableName] = useState(name);
   const [isEditing, setIsEditing] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
+  const [isHoveringStar, setIsHoveringStar] = useState(false);
   const { ensName, lensName } = useAddressName(address);
 
   const trimmedName = useMemo(() => editableName.trim(), [editableName]);
@@ -121,9 +127,17 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
   );
 
   return (
-    <TableRow onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
-      <TableCell>
-        <Stack direction="row">
+    <TableRow onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} >
+      <TableCell sx={{ pl: onStarClick ? 1 : 4 }}>
+        <Stack direction="row" alignItems="center" gap={1}>
+          {onStarClick &&
+            <Stack alignItems="center" justifyContent="center" onMouseEnter={() => setIsHoveringStar(true)} onMouseLeave={() => setIsHoveringStar(false)} onClick={onStarClick} sx={{ cursor: 'pointer', opacity: isHovering || isStarred ? 1 : 0 }}>
+              {isHoveringStar || isStarred ?
+                <Star color="primary" sx={{ width: 20, height: 20, cursor: 'pointer' }} />
+                : <StarBorder color="primary" sx={{ width: 20, height: 20 }} />
+              }
+            </Stack>
+          }
           <Stack direction="row" alignItems="center" gap={1.5}>
             <AddressAvatar
               address={address}
