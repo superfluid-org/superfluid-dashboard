@@ -7,11 +7,12 @@ import {
   vestingContractAddresses_v2,
   vestingContractAddresses_v3
 } from "../features/network/networkConstants";
+import { chainIds } from "../features/network/networkConstants";
 
 const ethSdkConfig = defineConfig({
   contracts: {
     optimismSepolia: {
-      vestingScheduler_v3: vestingContractAddresses_v3.optimismSepolia, // OP Sepolia used as source of truth for the ABI of Vesting Scheduler.
+      vestingScheduler_v3: vestingContractAddresses_v3[chainIds.optimismSepolia], // OP Sepolia used as source of truth for the ABI of Vesting Scheduler.
       vestingScheduler_v2: vestingContractAddresses_v2.optimismSepolia, // OP Sepolia used as source of truth for the ABI of Vesting Scheduler.
       vestingScheduler: vestingContractAddresses_v1.optimismSepolia // OP Sepolia used as source of truth for the ABI of Vesting Scheduler.
     },

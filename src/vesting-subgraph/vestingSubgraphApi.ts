@@ -18,7 +18,7 @@ import {
 } from "./.graphclient";
 import { EMPTY_ARRAY } from "../utils/constants";
 
-const tryGetBuiltGraphSdkForNetwork = (chainId: number) => {
+export const tryGetBuiltGraphSdkForNetwork = (chainId: number) => {
   const network = tryFindNetwork(allNetworks, chainId);
   if (network?.vestingSubgraphUrl) {
     return getBuiltGraphSDK({

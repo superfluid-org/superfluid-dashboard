@@ -74,7 +74,7 @@ export const vestingContractAddresses_v2 = {
 } as const;
 
 export const vestingContractAddresses_v3 = {
-  optimismSepolia: "0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c"
+  [chainIds.optimismSepolia]: "0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c"
 } as const;
 
 export const vestingSubgraphUrls = {

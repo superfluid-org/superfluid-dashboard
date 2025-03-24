@@ -1,6 +1,6 @@
 import { defineConfig } from "@wagmi/cli";
 import { etherscan, react } from "@wagmi/cli/plugins";
-import { autoWrapManagerAddresses } from "./src/features/network/networkConstants";
+import { autoWrapManagerAddresses, vestingContractAddresses_v3 } from "./src/features/network/networkConstants";
 import nativeAssetSuperTokenJSON from "@superfluid-finance/ethereum-contracts/build/truffle/SETHProxy.json" assert { type: "json" };
 import pureSuperTokenJSON from "@superfluid-finance/ethereum-contracts/build/truffle/PureSuperToken.json" assert { type: "json" };
 import superTokenJSON from "@superfluid-finance/ethereum-contracts/build/truffle/SuperToken.json" assert { type: "json" };
@@ -11,6 +11,7 @@ import SuperfluidJSON from "@superfluid-finance/ethereum-contracts/build/truffle
 import { Abi, Address, erc20Abi } from "viem";
 import superfluidMetadata from "@superfluid-finance/metadata";
 import { vestingSchedulerAbi } from "./src/abis/vestingSchedulerAbi";
+import { vestingSchedulerV3Abi } from "./src/abis/vestingSchedulerV3Abi";
 
 /** @type {import('@wagmi/cli').Config} */
 export default defineConfig({
@@ -85,6 +86,14 @@ export default defineConfig({
         if (address) {
           acc[current.chainId] = address;
         }
+        return acc;
+      }, {} as Record<number, Address>),
+    },
+    {
+      name: "VestingSchedulerV3",
+      abi: vestingSchedulerV3Abi,
+      address: Object.entries(vestingContractAddresses_v3).reduce((acc, [chainId, address]) => {
+        acc[Number(chainId)] = address;
         return acc;
       }, {} as Record<number, Address>),
     },

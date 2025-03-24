@@ -5975,6 +5975,954 @@ export const vestingSchedulerV2Config = {
 } as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// VestingSchedulerV3
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const vestingSchedulerV3Abi = [
+  {
+    type: 'constructor',
+    inputs: [
+      { name: 'host', internalType: 'contract ISuperfluid', type: 'address' },
+    ],
+    stateMutability: 'nonpayable',
+  },
+  { type: 'error', inputs: [], name: 'AccountInvalid' },
+  { type: 'error', inputs: [], name: 'AlreadyExecuted' },
+  { type: 'error', inputs: [], name: 'CFA_INVALID_FLOW_RATE' },
+  { type: 'error', inputs: [], name: 'CannotClaimScheduleOnBehalf' },
+  { type: 'error', inputs: [], name: 'CliffInvalid' },
+  { type: 'error', inputs: [], name: 'FlowRateInvalid' },
+  { type: 'error', inputs: [], name: 'HostInvalid' },
+  { type: 'error', inputs: [], name: 'InvalidNewTotalAmount' },
+  { type: 'error', inputs: [], name: 'ScheduleAlreadyExists' },
+  { type: 'error', inputs: [], name: 'ScheduleDoesNotExist' },
+  { type: 'error', inputs: [], name: 'ScheduleNotClaimed' },
+  { type: 'error', inputs: [], name: 'ScheduleNotFlowing' },
+  { type: 'error', inputs: [], name: 'TimeWindowInvalid' },
+  { type: 'error', inputs: [], name: 'ZeroAddress' },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'amountLeftToVest',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'timeLeftToVest',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'flowRate',
+        internalType: 'int96',
+        type: 'int96',
+        indexed: false,
+      },
+    ],
+    name: 'DEBUG',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'superToken',
+        internalType: 'contract ISuperToken',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'sender',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'receiver',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'claimer',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'VestingClaimed',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'superToken',
+        internalType: 'contract ISuperToken',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'sender',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'receiver',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'cliffAndFlowDate',
+        internalType: 'uint32',
+        type: 'uint32',
+        indexed: false,
+      },
+      {
+        name: 'flowRate',
+        internalType: 'int96',
+        type: 'int96',
+        indexed: false,
+      },
+      {
+        name: 'cliffAmount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'flowDelayCompensation',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'VestingCliffAndFlowExecuted',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'superToken',
+        internalType: 'contract ISuperToken',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'sender',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'receiver',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'endDate',
+        internalType: 'uint32',
+        type: 'uint32',
+        indexed: false,
+      },
+      {
+        name: 'earlyEndCompensation',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'didCompensationFail',
+        internalType: 'bool',
+        type: 'bool',
+        indexed: false,
+      },
+    ],
+    name: 'VestingEndExecuted',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'superToken',
+        internalType: 'contract ISuperToken',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'sender',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'receiver',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'endDate',
+        internalType: 'uint32',
+        type: 'uint32',
+        indexed: false,
+      },
+    ],
+    name: 'VestingEndFailed',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'superToken',
+        internalType: 'contract ISuperToken',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'sender',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'receiver',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'startDate',
+        internalType: 'uint32',
+        type: 'uint32',
+        indexed: false,
+      },
+      {
+        name: 'cliffDate',
+        internalType: 'uint32',
+        type: 'uint32',
+        indexed: false,
+      },
+      {
+        name: 'flowRate',
+        internalType: 'int96',
+        type: 'int96',
+        indexed: false,
+      },
+      {
+        name: 'endDate',
+        internalType: 'uint32',
+        type: 'uint32',
+        indexed: false,
+      },
+      {
+        name: 'cliffAmount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'claimValidityDate',
+        internalType: 'uint32',
+        type: 'uint32',
+        indexed: false,
+      },
+      {
+        name: 'remainderAmount',
+        internalType: 'uint96',
+        type: 'uint96',
+        indexed: false,
+      },
+    ],
+    name: 'VestingScheduleCreated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'superToken',
+        internalType: 'contract ISuperToken',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'sender',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'receiver',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'VestingScheduleDeleted',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'superToken',
+        internalType: 'contract ISuperToken',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'sender',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'receiver',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'oldEndDate',
+        internalType: 'uint32',
+        type: 'uint32',
+        indexed: false,
+      },
+      {
+        name: 'endDate',
+        internalType: 'uint32',
+        type: 'uint32',
+        indexed: false,
+      },
+      {
+        name: 'previousFlowRate',
+        internalType: 'int96',
+        type: 'int96',
+        indexed: false,
+      },
+      {
+        name: 'newFlowRate',
+        internalType: 'int96',
+        type: 'int96',
+        indexed: false,
+      },
+      {
+        name: 'remainderAmount',
+        internalType: 'uint96',
+        type: 'uint96',
+        indexed: false,
+      },
+    ],
+    name: 'VestingScheduleEndDateUpdated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'superToken',
+        internalType: 'contract ISuperToken',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'sender',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'receiver',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'previousFlowRate',
+        internalType: 'int96',
+        type: 'int96',
+        indexed: false,
+      },
+      {
+        name: 'newFlowRate',
+        internalType: 'int96',
+        type: 'int96',
+        indexed: false,
+      },
+      {
+        name: 'previousTotalAmount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'newTotalAmount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'remainderAmount',
+        internalType: 'uint96',
+        type: 'uint96',
+        indexed: false,
+      },
+    ],
+    name: 'VestingScheduleTotalAmountUpdated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'superToken',
+        internalType: 'contract ISuperToken',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'sender',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'receiver',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'oldEndDate',
+        internalType: 'uint32',
+        type: 'uint32',
+        indexed: false,
+      },
+      {
+        name: 'endDate',
+        internalType: 'uint32',
+        type: 'uint32',
+        indexed: false,
+      },
+      {
+        name: 'remainderAmount',
+        internalType: 'uint96',
+        type: 'uint96',
+        indexed: false,
+      },
+    ],
+    name: 'VestingScheduleUpdated',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'END_DATE_VALID_BEFORE',
+    outputs: [{ name: '', internalType: 'uint32', type: 'uint32' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'HOST',
+    outputs: [
+      { name: '', internalType: 'contract ISuperfluid', type: 'address' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'MIN_VESTING_DURATION',
+    outputs: [{ name: '', internalType: 'uint32', type: 'uint32' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'START_DATE_VALID_AFTER',
+    outputs: [{ name: '', internalType: 'uint32', type: 'uint32' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+    name: 'accountings',
+    outputs: [
+      { name: 'alreadyVestedAmount', internalType: 'uint256', type: 'uint256' },
+      { name: 'lastUpdated', internalType: 'uint256', type: 'uint256' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '', internalType: 'contract ISuperToken', type: 'address' },
+      { name: '', internalType: 'address', type: 'address' },
+      { name: '', internalType: 'bytes32', type: 'bytes32' },
+      { name: '', internalType: 'bytes', type: 'bytes' },
+      { name: '', internalType: 'bytes', type: 'bytes' },
+      { name: '', internalType: 'bytes', type: 'bytes' },
+    ],
+    name: 'afterAgreementCreated',
+    outputs: [{ name: '', internalType: 'bytes', type: 'bytes' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '', internalType: 'contract ISuperToken', type: 'address' },
+      { name: '', internalType: 'address', type: 'address' },
+      { name: '', internalType: 'bytes32', type: 'bytes32' },
+      { name: '', internalType: 'bytes', type: 'bytes' },
+      { name: '', internalType: 'bytes', type: 'bytes' },
+      { name: '', internalType: 'bytes', type: 'bytes' },
+    ],
+    name: 'afterAgreementTerminated',
+    outputs: [{ name: '', internalType: 'bytes', type: 'bytes' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '', internalType: 'contract ISuperToken', type: 'address' },
+      { name: '', internalType: 'address', type: 'address' },
+      { name: '', internalType: 'bytes32', type: 'bytes32' },
+      { name: '', internalType: 'bytes', type: 'bytes' },
+      { name: '', internalType: 'bytes', type: 'bytes' },
+      { name: '', internalType: 'bytes', type: 'bytes' },
+    ],
+    name: 'afterAgreementUpdated',
+    outputs: [{ name: '', internalType: 'bytes', type: 'bytes' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '', internalType: 'contract ISuperToken', type: 'address' },
+      { name: '', internalType: 'address', type: 'address' },
+      { name: '', internalType: 'bytes32', type: 'bytes32' },
+      { name: '', internalType: 'bytes', type: 'bytes' },
+      { name: '', internalType: 'bytes', type: 'bytes' },
+    ],
+    name: 'beforeAgreementCreated',
+    outputs: [{ name: '', internalType: 'bytes', type: 'bytes' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '', internalType: 'contract ISuperToken', type: 'address' },
+      { name: '', internalType: 'address', type: 'address' },
+      { name: '', internalType: 'bytes32', type: 'bytes32' },
+      { name: '', internalType: 'bytes', type: 'bytes' },
+      { name: '', internalType: 'bytes', type: 'bytes' },
+    ],
+    name: 'beforeAgreementTerminated',
+    outputs: [{ name: '', internalType: 'bytes', type: 'bytes' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '', internalType: 'contract ISuperToken', type: 'address' },
+      { name: '', internalType: 'address', type: 'address' },
+      { name: '', internalType: 'bytes32', type: 'bytes32' },
+      { name: '', internalType: 'bytes', type: 'bytes' },
+      { name: '', internalType: 'bytes', type: 'bytes' },
+    ],
+    name: 'beforeAgreementUpdated',
+    outputs: [{ name: '', internalType: 'bytes', type: 'bytes' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'superToken',
+        internalType: 'contract ISuperToken',
+        type: 'address',
+      },
+      { name: 'receiver', internalType: 'address', type: 'address' },
+      { name: 'totalAmount', internalType: 'uint256', type: 'uint256' },
+      { name: 'totalDuration', internalType: 'uint32', type: 'uint32' },
+      { name: 'ctx', internalType: 'bytes', type: 'bytes' },
+    ],
+    name: 'createAndExecuteVestingScheduleFromAmountAndDuration',
+    outputs: [{ name: 'newCtx', internalType: 'bytes', type: 'bytes' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'superToken',
+        internalType: 'contract ISuperToken',
+        type: 'address',
+      },
+      { name: 'receiver', internalType: 'address', type: 'address' },
+      { name: 'totalAmount', internalType: 'uint256', type: 'uint256' },
+      { name: 'totalDuration', internalType: 'uint32', type: 'uint32' },
+    ],
+    name: 'createAndExecuteVestingScheduleFromAmountAndDuration',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'superToken',
+        internalType: 'contract ISuperToken',
+        type: 'address',
+      },
+      { name: 'receiver', internalType: 'address', type: 'address' },
+      { name: 'startDate', internalType: 'uint32', type: 'uint32' },
+      { name: 'cliffDate', internalType: 'uint32', type: 'uint32' },
+      { name: 'flowRate', internalType: 'int96', type: 'int96' },
+      { name: 'cliffAmount', internalType: 'uint256', type: 'uint256' },
+      { name: 'endDate', internalType: 'uint32', type: 'uint32' },
+      { name: 'claimValidityDate', internalType: 'uint32', type: 'uint32' },
+    ],
+    name: 'createVestingSchedule',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'superToken',
+        internalType: 'contract ISuperToken',
+        type: 'address',
+      },
+      { name: 'receiver', internalType: 'address', type: 'address' },
+      { name: 'startDate', internalType: 'uint32', type: 'uint32' },
+      { name: 'cliffDate', internalType: 'uint32', type: 'uint32' },
+      { name: 'flowRate', internalType: 'int96', type: 'int96' },
+      { name: 'cliffAmount', internalType: 'uint256', type: 'uint256' },
+      { name: 'endDate', internalType: 'uint32', type: 'uint32' },
+      { name: 'ctx', internalType: 'bytes', type: 'bytes' },
+    ],
+    name: 'createVestingSchedule',
+    outputs: [{ name: 'newCtx', internalType: 'bytes', type: 'bytes' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'superToken',
+        internalType: 'contract ISuperToken',
+        type: 'address',
+      },
+      { name: 'receiver', internalType: 'address', type: 'address' },
+      { name: 'startDate', internalType: 'uint32', type: 'uint32' },
+      { name: 'cliffDate', internalType: 'uint32', type: 'uint32' },
+      { name: 'flowRate', internalType: 'int96', type: 'int96' },
+      { name: 'cliffAmount', internalType: 'uint256', type: 'uint256' },
+      { name: 'endDate', internalType: 'uint32', type: 'uint32' },
+      { name: 'claimValidityDate', internalType: 'uint32', type: 'uint32' },
+      { name: 'ctx', internalType: 'bytes', type: 'bytes' },
+    ],
+    name: 'createVestingSchedule',
+    outputs: [{ name: 'newCtx', internalType: 'bytes', type: 'bytes' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'superToken',
+        internalType: 'contract ISuperToken',
+        type: 'address',
+      },
+      { name: 'receiver', internalType: 'address', type: 'address' },
+      { name: 'totalAmount', internalType: 'uint256', type: 'uint256' },
+      { name: 'totalDuration', internalType: 'uint32', type: 'uint32' },
+      { name: 'startDate', internalType: 'uint32', type: 'uint32' },
+      { name: 'cliffPeriod', internalType: 'uint32', type: 'uint32' },
+      { name: 'claimPeriod', internalType: 'uint32', type: 'uint32' },
+      { name: 'ctx', internalType: 'bytes', type: 'bytes' },
+    ],
+    name: 'createVestingScheduleFromAmountAndDuration',
+    outputs: [{ name: 'newCtx', internalType: 'bytes', type: 'bytes' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'superToken',
+        internalType: 'contract ISuperToken',
+        type: 'address',
+      },
+      { name: 'receiver', internalType: 'address', type: 'address' },
+      { name: 'totalAmount', internalType: 'uint256', type: 'uint256' },
+      { name: 'totalDuration', internalType: 'uint32', type: 'uint32' },
+      { name: 'startDate', internalType: 'uint32', type: 'uint32' },
+      { name: 'cliffPeriod', internalType: 'uint32', type: 'uint32' },
+      { name: 'claimPeriod', internalType: 'uint32', type: 'uint32' },
+    ],
+    name: 'createVestingScheduleFromAmountAndDuration',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'superToken',
+        internalType: 'contract ISuperToken',
+        type: 'address',
+      },
+      { name: 'receiver', internalType: 'address', type: 'address' },
+      { name: 'ctx', internalType: 'bytes', type: 'bytes' },
+    ],
+    name: 'deleteVestingSchedule',
+    outputs: [{ name: 'newCtx', internalType: 'bytes', type: 'bytes' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'superToken',
+        internalType: 'contract ISuperToken',
+        type: 'address',
+      },
+      { name: 'sender', internalType: 'address', type: 'address' },
+      { name: 'receiver', internalType: 'address', type: 'address' },
+    ],
+    name: 'executeCliffAndFlow',
+    outputs: [{ name: 'success', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'superToken',
+        internalType: 'contract ISuperToken',
+        type: 'address',
+      },
+      { name: 'sender', internalType: 'address', type: 'address' },
+      { name: 'receiver', internalType: 'address', type: 'address' },
+    ],
+    name: 'executeEndVesting',
+    outputs: [{ name: 'success', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'superToken',
+        internalType: 'contract ISuperToken',
+        type: 'address',
+      },
+      { name: 'sender', internalType: 'address', type: 'address' },
+      { name: 'receiver', internalType: 'address', type: 'address' },
+    ],
+    name: 'getMaximumNeededTokenAllowance',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'schedule',
+        internalType: 'struct IVestingSchedulerV2.VestingSchedule',
+        type: 'tuple',
+        components: [
+          { name: 'cliffAndFlowDate', internalType: 'uint32', type: 'uint32' },
+          { name: 'endDate', internalType: 'uint32', type: 'uint32' },
+          { name: 'flowRate', internalType: 'int96', type: 'int96' },
+          { name: 'cliffAmount', internalType: 'uint256', type: 'uint256' },
+          { name: 'remainderAmount', internalType: 'uint96', type: 'uint96' },
+          { name: 'claimValidityDate', internalType: 'uint32', type: 'uint32' },
+        ],
+      },
+    ],
+    name: 'getMaximumNeededTokenAllowance',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'pure',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'superToken', internalType: 'address', type: 'address' },
+      { name: 'sender', internalType: 'address', type: 'address' },
+      { name: 'receiver', internalType: 'address', type: 'address' },
+    ],
+    name: 'getVestingSchedule',
+    outputs: [
+      {
+        name: '',
+        internalType: 'struct IVestingSchedulerV2.VestingSchedule',
+        type: 'tuple',
+        components: [
+          { name: 'cliffAndFlowDate', internalType: 'uint32', type: 'uint32' },
+          { name: 'endDate', internalType: 'uint32', type: 'uint32' },
+          { name: 'flowRate', internalType: 'int96', type: 'int96' },
+          { name: 'cliffAmount', internalType: 'uint256', type: 'uint256' },
+          { name: 'remainderAmount', internalType: 'uint96', type: 'uint96' },
+          { name: 'claimValidityDate', internalType: 'uint32', type: 'uint32' },
+        ],
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'forwarder', internalType: 'address', type: 'address' }],
+    name: 'isTrustedForwarder',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'superToken',
+        internalType: 'contract ISuperToken',
+        type: 'address',
+      },
+      { name: 'sender', internalType: 'address', type: 'address' },
+      { name: 'receiver', internalType: 'address', type: 'address' },
+      { name: 'totalAmount', internalType: 'uint256', type: 'uint256' },
+      { name: 'totalDuration', internalType: 'uint32', type: 'uint32' },
+      { name: 'startDate', internalType: 'uint32', type: 'uint32' },
+      { name: 'cliffPeriod', internalType: 'uint32', type: 'uint32' },
+      { name: 'claimPeriod', internalType: 'uint32', type: 'uint32' },
+    ],
+    name: 'mapCreateVestingScheduleParams',
+    outputs: [
+      {
+        name: 'params',
+        internalType: 'struct IVestingSchedulerV2.ScheduleCreationParams',
+        type: 'tuple',
+        components: [
+          {
+            name: 'superToken',
+            internalType: 'contract ISuperToken',
+            type: 'address',
+          },
+          { name: 'sender', internalType: 'address', type: 'address' },
+          { name: 'receiver', internalType: 'address', type: 'address' },
+          { name: 'startDate', internalType: 'uint32', type: 'uint32' },
+          { name: 'claimValidityDate', internalType: 'uint32', type: 'uint32' },
+          { name: 'cliffDate', internalType: 'uint32', type: 'uint32' },
+          { name: 'flowRate', internalType: 'int96', type: 'int96' },
+          { name: 'cliffAmount', internalType: 'uint256', type: 'uint256' },
+          { name: 'endDate', internalType: 'uint32', type: 'uint32' },
+          { name: 'remainderAmount', internalType: 'uint96', type: 'uint96' },
+        ],
+      },
+    ],
+    stateMutability: 'pure',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'superToken',
+        internalType: 'contract ISuperToken',
+        type: 'address',
+      },
+      { name: 'receiver', internalType: 'address', type: 'address' },
+      { name: 'endDate', internalType: 'uint32', type: 'uint32' },
+      { name: 'ctx', internalType: 'bytes', type: 'bytes' },
+    ],
+    name: 'updateVestingSchedule',
+    outputs: [{ name: 'newCtx', internalType: 'bytes', type: 'bytes' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'superToken',
+        internalType: 'contract ISuperToken',
+        type: 'address',
+      },
+      { name: 'receiver', internalType: 'address', type: 'address' },
+      { name: 'newTotalAmount', internalType: 'uint256', type: 'uint256' },
+      { name: 'ctx', internalType: 'bytes', type: 'bytes' },
+    ],
+    name: 'updateVestingScheduleFlowRateFromAmount',
+    outputs: [{ name: 'newCtx', internalType: 'bytes', type: 'bytes' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'superToken',
+        internalType: 'contract ISuperToken',
+        type: 'address',
+      },
+      { name: 'receiver', internalType: 'address', type: 'address' },
+      { name: 'endDate', internalType: 'uint32', type: 'uint32' },
+      { name: 'ctx', internalType: 'bytes', type: 'bytes' },
+    ],
+    name: 'updateVestingScheduleFlowRateFromEndDate',
+    outputs: [{ name: 'newCtx', internalType: 'bytes', type: 'bytes' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'versionRecipient',
+    outputs: [{ name: '', internalType: 'string', type: 'string' }],
+    stateMutability: 'pure',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+    name: 'vestingSchedules',
+    outputs: [
+      { name: 'cliffAndFlowDate', internalType: 'uint32', type: 'uint32' },
+      { name: 'endDate', internalType: 'uint32', type: 'uint32' },
+      { name: 'flowRate', internalType: 'int96', type: 'int96' },
+      { name: 'cliffAmount', internalType: 'uint256', type: 'uint256' },
+      { name: 'remainderAmount', internalType: 'uint96', type: 'uint96' },
+      { name: 'claimValidityDate', internalType: 'uint32', type: 'uint32' },
+    ],
+    stateMutability: 'view',
+  },
+] as const
+
+/**
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const vestingSchedulerV3Address = {
+  11155420: '0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c',
+} as const
+
+/**
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const vestingSchedulerV3Config = {
+  address: vestingSchedulerV3Address,
+  abi: vestingSchedulerV3Abi,
+} as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // React
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -15413,5 +16361,622 @@ export const useVestingSchedulerV2VestingScheduleUpdatedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: vestingSchedulerV2Abi,
     address: vestingSchedulerV2Address,
+    eventName: 'VestingScheduleUpdated',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const useVestingSchedulerV3Read = /*#__PURE__*/ createUseReadContract({
+  abi: vestingSchedulerV3Abi,
+  address: vestingSchedulerV3Address,
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"END_DATE_VALID_BEFORE"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const useVestingSchedulerV3EndDateValidBefore =
+  /*#__PURE__*/ createUseReadContract({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    functionName: 'END_DATE_VALID_BEFORE',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"HOST"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const useVestingSchedulerV3Host = /*#__PURE__*/ createUseReadContract({
+  abi: vestingSchedulerV3Abi,
+  address: vestingSchedulerV3Address,
+  functionName: 'HOST',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"MIN_VESTING_DURATION"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const useVestingSchedulerV3MinVestingDuration =
+  /*#__PURE__*/ createUseReadContract({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    functionName: 'MIN_VESTING_DURATION',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"START_DATE_VALID_AFTER"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const useVestingSchedulerV3StartDateValidAfter =
+  /*#__PURE__*/ createUseReadContract({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    functionName: 'START_DATE_VALID_AFTER',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"accountings"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const useVestingSchedulerV3Accountings =
+  /*#__PURE__*/ createUseReadContract({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    functionName: 'accountings',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"beforeAgreementCreated"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const useVestingSchedulerV3BeforeAgreementCreated =
+  /*#__PURE__*/ createUseReadContract({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    functionName: 'beforeAgreementCreated',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"beforeAgreementTerminated"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const useVestingSchedulerV3BeforeAgreementTerminated =
+  /*#__PURE__*/ createUseReadContract({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    functionName: 'beforeAgreementTerminated',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"beforeAgreementUpdated"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const useVestingSchedulerV3BeforeAgreementUpdated =
+  /*#__PURE__*/ createUseReadContract({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    functionName: 'beforeAgreementUpdated',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"getMaximumNeededTokenAllowance"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const useVestingSchedulerV3GetMaximumNeededTokenAllowance =
+  /*#__PURE__*/ createUseReadContract({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    functionName: 'getMaximumNeededTokenAllowance',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"getVestingSchedule"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const useVestingSchedulerV3GetVestingSchedule =
+  /*#__PURE__*/ createUseReadContract({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    functionName: 'getVestingSchedule',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"isTrustedForwarder"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const useVestingSchedulerV3IsTrustedForwarder =
+  /*#__PURE__*/ createUseReadContract({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    functionName: 'isTrustedForwarder',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"mapCreateVestingScheduleParams"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const useVestingSchedulerV3MapCreateVestingScheduleParams =
+  /*#__PURE__*/ createUseReadContract({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    functionName: 'mapCreateVestingScheduleParams',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"versionRecipient"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const useVestingSchedulerV3VersionRecipient =
+  /*#__PURE__*/ createUseReadContract({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    functionName: 'versionRecipient',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"vestingSchedules"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const useVestingSchedulerV3VestingSchedules =
+  /*#__PURE__*/ createUseReadContract({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    functionName: 'vestingSchedules',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const useVestingSchedulerV3Write = /*#__PURE__*/ createUseWriteContract({
+  abi: vestingSchedulerV3Abi,
+  address: vestingSchedulerV3Address,
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"afterAgreementCreated"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const useVestingSchedulerV3AfterAgreementCreated =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    functionName: 'afterAgreementCreated',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"afterAgreementTerminated"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const useVestingSchedulerV3AfterAgreementTerminated =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    functionName: 'afterAgreementTerminated',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"afterAgreementUpdated"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const useVestingSchedulerV3AfterAgreementUpdated =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    functionName: 'afterAgreementUpdated',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"createAndExecuteVestingScheduleFromAmountAndDuration"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const useVestingSchedulerV3CreateAndExecuteVestingScheduleFromAmountAndDuration =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    functionName: 'createAndExecuteVestingScheduleFromAmountAndDuration',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"createVestingSchedule"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const useVestingSchedulerV3CreateVestingSchedule =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    functionName: 'createVestingSchedule',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"createVestingScheduleFromAmountAndDuration"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const useVestingSchedulerV3CreateVestingScheduleFromAmountAndDuration =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    functionName: 'createVestingScheduleFromAmountAndDuration',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"deleteVestingSchedule"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const useVestingSchedulerV3DeleteVestingSchedule =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    functionName: 'deleteVestingSchedule',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"executeCliffAndFlow"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const useVestingSchedulerV3ExecuteCliffAndFlow =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    functionName: 'executeCliffAndFlow',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"executeEndVesting"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const useVestingSchedulerV3ExecuteEndVesting =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    functionName: 'executeEndVesting',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"updateVestingSchedule"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const useVestingSchedulerV3UpdateVestingSchedule =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    functionName: 'updateVestingSchedule',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"updateVestingScheduleFlowRateFromAmount"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const useVestingSchedulerV3UpdateVestingScheduleFlowRateFromAmount =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    functionName: 'updateVestingScheduleFlowRateFromAmount',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"updateVestingScheduleFlowRateFromEndDate"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const useVestingSchedulerV3UpdateVestingScheduleFlowRateFromEndDate =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    functionName: 'updateVestingScheduleFlowRateFromEndDate',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const usePrepareVestingSchedulerV3Write =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"afterAgreementCreated"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const usePrepareVestingSchedulerV3AfterAgreementCreated =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    functionName: 'afterAgreementCreated',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"afterAgreementTerminated"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const usePrepareVestingSchedulerV3AfterAgreementTerminated =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    functionName: 'afterAgreementTerminated',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"afterAgreementUpdated"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const usePrepareVestingSchedulerV3AfterAgreementUpdated =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    functionName: 'afterAgreementUpdated',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"createAndExecuteVestingScheduleFromAmountAndDuration"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const usePrepareVestingSchedulerV3CreateAndExecuteVestingScheduleFromAmountAndDuration =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    functionName: 'createAndExecuteVestingScheduleFromAmountAndDuration',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"createVestingSchedule"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const usePrepareVestingSchedulerV3CreateVestingSchedule =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    functionName: 'createVestingSchedule',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"createVestingScheduleFromAmountAndDuration"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const usePrepareVestingSchedulerV3CreateVestingScheduleFromAmountAndDuration =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    functionName: 'createVestingScheduleFromAmountAndDuration',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"deleteVestingSchedule"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const usePrepareVestingSchedulerV3DeleteVestingSchedule =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    functionName: 'deleteVestingSchedule',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"executeCliffAndFlow"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const usePrepareVestingSchedulerV3ExecuteCliffAndFlow =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    functionName: 'executeCliffAndFlow',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"executeEndVesting"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const usePrepareVestingSchedulerV3ExecuteEndVesting =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    functionName: 'executeEndVesting',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"updateVestingSchedule"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const usePrepareVestingSchedulerV3UpdateVestingSchedule =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    functionName: 'updateVestingSchedule',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"updateVestingScheduleFlowRateFromAmount"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const usePrepareVestingSchedulerV3UpdateVestingScheduleFlowRateFromAmount =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    functionName: 'updateVestingScheduleFlowRateFromAmount',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"updateVestingScheduleFlowRateFromEndDate"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const usePrepareVestingSchedulerV3UpdateVestingScheduleFlowRateFromEndDate =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    functionName: 'updateVestingScheduleFlowRateFromEndDate',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link vestingSchedulerV3Abi}__
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const useVestingSchedulerV3Event =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `eventName` set to `"DEBUG"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const useVestingSchedulerV3DebugEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    eventName: 'DEBUG',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `eventName` set to `"VestingClaimed"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const useVestingSchedulerV3VestingClaimedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    eventName: 'VestingClaimed',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `eventName` set to `"VestingCliffAndFlowExecuted"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const useVestingSchedulerV3VestingCliffAndFlowExecutedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    eventName: 'VestingCliffAndFlowExecuted',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `eventName` set to `"VestingEndExecuted"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const useVestingSchedulerV3VestingEndExecutedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    eventName: 'VestingEndExecuted',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `eventName` set to `"VestingEndFailed"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const useVestingSchedulerV3VestingEndFailedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    eventName: 'VestingEndFailed',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `eventName` set to `"VestingScheduleCreated"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const useVestingSchedulerV3VestingScheduleCreatedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    eventName: 'VestingScheduleCreated',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `eventName` set to `"VestingScheduleDeleted"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const useVestingSchedulerV3VestingScheduleDeletedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    eventName: 'VestingScheduleDeleted',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `eventName` set to `"VestingScheduleEndDateUpdated"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const useVestingSchedulerV3VestingScheduleEndDateUpdatedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    eventName: 'VestingScheduleEndDateUpdated',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `eventName` set to `"VestingScheduleTotalAmountUpdated"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const useVestingSchedulerV3VestingScheduleTotalAmountUpdatedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    eventName: 'VestingScheduleTotalAmountUpdated',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `eventName` set to `"VestingScheduleUpdated"`
+ *
+ * [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x7cEC6490CEfF2768A1ecfc6d71C1dF819A8a6E3c)
+ */
+export const useVestingSchedulerV3VestingScheduleUpdatedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
     eventName: 'VestingScheduleUpdated',
   })

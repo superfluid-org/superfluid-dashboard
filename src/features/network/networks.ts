@@ -943,7 +943,7 @@ export const networkDefinition = {
         END_DATE_VALID_BEFORE_IN_SECONDS: DEFAULT_TESTNET_END_DATE_VALID_BEFORE_IN_SECONDS
       },
       v3: {
-        address: vestingContractAddresses_v3.optimismSepolia,
+        address: vestingContractAddresses_v3[chain.optimismSepolia.id],
         MIN_VESTING_DURATION_IN_SECONDS: DEFAULT_TESTNET_MIN_VESTING_DURATION_IN_SECONDS,
         START_DATE_VALID_AFTER_IN_SECONDS: DEFAULT_TESTNET_START_DATE_VALID_AFTER_IN_SECONDS,
         END_DATE_VALID_BEFORE_IN_SECONDS: DEFAULT_TESTNET_END_DATE_VALID_BEFORE_IN_SECONDS
