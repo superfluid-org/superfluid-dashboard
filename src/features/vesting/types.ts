@@ -125,6 +125,7 @@ export const vestingStatuses = {
   },
 } as const satisfies Record<string, VestingStatus>;
 
+// Keep it serializable!
 export interface VestingSchedule {
   id: string;
   superToken: string;

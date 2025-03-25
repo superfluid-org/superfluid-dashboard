@@ -88,7 +88,7 @@ type StopVestingScheduleAction = Action<"stop-vesting-schedule", {
 
 type Actions = CreateVestingScheduleAction | UpdateVestingScheduleAction | StopVestingScheduleAction
 
-type ProjectState = {
+export type ProjectState = {
     agoraEntry: AgoraResponseEntry
 
     currentWallet: Address
@@ -96,12 +96,16 @@ type ProjectState = {
 
     activeSchedule: VestingSchedule | null
 
+    allocations: {
+        tranch: number
+        amount: string
+    }[]
+
     todo: Actions[]
 }
 
-const AGORA_API_ENDPOINT_URL = "https://op-atlas-git-stepan-rewards-api-mock-voteagora.vercel.app/api/v1/rewards/7/onchain-builders"
 
-type ResponseData = {
+export type AgoraResponseData = {
     success: true
     projectStates: ProjectState[]
 } | {
@@ -129,9 +133,15 @@ const OPxAddress = {
     [optimismSepolia.id]: "0x0043d7c85C8b96a49A72A92C0B48CdC4720437d7" as const, // ETHx actually
 }
 
+const agoraApiEndpoints = {
+    [optimismSepolia.id]: "https://op-atlas-git-stepan-rewards-api-mock-voteagora.vercel.app/api/v1/rewards/7/onchain-builders",
+}
+
+const validChainIds = Object.keys(agoraApiEndpoints).map(Number);
+
 export default async function handler(
     req: NextApiRequest,
-    res: NextApiResponse<ResponseData>
+    res: NextApiResponse<AgoraResponseData>
 ) {
     // TODO: validate method?
     const chain = optimismSepolia;
@@ -148,9 +158,37 @@ export default async function handler(
     }
     const sender = getAddress(sender_);
 
-    // Fetch the wanted state from the API
-    // https://op-atlas-git-stepan-rewards-api-mock-voteagora.vercel.app/api/v1/rewards/7/onchain-builders
+    const chainId_ = req.query.chainId
+    if (!chainId_ || typeof chainId_ !== 'string') {
+        return res.status(400).json({
+            success: false,
+            message: 'Chain ID is required as query parameter'
+        })
+    }
+    
+    const chainId = parseInt(chainId_, 10)
+    if (isNaN(chainId)) {
+        return res.status(400).json({
+            success: false,
+            message: 'Chain ID must be a valid number'
+        })
+    }
+    
+    // Optionally validate that the chainId is one we support
+    if (!validChainIds.includes(chainId)) {
+        return res.status(400).json({
+            success: false,
+            message: 'Unsupported chain ID. Only Optimism and Optimism Sepolia are supported.'
+        })
+    }
 
+    const agoraApiEndpoint = agoraApiEndpoints[chainId as keyof typeof agoraApiEndpoints];
+    if (!agoraApiEndpoint) {
+        return res.status(400).json({
+            success: false,
+            message: 'Agora API endpoint not found.'
+        })
+    }
 
     const OPx = OPxAddress[chain.id];
 
@@ -158,7 +196,7 @@ export default async function handler(
 
         const dataFromAgora = yield* pipe(
             E.tryPromise({
-                try: () => fetch(AGORA_API_ENDPOINT_URL).then(res => res.json()),
+                try: () => fetch(agoraApiEndpoint).then(res => res.json()),
                 catch: (error) => {
                     return new AgoraError("Failed to fetch data from Agora", { cause: error })
                 }
@@ -174,12 +212,6 @@ export default async function handler(
                 }
             })),
             E.tap((x) => E.logTrace(`Validated ${x.length} rows from Agora`)),
-            E.map(x => {
-                // TODO: Was there something to do with KYC?
-                // I think it was that when KYC is not done then I effectively ignore it...
-                // I'll default to filtering out for now.
-                return x.filter(_ => _.KYCStautsCompleted)
-            }),
             E.tap(() => E.logTrace(`Filtered out non-KYC'ed rows`))
         );
 
@@ -212,9 +244,10 @@ export default async function handler(
         }
 
         if (duplicateWallets.length > 0) {
-            yield* E.fail(new AgoraError(
-                `Found wallets assigned to multiple projects: ${JSON.stringify(duplicateWallets, null, 2)}`
-            ));
+            // TODO: Ignore this error for now has there are some in the test data...
+            // yield* E.fail(new AgoraError(
+            //     `Found wallets assigned to multiple projects: ${JSON.stringify(duplicateWallets, null, 2)}`
+            // ));
         }
         // ---
 
@@ -226,6 +259,7 @@ export default async function handler(
 
         // TODO: I need tranch start time. Or not? If there is a tranch then that's the start time. I think I only need the end time.
 
+        // TODO: Should I filter out the non-KYC projects from here for optimization purposes?
         const allReceiverAddresses_bothActiveAndInactive = uniq(dataFromAgora.flatMap(x => x.wallets));
 
         yield* E.logTrace(`Fetching vesting schedules for ${allReceiverAddresses_bothActiveAndInactive.length} wallets`);
@@ -266,13 +300,15 @@ export default async function handler(
             return E.gen(function* () {
 
                 const agoraCurrentWallet: Address = row.wallets[row.wallets.length - 1] as Address;
-                const agoraPreviousWallet: Address | null =
+                let agoraPreviousWallet: Address | null =
                     row.wallets.length > 1
                         ? row.wallets[row.wallets.length - 2] as Address
                         : null;
 
                 if (agoraCurrentWallet === agoraPreviousWallet) {
-                    return yield* E.die(new Error("Current and previous wallets are the same. Not prepared for this situation!"));
+                    // TODO: Handle this better
+                    agoraPreviousWallet = null;
+                    // return yield* E.die(new Error("Current and previous wallets are the same. Not prepared for this situation!"));
                 }
 
                 const currentWalletVestingSchedule = activeVestingSchedules.find(x => x.receiver.toLowerCase() === agoraCurrentWallet.toLowerCase()) ?? null;
@@ -285,6 +321,10 @@ export default async function handler(
 
                 const actions = yield* E.gen(function* () {
                     const actions: Actions[] = [];
+
+                    if (!row.KYCStautsCompleted) {
+                        return [];
+                    }
 
                     const hasProjectJustChangedWallet = !!previousWalletVestingSchedule;
                     if (hasProjectJustChangedWallet) {
@@ -391,13 +431,18 @@ export default async function handler(
                     return actions;
                 });
 
-                return {
+                const projectState: ProjectState = {
                     agoraEntry: row,
                     currentWallet: agoraCurrentWallet,
                     previousWallet: agoraPreviousWallet,
                     activeSchedule: currentWalletVestingSchedule,
-                    todo: actions
-                } as ProjectState;
+                    todo: actions,
+                    allocations: row.amounts.map((amount, index) => ({
+                        tranch: index + 1,
+                        amount: amount
+                    }))
+                };
+                return projectState;
             });
         });
 
