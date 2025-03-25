@@ -30,6 +30,7 @@ const ethSdkConfig = defineConfig({
     optimismSepolia: "https://api-sepolia-optimistic.etherscan.io/api",
   },
   "etherscanKeys": {
+    // TODO: invalidate these
     "mainnet": "IUNCWE1EGP5K32MFWNYRMMBQ3T15UDU4KG",
     // @ts-ignore
     "optimismSepolia": "8F79VATSP7AI7YPTS8BCSGUVZSUJSHGEP7"

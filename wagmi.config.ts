@@ -10,8 +10,9 @@ import SuperfluidPoolJSON from "@superfluid-finance/ethereum-contracts/build/tru
 import SuperfluidJSON from "@superfluid-finance/ethereum-contracts/build/truffle/Superfluid.json" assert { type: "json" };
 import { Abi, Address, erc20Abi } from "viem";
 import superfluidMetadata from "@superfluid-finance/metadata";
-import { vestingSchedulerAbi } from "./src/abis/vestingSchedulerAbi";
-import { vestingSchedulerV3Abi } from "./src/abis/vestingSchedulerV3Abi";
+import vestingSchedulerV1Abi from "./src/eth-sdk/abis/optimismSepolia/VestingScheduler.json" assert { type: "json" };
+import vestingSchedulerV2Abi from "./src/eth-sdk/abis/optimismSepolia/VestingScheduler_v2.json" assert { type: "json" };
+import vestingSchedulerV3Abi from "./src/eth-sdk/abis/optimismSepolia/VestingScheduler_v3.json" assert { type: "json" };
 
 /** @type {import('@wagmi/cli').Config} */
 export default defineConfig({
@@ -69,7 +70,7 @@ export default defineConfig({
     },
     {
       name: "VestingScheduler",
-      abi: vestingSchedulerAbi,
+      abi: vestingSchedulerV1Abi as Abi,
       address: superfluidMetadata.networks.reduce((acc, current) => {
         const address = current.contractsV1.vestingScheduler as Address;
         if (address) {
@@ -80,7 +81,7 @@ export default defineConfig({
     },
     {
       name: "VestingSchedulerV2",
-      abi: vestingSchedulerAbi,
+      abi: vestingSchedulerV2Abi as Abi,
       address: superfluidMetadata.networks.reduce((acc, current) => {
         const address = current.contractsV1.vestingSchedulerV2 as Address;
         if (address) {
@@ -91,7 +92,7 @@ export default defineConfig({
     },
     {
       name: "VestingSchedulerV3",
-      abi: vestingSchedulerV3Abi,
+      abi: vestingSchedulerV3Abi as Abi,
       address: Object.entries(vestingContractAddresses_v3).reduce((acc, [chainId, address]) => {
         acc[Number(chainId)] = address;
         return acc;

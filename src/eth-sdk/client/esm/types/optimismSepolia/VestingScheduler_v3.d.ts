@@ -80,8 +80,10 @@ export interface VestingScheduler_v3Interface extends utils.Interface {
         "createVestingSchedule(address,address,uint32,uint32,int96,uint256,uint32,uint32)": FunctionFragment;
         "createVestingSchedule(address,address,uint32,uint32,int96,uint256,uint32,bytes)": FunctionFragment;
         "createVestingSchedule(address,address,uint32,uint32,int96,uint256,uint32,uint32,bytes)": FunctionFragment;
+        "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32,uint256,bytes)": FunctionFragment;
         "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32,bytes)": FunctionFragment;
         "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32)": FunctionFragment;
+        "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32,uint256)": FunctionFragment;
         "deleteVestingSchedule(address,address,bytes)": FunctionFragment;
         "executeCliffAndFlow(address,address,address)": FunctionFragment;
         "executeEndVesting(address,address,address)": FunctionFragment;
@@ -89,6 +91,7 @@ export interface VestingScheduler_v3Interface extends utils.Interface {
         "getMaximumNeededTokenAllowance((uint32,uint32,int96,uint256,uint96,uint32))": FunctionFragment;
         "getVestingSchedule(address,address,address)": FunctionFragment;
         "isTrustedForwarder(address)": FunctionFragment;
+        "mapCreateVestingScheduleParams(address,address,address,uint256,uint32,uint32,uint32,uint32,uint256)": FunctionFragment;
         "mapCreateVestingScheduleParams(address,address,address,uint256,uint32,uint32,uint32,uint32)": FunctionFragment;
         "updateVestingSchedule(address,address,uint32,bytes)": FunctionFragment;
         "updateVestingScheduleFlowRateFromAmount(address,address,uint256,bytes)": FunctionFragment;
@@ -96,7 +99,7 @@ export interface VestingScheduler_v3Interface extends utils.Interface {
         "versionRecipient()": FunctionFragment;
         "vestingSchedules(bytes32)": FunctionFragment;
     };
-    getFunction(nameOrSignatureOrTopic: "END_DATE_VALID_BEFORE" | "HOST" | "MIN_VESTING_DURATION" | "START_DATE_VALID_AFTER" | "accountings" | "afterAgreementCreated" | "afterAgreementTerminated" | "afterAgreementUpdated" | "beforeAgreementCreated" | "beforeAgreementTerminated" | "beforeAgreementUpdated" | "createAndExecuteVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,bytes)" | "createAndExecuteVestingScheduleFromAmountAndDuration(address,address,uint256,uint32)" | "createVestingSchedule(address,address,uint32,uint32,int96,uint256,uint32,uint32)" | "createVestingSchedule(address,address,uint32,uint32,int96,uint256,uint32,bytes)" | "createVestingSchedule(address,address,uint32,uint32,int96,uint256,uint32,uint32,bytes)" | "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32,bytes)" | "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32)" | "deleteVestingSchedule" | "executeCliffAndFlow" | "executeEndVesting" | "getMaximumNeededTokenAllowance(address,address,address)" | "getMaximumNeededTokenAllowance((uint32,uint32,int96,uint256,uint96,uint32))" | "getVestingSchedule" | "isTrustedForwarder" | "mapCreateVestingScheduleParams" | "updateVestingSchedule" | "updateVestingScheduleFlowRateFromAmount" | "updateVestingScheduleFlowRateFromEndDate" | "versionRecipient" | "vestingSchedules"): FunctionFragment;
+    getFunction(nameOrSignatureOrTopic: "END_DATE_VALID_BEFORE" | "HOST" | "MIN_VESTING_DURATION" | "START_DATE_VALID_AFTER" | "accountings" | "afterAgreementCreated" | "afterAgreementTerminated" | "afterAgreementUpdated" | "beforeAgreementCreated" | "beforeAgreementTerminated" | "beforeAgreementUpdated" | "createAndExecuteVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,bytes)" | "createAndExecuteVestingScheduleFromAmountAndDuration(address,address,uint256,uint32)" | "createVestingSchedule(address,address,uint32,uint32,int96,uint256,uint32,uint32)" | "createVestingSchedule(address,address,uint32,uint32,int96,uint256,uint32,bytes)" | "createVestingSchedule(address,address,uint32,uint32,int96,uint256,uint32,uint32,bytes)" | "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32,uint256,bytes)" | "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32,bytes)" | "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32)" | "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32,uint256)" | "deleteVestingSchedule" | "executeCliffAndFlow" | "executeEndVesting" | "getMaximumNeededTokenAllowance(address,address,address)" | "getMaximumNeededTokenAllowance((uint32,uint32,int96,uint256,uint96,uint32))" | "getVestingSchedule" | "isTrustedForwarder" | "mapCreateVestingScheduleParams(address,address,address,uint256,uint32,uint32,uint32,uint32,uint256)" | "mapCreateVestingScheduleParams(address,address,address,uint256,uint32,uint32,uint32,uint32)" | "updateVestingSchedule" | "updateVestingScheduleFlowRateFromAmount" | "updateVestingScheduleFlowRateFromEndDate" | "versionRecipient" | "vestingSchedules"): FunctionFragment;
     encodeFunctionData(functionFragment: "END_DATE_VALID_BEFORE", values?: undefined): string;
     encodeFunctionData(functionFragment: "HOST", values?: undefined): string;
     encodeFunctionData(functionFragment: "MIN_VESTING_DURATION", values?: undefined): string;
@@ -191,6 +194,17 @@ export interface VestingScheduler_v3Interface extends utils.Interface {
         PromiseOrValue<BigNumberish>,
         PromiseOrValue<BytesLike>
     ]): string;
+    encodeFunctionData(functionFragment: "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32,uint256,bytes)", values: [
+        PromiseOrValue<string>,
+        PromiseOrValue<string>,
+        PromiseOrValue<BigNumberish>,
+        PromiseOrValue<BigNumberish>,
+        PromiseOrValue<BigNumberish>,
+        PromiseOrValue<BigNumberish>,
+        PromiseOrValue<BigNumberish>,
+        PromiseOrValue<BigNumberish>,
+        PromiseOrValue<BytesLike>
+    ]): string;
     encodeFunctionData(functionFragment: "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32,bytes)", values: [
         PromiseOrValue<string>,
         PromiseOrValue<string>,
@@ -204,6 +218,16 @@ export interface VestingScheduler_v3Interface extends utils.Interface {
     encodeFunctionData(functionFragment: "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32)", values: [
         PromiseOrValue<string>,
         PromiseOrValue<string>,
+        PromiseOrValue<BigNumberish>,
+        PromiseOrValue<BigNumberish>,
+        PromiseOrValue<BigNumberish>,
+        PromiseOrValue<BigNumberish>,
+        PromiseOrValue<BigNumberish>
+    ]): string;
+    encodeFunctionData(functionFragment: "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32,uint256)", values: [
+        PromiseOrValue<string>,
+        PromiseOrValue<string>,
+        PromiseOrValue<BigNumberish>,
         PromiseOrValue<BigNumberish>,
         PromiseOrValue<BigNumberish>,
         PromiseOrValue<BigNumberish>,
@@ -237,7 +261,18 @@ export interface VestingScheduler_v3Interface extends utils.Interface {
         PromiseOrValue<string>
     ]): string;
     encodeFunctionData(functionFragment: "isTrustedForwarder", values: [PromiseOrValue<string>]): string;
-    encodeFunctionData(functionFragment: "mapCreateVestingScheduleParams", values: [
+    encodeFunctionData(functionFragment: "mapCreateVestingScheduleParams(address,address,address,uint256,uint32,uint32,uint32,uint32,uint256)", values: [
+        PromiseOrValue<string>,
+        PromiseOrValue<string>,
+        PromiseOrValue<string>,
+        PromiseOrValue<BigNumberish>,
+        PromiseOrValue<BigNumberish>,
+        PromiseOrValue<BigNumberish>,
+        PromiseOrValue<BigNumberish>,
+        PromiseOrValue<BigNumberish>,
+        PromiseOrValue<BigNumberish>
+    ]): string;
+    encodeFunctionData(functionFragment: "mapCreateVestingScheduleParams(address,address,address,uint256,uint32,uint32,uint32,uint32)", values: [
         PromiseOrValue<string>,
         PromiseOrValue<string>,
         PromiseOrValue<string>,
@@ -283,8 +318,10 @@ export interface VestingScheduler_v3Interface extends utils.Interface {
     decodeFunctionResult(functionFragment: "createVestingSchedule(address,address,uint32,uint32,int96,uint256,uint32,uint32)", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "createVestingSchedule(address,address,uint32,uint32,int96,uint256,uint32,bytes)", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "createVestingSchedule(address,address,uint32,uint32,int96,uint256,uint32,uint32,bytes)", data: BytesLike): Result;
+    decodeFunctionResult(functionFragment: "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32,uint256,bytes)", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32,bytes)", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32)", data: BytesLike): Result;
+    decodeFunctionResult(functionFragment: "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32,uint256)", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "deleteVestingSchedule", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "executeCliffAndFlow", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "executeEndVesting", data: BytesLike): Result;
@@ -292,14 +329,14 @@ export interface VestingScheduler_v3Interface extends utils.Interface {
     decodeFunctionResult(functionFragment: "getMaximumNeededTokenAllowance((uint32,uint32,int96,uint256,uint96,uint32))", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "getVestingSchedule", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "isTrustedForwarder", data: BytesLike): Result;
-    decodeFunctionResult(functionFragment: "mapCreateVestingScheduleParams", data: BytesLike): Result;
+    decodeFunctionResult(functionFragment: "mapCreateVestingScheduleParams(address,address,address,uint256,uint32,uint32,uint32,uint32,uint256)", data: BytesLike): Result;
+    decodeFunctionResult(functionFragment: "mapCreateVestingScheduleParams(address,address,address,uint256,uint32,uint32,uint32,uint32)", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "updateVestingSchedule", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "updateVestingScheduleFlowRateFromAmount", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "updateVestingScheduleFlowRateFromEndDate", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "versionRecipient", data: BytesLike): Result;
     decodeFunctionResult(functionFragment: "vestingSchedules", data: BytesLike): Result;
     events: {
-        "DEBUG(uint256,uint256,int96)": EventFragment;
         "VestingClaimed(address,address,address,address)": EventFragment;
         "VestingCliffAndFlowExecuted(address,address,address,uint32,int96,uint256,uint256)": EventFragment;
         "VestingEndExecuted(address,address,address,uint32,uint256,bool)": EventFragment;
@@ -310,7 +347,6 @@ export interface VestingScheduler_v3Interface extends utils.Interface {
         "VestingScheduleTotalAmountUpdated(address,address,address,int96,int96,uint256,uint256,uint96)": EventFragment;
         "VestingScheduleUpdated(address,address,address,uint32,uint32,uint96)": EventFragment;
     };
-    getEvent(nameOrSignatureOrTopic: "DEBUG"): EventFragment;
     getEvent(nameOrSignatureOrTopic: "VestingClaimed"): EventFragment;
     getEvent(nameOrSignatureOrTopic: "VestingCliffAndFlowExecuted"): EventFragment;
     getEvent(nameOrSignatureOrTopic: "VestingEndExecuted"): EventFragment;
@@ -321,17 +357,6 @@ export interface VestingScheduler_v3Interface extends utils.Interface {
     getEvent(nameOrSignatureOrTopic: "VestingScheduleTotalAmountUpdated"): EventFragment;
     getEvent(nameOrSignatureOrTopic: "VestingScheduleUpdated"): EventFragment;
 }
-export interface DEBUGEventObject {
-    amountLeftToVest: BigNumber;
-    timeLeftToVest: BigNumber;
-    flowRate: BigNumber;
-}
-export type DEBUGEvent = TypedEvent<[
-    BigNumber,
-    BigNumber,
-    BigNumber
-], DEBUGEventObject>;
-export type DEBUGEventFilter = TypedEventFilter<DEBUGEvent>;
 export interface VestingClaimedEventObject {
     superToken: string;
     sender: string;
@@ -542,10 +567,16 @@ export interface VestingScheduler_v3 extends BaseContract {
         "createVestingSchedule(address,address,uint32,uint32,int96,uint256,uint32,uint32,bytes)"(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, startDate: PromiseOrValue<BigNumberish>, cliffDate: PromiseOrValue<BigNumberish>, flowRate: PromiseOrValue<BigNumberish>, cliffAmount: PromiseOrValue<BigNumberish>, endDate: PromiseOrValue<BigNumberish>, claimValidityDate: PromiseOrValue<BigNumberish>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<ContractTransaction>;
+        "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32,uint256,bytes)"(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, totalAmount: PromiseOrValue<BigNumberish>, totalDuration: PromiseOrValue<BigNumberish>, startDate: PromiseOrValue<BigNumberish>, cliffPeriod: PromiseOrValue<BigNumberish>, claimPeriod: PromiseOrValue<BigNumberish>, cliffAmount: PromiseOrValue<BigNumberish>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
+            from?: PromiseOrValue<string>;
+        }): Promise<ContractTransaction>;
         "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32,bytes)"(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, totalAmount: PromiseOrValue<BigNumberish>, totalDuration: PromiseOrValue<BigNumberish>, startDate: PromiseOrValue<BigNumberish>, cliffPeriod: PromiseOrValue<BigNumberish>, claimPeriod: PromiseOrValue<BigNumberish>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<ContractTransaction>;
         "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32)"(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, totalAmount: PromiseOrValue<BigNumberish>, totalDuration: PromiseOrValue<BigNumberish>, startDate: PromiseOrValue<BigNumberish>, cliffPeriod: PromiseOrValue<BigNumberish>, claimPeriod: PromiseOrValue<BigNumberish>, overrides?: Overrides & {
+            from?: PromiseOrValue<string>;
+        }): Promise<ContractTransaction>;
+        "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32,uint256)"(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, totalAmount: PromiseOrValue<BigNumberish>, totalDuration: PromiseOrValue<BigNumberish>, startDate: PromiseOrValue<BigNumberish>, cliffPeriod: PromiseOrValue<BigNumberish>, claimPeriod: PromiseOrValue<BigNumberish>, cliffAmount: PromiseOrValue<BigNumberish>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<ContractTransaction>;
         deleteVestingSchedule(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
@@ -561,7 +592,12 @@ export interface VestingScheduler_v3 extends BaseContract {
         "getMaximumNeededTokenAllowance((uint32,uint32,int96,uint256,uint96,uint32))"(schedule: IVestingSchedulerV2.VestingScheduleStruct, overrides?: CallOverrides): Promise<[BigNumber]>;
         getVestingSchedule(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, overrides?: CallOverrides): Promise<[IVestingSchedulerV2.VestingScheduleStructOutput]>;
         isTrustedForwarder(forwarder: PromiseOrValue<string>, overrides?: CallOverrides): Promise<[boolean]>;
-        mapCreateVestingScheduleParams(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, totalAmount: PromiseOrValue<BigNumberish>, totalDuration: PromiseOrValue<BigNumberish>, startDate: PromiseOrValue<BigNumberish>, cliffPeriod: PromiseOrValue<BigNumberish>, claimPeriod: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<[
+        "mapCreateVestingScheduleParams(address,address,address,uint256,uint32,uint32,uint32,uint32,uint256)"(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, totalAmount: PromiseOrValue<BigNumberish>, totalDuration: PromiseOrValue<BigNumberish>, startDate: PromiseOrValue<BigNumberish>, cliffPeriod: PromiseOrValue<BigNumberish>, claimPeriod: PromiseOrValue<BigNumberish>, cliffAmount: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<[
+            IVestingSchedulerV2.ScheduleCreationParamsStructOutput
+        ] & {
+            params: IVestingSchedulerV2.ScheduleCreationParamsStructOutput;
+        }>;
+        "mapCreateVestingScheduleParams(address,address,address,uint256,uint32,uint32,uint32,uint32)"(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, totalAmount: PromiseOrValue<BigNumberish>, totalDuration: PromiseOrValue<BigNumberish>, startDate: PromiseOrValue<BigNumberish>, cliffPeriod: PromiseOrValue<BigNumberish>, claimPeriod: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<[
             IVestingSchedulerV2.ScheduleCreationParamsStructOutput
         ] & {
             params: IVestingSchedulerV2.ScheduleCreationParamsStructOutput;
@@ -630,10 +666,16 @@ export interface VestingScheduler_v3 extends BaseContract {
     "createVestingSchedule(address,address,uint32,uint32,int96,uint256,uint32,uint32,bytes)"(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, startDate: PromiseOrValue<BigNumberish>, cliffDate: PromiseOrValue<BigNumberish>, flowRate: PromiseOrValue<BigNumberish>, cliffAmount: PromiseOrValue<BigNumberish>, endDate: PromiseOrValue<BigNumberish>, claimValidityDate: PromiseOrValue<BigNumberish>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
         from?: PromiseOrValue<string>;
     }): Promise<ContractTransaction>;
+    "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32,uint256,bytes)"(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, totalAmount: PromiseOrValue<BigNumberish>, totalDuration: PromiseOrValue<BigNumberish>, startDate: PromiseOrValue<BigNumberish>, cliffPeriod: PromiseOrValue<BigNumberish>, claimPeriod: PromiseOrValue<BigNumberish>, cliffAmount: PromiseOrValue<BigNumberish>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
+        from?: PromiseOrValue<string>;
+    }): Promise<ContractTransaction>;
     "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32,bytes)"(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, totalAmount: PromiseOrValue<BigNumberish>, totalDuration: PromiseOrValue<BigNumberish>, startDate: PromiseOrValue<BigNumberish>, cliffPeriod: PromiseOrValue<BigNumberish>, claimPeriod: PromiseOrValue<BigNumberish>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
         from?: PromiseOrValue<string>;
     }): Promise<ContractTransaction>;
     "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32)"(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, totalAmount: PromiseOrValue<BigNumberish>, totalDuration: PromiseOrValue<BigNumberish>, startDate: PromiseOrValue<BigNumberish>, cliffPeriod: PromiseOrValue<BigNumberish>, claimPeriod: PromiseOrValue<BigNumberish>, overrides?: Overrides & {
+        from?: PromiseOrValue<string>;
+    }): Promise<ContractTransaction>;
+    "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32,uint256)"(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, totalAmount: PromiseOrValue<BigNumberish>, totalDuration: PromiseOrValue<BigNumberish>, startDate: PromiseOrValue<BigNumberish>, cliffPeriod: PromiseOrValue<BigNumberish>, claimPeriod: PromiseOrValue<BigNumberish>, cliffAmount: PromiseOrValue<BigNumberish>, overrides?: Overrides & {
         from?: PromiseOrValue<string>;
     }): Promise<ContractTransaction>;
     deleteVestingSchedule(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
@@ -649,7 +691,8 @@ export interface VestingScheduler_v3 extends BaseContract {
     "getMaximumNeededTokenAllowance((uint32,uint32,int96,uint256,uint96,uint32))"(schedule: IVestingSchedulerV2.VestingScheduleStruct, overrides?: CallOverrides): Promise<BigNumber>;
     getVestingSchedule(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, overrides?: CallOverrides): Promise<IVestingSchedulerV2.VestingScheduleStructOutput>;
     isTrustedForwarder(forwarder: PromiseOrValue<string>, overrides?: CallOverrides): Promise<boolean>;
-    mapCreateVestingScheduleParams(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, totalAmount: PromiseOrValue<BigNumberish>, totalDuration: PromiseOrValue<BigNumberish>, startDate: PromiseOrValue<BigNumberish>, cliffPeriod: PromiseOrValue<BigNumberish>, claimPeriod: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<IVestingSchedulerV2.ScheduleCreationParamsStructOutput>;
+    "mapCreateVestingScheduleParams(address,address,address,uint256,uint32,uint32,uint32,uint32,uint256)"(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, totalAmount: PromiseOrValue<BigNumberish>, totalDuration: PromiseOrValue<BigNumberish>, startDate: PromiseOrValue<BigNumberish>, cliffPeriod: PromiseOrValue<BigNumberish>, claimPeriod: PromiseOrValue<BigNumberish>, cliffAmount: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<IVestingSchedulerV2.ScheduleCreationParamsStructOutput>;
+    "mapCreateVestingScheduleParams(address,address,address,uint256,uint32,uint32,uint32,uint32)"(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, totalAmount: PromiseOrValue<BigNumberish>, totalDuration: PromiseOrValue<BigNumberish>, startDate: PromiseOrValue<BigNumberish>, cliffPeriod: PromiseOrValue<BigNumberish>, claimPeriod: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<IVestingSchedulerV2.ScheduleCreationParamsStructOutput>;
     updateVestingSchedule(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, endDate: PromiseOrValue<BigNumberish>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
         from?: PromiseOrValue<string>;
     }): Promise<ContractTransaction>;
@@ -698,8 +741,10 @@ export interface VestingScheduler_v3 extends BaseContract {
         "createVestingSchedule(address,address,uint32,uint32,int96,uint256,uint32,uint32)"(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, startDate: PromiseOrValue<BigNumberish>, cliffDate: PromiseOrValue<BigNumberish>, flowRate: PromiseOrValue<BigNumberish>, cliffAmount: PromiseOrValue<BigNumberish>, endDate: PromiseOrValue<BigNumberish>, claimValidityDate: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<void>;
         "createVestingSchedule(address,address,uint32,uint32,int96,uint256,uint32,bytes)"(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, startDate: PromiseOrValue<BigNumberish>, cliffDate: PromiseOrValue<BigNumberish>, flowRate: PromiseOrValue<BigNumberish>, cliffAmount: PromiseOrValue<BigNumberish>, endDate: PromiseOrValue<BigNumberish>, ctx: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<string>;
         "createVestingSchedule(address,address,uint32,uint32,int96,uint256,uint32,uint32,bytes)"(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, startDate: PromiseOrValue<BigNumberish>, cliffDate: PromiseOrValue<BigNumberish>, flowRate: PromiseOrValue<BigNumberish>, cliffAmount: PromiseOrValue<BigNumberish>, endDate: PromiseOrValue<BigNumberish>, claimValidityDate: PromiseOrValue<BigNumberish>, ctx: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<string>;
+        "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32,uint256,bytes)"(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, totalAmount: PromiseOrValue<BigNumberish>, totalDuration: PromiseOrValue<BigNumberish>, startDate: PromiseOrValue<BigNumberish>, cliffPeriod: PromiseOrValue<BigNumberish>, claimPeriod: PromiseOrValue<BigNumberish>, cliffAmount: PromiseOrValue<BigNumberish>, ctx: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<string>;
         "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32,bytes)"(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, totalAmount: PromiseOrValue<BigNumberish>, totalDuration: PromiseOrValue<BigNumberish>, startDate: PromiseOrValue<BigNumberish>, cliffPeriod: PromiseOrValue<BigNumberish>, claimPeriod: PromiseOrValue<BigNumberish>, ctx: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<string>;
         "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32)"(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, totalAmount: PromiseOrValue<BigNumberish>, totalDuration: PromiseOrValue<BigNumberish>, startDate: PromiseOrValue<BigNumberish>, cliffPeriod: PromiseOrValue<BigNumberish>, claimPeriod: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<void>;
+        "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32,uint256)"(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, totalAmount: PromiseOrValue<BigNumberish>, totalDuration: PromiseOrValue<BigNumberish>, startDate: PromiseOrValue<BigNumberish>, cliffPeriod: PromiseOrValue<BigNumberish>, claimPeriod: PromiseOrValue<BigNumberish>, cliffAmount: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<void>;
         deleteVestingSchedule(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, ctx: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<string>;
         executeCliffAndFlow(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, overrides?: CallOverrides): Promise<boolean>;
         executeEndVesting(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, overrides?: CallOverrides): Promise<boolean>;
@@ -707,7 +752,8 @@ export interface VestingScheduler_v3 extends BaseContract {
         "getMaximumNeededTokenAllowance((uint32,uint32,int96,uint256,uint96,uint32))"(schedule: IVestingSchedulerV2.VestingScheduleStruct, overrides?: CallOverrides): Promise<BigNumber>;
         getVestingSchedule(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, overrides?: CallOverrides): Promise<IVestingSchedulerV2.VestingScheduleStructOutput>;
         isTrustedForwarder(forwarder: PromiseOrValue<string>, overrides?: CallOverrides): Promise<boolean>;
-        mapCreateVestingScheduleParams(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, totalAmount: PromiseOrValue<BigNumberish>, totalDuration: PromiseOrValue<BigNumberish>, startDate: PromiseOrValue<BigNumberish>, cliffPeriod: PromiseOrValue<BigNumberish>, claimPeriod: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<IVestingSchedulerV2.ScheduleCreationParamsStructOutput>;
+        "mapCreateVestingScheduleParams(address,address,address,uint256,uint32,uint32,uint32,uint32,uint256)"(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, totalAmount: PromiseOrValue<BigNumberish>, totalDuration: PromiseOrValue<BigNumberish>, startDate: PromiseOrValue<BigNumberish>, cliffPeriod: PromiseOrValue<BigNumberish>, claimPeriod: PromiseOrValue<BigNumberish>, cliffAmount: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<IVestingSchedulerV2.ScheduleCreationParamsStructOutput>;
+        "mapCreateVestingScheduleParams(address,address,address,uint256,uint32,uint32,uint32,uint32)"(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, totalAmount: PromiseOrValue<BigNumberish>, totalDuration: PromiseOrValue<BigNumberish>, startDate: PromiseOrValue<BigNumberish>, cliffPeriod: PromiseOrValue<BigNumberish>, claimPeriod: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<IVestingSchedulerV2.ScheduleCreationParamsStructOutput>;
         updateVestingSchedule(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, endDate: PromiseOrValue<BigNumberish>, ctx: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<string>;
         updateVestingScheduleFlowRateFromAmount(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, newTotalAmount: PromiseOrValue<BigNumberish>, ctx: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<string>;
         updateVestingScheduleFlowRateFromEndDate(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, endDate: PromiseOrValue<BigNumberish>, ctx: PromiseOrValue<BytesLike>, overrides?: CallOverrides): Promise<string>;
@@ -729,8 +775,6 @@ export interface VestingScheduler_v3 extends BaseContract {
         }>;
     };
     filters: {
-        "DEBUG(uint256,uint256,int96)"(amountLeftToVest?: null, timeLeftToVest?: null, flowRate?: null): DEBUGEventFilter;
-        DEBUG(amountLeftToVest?: null, timeLeftToVest?: null, flowRate?: null): DEBUGEventFilter;
         "VestingClaimed(address,address,address,address)"(superToken?: PromiseOrValue<string> | null, sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, claimer?: null): VestingClaimedEventFilter;
         VestingClaimed(superToken?: PromiseOrValue<string> | null, sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, claimer?: null): VestingClaimedEventFilter;
         "VestingCliffAndFlowExecuted(address,address,address,uint32,int96,uint256,uint256)"(superToken?: PromiseOrValue<string> | null, sender?: PromiseOrValue<string> | null, receiver?: PromiseOrValue<string> | null, cliffAndFlowDate?: null, flowRate?: null, cliffAmount?: null, flowDelayCompensation?: null): VestingCliffAndFlowExecutedEventFilter;
@@ -783,10 +827,16 @@ export interface VestingScheduler_v3 extends BaseContract {
         "createVestingSchedule(address,address,uint32,uint32,int96,uint256,uint32,uint32,bytes)"(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, startDate: PromiseOrValue<BigNumberish>, cliffDate: PromiseOrValue<BigNumberish>, flowRate: PromiseOrValue<BigNumberish>, cliffAmount: PromiseOrValue<BigNumberish>, endDate: PromiseOrValue<BigNumberish>, claimValidityDate: PromiseOrValue<BigNumberish>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<BigNumber>;
+        "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32,uint256,bytes)"(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, totalAmount: PromiseOrValue<BigNumberish>, totalDuration: PromiseOrValue<BigNumberish>, startDate: PromiseOrValue<BigNumberish>, cliffPeriod: PromiseOrValue<BigNumberish>, claimPeriod: PromiseOrValue<BigNumberish>, cliffAmount: PromiseOrValue<BigNumberish>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
+            from?: PromiseOrValue<string>;
+        }): Promise<BigNumber>;
         "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32,bytes)"(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, totalAmount: PromiseOrValue<BigNumberish>, totalDuration: PromiseOrValue<BigNumberish>, startDate: PromiseOrValue<BigNumberish>, cliffPeriod: PromiseOrValue<BigNumberish>, claimPeriod: PromiseOrValue<BigNumberish>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<BigNumber>;
         "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32)"(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, totalAmount: PromiseOrValue<BigNumberish>, totalDuration: PromiseOrValue<BigNumberish>, startDate: PromiseOrValue<BigNumberish>, cliffPeriod: PromiseOrValue<BigNumberish>, claimPeriod: PromiseOrValue<BigNumberish>, overrides?: Overrides & {
+            from?: PromiseOrValue<string>;
+        }): Promise<BigNumber>;
+        "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32,uint256)"(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, totalAmount: PromiseOrValue<BigNumberish>, totalDuration: PromiseOrValue<BigNumberish>, startDate: PromiseOrValue<BigNumberish>, cliffPeriod: PromiseOrValue<BigNumberish>, claimPeriod: PromiseOrValue<BigNumberish>, cliffAmount: PromiseOrValue<BigNumberish>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<BigNumber>;
         deleteVestingSchedule(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
@@ -802,7 +852,8 @@ export interface VestingScheduler_v3 extends BaseContract {
         "getMaximumNeededTokenAllowance((uint32,uint32,int96,uint256,uint96,uint32))"(schedule: IVestingSchedulerV2.VestingScheduleStruct, overrides?: CallOverrides): Promise<BigNumber>;
         getVestingSchedule(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, overrides?: CallOverrides): Promise<BigNumber>;
         isTrustedForwarder(forwarder: PromiseOrValue<string>, overrides?: CallOverrides): Promise<BigNumber>;
-        mapCreateVestingScheduleParams(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, totalAmount: PromiseOrValue<BigNumberish>, totalDuration: PromiseOrValue<BigNumberish>, startDate: PromiseOrValue<BigNumberish>, cliffPeriod: PromiseOrValue<BigNumberish>, claimPeriod: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<BigNumber>;
+        "mapCreateVestingScheduleParams(address,address,address,uint256,uint32,uint32,uint32,uint32,uint256)"(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, totalAmount: PromiseOrValue<BigNumberish>, totalDuration: PromiseOrValue<BigNumberish>, startDate: PromiseOrValue<BigNumberish>, cliffPeriod: PromiseOrValue<BigNumberish>, claimPeriod: PromiseOrValue<BigNumberish>, cliffAmount: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<BigNumber>;
+        "mapCreateVestingScheduleParams(address,address,address,uint256,uint32,uint32,uint32,uint32)"(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, totalAmount: PromiseOrValue<BigNumberish>, totalDuration: PromiseOrValue<BigNumberish>, startDate: PromiseOrValue<BigNumberish>, cliffPeriod: PromiseOrValue<BigNumberish>, claimPeriod: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<BigNumber>;
         updateVestingSchedule(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, endDate: PromiseOrValue<BigNumberish>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<BigNumber>;
@@ -848,10 +899,16 @@ export interface VestingScheduler_v3 extends BaseContract {
         "createVestingSchedule(address,address,uint32,uint32,int96,uint256,uint32,uint32,bytes)"(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, startDate: PromiseOrValue<BigNumberish>, cliffDate: PromiseOrValue<BigNumberish>, flowRate: PromiseOrValue<BigNumberish>, cliffAmount: PromiseOrValue<BigNumberish>, endDate: PromiseOrValue<BigNumberish>, claimValidityDate: PromiseOrValue<BigNumberish>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<PopulatedTransaction>;
+        "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32,uint256,bytes)"(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, totalAmount: PromiseOrValue<BigNumberish>, totalDuration: PromiseOrValue<BigNumberish>, startDate: PromiseOrValue<BigNumberish>, cliffPeriod: PromiseOrValue<BigNumberish>, claimPeriod: PromiseOrValue<BigNumberish>, cliffAmount: PromiseOrValue<BigNumberish>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
+            from?: PromiseOrValue<string>;
+        }): Promise<PopulatedTransaction>;
         "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32,bytes)"(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, totalAmount: PromiseOrValue<BigNumberish>, totalDuration: PromiseOrValue<BigNumberish>, startDate: PromiseOrValue<BigNumberish>, cliffPeriod: PromiseOrValue<BigNumberish>, claimPeriod: PromiseOrValue<BigNumberish>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<PopulatedTransaction>;
         "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32)"(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, totalAmount: PromiseOrValue<BigNumberish>, totalDuration: PromiseOrValue<BigNumberish>, startDate: PromiseOrValue<BigNumberish>, cliffPeriod: PromiseOrValue<BigNumberish>, claimPeriod: PromiseOrValue<BigNumberish>, overrides?: Overrides & {
+            from?: PromiseOrValue<string>;
+        }): Promise<PopulatedTransaction>;
+        "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32,uint256)"(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, totalAmount: PromiseOrValue<BigNumberish>, totalDuration: PromiseOrValue<BigNumberish>, startDate: PromiseOrValue<BigNumberish>, cliffPeriod: PromiseOrValue<BigNumberish>, claimPeriod: PromiseOrValue<BigNumberish>, cliffAmount: PromiseOrValue<BigNumberish>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<PopulatedTransaction>;
         deleteVestingSchedule(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
@@ -867,7 +924,8 @@ export interface VestingScheduler_v3 extends BaseContract {
         "getMaximumNeededTokenAllowance((uint32,uint32,int96,uint256,uint96,uint32))"(schedule: IVestingSchedulerV2.VestingScheduleStruct, overrides?: CallOverrides): Promise<PopulatedTransaction>;
         getVestingSchedule(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, overrides?: CallOverrides): Promise<PopulatedTransaction>;
         isTrustedForwarder(forwarder: PromiseOrValue<string>, overrides?: CallOverrides): Promise<PopulatedTransaction>;
-        mapCreateVestingScheduleParams(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, totalAmount: PromiseOrValue<BigNumberish>, totalDuration: PromiseOrValue<BigNumberish>, startDate: PromiseOrValue<BigNumberish>, cliffPeriod: PromiseOrValue<BigNumberish>, claimPeriod: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+        "mapCreateVestingScheduleParams(address,address,address,uint256,uint32,uint32,uint32,uint32,uint256)"(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, totalAmount: PromiseOrValue<BigNumberish>, totalDuration: PromiseOrValue<BigNumberish>, startDate: PromiseOrValue<BigNumberish>, cliffPeriod: PromiseOrValue<BigNumberish>, claimPeriod: PromiseOrValue<BigNumberish>, cliffAmount: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+        "mapCreateVestingScheduleParams(address,address,address,uint256,uint32,uint32,uint32,uint32)"(superToken: PromiseOrValue<string>, sender: PromiseOrValue<string>, receiver: PromiseOrValue<string>, totalAmount: PromiseOrValue<BigNumberish>, totalDuration: PromiseOrValue<BigNumberish>, startDate: PromiseOrValue<BigNumberish>, cliffPeriod: PromiseOrValue<BigNumberish>, claimPeriod: PromiseOrValue<BigNumberish>, overrides?: CallOverrides): Promise<PopulatedTransaction>;
         updateVestingSchedule(superToken: PromiseOrValue<string>, receiver: PromiseOrValue<string>, endDate: PromiseOrValue<BigNumberish>, ctx: PromiseOrValue<BytesLike>, overrides?: Overrides & {
             from?: PromiseOrValue<string>;
         }): Promise<PopulatedTransaction>;
