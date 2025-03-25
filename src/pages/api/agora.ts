@@ -10,16 +10,24 @@ import { mapSubgraphVestingSchedule, VestingSchedule } from '../../features/vest
 import { UnitOfTime } from '../../features/send/FlowRateInput'
 import { vestingSchedulerV3Abi, vestingSchedulerV3Address } from '../../generated'
 import { allNetworks, findNetworkOrThrow } from '../../features/network/networks'
+import { Operation } from '@superfluid-finance/sdk-core'
 
 // TODO: Pre-defining this because yup was not able to infer the types correctly for the transforms...
 type AgoraResponseEntry = {
     projectId: string,
     projectName: string,
-    KYCStautsCompleted: boolean,
+    KYCStatusCompleted: boolean,
     amounts: string[],
     wallets: Address[]
 };
 type AgoraResponse = Array<AgoraResponseEntry>;
+
+// TODO: It would super helpful if:
+// - in the response, it would be clear which amounts were for which wallets
+// - when was the start date and when will be the end date for a tranch
+// Until then, I'm better off handling only the first creation case.
+// Until I get that, I might be better for setting up a dummy API endpoint myself...
+// Hmm, could I figure out that data by looking at all the vesting schedles???
 
 export const agoraResponseEntrySchema = yup.object({
     projectId: yup.string().required('Project ID is required'),
@@ -31,7 +39,7 @@ export const agoraResponseEntrySchema = yup.object({
         .min(1, 'At least one wallet is required')
         .required('Wallets are required'),
     // Note about KYC: the typo is also in the API
-    KYCStautsCompleted: yup.boolean().required('KYC status is required'),
+    KYCStatusCompleted: yup.boolean().required('KYC status is required'),
     amounts: yup.array().of(
         yup.string().trim().required().test(testWeiAmount({
             notNegative: true,
@@ -88,6 +96,12 @@ type StopVestingScheduleAction = Action<"stop-vesting-schedule", {
 
 type Actions = CreateVestingScheduleAction | UpdateVestingScheduleAction | StopVestingScheduleAction
 
+export type ProjectsOverview = {
+    chainId: number
+    tranchPlan: TranchPlan
+    projects: ProjectState[]
+}
+
 export type ProjectState = {
     agoraEntry: AgoraResponseEntry
 
@@ -95,6 +109,7 @@ export type ProjectState = {
     previousWallet: Address | null
 
     activeSchedule: VestingSchedule | null
+    previousSchedules: VestingSchedule[]
 
     allocations: {
         tranch: number
@@ -107,7 +122,7 @@ export type ProjectState = {
 
 export type AgoraResponseData = {
     success: true
-    projectStates: ProjectState[]
+    projectsOverview: ProjectsOverview
 } | {
     success: false
     message: string
@@ -322,7 +337,7 @@ export default async function handler(
                 const actions = yield* E.gen(function* () {
                     const actions: Actions[] = [];
 
-                    if (!row.KYCStautsCompleted) {
+                    if (!row.KYCStatusCompleted) {
                         return [];
                     }
 
@@ -436,6 +451,7 @@ export default async function handler(
                     currentWallet: agoraCurrentWallet,
                     previousWallet: agoraPreviousWallet,
                     activeSchedule: currentWalletVestingSchedule,
+                    previousSchedules: [], // TODO: Implement this!
                     todo: actions,
                     allocations: row.amounts.map((amount, index) => ({
                         tranch: index + 1,
@@ -448,7 +464,11 @@ export default async function handler(
 
         yield* E.logTrace(`Processed ${projectStates.length} project states`);
 
-        return projectStates;
+        return {
+            chainId,
+            tranchPlan,
+            projects: projectStates
+        }
     })
 
     // Note: It's probably easiest to iterate one by one?
@@ -459,7 +479,7 @@ export default async function handler(
 
     // Note: You can handle the "simple" situation without previous state first.
 
-    const result = await E.runPromise(
+    const projectsOverview = await E.runPromise(
         pipe(
             main,
             Logger.withMinimumLogLevel(LogLevel.Trace) // TODO: make this work only in dev mode
@@ -468,7 +488,7 @@ export default async function handler(
 
     res.status(200).json({
         success: true,
-        projectStates: result
+        projectsOverview
     })
 }
 
@@ -512,4 +532,31 @@ function getId(superToken: Address, sender: Address, receiver: Address): `0x${st
             [superToken, sender, receiver]
         )
     );
+}
+
+// # Mapper
+
+async function mapProjectStateIntoOperations(state: ProjectState): Promise<Operation[]> {
+    // TODO: This should probably be moved into a redux slice...
+
+    const operations: Operation[] = [];
+
+    // const vestingScheduler = getVestingScheduler(network.id);
+
+    for (const action of state.todo) {
+        switch (action.type) {
+            case "create-vesting-schedule":
+                // operations.push(createVestingSchedule(action.payload));
+                break;
+            case "update-vesting-schedule":
+                // operations.push(updateVestingSchedule(action.payload));
+                break;
+            case "stop-vesting-schedule":
+                // TODO: stopping means bringing up the end date
+                // operations.push(stopVestingSchedule(action.payload));
+                break;
+        }
+    }
+
+    return operations;
 }

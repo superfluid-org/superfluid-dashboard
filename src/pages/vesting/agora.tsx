@@ -33,7 +33,7 @@ const AgoraPage: NextPageWithLayout = () => {
         return <div>Error: {errorMessage}</div>;
     }
 
-    const rows = data?.success ? data.projectStates : [];
+    const rows = data?.success ? data.projectsOverview.projects : [];
 
     return (
         <Container maxWidth="lg">
@@ -60,7 +60,7 @@ const AgoraPage: NextPageWithLayout = () => {
 
 function Row(props: { state: ProjectState }) {
     const { state } = props;
-    const [open, setOpen] = useState(state.agoraEntry.KYCStautsCompleted);
+    const [open, setOpen] = useState(state.agoraEntry.KYCStatusCompleted);
 
     const allocation = useMemo(() => {
         return state.agoraEntry.amounts.reduce((acc, amount) => {
@@ -74,7 +74,7 @@ function Row(props: { state: ProjectState }) {
             <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
                 <TableCell>{state.agoraEntry.projectName}</TableCell>
                 <TableCell>{formatEther(allocation)} OPx</TableCell>
-                <TableCell>{state.agoraEntry.KYCStautsCompleted ? <DoneIcon /> : <CloseIcon />}</TableCell>
+                <TableCell>{state.agoraEntry.KYCStatusCompleted ? <DoneIcon /> : <CloseIcon />}</TableCell>
                 <TableCell>
                     <IconButton
                         aria-label="expand row"
