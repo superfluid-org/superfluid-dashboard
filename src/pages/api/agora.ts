@@ -180,7 +180,7 @@ export default async function handler(
             message: 'Chain ID is required as query parameter'
         })
     }
-    
+
     const chainId = parseInt(chainId_, 10)
     if (isNaN(chainId)) {
         return res.status(400).json({
@@ -188,7 +188,7 @@ export default async function handler(
             message: 'Chain ID must be a valid number'
         })
     }
-    
+
     // Optionally validate that the chainId is one we support
     if (!validChainIds.includes(chainId)) {
         return res.status(400).json({
@@ -220,12 +220,23 @@ export default async function handler(
                 times: 5
             }),
             E.tap(() => E.logTrace("Fetched data from Agora")),
-            E.flatMap(response => E.tryPromise({
-                try: () => agoraResponseSchema.validate(response),
-                catch: (error) => {
-                    return new AgoraError("Invalid data from Agora, i.e. didn't pass validation", { cause: error })
+            E.map(x => {
+                if (!Array.isArray(x)) {
+                    return E.fail(new AgoraError("Invalid data from Agora: response is not an array"))
                 }
-            })),
+                return x;
+            }),
+            E.flatMap(response => E.forEach(response, entry =>
+                E.tryPromise(() => agoraResponseEntrySchema.validate(entry))
+                    .pipe(
+                        E.catchAll(error =>
+                            E.logError(`Invalid data from Agora for project ${entry.projectId || 'unknown'}: validation failed`, { cause: error }).pipe(
+                                E.flatMap(() => E.succeed(null))
+                            )
+                        )
+                    )
+            )),
+            E.map(x => x.filter((x): x is AgoraResponseEntry => x !== null)),
             E.tap((x) => E.logTrace(`Validated ${x.length} rows from Agora`)),
             E.tap(() => E.logTrace(`Filtered out non-KYC'ed rows`))
         );
