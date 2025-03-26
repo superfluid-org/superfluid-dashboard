@@ -19,7 +19,7 @@ export const testAddress: () => TestFunction<string, AnyObject> =
 const validateAddress = (address: string, context: TestContext) => {
   if (!isAddress(address) && address !== NATIVE_ASSET_ADDRESS) {
     throw context.createError({
-      message: "Not an address.",
+      message: `Not an address: ${address}`,
     });
   }
 

@@ -10,6 +10,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import DoneIcon from '@mui/icons-material/Done';
 import CloseIcon from '@mui/icons-material/Close';
 import { formatEther } from "viem";
+import { BigLoader } from "../../features/vesting/BigLoader";
 
 const AgoraPage: NextPageWithLayout = () => {
     const { visibleAddress } = useVisibleAddress();
@@ -25,7 +26,11 @@ const AgoraPage: NextPageWithLayout = () => {
 
     if (isLoading) {
         // TODO: use skeleton table?
-        return <div>Loading...</div>;
+        return (
+            <Container maxWidth="lg">
+                <BigLoader />
+            </Container>
+        );
     }
 
     if (errorMessage) {
