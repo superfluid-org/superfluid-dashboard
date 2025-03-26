@@ -208,6 +208,42 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
               </Stack>
             </Stack>
           )}
+          {network.vestingContractAddress.v3 && (
+            <Stack direction="row" alignItems="center" gap={0.5}>
+              <Typography
+                variant={isBelowMd ? "body2" : "body1"}
+                color="secondary"
+              >
+                Vesting (V3) Smart Contract
+              </Typography>
+              <Stack
+                data-cy="vesting-v3-contract-buttons"
+                direction="row"
+                alignItems="center"
+              >
+                <CopyIconBtn
+                  TooltipProps={{ placement: "top" }}
+                  copyText={getAddress(network.vestingContractAddress.v3.address)}
+                  description="Copy address to clipboard"
+                  IconButtonProps={{ size: "small" }}
+                />
+                <Tooltip
+                  arrow
+                  title="View on blockchain explorer"
+                  placement="top"
+                >
+                  <IconButton
+                    LinkComponent={Link}
+                    href={network.getLinkForAddress(network.vestingContractAddress.v3.address)}
+                    target="_blank"
+                    size="small"
+                  >
+                    <LaunchRoundedIcon color="inherit" />
+                  </IconButton>
+                </Tooltip>
+              </Stack>
+            </Stack>
+          )}
           <AutoWrapContractInfo network={network} />
         </Stack>
       </Stack>
