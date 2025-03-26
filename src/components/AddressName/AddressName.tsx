@@ -14,7 +14,7 @@ export default memo(function AddressName({
 }: AddressNameProps) {
   const addressName = useAddressName(address);
 
-  const isUsingEnsName = addressName.name === addressName.ensName;
+  const isUsingEnsName = !!addressName.ensName && addressName.name === addressName.ensName;
   if (isUsingEnsName) {
     return <>{ens_beautify(addressName.name)}</>;
   } else if (addressName.name) {
