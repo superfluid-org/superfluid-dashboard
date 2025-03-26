@@ -23,10 +23,7 @@ import { getUnixTime } from "date-fns";
 import { getMaximumNeededTokenAllowance } from "../../vesting/VestingSchedulesAllowancesTable/calculateRequiredAccessForActiveVestingSchedule";
 import { allNetworks, findNetworkOrThrow, VestingVersion } from "../../network/networks";
 import { resolvedWagmiClients } from "../../wallet/wagmiConfig";
-import { vestingSchedulerAbi } from "../../../abis/vestingSchedulerAbi";
-import { vestingSchedulerV2Abi } from "../../../abis/vestingSchedulerV2Abi";
-import { vestingSchedulerAddress } from "../../../generated";
-import { vestingSchedulerV2Address } from "../../../generated";
+import { vestingSchedulerAbi, vestingSchedulerAddress, vestingSchedulerV2Abi, vestingSchedulerV2Address } from "../../../generated";
 import { getClaimPeriodInSeconds, getClaimValidityDate } from "../../vesting/claimPeriod";
 
 export const MAX_VESTING_DURATION_IN_YEARS = 10;
