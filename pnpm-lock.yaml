@@ -79,10 +79,10 @@ importers:
         version: 1.5.2
       '@superfluid-finance/sdk-core':
         specifier: ^0.9.0
-        version: 0.9.0(@openzeppelin/test-helpers@0.5.16(bn.js@5.2.1)(bufferutil@4.0.8)(utf-8-validate@5.0.10))(browserify@17.0.0)(bufferutil@4.0.8)(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(graphql@16.9.0)(ts-node@10.9.2(@types/node@22.9.0)(typescript@5.6.3))(typescript@5.6.3)(utf-8-validate@5.0.10)
+        version: 0.9.0(@openzeppelin/test-helpers@0.5.16(bn.js@5.2.1)(bufferutil@4.0.8)(utf-8-validate@5.0.10))(browserify@17.0.0)(bufferutil@4.0.8)(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(graphql@16.9.0)(ts-node@10.9.2(@types/node@22.13.11)(typescript@5.6.3))(typescript@5.6.3)(utf-8-validate@5.0.10)
       '@superfluid-finance/sdk-redux':
         specifier: ^0.6.1
-        version: 0.6.1(@reduxjs/toolkit@1.9.2(react-redux@8.1.3(@types/react-dom@18.3.1)(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react-native@0.76.0(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@react-native-community/cli-server-api@15.0.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@types/react@18.3.12)(bufferutil@4.0.8)(react@18.3.1)(utf-8-validate@5.0.10))(react@18.3.1)(redux@4.2.1))(react@18.3.1))(@superfluid-finance/sdk-core@0.9.0(@openzeppelin/test-helpers@0.5.16(bn.js@5.2.1)(bufferutil@4.0.8)(utf-8-validate@5.0.10))(browserify@17.0.0)(bufferutil@4.0.8)(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(graphql@16.9.0)(ts-node@10.9.2(@types/node@22.9.0)(typescript@5.6.3))(typescript@5.6.3)(utf-8-validate@5.0.10))(graphql@16.9.0)
+        version: 0.6.1(@reduxjs/toolkit@1.9.2(react-redux@8.1.3(@types/react-dom@18.3.1)(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react-native@0.76.0(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@react-native-community/cli-server-api@15.0.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@types/react@18.3.12)(bufferutil@4.0.8)(react@18.3.1)(utf-8-validate@5.0.10))(react@18.3.1)(redux@4.2.1))(react@18.3.1))(@superfluid-finance/sdk-core@0.9.0(@openzeppelin/test-helpers@0.5.16(bn.js@5.2.1)(bufferutil@4.0.8)(utf-8-validate@5.0.10))(browserify@17.0.0)(bufferutil@4.0.8)(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(graphql@16.9.0)(ts-node@10.9.2(@types/node@22.13.11)(typescript@5.6.3))(typescript@5.6.3)(utf-8-validate@5.0.10))(graphql@16.9.0)
       '@superfluid-finance/tokenlist':
         specifier: ^5.11.0
         version: 5.11.0
@@ -200,13 +200,13 @@ importers:
         version: 0.3.4(@ethersproject/abi@5.7.0)(@ethersproject/abstract-provider@5.7.0)(@ethersproject/bignumber@5.7.0)(@ethersproject/providers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(typescript@5.6.3)
       '@graphprotocol/client-cli':
         specifier: ^2.2.22
-        version: 2.2.22(x4ijpfpsbxfzgwju7vemzfdrye)
+        version: 2.2.22(rfdtzuwvz4rimq7rrwsdbbj76e)
       '@rtk-query/codegen-openapi':
         specifier: ^1.2.0
         version: 1.2.0(openapi-types@12.1.3)
       '@superfluid-finance/ethereum-contracts':
         specifier: ^1.11.1
-        version: 1.11.1(@openzeppelin/test-helpers@0.5.16(bn.js@5.2.1)(bufferutil@4.0.8)(utf-8-validate@5.0.10))(bufferutil@4.0.8)(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(ts-node@10.9.2(@types/node@22.9.0)(typescript@5.6.3))(typescript@5.6.3)(utf-8-validate@5.0.10)
+        version: 1.11.1(@openzeppelin/test-helpers@0.5.16(bn.js@5.2.1)(bufferutil@4.0.8)(utf-8-validate@5.0.10))(bufferutil@4.0.8)(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(ts-node@10.9.2(@types/node@22.13.11)(typescript@5.6.3))(typescript@5.6.3)(utf-8-validate@5.0.10)
       '@types/await-timeout':
         specifier: ^0.3.3
         version: 0.3.4
@@ -237,6 +237,9 @@ importers:
       del-cli:
         specifier: ^5.1.0
         version: 5.1.0
+      dotenv:
+        specifier: ^16.4.7
+        version: 16.4.7
       eslint:
         specifier: ^8.57.1
         version: 8.57.1
@@ -1904,12 +1907,6 @@ packages:
     peerDependencies:
       graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
 
-  '@graphql-tools/merge@9.0.8':
-    resolution: {integrity: sha512-RG9NEp4fi0MoFi0te4ahqTMYuavQnXlpEZxxMomdCa6CI5tfekcVm/rsLF5Zt8O4HY+esDt9+4dCL+aOKvG79w==}
-    engines: {node: '>=16.0.0'}
-    peerDependencies:
-      graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-
   '@graphql-tools/optimize@1.4.0':
     resolution: {integrity: sha512-dJs/2XvZp+wgHH8T5J2TqptT9/6uVzIYvA6uFACha+ufvdMBedkfR4b4GbT8jAKLRARiqRTxy3dctnwkTM2tdw==}
     peerDependencies:
@@ -1943,12 +1940,6 @@ packages:
 
   '@graphql-tools/url-loader@7.17.18':
     resolution: {integrity: sha512-ear0CiyTj04jCVAxi7TvgbnGDIN2HgqzXzwsfcqiVg9cvjT40NcMlZ2P1lZDgqMkZ9oyLTV8Bw6j+SyG6A+xPw==}
-    peerDependencies:
-      graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-
-  '@graphql-tools/utils@10.5.5':
-    resolution: {integrity: sha512-LF/UDWmMT0mnobL2UZETwYghV7HYBzNaGj0SAkCYOMy/C3+6sQdbcTksnoFaKR9XIVD78jNXEGfivbB8Zd+cwA==}
-    engines: {node: '>=16.0.0'}
     peerDependencies:
       graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
 
@@ -5757,8 +5748,8 @@ packages:
     resolution: {integrity: sha512-GopVGCpVS1UKH75VKHGuQFqS1Gusej0z4FyQkPdwjil2gNIv+LNsqBlboOzpJFZKVT95GkCyWJbBSdFEFUWI2A==}
     engines: {node: '>=12'}
 
-  dotenv@16.4.5:
-    resolution: {integrity: sha512-ZmdL2rui+eB2YwhsWzjInR8LldtZHGDoQ1ugH85ppHKwpUHL7j7rN0Ti9NCnGiQbhaZ11FpR+7ao1dNsmduNUg==}
+  dotenv@16.4.7:
+    resolution: {integrity: sha512-47qPchRCykZC03FhkYAhrvwU4xDBFIj1QPqaarj6mdM/hgUzfPHcpkHJOn3mJAufFeeAxAzeGsr5X0M4k6fLZQ==}
     engines: {node: '>=12'}
 
   dset@3.1.4:
@@ -12967,15 +12958,15 @@ snapshots:
       graphql: 16.9.0
       tslib: 2.8.1
 
-  '@graphprotocol/client-cli@2.2.22(x4ijpfpsbxfzgwju7vemzfdrye)':
+  '@graphprotocol/client-cli@2.2.22(rfdtzuwvz4rimq7rrwsdbbj76e)':
     dependencies:
       '@graphprotocol/client-add-source-name': 1.0.20(@graphql-mesh/types@0.93.2(@graphql-mesh/store@0.93.1)(@graphql-tools/utils@9.2.1(graphql@16.9.0))(graphql@16.9.0)(tslib@2.8.1))(@graphql-tools/delegate@10.0.27(graphql@16.9.0))(@graphql-tools/utils@9.2.1(graphql@16.9.0))(@graphql-tools/wrap@10.0.11(graphql@16.9.0))(graphql@16.9.0)
       '@graphprotocol/client-auto-pagination': 1.1.18(@graphql-mesh/types@0.93.2(@graphql-mesh/store@0.93.1)(@graphql-tools/utils@9.2.1(graphql@16.9.0))(graphql@16.9.0)(tslib@2.8.1))(@graphql-tools/delegate@10.0.27(graphql@16.9.0))(@graphql-tools/utils@9.2.1(graphql@16.9.0))(@graphql-tools/wrap@10.0.11(graphql@16.9.0))(graphql@16.9.0)
       '@graphprotocol/client-auto-type-merging': 1.0.25(@graphql-mesh/types@0.93.2(@graphql-mesh/store@0.93.1)(@graphql-tools/utils@9.2.1(graphql@16.9.0))(graphql@16.9.0)(tslib@2.8.1))(@graphql-mesh/utils@0.93.2(@graphql-mesh/cross-helpers@0.3.4(@graphql-tools/utils@9.2.1(graphql@16.9.0))(graphql@16.9.0)(react-native@0.76.0(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@react-native-community/cli-server-api@15.0.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@types/react@18.3.12)(bufferutil@4.0.8)(react@18.3.1)(utf-8-validate@5.0.10)))(@graphql-mesh/types@0.93.2)(@graphql-tools/utils@9.2.1(graphql@16.9.0))(graphql@16.9.0)(tslib@2.8.1))(@graphql-tools/delegate@10.0.27(graphql@16.9.0))(graphql@16.9.0)
       '@graphprotocol/client-block-tracking': 1.0.14(@graphql-tools/delegate@10.0.27(graphql@16.9.0))(graphql@16.9.0)
-      '@graphprotocol/client-polling-live': 1.1.1(@envelop/core@3.0.6)(@graphql-tools/merge@9.0.8(graphql@16.9.0))(graphql@16.9.0)
-      '@graphql-mesh/cli': 0.82.35(@babel/core@7.26.0)(@types/node@22.9.0)(bufferutil@4.0.8)(graphql-tag@2.12.6(graphql@16.9.0))(graphql@16.9.0)(react-native@0.76.0(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@react-native-community/cli-server-api@15.0.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@types/react@18.3.12)(bufferutil@4.0.8)(react@18.3.1)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10)
-      '@graphql-mesh/graphql': 0.93.1(z7laf7iikmb7yts2q3zdredjgq)
+      '@graphprotocol/client-polling-live': 1.1.1(@envelop/core@3.0.6)(@graphql-tools/merge@9.0.24(graphql@16.9.0))(graphql@16.9.0)
+      '@graphql-mesh/cli': 0.82.35(@babel/core@7.26.0)(@types/node@22.13.11)(bufferutil@4.0.8)(graphql-tag@2.12.6(graphql@16.9.0))(graphql@16.9.0)(react-native@0.76.0(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@react-native-community/cli-server-api@15.0.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@types/react@18.3.12)(bufferutil@4.0.8)(react@18.3.1)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10)
+      '@graphql-mesh/graphql': 0.93.1(jbg7d4xjkhw5uibvewkysnukz4)
       graphql: 16.9.0
       tslib: 2.8.1
     transitivePeerDependencies:
@@ -13000,10 +12991,10 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@graphprotocol/client-polling-live@1.1.1(@envelop/core@3.0.6)(@graphql-tools/merge@9.0.8(graphql@16.9.0))(graphql@16.9.0)':
+  '@graphprotocol/client-polling-live@1.1.1(@envelop/core@3.0.6)(@graphql-tools/merge@9.0.24(graphql@16.9.0))(graphql@16.9.0)':
     dependencies:
       '@envelop/core': 3.0.6
-      '@graphql-tools/merge': 9.0.8(graphql@16.9.0)
+      '@graphql-tools/merge': 9.0.24(graphql@16.9.0)
       '@repeaterjs/repeater': 3.0.6
       graphql: 16.9.0
       tslib: 2.8.1
@@ -13163,7 +13154,7 @@ snapshots:
       localforage: 1.10.0
       tslib: 2.8.1
 
-  '@graphql-mesh/cli@0.82.35(@babel/core@7.26.0)(@types/node@22.9.0)(bufferutil@4.0.8)(graphql-tag@2.12.6(graphql@16.9.0))(graphql@16.9.0)(react-native@0.76.0(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@react-native-community/cli-server-api@15.0.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@types/react@18.3.12)(bufferutil@4.0.8)(react@18.3.1)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10)':
+  '@graphql-mesh/cli@0.82.35(@babel/core@7.26.0)(@types/node@22.13.11)(bufferutil@4.0.8)(graphql-tag@2.12.6(graphql@16.9.0))(graphql@16.9.0)(react-native@0.76.0(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@react-native-community/cli-server-api@15.0.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@types/react@18.3.12)(bufferutil@4.0.8)(react@18.3.1)(utf-8-validate@5.0.10))(utf-8-validate@5.0.10)':
     dependencies:
       '@graphql-codegen/core': 3.1.0(graphql@16.9.0)
       '@graphql-codegen/typed-document-node': 4.0.1(graphql@16.9.0)
@@ -13183,7 +13174,7 @@ snapshots:
       change-case: 4.1.2
       cosmiconfig: 8.3.6(typescript@5.6.3)
       dnscache: 1.0.2
-      dotenv: 16.4.5
+      dotenv: 16.4.7
       graphql: 16.9.0
       graphql-import-node: 0.0.5(graphql@16.9.0)
       graphql-ws: 5.16.0(graphql@16.9.0)
@@ -13193,7 +13184,7 @@ snapshots:
       open: 7.4.2
       pascal-case: 3.1.2
       rimraf: 5.0.10
-      ts-node: 10.9.2(@types/node@22.9.0)(typescript@5.6.3)
+      ts-node: 10.9.2(@types/node@22.13.11)(typescript@5.6.3)
       tsconfig-paths: 4.2.0
       tslib: 2.8.1
       typescript: 5.6.3
@@ -13248,7 +13239,7 @@ snapshots:
       - react-native
       - react-native-windows
 
-  '@graphql-mesh/graphql@0.93.1(z7laf7iikmb7yts2q3zdredjgq)':
+  '@graphql-mesh/graphql@0.93.1(jbg7d4xjkhw5uibvewkysnukz4)':
     dependencies:
       '@graphql-mesh/cross-helpers': 0.3.4(@graphql-tools/utils@9.2.1(graphql@16.9.0))(graphql@16.9.0)(react-native@0.76.0(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@react-native-community/cli-server-api@15.0.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@types/react@18.3.12)(bufferutil@4.0.8)(react@18.3.1)(utf-8-validate@5.0.10))
       '@graphql-mesh/store': 0.93.1(@graphql-mesh/cross-helpers@0.3.4(@graphql-tools/utils@9.2.1(graphql@16.9.0))(graphql@16.9.0)(react-native@0.76.0(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@react-native-community/cli-server-api@15.0.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@types/react@18.3.12)(bufferutil@4.0.8)(react@18.3.1)(utf-8-validate@5.0.10)))(@graphql-mesh/types@0.93.2)(@graphql-mesh/utils@0.93.2)(@graphql-tools/utils@9.2.1(graphql@16.9.0))(graphql@16.9.0)(tslib@2.8.1)
@@ -13256,7 +13247,7 @@ snapshots:
       '@graphql-mesh/types': 0.93.2(@graphql-mesh/store@0.93.1)(@graphql-tools/utils@9.2.1(graphql@16.9.0))(graphql@16.9.0)(tslib@2.8.1)
       '@graphql-mesh/utils': 0.93.2(@graphql-mesh/cross-helpers@0.3.4(@graphql-tools/utils@9.2.1(graphql@16.9.0))(graphql@16.9.0)(react-native@0.76.0(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@react-native-community/cli-server-api@15.0.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@types/react@18.3.12)(bufferutil@4.0.8)(react@18.3.1)(utf-8-validate@5.0.10)))(@graphql-mesh/types@0.93.2)(@graphql-tools/utils@9.2.1(graphql@16.9.0))(graphql@16.9.0)(tslib@2.8.1)
       '@graphql-tools/delegate': 9.0.35(graphql@16.9.0)
-      '@graphql-tools/url-loader': 7.17.18(@types/node@22.9.0)(bufferutil@4.0.8)(graphql@16.9.0)(utf-8-validate@5.0.10)
+      '@graphql-tools/url-loader': 7.17.18(@types/node@22.13.11)(bufferutil@4.0.8)(graphql@16.9.0)(utf-8-validate@5.0.10)
       '@graphql-tools/utils': 9.2.1(graphql@16.9.0)
       '@graphql-tools/wrap': 9.4.2(graphql@16.9.0)
       graphql: 16.9.0
@@ -13415,7 +13406,7 @@ snapshots:
       '@graphql-tools/batch-execute': 9.0.14(graphql@16.9.0)
       '@graphql-tools/executor': 1.4.6(graphql@16.9.0)
       '@graphql-tools/schema': 10.0.23(graphql@16.9.0)
-      '@graphql-tools/utils': 10.5.5(graphql@16.9.0)
+      '@graphql-tools/utils': 10.8.6(graphql@16.9.0)
       '@repeaterjs/repeater': 3.0.6
       dataloader: 2.2.3
       graphql: 16.9.0
@@ -13446,7 +13437,7 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  '@graphql-tools/executor-http@0.1.10(@types/node@22.9.0)(graphql@16.9.0)':
+  '@graphql-tools/executor-http@0.1.10(@types/node@22.13.11)(graphql@16.9.0)':
     dependencies:
       '@graphql-tools/utils': 9.2.1(graphql@16.9.0)
       '@repeaterjs/repeater': 3.0.6
@@ -13454,7 +13445,7 @@ snapshots:
       dset: 3.1.4
       extract-files: 11.0.0
       graphql: 16.9.0
-      meros: 1.3.0(@types/node@22.9.0)
+      meros: 1.3.0(@types/node@22.13.11)
       tslib: 2.8.1
       value-or-promise: 1.0.12
     transitivePeerDependencies:
@@ -13549,12 +13540,6 @@ snapshots:
       graphql: 16.9.0
       tslib: 2.8.1
 
-  '@graphql-tools/merge@9.0.8(graphql@16.9.0)':
-    dependencies:
-      '@graphql-tools/utils': 10.5.5(graphql@16.9.0)
-      graphql: 16.9.0
-      tslib: 2.8.1
-
   '@graphql-tools/optimize@1.4.0(graphql@16.9.0)':
     dependencies:
       graphql: 16.9.0
@@ -13605,12 +13590,12 @@ snapshots:
       graphql: 16.9.0
       tslib: 2.8.1
 
-  '@graphql-tools/url-loader@7.17.18(@types/node@22.9.0)(bufferutil@4.0.8)(graphql@16.9.0)(utf-8-validate@5.0.10)':
+  '@graphql-tools/url-loader@7.17.18(@types/node@22.13.11)(bufferutil@4.0.8)(graphql@16.9.0)(utf-8-validate@5.0.10)':
     dependencies:
       '@ardatan/sync-fetch': 0.0.1
       '@graphql-tools/delegate': 9.0.35(graphql@16.9.0)
       '@graphql-tools/executor-graphql-ws': 0.0.14(bufferutil@4.0.8)(graphql@16.9.0)(utf-8-validate@5.0.10)
-      '@graphql-tools/executor-http': 0.1.10(@types/node@22.9.0)(graphql@16.9.0)
+      '@graphql-tools/executor-http': 0.1.10(@types/node@22.13.11)(graphql@16.9.0)
       '@graphql-tools/executor-legacy-ws': 0.0.11(bufferutil@4.0.8)(graphql@16.9.0)(utf-8-validate@5.0.10)
       '@graphql-tools/utils': 9.2.1(graphql@16.9.0)
       '@graphql-tools/wrap': 9.4.2(graphql@16.9.0)
@@ -13626,14 +13611,6 @@ snapshots:
       - bufferutil
       - encoding
       - utf-8-validate
-
-  '@graphql-tools/utils@10.5.5(graphql@16.9.0)':
-    dependencies:
-      '@graphql-typed-document-node/core': 3.2.0(graphql@16.9.0)
-      cross-inspect: 1.0.1
-      dset: 3.1.4
-      graphql: 16.9.0
-      tslib: 2.8.1
 
   '@graphql-tools/utils@10.8.6(graphql@16.9.0)':
     dependencies:
@@ -13659,7 +13636,7 @@ snapshots:
     dependencies:
       '@graphql-tools/delegate': 10.0.27(graphql@16.9.0)
       '@graphql-tools/schema': 10.0.23(graphql@16.9.0)
-      '@graphql-tools/utils': 10.5.5(graphql@16.9.0)
+      '@graphql-tools/utils': 10.8.6(graphql@16.9.0)
       graphql: 16.9.0
       tslib: 2.8.1
       value-or-promise: 1.0.12
@@ -13744,14 +13721,14 @@ snapshots:
     dependencies:
       '@jest/fake-timers': 29.7.0
       '@jest/types': 29.6.3
-      '@types/node': 22.9.0
+      '@types/node': 22.13.11
       jest-mock: 29.7.0
 
   '@jest/fake-timers@29.7.0':
     dependencies:
       '@jest/types': 29.6.3
       '@sinonjs/fake-timers': 10.3.0
-      '@types/node': 22.9.0
+      '@types/node': 22.13.11
       jest-message-util: 29.7.0
       jest-mock: 29.7.0
       jest-util: 29.7.0
@@ -13794,7 +13771,7 @@ snapshots:
       '@jest/schemas': 29.6.3
       '@types/istanbul-lib-coverage': 2.0.6
       '@types/istanbul-reports': 3.0.4
-      '@types/node': 22.9.0
+      '@types/node': 22.13.11
       '@types/yargs': 17.0.33
       chalk: 4.1.2
 
@@ -14835,10 +14812,10 @@ snapshots:
       '@nomicfoundation/solidity-analyzer-linux-x64-musl': 0.1.2
       '@nomicfoundation/solidity-analyzer-win32-x64-msvc': 0.1.2
 
-  '@nomiclabs/hardhat-ethers@2.2.3(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(hardhat@2.22.9(bufferutil@4.0.8)(ts-node@10.9.2(@types/node@22.9.0)(typescript@5.6.3))(typescript@5.6.3)(utf-8-validate@5.0.10))':
+  '@nomiclabs/hardhat-ethers@2.2.3(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(hardhat@2.22.9(bufferutil@4.0.8)(ts-node@10.9.2(@types/node@22.13.11)(typescript@5.6.3))(typescript@5.6.3)(utf-8-validate@5.0.10))':
     dependencies:
       ethers: 5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      hardhat: 2.22.9(bufferutil@4.0.8)(ts-node@10.9.2(@types/node@22.9.0)(typescript@5.6.3))(typescript@5.6.3)(utf-8-validate@5.0.10)
+      hardhat: 2.22.9(bufferutil@4.0.8)(ts-node@10.9.2(@types/node@22.13.11)(typescript@5.6.3))(typescript@5.6.3)(utf-8-validate@5.0.10)
 
   '@opentelemetry/api-logs@0.52.1':
     dependencies:
@@ -15666,7 +15643,7 @@ snapshots:
       '@babel/core': 7.26.0
       '@sentry/babel-plugin-component-annotate': 2.22.6
       '@sentry/cli': 2.38.1
-      dotenv: 16.4.5
+      dotenv: 16.4.7
       find-up: 5.0.0
       glob: 9.3.5
       magic-string: 0.30.8
@@ -16138,16 +16115,16 @@ snapshots:
 
   '@standard-schema/spec@1.0.0': {}
 
-  '@superfluid-finance/ethereum-contracts@1.11.1(@openzeppelin/test-helpers@0.5.16(bn.js@5.2.1)(bufferutil@4.0.8)(utf-8-validate@5.0.10))(bufferutil@4.0.8)(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(ts-node@10.9.2(@types/node@22.9.0)(typescript@5.6.3))(typescript@5.6.3)(utf-8-validate@5.0.10)':
+  '@superfluid-finance/ethereum-contracts@1.11.1(@openzeppelin/test-helpers@0.5.16(bn.js@5.2.1)(bufferutil@4.0.8)(utf-8-validate@5.0.10))(bufferutil@4.0.8)(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(ts-node@10.9.2(@types/node@22.13.11)(typescript@5.6.3))(typescript@5.6.3)(utf-8-validate@5.0.10)':
     dependencies:
       '@decentral.ee/web3-helpers': 0.5.3(@openzeppelin/test-helpers@0.5.16(bn.js@5.2.1)(bufferutil@4.0.8)(utf-8-validate@5.0.10))
-      '@nomiclabs/hardhat-ethers': 2.2.3(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(hardhat@2.22.9(bufferutil@4.0.8)(ts-node@10.9.2(@types/node@22.9.0)(typescript@5.6.3))(typescript@5.6.3)(utf-8-validate@5.0.10))
+      '@nomiclabs/hardhat-ethers': 2.2.3(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(hardhat@2.22.9(bufferutil@4.0.8)(ts-node@10.9.2(@types/node@22.13.11)(typescript@5.6.3))(typescript@5.6.3)(utf-8-validate@5.0.10))
       '@openzeppelin/contracts': 4.9.6
       '@truffle/contract': 4.6.31(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       ethereumjs-tx: 2.1.2
       ethereumjs-util: 7.1.5
       ethers: 5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      hardhat: 2.22.9(bufferutil@4.0.8)(ts-node@10.9.2(@types/node@22.9.0)(typescript@5.6.3))(typescript@5.6.3)(utf-8-validate@5.0.10)
+      hardhat: 2.22.9(bufferutil@4.0.8)(ts-node@10.9.2(@types/node@22.13.11)(typescript@5.6.3))(typescript@5.6.3)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - '@openzeppelin/test-helpers'
       - bufferutil
@@ -16158,16 +16135,16 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@superfluid-finance/ethereum-contracts@1.12.0(@openzeppelin/test-helpers@0.5.16(bn.js@5.2.1)(bufferutil@4.0.8)(utf-8-validate@5.0.10))(bufferutil@4.0.8)(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(ts-node@10.9.2(@types/node@22.9.0)(typescript@5.6.3))(typescript@5.6.3)(utf-8-validate@5.0.10)':
+  '@superfluid-finance/ethereum-contracts@1.12.0(@openzeppelin/test-helpers@0.5.16(bn.js@5.2.1)(bufferutil@4.0.8)(utf-8-validate@5.0.10))(bufferutil@4.0.8)(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(ts-node@10.9.2(@types/node@22.13.11)(typescript@5.6.3))(typescript@5.6.3)(utf-8-validate@5.0.10)':
     dependencies:
       '@decentral.ee/web3-helpers': 0.5.3(@openzeppelin/test-helpers@0.5.16(bn.js@5.2.1)(bufferutil@4.0.8)(utf-8-validate@5.0.10))
-      '@nomiclabs/hardhat-ethers': 2.2.3(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(hardhat@2.22.9(bufferutil@4.0.8)(ts-node@10.9.2(@types/node@22.9.0)(typescript@5.6.3))(typescript@5.6.3)(utf-8-validate@5.0.10))
+      '@nomiclabs/hardhat-ethers': 2.2.3(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(hardhat@2.22.9(bufferutil@4.0.8)(ts-node@10.9.2(@types/node@22.13.11)(typescript@5.6.3))(typescript@5.6.3)(utf-8-validate@5.0.10))
       '@openzeppelin/contracts': 4.9.6
       '@truffle/contract': 4.6.31(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       ethereumjs-tx: 2.1.2
       ethereumjs-util: 7.1.5
       ethers: 5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      hardhat: 2.22.9(bufferutil@4.0.8)(ts-node@10.9.2(@types/node@22.9.0)(typescript@5.6.3))(typescript@5.6.3)(utf-8-validate@5.0.10)
+      hardhat: 2.22.9(bufferutil@4.0.8)(ts-node@10.9.2(@types/node@22.13.11)(typescript@5.6.3))(typescript@5.6.3)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - '@openzeppelin/test-helpers'
       - bufferutil
@@ -16180,9 +16157,9 @@ snapshots:
 
   '@superfluid-finance/metadata@1.5.2': {}
 
-  '@superfluid-finance/sdk-core@0.9.0(@openzeppelin/test-helpers@0.5.16(bn.js@5.2.1)(bufferutil@4.0.8)(utf-8-validate@5.0.10))(browserify@17.0.0)(bufferutil@4.0.8)(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(graphql@16.9.0)(ts-node@10.9.2(@types/node@22.9.0)(typescript@5.6.3))(typescript@5.6.3)(utf-8-validate@5.0.10)':
+  '@superfluid-finance/sdk-core@0.9.0(@openzeppelin/test-helpers@0.5.16(bn.js@5.2.1)(bufferutil@4.0.8)(utf-8-validate@5.0.10))(browserify@17.0.0)(bufferutil@4.0.8)(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(graphql@16.9.0)(ts-node@10.9.2(@types/node@22.13.11)(typescript@5.6.3))(typescript@5.6.3)(utf-8-validate@5.0.10)':
     dependencies:
-      '@superfluid-finance/ethereum-contracts': 1.12.0(@openzeppelin/test-helpers@0.5.16(bn.js@5.2.1)(bufferutil@4.0.8)(utf-8-validate@5.0.10))(bufferutil@4.0.8)(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(ts-node@10.9.2(@types/node@22.9.0)(typescript@5.6.3))(typescript@5.6.3)(utf-8-validate@5.0.10)
+      '@superfluid-finance/ethereum-contracts': 1.12.0(@openzeppelin/test-helpers@0.5.16(bn.js@5.2.1)(bufferutil@4.0.8)(utf-8-validate@5.0.10))(bufferutil@4.0.8)(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(ts-node@10.9.2(@types/node@22.13.11)(typescript@5.6.3))(typescript@5.6.3)(utf-8-validate@5.0.10)
       '@superfluid-finance/metadata': 1.5.2
       ethers: 5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       graphql: 16.9.0
@@ -16200,10 +16177,10 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@superfluid-finance/sdk-redux@0.6.1(@reduxjs/toolkit@1.9.2(react-redux@8.1.3(@types/react-dom@18.3.1)(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react-native@0.76.0(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@react-native-community/cli-server-api@15.0.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@types/react@18.3.12)(bufferutil@4.0.8)(react@18.3.1)(utf-8-validate@5.0.10))(react@18.3.1)(redux@4.2.1))(react@18.3.1))(@superfluid-finance/sdk-core@0.9.0(@openzeppelin/test-helpers@0.5.16(bn.js@5.2.1)(bufferutil@4.0.8)(utf-8-validate@5.0.10))(browserify@17.0.0)(bufferutil@4.0.8)(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(graphql@16.9.0)(ts-node@10.9.2(@types/node@22.9.0)(typescript@5.6.3))(typescript@5.6.3)(utf-8-validate@5.0.10))(graphql@16.9.0)':
+  '@superfluid-finance/sdk-redux@0.6.1(@reduxjs/toolkit@1.9.2(react-redux@8.1.3(@types/react-dom@18.3.1)(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react-native@0.76.0(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@react-native-community/cli-server-api@15.0.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@types/react@18.3.12)(bufferutil@4.0.8)(react@18.3.1)(utf-8-validate@5.0.10))(react@18.3.1)(redux@4.2.1))(react@18.3.1))(@superfluid-finance/sdk-core@0.9.0(@openzeppelin/test-helpers@0.5.16(bn.js@5.2.1)(bufferutil@4.0.8)(utf-8-validate@5.0.10))(browserify@17.0.0)(bufferutil@4.0.8)(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(graphql@16.9.0)(ts-node@10.9.2(@types/node@22.13.11)(typescript@5.6.3))(typescript@5.6.3)(utf-8-validate@5.0.10))(graphql@16.9.0)':
     dependencies:
       '@reduxjs/toolkit': 1.9.2(react-redux@8.1.3(@types/react-dom@18.3.1)(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react-native@0.76.0(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@react-native-community/cli-server-api@15.0.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(@types/react@18.3.12)(bufferutil@4.0.8)(react@18.3.1)(utf-8-validate@5.0.10))(react@18.3.1)(redux@4.2.1))(react@18.3.1)
-      '@superfluid-finance/sdk-core': 0.9.0(@openzeppelin/test-helpers@0.5.16(bn.js@5.2.1)(bufferutil@4.0.8)(utf-8-validate@5.0.10))(browserify@17.0.0)(bufferutil@4.0.8)(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(graphql@16.9.0)(ts-node@10.9.2(@types/node@22.9.0)(typescript@5.6.3))(typescript@5.6.3)(utf-8-validate@5.0.10)
+      '@superfluid-finance/sdk-core': 0.9.0(@openzeppelin/test-helpers@0.5.16(bn.js@5.2.1)(bufferutil@4.0.8)(utf-8-validate@5.0.10))(browserify@17.0.0)(bufferutil@4.0.8)(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(graphql@16.9.0)(ts-node@10.9.2(@types/node@22.13.11)(typescript@5.6.3))(typescript@5.6.3)(utf-8-validate@5.0.10)
       graphql-request: 5.2.0(graphql@16.9.0)
       lodash: 4.17.21
       promise-retry: 2.0.1
@@ -16413,7 +16390,7 @@ snapshots:
 
   '@types/graceful-fs@4.1.9':
     dependencies:
-      '@types/node': 22.9.0
+      '@types/node': 22.13.11
 
   '@types/hoist-non-react-statics@3.3.5':
     dependencies:
@@ -16456,14 +16433,13 @@ snapshots:
 
   '@types/node-forge@1.3.11':
     dependencies:
-      '@types/node': 22.9.0
+      '@types/node': 22.13.11
 
   '@types/node@12.20.55': {}
 
   '@types/node@22.13.11':
     dependencies:
       undici-types: 6.20.0
-    optional: true
 
   '@types/node@22.9.0':
     dependencies:
@@ -16681,7 +16657,7 @@ snapshots:
       change-case: 5.4.4
       chokidar: 4.0.1
       dedent: 0.7.0
-      dotenv: 16.4.5
+      dotenv: 16.4.7
       dotenv-expand: 10.0.0
       esbuild: 0.19.12
       escalade: 3.2.0
@@ -18668,7 +18644,7 @@ snapshots:
 
   chrome-launcher@0.15.2:
     dependencies:
-      '@types/node': 22.9.0
+      '@types/node': 22.13.11
       escape-string-regexp: 4.0.0
       is-wsl: 2.2.0
       lighthouse-logger: 1.4.2
@@ -18679,7 +18655,7 @@ snapshots:
 
   chromium-edge-launcher@0.2.0:
     dependencies:
-      '@types/node': 22.9.0
+      '@types/node': 22.13.11
       escape-string-regexp: 4.0.0
       is-wsl: 2.2.0
       lighthouse-logger: 1.4.2
@@ -19357,7 +19333,7 @@ snapshots:
 
   dotenv-expand@10.0.0: {}
 
-  dotenv@16.4.5: {}
+  dotenv@16.4.7: {}
 
   dset@3.1.4: {}
 
@@ -20749,7 +20725,7 @@ snapshots:
 
   hard-rejection@2.1.0: {}
 
-  hardhat@2.22.9(bufferutil@4.0.8)(ts-node@10.9.2(@types/node@22.9.0)(typescript@5.6.3))(typescript@5.6.3)(utf-8-validate@5.0.10):
+  hardhat@2.22.9(bufferutil@4.0.8)(ts-node@10.9.2(@types/node@22.13.11)(typescript@5.6.3))(typescript@5.6.3)(utf-8-validate@5.0.10):
     dependencies:
       '@ethersproject/abi': 5.7.0
       '@metamask/eth-sig-util': 4.0.1
@@ -20795,7 +20771,7 @@ snapshots:
       uuid: 8.3.2
       ws: 7.5.10(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     optionalDependencies:
-      ts-node: 10.9.2(@types/node@22.9.0)(typescript@5.6.3)
+      ts-node: 10.9.2(@types/node@22.13.11)(typescript@5.6.3)
       typescript: 5.6.3
     transitivePeerDependencies:
       - bufferutil
@@ -21431,7 +21407,7 @@ snapshots:
       '@jest/environment': 29.7.0
       '@jest/fake-timers': 29.7.0
       '@jest/types': 29.6.3
-      '@types/node': 22.9.0
+      '@types/node': 22.13.11
       jest-mock: 29.7.0
       jest-util: 29.7.0
 
@@ -21441,7 +21417,7 @@ snapshots:
     dependencies:
       '@jest/types': 29.6.3
       '@types/graceful-fs': 4.1.9
-      '@types/node': 22.9.0
+      '@types/node': 22.13.11
       anymatch: 3.1.3
       fb-watchman: 2.0.2
       graceful-fs: 4.2.11
@@ -21468,7 +21444,7 @@ snapshots:
   jest-mock@29.7.0:
     dependencies:
       '@jest/types': 29.6.3
-      '@types/node': 22.9.0
+      '@types/node': 22.13.11
       jest-util: 29.7.0
 
   jest-regex-util@29.6.3: {}
@@ -21476,7 +21452,7 @@ snapshots:
   jest-util@29.7.0:
     dependencies:
       '@jest/types': 29.6.3
-      '@types/node': 22.9.0
+      '@types/node': 22.13.11
       chalk: 4.1.2
       ci-info: 3.9.0
       graceful-fs: 4.2.11
@@ -21493,13 +21469,13 @@ snapshots:
 
   jest-worker@27.5.1:
     dependencies:
-      '@types/node': 22.9.0
+      '@types/node': 22.13.11
       merge-stream: 2.0.0
       supports-color: 8.1.1
 
   jest-worker@29.7.0:
     dependencies:
-      '@types/node': 22.9.0
+      '@types/node': 22.13.11
       jest-util: 29.7.0
       merge-stream: 2.0.0
       supports-color: 8.1.1
@@ -22000,9 +21976,9 @@ snapshots:
 
   merge2@1.4.1: {}
 
-  meros@1.3.0(@types/node@22.9.0):
+  meros@1.3.0(@types/node@22.13.11):
     optionalDependencies:
-      '@types/node': 22.9.0
+      '@types/node': 22.13.11
 
   methods@1.1.2: {}
 
@@ -24673,14 +24649,14 @@ snapshots:
     dependencies:
       typescript: 5.6.3
 
-  ts-node@10.9.2(@types/node@22.9.0)(typescript@5.6.3):
+  ts-node@10.9.2(@types/node@22.13.11)(typescript@5.6.3):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       '@tsconfig/node10': 1.0.11
       '@tsconfig/node12': 1.0.11
       '@tsconfig/node14': 1.0.3
       '@tsconfig/node16': 1.0.4
-      '@types/node': 22.9.0
+      '@types/node': 22.13.11
       acorn: 8.14.0
       acorn-walk: 8.3.3
       arg: 4.1.3
@@ -24877,8 +24853,7 @@ snapshots:
 
   undici-types@6.19.8: {}
 
-  undici-types@6.20.0:
-    optional: true
+  undici-types@6.20.0: {}
 
   undici@5.28.4:
     dependencies:

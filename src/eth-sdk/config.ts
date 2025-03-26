@@ -8,6 +8,9 @@ import {
   vestingContractAddresses_v3
 } from "../features/network/networkConstants";
 import { chainIds } from "../features/network/networkConstants";
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const ethSdkConfig = defineConfig({
   contracts: {
@@ -30,10 +33,9 @@ const ethSdkConfig = defineConfig({
     optimismSepolia: "https://api-sepolia-optimistic.etherscan.io/api",
   },
   "etherscanKeys": {
-    // TODO: invalidate these
-    "mainnet": "IUNCWE1EGP5K32MFWNYRMMBQ3T15UDU4KG",
+    "mainnet": process.env.ETHERSCAN_MAINNET_API_KEY,
     // @ts-ignore
-    "optimismSepolia": "8F79VATSP7AI7YPTS8BCSGUVZSUJSHGEP7"
+    "optimismSepolia": process.env.ETHERSCAN_OPTIMISM_API_KEY
   }
 });
 

@@ -10,9 +10,9 @@ import SuperfluidPoolJSON from "@superfluid-finance/ethereum-contracts/build/tru
 import SuperfluidJSON from "@superfluid-finance/ethereum-contracts/build/truffle/Superfluid.json" assert { type: "json" };
 import { Abi, Address, erc20Abi } from "viem";
 import superfluidMetadata from "@superfluid-finance/metadata";
-import vestingSchedulerV1Abi from "./src/eth-sdk/abis/optimismSepolia/VestingScheduler.json" assert { type: "json" };
-import vestingSchedulerV2Abi from "./src/eth-sdk/abis/optimismSepolia/VestingScheduler_v2.json" assert { type: "json" };
-import vestingSchedulerV3Abi from "./src/eth-sdk/abis/optimismSepolia/VestingScheduler_v3.json" assert { type: "json" };
+import vestingSchedulerV1Abi from "./src/eth-sdk/abis/optimismSepolia/vestingScheduler.json" assert { type: "json" };
+import vestingSchedulerV2Abi from "./src/eth-sdk/abis/optimismSepolia/vestingScheduler_v2.json" assert { type: "json" };
+import vestingSchedulerV3Abi from "./src/eth-sdk/abis/optimismSepolia/vestingScheduler_v3.json" assert { type: "json" };
 
 /** @type {import('@wagmi/cli').Config} */
 export default defineConfig({
