@@ -14,6 +14,7 @@ import {
   ListItemButton,
   ListItemText,
   ListSubheader,
+  Skeleton,
   Stack,
   TextField,
   Typography,
@@ -44,6 +45,8 @@ import AddressSearchIndex from "../../features/send/AddressSearchIndex";
 import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
 import addressBookRpcApi from "../../features/addressBook/addressBookRpcApi.slice";
 import { lensApi } from "../../features/lens/lensApi.slice";
+import { efpApi } from "../../features/efp/efpApi.slice";
+import { useAccount } from "wagmi";
 
 const LIST_ITEM_STYLE = { px: 3, minHeight: 68 };
 
@@ -244,6 +247,25 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
     ]
   );
 
+  const { address: accountAddress } = useAccount();
+  const followingQuery = efpApi.useGetFollowingQuery({
+    address: accountAddress,
+    offset: 0,
+    limit: 10,
+    search: searchTermDebounced,
+  }, {
+    skip: !searchTermDebounced,
+  });
+  const following = followingQuery.data;
+  const followingLoading = followingQuery.isLoading || followingQuery.isFetching;
+
+  // optional network ID filtering (.filter(() => [1, 10, 8453].includes(network.id)))
+  const followingList = useMemo(() => {
+    return following ? following.map(({ address }) => (
+      <AddressListItem key={address} address={address} onClick={() => onSelectAddress({ address })} />
+    )) : [];
+  }, [following, onSelectAddress]);
+
   return (
     <>
       <DialogTitle sx={{ p: 3 }}>
@@ -422,6 +444,26 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
                 <ListSubheader sx={{ px: 3 }}>Address Book</ListSubheader>
                 {addressBookList.length > 0 ? (
                   addressBookList
+                ) : (
+                  <ListItem sx={LIST_ITEM_STYLE}>
+                    <ListItemText
+                      data-cy={"no-address-book-results"}
+                      translate="yes"
+                      primary="No results"
+                    />
+                  </ListItem>
+                )}
+              </>
+            )}
+            {/* EFP Followings will be displayed where the address book is displayed */}
+            {showAddressBook && (
+              <>
+                <ListSubheader sx={{ px: 3 }}>Onchain Friends | EFP Followings</ListSubheader>
+                {followingLoading ? <ListItem sx={{ ...LIST_ITEM_STYLE, gap: 2 }}>
+                  <Skeleton variant="rounded" width={36} height={36} />
+                  <Skeleton variant="text" width="100%" height={28} />
+                </ListItem> : followingList.length > 0 ? (
+                  followingList
                 ) : (
                   <ListItem sx={LIST_ITEM_STYLE}>
                     <ListItemText

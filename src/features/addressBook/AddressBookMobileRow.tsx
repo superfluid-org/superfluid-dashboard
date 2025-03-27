@@ -16,12 +16,15 @@ import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
 import useAddressName from "../../hooks/useAddressName";
 import shortenHex from "../../utils/shortenHex";
+import { Star, StarBorder } from "@mui/icons-material";
 
 interface AddressBookMobileRowProps {
   address: Address;
   selectable: boolean;
   selected: boolean;
   onSelect: (isSelected: boolean) => void;
+  isStarred?: boolean;
+  onStarClick?: () => void;
 }
 
 const AddressBookMobileRow: FC<AddressBookMobileRowProps> = ({
@@ -29,6 +32,8 @@ const AddressBookMobileRow: FC<AddressBookMobileRowProps> = ({
   selectable,
   selected,
   onSelect,
+  isStarred = false,
+  onStarClick,
 }) => {
   const { name } = useAddressName(address);
 
@@ -54,6 +59,11 @@ const AddressBookMobileRow: FC<AddressBookMobileRowProps> = ({
         </Stack>
       </TableCell>
       <TableCell width="64px">
+        {onStarClick &&
+          (isStarred ?
+            <Star color="primary" sx={{ width: 26, height: 26 }} onClick={onStarClick} />
+            : <StarBorder color="primary" sx={{ width: 26, height: 26 }} onClick={onStarClick} />
+          )}
         {selectable && (
           <Checkbox
             checked={selected}

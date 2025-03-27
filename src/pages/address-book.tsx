@@ -48,7 +48,11 @@ import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 import { LoadingButton } from "@mui/lab";
 import { publicClientToProvider } from "../utils/wagmiEthersAdapters";
 import { resolvedWagmiClients } from "../features/wallet/WagmiManager";
-import { PublicClient } from "viem";
+import { efpApi } from "../features/efp/efpApi.slice";
+import { useAccount } from "wagmi";
+import Link from "next/link";
+import AddressBookLoadingRow from "../features/addressBook/AddressBookLoadingRow";
+import AddressBookMobileLoadingRow from "../features/addressBook/AddressBookMobileLoadingRow";
 
 const AddressBook: NextPage = () => {
   const dispatch = useAppDispatch();
@@ -57,8 +61,8 @@ const AddressBook: NextPage = () => {
 
   const { visibleAddress } = useVisibleAddress();
   const { network } = useExpectedNetwork();
-  const [page, setPage] = useState({ wallet: 0, contract: 0 });
-  const [rowsPerPage, setRowsPerPage] = useState({ wallet: 25, contract: 25 });
+  const [page, setPage] = useState({ wallet: 0, contract: 0, following: 0 });
+  const [rowsPerPage, setRowsPerPage] = useState({ wallet: 25, contract: 25, following: 25 });
   const [isDeleting, setIsDeleting] = useState(false);
   const [selectedAddresses, setSelectedAddresses] = useState<string[]>([]);
   const [showAddDialog, setShowAddDialog] = useState(false);
@@ -71,6 +75,19 @@ const AddressBook: NextPage = () => {
   const addressBookEntries = useAppSelector((state) =>
     addressBookSelectors.selectAll(state.addressBook)
   );
+
+  const { address: accountAddress } = useAccount();
+
+  const statsQuery = efpApi.useGetStatsQuery(accountAddress);
+  const totalFollowing = statsQuery.data?.following;
+
+  const followingQuery = efpApi.useGetFollowingQuery({
+    address: accountAddress,
+    offset: page.following * rowsPerPage.following,
+    limit: rowsPerPage.following,
+  });
+  const following = followingQuery.data;
+  const isFollowingLoading = followingQuery.isLoading || followingQuery.isFetching;
 
   const incomingStreamsQuery = subgraphApi.useStreamsQuery(
     visibleAddress
@@ -141,12 +158,12 @@ const AddressBook: NextPage = () => {
   // Pagination
 
   const handleChangePage =
-    (table: "wallet" | "contract") => (_e: unknown, newPage: number) => {
+    (table: "wallet" | "contract" | "following") => (_e: unknown, newPage: number) => {
       setPage((page) => ({ ...page, [table]: newPage }));
     };
 
   const handleChangeRowsPerPage =
-    (table: "wallet" | "contract") =>
+    (table: "wallet" | "contract" | "following") =>
       (event: ChangeEvent<HTMLInputElement>) => {
         setRowsPerPage((rowsPerPage) => {
           const newRowsPerPage = parseInt(event.target.value, 10);
@@ -263,6 +280,27 @@ const AddressBook: NextPage = () => {
     addressBookEntries,
   ]);
 
+  const mappedFollowing = useMemo(() => {
+    const allStreams = (incomingStreamsQuery.data?.items || []).concat(
+      outgoingStreamsQuery.data?.items || []
+    );
+
+    return following ? following?.map((entry) => {
+      return {
+        ...entry,
+        streams: allStreams.filter((stream) =>
+          [stream.sender.toLowerCase(), stream.receiver.toLowerCase()].includes(
+            entry.address.toLowerCase()
+          )
+        ),
+      };
+    }) : [];
+  }, [
+    incomingStreamsQuery.data,
+    outgoingStreamsQuery.data,
+    following,
+  ]);
+
   const filteredEntries = useMemo(
     () =>
       mappedEntries
@@ -288,6 +326,33 @@ const AddressBook: NextPage = () => {
           }
         }),
     [mappedEntries, addressesFilter, streamActiveFilter]
+  );
+
+  const filteredFollowing = useMemo(
+    () =>
+      mappedFollowing
+        .filter(
+          (entry) =>
+            addressesFilter.length === 0 ||
+            addressesFilter.includes(entry.address)
+        )
+        .filter((entry) => {
+          switch (streamActiveFilter) {
+            case StreamActiveType.Active:
+              return entry.streams.some(
+                (stream) => stream.currentFlowRate !== "0"
+              );
+
+            case StreamActiveType.NoActive:
+              return !entry.streams.some(
+                (stream) => stream.currentFlowRate !== "0"
+              );
+
+            default:
+              return true;
+          }
+        }),
+    [mappedFollowing, addressesFilter, streamActiveFilter]
   );
 
   const filteredAddresses = useMemo(
@@ -364,6 +429,20 @@ const AddressBook: NextPage = () => {
 
   const streamsLoading =
     incomingStreamsQuery.isLoading || outgoingStreamsQuery.isLoading;
+
+  const onStarAddress = (address: Address) => {
+    if (addressBookEntries.some((entry) => entry.address.toLowerCase() === address.toLowerCase())) {
+      dispatch(
+        removeAddressBookEntries(
+          filteredEntries
+            .filter((entry) => entry.address.toLowerCase() === address.toLowerCase())
+            .map(adapter.selectId)
+        )
+      );
+    } else {
+      onAddAddress({ address, name: "", associatedNetworks: [1, 10, 8453], isContract: false });
+    }
+  };
 
   return (
     <Container maxWidth="lg">
@@ -698,6 +777,116 @@ const AddressBook: NextPage = () => {
                   "> *": {
                     visibility:
                       filteredEntries.length <= rowsPerPage.contract
+                        ? "hidden"
+                        : "visible",
+                  },
+                }}
+              />
+            </TableContainer>
+          </>
+        )}
+
+        {filteredFollowing.length === 0 && !isFollowingLoading && (
+          <Paper elevation={1} sx={{ px: 12, py: 7 }} translate="yes">
+            <Typography
+              data-cy={"no-address-title"}
+              variant="h4"
+              textAlign="center"
+            >
+              {accountAddress ? "You don't follow anyone yet" : "Connect your wallet to see your friends"}
+            </Typography>
+            {accountAddress && <Typography
+              data-cy={"no-address-message"}
+              color="text.secondary"
+              textAlign="center"
+            >
+              Follow people on <Link href="https://efp.app" target="_blank" rel="noopener noreferrer">EFP (Ethereum Follow Protocol)</Link> to see them here.
+            </Typography>}
+          </Paper>
+        )}
+
+        {(filteredFollowing.length > 0 || isFollowingLoading) && (
+          <>
+            <Typography
+              sx={{ marginBottom: isBelowMd ? -1.5 : -3.5 }}
+              variant="h6"
+            >
+              Onchain Friends | EFP Followings
+            </Typography>
+            <TableContainer
+              component={Paper}
+              sx={{
+                [theme.breakpoints.down("md")]: {
+                  borderLeft: 0,
+                  borderRight: 0,
+                  borderRadius: 0,
+                  boxShadow: "none",
+                  mx: -2,
+                  width: "auto",
+                },
+              }}
+            >
+              <Table data-cy="wallet-addresses" sx={{ tableLayout: "fixed" }}>
+                {!isBelowMd && (
+                  <TableHead>
+                    <TableRow>
+                      <TableCell width="150px" sx={{ pl: 10 }}>
+                        Name
+                      </TableCell>
+                      <TableCell width="145px">Address</TableCell>
+                      <TableCell width="150px">Networks</TableCell>
+                      <TableCell width="160px">Active Streams</TableCell>
+                      <TableCell width="88px" />
+                    </TableRow>
+                  </TableHead>
+                )}
+                <TableBody>
+                  {isFollowingLoading ?
+                    Array.from({ length: rowsPerPage.following }).map((_, index) => (
+                      isBelowMd ? <AddressBookMobileLoadingRow key={index} /> : <AddressBookLoadingRow key={index} />
+                    ))
+                    : filteredFollowing.map(
+                      ({ address, streams }) =>
+                        isBelowMd ? (
+                          <AddressBookMobileRow
+                            key={address}
+                            address={address}
+                            selected={selectedAddresses.includes(address)}
+                            selectable={false}
+                            onSelect={setRowSelected(address)}
+                            isStarred={addressBookEntries.some((entry) => entry.address.toLowerCase() === address.toLowerCase())}
+                            onStarClick={() => onStarAddress(address)}
+                          />
+                        ) : (
+                          <AddressBookRow
+                            key={address}
+                            address={address}
+                            selected={selectedAddresses.includes(address)}
+                            selectable={false}
+                            onSelect={setRowSelected(address)}
+                            streams={streams}
+                            streamsLoading={streamsLoading}
+                            chainIds={[1, 10, 8453]}
+                            canEdit={false}
+                            isStarred={addressBookEntries.some((entry) => entry.address.toLowerCase() === address.toLowerCase())}
+                            onStarClick={() => onStarAddress(address)}
+                          />
+                        )
+                    )}
+                </TableBody>
+              </Table>
+              <TablePagination
+                rowsPerPageOptions={[5, 10, 25, 50]}
+                component="div"
+                count={totalFollowing || filteredFollowing.length}
+                rowsPerPage={rowsPerPage.following}
+                page={page.following}
+                onPageChange={handleChangePage("following")}
+                onRowsPerPageChange={handleChangeRowsPerPage("following")}
+                sx={{
+                  "> *": {
+                    visibility:
+                      (totalFollowing || filteredFollowing.length) <= rowsPerPage.following
                         ? "hidden"
                         : "visible",
                   },

@@ -2,7 +2,7 @@
   "gnosis": {
     "TokenOne": "TDL",
     "TokenTwo": "USDC",
-    "TokenThree": "WORK",
+    "TokenThree": "AC",
     "TokenGas": "XDAI"
   },
   "polygon": {
@@ -62,8 +62,8 @@
     "TokenGas": "ETH"
   },
   "scroll": {
-    "TokenOne": "changeThisWhenTokensListed",
-    "TokenTwo": "changeThisWhenTokensListed",
+    "TokenOne": "fDAI",
+    "TokenTwo": "fUSDC",
     "TokenGas": "ETH"
   },
   "scrsepolia": {

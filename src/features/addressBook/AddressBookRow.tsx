@@ -27,6 +27,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { ens_beautify } from "@adraffy/ens-normalize";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
 import useAddressName from "../../hooks/useAddressName";
@@ -37,6 +38,7 @@ import { allNetworks, tryFindNetwork } from "../network/networks";
 import NetworkIcon from "../network/NetworkIcon";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { CopyIconBtn } from "../common/CopyIconBtn";
+import { Star, StarBorder } from "@mui/icons-material";
 
 interface AddressBookRowProps {
   address: Address;
@@ -48,6 +50,9 @@ interface AddressBookRowProps {
   chainIds?: number[];
   isContract?: boolean;
   onSelect: (isSelected: boolean) => void;
+  canEdit?: boolean;
+  isStarred?: boolean;
+  onStarClick?: () => void;
 }
 
 const WideTooltip = styled(({ className, ...props }: TooltipProps) => (
@@ -68,6 +73,9 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
   chainIds,
   isContract = false,
   onSelect,
+  canEdit = true,
+  isStarred = false,
+  onStarClick,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -76,6 +84,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
   const [editableName, setEditableName] = useState(name);
   const [isEditing, setIsEditing] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
+  const [isHoveringStar, setIsHoveringStar] = useState(false);
   const { ensName, lensName } = useAddressName(address);
 
   const trimmedName = useMemo(() => editableName.trim(), [editableName]);
@@ -92,7 +101,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
     setIsEditing(false);
   }, [trimmedName, address, dispatch]);
 
-  const startEditing = () => setIsEditing(true);
+  const startEditing = () => canEdit && setIsEditing(true);
 
   const cancelEditing = useCallback(() => {
     setIsEditing(false);
@@ -118,9 +127,17 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
   );
 
   return (
-    <TableRow onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
-      <TableCell>
-        <Stack direction="row">
+    <TableRow onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} >
+      <TableCell sx={{ pl: onStarClick ? 1 : 4 }}>
+        <Stack direction="row" alignItems="center" gap={1}>
+          {onStarClick &&
+            <Stack alignItems="center" justifyContent="center" onMouseEnter={() => setIsHoveringStar(true)} onMouseLeave={() => setIsHoveringStar(false)} onClick={onStarClick} sx={{ cursor: 'pointer', opacity: isHovering || isStarred ? 1 : 0 }}>
+              {isHoveringStar || isStarred ?
+                <Star color="primary" sx={{ width: 20, height: 20, cursor: 'pointer' }} />
+                : <StarBorder color="primary" sx={{ width: 20, height: 20 }} />
+              }
+            </Stack>
+          }
           <Stack direction="row" alignItems="center" gap={1.5}>
             <AddressAvatar
               address={address}
@@ -149,7 +166,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
               </Typography>
             )}
 
-            {(isEditing || isHovering) && (
+            {canEdit && (isEditing || isHovering) && (
               <>
                 <Tooltip
                   placement="top"
@@ -212,7 +229,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
               variant="tooltip"
               sx={{ fontSize: 12 }}
             >
-              {ensName}
+              {ens_beautify(ensName)}
             </Typography>
           )}
 

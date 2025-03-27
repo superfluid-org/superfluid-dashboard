@@ -11,4 +11,4 @@ Feature: Transfer transactional test cases
     And The restore button is visible for the last transaction
     And The first row does not have a pending transfer transaction status
     And User restores the last transaction
-    Then All the details to send "1" "fDAIx" to "@elvijs" on "opsepolia" are set in the fields
+    Then All the details to send "1" "fDAIx" to "elvijs.eth" on "opsepolia" are set in the fields

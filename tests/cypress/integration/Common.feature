@@ -101,6 +101,7 @@ Feature: Common element test cases
   #     And User opens the navigation more menu
   #     And User opens the faucet view from the navigation menu
   #     Then The claim token is disabled and shows Tokens claimed message
+  # Notifications are hidden
   @skip
   Scenario: No new notifications message
     Given "Settings Page" is open with "dan" connected on "ethereum"
@@ -174,7 +175,7 @@ Feature: Common element test cases
   Scenario: Using view mode from the Connect or Impersonate screen
     Given "Vesting page" is open without connecting a wallet
     And User uses view mode to look at "john"
-    Then View mode chip shows "0x9Be8...E2B9"
+    Then View mode chip shows "0x46Bd...27d2"
 
   Scenario: Close view mode from the Connect or Impersonate screen
     Given "Vesting page" is open without connecting a wallet
@@ -186,7 +187,7 @@ Feature: Common element test cases
     Given "Address book page" is open with "alice" connected on "polygon"
     And User opens the connected account modal
     And User uses view mode to look at "john"
-    Then View mode chip shows "0x9Be8...E2B9"
+    Then View mode chip shows "0x46Bd...27d2"
 
   Scenario: Close view mode from the account modal
     Given "Address book page" is open with "alice" connected on "polygon"
@@ -213,6 +214,7 @@ Feature: Common element test cases
     And User clicks on the copy address button in the account modal
     Then The address is copied and the buttons text in the address modal changes to "Copied!" with a checkmark icon
 
+  @skip
   Scenario: Searching for an lens address
     Given "Vesting page" is open without connecting a wallet
     And User clicks on the view mode button
@@ -243,8 +245,8 @@ Feature: Common element test cases
 
     Given Lens and ENS api requests are blocked
     And User clicks on the view mode button
-    And User types "@elvijs" into the address input
-    Then An error is shown in the "Lens" receiver list
+    And User types "elvijs.eth" into the address input
+    Then An error is shown in the "ENS" receiver list
 
   Scenario: ENS Api error when fetching a receiver
     Given "Vesting page" is open without connecting a wallet

@@ -98,8 +98,8 @@ const REQUIRE_RECEIVER_TO_CLAIM = '[data-cy=claim-toggle]';
 const VESTING_STATUS = '[data-cy=vesting-status]';
 
 //Dates for the vesting previews etc.
-let staticStartDate = new Date(1879145815000);
-let staticEndDate = new Date(2036912215000);
+let staticStartDate = new Date(1898252700000);
+let staticEndDate = new Date(2056021500000);
 let currentTime = new Date();
 let startDate = new Date(
   currentTime.getTime() + wordTimeUnitMap['year'] * 1000
@@ -257,14 +257,6 @@ export class VestingPage extends BasePage {
     // WrapPage.validatePendingTransaction("Create Vesting Schedule" , "avalanche-fuji")
   }
 
-  static createNewVestingSchedulev2() {
-    SendPage.overrideNextGasPrice();
-    this.click(CREATE_SCHEDULE_TX_BUTTON);
-    this.hasText(APPROVAL_MESSAGE, 'Waiting for transaction approval...');
-    cy.get(OK_BUTTON, { timeout: 45000 }).should('be.visible').click();
-    this.click(TX_DRAWER_BUTTON);
-  }
-
   static validateFormError(error: string) {
     this.hasText(FORM_ERROR, error, 0);
     this.isDisabled(PREVIEW_SCHEDULE_BUTTON);
@@ -382,12 +374,6 @@ export class VestingPage extends BasePage {
 
   static deleteVestingSchedule() {
     this.click(DELETE_SCHEDULE_BUTTON, undefined, { timeout: 30000 });
-  }
-
-  static deleteVestingSchedulev2() {
-    this.click(DELETE_SCHEDULE_BUTTON, undefined, { timeout: 30000 });
-    this.hasText(APPROVAL_MESSAGE, 'Waiting for transaction approval...');
-    cy.get(OK_BUTTON, { timeout: 45000 }).should('be.visible').click();
   }
 
   static deleteVestingButtonDoesNotExist() {
@@ -607,11 +593,13 @@ export class VestingPage extends BasePage {
   }
 
   static validateVestingRowStatus(status: string) {
+    let rowNo = 1;
     if (status === 'Deleted') {
       cy.get(TABLE_VESTING_STATUS).should('be.visible');
       cy.contains('Deleted').click();
+      rowNo = 0;
     }
-    this.hasText(TABLE_VESTING_STATUS, status, 0);
+    this.hasText(TABLE_VESTING_STATUS, status, rowNo);
   }
 
   static validateScheduleBarElements(
@@ -785,6 +773,7 @@ export class VestingPage extends BasePage {
         schedule.cliffAmount / 1e18 +
         ((Date.now() - stream.startedAtUnix) * stream.flowRate) / 1e21
       )
+        .toFixed(0)
         .toString()
         .substring(0, 8);
       this.hasText(

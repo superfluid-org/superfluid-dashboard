@@ -123,7 +123,7 @@
               "dateSent": "24 Jul. 2024"
             },
             {
-              "toFrom": "@elvijs",
+              "toFrom": "elvijs.eth",
               "amount": -100,
               "dateSent": "24 Jul. 2024"
             },
@@ -140,20 +140,30 @@
       "tokenValues": {
         "token": "fDAIx",
         "tokenName": "Super fDAI Fake Token",
-        "liquidationDate": "March 20th, 2041",
+        "liquidationDate": "-",
         "netFlowRate": "-1/mo",
         "inFlow": "+5/mo",
         "outFlow": "-6/mo",
         "streams": [
           {
-            "fromTo": "0x4e1d...235D",
-            "flowRate": "-6/mo",
-            "endDate": "24 Jul. 2024 08:02"
+            "fromTo": "0xBCfD...59c3",
+            "flowRate": "-0.5/mo",
+            "endDate": "4 Mar. 2025 15:33"
+          },
+          {
+            "fromTo": "0xBCfD...59c3",
+            "flowRate": "+0.5/mo",
+            "endDate": "4 Mar. 2025 15:31"
           },
           {
             "fromTo": "0x4e1d...235D",
-            "flowRate": "+5/mo",
-            "endDate": "24 Jul. 2024 08:01"
+            "flowRate": "-",
+            "endDate": "24 Jul. 2024 08:0124 Feb. 2025 10:15"
+          },
+          {
+            "fromTo": "0x4e1d...235D",
+            "flowRate": "-",
+            "endDate": "24 Jul. 2024 08:0224 Feb. 2025 10:14"
           }
         ]
       }
@@ -187,7 +197,7 @@
         "tokenAddress": "0x7d342726b69c28d942ad8bfe6ac81b972349d524",
         "streams": [
           {
-            "fromTo": "@elvijs",
+            "fromTo": "elvijs.eth",
             "flowRate": "-0.020278/mo",
             "endDate": "5 Apr. 2022 11:23"
           },

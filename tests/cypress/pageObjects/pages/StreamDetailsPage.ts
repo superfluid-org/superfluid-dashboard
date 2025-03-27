@@ -1,10 +1,11 @@
 import { BasePage } from '../BasePage';
 import { format, fromUnixTime } from 'date-fns';
 import { TOKEN_ANIMATION } from './Common';
+import cypressConfig from '../../../cypress.config';
 
 const SENT_SO_FAR = '[data-cy=balance]';
 const TOKEN_STREAMED = '[data-cy=streamed-token]';
-const SENDER_AND_RECEIVER = '[data-cy=sender-and-receiver]';
+const SENDER_AND_RECEIVER = '[data-cy=sender-and-receiver] h6';
 const AMOUNT_PER_MONTH = '[data-cy=amount-per-month]';
 const START_DATE = '[data-cy=start-date]';
 const BUFFER = '[data-cy=buffer]';
@@ -60,7 +61,7 @@ export class StreamDetailsPage extends BasePage {
         BasePage.shortenHex(endedStream.sender),
         0
       );
-      this.hasText(SENDER_AND_RECEIVER, '@elvijs', -1);
+      this.hasText(SENDER_AND_RECEIVER, 'elvijs.eth', -1);
       this.hasText(BUFFER, endedStream.buffer);
       this.hasText(NETWORK_NAME, endedStream.networkName);
       this.hasText(TX_HASH, BasePage.shortenHex(endedStream.txHash));
@@ -206,10 +207,10 @@ export class StreamDetailsPage extends BasePage {
         this.trigger(SENDER_RECEIVER_COPY_BUTTONS, 'mouseout', 0);
         this.doesNotExist(VISIBLE_TOOLTIP);
         this.trigger(SENDER_AND_RECEIVER, 'mouseover', 0);
-        this.click(SENDER_RECEIVER_COPY_BUTTONS, -1);
+        cy.get(SENDER_RECEIVER_COPY_BUTTONS).last().click({ force: true });
         this.isVisible(VISIBLE_TOOLTIP);
         this.hasText(VISIBLE_TOOLTIP, 'Copied!');
-        this.trigger(SENDER_RECEIVER_COPY_BUTTONS, 'mouseout', -1);
+        cy.get(SENDER_RECEIVER_COPY_BUTTONS).last().trigger('mouseout');
         this.doesNotExist(VISIBLE_TOOLTIP);
       }
       this.hasAttributeWithValue(
@@ -293,13 +294,14 @@ export class StreamDetailsPage extends BasePage {
       this.hasAttributeWithValue(
         ALL_COPY_BUTTONS,
         'test-data',
-        `https://app.superfluid.finance${endedStream.v2Link}`,
+        `${Cypress.config('baseUrl')}${endedStream.v2Link}`,
         -1
       );
     });
   }
 
   static validateSocialNetworkTooltipsAndLinks() {
+    const baseUrl = Cypress.config('baseUrl').replace(/^https?:\/\//, '');
     this.trigger(TELEGRAM_BUTTON, 'mouseover');
     this.isVisible(VISIBLE_TOOLTIP);
     this.hasText(VISIBLE_TOOLTIP, 'Share on Telegram');
@@ -308,7 +310,7 @@ export class StreamDetailsPage extends BasePage {
     this.hasAttributeWithValue(
       TELEGRAM_BUTTON,
       'href',
-      'https://t.me/share/url?text=I%E2%80%99m%20streaming%20money%20every%20second%20with%20%40Superfluid_HQ!%20%F0%9F%8C%8A%0A%0ACheck%20out%20my%20stream%20here%20%E2%98%9D%EF%B8%8F&url=https%3A%2F%2Fapp.superfluid.finance%2Fstream%2Fpolygon%2F0x384bec1faf849929dcce6b293f7bee432f2a299cc9afc6750179dc96dd81b8ff-211'
+      `https://t.me/share/url?text=I%E2%80%99m%20streaming%20money%20every%20second%20with%20%40Superfluid_HQ!%20%F0%9F%8C%8A%0A%0ACheck%20out%20my%20stream%20here%20%E2%98%9D%EF%B8%8F&url=https%3A%2F%2F${baseUrl}%2Fstream%2Fpolygon%2F0x384bec1faf849929dcce6b293f7bee432f2a299cc9afc6750179dc96dd81b8ff-211`
     );
     this.hasAttributeWithValue(TELEGRAM_BUTTON, 'target', '_blank');
     this.trigger(TWITTER_BUTTON, 'mouseover');
@@ -319,7 +321,7 @@ export class StreamDetailsPage extends BasePage {
     this.hasAttributeWithValue(
       TWITTER_BUTTON,
       'href',
-      'https://twitter.com/intent/tweet?text=I%E2%80%99m%20streaming%20money%20every%20second%20with%20%40Superfluid_HQ!%20%F0%9F%8C%8A%0A%0ACheck%20out%20my%20stream%20here%20%F0%9F%91%87&url=https%3A%2F%2Fapp.superfluid.finance%2Fstream%2Fpolygon%2F0x384bec1faf849929dcce6b293f7bee432f2a299cc9afc6750179dc96dd81b8ff-211&hashtags=superfluid%2Cmoneystreaming%2Crealtimefinance'
+      `https://twitter.com/intent/tweet?text=I%E2%80%99m%20streaming%20money%20every%20second%20with%20%40Superfluid_HQ!%20%F0%9F%8C%8A%0A%0ACheck%20out%20my%20stream%20here%20%F0%9F%91%87&url=https%3A%2F%2F${baseUrl}%2Fstream%2Fpolygon%2F0x384bec1faf849929dcce6b293f7bee432f2a299cc9afc6750179dc96dd81b8ff-211&hashtags=superfluid%2Cmoneystreaming%2Crealtimefinance`
     );
     this.hasAttributeWithValue(TWITTER_BUTTON, 'target', '_blank');
   }

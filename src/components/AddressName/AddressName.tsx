@@ -1,4 +1,5 @@
 import { memo } from "react";
+import { ens_beautify } from "@adraffy/ens-normalize";
 import useAddressName from "../../hooks/useAddressName";
 import shortenHex from "../../utils/shortenHex";
 
@@ -13,7 +14,10 @@ export default memo(function AddressName({
 }: AddressNameProps) {
   const addressName = useAddressName(address);
 
-  if (addressName.name) {
+  const isUsingEnsName = !!addressName.ensName && addressName.name === addressName.ensName;
+  if (isUsingEnsName) {
+    return <>{ens_beautify(addressName.name)}</>;
+  } else if (addressName.name) {
     return <>{addressName.name}</>;
   } else {
     return (
@@ -21,9 +25,9 @@ export default memo(function AddressName({
         {length === "long"
           ? addressName.addressChecksummed
           : shortenHex(
-              addressName.addressChecksummed,
-              length === "medium" ? 8 : 4
-            )}
+            addressName.addressChecksummed,
+            length === "medium" ? 8 : 4
+          )}
       </>
     );
   }

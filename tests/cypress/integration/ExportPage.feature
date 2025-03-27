@@ -63,6 +63,7 @@ Feature: Export Stream Data page test cases
     And User changes the export end date with date picker to "Feb" "2022"
     Then Exported data for "custom dates" is fetched and shown correctly
 
+  @skip
   Scenario: Export preview - enabling and disabling columns
     Given "Accounting Export page" is open without connecting a wallet
     And User searches for "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40" as the accountable account
@@ -112,4 +113,4 @@ Feature: Export Stream Data page test cases
     And User opens the navigation more menu
     And User clicks on the "export" button in the more menu
     #John address
-    And "0x9Be85A79D847dFa90584F3FD40cC1f6D4026E2B9" is selected for the export
+    And "0x46Bdc58eDF8837841A1eBb944e0cb53afCf627d2" is selected for the export

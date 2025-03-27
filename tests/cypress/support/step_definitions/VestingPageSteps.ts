@@ -62,9 +62,6 @@ Given(/^Preview of the vesting schedule is shown correctly$/, function () {
 Given(/^User creates the vesting schedule$/, function () {
   VestingPage.createNewVestingSchedule();
 });
-Given(/^User creates the vesting schedule v2$/, function () {
-  VestingPage.createNewVestingSchedulev2();
-});
 Given(
   /^The newly created vesting schedule is visible in the table$/,
   function () {
@@ -85,9 +82,6 @@ Given(/^User opens the vesting schedule they have created$/, function () {
 });
 Given(/^User deletes the vesting schedule$/, function () {
   VestingPage.deleteVestingSchedule();
-});
-Given(/^User deletes the vesting schedule v2$/, function () {
-  VestingPage.deleteVestingSchedulev2();
 });
 Given(/^Delete vesting schedule button is not visible$/, function () {
   VestingPage.deleteVestingButtonDoesNotExist();
