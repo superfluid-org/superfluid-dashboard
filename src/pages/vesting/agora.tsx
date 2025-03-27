@@ -3,8 +3,8 @@ import { NextPageWithLayout } from "../_app";
 import { useVisibleAddress } from "../../features/wallet/VisibleAddressContext";
 import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
 import { AgoraResponseData, ProjectState } from "../api/agora";
-import { TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Collapse, Box, Typography, IconButton, Container } from "@mui/material";
-import { useMemo, useState } from "react";
+import { TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Collapse, Box, Typography, IconButton, Container, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import { useEffect, useMemo, useState } from "react";
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import DoneIcon from '@mui/icons-material/Done';
@@ -16,10 +16,24 @@ const AgoraPage: NextPageWithLayout = () => {
     const { visibleAddress } = useVisibleAddress();
     const { network } = useExpectedNetwork();
 
+    const [tranch, setTranch] = useState(() => {
+        // Try to get the value from localStorage
+        const savedTranch = typeof window !== 'undefined' ? localStorage.getItem('selectedTranch') : null;
+        // Return the saved value or default to 1
+        return savedTranch ? parseInt(savedTranch, 10) : 1;
+    });
+
+    // Update localStorage when tranch changes
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('selectedTranch', tranch.toString());
+        }
+    }, [tranch]);
+
     const { data, isLoading, error: error_ } = useQuery({
-        queryKey: ['agora', visibleAddress ?? null, network.id],
-        queryFn: () => fetch(`/api/agora?sender=${visibleAddress}&chainId=${network.id}`).then(async (res) => (await res.json()) as AgoraResponseData),
-        enabled: !!visibleAddress && !!network.id
+        queryKey: ['agora', visibleAddress ?? null, network.id, tranch],
+        queryFn: () => fetch(`/api/agora?sender=${visibleAddress}&chainId=${network.id}&tranch=${tranch}`).then(async (res) => (await res.json()) as AgoraResponseData),
+        enabled: !!visibleAddress && !!network.id && !!tranch
     });
 
     const errorMessage = data?.success === false ? data.message : error_?.message;
@@ -42,6 +56,24 @@ const AgoraPage: NextPageWithLayout = () => {
 
     return (
         <Container maxWidth="lg">
+            <Box sx={{ mb: 3, mt: 2 }}>
+                <FormControl sx={{ minWidth: 120 }}>
+                    <InputLabel id="tranch-select-label">Tranch</InputLabel>
+                    <Select
+                        labelId="tranch-select-label"
+                        id="tranch-select"
+                        value={tranch}
+                        label="Tranch"
+                        onChange={(e) => setTranch(Number(e.target.value))}
+                    >
+                        <MenuItem value={1}>Tranch 1</MenuItem>
+                        <MenuItem value={2}>Tranch 2</MenuItem>
+                        <MenuItem value={3}>Tranch 3</MenuItem>
+                        <MenuItem value={4}>Tranch 4</MenuItem>
+                    </Select>
+                </FormControl>
+            </Box>
+            
             <TableContainer component={Paper}>
                 <Table aria-label="collapsible table">
                     <TableHead>
@@ -75,7 +107,6 @@ function Row(props: { state: ProjectState }) {
 
     return (
         <>
-
             <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
                 <TableCell>{state.agoraEntry.projectName}</TableCell>
                 <TableCell>{formatEther(allocation)} OPx</TableCell>

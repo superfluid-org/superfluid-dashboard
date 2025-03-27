@@ -10,7 +10,7 @@ import { mapSubgraphVestingSchedule, VestingSchedule } from '../../features/vest
 import { UnitOfTime } from '../../features/send/FlowRateInput'
 import { vestingSchedulerV3Abi, vestingSchedulerV3Address } from '../../generated'
 import { allNetworks, findNetworkOrThrow } from '../../features/network/networks'
-import { Operation } from '@superfluid-finance/sdk-core'
+import { getUnixTime } from 'date-fns'
 
 // TODO: Pre-defining this because yup was not able to infer the types correctly for the transforms...
 type AgoraResponseEntry = {
@@ -53,16 +53,13 @@ export const agoraResponseSchema = yup.array().of(agoraResponseEntrySchema).requ
 
 // Map this data into a more readable state...
 type TranchPlan = {
-    endTimestamp: number
-    tranchCount: number
+    tranchCount: 6
+    currentTranchCount: number
     totalDurationInSeconds: number
-}
-
-const tranchCount = 6;
-const tranchPlan: TranchPlan = {
-    endTimestamp: 1767218400,
-    tranchCount,
-    totalDurationInSeconds: tranchCount * UnitOfTime.Month
+    tranches: {
+        startTimestamp: number
+        endTimestamp: number
+    }[]
 }
 
 type ActionType = "create-vesting-schedule" | "update-vesting-schedule" | "stop-vesting-schedule"
@@ -98,6 +95,8 @@ type Actions = CreateVestingScheduleAction | UpdateVestingScheduleAction | StopV
 
 export type ProjectsOverview = {
     chainId: number
+    superTokenAddress: string
+    senderAddress: string
     tranchPlan: TranchPlan
     projects: ProjectState[]
 }
@@ -149,7 +148,8 @@ const OPxAddress = {
 }
 
 const agoraApiEndpoints = {
-    [optimismSepolia.id]: "https://op-atlas-git-stepan-rewards-api-mock-voteagora.vercel.app/api/v1/rewards/7/onchain-builders",
+    // [optimismSepolia.id]: "https://op-atlas-git-stepan-rewards-api-mock-voteagora.vercel.app/api/v1/rewards/7/onchain-builders",
+    [optimismSepolia.id]: "http://localhost:3000/api/mock",
 }
 
 const validChainIds = Object.keys(agoraApiEndpoints).map(Number);
@@ -158,6 +158,28 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<AgoraResponseData>
 ) {
+    // Get the tranch parameter from the query
+    const tranchParam = req.query.tranch;
+    
+    // Check if tranch parameter exists and validate it
+    let tranch: number | undefined;
+    if (tranchParam) {
+        if (typeof tranchParam !== 'string') {
+            return res.status(400).json({
+                success: false,
+                message: 'Tranch parameter must be a string'
+            });
+        }
+        
+        tranch = parseInt(tranchParam, 10);
+        if (isNaN(tranch)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Tranch parameter must be a valid number'
+            });
+        }
+    }
+
     // TODO: validate method?
     const chain = optimismSepolia;
     const network = findNetworkOrThrow(allNetworks, chain.id);
@@ -211,7 +233,7 @@ export default async function handler(
 
         const dataFromAgora = yield* pipe(
             E.tryPromise({
-                try: () => fetch(agoraApiEndpoint).then(res => res.json()),
+                try: () => fetch(agoraApiEndpoint + `?tranch=${tranch}`).then(res => res.json()),
                 catch: (error) => {
                     return new AgoraError("Failed to fetch data from Agora", { cause: error })
                 }
@@ -241,6 +263,33 @@ export default async function handler(
             E.tap(() => E.logTrace(`Filtered out non-KYC'ed rows`))
         );
 
+        const currentTranchCount = dataFromAgora[0].amounts.length;
+        const now = getUnixTime(new Date());
+        const tranchDuration = 2.5 * UnitOfTime.Minute;
+        
+        // Calculate which tranch index is current (0-based)
+        const currentTranchIndex = currentTranchCount - 1;
+        
+        const tranchPlan: TranchPlan = {
+            tranchCount: 6,
+            currentTranchCount,
+            totalDurationInSeconds: 15 * UnitOfTime.Minute,
+            tranches: Array(6).fill(null).map((_, index) => {
+                // Calculate offset from current tranch
+                const offset = (index - currentTranchIndex) * tranchDuration;
+                
+                // Start time is now plus offset (negative for past tranches, positive for future)
+                const startTimestamp = now + offset;
+                
+                // End time is start time plus duration
+                const endTimestamp = startTimestamp + tranchDuration;
+                
+                return {
+                    startTimestamp,
+                    endTimestamp
+                };
+            })
+        }
 
         // # Validate no wallet appears in multiple rows
         // Just in case... You can probably skip reading this part.
@@ -293,9 +342,10 @@ export default async function handler(
             E.tryPromise({
                 try: () => subgraphSdk.getVestingSchedules({
                     where: {
+                        // TODO: add cut-off dates here?
                         superToken: OPx.toLowerCase(),
                         sender: sender.toLowerCase(),
-                        receiver_in: allReceiverAddresses_bothActiveAndInactive, // TODO: Can this go over any limits?
+                        receiver_in: allReceiverAddresses_bothActiveAndInactive, // Note: Can this go over any limits? Answer: not too worried...
                         // What statuses to check so it would be active? Note: Might be fine to just filter later.
                     }
                 }),
@@ -311,20 +361,18 @@ export default async function handler(
                 subgraphResponse.vestingSchedules.map(vestingSchedule =>
                     mapSubgraphVestingSchedule(vestingSchedule)
                 )
-                    .filter(x => !x.status.isFinished) // Probably need more filters
+                    .filter(x => !x.status.isDeleted && x.status.isError)
             )
         );
         // TODO: I know this has too many vesting schedules. I'll not perfect the filtering just yet.
 
         // Probably the most sensible thing to do now is to group together tranches with the relevant vesting schedule data...
 
-        // TODO: Make sure the collection holds active schedules.
-        const activeVestingSchedules = vestingSchedulesFromSubgraph;
-
         // Map into project states
         const projectStates = yield* E.forEach(dataFromAgora, (row) => {
             return E.gen(function* () {
 
+                const walletsLowerCased = row.wallets.map(x => x.toLowerCase());
                 const agoraCurrentWallet: Address = row.wallets[row.wallets.length - 1] as Address;
                 let agoraPreviousWallet: Address | null =
                     row.wallets.length > 1
@@ -332,13 +380,20 @@ export default async function handler(
                         : null;
 
                 if (agoraCurrentWallet === agoraPreviousWallet) {
-                    // TODO: Handle this better
                     agoraPreviousWallet = null;
+                    // TODO: Handle this better
                     // return yield* E.die(new Error("Current and previous wallets are the same. Not prepared for this situation!"));
                 }
 
-                const currentWalletVestingSchedule = activeVestingSchedules.find(x => x.receiver.toLowerCase() === agoraCurrentWallet.toLowerCase()) ?? null;
-                const previousWalletVestingSchedule = (agoraPreviousWallet && activeVestingSchedules.find(x => x.receiver.toLowerCase() === agoraPreviousWallet.toLowerCase())) ?? null;
+                // TODO: Find all relevant vesting schedules
+                // TODO: Probably want to update subgraph after all...
+
+                const allRelevantVestingSchedules = vestingSchedulesFromSubgraph.filter(x => walletsLowerCased.includes(x.receiver.toLowerCase()));
+
+                const currentWalletVestingSchedule = allRelevantVestingSchedules.find(
+                    x => !x.status.isFinished && x.receiver.toLowerCase() === agoraCurrentWallet.toLowerCase()
+                ) ?? null;
+                const previousWalletVestingSchedule = (agoraPreviousWallet && allRelevantVestingSchedules.find(x => x.receiver.toLowerCase() === agoraPreviousWallet.toLowerCase())) ?? null;
 
                 // TODO: Double-check if an amount is for the total time or for a single tranch.
                 // Answer: It is for the current tranch.
@@ -477,6 +532,8 @@ export default async function handler(
 
         return {
             chainId,
+            senderAddress: sender,
+            superTokenAddress: OPx,
             tranchPlan,
             projects: projectStates
         }
@@ -547,27 +604,23 @@ function getId(superToken: Address, sender: Address, receiver: Address): `0x${st
 
 // # Mapper
 
-async function mapProjectStateIntoOperations(state: ProjectState): Promise<Operation[]> {
-    // TODO: This should probably be moved into a redux slice...
-
-    const operations: Operation[] = [];
-
-    // const vestingScheduler = getVestingScheduler(network.id);
-
-    for (const action of state.todo) {
-        switch (action.type) {
-            case "create-vesting-schedule":
-                // operations.push(createVestingSchedule(action.payload));
-                break;
-            case "update-vesting-schedule":
-                // operations.push(updateVestingSchedule(action.payload));
-                break;
-            case "stop-vesting-schedule":
-                // TODO: stopping means bringing up the end date
-                // operations.push(stopVestingSchedule(action.payload));
-                break;
-        }
-    }
-
-    return operations;
-}
+//    {
+//     type: 'function',
+//     inputs: [
+//       {
+//         name: 'superToken',
+//         internalType: 'contract ISuperToken',
+//         type: 'address',
+//       },
+//       { name: 'receiver', internalType: 'address', type: 'address' },
+//       { name: 'totalAmount', internalType: 'uint256', type: 'uint256' },
+//       { name: 'totalDuration', internalType: 'uint32', type: 'uint32' },
+//       { name: 'startDate', internalType: 'uint32', type: 'uint32' },
+//       { name: 'cliffPeriod', internalType: 'uint32', type: 'uint32' },
+//       { name: 'claimPeriod', internalType: 'uint32', type: 'uint32' },
+//       { name: 'cliffAmount', internalType: 'uint256', type: 'uint256' },
+//     ],
+//     name: 'createVestingScheduleFromAmountAndDuration',
+//     outputs: [],
+//     stateMutability: 'nonpayable',
+//   },
