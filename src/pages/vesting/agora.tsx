@@ -26,6 +26,7 @@ import { skipToken } from "@reduxjs/toolkit/dist/query";
 import VestingScheduleTable from "../../features/vesting/VestingScheduleTable";
 import VestingRow from "../../features/vesting/VestingRow";
 import { useRouter } from "next/router";
+import { useTokenQuery } from "../../hooks/useTokenQuery";
 
 // Updated ActionsList component without the badges
 const ActionsList: FC<{ actions: Actions[] }> = ({ actions }) => {
@@ -141,7 +142,7 @@ const AgoraPage: NextPageWithLayout = () => {
 
     const allActions = useMemo(() => {
         return rows.flatMap(row => row.todo);
-    }, [rows.length]);
+    }, [data]);
 
     if (isLoading || isWalletConnecting) {
         // TODO: use skeleton table?
@@ -204,6 +205,10 @@ const AgoraPage: NextPageWithLayout = () => {
         );
     }
 
+    if (!projectsOverview) {
+        return null;
+    }
+
     return (
         <Container maxWidth="lg" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <Box sx={{ mb: 3, mt: 2 }}>
@@ -247,7 +252,7 @@ const AgoraPage: NextPageWithLayout = () => {
                     </TableHead>
                     <TableBody>
                         {rows.map((row) => (
-                            <Row key={row.agoraEntry.projectId} state={row} />
+                            <Row key={row.agoraEntry.projectId} chainId={projectsOverview.chainId} superTokenAddress={projectsOverview.superTokenAddress} state={row} />
                         ))}
                     </TableBody>
                 </Table>
@@ -272,7 +277,7 @@ const AgoraPage: NextPageWithLayout = () => {
     );
 };
 
-function Row(props: { state: ProjectState }) {
+function Row(props: { chainId: number, superTokenAddress: string, state: ProjectState }) {
     const { state } = props;
     const [open, setOpen] = useState(false);
 
@@ -282,6 +287,11 @@ function Row(props: { state: ProjectState }) {
             amount: amount
         }));
     }, [state.agoraEntry.amounts]);
+
+    const { data: token } = useTokenQuery({
+        chainId: props.chainId,
+        id: props.superTokenAddress
+    });
 
     return (
         <>
@@ -296,12 +306,12 @@ function Row(props: { state: ProjectState }) {
                     </IconButton>
                 </TableCell>
                 <TableCell>{state.agoraEntry.projectName}</TableCell>
-                <TableCell>{allocations[0]?.amount ? `${formatEther(BigInt(allocations[0]!.amount))} OPx` : '—'}</TableCell>
-                <TableCell>{allocations[1]?.amount ? `${formatEther(BigInt(allocations[1]!.amount))} OPx` : '—'}</TableCell>
-                <TableCell>{allocations[2]?.amount ? `${formatEther(BigInt(allocations[2]!.amount))} OPx` : '—'}</TableCell>
-                <TableCell>{allocations[3]?.amount ? `${formatEther(BigInt(allocations[3]!.amount))} OPx` : '—'}</TableCell>
-                <TableCell>{allocations[4]?.amount ? `${formatEther(BigInt(allocations[4]!.amount))} OPx` : '—'}</TableCell>
-                <TableCell>{allocations[5]?.amount ? `${formatEther(BigInt(allocations[5]!.amount))} OPx` : '—'}</TableCell>
+                <TableCell>{allocations[0]?.amount ? `${formatEther(BigInt(allocations[0]!.amount))} ${token?.symbol}` : '—'}</TableCell>
+                <TableCell>{allocations[1]?.amount ? `${formatEther(BigInt(allocations[1]!.amount))} ${token?.symbol}` : '—'}</TableCell>
+                <TableCell>{allocations[2]?.amount ? `${formatEther(BigInt(allocations[2]!.amount))} ${token?.symbol}` : '—'}</TableCell>
+                <TableCell>{allocations[3]?.amount ? `${formatEther(BigInt(allocations[3]!.amount))} ${token?.symbol}` : '—'}</TableCell>
+                <TableCell>{allocations[4]?.amount ? `${formatEther(BigInt(allocations[4]!.amount))} ${token?.symbol}` : '—'}</TableCell>
+                <TableCell>{allocations[5]?.amount ? `${formatEther(BigInt(allocations[5]!.amount))} ${token?.symbol}` : '—'}</TableCell>
                 <TableCell>{state.agoraEntry.KYCStatusCompleted ? <DoneIcon /> : <CloseIcon />}</TableCell>
             </TableRow>
 

@@ -148,7 +148,7 @@ class PublicClientRpcError extends Error {
     readonly _tag = 'PublicClientRpcError'
 }
 
-const OPxAddress = {
+const tokenAddresses = {
     [optimism.id]: "0x1828Bff08BD244F7990edDCd9B19cc654b33cDB4" as const,
     [optimismSepolia.id]: "0x0043d7c85C8b96a49A72A92C0B48CdC4720437d7" as const, // ETHx actually
 }
@@ -233,7 +233,7 @@ export default async function handler(
         })
     }
 
-    const OPx = OPxAddress[chain.id];
+    const token = tokenAddresses[chain.id];
 
     const main = E.gen(function* () {
 
@@ -349,15 +349,17 @@ export default async function handler(
         yield* E.logTrace(`Fetching vesting schedules for ${allReceiverAddresses_bothActiveAndInactive.length} wallets`);
         const vestingSchedulesFromSubgraph = yield* pipe(
             E.tryPromise({
-                try: () => subgraphSdk.getVestingSchedules({
-                    where: {
-                        // TODO: add cut-off dates here?
-                        superToken: OPx.toLowerCase(),
-                        sender: sender.toLowerCase(),
-                        receiver_in: allReceiverAddresses_bothActiveAndInactive, // Note: Can this go over any limits? Answer: not too worried...
-                        // What statuses to check so it would be active? Note: Might be fine to just filter later.
-                    }
-                }),
+                try: () => {
+                    return subgraphSdk.getVestingSchedules({
+                        where: {
+                            // TODO: add cut-off dates here?
+                            superToken: token.toLowerCase(),
+                            sender: sender.toLowerCase(),
+                            receiver_in: allReceiverAddresses_bothActiveAndInactive.map(x => x.toLowerCase()), // Note: Can this go over any limits? Answer: not too worried...
+                            // What statuses to check so it would be active? Note: Might be fine to just filter later.
+                        }
+                    })
+                },
                 catch: (error) => {
                     return new SubgraphError("Failed to fetch vesting schedules from subgraph", { cause: error })
                 }
@@ -370,7 +372,7 @@ export default async function handler(
                 subgraphResponse.vestingSchedules.map(vestingSchedule =>
                     mapSubgraphVestingSchedule(vestingSchedule)
                 )
-                    .filter(x => !x.status.isDeleted && x.status.isError)
+                    .filter(x => !x.status.isDeleted && !x.status.isError) // TODO: Consider this filter...
             )
         );
         // TODO: I know this has too many vesting schedules. I'll not perfect the filtering just yet.
@@ -404,6 +406,13 @@ export default async function handler(
                 ) ?? null;
                 const previousWalletVestingSchedule = (agoraPreviousWallet && allRelevantVestingSchedules.find(x => x.receiver.toLowerCase() === agoraPreviousWallet.toLowerCase())) ?? null;
 
+                console.log({
+                    vestingSchedulesFromSubgraph,
+                    currentWalletVestingSchedule,
+                    previousWalletVestingSchedule,
+                    allRelevantVestingSchedules
+                })
+
                 // TODO: Double-check if an amount is for the total time or for a single tranch.
                 // Answer: It is for the current tranch.
                 const agoraCurrentAmount_ = row.amounts[row.amounts.length - 1] ?? 0;
@@ -430,7 +439,7 @@ export default async function handler(
                         actions.push({
                             type: "stop-vesting-schedule",
                             payload: {
-                                superToken: OPx,
+                                superToken: token,
                                 sender,
                                 receiver: agoraPreviousWallet, // Make sure to use previous wallet here.
                             }
@@ -447,7 +456,7 @@ export default async function handler(
                         actions.push({
                             type: "create-vesting-schedule",
                             payload: {
-                                superToken: OPx,
+                                superToken: token,
                                 sender,
                                 receiver: agoraCurrentWallet,
                                 startDate: currentTranch.startTimestamp,
@@ -466,7 +475,7 @@ export default async function handler(
                             actions.push({
                                 type: "stop-vesting-schedule",
                                 payload: {
-                                    superToken: OPx,
+                                    superToken: token,
                                     sender,
                                     receiver: agoraCurrentWallet, // Make sure to use current wallet here.
                                 }
@@ -485,7 +494,7 @@ export default async function handler(
                                     abi: vestingSchedulerV3Abi,
                                     address: vestingSchedulerV3Address[network.id as keyof typeof vestingSchedulerV3Address],
                                     functionName: "accountings",
-                                    args: [getId(OPx, sender, agoraCurrentWallet)]
+                                    args: [getId(token, sender, agoraCurrentWallet)]
                                 }),
                                 catch: (error) => {
                                     return new PublicClientRpcError("Failed to read contract accounting data", { cause: error })
@@ -514,7 +523,7 @@ export default async function handler(
                                 actions.push({
                                     type: "stop-vesting-schedule",
                                     payload: {
-                                        superToken: OPx,
+                                        superToken: token,
                                         sender,
                                         receiver: agoraCurrentWallet,
                                     }
@@ -523,7 +532,7 @@ export default async function handler(
                                 actions.push({
                                     type: "update-vesting-schedule",
                                     payload: {
-                                        superToken: OPx,
+                                        superToken: token,
                                         sender,
                                         receiver: agoraCurrentWallet,
                                         totalAmount: totalAmount.toString(), // TODO: This is wrong! Because of multiple wallets.
@@ -558,7 +567,7 @@ export default async function handler(
         return {
             chainId,
             senderAddress: sender,
-            superTokenAddress: OPx,
+            superTokenAddress: token,
             tranchPlan,
             projects: projectStates
         }
