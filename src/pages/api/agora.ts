@@ -34,7 +34,7 @@ export const agoraResponseEntrySchema = yup.object({
     projectName: yup.string().required('Project name is required'),
     // Note about wallets: not able to get the output to be `Address` for some reason
     wallets: yup.array().of(
-        yup.string().trim().required().test(testAddress()).transform(getAddress)
+        yup.string().required().transform(getAddress)
     )
         .min(1, 'At least one wallet is required')
         .required('Wallets are required'),

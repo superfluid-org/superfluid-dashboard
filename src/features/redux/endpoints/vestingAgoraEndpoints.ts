@@ -74,8 +74,6 @@ async function mapProjectStateIntoOperations(state: ProjectsOverview, signer: Si
     const network = findNetworkOrThrow(allNetworks, state.chainId);
     const vestingScheduler = getVestingScheduler(network.id, signer, 'v3');
     const framework = await getFramework(network.id);
-    // const superToken = await framework.loadSuperToken(state.superTokenAddress);
-    const claimPeriod = 1 * UnitOfTime.Year; // TODO: This should be made dynamic based on the current tranch.
 
     for (const project of state.projects) {
         for (const action of project.todo) {

@@ -21,6 +21,8 @@ export default async function handler(
 ) {
     // Get the tranch parameter from the query
     const tranchParam = req.query.tranch;
+
+    console.log("foo")
     
     // Validate that tranch is provided and is a number
     if (!tranchParam || typeof tranchParam !== 'string') {

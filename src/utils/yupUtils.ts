@@ -1,7 +1,8 @@
 import { BigNumber, BigNumberish } from "ethers";
-import { isAddress, parseEther } from "ethers/lib/utils";
+import { parseEther } from "ethers/lib/utils";
 import { AnyObject, TestContext, TestFunction } from "yup";
 import { NATIVE_ASSET_ADDRESS } from "../features/redux/endpoints/tokenTypes";
+import { isAddress } from "viem";
 
 interface IsWeiOrEtherAmountOptions {
   notNegative?: boolean;

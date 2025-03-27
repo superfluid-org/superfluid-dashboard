@@ -2,13 +2,16 @@ import { useQuery } from "@tanstack/react-query";
 import { NextPageWithLayout } from "../_app";
 import { useVisibleAddress } from "../../features/wallet/VisibleAddressContext";
 import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
-import { AgoraResponseData, ProjectsOverview, ProjectState } from "../api/agora";
-import { TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Collapse, Box, Typography, IconButton, Container, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
-import { FC, useEffect, useMemo, useState } from "react";
+import { Actions, AgoraResponseData, ProjectsOverview, ProjectState } from "../api/agora";
+import { TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Collapse, Box, Typography, IconButton, Container, FormControl, InputLabel, Select, MenuItem, List, ListItem, ListItemText, Divider, ListItemIcon, Button, useMediaQuery } from "@mui/material";
+import { FC, Fragment, useEffect, useMemo, useState } from "react";
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import DoneIcon from '@mui/icons-material/Done';
 import CloseIcon from '@mui/icons-material/Close';
+import AddIcon from '@mui/icons-material/Add';
+import UpdateIcon from '@mui/icons-material/Update';
+import StopIcon from '@mui/icons-material/Stop';
 import { formatEther } from "viem";
 import { BigLoader } from "../../features/vesting/BigLoader";
 import ConnectionBoundary, { useConnectionBoundary } from "../../features/transactionBoundary/ConnectionBoundary";
@@ -17,10 +20,99 @@ import { TransactionBoundary } from "../../features/transactionBoundary/Transact
 import { TransactionButton } from "../../features/transactionBoundary/TransactionButton";
 import { TransactionDialogActions, TransactionDialogButton } from "../../features/transactionBoundary/TransactionDialog";
 import NextLink from "next/link";
+import { useAccount } from "wagmi";
+import { vestingSubgraphApi } from "../../vesting-subgraph/vestingSubgraphApi";
+import { skipToken } from "@reduxjs/toolkit/dist/query";
+import VestingScheduleTable from "../../features/vesting/VestingScheduleTable";
+import VestingRow from "../../features/vesting/VestingRow";
+import { useRouter } from "next/router";
+
+// Updated ActionsList component without the badges
+const ActionsList: FC<{ actions: Actions[] }> = ({ actions }) => {
+    if (actions.length === 0) {
+        return <Typography variant="body2" color="text.secondary">No actions needed</Typography>;
+    }
+
+    return (
+        <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
+            {actions.map((action, index) => {
+                // For calculating differences in update actions
+                const formatAmount = (amount: string) => {
+                    const amountBigInt = BigInt(amount);
+                    return `${formatEther(amountBigInt)} OPx`;
+                };
+
+                // Determine icon and content based on action type
+                let icon, primaryText, secondaryText;
+
+                switch (action.type) {
+                    case "create-vesting-schedule":
+                        const startDate = new Date(action.payload.startDate * 1000).toLocaleString();
+                        const endDate = new Date((action.payload.startDate + action.payload.totalDuration) * 1000).toLocaleString();
+
+                        icon = <AddIcon color="success" />;
+                        primaryText = `Create Vesting Schedule for ${action.payload.receiver.slice(0, 6)}...${action.payload.receiver.slice(-4)}`;
+                        secondaryText = `Amount: ${formatAmount(action.payload.totalAmount)} | Start: ${startDate} | End: ${endDate}`;
+                        break;
+
+                    case "update-vesting-schedule":
+                        const prevAmount = formatAmount(action.payload.previousTotalAmount);
+                        const newAmount = formatAmount(action.payload.totalAmount);
+                        const isDifference = action.payload.previousTotalAmount !== action.payload.totalAmount;
+
+                        icon = <UpdateIcon color="primary" />;
+                        primaryText = `Update Vesting Schedule for ${action.payload.receiver.slice(0, 6)}...${action.payload.receiver.slice(-4)}`;
+                        secondaryText = isDifference ?
+                            `Amount: ${prevAmount} → ${newAmount}` :
+                            `Amount: ${newAmount} (unchanged)`;
+                        break;
+
+                    case "stop-vesting-schedule":
+                        // Since end date isn't in the type yet, we'll add dummy code
+                        const dummyEndDate = new Date().toLocaleString();
+
+                        icon = <StopIcon color="error" />;
+                        primaryText = `Stop Vesting Schedule for ${action.payload.receiver.slice(0, 6)}...${action.payload.receiver.slice(-4)}`;
+                        secondaryText = `End Date: ${dummyEndDate}`;
+                        break;
+
+                    default:
+                        icon = <IconButton>?</IconButton>;
+                        primaryText = `Unknown Action: ${(action as any).type}`;
+                        secondaryText = "Details not available";
+                }
+
+                return (
+                    <Fragment key={index}>
+                        <ListItem alignItems="flex-start">
+                            <ListItemIcon>{icon}</ListItemIcon>
+                            <ListItemText
+                                primary={primaryText}
+                                secondary={
+                                    <Typography
+                                        sx={{ display: 'inline' }}
+                                        component="span"
+                                        variant="body2"
+                                        color="text.primary"
+                                    >
+                                        {secondaryText}
+                                    </Typography>
+                                }
+                            />
+                        </ListItem>
+                        {index < actions.length - 1 && <Divider variant="inset" component="li" />}
+                    </Fragment>
+                );
+            })}
+        </List>
+    );
+};
 
 const AgoraPage: NextPageWithLayout = () => {
     const { visibleAddress } = useVisibleAddress();
     const { network } = useExpectedNetwork();
+    const { isConnected, isConnecting, isReconnecting } = useAccount();
+    const isWalletConnecting = !isConnected && (isConnecting || isReconnecting);
 
     const [tranch, setTranch] = useState(() => {
         // Try to get the value from localStorage
@@ -51,7 +143,7 @@ const AgoraPage: NextPageWithLayout = () => {
         return rows.flatMap(row => row.todo);
     }, [rows.length]);
 
-    if (isLoading) {
+    if (isLoading || isWalletConnecting) {
         // TODO: use skeleton table?
         return (
             <Container maxWidth="lg">
@@ -60,9 +152,56 @@ const AgoraPage: NextPageWithLayout = () => {
         );
     }
 
+    // Show message if wallet is not connected
+    if (!isConnected) {
+        return (
+            <Container maxWidth="lg">
+                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '50vh', textAlign: 'center' }}>
+                    <Typography variant="h5" color="text.secondary" gutterBottom>
+                        Please connect your wallet
+                    </Typography>
+                    <Typography variant="body1" color="text.secondary">
+                        You need to connect your wallet to view vesting information.
+                    </Typography>
+                </Box>
+            </Container>
+        );
+    }
+
     if (errorMessage) {
-        // TODO: can handle better...
-        return <div>Error: {errorMessage}</div>;
+        return (
+            <Container maxWidth="lg">
+                <Paper
+                    elevation={3}
+                    sx={{
+                        p: 4,
+                        my: 4,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: 2
+                    }}
+                >
+                    <Typography variant="h5" color="error" gutterBottom>
+                        Error Occurred
+                    </Typography>
+                    <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+                        {errorMessage}
+                    </Typography>
+                    <Box sx={{ mt: 2 }}>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() => {
+                                window.location.reload()
+                            }}
+                        >
+                            Reload app
+                        </Button>
+                    </Box>
+                </Paper>
+            </Container>
+        );
     }
 
     return (
@@ -87,6 +226,10 @@ const AgoraPage: NextPageWithLayout = () => {
                 </FormControl>
             </Box>
 
+            <Typography variant="h6" gutterBottom>
+                Projects Overview
+            </Typography>
+
             <TableContainer component={Paper}>
                 <Table aria-label="collapsible table">
                     <TableHead>
@@ -110,16 +253,13 @@ const AgoraPage: NextPageWithLayout = () => {
                 </Table>
             </TableContainer>
 
-            <Box>
-                <pre style={{ 
-                    backgroundColor: '#f5f5f5', 
-                    padding: '10px', 
-                    borderRadius: '4px',
-                    overflowX: 'auto'
-                }}>
-                    {JSON.stringify(allActions, null, 2)}
-                </pre>
-            </Box>
+            <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
+                Pending Actions ({allActions.length})
+            </Typography>
+
+            <Paper elevation={1} sx={{ p: 2 }}>
+                <ActionsList actions={allActions} />
+            </Paper>
 
             <ConnectionBoundary expectedNetwork={network}>
                 {
@@ -166,52 +306,51 @@ function Row(props: { state: ProjectState }) {
             </TableRow>
 
             <TableRow>
-                <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={4}>
+                <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={9}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
+                        <Box sx={{ p: 2 }}>
+                            {/* <Typography variant="subtitle1" gutterBottom>
+                                Wallet Information
+                            </Typography> */}
 
-                        <Typography>
-                            Current wallet: {state.currentWallet}
-                        </Typography>
+                            <Box sx={{ ml: 2, mt: 1 }}>
+                                <Box sx={{ display: 'flex', mb: 1 }}>
+                                    <Typography variant="body2" color="text.secondary" sx={{ width: 120 }}>
+                                        Current wallet:
+                                    </Typography>
+                                    <Typography
+                                        variant="body2"
+                                        sx={{ fontFamily: 'monospace' }}
+                                    >
+                                        {state.currentWallet}
+                                    </Typography>
+                                </Box>
 
-                        {
-                            state.agoraEntry.wallets.length > 1 && (
-                                <Typography>
-                                    Previous wallet: {state.agoraEntry.wallets.slice(0, -1).join(', ')}
-                                </Typography>
-                            )
-                        }
+                                {state.agoraEntry.wallets.length > 1 && (
+                                    <Box sx={{ display: 'flex' }}>
+                                        <Typography variant="body2" color="text.secondary" sx={{ width: 120 }}>
+                                            Previous wallets:
+                                        </Typography>
+                                        <Box>
+                                            {state.agoraEntry.wallets.slice(0, -1).map((wallet, index) => (
+                                                <Typography
+                                                    key={index}
+                                                    variant="body2"
+                                                    sx={{
+                                                        fontFamily: 'monospace',
+                                                        mb: 0.5
+                                                    }}
+                                                >
+                                                    {wallet}
+                                                </Typography>
+                                            ))}
+                                        </Box>
+                                    </Box>
+                                )}
+                            </Box>
 
-                        {
-                            // TODO: show all schedules here?
-                        }
-
-                        {/* <Box sx={{ margin: 1 }}> */}
-                        {/* <Table size="small" aria-label="tranches">
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell>Tranch</TableCell>
-                                    <TableCell>Allocation</TableCell>
-                                    <TableCell></TableCell>
-                                    <TableCell></TableCell>
-                                </TableRow>
-                            </TableHead>
-
-                            <TableBody>
-                                {state.allocations.map((allocation) => (
-                                    <TableRow key={allocation.tranch}>
-                                        <TableCell>
-                                            {allocation.tranch}
-                                        </TableCell>
-                                        <TableCell>{formatEther(BigInt(allocation.amount))} OPx</TableCell>
-                                        <TableCell></TableCell>
-                                        <TableCell></TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-
-                        </Table> */}
-                        {/* </Box> */}
-
+                            <ProjectVestingSchedulesTables project={state} />
+                        </Box>
                     </Collapse>
                 </TableCell>
             </TableRow>
@@ -269,21 +408,55 @@ export const ExecuteTranchUpdateTransactionButton: FC<Props> = ({
 
                             setDialogSuccessActions(
                                 <TransactionDialogActions>
-                                  <NextLink href="/vesting" passHref legacyBehavior>
-                                    <TransactionDialogButton
-                                      data-cy="ok-button"
-                                      color="primary"
-                                    >
-                                      OK
-                                    </TransactionDialogButton>
-                                  </NextLink>
+                                    <NextLink href="/vesting" passHref legacyBehavior>
+                                        <TransactionDialogButton
+                                            data-cy="ok-button"
+                                            color="primary"
+                                        >
+                                            OK
+                                        </TransactionDialogButton>
+                                    </NextLink>
                                 </TransactionDialogActions>
-                              );
+                            );
                         }}>
                         Execute Tranch Update
                     </TransactionButton>
                 )
             }
         </TransactionBoundary>
+    );
+};
+
+const ProjectVestingSchedulesTables: FC<{
+    project: ProjectState
+}> = ({ project }) => {
+    const { network } = useExpectedNetwork();
+
+    const router = useRouter();
+    const openDetails = (id: string) => () =>
+        router.push(`/vesting/${network.slugName}/${id}`);
+
+    if (project.previousSchedules.length === 0) {
+        return null;
+    }
+
+    return (
+        <TableContainer component={Paper}>
+            <Table>
+                <TableBody>
+                    {
+                        project.previousSchedules
+                            .map((vestingSchedule) => (
+                                <VestingRow
+                                    key={vestingSchedule.id}
+                                    network={network}
+                                    vestingSchedule={vestingSchedule}
+                                    onClick={openDetails(vestingSchedule.id)}
+                                />
+                            ))
+                    }
+                </TableBody>
+            </Table>
+        </TableContainer>
     );
 };
