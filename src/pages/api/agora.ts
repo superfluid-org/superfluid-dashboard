@@ -59,6 +59,7 @@ type TranchPlan = {
     tranches: {
         startTimestamp: number
         endTimestamp: number
+        totalDuration: number
     }[]
 }
 
@@ -73,8 +74,10 @@ type CreateVestingScheduleAction = Action<"create-vesting-schedule", {
     superToken: Address
     sender: Address
     receiver: Address
+    startDate: number
     totalAmount: string
     totalDuration: number
+    cliffAmount: string;
 }>
 
 type UpdateVestingScheduleAction = Action<"update-vesting-schedule", {
@@ -160,7 +163,7 @@ export default async function handler(
 ) {
     // Get the tranch parameter from the query
     const tranchParam = req.query.tranch;
-    
+
     // Check if tranch parameter exists and validate it
     let tranch: number | undefined;
     if (tranchParam) {
@@ -170,7 +173,7 @@ export default async function handler(
                 message: 'Tranch parameter must be a string'
             });
         }
-        
+
         tranch = parseInt(tranchParam, 10);
         if (isNaN(tranch)) {
             return res.status(400).json({
@@ -263,30 +266,34 @@ export default async function handler(
             E.tap(() => E.logTrace(`Filtered out non-KYC'ed rows`))
         );
 
+        // TODO: I should change this logic to only do the tranch times calculation for first tranch. Otherwise, I'm better off looking at existing schedules.
+
         const currentTranchCount = dataFromAgora[0].amounts.length;
-        const now = getUnixTime(new Date());
-        const tranchDuration = 2.5 * UnitOfTime.Minute;
-        
+        const now = getUnixTime(new Date()) + 5 * UnitOfTime.Minute;
+        const tranchDuration = 604800 * UnitOfTime.Second;
+
         // Calculate which tranch index is current (0-based)
         const currentTranchIndex = currentTranchCount - 1;
-        
+
+        const tranchCount = 6;
         const tranchPlan: TranchPlan = {
-            tranchCount: 6,
+            tranchCount,
             currentTranchCount,
-            totalDurationInSeconds: 420 * UnitOfTime.Minute,
-            tranches: Array(6).fill(null).map((_, index) => {
+            totalDurationInSeconds: tranchCount * tranchDuration,
+            tranches: Array(tranchCount).fill(null).map((_, index) => {
                 // Calculate offset from current tranch
                 const offset = (index - currentTranchIndex) * tranchDuration;
-                
+
                 // Start time is now plus offset (negative for past tranches, positive for future)
                 const startTimestamp = now + offset;
-                
+
                 // End time is start time plus duration
                 const endTimestamp = startTimestamp + tranchDuration;
-                
+
                 return {
                     startTimestamp,
-                    endTimestamp
+                    endTimestamp,
+                    totalDuration: endTimestamp - startTimestamp
                 };
             })
         }
@@ -407,6 +414,10 @@ export default async function handler(
                         return [];
                     }
 
+                    const sumOfPreviousTranches = row.amounts
+                        .slice(0, -1)
+                        .reduce((sum, amount) => sum + BigInt(amount || 0), 0n);
+
                     const hasProjectJustChangedWallet = !!previousWalletVestingSchedule;
                     if (hasProjectJustChangedWallet) {
                         actions.push({
@@ -419,9 +430,19 @@ export default async function handler(
                         } as StopVestingScheduleAction)
                     }
 
+                    // ARGH: Something is off here. When updating a vesting schedule, I need to know how much was vested to this particular receiver!
+                    // I might need to do in the subgraph. I can look at previous vesting schedules and see if they match!
+
                     const isAlreadyVestingToRightWallet = !!currentWalletVestingSchedule;
                     if (!isAlreadyVestingToRightWallet) {
                         // TODO: This is tricky, we'll have to look at previous vesting schedules as well, so not to double-account
+
+                        const didKycGetJustApproved = allRelevantVestingSchedules.length === 0;
+                        const cliffAmount = didKycGetJustApproved ? sumOfPreviousTranches : 0n;
+
+                        const totalAmount = agoraCurrentAmount + cliffAmount;
+
+                        const currentTranch = tranchPlan.tranches[tranchPlan.currentTranchCount - 1];
 
                         actions.push({
                             type: "create-vesting-schedule",
@@ -429,8 +450,10 @@ export default async function handler(
                                 superToken: OPx,
                                 sender,
                                 receiver: agoraCurrentWallet,
-                                totalAmount: agoraCurrentAmount.toString(),
-                                totalDuration: tranchPlan.totalDurationInSeconds
+                                startDate: currentTranch.startTimestamp,
+                                totalAmount: totalAmount.toString(),
+                                totalDuration: currentTranch.totalDuration,
+                                cliffAmount: cliffAmount.toString()
                             }
                         } as CreateVestingScheduleAction)
                     } else {
@@ -502,7 +525,7 @@ export default async function handler(
                                         superToken: OPx,
                                         sender,
                                         receiver: agoraCurrentWallet,
-                                        totalAmount: agoraCurrentAmount.toString(),
+                                        totalAmount: agoraCurrentAmount.toString(), // TODO: This is wrong!
                                     }
                                 } as UpdateVestingScheduleAction)
                             }

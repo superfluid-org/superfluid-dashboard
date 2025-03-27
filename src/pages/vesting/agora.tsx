@@ -2,15 +2,21 @@ import { useQuery } from "@tanstack/react-query";
 import { NextPageWithLayout } from "../_app";
 import { useVisibleAddress } from "../../features/wallet/VisibleAddressContext";
 import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
-import { AgoraResponseData, ProjectState } from "../api/agora";
+import { AgoraResponseData, ProjectsOverview, ProjectState } from "../api/agora";
 import { TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Collapse, Box, Typography, IconButton, Container, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
-import { useEffect, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import DoneIcon from '@mui/icons-material/Done';
 import CloseIcon from '@mui/icons-material/Close';
 import { formatEther } from "viem";
 import { BigLoader } from "../../features/vesting/BigLoader";
+import ConnectionBoundary, { useConnectionBoundary } from "../../features/transactionBoundary/ConnectionBoundary";
+import { rpcApi } from "../../features/redux/store";
+import { TransactionBoundary } from "../../features/transactionBoundary/TransactionBoundary";
+import { TransactionButton } from "../../features/transactionBoundary/TransactionButton";
+import { TransactionDialogActions, TransactionDialogButton } from "../../features/transactionBoundary/TransactionDialog";
+import NextLink from "next/link";
 
 const AgoraPage: NextPageWithLayout = () => {
     const { visibleAddress } = useVisibleAddress();
@@ -38,6 +44,13 @@ const AgoraPage: NextPageWithLayout = () => {
 
     const errorMessage = data?.success === false ? data.message : error_?.message;
 
+    const rows = data?.success ? data.projectsOverview.projects : [];
+    const projectsOverview = data?.success ? data.projectsOverview : null;
+
+    const allActions = useMemo(() => {
+        return rows.flatMap(row => row.todo);
+    }, [rows.length]);
+
     if (isLoading) {
         // TODO: use skeleton table?
         return (
@@ -52,10 +65,9 @@ const AgoraPage: NextPageWithLayout = () => {
         return <div>Error: {errorMessage}</div>;
     }
 
-    const rows = data?.success ? data.projectsOverview.projects : [];
 
     return (
-        <Container maxWidth="lg">
+        <Container maxWidth="lg" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <Box sx={{ mb: 3, mt: 2 }}>
                 <FormControl sx={{ minWidth: 120 }}>
                     <InputLabel id="tranch-select-label">Tranch</InputLabel>
@@ -75,7 +87,7 @@ const AgoraPage: NextPageWithLayout = () => {
                     </Select>
                 </FormControl>
             </Box>
-            
+
             <TableContainer component={Paper}>
                 <Table aria-label="collapsible table">
                     <TableHead>
@@ -93,6 +105,25 @@ const AgoraPage: NextPageWithLayout = () => {
                     </TableBody>
                 </Table>
             </TableContainer>
+
+            <Box>
+                <pre style={{ 
+                    backgroundColor: '#f5f5f5', 
+                    padding: '10px', 
+                    borderRadius: '4px',
+                    overflowX: 'auto'
+                }}>
+                    {JSON.stringify(allActions, null, 2)}
+                </pre>
+            </Box>
+
+            <ConnectionBoundary expectedNetwork={network}>
+                {
+                    projectsOverview && (
+                        <ExecuteTranchUpdateTransactionButton isVisible={true} projectsOverview={projectsOverview} />
+                    )
+                }
+            </ConnectionBoundary>
         </Container>
     );
 };
@@ -176,3 +207,69 @@ function Row(props: { state: ProjectState }) {
 }
 
 export default AgoraPage;
+
+type Props = {
+    isVisible: boolean;
+    projectsOverview: ProjectsOverview;
+}
+
+export const ExecuteTranchUpdateTransactionButton: FC<Props> = ({
+    isVisible: isVisible_,
+    projectsOverview
+}) => {
+    const { expectedNetwork } = useConnectionBoundary();
+
+    const [executeTranchUpdate, executeTranchUpdateResult] =
+        rpcApi.useExecuteTranchUpdateMutation();
+
+    const isVisible = !executeTranchUpdateResult.isSuccess && isVisible_;
+
+    return (
+        <TransactionBoundary mutationResult={executeTranchUpdateResult}>
+            {({
+                network,
+                getOverrides,
+                setDialogLoadingInfo,
+                setDialogSuccessActions,
+                txAnalytics
+            }) =>
+                isVisible && (
+                    <TransactionButton
+                        dataCy={"create-schedule-tx-button"}
+                        disabled={false}
+                        onClick={async (signer) => {
+                            setDialogLoadingInfo(
+                                <Typography
+                                    variant="h5"
+                                    color="text.secondary"
+                                    translate="yes"
+                                >
+                                    You are executing a tranch update.
+                                </Typography>
+                            );
+
+                            executeTranchUpdate({
+                                signer,
+                                ...projectsOverview
+                            }).unwrap();
+
+                            setDialogSuccessActions(
+                                <TransactionDialogActions>
+                                  <NextLink href="/vesting" passHref legacyBehavior>
+                                    <TransactionDialogButton
+                                      data-cy="ok-button"
+                                      color="primary"
+                                    >
+                                      OK
+                                    </TransactionDialogButton>
+                                  </NextLink>
+                                </TransactionDialogActions>
+                              );
+                        }}>
+                        Execute Tranch Update
+                    </TransactionButton>
+                )
+            }
+        </TransactionBoundary>
+    );
+};

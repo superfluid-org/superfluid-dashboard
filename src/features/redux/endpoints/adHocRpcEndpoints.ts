@@ -57,6 +57,9 @@ declare module "@superfluid-finance/sdk-redux" {
     "Disconnect from Pool": true;
     "Interface Fee": true;
     "Cancel Distribution Stream": true;
+
+    // TODO: Is there a better name to use?
+    "Execute Tranch Update": true;
   }
 }
 
