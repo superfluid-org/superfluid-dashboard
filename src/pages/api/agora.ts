@@ -87,6 +87,7 @@ type UpdateVestingScheduleAction = Action<"update-vesting-schedule", {
     sender: Address
     receiver: Address
     totalAmount: string
+    previousTotalAmount: string
 }>
 
 // Probably don't want to actually "stop" anything. Rather just have them run out.
@@ -96,7 +97,7 @@ type StopVestingScheduleAction = Action<"stop-vesting-schedule", {
     receiver: Address
 }>
 
-type Actions = CreateVestingScheduleAction | UpdateVestingScheduleAction | StopVestingScheduleAction
+export type Actions = CreateVestingScheduleAction | UpdateVestingScheduleAction | StopVestingScheduleAction
 
 export type ProjectsOverview = {
     chainId: number
@@ -270,7 +271,7 @@ export default async function handler(
         // TODO: I should change this logic to only do the tranch times calculation for first tranch. Otherwise, I'm better off looking at existing schedules.
 
         const currentTranchCount = dataFromAgora[0].amounts.length;
-        const now = getUnixTime(new Date()) + 5 * UnitOfTime.Minute;
+        const startOfTranchOne = getUnixTime(new Date()) + 5 * UnitOfTime.Minute;
         const tranchDuration = 604800 * UnitOfTime.Second;
 
         // Calculate which tranch index is current (0-based)
@@ -286,7 +287,7 @@ export default async function handler(
                 const offset = (index - currentTranchIndex) * tranchDuration;
 
                 // Start time is now plus offset (negative for past tranches, positive for future)
-                const startTimestamp = now + offset;
+                const startTimestamp = startOfTranchOne + offset;
 
                 // End time is start time plus duration
                 const endTimestamp = startTimestamp + tranchDuration;
@@ -407,6 +408,7 @@ export default async function handler(
                 // Answer: It is for the current tranch.
                 const agoraCurrentAmount_ = row.amounts[row.amounts.length - 1] ?? 0;
                 const agoraCurrentAmount = BigInt(agoraCurrentAmount_);
+                const agoraTotalAmount = row.amounts.reduce((sum, amount) => sum + BigInt(amount || 0), 0n);
 
                 const actions = yield* E.gen(function* () {
                     const actions: Actions[] = [];
@@ -418,6 +420,10 @@ export default async function handler(
                     const sumOfPreviousTranches = row.amounts
                         .slice(0, -1)
                         .reduce((sum, amount) => sum + BigInt(amount || 0), 0n);
+                    const didKycGetJustApproved = allRelevantVestingSchedules.length === 0;
+                    const cliffAmount = didKycGetJustApproved ? sumOfPreviousTranches : 0n;
+                    const totalAmount = agoraCurrentAmount + cliffAmount;
+                    const currentTranch = tranchPlan.tranches[tranchPlan.currentTranchCount - 1];
 
                     const hasProjectJustChangedWallet = !!previousWalletVestingSchedule;
                     if (hasProjectJustChangedWallet) {
@@ -437,13 +443,6 @@ export default async function handler(
                     const isAlreadyVestingToRightWallet = !!currentWalletVestingSchedule;
                     if (!isAlreadyVestingToRightWallet) {
                         // TODO: This is tricky, we'll have to look at previous vesting schedules as well, so not to double-account
-
-                        const didKycGetJustApproved = allRelevantVestingSchedules.length === 0;
-                        const cliffAmount = didKycGetJustApproved ? sumOfPreviousTranches : 0n;
-
-                        const totalAmount = agoraCurrentAmount + cliffAmount;
-
-                        const currentTranch = tranchPlan.tranches[tranchPlan.currentTranchCount - 1];
 
                         actions.push({
                             type: "create-vesting-schedule",
@@ -502,10 +501,9 @@ export default async function handler(
                             alreadyVestedAmount: alreadyVestedAmount_.toString()
                         }
                         const currentVestingScheduleAmount = getTotalVestedAmount(currentWalletVestingSchedule, accounting);
-                        const isFundingJustChangedForProject = agoraCurrentAmount !== currentVestingScheduleAmount;
 
-                        // Calculate expected amount
-                        // 
+                        // TODO: this breaks with wallet changing...
+                        const isFundingJustChangedForProject = agoraTotalAmount !== currentVestingScheduleAmount;
 
                         // TODO: Consider scenarios where it's off by very small amounts, and whether it can happen bacause of minute calculation issues
                         // TODO: Log something meaningful here
@@ -528,7 +526,8 @@ export default async function handler(
                                         superToken: OPx,
                                         sender,
                                         receiver: agoraCurrentWallet,
-                                        totalAmount: agoraCurrentAmount.toString(), // TODO: This is wrong!
+                                        totalAmount: totalAmount.toString(), // TODO: This is wrong! Because of multiple wallets.
+                                        previousTotalAmount: currentVestingScheduleAmount.toString()
                                     }
                                 } as UpdateVestingScheduleAction)
                             }
@@ -627,26 +626,3 @@ function getId(superToken: Address, sender: Address, receiver: Address): `0x${st
         )
     );
 }
-
-// # Mapper
-
-//    {
-//     type: 'function',
-//     inputs: [
-//       {
-//         name: 'superToken',
-//         internalType: 'contract ISuperToken',
-//         type: 'address',
-//       },
-//       { name: 'receiver', internalType: 'address', type: 'address' },
-//       { name: 'totalAmount', internalType: 'uint256', type: 'uint256' },
-//       { name: 'totalDuration', internalType: 'uint32', type: 'uint32' },
-//       { name: 'startDate', internalType: 'uint32', type: 'uint32' },
-//       { name: 'cliffPeriod', internalType: 'uint32', type: 'uint32' },
-//       { name: 'claimPeriod', internalType: 'uint32', type: 'uint32' },
-//       { name: 'cliffAmount', internalType: 'uint256', type: 'uint256' },
-//     ],
-//     name: 'createVestingScheduleFromAmountAndDuration',
-//     outputs: [],
-//     stateMutability: 'nonpayable',
-//   },
