@@ -91,10 +91,15 @@ const AgoraPage: NextPageWithLayout = () => {
                 <Table aria-label="collapsible table">
                     <TableHead>
                         <TableRow>
-                            <TableCell>Project</TableCell>
-                            <TableCell>Total Allocation</TableCell>
-                            <TableCell>KYC</TableCell>
                             <TableCell></TableCell>
+                            <TableCell>Project</TableCell>
+                            <TableCell>Tranch 1</TableCell>
+                            <TableCell>Tranch 2</TableCell>
+                            <TableCell>Tranch 3</TableCell>
+                            <TableCell>Tranch 4</TableCell>
+                            <TableCell>Tranch 5</TableCell>
+                            <TableCell>Tranch 6</TableCell>
+                            <TableCell>KYC</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -129,20 +134,18 @@ const AgoraPage: NextPageWithLayout = () => {
 
 function Row(props: { state: ProjectState }) {
     const { state } = props;
-    const [open, setOpen] = useState(state.agoraEntry.KYCStatusCompleted);
+    const [open, setOpen] = useState(false);
 
-    const allocation = useMemo(() => {
-        return state.agoraEntry.amounts.reduce((acc, amount) => {
-            return acc + BigInt(amount);
-        }, BigInt(0));
+    const allocations = useMemo(() => {
+        return state.agoraEntry.amounts.map((amount, index) => ({
+            tranch: index + 1,
+            amount: amount
+        }));
     }, [state.agoraEntry.amounts]);
 
     return (
         <>
             <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
-                <TableCell>{state.agoraEntry.projectName}</TableCell>
-                <TableCell>{formatEther(allocation)} OPx</TableCell>
-                <TableCell>{state.agoraEntry.KYCStatusCompleted ? <DoneIcon /> : <CloseIcon />}</TableCell>
                 <TableCell>
                     <IconButton
                         aria-label="expand row"
@@ -152,6 +155,14 @@ function Row(props: { state: ProjectState }) {
                         {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                     </IconButton>
                 </TableCell>
+                <TableCell>{state.agoraEntry.projectName}</TableCell>
+                <TableCell>{allocations[0]?.amount ? `${formatEther(BigInt(allocations[0]!.amount))} OPx` : '—'}</TableCell>
+                <TableCell>{allocations[1]?.amount ? `${formatEther(BigInt(allocations[1]!.amount))} OPx` : '—'}</TableCell>
+                <TableCell>{allocations[2]?.amount ? `${formatEther(BigInt(allocations[2]!.amount))} OPx` : '—'}</TableCell>
+                <TableCell>{allocations[3]?.amount ? `${formatEther(BigInt(allocations[3]!.amount))} OPx` : '—'}</TableCell>
+                <TableCell>{allocations[4]?.amount ? `${formatEther(BigInt(allocations[4]!.amount))} OPx` : '—'}</TableCell>
+                <TableCell>{allocations[5]?.amount ? `${formatEther(BigInt(allocations[5]!.amount))} OPx` : '—'}</TableCell>
+                <TableCell>{state.agoraEntry.KYCStatusCompleted ? <DoneIcon /> : <CloseIcon />}</TableCell>
             </TableRow>
 
             <TableRow>
@@ -163,15 +174,19 @@ function Row(props: { state: ProjectState }) {
                         </Typography>
 
                         {
-                            state.previousWallet && (
+                            state.agoraEntry.wallets.length > 1 && (
                                 <Typography>
-                                    Previous wallet: {state.previousWallet}
+                                    Previous wallet: {state.agoraEntry.wallets.slice(0, -1).join(', ')}
                                 </Typography>
                             )
                         }
 
+                        {
+                            // TODO: show all schedules here?
+                        }
+
                         {/* <Box sx={{ margin: 1 }}> */}
-                        <Table size="small" aria-label="tranches">
+                        {/* <Table size="small" aria-label="tranches">
                             <TableHead>
                                 <TableRow>
                                     <TableCell>Tranch</TableCell>
@@ -194,7 +209,7 @@ function Row(props: { state: ProjectState }) {
                                 ))}
                             </TableBody>
 
-                        </Table>
+                        </Table> */}
                         {/* </Box> */}
 
                     </Collapse>
