@@ -273,7 +273,7 @@ export default async function handler(
         const tranchPlan: TranchPlan = {
             tranchCount: 6,
             currentTranchCount,
-            totalDurationInSeconds: 15 * UnitOfTime.Minute,
+            totalDurationInSeconds: 420 * UnitOfTime.Minute,
             tranches: Array(6).fill(null).map((_, index) => {
                 // Calculate offset from current tranch
                 const offset = (index - currentTranchIndex) * tranchDuration;

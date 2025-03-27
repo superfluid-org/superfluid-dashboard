@@ -70,6 +70,8 @@ const AgoraPage: NextPageWithLayout = () => {
                         <MenuItem value={2}>Tranch 2</MenuItem>
                         <MenuItem value={3}>Tranch 3</MenuItem>
                         <MenuItem value={4}>Tranch 4</MenuItem>
+                        <MenuItem value={5}>Tranch 5</MenuItem>
+                        <MenuItem value={6}>Tranch 6</MenuItem>
                     </Select>
                 </FormControl>
             </Box>

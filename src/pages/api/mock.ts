@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { tranch1 } from "./mock-responses/tranch1";
 import { tranch2 } from "./mock-responses/tranch2";
 import { tranch3 } from "./mock-responses/tranch3";
+import { tranch4 } from "./mock-responses/tranch4";
 import { tranch5 } from "./mock-responses/tranch5";
 import { tranch6 } from "./mock-responses/tranch6";
 
@@ -45,8 +46,5 @@ export default async function handler(
         });
     }
 
-    res.status(200).json({
-        success: true,
-        data: tranchData
-    })
+    res.status(200).json(tranchData)
 }

@@ -1,4 +1,4 @@
-const tranch4 = [
+export const tranch4 = [
     {
         "projectId": "0x9aa8d3f8aa6793dba4176f706571c16650bb6343bb7c56ac9dd249d6db3b2a84",
         "projectName": "Project 1",
