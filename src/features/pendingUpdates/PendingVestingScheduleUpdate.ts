@@ -5,23 +5,23 @@ import { useAppSelector } from "../redux/store";
 import { ClaimVestingSchedule } from "../redux/endpoints/vestingSchedulerEndpoints";
 import { VestingVersion } from "../network/networks";
 
-export interface PendingVestingScheduleClaim
+export interface PendingVestingScheduleUpdate
   extends PendingUpdate,
     Pick<
-      ClaimVestingSchedule,
+      ClaimVestingSchedule, // Meh
       "chainId" | "superTokenAddress" | "senderAddress" | "receiverAddress"
     > {
-  pendingType: "VestingScheduleClaim";
+  pendingType: "VestingScheduleUpdate";
   version: "v2" | "v3"
 }
 
-export const isPendingVestingScheduleClaim = (
+export const isPendingVestingScheduleUpdate = (
   x: PendingUpdate
-): x is PendingVestingScheduleClaim => x.pendingType === "VestingScheduleClaim";
+): x is PendingVestingScheduleUpdate => x.pendingType === "VestingScheduleUpdate";
 
-export const useAddressPendingVestingScheduleClaims = (
+export const useAddressPendingVestingScheduleUpdates = (
   address: string | undefined
-): PendingVestingScheduleClaim[] => {
+): PendingVestingScheduleUpdate[] => {
   const allPendingUpdates = useAppSelector((state) =>
     pendingUpdateSelectors.selectAll(state.pendingUpdates)
   );
@@ -30,7 +30,7 @@ export const useAddressPendingVestingScheduleClaims = (
     () =>
       address
         ? allPendingUpdates
-            .filter(isPendingVestingScheduleClaim)
+            .filter(isPendingVestingScheduleUpdate)
             .filter(
               (x) =>
                 x.senderAddress.toLowerCase() === address.toLowerCase() ||
@@ -41,7 +41,7 @@ export const useAddressPendingVestingScheduleClaims = (
   );
 };
 
-export const usePendingVestingScheduleClaim = (
+export const usePendingVestingScheduleUpdate = (
   {
     chainId,
     superTokenAddress,
@@ -57,7 +57,7 @@ export const usePendingVestingScheduleClaim = (
   },
   options?: { skip: boolean }
 ) => {
-  const list = useAddressPendingVestingScheduleClaims(senderAddress);
+  const list = useAddressPendingVestingScheduleUpdates(senderAddress);
 
   const skip = options?.skip ?? false;
 

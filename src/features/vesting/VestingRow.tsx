@@ -30,6 +30,7 @@ import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import { ClaimVestingScheduleTransactionButton } from "./transactionButtons/ClaimVestingScheduleTransactionButton";
 import { useTokenQuery } from "../../hooks/useTokenQuery";
 import { isDefined } from "../../utils/ensureDefined";
+import { usePendingVestingScheduleUpdate } from "../pendingUpdates/PendingVestingScheduleUpdate";
 
 interface VestingRowProps {
   network: Network;
@@ -85,6 +86,19 @@ const VestingRow: FC<VestingRowProps> = ({
     }
   );
 
+  const pendingUpdate = usePendingVestingScheduleUpdate(
+    {
+      chainId: network.id,
+      superTokenAddress: superTokenAddress,
+      receiverAddress: receiver,
+      senderAddress: sender,
+      version
+    },
+    {
+      skip: !vestingSchedule.status.canClaim,
+    }
+  );
+
   const { visibleAddress } = useVisibleAddress();
 
   const superTokenQuery = useTokenQuery({ chainId: network.id, id: superTokenAddress, onlySuperToken: true });
@@ -107,13 +121,15 @@ const VestingRow: FC<VestingRowProps> = ({
 
   const VestingStatusOrPendingProgress = (
     <>
-      {pendingDelete || pendingCreate || pendingClaim ? (
+      {pendingDelete || pendingCreate || pendingClaim || pendingUpdate ? (
         <PendingProgress
-          pendingUpdate={pendingDelete || pendingCreate || pendingClaim}
+          pendingUpdate={pendingDelete || pendingCreate || pendingClaim || pendingUpdate}
           transactingText={
             pendingDelete ? "Deleting..." :
             pendingCreate ? "Creating..." :
-            "Claiming..."
+            pendingClaim ? "Claiming..." :
+            pendingUpdate ? "Updating..." :
+            "Loading..."
           }
         />
       ) : (

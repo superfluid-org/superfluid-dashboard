@@ -15,6 +15,7 @@ import { PendingVestingScheduleDeletion as PendingVestingScheduleDelete } from "
 import { PendingConnectToPool } from "./PendingConnectToPool";
 import { PendingVestingScheduleClaim } from "./PendingVestingScheduleClaim";
 import { BigNumber } from "ethers";
+import { PendingVestingScheduleUpdate } from "./PendingVestingScheduleUpdate";
 
 export const pendingUpdateAdapter = createEntityAdapter<PendingUpdate>({
   selectId: (x) => x.id,
@@ -395,6 +396,7 @@ export const pendingUpdateSlice = createSlice({
         const pendingUpdatesToAdd = [];
         const { projects } = action.meta.arg.originalArgs;
         const createVestingScheduleActions = projects.flatMap(project => project.todo.filter(x => x.type === "create-vesting-schedule"));
+        const updateVestingScheduleActions = projects.flatMap(project => project.todo.filter(x => x.type === "update-vesting-schedule"));
 
         for (const [index, actions] of createVestingScheduleActions.entries()) {
           const {
@@ -424,6 +426,28 @@ export const pendingUpdateSlice = createSlice({
             relevantSubgraph: "Vesting",
             version: "v3"
           };
+          pendingUpdatesToAdd.push(pendingUpdate);
+        }
+
+        for (const [index, actions] of updateVestingScheduleActions.entries()) {
+          const {
+            superToken,
+            receiver
+          } = actions.payload;
+          
+          const pendingUpdate: PendingVestingScheduleUpdate = {
+            chainId,
+            transactionHash,
+            senderAddress,
+            receiverAddress: receiver,
+            id: transactionHash + "-" + index,
+            superTokenAddress: superToken,
+            pendingType: "VestingScheduleUpdate",
+            timestamp: dateNowSeconds(),
+            relevantSubgraph: "Vesting",
+            version: "v3"
+          };
+
           pendingUpdatesToAdd.push(pendingUpdate);
         }
 
