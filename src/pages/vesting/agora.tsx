@@ -65,7 +65,6 @@ const AgoraPage: NextPageWithLayout = () => {
         return <div>Error: {errorMessage}</div>;
     }
 
-
     return (
         <Container maxWidth="lg" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <Box sx={{ mb: 3, mt: 2 }}>

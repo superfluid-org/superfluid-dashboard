@@ -12,7 +12,7 @@ export interface ExecuteTranchUpdate extends BaseSuperTokenMutation, ProjectsOve
 export const vestingAgoraEndpoints = {
     endpoints: (builder: RpcEndpointBuilder) => ({
         executeTranchUpdate: builder.mutation<
-            TransactionInfo & { subTransactionTitles: TransactionTitle[] },
+            TransactionInfo & { subTransactionTitles: TransactionTitle[], signerAddress: string },
             ExecuteTranchUpdate
         >({
             queryFn: async (
@@ -52,6 +52,7 @@ export const vestingAgoraEndpoints = {
                         chainId: arg.chainId,
                         hash: transactionResponse.hash,
                         subTransactionTitles,
+                        signerAddress
                     },
                 };
                 
@@ -80,8 +81,6 @@ async function mapProjectStateIntoOperations(state: ProjectsOverview, signer: Si
         for (const action of project.todo) {
             switch (action.type) {
                 case "create-vesting-schedule": {
-                    const hasCliff = BigInt(action.payload.cliffAmount) > 0n;
-
                     // {
                     //     name: 'superToken',
                     //     internalType: 'contract ISuperToken',
@@ -105,8 +104,8 @@ async function mapProjectStateIntoOperations(state: ProjectsOverview, signer: Si
                         action.payload.totalAmount,
                         action.payload.totalDuration,
                         action.payload.startDate,
-                        hasCliff ? 1 : 0, // If there's cliff then set 1 second cliff period for instant transfer.
-                        claimPeriod,
+                        action.payload.cliffPeriod,
+                        action.payload.claimPeriod,
                         action.payload.cliffAmount
                     );
                     const operation = new Operation(

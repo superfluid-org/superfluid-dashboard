@@ -388,6 +388,51 @@ export const pendingUpdateSlice = createSlice({
       }
     );
     builder.addMatcher(
+      rpcApi.endpoints.executeTranchUpdate.matchFulfilled,
+      (state, action) => {
+        const { chainId, hash: transactionHash, signerAddress: senderAddress } = action.payload;
+
+        const pendingUpdatesToAdd = [];
+        const { projects } = action.meta.arg.originalArgs;
+        const createVestingScheduleActions = projects.flatMap(project => project.todo.filter(x => x.type === "create-vesting-schedule"));
+
+        for (const [index, actions] of createVestingScheduleActions.entries()) {
+          const {
+            superToken,
+            cliffPeriod,
+            startDate,
+            receiver,
+            totalAmount,
+            totalDuration
+          } = actions.payload;
+          const endDateTimestamp = startDate + totalDuration;
+          const flowRate = BigNumber.from(totalAmount).div(totalDuration);
+          const pendingUpdate: PendingVestingSchedule = {
+            chainId,
+            transactionHash,
+            senderAddress,
+            receiverAddress: receiver,
+            id: transactionHash + "-" + index,
+            superTokenAddress: superToken,
+            pendingType: "VestingScheduleCreate",
+            timestamp: dateNowSeconds(),
+            cliffDateTimestamp: startDate + cliffPeriod,
+            cliffTransferAmountWei: BigNumber.from(cliffPeriod).mul(flowRate).toString(),
+            startDateTimestamp: startDate,
+            endDateTimestamp,
+            flowRateWei: flowRate.toString(),
+            relevantSubgraph: "Vesting",
+            version: "v3"
+          };
+          pendingUpdatesToAdd.push(pendingUpdate);
+        }
+
+        if (pendingUpdatesToAdd.length > 0) {
+          pendingUpdateAdapter.addMany(state, pendingUpdatesToAdd);
+        }
+      }
+    );
+    builder.addMatcher(
       rpcApi.endpoints.deleteVestingSchedule.matchFulfilled,
       (state, action) => {
         const { chainId, hash: transactionHash } = action.payload;

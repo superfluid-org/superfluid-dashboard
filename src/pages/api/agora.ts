@@ -78,6 +78,8 @@ type CreateVestingScheduleAction = Action<"create-vesting-schedule", {
     totalAmount: string
     totalDuration: number
     cliffAmount: string;
+    cliffPeriod: number;
+    claimPeriod: number;
 }>
 
 type UpdateVestingScheduleAction = Action<"update-vesting-schedule", {
@@ -453,7 +455,9 @@ export default async function handler(
                                 startDate: currentTranch.startTimestamp,
                                 totalAmount: totalAmount.toString(),
                                 totalDuration: currentTranch.totalDuration,
-                                cliffAmount: cliffAmount.toString()
+                                cliffAmount: cliffAmount.toString(),
+                                cliffPeriod: cliffAmount > 0n ? 1 : 0,
+                                claimPeriod: currentTranch.totalDuration * 2 // TODO: this is not finished solution
                             }
                         } as CreateVestingScheduleAction)
                     } else {
