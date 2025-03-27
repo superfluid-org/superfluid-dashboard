@@ -405,7 +405,8 @@ export const pendingUpdateSlice = createSlice({
             startDate,
             receiver,
             totalAmount,
-            totalDuration
+            totalDuration,
+            cliffAmount
           } = actions.payload;
           const endDateTimestamp = startDate + totalDuration;
           const flowRate = BigNumber.from(totalAmount).div(totalDuration);
@@ -419,7 +420,7 @@ export const pendingUpdateSlice = createSlice({
             pendingType: "VestingScheduleCreate",
             timestamp: dateNowSeconds(),
             cliffDateTimestamp: startDate + cliffPeriod,
-            cliffTransferAmountWei: BigNumber.from(cliffPeriod).mul(flowRate).toString(),
+            cliffTransferAmountWei: cliffAmount,
             startDateTimestamp: startDate,
             endDateTimestamp,
             flowRateWei: flowRate.toString(),
