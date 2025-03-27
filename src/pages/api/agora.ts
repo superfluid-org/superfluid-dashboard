@@ -264,8 +264,7 @@ export default async function handler(
                     )
             )),
             E.map(x => x.filter((x): x is AgoraResponseEntry => x !== null)),
-            E.tap((x) => E.logTrace(`Validated ${x.length} rows from Agora`)),
-            E.tap(() => E.logTrace(`Filtered out non-KYC'ed rows`))
+            E.tap((x) => E.logTrace(`Validated ${x.length} rows from Agora`))
         );
 
         // TODO: I should change this logic to only do the tranch times calculation for first tranch. Otherwise, I'm better off looking at existing schedules.

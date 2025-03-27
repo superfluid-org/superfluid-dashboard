@@ -949,7 +949,7 @@ export const networkDefinition = {
         END_DATE_VALID_BEFORE_IN_SECONDS: DEFAULT_TESTNET_END_DATE_VALID_BEFORE_IN_SECONDS
       },
     },
-    vestingSubgraphUrl: "https://api.goldsky.com/api/public/project_clsnd6xsoma5j012qepvucfpp/subgraphs/vesting-v1-optimism-sepolia/1.1.0/gn",
+    vestingSubgraphUrl: vestingSubgraphUrls.optimismSepolia,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.optimismSepolia,
     autoWrap: {
       managerContractAddress: autoWrapManagerAddresses[chain.optimismSepolia.id],
