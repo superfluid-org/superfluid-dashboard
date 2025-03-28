@@ -21,9 +21,6 @@ import { TransactionButton } from "../../features/transactionBoundary/Transactio
 import { TransactionDialogActions, TransactionDialogButton } from "../../features/transactionBoundary/TransactionDialog";
 import NextLink from "next/link";
 import { useAccount } from "wagmi";
-import { vestingSubgraphApi } from "../../vesting-subgraph/vestingSubgraphApi";
-import { skipToken } from "@reduxjs/toolkit/dist/query";
-import VestingScheduleTable from "../../features/vesting/VestingScheduleTable";
 import VestingRow from "../../features/vesting/VestingRow";
 import { useRouter } from "next/router";
 import { useTokenQuery } from "../../hooks/useTokenQuery";
