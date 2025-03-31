@@ -1,16 +1,15 @@
 import { Connector, createConnector, CreateConnectorFn, custom, fallback, http } from "wagmi";
-import { defaultWagmiConfig } from '@web3modal/wagmi/react/config'
 import { defaultAppDescription } from '../../components/SEO/StaticSEO';
 import { allNetworks, findNetworkOrThrow } from '../network/networks';
 import appConfig from "../../utils/config";
 import { safe } from 'wagmi/connectors';
-import { createWeb3Modal } from "@web3modal/wagmi/react";
 import { getPublicClient, GetPublicClientReturnType } from "wagmi/actions"
 import { Address, createWalletClient } from "viem";
 
-type Web3ModalMetadata = Parameters<typeof defaultWagmiConfig>[0]["metadata"];
+import { createAppKit } from '@reown/appkit/react'
+import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
 
-const metadata: Web3ModalMetadata = {
+const metadata = {
   name: 'Superfluid Dashboard',
   description: defaultAppDescription,
   url: 'https://app.superfluid.org',
@@ -120,18 +119,10 @@ if (needsTestConnector) {
 }
 // ---
 
-export const wagmiConfig = defaultWagmiConfig({
+const wagmiAdapter = new WagmiAdapter({
   ssr: false,
-  chains: allNetworks,
+  networks: allNetworks,
   projectId,
-  metadata,
-  enableCoinbase: true,
-  enableInjected: true,
-  enableWalletConnect: true,
-  enableEIP6963: enableEIP6963,
-  auth: {
-    email: false,
-  },
   connectors: [
     safe({
       allowedDomains: [
@@ -152,16 +143,22 @@ export const wagmiConfig = defaultWagmiConfig({
       wait: 100,
     },
   }
-});
+})
 
-const _web3Modal = createWeb3Modal({
-  metadata,
-  wagmiConfig,
+export const wagmiConfig = wagmiAdapter.wagmiConfig;
+
+const _appKit = createAppKit({
+  adapters: [wagmiAdapter],
+  networks: allNetworks,
+  metadata: metadata,
   projectId,
-  enableAnalytics: false,
-  enableOnramp: false,
-  enableSwaps: false,
-  enableEIP6963: enableEIP6963,
+  features: {
+    analytics: false,
+    email: false,
+    onramp: false,
+    swaps: false,
+    socials: false
+  },
   privacyPolicyUrl: "https://www.iubenda.com/privacy-policy/34415583/legal",
   termsConditionsUrl: "https://www.superfluid.finance/termsofuse",
   featuredWalletIds: [
@@ -170,7 +167,25 @@ const _web3Modal = createWeb3Modal({
   themeVariables: {
     "--w3m-z-index": 2147483646
   }
-})
+ })
+
+// const _web3Modal = createWeb3Modal({
+//   metadata,
+//   wagmiConfig,
+//   projectId,
+//   enableAnalytics: false,
+//   enableOnramp: false,
+//   enableSwaps: false,
+//   enableEIP6963: enableEIP6963,
+//   privacyPolicyUrl: "https://www.iubenda.com/privacy-policy/34415583/legal",
+//   termsConditionsUrl: "https://www.superfluid.finance/termsofuse",
+//   featuredWalletIds: [
+//     "971e689d0a5be527bac79629b4ee9b925e82208e5168b733496a09c0faed0709"
+//   ],
+//   themeVariables: {
+//     "--w3m-z-index": 2147483646
+//   }
+// })
 
 type PublicClient = NonNullable<GetPublicClientReturnType<typeof wagmiConfig, number>>;
 

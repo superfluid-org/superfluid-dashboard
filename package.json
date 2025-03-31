@@ -39,6 +39,8 @@
     "@mui/x-data-grid": "^5.17.26",
     "@mui/x-date-pickers": "^5.0.20",
     "@reduxjs/toolkit": "1.9.2",
+    "@reown/appkit": "^1.7.1",
+    "@reown/appkit-adapter-wagmi": "^1.7.1",
     "@segment/analytics-next": "^1.79.0",
     "@sentry/browser": "^8.55.0",
     "@sentry/nextjs": "^8.55.0",
