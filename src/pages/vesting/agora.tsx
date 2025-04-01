@@ -24,7 +24,6 @@ import { useAccount } from "wagmi";
 import VestingRow from "../../features/vesting/VestingRow";
 import { useRouter } from "next/router";
 import { useTokenQuery } from "../../hooks/useTokenQuery";
-import { getTxBuilderInputs_v2 } from "../../features/vesting/batch/gnosisSafe";
 import JSZip from "jszip";
 import { mapProjectStateIntoGnosisSafeBatch } from "../../features/redux/endpoints/vestingAgoraEndpoints";
 import { TxBuilder } from "../../libs/gnosis-tx-builder";

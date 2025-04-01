@@ -12,7 +12,7 @@ import { vestingSchedulerV3Abi, vestingSchedulerV3Address } from '../../generate
 import { allNetworks, findNetworkOrThrow } from '../../features/network/networks'
 import { getUnixTime } from 'date-fns'
 
-// TODO: Pre-defining this because yup was not able to infer the types correctly for the transforms...
+// Note: Pre-defining this because yup was not able to infer the types correctly for the transforms...
 type AgoraResponseEntry = {
     projectId: string,
     projectName: string,
@@ -115,7 +115,6 @@ export type ProjectState = {
     previousWallet: Address | null
 
     activeSchedule: VestingSchedule | null
-    previousSchedules: VestingSchedule[]
     allRelevantSchedules: VestingSchedule[]
 
     allocations: {
@@ -447,7 +446,6 @@ export default async function handler(
                     const isAlreadyVestingToRightWallet = !!currentWalletVestingSchedule;
                     if (!isAlreadyVestingToRightWallet) {
                         // TODO: This is tricky, we'll have to look at previous vesting schedules as well, so not to double-account
-
                         actions.push({
                             type: "create-vesting-schedule",
                             payload: {
@@ -455,7 +453,7 @@ export default async function handler(
                                 sender,
                                 receiver: agoraCurrentWallet,
                                 startDate: currentTranch.startTimestamp,
-                                totalAmount: totalAmount.toString(),
+                                totalAmount: totalAmount.toString(), // TODO: Can be wrong if there are previous wallets
                                 totalDuration: currentTranch.totalDuration,
                                 cliffAmount: cliffAmount.toString(),
                                 cliffPeriod: cliffAmount > 0n ? 1 : 0,
@@ -507,13 +505,14 @@ export default async function handler(
                         const currentVestingScheduleAmount = getTotalVestedAmount(currentWalletVestingSchedule, accounting);
 
                         // TODO: this breaks with wallet changing...
+                        // TODO: the cleanest might be still to put `totalAmount` on subgraph
+
                         const isFundingJustChangedForProject = agoraTotalAmount !== currentVestingScheduleAmount;
 
                         // TODO: Consider scenarios where it's off by very small amounts, and whether it can happen bacause of minute calculation issues
                         // TODO: Log something meaningful here
 
                         if (isFundingJustChangedForProject) {
-                            // TODO: Make sure 0 means stopping, not just not changing the flow rate
                             if (agoraCurrentAmount === 0n) {
                                 actions.push({
                                     type: "stop-vesting-schedule",
@@ -547,7 +546,6 @@ export default async function handler(
                     currentWallet: agoraCurrentWallet,
                     previousWallet: agoraPreviousWallet,
                     activeSchedule: currentWalletVestingSchedule,
-                    previousSchedules: [], // TODO: Implement this!
                     todo: actions,
                     allocations: row.amounts.map((amount, index) => ({
                         tranch: index + 1,
@@ -570,13 +568,13 @@ export default async function handler(
         }
     })
 
-    // Note: It's probably easiest to iterate one by one?
-
-    // Fetch the current/previous state from on-chain and/or subgraph.
-
-    // Diff the API state
-
-    // Note: You can handle the "simple" situation without previous state first.
+    // TODO: Should I handle allowance here?
+    // What's the best way to do it? It could be by only looking at the actions. I could be by looking at actions and the vesting schedules.
+    // It might be in the form similar to "Fix access"
+    // I will need:
+    //  requiredTokenAllowanceWei: string;
+    //  requiredFlowOperatorPermissions: number;
+    //  requiredFlowRateAllowanceWei: string;
 
     const projectsOverview = await E.runPromise(
         pipe(

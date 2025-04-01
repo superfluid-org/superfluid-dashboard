@@ -21,22 +21,22 @@ export const vestingAgoraEndpoints = {
                 { signer, ...arg },
                 { dispatch }
             ) => {
-    
+
                 const signerAddress = await signer.getAddress();
                 if (signerAddress !== arg.senderAddress) {
                     throw new Error("Signer address does not match sender address");
                 }
-    
+
                 const subOperations = await mapProjectStateIntoOperations(arg, signer);
-    
+
                 const framework = await getFramework(arg.chainId);
                 const executable = framework.batchCall(
                     subOperations.map((x) => x.operation)
                 );
                 const subTransactionTitles = subOperations.map((x) => x.title);
-    
+
                 const transactionResponse = await executable.exec(signer);
-    
+
                 await registerNewTransaction({
                     dispatch,
                     chainId: arg.chainId,
@@ -48,7 +48,7 @@ export const vestingAgoraEndpoints = {
                     },
                     title: "Execute Tranch Update"
                 });
-    
+
                 return {
                     data: {
                         chainId: arg.chainId,
@@ -57,7 +57,7 @@ export const vestingAgoraEndpoints = {
                         signerAddress
                     },
                 };
-                
+
             },
         })
     })
@@ -105,38 +105,23 @@ async function mapProjectStateIntoOperations(state: ProjectsOverview, signer: Si
                     break;
                 }
                 case "update-vesting-schedule": {
-                    const populatedTransaction1 = await vestingScheduler
-                        .populateTransaction.updateVestingSchedule(
-                            action.payload.superToken,
-                            action.payload.receiver,
-                            action.payload.endDate,
-                            []
-                        );
-                    const operation1 = await framework.host.callAppAction(
-                        vestingScheduler.address,
-                        populatedTransaction1.data!
-                    );
-                    operations.push({
-                        operation: operation1,
-                        title: "Update Vesting Schedule" // end date
-                    });
-
-                    const populatedTransaction2 = await vestingScheduler
-                        .populateTransaction.updateVestingScheduleFlowRateFromAmount(
+                    const populatedTransaction = vestingScheduler
+                        .populateTransaction.updateVestingScheduleFlowRateFromAmountAndEndDate(
                             action.payload.superToken,
                             action.payload.receiver,
                             action.payload.totalAmount,
-                            []
+                            action.payload.endDate
                         );
-                    const operation2 = await framework.host.callAppAction(
-                        vestingScheduler.address,
-                        populatedTransaction2.data!
+                    const operation = new Operation(
+                        populatedTransaction,
+                        'ERC2771_FORWARD_CALL'
                     );
-
                     operations.push({
-                        operation: operation2,
-                        title: "Update Vesting Schedule" // amount
+                        operation: operation,
+                        title: "Update Vesting Schedule" // end date
                     });
+
+
                     break;
                 }
                 case "stop-vesting-schedule": {
@@ -215,8 +200,7 @@ export const mapProjectStateIntoGnosisSafeBatch = (state: ProjectsOverview) => {
                     const args2 = [
                         action.payload.superToken,
                         action.payload.receiver,
-                        BigInt(action.payload.totalAmount),
-                        "0x"
+                        BigInt(action.payload.totalAmount)
                     ] as const;
                     const functionAbi2 = getAbiItem({
                         abi: vestingSchedulerV3Abi,

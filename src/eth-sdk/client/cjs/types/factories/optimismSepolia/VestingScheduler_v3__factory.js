@@ -1413,6 +1413,35 @@ const _abi = [
     {
         inputs: [
             {
+                internalType: "contract ISuperToken",
+                name: "superToken",
+                type: "address",
+            },
+            {
+                internalType: "address",
+                name: "sender",
+                type: "address",
+            },
+            {
+                internalType: "address",
+                name: "receiver",
+                type: "address",
+            },
+        ],
+        name: "getTotalVestedAmount",
+        outputs: [
+            {
+                internalType: "uint256",
+                name: "totalVestedAmount",
+                type: "uint256",
+            },
+        ],
+        stateMutability: "view",
+        type: "function",
+    },
+    {
+        inputs: [
+            {
                 internalType: "address",
                 name: "superToken",
                 type: "address",
@@ -1758,20 +1787,37 @@ const _abi = [
                 name: "newTotalAmount",
                 type: "uint256",
             },
-            {
-                internalType: "bytes",
-                name: "ctx",
-                type: "bytes",
-            },
         ],
         name: "updateVestingScheduleFlowRateFromAmount",
-        outputs: [
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+    },
+    {
+        inputs: [
             {
-                internalType: "bytes",
-                name: "newCtx",
-                type: "bytes",
+                internalType: "contract ISuperToken",
+                name: "superToken",
+                type: "address",
+            },
+            {
+                internalType: "address",
+                name: "receiver",
+                type: "address",
+            },
+            {
+                internalType: "uint256",
+                name: "newTotalAmount",
+                type: "uint256",
+            },
+            {
+                internalType: "uint32",
+                name: "newEndDate",
+                type: "uint32",
             },
         ],
+        name: "updateVestingScheduleFlowRateFromAmountAndEndDate",
+        outputs: [],
         stateMutability: "nonpayable",
         type: "function",
     },
@@ -1792,20 +1838,9 @@ const _abi = [
                 name: "endDate",
                 type: "uint32",
             },
-            {
-                internalType: "bytes",
-                name: "ctx",
-                type: "bytes",
-            },
         ],
         name: "updateVestingScheduleFlowRateFromEndDate",
-        outputs: [
-            {
-                internalType: "bytes",
-                name: "newCtx",
-                type: "bytes",
-            },
-        ],
+        outputs: [],
         stateMutability: "nonpayable",
         type: "function",
     },
