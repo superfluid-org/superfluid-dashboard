@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import * as yup from 'yup'
-import { testAddress, testWeiAmount } from '../../utils/yupUtils'
+import { testWeiAmount } from '../../utils/yupUtils'
 import { Effect as E, Logger, LogLevel, pipe } from 'effect'
 import { uniq } from 'lodash'
 import { tryGetBuiltGraphSdkForNetwork } from '../../vesting-subgraph/vestingSubgraphApi'
@@ -115,6 +115,7 @@ export type ProjectState = {
 
     activeSchedule: VestingSchedule | null
     previousSchedules: VestingSchedule[]
+    allRelevantSchedules: VestingSchedule[]
 
     allocations: {
         tranch: number
@@ -352,7 +353,7 @@ export default async function handler(
                 try: () => {
                     return subgraphSdk.getVestingSchedules({
                         where: {
-                            // TODO: add cut-off dates here?
+                            // TODO: add cut-off dates here? Answer: Might not be necessary because these are brand new.
                             superToken: token.toLowerCase(),
                             sender: sender.toLowerCase(),
                             receiver_in: allReceiverAddresses_bothActiveAndInactive.map(x => x.toLowerCase()), // Note: Can this go over any limits? Answer: not too worried...
@@ -405,13 +406,6 @@ export default async function handler(
                     x => !x.status.isFinished && x.receiver.toLowerCase() === agoraCurrentWallet.toLowerCase()
                 ) ?? null;
                 const previousWalletVestingSchedule = (agoraPreviousWallet && allRelevantVestingSchedules.find(x => x.receiver.toLowerCase() === agoraPreviousWallet.toLowerCase())) ?? null;
-
-                console.log({
-                    vestingSchedulesFromSubgraph,
-                    currentWalletVestingSchedule,
-                    previousWalletVestingSchedule,
-                    allRelevantVestingSchedules
-                })
 
                 // TODO: Double-check if an amount is for the total time or for a single tranch.
                 // Answer: It is for the current tranch.
@@ -556,7 +550,8 @@ export default async function handler(
                     allocations: row.amounts.map((amount, index) => ({
                         tranch: index + 1,
                         amount: amount
-                    }))
+                    })),
+                    allRelevantSchedules: allRelevantVestingSchedules
                 };
                 return projectState;
             });

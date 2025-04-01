@@ -356,7 +356,9 @@ function Row(props: { chainId: number, superTokenAddress: string, state: Project
                                 )}
                             </Box>
 
-                            <ProjectVestingSchedulesTables project={state} />
+                            <Box sx={{ mt: 2 }}>
+                                <ProjectVestingSchedulesTables project={state} />
+                            </Box>
                         </Box>
                     </Collapse>
                 </TableCell>
@@ -443,7 +445,7 @@ const ProjectVestingSchedulesTables: FC<{
     const openDetails = (id: string) => () =>
         router.push(`/vesting/${network.slugName}/${id}`);
 
-    if (project.previousSchedules.length === 0) {
+    if (project.allRelevantSchedules.length === 0) {
         return null;
     }
 
@@ -452,7 +454,7 @@ const ProjectVestingSchedulesTables: FC<{
             <Table>
                 <TableBody>
                     {
-                        project.previousSchedules
+                        project.allRelevantSchedules
                             .map((vestingSchedule) => (
                                 <VestingRow
                                     key={vestingSchedule.id}
