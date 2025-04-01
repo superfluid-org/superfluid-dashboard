@@ -4,7 +4,9 @@ import { type ProjectsOverview } from "../../../pages/api/agora";
 import { allNetworks, findNetworkOrThrow } from "../../network/networks";
 import { getVestingScheduler } from "../../../eth-sdk/getEthSdk";
 import { Signer } from "ethers";
-import { UnitOfTime } from "../../send/FlowRateInput";
+import { BatchTransaction } from "../../../libs/gnosis-tx-builder/types";
+import { vestingSchedulerV3Abi } from "../../../generated";
+import { decodeFunctionData, encodeFunctionData, getAbiItem } from "viem";
 
 export interface ExecuteTranchUpdate extends BaseSuperTokenMutation, ProjectsOverview {
 }
@@ -79,20 +81,6 @@ async function mapProjectStateIntoOperations(state: ProjectsOverview, signer: Si
         for (const action of project.todo) {
             switch (action.type) {
                 case "create-vesting-schedule": {
-                    // {
-                    //     name: 'superToken',
-                    //     internalType: 'contract ISuperToken',
-                    //     type: 'address',
-                    //   },
-                    //   { name: 'receiver', internalType: 'address', type: 'address' },
-                    //   { name: 'totalAmount', internalType: 'uint256', type: 'uint256' },
-                    //   { name: 'totalDuration', internalType: 'uint32', type: 'uint32' },
-                    //   { name: 'startDate', internalType: 'uint32', type: 'uint32' },
-                    //   { name: 'cliffPeriod', internalType: 'uint32', type: 'uint32' },
-                    //   { name: 'claimPeriod', internalType: 'uint32', type: 'uint32' },
-                    //   { name: 'cliffAmount', internalType: 'uint256', type: 'uint256' },
-                    //   { name: 'ctx', internalType: 'bytes', type: 'bytes' },
-
                     const populatedTransaction = vestingScheduler
                         .populateTransaction[
                         'createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32,uint256)'
@@ -117,29 +105,11 @@ async function mapProjectStateIntoOperations(state: ProjectsOverview, signer: Si
                     break;
                 }
                 case "update-vesting-schedule": {
-                    // {
-                    //     type: 'function',
-                    //     inputs: [
-                    //       {
-                    //         name: 'superToken',
-                    //         internalType: 'contract ISuperToken',
-                    //         type: 'address',
-                    //       },
-                    //       { name: 'receiver', internalType: 'address', type: 'address' },
-                    //       { name: 'newTotalAmount', internalType: 'uint256', type: 'uint256' },
-                    //       { name: 'ctx', internalType: 'bytes', type: 'bytes' },
-                    //     ],
-                    //     name: 'updateVestingScheduleFlowRateFromAmount',
-                    //     outputs: [{ name: 'newCtx', internalType: 'bytes', type: 'bytes' }],
-                    //     stateMutability: 'nonpayable',
-                    //   },
-
-                    // operations.push(updateVestingSchedule(action.payload));
                     const populatedTransaction1 = await vestingScheduler
                         .populateTransaction.updateVestingSchedule(
                             action.payload.superToken,
                             action.payload.receiver,
-                            state.tranchPlan.tranches[state.tranchPlan.currentTranchCount - 1].endTimestamp,
+                            action.payload.endDate,
                             []
                         );
                     const operation1 = await framework.host.callAppAction(
@@ -171,32 +141,106 @@ async function mapProjectStateIntoOperations(state: ProjectsOverview, signer: Si
                 }
                 case "stop-vesting-schedule": {
                     break;
-
-                    // NOTE: Nothing needs to be done when stopping.
-
-                    // TODO: stopping means bringing up the end date
-                    const populatedTransaction = await vestingScheduler
-                        .populateTransaction.updateVestingSchedule(
-                            action.payload.superToken,
-                            action.payload.receiver,
-                            state.tranchPlan.tranches[state.tranchPlan.currentTranchCount - 1].endTimestamp,
-                            []
-                        );
-
-                    const operation = await framework.host.callAppAction(
-                        vestingScheduler.address,
-                        populatedTransaction.data!
-                    );
-
-                    operations.push({
-                        operation,
-                        title: "Update Vesting Schedule"
-                    });
-                    break;
                 }
             }
         }
     }
 
     return operations;
+}
+
+export const mapProjectStateIntoGnosisSafeBatch = (state: ProjectsOverview) => {
+    const transactions: BatchTransaction[] = []
+
+    const network = findNetworkOrThrow(allNetworks, state.chainId);
+    const vestingContractInfo = network.vestingContractAddress["v3"];
+    if (!vestingContractInfo) {
+        throw new Error("Vesting contract not found");
+    }
+
+    for (const project of state.projects) {
+        for (const action of project.todo) {
+            switch (action.type) {
+                case "create-vesting-schedule": {
+                    const args = [
+                        action.payload.superToken,
+                        action.payload.receiver,
+                        BigInt(action.payload.totalAmount),
+                        action.payload.totalDuration,
+                        action.payload.startDate,
+                        action.payload.cliffPeriod,
+                        action.payload.claimPeriod,
+                        BigInt(action.payload.cliffAmount)
+                    ] as const;
+                    const functionAbi = getAbiItem({
+                        abi: vestingSchedulerV3Abi,
+                        name: 'createVestingScheduleFromAmountAndDuration',
+                        args
+                    })
+                    transactions.push({
+                        to: vestingContractInfo.address,
+                        data: null,
+                        value: "0",
+                        contractMethod: functionAbi,
+                        contractInputsValues: args.reduce((acc, arg, index) => {
+                            acc[`arg${index}`] = arg.toString();
+                            return acc;
+                        }, {} as Record<string, string>)
+                    })
+                    break;
+                }
+                case "update-vesting-schedule": {
+                    const args = [
+                        action.payload.superToken,
+                        action.payload.receiver,
+                        action.payload.endDate,
+                        "0x"
+                    ] as const;
+                    const functionAbi = getAbiItem({
+                        abi: vestingSchedulerV3Abi,
+                        name: 'updateVestingSchedule',
+                        args
+                    })
+                    transactions.push({
+                        to: vestingContractInfo.address,
+                        data: null,
+                        value: "0",
+                        contractMethod: functionAbi,
+                        contractInputsValues: args.reduce((acc, arg, index) => {
+                            acc[`arg${index}`] = arg.toString();
+                            return acc;
+                        }, {} as Record<string, string>)
+                    })
+
+                    const args2 = [
+                        action.payload.superToken,
+                        action.payload.receiver,
+                        BigInt(action.payload.totalAmount),
+                        "0x"
+                    ] as const;
+                    const functionAbi2 = getAbiItem({
+                        abi: vestingSchedulerV3Abi,
+                        name: 'updateVestingScheduleFlowRateFromAmount',
+                        args: args2
+                    })
+                    transactions.push({
+                        to: vestingContractInfo.address,
+                        data: null,
+                        value: "0",
+                        contractMethod: functionAbi2,
+                        contractInputsValues: args2.reduce((acc, arg, index) => {
+                            acc[`arg${index}`] = arg.toString();
+                            return acc;
+                        }, {} as Record<string, string>)
+                    })
+                    break;
+                }
+                case "stop-vesting-schedule": {
+                    break;
+                }
+            }
+        }
+    }
+
+    return transactions;
 }

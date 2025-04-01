@@ -87,6 +87,7 @@ type UpdateVestingScheduleAction = Action<"update-vesting-schedule", {
     sender: Address
     receiver: Address
     totalAmount: string
+    endDate: number
     previousTotalAmount: string
 }>
 
@@ -530,7 +531,8 @@ export default async function handler(
                                         sender,
                                         receiver: agoraCurrentWallet,
                                         totalAmount: totalAmount.toString(), // TODO: This is wrong! Because of multiple wallets.
-                                        previousTotalAmount: currentVestingScheduleAmount.toString()
+                                        previousTotalAmount: currentVestingScheduleAmount.toString(),
+                                        endDate: currentTranch.endTimestamp
                                     }
                                 } as UpdateVestingScheduleAction)
                             }

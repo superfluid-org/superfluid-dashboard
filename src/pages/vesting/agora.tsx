@@ -17,13 +17,17 @@ import { BigLoader } from "../../features/vesting/BigLoader";
 import ConnectionBoundary, { useConnectionBoundary } from "../../features/transactionBoundary/ConnectionBoundary";
 import { rpcApi } from "../../features/redux/store";
 import { TransactionBoundary } from "../../features/transactionBoundary/TransactionBoundary";
-import { TransactionButton } from "../../features/transactionBoundary/TransactionButton";
+import { TransactionButton, transactionButtonDefaultProps } from "../../features/transactionBoundary/TransactionButton";
 import { TransactionDialogActions, TransactionDialogButton } from "../../features/transactionBoundary/TransactionDialog";
 import NextLink from "next/link";
 import { useAccount } from "wagmi";
 import VestingRow from "../../features/vesting/VestingRow";
 import { useRouter } from "next/router";
 import { useTokenQuery } from "../../hooks/useTokenQuery";
+import { getTxBuilderInputs_v2 } from "../../features/vesting/batch/gnosisSafe";
+import JSZip from "jszip";
+import { mapProjectStateIntoGnosisSafeBatch } from "../../features/redux/endpoints/vestingAgoraEndpoints";
+import { TxBuilder } from "../../libs/gnosis-tx-builder";
 
 // Updated ActionsList component without the badges
 const ActionsList: FC<{ actions: Actions[] }> = ({ actions }) => {
@@ -266,7 +270,10 @@ const AgoraPage: NextPageWithLayout = () => {
             <ConnectionBoundary expectedNetwork={network}>
                 {
                     projectsOverview && (
-                        <ExecuteTranchUpdateTransactionButton isVisible={true} projectsOverview={projectsOverview} />
+                        <>
+                            <ExecuteTranchUpdateTransactionButton isVisible={true} projectsOverview={projectsOverview} />
+                            <DownloadGnosisSafeTransactionButton isVisible={true} projectsOverview={projectsOverview} />
+                        </>
                     )
                 }
             </ConnectionBoundary>
@@ -375,12 +382,52 @@ type Props = {
     projectsOverview: ProjectsOverview;
 }
 
+export const DownloadGnosisSafeTransactionButton: FC<Props> = ({
+    isVisible,
+    projectsOverview
+}) => {
+
+    return (
+        <Button {...transactionButtonDefaultProps} variant="outlined" onClick={async () => {
+            const zip = new JSZip();
+            const zipName = `execute-tranch-${projectsOverview.tranchPlan.currentTranchCount}_for_safe_tx-builder`;
+            const batchFolder = zip.folder(zipName);
+
+            const transactions = mapProjectStateIntoGnosisSafeBatch(projectsOverview);
+
+            const safeTxBuilderJSON = TxBuilder.batch(undefined, transactions, {
+                chainId: projectsOverview.chainId
+            });
+
+            const blob = new Blob([JSON.stringify(safeTxBuilderJSON)], {
+                type: "application/json",
+            });
+
+            batchFolder?.file(`batch.json`, blob);
+
+            const objectURL = URL.createObjectURL(
+                (await batchFolder?.generateAsync({ type: "blob" })) as Blob
+            );
+
+            const a = document.createElement('a');
+            a.href = objectURL;
+            a.download = zipName + ".zip";
+            document.body.appendChild(a);
+            a.click();
+
+            // Clean up by revoking the object URL and removing the link
+            URL.revokeObjectURL(objectURL);
+            document.body.removeChild(a);
+        }}>
+            Download Safe Transaction Builder JSON
+        </Button>
+    )
+}
+
 export const ExecuteTranchUpdateTransactionButton: FC<Props> = ({
     isVisible: isVisible_,
     projectsOverview
 }) => {
-    const { expectedNetwork } = useConnectionBoundary();
-
     const [executeTranchUpdate, executeTranchUpdateResult] =
         rpcApi.useExecuteTranchUpdateMutation();
 

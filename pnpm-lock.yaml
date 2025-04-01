@@ -14415,9 +14415,9 @@ snapshots:
       '@noble/hashes': 1.5.0
       '@scure/base': 1.1.9
       '@types/debug': 4.1.12
-      debug: 4.3.7(supports-color@8.1.1)
+      debug: 4.4.0
       pony-cause: 2.1.11
-      semver: 7.6.3
+      semver: 7.7.1
       uuid: 9.0.1
     transitivePeerDependencies:
       - supports-color
@@ -14429,9 +14429,9 @@ snapshots:
       '@noble/hashes': 1.5.0
       '@scure/base': 1.1.9
       '@types/debug': 4.1.12
-      debug: 4.3.7(supports-color@8.1.1)
+      debug: 4.4.0
       pony-cause: 2.1.11
-      semver: 7.6.3
+      semver: 7.7.1
       uuid: 9.0.1
     transitivePeerDependencies:
       - supports-color
