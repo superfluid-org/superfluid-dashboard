@@ -373,7 +373,7 @@ export default async function handler(
                 subgraphResponse.vestingSchedules.map(vestingSchedule =>
                     mapSubgraphVestingSchedule(vestingSchedule)
                 )
-                    .filter(x => !x.status.isDeleted && !x.status.isError) // TODO: Consider this filter...
+                    .filter(x => !x.status.isDeleted) // TODO: Consider this filter...
             )
         );
         // TODO: I know this has too many vesting schedules. I'll not perfect the filtering just yet.
@@ -412,6 +412,8 @@ export default async function handler(
                 const agoraCurrentAmount_ = row.amounts[row.amounts.length - 1] ?? 0;
                 const agoraCurrentAmount = BigInt(agoraCurrentAmount_);
                 const agoraTotalAmount = row.amounts.reduce((sum, amount) => sum + BigInt(amount || 0), 0n);
+                const subgraphTotalAmount = allRelevantVestingSchedules.reduce((sum, vestingSchedule) => sum + BigInt(vestingSchedule.totalAmount ?? 0), 0n);
+                const missingAmount = agoraTotalAmount - subgraphTotalAmount;
 
                 const actions = yield* E.gen(function* () {
                     const actions: Actions[] = [];
@@ -446,20 +448,37 @@ export default async function handler(
                     const isAlreadyVestingToRightWallet = !!currentWalletVestingSchedule;
                     if (!isAlreadyVestingToRightWallet) {
                         // TODO: This is tricky, we'll have to look at previous vesting schedules as well, so not to double-account
-                        actions.push({
-                            type: "create-vesting-schedule",
-                            payload: {
-                                superToken: token,
-                                sender,
-                                receiver: agoraCurrentWallet,
-                                startDate: currentTranch.startTimestamp,
-                                totalAmount: totalAmount.toString(), // TODO: Can be wrong if there are previous wallets
-                                totalDuration: currentTranch.totalDuration,
-                                cliffAmount: cliffAmount.toString(),
-                                cliffPeriod: cliffAmount > 0n ? 1 : 0,
-                                claimPeriod: currentTranch.totalDuration * 2 // TODO: this is not finished solution
-                            }
-                        } as CreateVestingScheduleAction)
+                        if (didKycGetJustApproved) {
+                            actions.push({
+                                type: "create-vesting-schedule",
+                                payload: {
+                                    superToken: token,
+                                    sender,
+                                    receiver: agoraCurrentWallet,
+                                    startDate: currentTranch.startTimestamp,
+                                    totalAmount: totalAmount.toString(),
+                                    totalDuration: currentTranch.totalDuration,
+                                    cliffAmount: cliffAmount.toString(),
+                                    cliffPeriod: cliffAmount > 0n ? 1 : 0,
+                                    claimPeriod: currentTranch.totalDuration * 2 // TODO: this is not finished solution
+                                }
+                            } as CreateVestingScheduleAction)
+                        } else {
+                            actions.push({
+                                type: "create-vesting-schedule",
+                                payload: {
+                                    superToken: token,
+                                    sender,
+                                    receiver: agoraCurrentWallet,
+                                    startDate: currentTranch.startTimestamp,
+                                    totalAmount: missingAmount.toString(),
+                                    totalDuration: currentTranch.totalDuration,
+                                    cliffAmount: "0",
+                                    cliffPeriod: 0,
+                                    claimPeriod: currentTranch.totalDuration * 2 // TODO: this is not finished solution
+                                }
+                            } as CreateVestingScheduleAction)
+                        }
                     } else {
                         // isAlreadyVestingToRightWallet === true
 
@@ -475,39 +494,10 @@ export default async function handler(
                             } as StopVestingScheduleAction)
                         }
 
-                        const publicClient = createPublicClient({
-                            chain: optimism,
-                            transport: http(network.rpcUrls.superfluid.http[0])
-                        });
-
-                        // TODO: Not sure I can do anything useful with the already vested amount...
-                        const [alreadyVestedAmount_, lastUpdated_] = yield* pipe(
-                            E.tryPromise({
-                                try: () => publicClient.readContract({
-                                    abi: vestingSchedulerV3Abi,
-                                    address: vestingSchedulerV3Address[network.id as keyof typeof vestingSchedulerV3Address],
-                                    functionName: "accountings",
-                                    args: [getId(token, sender, agoraCurrentWallet)]
-                                }),
-                                catch: (error) => {
-                                    return new PublicClientRpcError("Failed to read contract accounting data", { cause: error })
-                                }
-                            }),
-                            E.retry({
-                                times: 3
-                            })
-                        );
-
-                        const accounting = {
-                            lastUpdated: Number(lastUpdated_),
-                            alreadyVestedAmount: alreadyVestedAmount_.toString()
-                        }
-                        const currentVestingScheduleAmount = getTotalVestedAmount(currentWalletVestingSchedule, accounting);
-
                         // TODO: this breaks with wallet changing...
                         // TODO: the cleanest might be still to put `totalAmount` on subgraph
 
-                        const isFundingJustChangedForProject = agoraTotalAmount !== currentVestingScheduleAmount;
+                        const isFundingJustChangedForProject = agoraTotalAmount > subgraphTotalAmount;
 
                         // TODO: Consider scenarios where it's off by very small amounts, and whether it can happen bacause of minute calculation issues
                         // TODO: Log something meaningful here
@@ -523,14 +513,16 @@ export default async function handler(
                                     }
                                 } as StopVestingScheduleAction)
                             } else {
+                                const newTotalAmount = BigInt(currentWalletVestingSchedule.totalAmount) + missingAmount;
+
                                 actions.push({
                                     type: "update-vesting-schedule",
                                     payload: {
                                         superToken: token,
                                         sender,
                                         receiver: agoraCurrentWallet,
-                                        totalAmount: totalAmount.toString(), // TODO: This is wrong! Because of multiple wallets.
-                                        previousTotalAmount: currentVestingScheduleAmount.toString(),
+                                        totalAmount: newTotalAmount.toString(),
+                                        previousTotalAmount: currentWalletVestingSchedule.totalAmount,
                                         endDate: currentTranch.endTimestamp
                                     }
                                 } as UpdateVestingScheduleAction)

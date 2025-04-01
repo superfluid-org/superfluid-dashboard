@@ -859,7 +859,8 @@ export type Task_OrderBy =
   | 'vestingSchedule__endExecutedAt'
   | 'vestingSchedule__claimValidityDate'
   | 'vestingSchedule__claimedAt'
-  | 'vestingSchedule__remainderAmount';
+  | 'vestingSchedule__remainderAmount'
+  | 'vestingSchedule__totalAmount';
 
 export type TokenSenderReceiverCursor = {
   id: Scalars['String'];
@@ -984,6 +985,7 @@ export type TokenSenderReceiverCursor_OrderBy =
   | 'currentVestingSchedule__claimValidityDate'
   | 'currentVestingSchedule__claimedAt'
   | 'currentVestingSchedule__remainderAmount'
+  | 'currentVestingSchedule__totalAmount'
   | 'currentCliffAndFlowTask'
   | 'currentCliffAndFlowTask__id'
   | 'currentCliffAndFlowTask__type'
@@ -1761,6 +1763,7 @@ export type VestingSchedule = {
   claimValidityDate: Scalars['BigInt'];
   claimedAt?: Maybe<Scalars['BigInt']>;
   remainderAmount: Scalars['BigInt'];
+  totalAmount: Scalars['BigInt'];
 };
 
 
@@ -2954,6 +2957,14 @@ export type VestingSchedule_Filter = {
   remainderAmount_lte?: InputMaybe<Scalars['BigInt']>;
   remainderAmount_in?: InputMaybe<Array<Scalars['BigInt']>>;
   remainderAmount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  totalAmount?: InputMaybe<Scalars['BigInt']>;
+  totalAmount_not?: InputMaybe<Scalars['BigInt']>;
+  totalAmount_gt?: InputMaybe<Scalars['BigInt']>;
+  totalAmount_lt?: InputMaybe<Scalars['BigInt']>;
+  totalAmount_gte?: InputMaybe<Scalars['BigInt']>;
+  totalAmount_lte?: InputMaybe<Scalars['BigInt']>;
+  totalAmount_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  totalAmount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<VestingSchedule_Filter>>>;
@@ -2985,7 +2996,8 @@ export type VestingSchedule_OrderBy =
   | 'events'
   | 'claimValidityDate'
   | 'claimedAt'
-  | 'remainderAmount';
+  | 'remainderAmount'
+  | 'totalAmount';
 
 export type _Block_ = {
   /** The hash of the block */
@@ -3445,6 +3457,7 @@ export type VestingScheduleResolvers<ContextType = MeshContext, ParentType exten
   claimValidityDate?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   claimedAt?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   remainderAmount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  totalAmount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -3640,7 +3653,7 @@ const vestingTransforms = [];
 const additionalTypeDefs = [] as any[];
 const vestingHandler = new GraphqlHandler({
               name: "vesting",
-              config: {"endpoint":"{context.url:https://api.goldsky.com/api/public/project_clsnd6xsoma5j012qepvucfpp/subgraphs/vesting-v1-optimism-sepolia/1.1.1/gn}","retry":5},
+              config: {"endpoint":"{context.url:https://api.goldsky.com/api/public/project_clsnd6xsoma5j012qepvucfpp/subgraphs/vesting-v1-optimism-sepolia/1.1.2/gn}","retry":5},
               baseDir,
               cache,
               pubsub,
@@ -3691,6 +3704,12 @@ const merger = new(BareMerger as any)({
           return printWithCache(GetVestingSchedulesDocument);
         },
         location: 'GetVestingSchedulesDocument.graphql'
+      },{
+        document: GetVestingSchedulesV3Document,
+        get rawSDL() {
+          return printWithCache(GetVestingSchedulesV3Document);
+        },
+        location: 'GetVestingSchedulesV3Document.graphql'
       }
     ];
     },
@@ -3752,6 +3771,15 @@ export type GetVestingSchedulesQueryVariables = Exact<{
 
 export type GetVestingSchedulesQuery = { vestingSchedules: Array<Pick<VestingSchedule, 'id' | 'superToken' | 'sender' | 'receiver' | 'flowRate' | 'createdAt' | 'deletedAt' | 'startDate' | 'claimedAt' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowExpirationAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'endDateValidAt' | 'endExecutedAt' | 'failedAt' | 'didEarlyEndCompensationFail' | 'earlyEndCompensation' | 'claimValidityDate' | 'remainderAmount' | 'contractVersion'>> };
 
+export type GetVestingSchedulesV3QueryVariables = Exact<{
+  where?: InputMaybe<VestingSchedule_Filter>;
+  orderBy?: InputMaybe<VestingSchedule_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+}>;
+
+
+export type GetVestingSchedulesV3Query = { vestingSchedules: Array<Pick<VestingSchedule, 'totalAmount' | 'id' | 'superToken' | 'sender' | 'receiver' | 'flowRate' | 'createdAt' | 'deletedAt' | 'startDate' | 'claimedAt' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowExpirationAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'endDateValidAt' | 'endExecutedAt' | 'failedAt' | 'didEarlyEndCompensationFail' | 'earlyEndCompensation' | 'claimValidityDate' | 'remainderAmount' | 'contractVersion'>> };
+
 export type VestingSchedulePartFragment = Pick<VestingSchedule, 'id' | 'superToken' | 'sender' | 'receiver' | 'flowRate' | 'createdAt' | 'deletedAt' | 'startDate' | 'claimedAt' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowExpirationAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'endDateValidAt' | 'endExecutedAt' | 'failedAt' | 'didEarlyEndCompensationFail' | 'earlyEndCompensation' | 'claimValidityDate' | 'remainderAmount' | 'contractVersion'>;
 
 export const VestingSchedulePartFragmentDoc = gql`
@@ -3807,6 +3835,20 @@ export const GetVestingSchedulesDocument = gql`
   }
 }
     ${VestingSchedulePartFragmentDoc}` as unknown as DocumentNode<GetVestingSchedulesQuery, GetVestingSchedulesQueryVariables>;
+export const GetVestingSchedulesV3Document = gql`
+    query getVestingSchedulesV3($where: VestingSchedule_filter = {}, $orderBy: VestingSchedule_orderBy = id, $orderDirection: OrderDirection = asc) {
+  vestingSchedules(
+    first: 1000
+    where: $where
+    orderBy: $orderBy
+    orderDirection: $orderDirection
+  ) {
+    ...VestingSchedulePart
+    totalAmount
+  }
+}
+    ${VestingSchedulePartFragmentDoc}` as unknown as DocumentNode<GetVestingSchedulesV3Query, GetVestingSchedulesV3QueryVariables>;
+
 
 
 
@@ -3822,6 +3864,9 @@ export function getSdk<C, E>(requester: Requester<C, E>) {
     },
     getVestingSchedules(variables?: GetVestingSchedulesQueryVariables, options?: C): Promise<GetVestingSchedulesQuery> {
       return requester<GetVestingSchedulesQuery, GetVestingSchedulesQueryVariables>(GetVestingSchedulesDocument, variables, options) as Promise<GetVestingSchedulesQuery>;
+    },
+    getVestingSchedulesV3(variables?: GetVestingSchedulesV3QueryVariables, options?: C): Promise<GetVestingSchedulesV3Query> {
+      return requester<GetVestingSchedulesV3Query, GetVestingSchedulesV3QueryVariables>(GetVestingSchedulesV3Document, variables, options) as Promise<GetVestingSchedulesV3Query>;
     }
   };
 }

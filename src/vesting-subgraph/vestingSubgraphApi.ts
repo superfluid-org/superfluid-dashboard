@@ -17,6 +17,7 @@ import {
   PollQueryVariables,
 } from "./.graphclient";
 import { EMPTY_ARRAY } from "../utils/constants";
+import { chainIds } from "../features/network/networkConstants";
 
 export const tryGetBuiltGraphSdkForNetwork = (chainId: number) => {
   const network = tryFindNetwork(allNetworks, chainId);
@@ -69,9 +70,16 @@ export const vestingSubgraphApi = createApi({
       queryFn: async ({ chainId, ...variables }) => {
         const sdk = tryGetBuiltGraphSdkForNetwork(chainId);
 
-        const subgraphVestingSchedules = sdk
-          ? (await sdk.getVestingSchedules(variables)).vestingSchedules
-          : EMPTY_ARRAY;
+        const network = tryFindNetwork(allNetworks, chainId);
+
+        const subgraphVestingSchedules = await (async () => {
+          if (!sdk) return EMPTY_ARRAY;
+          
+          return network?.id === chainIds.optimismSepolia
+            // TODO: remove this when subgraph with `totalAmount` deployed to all networks
+            ? (await sdk.getVestingSchedulesV3(variables)).vestingSchedules
+            : (await sdk.getVestingSchedules(variables)).vestingSchedules;
+        })();
 
         return {
           data: {

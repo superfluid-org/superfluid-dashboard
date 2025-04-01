@@ -837,7 +837,8 @@ export type Task_orderBy =
   | 'vestingSchedule__endExecutedAt'
   | 'vestingSchedule__claimValidityDate'
   | 'vestingSchedule__claimedAt'
-  | 'vestingSchedule__remainderAmount';
+  | 'vestingSchedule__remainderAmount'
+  | 'vestingSchedule__totalAmount';
 
 export type TokenSenderReceiverCursor = {
   id: Scalars['String'];
@@ -962,6 +963,7 @@ export type TokenSenderReceiverCursor_orderBy =
   | 'currentVestingSchedule__claimValidityDate'
   | 'currentVestingSchedule__claimedAt'
   | 'currentVestingSchedule__remainderAmount'
+  | 'currentVestingSchedule__totalAmount'
   | 'currentCliffAndFlowTask'
   | 'currentCliffAndFlowTask__id'
   | 'currentCliffAndFlowTask__type'
@@ -1739,6 +1741,7 @@ export type VestingSchedule = {
   claimValidityDate: Scalars['BigInt'];
   claimedAt?: Maybe<Scalars['BigInt']>;
   remainderAmount: Scalars['BigInt'];
+  totalAmount: Scalars['BigInt'];
 };
 
 
@@ -2932,6 +2935,14 @@ export type VestingSchedule_filter = {
   remainderAmount_lte?: InputMaybe<Scalars['BigInt']>;
   remainderAmount_in?: InputMaybe<Array<Scalars['BigInt']>>;
   remainderAmount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  totalAmount?: InputMaybe<Scalars['BigInt']>;
+  totalAmount_not?: InputMaybe<Scalars['BigInt']>;
+  totalAmount_gt?: InputMaybe<Scalars['BigInt']>;
+  totalAmount_lt?: InputMaybe<Scalars['BigInt']>;
+  totalAmount_gte?: InputMaybe<Scalars['BigInt']>;
+  totalAmount_lte?: InputMaybe<Scalars['BigInt']>;
+  totalAmount_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  totalAmount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<VestingSchedule_filter>>>;
@@ -2963,7 +2974,8 @@ export type VestingSchedule_orderBy =
   | 'events'
   | 'claimValidityDate'
   | 'claimedAt'
-  | 'remainderAmount';
+  | 'remainderAmount'
+  | 'totalAmount';
 
 export type _Block_ = {
   /** The hash of the block */

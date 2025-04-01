@@ -6,7 +6,7 @@ import { getVestingScheduler } from "../../../eth-sdk/getEthSdk";
 import { Signer } from "ethers";
 import { BatchTransaction } from "../../../libs/gnosis-tx-builder/types";
 import { vestingSchedulerV3Abi } from "../../../generated";
-import { decodeFunctionData, encodeFunctionData, getAbiItem } from "viem";
+import { getAbiItem } from "viem";
 
 export interface ExecuteTranchUpdate extends BaseSuperTokenMutation, ProjectsOverview {
 }
@@ -178,12 +178,12 @@ export const mapProjectStateIntoGnosisSafeBatch = (state: ProjectsOverview) => {
                     const args = [
                         action.payload.superToken,
                         action.payload.receiver,
-                        action.payload.endDate,
-                        "0x"
+                        BigInt(action.payload.totalAmount),
+                        action.payload.endDate
                     ] as const;
                     const functionAbi = getAbiItem({
                         abi: vestingSchedulerV3Abi,
-                        name: 'updateVestingSchedule',
+                        name: 'updateVestingScheduleFlowRateFromAmountAndEndDate',
                         args
                     })
                     transactions.push({
@@ -192,27 +192,6 @@ export const mapProjectStateIntoGnosisSafeBatch = (state: ProjectsOverview) => {
                         value: "0",
                         contractMethod: functionAbi,
                         contractInputsValues: args.reduce((acc, arg, index) => {
-                            acc[`arg${index}`] = arg.toString();
-                            return acc;
-                        }, {} as Record<string, string>)
-                    })
-
-                    const args2 = [
-                        action.payload.superToken,
-                        action.payload.receiver,
-                        BigInt(action.payload.totalAmount)
-                    ] as const;
-                    const functionAbi2 = getAbiItem({
-                        abi: vestingSchedulerV3Abi,
-                        name: 'updateVestingScheduleFlowRateFromAmount',
-                        args: args2
-                    })
-                    transactions.push({
-                        to: vestingContractInfo.address,
-                        data: null,
-                        value: "0",
-                        contractMethod: functionAbi2,
-                        contractInputsValues: args2.reduce((acc, arg, index) => {
                             acc[`arg${index}`] = arg.toString();
                             return acc;
                         }, {} as Record<string, string>)
