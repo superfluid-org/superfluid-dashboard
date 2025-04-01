@@ -36,8 +36,6 @@ const appTransports = Object.fromEntries(
   })
 );
 
-const enableEIP6963 = true;
-
 // # Test Connector
 type EthereumProvider = Parameters<typeof custom>[0];
 

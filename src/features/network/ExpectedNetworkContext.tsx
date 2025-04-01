@@ -9,9 +9,9 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useAccount } from "wagmi";
 import { useAvailableNetworks } from "./AvailableNetworksContext";
 import { findNetworkOrThrow, Network, networkDefinition, tryFindNetwork } from "./networks";
+import { useAppKitNetwork } from "@reown/appkit/react";
 
 /**
  * "Expected" points to expected wallet network.
@@ -119,24 +119,24 @@ export const ExpectedNetworkProvider: FC<PropsWithChildren> = ({
     }
   }, [router.isReady, networkQueryParam]);
 
-  const { chain: activeChain } = useAccount();
+  const { chainId: activeChainId } = useAppKitNetwork();
 
   useEffect(() => {
     if (autoSwitchStop) {
       return;
     }
 
-    if (activeChain && activeChain.id !== network.id) {
+    if (activeChainId && activeChainId !== network.id) {
       const networkFromWallet = tryFindNetwork(
         availableNetworks,
-        activeChain.id
+        activeChainId
       );
       if (networkFromWallet) {
         setNetwork(networkFromWallet);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeChain, availableNetworks]);
+  }, [activeChainId, availableNetworks]);
 
   return (
     <ExpectedNetworkContext.Provider value={contextValue}>
