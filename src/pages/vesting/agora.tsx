@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { NextPageWithLayout } from "../_app";
 import { useVisibleAddress } from "../../features/wallet/VisibleAddressContext";
 import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
-import { ProjectActions, AgoraResponseData, ProjectsOverview, ProjectState } from "../api/agora";
+import { ProjectActions, AgoraResponseData, ProjectsOverview, ProjectState, AllowanceActions } from "../api/agora";
 import { TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Collapse, Box, Typography, IconButton, Container, FormControl, InputLabel, Select, MenuItem, List, ListItem, ListItemText, Divider, ListItemIcon, Button, useMediaQuery } from "@mui/material";
 import { FC, Fragment, useEffect, useMemo, useState } from "react";
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
@@ -12,9 +12,10 @@ import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 import UpdateIcon from '@mui/icons-material/Update';
 import StopIcon from '@mui/icons-material/Stop';
+import SecurityIcon from '@mui/icons-material/Security';
 import { formatEther } from "viem";
 import { BigLoader } from "../../features/vesting/BigLoader";
-import ConnectionBoundary, { useConnectionBoundary } from "../../features/transactionBoundary/ConnectionBoundary";
+import ConnectionBoundary from "../../features/transactionBoundary/ConnectionBoundary";
 import { rpcApi } from "../../features/redux/store";
 import { TransactionBoundary } from "../../features/transactionBoundary/TransactionBoundary";
 import { TransactionButton, transactionButtonDefaultProps } from "../../features/transactionBoundary/TransactionButton";
@@ -29,7 +30,7 @@ import { mapProjectStateIntoGnosisSafeBatch } from "../../features/redux/endpoin
 import { TxBuilder } from "../../libs/gnosis-tx-builder";
 
 // Updated ActionsList component without the badges
-const ActionsList: FC<{ actions: ProjectActions[] }> = ({ actions }) => {
+const ActionsList: FC<{ actions: (ProjectActions | AllowanceActions)[] }> = ({ actions }) => {
     if (actions.length === 0) {
         return <Typography variant="body2" color="text.secondary">No actions needed</Typography>;
     }
@@ -75,6 +76,18 @@ const ActionsList: FC<{ actions: ProjectActions[] }> = ({ actions }) => {
                         icon = <StopIcon color="error" />;
                         primaryText = `Stop Vesting Schedule for ${action.payload.receiver.slice(0, 6)}...${action.payload.receiver.slice(-4)}`;
                         secondaryText = `End Date: ${dummyEndDate}`;
+                        break;
+
+                    case "increase-token-allowance":
+                        icon = <SecurityIcon color="primary" />;
+                        primaryText = `Increase Token Allowance for ${action.payload.receiver.slice(0, 6)}...${action.payload.receiver.slice(-4)}`;
+                        secondaryText = `Additional Allowance: ${formatAmount(action.payload.allowanceDelta)}`;
+                        break;
+
+                    case "increase-flow-operator-permissions":
+                        icon = <SecurityIcon color="primary" />;
+                        primaryText = `Increase Flow Operator Permissions for ${action.payload.receiver.slice(0, 6)}...${action.payload.receiver.slice(-4)}`;
+                        secondaryText = `Flow Rate Allowance: ${formatAmount(action.payload.flowRateAllowanceDelta)} per second`;
                         break;
 
                     default:
@@ -141,8 +154,12 @@ const AgoraPage: NextPageWithLayout = () => {
     const projectsOverview = data?.success ? data.projectsOverview : null;
 
     const allActions = useMemo(() => {
-        return rows.flatMap(row => row.todo);
-    }, [data]);
+        if (!data?.success) return [];
+        return [
+            ...(data.projectsOverview.allowanceActions || []),
+            ...rows.flatMap(row => row.todo),
+        ];
+    }, [data, rows]);
 
     if (isLoading || isWalletConnecting) {
         // TODO: use skeleton table?
