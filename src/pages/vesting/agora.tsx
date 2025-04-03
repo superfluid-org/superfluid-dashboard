@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { NextPageWithLayout } from "../_app";
 import { useVisibleAddress } from "../../features/wallet/VisibleAddressContext";
 import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
-import { Actions, AgoraResponseData, ProjectsOverview, ProjectState } from "../api/agora";
+import { ProjectActions, AgoraResponseData, ProjectsOverview, ProjectState } from "../api/agora";
 import { TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Collapse, Box, Typography, IconButton, Container, FormControl, InputLabel, Select, MenuItem, List, ListItem, ListItemText, Divider, ListItemIcon, Button, useMediaQuery } from "@mui/material";
 import { FC, Fragment, useEffect, useMemo, useState } from "react";
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
@@ -29,7 +29,7 @@ import { mapProjectStateIntoGnosisSafeBatch } from "../../features/redux/endpoin
 import { TxBuilder } from "../../libs/gnosis-tx-builder";
 
 // Updated ActionsList component without the badges
-const ActionsList: FC<{ actions: Actions[] }> = ({ actions }) => {
+const ActionsList: FC<{ actions: ProjectActions[] }> = ({ actions }) => {
     if (actions.length === 0) {
         return <Typography variant="body2" color="text.secondary">No actions needed</Typography>;
     }

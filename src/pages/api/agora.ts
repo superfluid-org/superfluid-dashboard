@@ -5,11 +5,17 @@ import { Effect as E, Logger, LogLevel, pipe } from 'effect'
 import { uniq } from 'lodash'
 import { tryGetBuiltGraphSdkForNetwork } from '../../vesting-subgraph/vestingSubgraphApi'
 import { optimism, optimismSepolia } from 'viem/chains'
-import { Address, encodePacked, getAddress, isAddress, keccak256 } from 'viem'
+import { Address, createPublicClient, getAddress, http, isAddress } from 'viem'
 import { mapSubgraphVestingSchedule, VestingSchedule } from '../../features/vesting/types'
 import { UnitOfTime } from '../../features/send/FlowRateInput'
 import { allNetworks, findNetworkOrThrow } from '../../features/network/networks'
 import { getUnixTime } from 'date-fns'
+import { cfaV1ForwarderAbi, cfaV1ForwarderAddress, superTokenAbi } from '../../generated'
+
+// TODO: this is duplicated
+const ACL_CREATE_PERMISSION = 1;
+const ACL_UPDATE_PERMISSION = 2;
+const ACL_DELETE_PERMISSION = 4;
 
 // Note: Pre-defining this because yup was not able to infer the types correctly for the transforms...
 type AgoraResponseEntry = {
@@ -62,7 +68,7 @@ type TranchPlan = {
     }[]
 }
 
-type ActionType = "create-vesting-schedule" | "update-vesting-schedule" | "stop-vesting-schedule"
+type ActionType = "create-vesting-schedule" | "update-vesting-schedule" | "stop-vesting-schedule" | "increase-token-allowance" | "increase-flow-operator-permissions"
 
 type Action<TType extends ActionType, TPayload extends Record<string, unknown>> = {
     type: TType
@@ -97,7 +103,23 @@ type StopVestingScheduleAction = Action<"stop-vesting-schedule", {
     receiver: Address
 }>
 
-export type Actions = CreateVestingScheduleAction | UpdateVestingScheduleAction | StopVestingScheduleAction
+type TokenAllowanceAction = Action<"increase-token-allowance", {
+    superToken: Address
+    sender: Address
+    receiver: Address
+    allowanceDelta: string
+}>
+
+type SetFlowOperatorPermissionsAction = Action<"increase-flow-operator-permissions", {
+    superToken: Address
+    sender: Address
+    receiver: Address
+    permissionsDelta: number
+    flowRateAllowanceDelta: string
+}>
+
+export type ProjectActions = CreateVestingScheduleAction | UpdateVestingScheduleAction | StopVestingScheduleAction
+export type AllowanceActions = TokenAllowanceAction | SetFlowOperatorPermissionsAction
 
 export type ProjectsOverview = {
     chainId: number
@@ -105,6 +127,7 @@ export type ProjectsOverview = {
     senderAddress: string
     tranchPlan: TranchPlan
     projects: ProjectState[]
+    allowanceActions: AllowanceActions[]
 }
 
 export type ProjectState = {
@@ -121,7 +144,7 @@ export type ProjectState = {
         amount: string
     }[]
 
-    todo: Actions[]
+    todo: ProjectActions[]
 }
 
 
@@ -186,14 +209,8 @@ export default async function handler(
         }
     }
 
-    // TODO: validate method?
-    const chain = optimismSepolia;
-    const network = findNetworkOrThrow(allNetworks, chain.id);
-
     const sender_ = req.query.sender
     if (!sender_ || typeof sender_ !== 'string' || !isAddress(sender_)) {
-        // res.status(400).json({ message: 'Sender address is required as query parameter' })
-        // TODO: Handle this better
         return res.status(400).json({
             success: false,
             message: 'Sender address is required as query parameter'
@@ -233,7 +250,16 @@ export default async function handler(
         })
     }
 
-    const token = tokenAddresses[chain.id];
+    const network = findNetworkOrThrow(allNetworks, chainId);
+    const vestingContractInfo = network.vestingContractAddress["v3"]
+    if (!vestingContractInfo) {
+        return res.status(400).json({
+            success: false,
+            message: 'Network does not support vesting scheduler V3.'
+        })
+    }
+
+    const token = tokenAddresses[network.id as keyof typeof tokenAddresses];
 
     const main = E.gen(function* () {
 
@@ -349,10 +375,11 @@ export default async function handler(
             throw new Error("Subgraph SDK not found! Should never happen.");
         }
 
-        // TODO: I need tranch start time. Or not? If there is a tranch then that's the start time. I think I only need the end time.
-
-        // TODO: Should I filter out the non-KYC projects from here for optimization purposes?
-        const allReceiverAddresses_bothActiveAndInactive = uniq(dataFromAgora.flatMap(x => x.wallets));
+        const allReceiverAddresses_bothActiveAndInactive = uniq(
+            dataFromAgora
+                .filter(x => x.KYCStatusCompleted)
+                .flatMap(x => x.wallets)
+        );
 
         yield* E.logTrace(`Fetching vesting schedules for ${allReceiverAddresses_bothActiveAndInactive.length} wallets`);
         const vestingSchedulesFromSubgraph = yield* pipe(
@@ -385,9 +412,7 @@ export default async function handler(
         );
         // TODO: I know this has too many vesting schedules. I'll not perfect the filtering just yet.
 
-        // Probably the most sensible thing to do now is to group together tranches with the relevant vesting schedule data...
-
-        // Map into project states
+        // # Map into project states
         const projectStates = yield* E.forEach(dataFromAgora, (row) => {
             return E.gen(function* () {
 
@@ -404,9 +429,6 @@ export default async function handler(
                     // return yield* E.die(new Error("Current and previous wallets are the same. Not prepared for this situation!"));
                 }
 
-                // TODO: Find all relevant vesting schedules
-                // TODO: Probably want to update subgraph after all...
-
                 const allRelevantVestingSchedules = vestingSchedulesFromSubgraph.filter(x => walletsLowerCased.includes(x.receiver.toLowerCase()));
 
                 const currentWalletVestingSchedule = allRelevantVestingSchedules.find(
@@ -414,8 +436,6 @@ export default async function handler(
                 ) ?? null;
                 const previousWalletVestingSchedule = (agoraPreviousWallet && allRelevantVestingSchedules.find(x => x.receiver.toLowerCase() === agoraPreviousWallet.toLowerCase())) ?? null;
 
-                // TODO: Double-check if an amount is for the total time or for a single tranch.
-                // Answer: It is for the current tranch.
                 const agoraCurrentAmount_ = row.amounts[row.amounts.length - 1] ?? 0;
                 const agoraCurrentAmount = BigInt(agoraCurrentAmount_);
                 const agoraTotalAmount = row.amounts.reduce((sum, amount) => sum + BigInt(amount || 0), 0n);
@@ -423,7 +443,7 @@ export default async function handler(
                 const missingAmount = agoraTotalAmount - subgraphTotalAmount;
 
                 const actions = yield* E.gen(function* () {
-                    const actions: Actions[] = [];
+                    const actions: ProjectActions[] = [];
 
                     if (!row.KYCStatusCompleted) {
                         return [];
@@ -444,13 +464,10 @@ export default async function handler(
                             payload: {
                                 superToken: token,
                                 sender,
-                                receiver: agoraPreviousWallet, // Make sure to use previous wallet here.
+                                receiver: agoraPreviousWallet, // Make sure to use previous wallet here!
                             }
                         } as StopVestingScheduleAction)
                     }
-
-                    // ARGH: Something is off here. When updating a vesting schedule, I need to know how much was vested to this particular receiver!
-                    // I might need to do in the subgraph. I can look at previous vesting schedules and see if they match!
 
                     const isAlreadyVestingToRightWallet = !!currentWalletVestingSchedule;
                     if (!isAlreadyVestingToRightWallet) {
@@ -499,9 +516,6 @@ export default async function handler(
                                 }
                             } as StopVestingScheduleAction)
                         }
-
-                        // TODO: this breaks with wallet changing...
-                        // TODO: the cleanest might be still to put `totalAmount` on subgraph
 
                         const isFundingJustChangedForProject = agoraTotalAmount > subgraphTotalAmount;
 
@@ -557,22 +571,119 @@ export default async function handler(
 
         yield* E.logTrace(`Processed ${projectStates.length} project states`);
 
+        // TODO: Should I handle allowance here?
+        // What's the best way to do it? It could be by only looking at the actions. I could be by looking at actions and the vesting schedules.
+        // It might be in the form similar to "Fix access"
+        // I will need:
+        //  requiredTokenAllowanceWei: string;
+        //  requiredFlowOperatorPermissions: number;
+        //  requiredFlowRateAllowanceWei: string;
+
+        const publicClient = createPublicClient({
+            chain: network,
+            transport: http(network.rpcUrls.superfluid.http[0])
+        });
+
+        // const flowOperatorData = await superToken.getFlowOperatorData({
+        //     flowOperator: network.flowSchedulerContractAddress,
+        //     sender: arg.senderAddress,
+        //     providerOrSigner: arg.signer,
+        //   });
+
+        // {
+        //     type: 'function',
+        //     inputs: [
+        //       {
+        //         name: 'token',
+        //         internalType: 'contract ISuperfluidToken',
+        //         type: 'address',
+        //       },
+        //       { name: 'sender', internalType: 'address', type: 'address' },
+        //       { name: 'flowOperator', internalType: 'address', type: 'address' },
+        //     ],
+        //     name: 'getFlowOperatorData',
+        //     outputs: [
+        //       { name: 'flowOperatorId', internalType: 'bytes32', type: 'bytes32' },
+        //       { name: 'permissions', internalType: 'uint8', type: 'uint8' },
+        //       { name: 'flowRateAllowance', internalType: 'int96', type: 'int96' },
+        //     ],
+        //     stateMutability: 'view',
+        //   },
+
+        const allowanceActions = yield* E.gen(function* () {
+            // TODO: Use RPC errors
+
+            const result: AllowanceActions[] = [];
+
+            const flowOperatorData = yield* E.tryPromise(() => publicClient.readContract({
+                address: cfaV1ForwarderAddress[network.id as keyof typeof cfaV1ForwarderAddress],
+                abi: cfaV1ForwarderAbi,
+                functionName: "getFlowOperatorPermissions",
+                args: [token, sender, vestingContractInfo.address]
+            }));
+            const existingPermissions = Number(flowOperatorData[0]);
+            const neededPermissions = ACL_CREATE_PERMISSION | ACL_DELETE_PERMISSION;
+            const neededFlowRateAllowance = projectStates
+                .flatMap(x => x.todo)
+                .filter(x => x.type === "create-vesting-schedule")
+                .reduce((sum, action) => {
+                    const streamedAmount = BigInt(action.payload.totalAmount) - BigInt(action.payload.cliffAmount);
+                    const flowRate = streamedAmount / BigInt(action.payload.totalDuration);
+                    return sum + flowRate;
+                }, 0n);
+            const permissionsDelta = existingPermissions | neededPermissions;
+
+            if (permissionsDelta !== 0 || neededFlowRateAllowance > 0n) {
+                result.push({
+                    type: "increase-flow-operator-permissions",
+                    payload: {
+                        superToken: token,
+                        sender,
+                        receiver: vestingContractInfo.address,
+                        permissionsDelta,
+                        flowRateAllowanceDelta: neededFlowRateAllowance.toString()
+                    }
+                })
+            }
+
+            const tokenAllowance = yield* E.tryPromise(() => publicClient.readContract({
+                address: token,
+                abi: superTokenAbi,
+                functionName: "allowance",
+                args: [sender, vestingContractInfo.address]
+            }));
+
+            const agoraTotalAmountOfAllProjects = dataFromAgora
+                .filter(x => x.KYCStatusCompleted)
+                .reduce((sum, row) => sum + BigInt(row.amounts.reduce((sum, amount) => sum + BigInt(amount || 0), 0n)), 0n);
+            const missingAllowance = agoraTotalAmountOfAllProjects - tokenAllowance;
+            if (missingAllowance > 0n) {
+                result.push({
+                    type: "increase-token-allowance",
+                    payload: {
+                        superToken: token,
+                        sender,
+                        receiver: vestingContractInfo.address,
+                        allowanceDelta: missingAllowance.toString()
+                    }
+                })
+            }
+
+            return result;
+        })
+
         return {
             chainId,
             senderAddress: sender,
             superTokenAddress: token,
             tranchPlan,
-            projects: projectStates
+            projects: projectStates,
+            allowanceActions
         }
     })
 
-    // TODO: Should I handle allowance here?
-    // What's the best way to do it? It could be by only looking at the actions. I could be by looking at actions and the vesting schedules.
-    // It might be in the form similar to "Fix access"
-    // I will need:
-    //  requiredTokenAllowanceWei: string;
-    //  requiredFlowOperatorPermissions: number;
-    //  requiredFlowRateAllowanceWei: string;
+    // Look at create commands and sum up the expected flow rates for flow rate allowance
+    // The token allowance should be the sum of all tranches
 
     const projectsOverview = await E.runPromise(
         pipe(
@@ -585,46 +696,4 @@ export default async function handler(
         success: true,
         projectsOverview
     })
-}
-
-// # Helpers
-interface ScheduleAccounting {
-    lastUpdated: number;
-    alreadyVestedAmount: string;
-}
-
-function getTotalVestedAmount(
-    schedule: VestingSchedule,
-    accounting: ScheduleAccounting
-): bigint {
-    // TODO: I might need to handle myself the cliffAndFlowDate being before the current timestamp
-
-    // If lastUpdated is 0, use the cliff date instead
-    const actualLastUpdate = accounting.lastUpdated === 0
-        ? schedule.cliffAndFlowDate
-        : accounting.lastUpdated;
-
-    // Calculate the duration of the current flow period
-    const currentFlowDuration = schedule.endDate - actualLastUpdate;
-
-    // Calculate the amount from the current flow
-    const currentFlowAmount = BigInt(currentFlowDuration) * BigInt(schedule.flowRate);
-
-    // Calculate the total vested amount by summing all components
-    const totalVestedAmount =
-        BigInt(accounting.alreadyVestedAmount) +
-        BigInt(schedule.cliffAmount) +
-        BigInt(schedule.remainderAmount) +
-        currentFlowAmount;
-
-    return totalVestedAmount;
-}
-
-function getId(superToken: Address, sender: Address, receiver: Address): `0x${string}` {
-    return keccak256(
-        encodePacked(
-            ["address", "address", "address"],
-            [superToken, sender, receiver]
-        )
-    );
 }
