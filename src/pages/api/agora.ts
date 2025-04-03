@@ -5,10 +5,9 @@ import { Effect as E, Logger, LogLevel, pipe } from 'effect'
 import { uniq } from 'lodash'
 import { tryGetBuiltGraphSdkForNetwork } from '../../vesting-subgraph/vestingSubgraphApi'
 import { optimism, optimismSepolia } from 'viem/chains'
-import { Address, createPublicClient, encodePacked, getAddress, http, isAddress, keccak256 } from 'viem'
+import { Address, encodePacked, getAddress, isAddress, keccak256 } from 'viem'
 import { mapSubgraphVestingSchedule, VestingSchedule } from '../../features/vesting/types'
 import { UnitOfTime } from '../../features/send/FlowRateInput'
-import { vestingSchedulerV3Abi, vestingSchedulerV3Address } from '../../generated'
 import { allNetworks, findNetworkOrThrow } from '../../features/network/networks'
 import { getUnixTime } from 'date-fns'
 
@@ -300,6 +299,14 @@ export default async function handler(
                 };
             })
         }
+        const claimEndDate = tranchPlan.tranches[tranchPlan.tranches.length - 1].endTimestamp + 1 * UnitOfTime.Year;
+        function getClaimPeriod(startTimestamp: number) {
+            if (startTimestamp > claimEndDate) {
+                throw new Error("Start timestamp is after claim end date. This shouldn't happen. Please investigate!");
+            }
+
+            return claimEndDate - startTimestamp;
+        }
 
         // # Validate no wallet appears in multiple rows
         // Just in case... You can probably skip reading this part.
@@ -447,7 +454,6 @@ export default async function handler(
 
                     const isAlreadyVestingToRightWallet = !!currentWalletVestingSchedule;
                     if (!isAlreadyVestingToRightWallet) {
-                        // TODO: This is tricky, we'll have to look at previous vesting schedules as well, so not to double-account
                         if (didKycGetJustApproved) {
                             actions.push({
                                 type: "create-vesting-schedule",
@@ -460,7 +466,7 @@ export default async function handler(
                                     totalDuration: currentTranch.totalDuration,
                                     cliffAmount: cliffAmount.toString(),
                                     cliffPeriod: cliffAmount > 0n ? 1 : 0,
-                                    claimPeriod: currentTranch.totalDuration * 2 // TODO: this is not finished solution
+                                    claimPeriod: getClaimPeriod(currentTranch.startTimestamp)
                                 }
                             } as CreateVestingScheduleAction)
                         } else {
@@ -475,7 +481,7 @@ export default async function handler(
                                     totalDuration: currentTranch.totalDuration,
                                     cliffAmount: "0",
                                     cliffPeriod: 0,
-                                    claimPeriod: currentTranch.totalDuration * 2 // TODO: this is not finished solution
+                                    claimPeriod: getClaimPeriod(currentTranch.startTimestamp)
                                 }
                             } as CreateVestingScheduleAction)
                         }
