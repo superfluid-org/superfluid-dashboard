@@ -29,7 +29,7 @@ export interface BatchFileMeta {
 
 export interface BatchTransaction {
   to: Address;
-  value: string;
+  value?: string;
   data?: string | null;
   contractMethod?: AbiFunction;
   contractInputsValues?: { [key: string]: string };
