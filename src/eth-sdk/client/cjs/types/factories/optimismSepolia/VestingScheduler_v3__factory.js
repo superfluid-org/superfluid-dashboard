@@ -49,11 +49,6 @@ const _abi = [
     },
     {
         inputs: [],
-        name: "HostInvalid",
-        type: "error",
-    },
-    {
-        inputs: [],
         name: "InvalidNewTotalAmount",
         type: "error",
     },
@@ -542,7 +537,7 @@ const _abi = [
         inputs: [
             {
                 internalType: "bytes32",
-                name: "",
+                name: "vestingId",
                 type: "bytes32",
             },
         ],
@@ -566,294 +561,6 @@ const _abi = [
         inputs: [
             {
                 internalType: "contract ISuperToken",
-                name: "",
-                type: "address",
-            },
-            {
-                internalType: "address",
-                name: "",
-                type: "address",
-            },
-            {
-                internalType: "bytes32",
-                name: "",
-                type: "bytes32",
-            },
-            {
-                internalType: "bytes",
-                name: "",
-                type: "bytes",
-            },
-            {
-                internalType: "bytes",
-                name: "",
-                type: "bytes",
-            },
-            {
-                internalType: "bytes",
-                name: "",
-                type: "bytes",
-            },
-        ],
-        name: "afterAgreementCreated",
-        outputs: [
-            {
-                internalType: "bytes",
-                name: "",
-                type: "bytes",
-            },
-        ],
-        stateMutability: "nonpayable",
-        type: "function",
-    },
-    {
-        inputs: [
-            {
-                internalType: "contract ISuperToken",
-                name: "",
-                type: "address",
-            },
-            {
-                internalType: "address",
-                name: "",
-                type: "address",
-            },
-            {
-                internalType: "bytes32",
-                name: "",
-                type: "bytes32",
-            },
-            {
-                internalType: "bytes",
-                name: "",
-                type: "bytes",
-            },
-            {
-                internalType: "bytes",
-                name: "",
-                type: "bytes",
-            },
-            {
-                internalType: "bytes",
-                name: "",
-                type: "bytes",
-            },
-        ],
-        name: "afterAgreementTerminated",
-        outputs: [
-            {
-                internalType: "bytes",
-                name: "",
-                type: "bytes",
-            },
-        ],
-        stateMutability: "nonpayable",
-        type: "function",
-    },
-    {
-        inputs: [
-            {
-                internalType: "contract ISuperToken",
-                name: "",
-                type: "address",
-            },
-            {
-                internalType: "address",
-                name: "",
-                type: "address",
-            },
-            {
-                internalType: "bytes32",
-                name: "",
-                type: "bytes32",
-            },
-            {
-                internalType: "bytes",
-                name: "",
-                type: "bytes",
-            },
-            {
-                internalType: "bytes",
-                name: "",
-                type: "bytes",
-            },
-            {
-                internalType: "bytes",
-                name: "",
-                type: "bytes",
-            },
-        ],
-        name: "afterAgreementUpdated",
-        outputs: [
-            {
-                internalType: "bytes",
-                name: "",
-                type: "bytes",
-            },
-        ],
-        stateMutability: "nonpayable",
-        type: "function",
-    },
-    {
-        inputs: [
-            {
-                internalType: "contract ISuperToken",
-                name: "",
-                type: "address",
-            },
-            {
-                internalType: "address",
-                name: "",
-                type: "address",
-            },
-            {
-                internalType: "bytes32",
-                name: "",
-                type: "bytes32",
-            },
-            {
-                internalType: "bytes",
-                name: "",
-                type: "bytes",
-            },
-            {
-                internalType: "bytes",
-                name: "",
-                type: "bytes",
-            },
-        ],
-        name: "beforeAgreementCreated",
-        outputs: [
-            {
-                internalType: "bytes",
-                name: "",
-                type: "bytes",
-            },
-        ],
-        stateMutability: "view",
-        type: "function",
-    },
-    {
-        inputs: [
-            {
-                internalType: "contract ISuperToken",
-                name: "",
-                type: "address",
-            },
-            {
-                internalType: "address",
-                name: "",
-                type: "address",
-            },
-            {
-                internalType: "bytes32",
-                name: "",
-                type: "bytes32",
-            },
-            {
-                internalType: "bytes",
-                name: "",
-                type: "bytes",
-            },
-            {
-                internalType: "bytes",
-                name: "",
-                type: "bytes",
-            },
-        ],
-        name: "beforeAgreementTerminated",
-        outputs: [
-            {
-                internalType: "bytes",
-                name: "",
-                type: "bytes",
-            },
-        ],
-        stateMutability: "view",
-        type: "function",
-    },
-    {
-        inputs: [
-            {
-                internalType: "contract ISuperToken",
-                name: "",
-                type: "address",
-            },
-            {
-                internalType: "address",
-                name: "",
-                type: "address",
-            },
-            {
-                internalType: "bytes32",
-                name: "",
-                type: "bytes32",
-            },
-            {
-                internalType: "bytes",
-                name: "",
-                type: "bytes",
-            },
-            {
-                internalType: "bytes",
-                name: "",
-                type: "bytes",
-            },
-        ],
-        name: "beforeAgreementUpdated",
-        outputs: [
-            {
-                internalType: "bytes",
-                name: "",
-                type: "bytes",
-            },
-        ],
-        stateMutability: "view",
-        type: "function",
-    },
-    {
-        inputs: [
-            {
-                internalType: "contract ISuperToken",
-                name: "superToken",
-                type: "address",
-            },
-            {
-                internalType: "address",
-                name: "receiver",
-                type: "address",
-            },
-            {
-                internalType: "uint256",
-                name: "totalAmount",
-                type: "uint256",
-            },
-            {
-                internalType: "uint32",
-                name: "totalDuration",
-                type: "uint32",
-            },
-            {
-                internalType: "bytes",
-                name: "ctx",
-                type: "bytes",
-            },
-        ],
-        name: "createAndExecuteVestingScheduleFromAmountAndDuration",
-        outputs: [
-            {
-                internalType: "bytes",
-                name: "newCtx",
-                type: "bytes",
-            },
-        ],
-        stateMutability: "nonpayable",
-        type: "function",
-    },
-    {
-        inputs: [
-            {
-                internalType: "contract ISuperToken",
                 name: "superToken",
                 type: "address",
             },
@@ -963,192 +670,9 @@ const _abi = [
                 name: "endDate",
                 type: "uint32",
             },
-            {
-                internalType: "bytes",
-                name: "ctx",
-                type: "bytes",
-            },
         ],
         name: "createVestingSchedule",
-        outputs: [
-            {
-                internalType: "bytes",
-                name: "newCtx",
-                type: "bytes",
-            },
-        ],
-        stateMutability: "nonpayable",
-        type: "function",
-    },
-    {
-        inputs: [
-            {
-                internalType: "contract ISuperToken",
-                name: "superToken",
-                type: "address",
-            },
-            {
-                internalType: "address",
-                name: "receiver",
-                type: "address",
-            },
-            {
-                internalType: "uint32",
-                name: "startDate",
-                type: "uint32",
-            },
-            {
-                internalType: "uint32",
-                name: "cliffDate",
-                type: "uint32",
-            },
-            {
-                internalType: "int96",
-                name: "flowRate",
-                type: "int96",
-            },
-            {
-                internalType: "uint256",
-                name: "cliffAmount",
-                type: "uint256",
-            },
-            {
-                internalType: "uint32",
-                name: "endDate",
-                type: "uint32",
-            },
-            {
-                internalType: "uint32",
-                name: "claimValidityDate",
-                type: "uint32",
-            },
-            {
-                internalType: "bytes",
-                name: "ctx",
-                type: "bytes",
-            },
-        ],
-        name: "createVestingSchedule",
-        outputs: [
-            {
-                internalType: "bytes",
-                name: "newCtx",
-                type: "bytes",
-            },
-        ],
-        stateMutability: "nonpayable",
-        type: "function",
-    },
-    {
-        inputs: [
-            {
-                internalType: "contract ISuperToken",
-                name: "superToken",
-                type: "address",
-            },
-            {
-                internalType: "address",
-                name: "receiver",
-                type: "address",
-            },
-            {
-                internalType: "uint256",
-                name: "totalAmount",
-                type: "uint256",
-            },
-            {
-                internalType: "uint32",
-                name: "totalDuration",
-                type: "uint32",
-            },
-            {
-                internalType: "uint32",
-                name: "startDate",
-                type: "uint32",
-            },
-            {
-                internalType: "uint32",
-                name: "cliffPeriod",
-                type: "uint32",
-            },
-            {
-                internalType: "uint32",
-                name: "claimPeriod",
-                type: "uint32",
-            },
-            {
-                internalType: "uint256",
-                name: "cliffAmount",
-                type: "uint256",
-            },
-            {
-                internalType: "bytes",
-                name: "ctx",
-                type: "bytes",
-            },
-        ],
-        name: "createVestingScheduleFromAmountAndDuration",
-        outputs: [
-            {
-                internalType: "bytes",
-                name: "newCtx",
-                type: "bytes",
-            },
-        ],
-        stateMutability: "nonpayable",
-        type: "function",
-    },
-    {
-        inputs: [
-            {
-                internalType: "contract ISuperToken",
-                name: "superToken",
-                type: "address",
-            },
-            {
-                internalType: "address",
-                name: "receiver",
-                type: "address",
-            },
-            {
-                internalType: "uint256",
-                name: "totalAmount",
-                type: "uint256",
-            },
-            {
-                internalType: "uint32",
-                name: "totalDuration",
-                type: "uint32",
-            },
-            {
-                internalType: "uint32",
-                name: "startDate",
-                type: "uint32",
-            },
-            {
-                internalType: "uint32",
-                name: "cliffPeriod",
-                type: "uint32",
-            },
-            {
-                internalType: "uint32",
-                name: "claimPeriod",
-                type: "uint32",
-            },
-            {
-                internalType: "bytes",
-                name: "ctx",
-                type: "bytes",
-            },
-        ],
-        name: "createVestingScheduleFromAmountAndDuration",
-        outputs: [
-            {
-                internalType: "bytes",
-                name: "newCtx",
-                type: "bytes",
-            },
-        ],
+        outputs: [],
         stateMutability: "nonpayable",
         type: "function",
     },
@@ -1254,21 +778,10 @@ const _abi = [
                 internalType: "address",
                 name: "receiver",
                 type: "address",
-            },
-            {
-                internalType: "bytes",
-                name: "ctx",
-                type: "bytes",
             },
         ],
         name: "deleteVestingSchedule",
-        outputs: [
-            {
-                internalType: "bytes",
-                name: "newCtx",
-                type: "bytes",
-            },
-        ],
+        outputs: [],
         stateMutability: "nonpayable",
         type: "function",
     },
@@ -1352,7 +865,7 @@ const _abi = [
         outputs: [
             {
                 internalType: "uint256",
-                name: "",
+                name: "maxNeededAllowance",
                 type: "uint256",
             },
         ],
@@ -1394,7 +907,7 @@ const _abi = [
                         type: "uint32",
                     },
                 ],
-                internalType: "struct IVestingSchedulerV2.VestingSchedule",
+                internalType: "struct IVestingSchedulerV3.VestingSchedule",
                 name: "schedule",
                 type: "tuple",
             },
@@ -1403,7 +916,7 @@ const _abi = [
         outputs: [
             {
                 internalType: "uint256",
-                name: "",
+                name: "maxNeededAllowance",
                 type: "uint256",
             },
         ],
@@ -1492,8 +1005,8 @@ const _abi = [
                         type: "uint32",
                     },
                 ],
-                internalType: "struct IVestingSchedulerV2.VestingSchedule",
-                name: "",
+                internalType: "struct IVestingSchedulerV3.VestingSchedule",
+                name: "schedule",
                 type: "tuple",
             },
         ],
@@ -1512,7 +1025,7 @@ const _abi = [
         outputs: [
             {
                 internalType: "bool",
-                name: "",
+                name: "isForwarderTrusted",
                 type: "bool",
             },
         ],
@@ -1622,7 +1135,7 @@ const _abi = [
                         type: "uint96",
                     },
                 ],
-                internalType: "struct IVestingSchedulerV2.ScheduleCreationParams",
+                internalType: "struct IVestingSchedulerV3.ScheduleCreationParams",
                 name: "params",
                 type: "tuple",
             },
@@ -1728,7 +1241,7 @@ const _abi = [
                         type: "uint96",
                     },
                 ],
-                internalType: "struct IVestingSchedulerV2.ScheduleCreationParams",
+                internalType: "struct IVestingSchedulerV3.ScheduleCreationParams",
                 name: "params",
                 type: "tuple",
             },
@@ -1753,20 +1266,9 @@ const _abi = [
                 name: "endDate",
                 type: "uint32",
             },
-            {
-                internalType: "bytes",
-                name: "ctx",
-                type: "bytes",
-            },
         ],
         name: "updateVestingSchedule",
-        outputs: [
-            {
-                internalType: "bytes",
-                name: "newCtx",
-                type: "bytes",
-            },
-        ],
+        outputs: [],
         stateMutability: "nonpayable",
         type: "function",
     },
@@ -1850,7 +1352,7 @@ const _abi = [
         outputs: [
             {
                 internalType: "string",
-                name: "",
+                name: "version",
                 type: "string",
             },
         ],
@@ -1861,7 +1363,7 @@ const _abi = [
         inputs: [
             {
                 internalType: "bytes32",
-                name: "",
+                name: "vestingId",
                 type: "bytes32",
             },
         ],

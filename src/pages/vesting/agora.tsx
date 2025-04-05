@@ -3,7 +3,7 @@ import { NextPageWithLayout } from "../_app";
 import { useVisibleAddress } from "../../features/wallet/VisibleAddressContext";
 import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
 import { ProjectActions, AgoraResponseData, ProjectsOverview, ProjectState, AllowanceActions } from "../api/agora";
-import { TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Collapse, Box, Typography, IconButton, Container, FormControl, InputLabel, Select, MenuItem, List, ListItem, ListItemText, Divider, ListItemIcon, Button, useMediaQuery } from "@mui/material";
+import { TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Collapse, Box, Typography, IconButton, Container, FormControl, InputLabel, Select, MenuItem, List, ListItem, ListItemText, Divider, ListItemIcon, Button, useMediaQuery, Badge, Stack } from "@mui/material";
 import { FC, Fragment, useEffect, useMemo, useState } from "react";
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -150,7 +150,16 @@ const AgoraPage: NextPageWithLayout = () => {
 
     const errorMessage = data?.success === false ? data.message : error_?.message;
 
-    const rows = data?.success ? data.projectsOverview.projects : [];
+    const rows = useMemo(() => {
+        if (!data?.success) return [];
+        return [...data.projectsOverview.projects].sort((a, b) => {
+            // Sort KYC completed first, non-KYC last
+            if (a.agoraEntry.KYCStatusCompleted && !b.agoraEntry.KYCStatusCompleted) return -1;
+            if (!a.agoraEntry.KYCStatusCompleted && b.agoraEntry.KYCStatusCompleted) return 1;
+            return 0;
+        });
+    }, [data]);
+
     const projectsOverview = data?.success ? data.projectsOverview : null;
 
     const allActions = useMemo(() => {
@@ -226,6 +235,9 @@ const AgoraPage: NextPageWithLayout = () => {
         return null;
     }
 
+    const currentTranchNo = projectsOverview.tranchPlan.currentTranchCount;
+    const areButtonsDisabled = allActions.length === 0;
+
     return (
         <Container maxWidth="lg" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <Box sx={{ mb: 3, mt: 2 }}>
@@ -256,20 +268,28 @@ const AgoraPage: NextPageWithLayout = () => {
                 <Table aria-label="collapsible table">
                     <TableHead>
                         <TableRow>
+                            <TableCell align="center" colSpan={3}>
+
+                            </TableCell>
+                            <TableCell align="center" colSpan={6}>
+                                Tranches
+                            </TableCell>
+                        </TableRow>
+                        <TableRow>
                             <TableCell></TableCell>
-                            <TableCell>Project</TableCell>
-                            <TableCell>Tranch 1</TableCell>
-                            <TableCell>Tranch 2</TableCell>
-                            <TableCell>Tranch 3</TableCell>
-                            <TableCell>Tranch 4</TableCell>
-                            <TableCell>Tranch 5</TableCell>
-                            <TableCell>Tranch 6</TableCell>
-                            <TableCell>KYC</TableCell>
+                            <TableCell>Project Name</TableCell>
+                            <TableCell align="center" sx={{ borderRight: 1, borderColor: 'divider' }}>KYC</TableCell>
+                            <TableCell sx={{ bgcolor: currentTranchNo === 1 ? 'action.hover' : "" }} >Tranch 1</TableCell>
+                            <TableCell sx={{ bgcolor: currentTranchNo === 2 ? 'action.hover' : "" }} >Tranch 2</TableCell>
+                            <TableCell sx={{ bgcolor: currentTranchNo === 3 ? 'action.hover' : "" }} >Tranch 3</TableCell>
+                            <TableCell sx={{ bgcolor: currentTranchNo === 4 ? 'action.hover' : "" }} >Tranch 4</TableCell>
+                            <TableCell sx={{ bgcolor: currentTranchNo === 5 ? 'action.hover' : "" }} >Tranch 5</TableCell>
+                            <TableCell sx={{ bgcolor: currentTranchNo === 6 ? 'action.hover' : "" }} >Tranch 6</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {rows.map((row) => (
-                            <Row key={row.agoraEntry.projectId} chainId={projectsOverview.chainId} superTokenAddress={projectsOverview.superTokenAddress} state={row} />
+                            <Row key={row.agoraEntry.projectId} currentTranchNo={currentTranchNo} chainId={projectsOverview.chainId} superTokenAddress={projectsOverview.superTokenAddress} state={row} />
                         ))}
                     </TableBody>
                 </Table>
@@ -286,10 +306,12 @@ const AgoraPage: NextPageWithLayout = () => {
             <ConnectionBoundary expectedNetwork={network}>
                 {
                     projectsOverview && (
-                        <>
-                            <ExecuteTranchUpdateTransactionButton isVisible={true} projectsOverview={projectsOverview} />
-                            <DownloadGnosisSafeTransactionButton isVisible={true} projectsOverview={projectsOverview} />
-                        </>
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 4 }}>
+                            <Stack direction="column" spacing={1.25} sx={{ width: 'auto' }}>
+                                <ExecuteTranchUpdateTransactionButton isDisabled={areButtonsDisabled} projectsOverview={projectsOverview} />
+                                <DownloadGnosisSafeTransactionButton isDisabled={areButtonsDisabled} projectsOverview={projectsOverview} />
+                            </Stack>
+                        </Box>
                     )
                 }
             </ConnectionBoundary>
@@ -297,8 +319,8 @@ const AgoraPage: NextPageWithLayout = () => {
     );
 };
 
-function Row(props: { chainId: number, superTokenAddress: string, state: ProjectState }) {
-    const { state } = props;
+function Row(props: { currentTranchNo: number, chainId: number, superTokenAddress: string, state: ProjectState }) {
+    const { state, currentTranchNo } = props;
     const [open, setOpen] = useState(false);
 
     const allocations = useMemo(() => {
@@ -326,13 +348,13 @@ function Row(props: { chainId: number, superTokenAddress: string, state: Project
                     </IconButton>
                 </TableCell>
                 <TableCell>{state.agoraEntry.projectName}</TableCell>
-                <TableCell>{allocations[0]?.amount ? `${formatEther(BigInt(allocations[0]!.amount))} ${token?.symbol}` : '—'}</TableCell>
-                <TableCell>{allocations[1]?.amount ? `${formatEther(BigInt(allocations[1]!.amount))} ${token?.symbol}` : '—'}</TableCell>
-                <TableCell>{allocations[2]?.amount ? `${formatEther(BigInt(allocations[2]!.amount))} ${token?.symbol}` : '—'}</TableCell>
-                <TableCell>{allocations[3]?.amount ? `${formatEther(BigInt(allocations[3]!.amount))} ${token?.symbol}` : '—'}</TableCell>
-                <TableCell>{allocations[4]?.amount ? `${formatEther(BigInt(allocations[4]!.amount))} ${token?.symbol}` : '—'}</TableCell>
-                <TableCell>{allocations[5]?.amount ? `${formatEther(BigInt(allocations[5]!.amount))} ${token?.symbol}` : '—'}</TableCell>
-                <TableCell>{state.agoraEntry.KYCStatusCompleted ? <DoneIcon /> : <CloseIcon />}</TableCell>
+                <TableCell align="center" sx={{ borderRight: 1, borderColor: 'divider' }}>{state.agoraEntry.KYCStatusCompleted ? <DoneIcon fontSize="small" /> : <CloseIcon fontSize="small" />}</TableCell>
+                <TableCell sx={{ bgcolor: currentTranchNo === 1 ? 'action.hover' : "" }}>{allocations[0]?.amount ? `${formatEther(BigInt(allocations[0]!.amount))} ${token?.symbol}` : '—'}</TableCell>
+                <TableCell sx={{ bgcolor: currentTranchNo === 2 ? 'action.hover' : "" }}>{allocations[1]?.amount ? `${formatEther(BigInt(allocations[1]!.amount))} ${token?.symbol}` : '—'}</TableCell>
+                <TableCell sx={{ bgcolor: currentTranchNo === 3 ? 'action.hover' : "" }}>{allocations[2]?.amount ? `${formatEther(BigInt(allocations[2]!.amount))} ${token?.symbol}` : '—'}</TableCell>
+                <TableCell sx={{ bgcolor: currentTranchNo === 4 ? 'action.hover' : "" }}>{allocations[3]?.amount ? `${formatEther(BigInt(allocations[3]!.amount))} ${token?.symbol}` : '—'}</TableCell>
+                <TableCell sx={{ bgcolor: currentTranchNo === 5 ? 'action.hover' : "" }}>{allocations[4]?.amount ? `${formatEther(BigInt(allocations[4]!.amount))} ${token?.symbol}` : '—'}</TableCell>
+                <TableCell sx={{ bgcolor: currentTranchNo === 6 ? 'action.hover' : "" }}>{allocations[5]?.amount ? `${formatEther(BigInt(allocations[5]!.amount))} ${token?.symbol}` : '—'}</TableCell>
             </TableRow>
 
             <TableRow>
@@ -394,17 +416,17 @@ function Row(props: { chainId: number, superTokenAddress: string, state: Project
 export default AgoraPage;
 
 type Props = {
-    isVisible: boolean;
+    isDisabled: boolean;
     projectsOverview: ProjectsOverview;
 }
 
 export const DownloadGnosisSafeTransactionButton: FC<Props> = ({
-    isVisible,
+    isDisabled,
     projectsOverview
 }) => {
 
     return (
-        <Button {...transactionButtonDefaultProps} variant="outlined" onClick={async () => {
+        <Button {...transactionButtonDefaultProps} disabled={isDisabled} variant="outlined" onClick={async () => {
             const zip = new JSZip();
             const zipName = `execute-tranch-${projectsOverview.tranchPlan.currentTranchCount}_for_safe_tx-builder`;
             const batchFolder = zip.folder(zipName);
@@ -441,13 +463,13 @@ export const DownloadGnosisSafeTransactionButton: FC<Props> = ({
 }
 
 export const ExecuteTranchUpdateTransactionButton: FC<Props> = ({
-    isVisible: isVisible_,
+    isDisabled,
     projectsOverview
 }) => {
     const [executeTranchUpdate, executeTranchUpdateResult] =
         rpcApi.useExecuteTranchUpdateMutation();
 
-    const isVisible = !executeTranchUpdateResult.isSuccess && isVisible_;
+    const isVisible = !executeTranchUpdateResult.isSuccess;
 
     return (
         <TransactionBoundary mutationResult={executeTranchUpdateResult}>
@@ -461,7 +483,7 @@ export const ExecuteTranchUpdateTransactionButton: FC<Props> = ({
                 isVisible && (
                     <TransactionButton
                         dataCy={"create-schedule-tx-button"}
-                        disabled={false}
+                        disabled={isDisabled}
                         onClick={async (signer) => {
                             setDialogLoadingInfo(
                                 <Typography

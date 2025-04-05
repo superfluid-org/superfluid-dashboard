@@ -622,7 +622,9 @@ export default async function handler(
                 args: [token, sender, vestingContractInfo.address]
             }));
             const existingPermissions = Number(flowOperatorData[0]);
-            const neededPermissions = ACL_CREATE_PERMISSION | ACL_DELETE_PERMISSION;
+            const permissionsDelta = ACL_CREATE_PERMISSION | ACL_DELETE_PERMISSION;
+            const expectedPermissions = existingPermissions | permissionsDelta;
+            const needsMorePermissions = existingPermissions !== expectedPermissions;
             const neededFlowRateAllowance = projectStates
                 .flatMap(x => x.todo)
                 .filter(x => x.type === "create-vesting-schedule")
@@ -631,9 +633,8 @@ export default async function handler(
                     const flowRate = streamedAmount / BigInt(action.payload.totalDuration);
                     return sum + flowRate;
                 }, 0n);
-            const permissionsDelta = existingPermissions | neededPermissions;
 
-            if (permissionsDelta !== 0 || neededFlowRateAllowance > 0n) {
+            if (needsMorePermissions || neededFlowRateAllowance > 0n) {
                 result.push({
                     type: "increase-flow-operator-permissions",
                     payload: {
