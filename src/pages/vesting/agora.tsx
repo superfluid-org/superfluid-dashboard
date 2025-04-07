@@ -2,8 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { NextPageWithLayout } from "../_app";
 import { useVisibleAddress } from "../../features/wallet/VisibleAddressContext";
 import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
-import { ProjectActions, AgoraResponseData, ProjectsOverview, ProjectState, AllowanceActions } from "../api/agora";
-import { TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Collapse, Box, Typography, IconButton, Container, FormControl, InputLabel, Select, MenuItem, List, ListItem, ListItemText, Divider, ListItemIcon, Button, useMediaQuery, Badge, Stack } from "@mui/material";
+import { ProjectActions, AgoraResponseData, ProjectsOverview, ProjectState, AllowanceActions, RoundType, roundTypes } from "../api/agora";
+import { TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Collapse, Box, Typography, IconButton, Container, FormControl, InputLabel, Select, MenuItem, List, ListItem, ListItemText, Divider, ListItemIcon, Button, useMediaQuery, Badge, Stack, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { FC, Fragment, useEffect, useMemo, useState } from "react";
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -141,10 +141,20 @@ const AgoraPage: NextPageWithLayout = () => {
             localStorage.setItem('selectedTranch', tranch.toString());
         }
     }, [tranch]);
+    
+    const [roundType, setRoundType] = useState<RoundType>("onchain_builders");
+    const handleRoundTypeChange = (
+        event: React.MouseEvent<HTMLElement>,
+        newRoundType: RoundType | null
+    ) => {
+        if (newRoundType !== null) {
+            setRoundType(newRoundType);
+        }
+    };
 
     const { data, isLoading, error: error_ } = useQuery({
-        queryKey: ['agora', visibleAddress ?? null, network.id, tranch],
-        queryFn: () => fetch(`/api/agora?sender=${visibleAddress}&chainId=${network.id}&tranch=${tranch}`).then(async (res) => (await res.json()) as AgoraResponseData),
+        queryKey: ['agora', visibleAddress ?? null, network.id, tranch, roundType],
+        queryFn: () => fetch(`/api/agora?sender=${visibleAddress}&chainId=${network.id}&tranch=${tranch}&type=${roundType}`).then(async (res) => (await res.json()) as AgoraResponseData),
         enabled: !!visibleAddress && !!network.id && !!tranch
     });
 
@@ -239,8 +249,11 @@ const AgoraPage: NextPageWithLayout = () => {
     const areButtonsDisabled = allActions.length === 0;
 
     return (
-        <Container maxWidth="lg" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Container key={roundType} maxWidth="lg" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <Box sx={{ mb: 3, mt: 2 }}>
+                <Typography variant="h6" gutterBottom>
+                    Tranch (Temporary selection for mock API)
+                </Typography>
                 <FormControl sx={{ minWidth: 120 }}>
                     <InputLabel id="tranch-select-label">Tranch</InputLabel>
                     <Select
@@ -258,6 +271,26 @@ const AgoraPage: NextPageWithLayout = () => {
                         <MenuItem value={6}>Tranch 6</MenuItem>
                     </Select>
                 </FormControl>
+            </Box>
+
+            <Box sx={{ mb: 3 }}>
+                <Typography variant="h6" gutterBottom>
+                    Round Type
+                </Typography>
+                <ToggleButtonGroup
+                    value={roundType}
+                    exclusive
+                    onChange={handleRoundTypeChange}
+                    aria-label="round type"
+                    size="small"
+                >
+                    <ToggleButton value={roundTypes.onchain_builders} aria-label="onchain builders">
+                        Onchain Builders
+                    </ToggleButton>
+                    <ToggleButton value={roundTypes.dev_tooling} aria-label="dev tooling">
+                        Dev Tooling
+                    </ToggleButton>
+                </ToggleButtonGroup>
             </Box>
 
             <Typography variant="h6" gutterBottom>

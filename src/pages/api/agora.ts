@@ -52,6 +52,12 @@ export const agoraResponseEntrySchema = yup.object({
 
 export const agoraResponseSchema = yup.array().of(agoraResponseEntrySchema).required('Response array is required') as unknown as yup.Schema<AgoraResponse>;
 
+export type RoundType = "onchain_builders" | "dev_tooling"
+export const roundTypes: Record<RoundType, RoundType> = {
+    onchain_builders: "onchain_builders",
+    dev_tooling: "dev_tooling",
+} as const satisfies Record<RoundType, RoundType>;
+
 // Map this data into a more readable state...
 type TranchPlan = {
     tranchCount: 6
@@ -174,8 +180,11 @@ const tokenAddresses = {
 
 const agoraApiEndpoints = {
     // [optimismSepolia.id]: "https://op-atlas-git-stepan-rewards-api-mock-voteagora.vercel.app/api/v1/rewards/7/onchain-builders",
-    [optimismSepolia.id]: "http://localhost:3000/api/mock",
-}
+    [optimismSepolia.id]: {
+        onchain_builders: "http://localhost:3000/api/mock",
+        dev_tooling: "https://op-atlas-git-stepan-rewards-api-mock-voteagora.vercel.app/api/v1/rewards/7/dev-tooling",
+    },
+} as const satisfies Record<number, Record<RoundType, string>>;
 
 const validChainIds = Object.keys(agoraApiEndpoints).map(Number);
 
@@ -204,6 +213,15 @@ export default async function handler(
             });
         }
     }
+
+    const type_ = req.query.type
+    if (!type_ || typeof type_ !== 'string' || !roundTypes[type_ as RoundType]) {
+        return res.status(400).json({
+            success: false,
+            message: 'Round type is required as query parameter'
+        })
+    }
+    const type = type_ as RoundType;
 
     const sender_ = req.query.sender
     if (!sender_ || typeof sender_ !== 'string' || !isAddress(sender_)) {
@@ -238,7 +256,7 @@ export default async function handler(
         })
     }
 
-    const agoraApiEndpoint = agoraApiEndpoints[chainId as keyof typeof agoraApiEndpoints];
+    const agoraApiEndpoint = agoraApiEndpoints[chainId as keyof typeof agoraApiEndpoints][type];
     if (!agoraApiEndpoint) {
         return res.status(400).json({
             success: false,
