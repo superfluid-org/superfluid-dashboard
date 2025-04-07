@@ -1,8 +1,5 @@
 import { BigNumber } from "ethers";
-import {
-  ACL_CREATE_PERMISSION,
-  ACL_DELETE_PERMISSION,
-} from "../../redux/endpoints/flowSchedulerEndpoints";
+import { ACL_DELETE_PERMISSION, ACL_CREATE_PERMISSION } from "../../../utils/constants";
 
 export type RequiredAccessForActiveVestingSchedule = {
   recommendedTokenAllowance: BigNumber;

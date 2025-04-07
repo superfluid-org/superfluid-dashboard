@@ -11,11 +11,7 @@ import { UnitOfTime } from '../../features/send/FlowRateInput'
 import { allNetworks, findNetworkOrThrow } from '../../features/network/networks'
 import { getUnixTime } from 'date-fns'
 import { cfaV1ForwarderAbi, cfaV1ForwarderAddress, superTokenAbi } from '../../generated'
-
-// TODO: this is duplicated
-const ACL_CREATE_PERMISSION = 1;
-const ACL_UPDATE_PERMISSION = 2;
-const ACL_DELETE_PERMISSION = 4;
+import { ACL_CREATE_PERMISSION, ACL_DELETE_PERMISSION } from '../../utils/constants'
 
 // Note: Pre-defining this because yup was not able to infer the types correctly for the transforms...
 type AgoraResponseEntry = {
