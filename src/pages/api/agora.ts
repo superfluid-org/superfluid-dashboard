@@ -580,43 +580,18 @@ export default async function handler(
             transport: http(network.rpcUrls.superfluid.http[0])
         });
 
-        // const flowOperatorData = await superToken.getFlowOperatorData({
-        //     flowOperator: network.flowSchedulerContractAddress,
-        //     sender: arg.senderAddress,
-        //     providerOrSigner: arg.signer,
-        //   });
-
-        // {
-        //     type: 'function',
-        //     inputs: [
-        //       {
-        //         name: 'token',
-        //         internalType: 'contract ISuperfluidToken',
-        //         type: 'address',
-        //       },
-        //       { name: 'sender', internalType: 'address', type: 'address' },
-        //       { name: 'flowOperator', internalType: 'address', type: 'address' },
-        //     ],
-        //     name: 'getFlowOperatorData',
-        //     outputs: [
-        //       { name: 'flowOperatorId', internalType: 'bytes32', type: 'bytes32' },
-        //       { name: 'permissions', internalType: 'uint8', type: 'uint8' },
-        //       { name: 'flowRateAllowance', internalType: 'int96', type: 'int96' },
-        //     ],
-        //     stateMutability: 'view',
-        //   },
-
         const allowanceActions = yield* E.gen(function* () {
-            // TODO: Use RPC errors
-
             const result: AllowanceActions[] = [];
 
-            const flowOperatorData = yield* E.tryPromise(() => publicClient.readContract({
-                address: cfaV1ForwarderAddress[network.id as keyof typeof cfaV1ForwarderAddress],
-                abi: cfaV1ForwarderAbi,
-                functionName: "getFlowOperatorPermissions",
-                args: [token, sender, vestingContractInfo.address]
-            }));
+            const flowOperatorData = yield* E.tryPromise({
+                try: () => publicClient.readContract({
+                    address: cfaV1ForwarderAddress[network.id as keyof typeof cfaV1ForwarderAddress],
+                    abi: cfaV1ForwarderAbi,
+                    functionName: "getFlowOperatorPermissions",
+                    args: [token, sender, vestingContractInfo.address]
+                }),
+                catch: (error) => new PublicClientRpcError("Failed to read flow operator permissions", { cause: error })
+            });
             const existingPermissions = Number(flowOperatorData[0]);
             const permissionsDelta = ACL_CREATE_PERMISSION | ACL_DELETE_PERMISSION;
             const expectedPermissions = existingPermissions | permissionsDelta;
@@ -643,12 +618,15 @@ export default async function handler(
                 })
             }
 
-            const tokenAllowance = yield* E.tryPromise(() => publicClient.readContract({
-                address: token,
-                abi: superTokenAbi,
-                functionName: "allowance",
-                args: [sender, vestingContractInfo.address]
-            }));
+            const tokenAllowance = yield* E.tryPromise({
+                try: () => publicClient.readContract({
+                    address: token,
+                    abi: superTokenAbi,
+                    functionName: "allowance",
+                    args: [sender, vestingContractInfo.address]
+                }),
+                catch: (error) => new PublicClientRpcError("Failed to read token allowance", { cause: error })
+            });
 
             const agoraTotalAmountOfAllProjects = dataFromAgora
                 .filter(x => x.KYCStatusCompleted)
