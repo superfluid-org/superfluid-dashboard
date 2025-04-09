@@ -6,10 +6,10 @@ import {
   useContext,
   useMemo,
 } from "react";
-import { useAccount } from "wagmi";
 import { useImpersonation } from "../impersonation/ImpersonationContext";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { rpcApi } from "../redux/store";
+import { useAppKitAccount } from "@reown/appkit/react";
 
 interface VisibleAddressContextValue {
   visibleAddress: string | undefined;
@@ -21,7 +21,7 @@ const VisibleAddressContext = createContext<VisibleAddressContextValue>(null!);
 export const VisibleAddressProvider: FC<PropsWithChildren> = ({ children }) => {
   const { impersonatedAddress } = useImpersonation();
   const { network } = useExpectedNetwork();
-  const { address: accountAddress } = useAccount();
+  const { address: accountAddress } = useAppKitAccount();
   const visibleAddress = impersonatedAddress ?? accountAddress;
 
   const { isEOA } = rpcApi.useIsEOAQuery(

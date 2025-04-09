@@ -28,6 +28,7 @@ import {
 import { useTokenPairsQuery } from "./useTokenPairsQuery";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { CommonFormEffects } from "../common/CommonFormEffects";
+import { useAppKitProvider } from "@reown/appkit/react";
 
 export type WrappingForm = {
   type: RestorationType.Wrap | RestorationType.Unwrap;
