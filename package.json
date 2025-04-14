@@ -18,7 +18,7 @@
     "generate:scheduling-graphql": "graphclient build --dir ./src/scheduling-subgraph",
     "generate:wagmi": "wagmi generate",
     "depcheck": "pnpm dlx depcheck",
-    "tsc": "pnpm exec tsc --noEmit"
+    "typecheck": "pnpm exec tsc --noEmit"
   },
   "dependencies": {
     "@emotion/cache": "^11.14.0",
@@ -49,7 +49,7 @@
     "@superfluid-finance/sdk-core": "^0.9.0",
     "@superfluid-finance/sdk-redux": "^0.6.1",
     "@superfluid-finance/tokenlist": "^5.24.0",
-    "@tanstack/react-query": "^5.72.2",
+    "@tanstack/react-query": "^5.74.2",
     "@vercel/functions": "^2.0.0",
     "await-timeout": "^1.1.1",
     "axios": "^1.8.4",
@@ -80,7 +80,7 @@
     "react-use-intercom": "^5.4.3",
     "redux-persist": "^6.0.0",
     "serialize-error": "^8.1.0",
-    "viem": "^2.26.2",
+    "viem": "^2.26.5",
     "wagmi": "^2.14.16",
     "yup": "^1.6.1"
   },
