@@ -1,4 +1,4 @@
-import { Connector, createConnector, CreateConnectorFn, custom, fallback, http } from "wagmi";
+import { Connector, createConnector, CreateConnectorFn, custom, fallback, http, Transport } from "wagmi";
 import { defaultAppDescription } from '../../components/SEO/StaticSEO';
 import { allNetworks, findNetworkOrThrow } from '../network/networks';
 import appConfig from "../../utils/config";
@@ -18,23 +18,19 @@ const metadata = {
 
 const projectId = appConfig.walletConnectProjectId;
 
-const appTransports = Object.fromEntries(
-  allNetworks.map((x) => {
-    const chainId = x.id;
+const appTransports = allNetworks.reduce<Record<number, Transport>>((acc, x) => {
+  const chainId = x.id;
 
-    const transport = fallback([
-      http(x.rpcUrls.superfluid.http[0]), // Prioritize Superfluid API
-      http(x.rpcUrls.default.http[0]) // Fallback to wagmi-defined default public RPC
-    ], {
-      rank: false
-    })
-
-    return [
-      chainId,
-      transport,
-    ];
+  const transport = fallback([
+    http(x.rpcUrls.superfluid.http[0]), // Prioritize Superfluid API
+    http(x.rpcUrls.default.http[0]) // Fallback to wagmi-defined default public RPC
+  ], {
+    rank: false
   })
-);
+
+  acc[chainId] = transport;
+  return acc;
+}, {});
 
 // # Test Connector
 type EthereumProvider = Parameters<typeof custom>[0];
