@@ -13,6 +13,8 @@ import { getUnixTime } from 'date-fns'
 import { cfaV1ForwarderAbi, cfaV1ForwarderAddress, superTokenAbi } from '../../generated'
 import { ACL_CREATE_PERMISSION, ACL_DELETE_PERMISSION } from '../../utils/constants'
 
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL;
+
 // Note: Pre-defining this because yup was not able to infer the types correctly for the transforms...
 type AgoraResponseEntry = {
     projectId: string,
@@ -181,7 +183,7 @@ const tokenAddresses = {
 const agoraApiEndpoints = {
     // [optimismSepolia.id]: "https://op-atlas-git-stepan-rewards-api-mock-voteagora.vercel.app/api/v1/rewards/7/onchain-builders",
     [optimismSepolia.id]: {
-        onchain_builders: "http://localhost:3000/api/mock",
+        onchain_builders: `${APP_URL}/api/mock`,
         dev_tooling: "https://op-atlas-git-stepan-rewards-api-mock-voteagora.vercel.app/api/v1/rewards/7/dev-tooling",
     },
 } as const satisfies Record<number, Record<RoundType, string>>;
