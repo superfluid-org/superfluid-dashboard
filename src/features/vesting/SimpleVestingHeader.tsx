@@ -23,6 +23,16 @@ const SimpleVestingHeader: FC = () => {
       </Typography>
 
       <Stack direction="row" gap={1}>
+        <Button
+          LinkComponent={Link}
+          href="/vesting/agora"
+          data-cy="agora-link-button"
+          color="primary"
+          variant="outlined"
+        >
+          Agora
+        </Button>
+
         {accountAddress && (
           <Button
             LinkComponent={Link}
