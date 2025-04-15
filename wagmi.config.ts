@@ -8,7 +8,7 @@ import ConstantFlowAgreementV1JSON from "@superfluid-finance/ethereum-contracts/
 import GeneralDistributionAgreementV1JSON from "@superfluid-finance/ethereum-contracts/build/truffle/GeneralDistributionAgreementV1.json" assert { type: "json" };
 import SuperfluidPoolJSON from "@superfluid-finance/ethereum-contracts/build/truffle/SuperfluidPool.json" assert { type: "json" };
 import SuperfluidJSON from "@superfluid-finance/ethereum-contracts/build/truffle/Superfluid.json" assert { type: "json" };
-import cfaV1ForwarderJSON from "@superfluid-finance/ethereum-contracts/build/truffle/CfaV1Forwarder.json" assert { type: "json" };
+import cfaV1ForwarderJSON from "@superfluid-finance/ethereum-contracts/build/truffle/CFAv1Forwarder.json" assert { type: "json" };
 import { Abi, Address, erc20Abi } from "viem";
 import superfluidMetadata from "@superfluid-finance/metadata";
 import vestingSchedulerV1Abi from "./src/eth-sdk/abis/optimismSepolia/vestingScheduler.json" assert { type: "json" };
