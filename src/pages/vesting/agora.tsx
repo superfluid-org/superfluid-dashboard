@@ -28,9 +28,10 @@ import { useTokenQuery } from "../../hooks/useTokenQuery";
 import JSZip from "jszip";
 import { mapProjectStateIntoGnosisSafeBatch } from "../../features/redux/endpoints/vestingAgoraEndpoints";
 import { TxBuilder } from "../../libs/gnosis-tx-builder";
+import { skipToken } from "@reduxjs/toolkit/dist/query";
 
 // Updated ActionsList component without the badges
-const ActionsList: FC<{ actions: (ProjectActions | AllowanceActions)[] }> = ({ actions }) => {
+const ActionsList: FC<{ actions: (ProjectActions | AllowanceActions)[], tokenSymbol: string | undefined }> = ({ actions, tokenSymbol = "" }) => {
     if (actions.length === 0) {
         return <Typography variant="body2" color="text.secondary">No actions needed</Typography>;
     }
@@ -41,7 +42,7 @@ const ActionsList: FC<{ actions: (ProjectActions | AllowanceActions)[] }> = ({ a
                 // For calculating differences in update actions
                 const formatAmount = (amount: string) => {
                     const amountBigInt = BigInt(amount);
-                    return `${formatEther(amountBigInt)} OPx`;
+                    return `${formatEther(amountBigInt)} ${tokenSymbol}`;
                 };
 
                 // Determine icon and content based on action type
@@ -169,6 +170,11 @@ const AgoraPage: NextPageWithLayout = () => {
     }, [data]);
 
     const projectsOverview = data?.success ? data.projectsOverview : null;
+
+    const { data: token } = useTokenQuery(projectsOverview ? {
+        chainId: network.id,
+        id: projectsOverview?.superTokenAddress
+    } : skipToken);
 
     const allActions = useMemo(() => {
         if (!data?.success) return [];
@@ -331,7 +337,7 @@ const AgoraPage: NextPageWithLayout = () => {
             </Typography>
 
             <Paper elevation={1} sx={{ p: 2 }}>
-                <ActionsList actions={allActions} />
+                <ActionsList actions={allActions} tokenSymbol={token?.symbol} />
             </Paper>
 
             <ConnectionBoundary expectedNetwork={network}>
@@ -462,7 +468,7 @@ function Row(props: { currentTranchNo: number, chainId: number, superTokenAddres
                                         Pending Actions ({state.todo.length}):
                                     </Typography>
                                     <Paper elevation={1} sx={{ p: 2 }}>
-                                        <ActionsList actions={state.todo} />
+                                        <ActionsList actions={state.todo} tokenSymbol={token?.symbol} />
                                     </Paper>
                                 </Box>
                             )}
