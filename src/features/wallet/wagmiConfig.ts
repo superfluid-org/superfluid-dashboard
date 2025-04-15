@@ -1,16 +1,15 @@
-import { Connector, createConnector, CreateConnectorFn, custom, fallback, http } from "wagmi";
-import { defaultWagmiConfig } from '@web3modal/wagmi/react/config'
+import { Connector, createConnector, CreateConnectorFn, custom, fallback, http, Transport } from "wagmi";
 import { defaultAppDescription } from '../../components/SEO/StaticSEO';
 import { allNetworks, findNetworkOrThrow } from '../network/networks';
 import appConfig from "../../utils/config";
 import { safe } from 'wagmi/connectors';
-import { createWeb3Modal } from "@web3modal/wagmi/react";
 import { getPublicClient, GetPublicClientReturnType } from "wagmi/actions"
 import { Address, createWalletClient } from "viem";
 
-type Web3ModalMetadata = Parameters<typeof defaultWagmiConfig>[0]["metadata"];
+import { createAppKit } from '@reown/appkit/react'
+import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
 
-const metadata: Web3ModalMetadata = {
+const metadata = {
   name: 'Superfluid Dashboard',
   description: defaultAppDescription,
   url: 'https://app.superfluid.org',
@@ -19,25 +18,19 @@ const metadata: Web3ModalMetadata = {
 
 const projectId = appConfig.walletConnectProjectId;
 
-const appTransports = Object.fromEntries(
-  allNetworks.map((x) => {
-    const chainId = x.id;
+const appTransports = allNetworks.reduce<Record<number, Transport>>((acc, x) => {
+  const chainId = x.id;
 
-    const transport = fallback([
-      http(x.rpcUrls.superfluid.http[0]), // Prioritize Superfluid API
-      http(x.rpcUrls.default.http[0]) // Fallback to wagmi-defined default public RPC
-    ], {
-      rank: false
-    })
-
-    return [
-      chainId,
-      transport,
-    ];
+  const transport = fallback([
+    http(x.rpcUrls.superfluid.http[0]), // Prioritize Superfluid API
+    http(x.rpcUrls.default.http[0]) // Fallback to wagmi-defined default public RPC
+  ], {
+    rank: false
   })
-);
 
-const enableEIP6963 = true;
+  acc[chainId] = transport;
+  return acc;
+}, {});
 
 // # Test Connector
 type EthereumProvider = Parameters<typeof custom>[0];
@@ -120,18 +113,10 @@ if (needsTestConnector) {
 }
 // ---
 
-export const wagmiConfig = defaultWagmiConfig({
+const wagmiAdapter = new WagmiAdapter({
   ssr: false,
-  chains: allNetworks,
+  networks: allNetworks,
   projectId,
-  metadata,
-  enableCoinbase: true,
-  enableInjected: true,
-  enableWalletConnect: true,
-  enableEIP6963: enableEIP6963,
-  auth: {
-    email: false,
-  },
   connectors: [
     safe({
       allowedDomains: [
@@ -152,16 +137,22 @@ export const wagmiConfig = defaultWagmiConfig({
       wait: 100,
     },
   }
-});
+})
 
-const _web3Modal = createWeb3Modal({
-  metadata,
-  wagmiConfig,
+export const wagmiConfig = wagmiAdapter.wagmiConfig;
+
+const _appKit = createAppKit({
+  adapters: [wagmiAdapter],
+  networks: allNetworks,
+  metadata: metadata,
   projectId,
-  enableAnalytics: false,
-  enableOnramp: false,
-  enableSwaps: false,
-  enableEIP6963: enableEIP6963,
+  features: {
+    analytics: false,
+    email: false,
+    onramp: false,
+    swaps: false,
+    socials: false
+  },
   privacyPolicyUrl: "https://www.iubenda.com/privacy-policy/34415583/legal",
   termsConditionsUrl: "https://www.superfluid.finance/termsofuse",
   featuredWalletIds: [
@@ -170,7 +161,25 @@ const _web3Modal = createWeb3Modal({
   themeVariables: {
     "--w3m-z-index": 2147483646
   }
-})
+ })
+
+// const _web3Modal = createWeb3Modal({
+//   metadata,
+//   wagmiConfig,
+//   projectId,
+//   enableAnalytics: false,
+//   enableOnramp: false,
+//   enableSwaps: false,
+//   enableEIP6963: enableEIP6963,
+//   privacyPolicyUrl: "https://www.iubenda.com/privacy-policy/34415583/legal",
+//   termsConditionsUrl: "https://www.superfluid.finance/termsofuse",
+//   featuredWalletIds: [
+//     "971e689d0a5be527bac79629b4ee9b925e82208e5168b733496a09c0faed0709"
+//   ],
+//   themeVariables: {
+//     "--w3m-z-index": 2147483646
+//   }
+// })
 
 type PublicClient = NonNullable<GetPublicClientReturnType<typeof wagmiConfig, number>>;
 

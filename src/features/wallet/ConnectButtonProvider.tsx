@@ -9,7 +9,7 @@ import {
 } from "react";
 import { useAccount } from "wagmi";
 import AccountModal from "./AccountModal";
-import { useWeb3Modal, useWeb3ModalState, useWeb3ModalTheme } from '@web3modal/wagmi/react'
+import { useAppKit, useAppKitState, useAppKitTheme } from '@reown/appkit/react'
 import { useTheme } from "@mui/material";
 import { useSafeAppAutoConnect } from "./useSafeAppAutoConnect";
 
@@ -26,9 +26,9 @@ const ConnectButtonContext = createContext<ConnectButtonContextValue>(null!);
 const ConnectButtonProvider: FC<PropsWithChildren> = ({ children }) => {
   const [accountModalOpen, setAccountModalOpen] = useState(false);
   const { address } = useAccount();
-  const { open } = useWeb3Modal()
-  const { open: isOpen } = useWeb3ModalState();
-  const { setThemeMode, setThemeVariables } = useWeb3ModalTheme();
+  const { open } = useAppKit()
+  const { open: isOpen } = useAppKitState();
+  const { setThemeMode, setThemeVariables } = useAppKitTheme();
   const theme = useTheme();
   useSafeAppAutoConnect();
 

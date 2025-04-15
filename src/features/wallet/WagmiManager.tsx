@@ -16,14 +16,14 @@ const WagmiManager: FC<PropsWithChildren> = ({ children }) => {
   }, [])
 
   return (
-    <QueryClientProvider client={tanstackQueryClient}>
-      <WagmiProvider
-        config={wagmiConfig}
-        reconnectOnMount={reconnectOnMount}
-      >
+    <WagmiProvider
+      config={wagmiConfig}
+      reconnectOnMount={reconnectOnMount}
+    >
+      <QueryClientProvider client={tanstackQueryClient}>
         {children}
-      </WagmiProvider>
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
   );
 };
 
