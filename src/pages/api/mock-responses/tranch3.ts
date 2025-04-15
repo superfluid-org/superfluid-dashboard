@@ -61,7 +61,7 @@ export const tranch3 = [
         "KYCStatusCompleted": true,
         "amounts": [
             "500000000000000000000",
-            "250000000000000000000",
+            "550000000000000000000",
             "0"
         ]
     }

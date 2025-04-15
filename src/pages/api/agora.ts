@@ -585,14 +585,6 @@ export default async function handler(
 
         yield* E.logTrace(`Processed ${projectStates.length} project states`);
 
-        // TODO: Should I handle allowance here?
-        // What's the best way to do it? It could be by only looking at the actions. I could be by looking at actions and the vesting schedules.
-        // It might be in the form similar to "Fix access"
-        // I will need:
-        //  requiredTokenAllowanceWei: string;
-        //  requiredFlowOperatorPermissions: number;
-        //  requiredFlowRateAllowanceWei: string;
-
         const publicClient = createPublicClient({
             chain: network,
             transport: http(network.rpcUrls.superfluid.http[0])
