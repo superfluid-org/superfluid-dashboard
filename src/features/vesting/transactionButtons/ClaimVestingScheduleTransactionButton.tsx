@@ -19,12 +19,13 @@ import { Typography } from "@mui/material";
 import { useAnalytics } from "../../analytics/useAnalytics";
 import { usePendingVestingScheduleClaim } from "../../pendingUpdates/PendingVestingScheduleClaim";
 import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
+import { VestingVersion } from "../../network/networks";
 
 export const ClaimVestingScheduleTransactionButton: FC<{
   superTokenAddress: string;
   senderAddress: string;
   receiverAddress: string;
-  version: "v1" | "v2"
+  version: VestingVersion;
   TransactionBoundaryProps?: TransactionBoundaryProps;
   TransactionButtonProps?: Partial<TransactionButtonProps>;
 }> = ({

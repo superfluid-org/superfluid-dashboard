@@ -27,6 +27,7 @@ import VestingSchedulerAllowanceRow, {
 import { VestingTooltips } from "../CreateVestingForm";
 import { useVestingVersion } from "../../../hooks/useVestingVersion";
 import { EMPTY_ARRAY } from "../../../utils/constants";
+import { ContractVersion } from "../../../vesting-subgraph/.graphclient";
 
 const VestingSchedulerAllowancesTable: FC = () => {
   const theme = useTheme();
@@ -48,7 +49,7 @@ const VestingSchedulerAllowancesTable: FC = () => {
     senderAddress
       ? {
         chainId: network.id,
-        where: { sender: senderAddress?.toLowerCase(), contractVersion: vestingVersion },
+        where: { sender: senderAddress?.toLowerCase(), contractVersion: vestingVersion as ContractVersion },
       }
       : skipToken,
     {

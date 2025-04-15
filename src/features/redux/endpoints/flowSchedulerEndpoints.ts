@@ -21,10 +21,7 @@ import {
 import { UnitOfTime } from "../../send/FlowRateInput";
 import { rpcApi } from "../store";
 import { interfaceFeeAddress } from "../../interfaceFees";
-
-export const ACL_CREATE_PERMISSION = 1;
-export const ACL_UPDATE_PERMISSION = 2;
-export const ACL_DELETE_PERMISSION = 4;
+import { ACL_CREATE_PERMISSION, ACL_DELETE_PERMISSION } from "../../../utils/constants";
 
 interface GetFlowSchedule extends BaseQuery<number | null> {
   superTokenAddress: string;

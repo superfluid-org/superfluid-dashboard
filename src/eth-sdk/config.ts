@@ -4,12 +4,18 @@ import {
   autoWrapStrategyAddresses,
   flowSchedulerContractAddresses,
   vestingContractAddresses_v1,
-  vestingContractAddresses_v2
+  vestingContractAddresses_v2,
+  vestingContractAddresses_v3
 } from "../features/network/networkConstants";
+import { chainIds } from "../features/network/networkConstants";
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const ethSdkConfig = defineConfig({
   contracts: {
     optimismSepolia: {
+      vestingScheduler_v3: vestingContractAddresses_v3[chainIds.optimismSepolia], // OP Sepolia used as source of truth for the ABI of Vesting Scheduler.
       vestingScheduler_v2: vestingContractAddresses_v2.optimismSepolia, // OP Sepolia used as source of truth for the ABI of Vesting Scheduler.
       vestingScheduler: vestingContractAddresses_v1.optimismSepolia // OP Sepolia used as source of truth for the ABI of Vesting Scheduler.
     },
@@ -25,6 +31,11 @@ const ethSdkConfig = defineConfig({
   },
   etherscanURLs: {
     optimismSepolia: "https://api-sepolia-optimistic.etherscan.io/api",
+  },
+  "etherscanKeys": {
+    "mainnet": process.env.ETHERSCAN_MAINNET_API_KEY,
+    // @ts-ignore
+    "optimismSepolia": process.env.ETHERSCAN_OPTIMISM_API_KEY
   }
 });
 

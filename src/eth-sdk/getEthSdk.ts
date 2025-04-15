@@ -1,13 +1,12 @@
 import { providers, Signer } from "ethers";
 import { allNetworks, findNetworkOrThrow } from "../features/network/networks";
-import { VestingScheduler__factory } from "./client/esm/types/factories/optimismSepolia";
-import { VestingScheduler_v2__factory } from "./client/esm/types/factories/optimismSepolia";
+import { VestingScheduler__factory, VestingScheduler_v2__factory, VestingScheduler_v3__factory } from "./client/esm/types/factories/optimismSepolia";
 import {
   AutoWrapManager__factory,
   AutoWrapStrategy__factory,
   FlowScheduler__factory
 } from "./client/esm/types/factories/mainnet";
-import { AutoWrapManager, AutoWrapStrategy, VestingScheduler, VestingScheduler_v2 } from "./client/esm/types";
+import { AutoWrapManager, AutoWrapStrategy, VestingScheduler, VestingScheduler_v2, VestingScheduler_v3 } from "./client/esm/types";
 
 export const getFlowScheduler = (
   chainId: number,
@@ -30,8 +29,8 @@ export const getFlowScheduler = (
 };
 
 // Define a generic type for versions
-type Version = 'v1' | 'v2';
-type VestingSchedulerType<T extends Version> = T extends 'v1' ? VestingScheduler : VestingScheduler_v2;
+type Version = 'v1' | 'v2' | 'v3';
+type VestingSchedulerType<T extends Version> = T extends 'v1' ? VestingScheduler : T extends 'v2' ? VestingScheduler_v2 : VestingScheduler_v3;
 
 export const getVestingScheduler = <T extends Version>(
   chainId: number,
@@ -40,12 +39,19 @@ export const getVestingScheduler = <T extends Version>(
 ): VestingSchedulerType<T> => {
   const network = findNetworkOrThrow(allNetworks, chainId);
 
-  const contractInfo = version === 'v2' ? network.vestingContractAddress_v2 : network.vestingContractAddress_v1;
+  const contractInfo = network.vestingContractAddress[version];
   const doesNetworkSupportContract = !!contractInfo;
   if (!doesNetworkSupportContract) {
     throw new Error(
       `Vesting Scheduler not available for network [${chainId}:${network?.name}].`
     );
+  }
+
+  if (version === 'v3') {
+    return VestingScheduler_v3__factory.connect(
+      contractInfo.address,
+      providerOrSigner
+    ) as VestingSchedulerType<T>;
   }
 
   if (version === 'v2') {

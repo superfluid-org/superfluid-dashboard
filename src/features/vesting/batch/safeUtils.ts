@@ -19,7 +19,7 @@ export type SafeTxBuilderInput = {
   meta: {
     name: string;
     description: string;
-    txBuilderVersion: "1.16.1";
+    txBuilderVersion: "1.18.0";
     createdFromSafeAddress: Address | "";
     createdFromOwnerAddress: Address | "";
     checksum: string;
@@ -69,7 +69,7 @@ export const getDefaultSafeTxBuilderInput = (
   meta: {
     name: "Superfluid VestingScheduler Transactions Batch",
     description: "Batch of transactions to create Superfluid VestingSchedules",
-    txBuilderVersion: "1.16.1",
+    txBuilderVersion: "1.18.0",
     createdFromSafeAddress: "",
     createdFromOwnerAddress: "",
     checksum: "",

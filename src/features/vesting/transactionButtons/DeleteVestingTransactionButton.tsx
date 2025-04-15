@@ -20,12 +20,13 @@ import { Typography } from "@mui/material";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import { useAnalytics } from "../../analytics/useAnalytics";
 import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
+import { VestingVersion } from "../../network/networks";
 
 export const DeleteVestingTransactionButton: FC<{
   superTokenAddress: string;
   senderAddress: string;
   receiverAddress: string;
-  version: "v1" | "v2"
+  version: VestingVersion;
   TransactionBoundaryProps?: TransactionBoundaryProps;
   TransactionButtonProps?: Partial<TransactionButtonProps>;
 }> = ({

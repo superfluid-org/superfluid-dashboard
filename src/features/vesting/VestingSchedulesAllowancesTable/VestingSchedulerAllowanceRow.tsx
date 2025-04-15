@@ -28,7 +28,7 @@ import {
   isCloseToUnlimitedFlowRateAllowance,
   isCloseToUnlimitedTokenAllowance,
 } from "../../../utils/isCloseToUnlimitedAllowance";
-import { Network } from "../../network/networks";
+import { Network, VestingVersion } from "../../network/networks";
 import { rpcApi } from "../../redux/store";
 import Amount from "../../token/Amount";
 import TokenIcon from "../../token/TokenIcon";
@@ -117,7 +117,7 @@ interface VestingSchedulerAllowanceRowProps {
   recommendedTokenAllowance: BigNumber;
   requiredFlowOperatorPermissions: number; // Usually 5 (Create or Delete) https://docs.superfluid.finance/superfluid/developers/constant-flow-agreement-cfa/cfa-access-control-list-acl/acl-features
   requiredFlowRateAllowance: BigNumber;
-  vestingVersion: "v1" | "v2"
+  vestingVersion: VestingVersion;
 }
 
 const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({

@@ -5,6 +5,7 @@ import { useAppSelector } from "../redux/store";
 import { CreateVestingSchedule } from "../redux/endpoints/vestingSchedulerEndpoints";
 import { Address } from "@superfluid-finance/sdk-core";
 import { VestingSchedule, vestingStatuses } from "../vesting/types";
+import { calculateVestingScheduleAllocated } from "../../utils/vestingUtils";
 
 export interface PendingVestingSchedule
   extends PendingUpdate,
@@ -88,6 +89,13 @@ export const mapPendingToVestingSchedule = (
     claimValidityDate: 0,
     remainderAmount: "0",
     version,
-    transactionHash: pendingVestingSchedule.transactionHash
+    transactionHash: pendingVestingSchedule.transactionHash,
+    totalAmount: calculateVestingScheduleAllocated(
+      cliffAndFlowDate,
+      endDateTimestamp,
+      flowRateWei,
+      cliffTransferAmountWei,
+      "0"
+    ).toString(),
   };
 };

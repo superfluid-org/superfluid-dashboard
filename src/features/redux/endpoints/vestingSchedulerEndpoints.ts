@@ -15,19 +15,13 @@ import {
   isCloseToUnlimitedTokenAllowance,
 } from "../../../utils/isCloseToUnlimitedAllowance";
 import { UnitOfTime } from "../../send/FlowRateInput";
-import {
-  ACL_CREATE_PERMISSION,
-  ACL_DELETE_PERMISSION,
-} from "./flowSchedulerEndpoints";
 import { getUnixTime } from "date-fns";
 import { getMaximumNeededTokenAllowance } from "../../vesting/VestingSchedulesAllowancesTable/calculateRequiredAccessForActiveVestingSchedule";
-import { allNetworks, findNetworkOrThrow } from "../../network/networks";
+import { allNetworks, findNetworkOrThrow, VestingVersion } from "../../network/networks";
 import { resolvedWagmiClients } from "../../wallet/wagmiConfig";
-import { vestingSchedulerAbi } from "../../../abis/vestingSchedulerAbi";
-import { vestingSchedulerV2Abi } from "../../../abis/vestingSchedulerV2Abi";
-import { vestingSchedulerAddress } from "../../../generated";
-import { vestingSchedulerV2Address } from "../../../generated";
+import { vestingSchedulerAbi, vestingSchedulerAddress, vestingSchedulerV2Abi, vestingSchedulerV2Address } from "../../../generated";
 import { getClaimPeriodInSeconds, getClaimValidityDate } from "../../vesting/claimPeriod";
+import { ACL_CREATE_PERMISSION, ACL_DELETE_PERMISSION } from "../../../utils/constants";
 
 export const MAX_VESTING_DURATION_IN_YEARS = 10;
 export const MAX_VESTING_DURATION_IN_SECONDS =
@@ -42,7 +36,7 @@ export interface CreateVestingSchedule extends BaseSuperTokenMutation {
   endDateTimestamp: number;
   cliffTransferAmountWei: string;
   claimEnabled: boolean;
-  version: "v1" | "v2";
+  version: VestingVersion;
 }
 
 export interface CreateVestingScheduleFromAmountAndDuration
@@ -67,14 +61,14 @@ export interface DeleteVestingSchedule extends BaseSuperTokenMutation {
   senderAddress: string;
   receiverAddress: string;
   deleteFlow: boolean;
-  version: "v1" | "v2";
+  version: VestingVersion;
 }
 
 interface GetVestingSchedule extends BaseQuery<RpcVestingSchedule | null> {
   superTokenAddress: string;
   senderAddress: string;
   receiverAddress: string;
-  version: "v1" | "v2";
+  version: VestingVersion;
 }
 
 interface RpcVestingSchedule {
@@ -88,7 +82,7 @@ interface FixAccessForVestingMutation extends BaseSuperTokenMutation {
   requiredTokenAllowanceWei: string;
   requiredFlowOperatorPermissions: number;
   requiredFlowRateAllowanceWei: string;
-  version: "v1" | "v2";
+  version: VestingVersion;
 }
 
 export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
@@ -122,7 +116,7 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
       });
 
       const network = findNetworkOrThrow(allNetworks, chainId);
-      const contractInfo = version === 'v2' ? network.vestingContractAddress_v2 : network.vestingContractAddress_v1;
+      const contractInfo = network.vestingContractAddress[version];
       if (!contractInfo) {
         throw new Error("Vesting contract not supported on this network");
       }
@@ -736,7 +730,7 @@ export const vestingSchedulerQueryEndpoints = {
         END_DATE_VALID_BEFORE_IN_DAYS: number;
         END_DATE_VALID_BEFORE_IN_SECONDS: number;
       },
-      { chainId: number; version: "v1" | "v2" }
+      { chainId: number; version: VestingVersion }
     >({
       keepUnusedDataFor: 3600,
       extraOptions: {
@@ -744,7 +738,7 @@ export const vestingSchedulerQueryEndpoints = {
       },
       queryFn: async ({ chainId, version }) => {
         const network = findNetworkOrThrow(allNetworks, chainId);
-        const contractInfo = version === 'v2' ? network.vestingContractAddress_v2 : network.vestingContractAddress_v1;
+        const contractInfo = network.vestingContractAddress[version];
         if (!contractInfo) {
           throw new Error("Vesting contract not supported on this network");
         }
@@ -782,7 +776,7 @@ export const vestingSchedulerQueryEndpoints = {
         chainId: number;
         tokenAddress: string;
         senderAddress: string;
-        version: "v1" | "v2";
+        version: VestingVersion;
       }
     >({
       providesTags: (_result, _error, arg) => [
@@ -874,5 +868,5 @@ export const vestingSchedulerQueryEndpoints = {
         };
       },
     }),
-  }),
+  })
 };

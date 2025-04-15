@@ -1,7 +1,7 @@
 import {
   AgreementLiquidatedByEvent,
   AgreementLiquidatedV2Event,
-  AllEvents,
+  AllEvents as AllProtocolEvents,
   BurnedEvent,
   FlowUpdatedEvent,
   IndexDistributionClaimedEvent,
@@ -19,6 +19,9 @@ import {
 } from "@superfluid-finance/sdk-core";
 import groupBy from "lodash/fp/groupBy";
 import { Network } from "../features/network/networks";
+import { AllVestingEvents } from "../vesting-subgraph/vestingEvents";
+
+export type AllEvents = AllProtocolEvents | AllVestingEvents;
 
 export interface MintedActivity extends Activity<MintedEvent> {
   transferEvent?: TransferEvent;
@@ -274,6 +277,13 @@ const mapTransactionActivityRecursive = (
     case "IndexCreated":
     case "FlowUpdated":
     case "Transfer":
+    case "VestingCliffAndFlowExecuted":
+    case "VestingEndExecuted":
+    case "VestingEndFailed":
+    case "VestingScheduleCreated":
+    case "VestingScheduleDeleted":
+    case "VestingScheduleUpdated":
+    case "VestingClaimed":
       return mapTransactionActivityRecursive(
         transactionEvents,
         network,

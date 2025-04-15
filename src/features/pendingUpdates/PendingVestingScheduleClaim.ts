@@ -3,6 +3,7 @@ import { PendingUpdate } from "./PendingUpdate";
 import { pendingUpdateSelectors } from "./pendingUpdate.slice";
 import { useAppSelector } from "../redux/store";
 import { ClaimVestingSchedule } from "../redux/endpoints/vestingSchedulerEndpoints";
+import { VestingVersion } from "../network/networks";
 
 export interface PendingVestingScheduleClaim
   extends PendingUpdate,
@@ -11,7 +12,7 @@ export interface PendingVestingScheduleClaim
       "chainId" | "superTokenAddress" | "senderAddress" | "receiverAddress"
     > {
   pendingType: "VestingScheduleClaim";
-  version: "v2"
+  version: "v2" | "v3"
 }
 
 export const isPendingVestingScheduleClaim = (
@@ -52,7 +53,7 @@ export const usePendingVestingScheduleClaim = (
     superTokenAddress: string;
     senderAddress: string;
     receiverAddress: string;
-    version: "v1" | "v2"
+    version: VestingVersion;
   },
   options?: { skip: boolean }
 ) => {

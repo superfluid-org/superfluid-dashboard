@@ -169,6 +169,14 @@ const ActivityRow: FC<ActivityRowProps> = ({
         />
       );
 
+    case "VestingCliffAndFlowExecuted":
+    case "VestingEndExecuted":
+    case "VestingEndFailed":
+    case "VestingScheduleCreated":
+    case "VestingScheduleDeleted":
+    case "VestingScheduleUpdated":
+    case "VestingClaimed":
+
     default:
       return (
         <DefaultActivityRow

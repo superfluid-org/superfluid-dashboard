@@ -5,14 +5,16 @@ import {
   MenuItem,
   useTheme,
 } from "@mui/material";
-import { Address, AllEvents } from "@superfluid-finance/sdk-core";
+import { Address } from "@superfluid-finance/sdk-core";
 import { FC } from "react";
+import { AllEvents } from "../../utils/activityUtils";
 
 export enum ActivityType {
   Streams = "Streams",
   Distributions = "Distributions",
   Transfers = "Transfers",
   WrapUnwrap = "Wrap / Unwrap",
+  Vesting = "Vesting"
 }
 
 export const AllActivityTypes = [
@@ -20,6 +22,7 @@ export const AllActivityTypes = [
   ActivityType.Distributions,
   ActivityType.Transfers,
   ActivityType.WrapUnwrap,
+  ActivityType.Vesting
 ];
 
 interface ActivityFilter {
@@ -59,6 +62,11 @@ export const ActivityTypeFilters: ActivityFilter[] = [
     key: ActivityType.WrapUnwrap,
     filter: (keyEvent: AllEvents) =>
       ["Minted", "Burned"].includes(keyEvent.name),
+  },
+  {
+    key: ActivityType.Vesting,
+    filter: (keyEvent: AllEvents) =>
+      ["VestingCliffAndFlowExecuted", "VestingEndExecuted", "VestingEndFailed", "VestingScheduleCreated", "VestingScheduleDeleted", "VestingScheduleUpdated", "VestingClaimed"].includes(keyEvent.name),
   },
 ];
 

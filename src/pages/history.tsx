@@ -32,6 +32,7 @@ import { subgraphApi } from "../features/redux/store";
 import AddressSearch from "../features/send/AddressSearch";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 import { Activity, mapActivitiesFromEvents } from "../utils/activityUtils";
+import { vestingSubgraphApi } from "../vesting-subgraph/vestingSubgraphApi";
 
 const History: NextPage = () => {
   const theme = useTheme();
@@ -53,7 +54,12 @@ const History: NextPage = () => {
     useState<HTMLButtonElement | null>(null);
 
   const [activeActivityTypes, setActiveActivityTypes] =
-    useState(AllActivityTypes);
+    useState([
+      ActivityType.Streams,
+      ActivityType.Distributions,
+      ActivityType.Transfers,
+      ActivityType.WrapUnwrap
+    ]);
   const [activities, setActivities] = useState<Activity[]>([]);
 
   const [startDate, setStartDate] = useState(add(dateNow, { months: -1 }));
@@ -62,13 +68,14 @@ const History: NextPage = () => {
   const [searchedAddress, setAddressSearch] = useState<string | null>(null);
 
   const [eventsQueryTrigger] = subgraphApi.useLazyEventsQuery();
+  const [vestingEventsQueryTrigger] = vestingSubgraphApi.useLazyVestingEventsQuery();
 
   useEffect(() => {
     if (visibleAddress) {
       setIsLoading(true);
 
       Promise.all(
-        activeNetworks.map((network) =>
+        activeNetworks.flatMap((network) => [
           eventsQueryTrigger(
             {
               chainId: network.id,
@@ -96,10 +103,42 @@ const History: NextPage = () => {
               },
             },
             true
-          ).then((result) =>
-            mapActivitiesFromEvents(result.data?.items || [], network)
           )
-        )
+            .then((result) =>
+              mapActivitiesFromEvents(result.data?.items || [], network)
+            ),
+          ...(activeActivityTypes.includes(ActivityType.Vesting) ? [
+            vestingEventsQueryTrigger(
+              {
+                chainId: network.id,
+                filter: {
+                  addresses_contains: searchedAddress
+                    ? [
+                      visibleAddress.toLowerCase(),
+                      searchedAddress.toLowerCase(),
+                    ]
+                    : [visibleAddress.toLowerCase()],
+                  timestamp_gte: Math.floor(
+                    startOfDay(startDate).getTime() / 1000
+                  ).toString(),
+                  timestamp_lte: Math.floor(
+                    endOfDay(endDate).getTime() / 1000
+                  ).toString(),
+                },
+                pagination: {
+                  take: 300,
+                  skip: 0,
+                },
+                order: {
+                  orderBy: "order",
+                  orderDirection: "desc",
+                },
+              },
+            ).then((result) => 
+              mapActivitiesFromEvents(result.data?.items || [], network)
+            )
+          ] : [])
+        ])
       ).then((results) => {
         setActivities(
           orderBy(
@@ -115,7 +154,7 @@ const History: NextPage = () => {
       setActivities([]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [visibleAddress, activeNetworks, startDate, endDate, searchedAddress]);
+  }, [visibleAddress, eventsQueryTrigger, vestingEventsQueryTrigger, activeNetworks, startDate, endDate, searchedAddress, activeActivityTypes]);
 
   const openNetworkSelection = (event: MouseEvent<HTMLButtonElement>) =>
     setNetworkSelectionAnchor(event.currentTarget);

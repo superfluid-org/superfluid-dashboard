@@ -197,7 +197,7 @@ const VestingScheduleTable: FC<VestingScheduleTableProps> = ({
     }
   }, [statusFilter, vestingSchedules]);
 
-  const showVestingVersion = !isBelowMd && !incoming && !!network.vestingContractAddress_v2;
+  const showVestingVersion = !isBelowMd && !incoming && (network.vestingContractAddress.v2 || network.vestingContractAddress.v3);
 
   return (
     <TableContainer

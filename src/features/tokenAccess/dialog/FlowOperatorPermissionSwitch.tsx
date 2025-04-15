@@ -10,12 +10,8 @@ import {
   ACL_DELETE_PERMISSION_LABEL,
   ACL_UPDATE_PERMISSION_LABEL,
 } from "../../../utils/flowOperatorPermissionsToString";
-import {
-  ACL_CREATE_PERMISSION,
-  ACL_DELETE_PERMISSION,
-  ACL_UPDATE_PERMISSION,
-} from "../../redux/endpoints/flowSchedulerEndpoints";
 import { FC } from "react";
+import { ACL_CREATE_PERMISSION, ACL_DELETE_PERMISSION, ACL_UPDATE_PERMISSION } from "../../../utils/constants";
 
 interface Permission {
   name: string;

@@ -61,7 +61,8 @@ export type Block_Height = {
 
 export type ContractVersion =
   | 'v1'
-  | 'v2';
+  | 'v2'
+  | 'v3';
 
 /**
  * Event: An interface which is shared by all
@@ -207,6 +208,8 @@ export type Query = {
   vestingScheduleUpdatedEvents: Array<VestingScheduleUpdatedEvent>;
   vestingClaimedEvent?: Maybe<VestingClaimedEvent>;
   vestingClaimedEvents: Array<VestingClaimedEvent>;
+  vestingScheduleEndDateUpdatedEvent?: Maybe<VestingScheduleEndDateUpdatedEvent>;
+  vestingScheduleEndDateUpdatedEvents: Array<VestingScheduleEndDateUpdatedEvent>;
   vestingSchedule?: Maybe<VestingSchedule>;
   vestingSchedules: Array<VestingSchedule>;
   tokenSenderReceiverCursor?: Maybe<TokenSenderReceiverCursor>;
@@ -346,6 +349,24 @@ export type QueryVestingClaimedEventsArgs = {
 };
 
 
+export type QueryVestingScheduleEndDateUpdatedEventArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryVestingScheduleEndDateUpdatedEventsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<VestingScheduleEndDateUpdatedEvent_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<VestingScheduleEndDateUpdatedEvent_Filter>;
+  block?: InputMaybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
 export type QueryVestingScheduleArgs = {
   id: Scalars['ID'];
   block?: InputMaybe<Block_Height>;
@@ -437,6 +458,8 @@ export type Subscription = {
   vestingScheduleUpdatedEvents: Array<VestingScheduleUpdatedEvent>;
   vestingClaimedEvent?: Maybe<VestingClaimedEvent>;
   vestingClaimedEvents: Array<VestingClaimedEvent>;
+  vestingScheduleEndDateUpdatedEvent?: Maybe<VestingScheduleEndDateUpdatedEvent>;
+  vestingScheduleEndDateUpdatedEvents: Array<VestingScheduleEndDateUpdatedEvent>;
   vestingSchedule?: Maybe<VestingSchedule>;
   vestingSchedules: Array<VestingSchedule>;
   tokenSenderReceiverCursor?: Maybe<TokenSenderReceiverCursor>;
@@ -571,6 +594,24 @@ export type SubscriptionVestingClaimedEventsArgs = {
   orderBy?: InputMaybe<VestingClaimedEvent_OrderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
   where?: InputMaybe<VestingClaimedEvent_Filter>;
+  block?: InputMaybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionVestingScheduleEndDateUpdatedEventArgs = {
+  id: Scalars['ID'];
+  block?: InputMaybe<Block_Height>;
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionVestingScheduleEndDateUpdatedEventsArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<VestingScheduleEndDateUpdatedEvent_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<VestingScheduleEndDateUpdatedEvent_Filter>;
   block?: InputMaybe<Block_Height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
@@ -778,7 +819,8 @@ export type Task_OrderBy =
   | 'vestingSchedule__endExecutedAt'
   | 'vestingSchedule__claimValidityDate'
   | 'vestingSchedule__claimedAt'
-  | 'vestingSchedule__remainderAmount';
+  | 'vestingSchedule__remainderAmount'
+  | 'vestingSchedule__totalAmount';
 
 export type TokenSenderReceiverCursor = {
   id: Scalars['String'];
@@ -903,6 +945,7 @@ export type TokenSenderReceiverCursor_OrderBy =
   | 'currentVestingSchedule__claimValidityDate'
   | 'currentVestingSchedule__claimedAt'
   | 'currentVestingSchedule__remainderAmount'
+  | 'currentVestingSchedule__totalAmount'
   | 'currentCliffAndFlowTask'
   | 'currentCliffAndFlowTask__id'
   | 'currentCliffAndFlowTask__type'
@@ -1680,6 +1723,7 @@ export type VestingSchedule = {
   claimValidityDate: Scalars['BigInt'];
   claimedAt?: Maybe<Scalars['BigInt']>;
   remainderAmount: Scalars['BigInt'];
+  totalAmount: Scalars['BigInt'];
 };
 
 
@@ -2078,6 +2122,210 @@ export type VestingScheduleDeletedEvent_OrderBy =
   | 'sender'
   | 'receiver';
 
+export type VestingScheduleEndDateUpdatedEvent = Event & {
+  id: Scalars['ID'];
+  blockNumber: Scalars['BigInt'];
+  logIndex: Scalars['BigInt'];
+  order: Scalars['BigInt'];
+  name: Scalars['String'];
+  /**
+   * Holds the addresses for sender and receiver.
+   *
+   */
+  addresses: Array<Scalars['Bytes']>;
+  timestamp: Scalars['BigInt'];
+  transactionHash: Scalars['Bytes'];
+  gasPrice: Scalars['BigInt'];
+  superToken: Scalars['Bytes'];
+  sender: Scalars['Bytes'];
+  receiver: Scalars['Bytes'];
+  oldEndDate: Scalars['BigInt'];
+  endDate: Scalars['BigInt'];
+  previousFlowRate: Scalars['BigInt'];
+  newFlowRate: Scalars['BigInt'];
+  remainderAmount: Scalars['BigInt'];
+};
+
+export type VestingScheduleEndDateUpdatedEvent_Filter = {
+  id?: InputMaybe<Scalars['ID']>;
+  id_not?: InputMaybe<Scalars['ID']>;
+  id_gt?: InputMaybe<Scalars['ID']>;
+  id_lt?: InputMaybe<Scalars['ID']>;
+  id_gte?: InputMaybe<Scalars['ID']>;
+  id_lte?: InputMaybe<Scalars['ID']>;
+  id_in?: InputMaybe<Array<Scalars['ID']>>;
+  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
+  blockNumber?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_not?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_gt?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_lt?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_gte?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_lte?: InputMaybe<Scalars['BigInt']>;
+  blockNumber_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  blockNumber_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  logIndex?: InputMaybe<Scalars['BigInt']>;
+  logIndex_not?: InputMaybe<Scalars['BigInt']>;
+  logIndex_gt?: InputMaybe<Scalars['BigInt']>;
+  logIndex_lt?: InputMaybe<Scalars['BigInt']>;
+  logIndex_gte?: InputMaybe<Scalars['BigInt']>;
+  logIndex_lte?: InputMaybe<Scalars['BigInt']>;
+  logIndex_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  logIndex_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  order?: InputMaybe<Scalars['BigInt']>;
+  order_not?: InputMaybe<Scalars['BigInt']>;
+  order_gt?: InputMaybe<Scalars['BigInt']>;
+  order_lt?: InputMaybe<Scalars['BigInt']>;
+  order_gte?: InputMaybe<Scalars['BigInt']>;
+  order_lte?: InputMaybe<Scalars['BigInt']>;
+  order_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  order_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  name?: InputMaybe<Scalars['String']>;
+  name_not?: InputMaybe<Scalars['String']>;
+  name_gt?: InputMaybe<Scalars['String']>;
+  name_lt?: InputMaybe<Scalars['String']>;
+  name_gte?: InputMaybe<Scalars['String']>;
+  name_lte?: InputMaybe<Scalars['String']>;
+  name_in?: InputMaybe<Array<Scalars['String']>>;
+  name_not_in?: InputMaybe<Array<Scalars['String']>>;
+  name_contains?: InputMaybe<Scalars['String']>;
+  name_contains_nocase?: InputMaybe<Scalars['String']>;
+  name_not_contains?: InputMaybe<Scalars['String']>;
+  name_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  name_starts_with?: InputMaybe<Scalars['String']>;
+  name_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  name_not_starts_with?: InputMaybe<Scalars['String']>;
+  name_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  name_ends_with?: InputMaybe<Scalars['String']>;
+  name_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  name_not_ends_with?: InputMaybe<Scalars['String']>;
+  name_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  addresses?: InputMaybe<Array<Scalars['Bytes']>>;
+  addresses_not?: InputMaybe<Array<Scalars['Bytes']>>;
+  addresses_contains?: InputMaybe<Array<Scalars['Bytes']>>;
+  addresses_contains_nocase?: InputMaybe<Array<Scalars['Bytes']>>;
+  addresses_not_contains?: InputMaybe<Array<Scalars['Bytes']>>;
+  addresses_not_contains_nocase?: InputMaybe<Array<Scalars['Bytes']>>;
+  timestamp?: InputMaybe<Scalars['BigInt']>;
+  timestamp_not?: InputMaybe<Scalars['BigInt']>;
+  timestamp_gt?: InputMaybe<Scalars['BigInt']>;
+  timestamp_lt?: InputMaybe<Scalars['BigInt']>;
+  timestamp_gte?: InputMaybe<Scalars['BigInt']>;
+  timestamp_lte?: InputMaybe<Scalars['BigInt']>;
+  timestamp_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  timestamp_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  transactionHash?: InputMaybe<Scalars['Bytes']>;
+  transactionHash_not?: InputMaybe<Scalars['Bytes']>;
+  transactionHash_gt?: InputMaybe<Scalars['Bytes']>;
+  transactionHash_lt?: InputMaybe<Scalars['Bytes']>;
+  transactionHash_gte?: InputMaybe<Scalars['Bytes']>;
+  transactionHash_lte?: InputMaybe<Scalars['Bytes']>;
+  transactionHash_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  transactionHash_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  transactionHash_contains?: InputMaybe<Scalars['Bytes']>;
+  transactionHash_not_contains?: InputMaybe<Scalars['Bytes']>;
+  gasPrice?: InputMaybe<Scalars['BigInt']>;
+  gasPrice_not?: InputMaybe<Scalars['BigInt']>;
+  gasPrice_gt?: InputMaybe<Scalars['BigInt']>;
+  gasPrice_lt?: InputMaybe<Scalars['BigInt']>;
+  gasPrice_gte?: InputMaybe<Scalars['BigInt']>;
+  gasPrice_lte?: InputMaybe<Scalars['BigInt']>;
+  gasPrice_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  gasPrice_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  superToken?: InputMaybe<Scalars['Bytes']>;
+  superToken_not?: InputMaybe<Scalars['Bytes']>;
+  superToken_gt?: InputMaybe<Scalars['Bytes']>;
+  superToken_lt?: InputMaybe<Scalars['Bytes']>;
+  superToken_gte?: InputMaybe<Scalars['Bytes']>;
+  superToken_lte?: InputMaybe<Scalars['Bytes']>;
+  superToken_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  superToken_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  superToken_contains?: InputMaybe<Scalars['Bytes']>;
+  superToken_not_contains?: InputMaybe<Scalars['Bytes']>;
+  sender?: InputMaybe<Scalars['Bytes']>;
+  sender_not?: InputMaybe<Scalars['Bytes']>;
+  sender_gt?: InputMaybe<Scalars['Bytes']>;
+  sender_lt?: InputMaybe<Scalars['Bytes']>;
+  sender_gte?: InputMaybe<Scalars['Bytes']>;
+  sender_lte?: InputMaybe<Scalars['Bytes']>;
+  sender_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  sender_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  sender_contains?: InputMaybe<Scalars['Bytes']>;
+  sender_not_contains?: InputMaybe<Scalars['Bytes']>;
+  receiver?: InputMaybe<Scalars['Bytes']>;
+  receiver_not?: InputMaybe<Scalars['Bytes']>;
+  receiver_gt?: InputMaybe<Scalars['Bytes']>;
+  receiver_lt?: InputMaybe<Scalars['Bytes']>;
+  receiver_gte?: InputMaybe<Scalars['Bytes']>;
+  receiver_lte?: InputMaybe<Scalars['Bytes']>;
+  receiver_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  receiver_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  receiver_contains?: InputMaybe<Scalars['Bytes']>;
+  receiver_not_contains?: InputMaybe<Scalars['Bytes']>;
+  oldEndDate?: InputMaybe<Scalars['BigInt']>;
+  oldEndDate_not?: InputMaybe<Scalars['BigInt']>;
+  oldEndDate_gt?: InputMaybe<Scalars['BigInt']>;
+  oldEndDate_lt?: InputMaybe<Scalars['BigInt']>;
+  oldEndDate_gte?: InputMaybe<Scalars['BigInt']>;
+  oldEndDate_lte?: InputMaybe<Scalars['BigInt']>;
+  oldEndDate_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  oldEndDate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  endDate?: InputMaybe<Scalars['BigInt']>;
+  endDate_not?: InputMaybe<Scalars['BigInt']>;
+  endDate_gt?: InputMaybe<Scalars['BigInt']>;
+  endDate_lt?: InputMaybe<Scalars['BigInt']>;
+  endDate_gte?: InputMaybe<Scalars['BigInt']>;
+  endDate_lte?: InputMaybe<Scalars['BigInt']>;
+  endDate_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  endDate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  previousFlowRate?: InputMaybe<Scalars['BigInt']>;
+  previousFlowRate_not?: InputMaybe<Scalars['BigInt']>;
+  previousFlowRate_gt?: InputMaybe<Scalars['BigInt']>;
+  previousFlowRate_lt?: InputMaybe<Scalars['BigInt']>;
+  previousFlowRate_gte?: InputMaybe<Scalars['BigInt']>;
+  previousFlowRate_lte?: InputMaybe<Scalars['BigInt']>;
+  previousFlowRate_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  previousFlowRate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  newFlowRate?: InputMaybe<Scalars['BigInt']>;
+  newFlowRate_not?: InputMaybe<Scalars['BigInt']>;
+  newFlowRate_gt?: InputMaybe<Scalars['BigInt']>;
+  newFlowRate_lt?: InputMaybe<Scalars['BigInt']>;
+  newFlowRate_gte?: InputMaybe<Scalars['BigInt']>;
+  newFlowRate_lte?: InputMaybe<Scalars['BigInt']>;
+  newFlowRate_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  newFlowRate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  remainderAmount?: InputMaybe<Scalars['BigInt']>;
+  remainderAmount_not?: InputMaybe<Scalars['BigInt']>;
+  remainderAmount_gt?: InputMaybe<Scalars['BigInt']>;
+  remainderAmount_lt?: InputMaybe<Scalars['BigInt']>;
+  remainderAmount_gte?: InputMaybe<Scalars['BigInt']>;
+  remainderAmount_lte?: InputMaybe<Scalars['BigInt']>;
+  remainderAmount_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  remainderAmount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<VestingScheduleEndDateUpdatedEvent_Filter>>>;
+  or?: InputMaybe<Array<InputMaybe<VestingScheduleEndDateUpdatedEvent_Filter>>>;
+};
+
+export type VestingScheduleEndDateUpdatedEvent_OrderBy =
+  | 'id'
+  | 'blockNumber'
+  | 'logIndex'
+  | 'order'
+  | 'name'
+  | 'addresses'
+  | 'timestamp'
+  | 'transactionHash'
+  | 'gasPrice'
+  | 'superToken'
+  | 'sender'
+  | 'receiver'
+  | 'oldEndDate'
+  | 'endDate'
+  | 'previousFlowRate'
+  | 'newFlowRate'
+  | 'remainderAmount';
+
 export type VestingScheduleUpdatedEvent = Event & {
   id: Scalars['ID'];
   blockNumber: Scalars['BigInt'];
@@ -2098,6 +2346,12 @@ export type VestingScheduleUpdatedEvent = Event & {
   oldEndDate: Scalars['BigInt'];
   endDate: Scalars['BigInt'];
   remainderAmount: Scalars['BigInt'];
+  oldRemainderAmount: Scalars['BigInt'];
+  flowRate: Scalars['BigInt'];
+  oldFlowRate: Scalars['BigInt'];
+  totalAmount: Scalars['BigInt'];
+  oldTotalAmount: Scalars['BigInt'];
+  settledAmount: Scalars['BigInt'];
 };
 
 export type VestingScheduleUpdatedEvent_Filter = {
@@ -2239,6 +2493,54 @@ export type VestingScheduleUpdatedEvent_Filter = {
   remainderAmount_lte?: InputMaybe<Scalars['BigInt']>;
   remainderAmount_in?: InputMaybe<Array<Scalars['BigInt']>>;
   remainderAmount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  oldRemainderAmount?: InputMaybe<Scalars['BigInt']>;
+  oldRemainderAmount_not?: InputMaybe<Scalars['BigInt']>;
+  oldRemainderAmount_gt?: InputMaybe<Scalars['BigInt']>;
+  oldRemainderAmount_lt?: InputMaybe<Scalars['BigInt']>;
+  oldRemainderAmount_gte?: InputMaybe<Scalars['BigInt']>;
+  oldRemainderAmount_lte?: InputMaybe<Scalars['BigInt']>;
+  oldRemainderAmount_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  oldRemainderAmount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  flowRate?: InputMaybe<Scalars['BigInt']>;
+  flowRate_not?: InputMaybe<Scalars['BigInt']>;
+  flowRate_gt?: InputMaybe<Scalars['BigInt']>;
+  flowRate_lt?: InputMaybe<Scalars['BigInt']>;
+  flowRate_gte?: InputMaybe<Scalars['BigInt']>;
+  flowRate_lte?: InputMaybe<Scalars['BigInt']>;
+  flowRate_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  flowRate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  oldFlowRate?: InputMaybe<Scalars['BigInt']>;
+  oldFlowRate_not?: InputMaybe<Scalars['BigInt']>;
+  oldFlowRate_gt?: InputMaybe<Scalars['BigInt']>;
+  oldFlowRate_lt?: InputMaybe<Scalars['BigInt']>;
+  oldFlowRate_gte?: InputMaybe<Scalars['BigInt']>;
+  oldFlowRate_lte?: InputMaybe<Scalars['BigInt']>;
+  oldFlowRate_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  oldFlowRate_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  totalAmount?: InputMaybe<Scalars['BigInt']>;
+  totalAmount_not?: InputMaybe<Scalars['BigInt']>;
+  totalAmount_gt?: InputMaybe<Scalars['BigInt']>;
+  totalAmount_lt?: InputMaybe<Scalars['BigInt']>;
+  totalAmount_gte?: InputMaybe<Scalars['BigInt']>;
+  totalAmount_lte?: InputMaybe<Scalars['BigInt']>;
+  totalAmount_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  totalAmount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  oldTotalAmount?: InputMaybe<Scalars['BigInt']>;
+  oldTotalAmount_not?: InputMaybe<Scalars['BigInt']>;
+  oldTotalAmount_gt?: InputMaybe<Scalars['BigInt']>;
+  oldTotalAmount_lt?: InputMaybe<Scalars['BigInt']>;
+  oldTotalAmount_gte?: InputMaybe<Scalars['BigInt']>;
+  oldTotalAmount_lte?: InputMaybe<Scalars['BigInt']>;
+  oldTotalAmount_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  oldTotalAmount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  settledAmount?: InputMaybe<Scalars['BigInt']>;
+  settledAmount_not?: InputMaybe<Scalars['BigInt']>;
+  settledAmount_gt?: InputMaybe<Scalars['BigInt']>;
+  settledAmount_lt?: InputMaybe<Scalars['BigInt']>;
+  settledAmount_gte?: InputMaybe<Scalars['BigInt']>;
+  settledAmount_lte?: InputMaybe<Scalars['BigInt']>;
+  settledAmount_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  settledAmount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<VestingScheduleUpdatedEvent_Filter>>>;
@@ -2260,7 +2562,13 @@ export type VestingScheduleUpdatedEvent_OrderBy =
   | 'receiver'
   | 'oldEndDate'
   | 'endDate'
-  | 'remainderAmount';
+  | 'remainderAmount'
+  | 'oldRemainderAmount'
+  | 'flowRate'
+  | 'oldFlowRate'
+  | 'totalAmount'
+  | 'oldTotalAmount'
+  | 'settledAmount';
 
 export type VestingSchedule_Filter = {
   id?: InputMaybe<Scalars['String']>;
@@ -2465,6 +2773,14 @@ export type VestingSchedule_Filter = {
   remainderAmount_lte?: InputMaybe<Scalars['BigInt']>;
   remainderAmount_in?: InputMaybe<Array<Scalars['BigInt']>>;
   remainderAmount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  totalAmount?: InputMaybe<Scalars['BigInt']>;
+  totalAmount_not?: InputMaybe<Scalars['BigInt']>;
+  totalAmount_gt?: InputMaybe<Scalars['BigInt']>;
+  totalAmount_lt?: InputMaybe<Scalars['BigInt']>;
+  totalAmount_gte?: InputMaybe<Scalars['BigInt']>;
+  totalAmount_lte?: InputMaybe<Scalars['BigInt']>;
+  totalAmount_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  totalAmount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<VestingSchedule_Filter>>>;
@@ -2496,7 +2812,8 @@ export type VestingSchedule_OrderBy =
   | 'events'
   | 'claimValidityDate'
   | 'claimedAt'
-  | 'remainderAmount';
+  | 'remainderAmount'
+  | 'totalAmount';
 
 export type _Block_ = {
   /** The hash of the block */
@@ -2625,7 +2942,7 @@ export type ResolversTypes = ResolversObject<{
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   Bytes: ResolverTypeWrapper<Scalars['Bytes']>;
   ContractVersion: ContractVersion;
-  Event: ResolversTypes['VestingClaimedEvent'] | ResolversTypes['VestingCliffAndFlowExecutedEvent'] | ResolversTypes['VestingEndExecutedEvent'] | ResolversTypes['VestingEndFailedEvent'] | ResolversTypes['VestingScheduleCreatedEvent'] | ResolversTypes['VestingScheduleDeletedEvent'] | ResolversTypes['VestingScheduleUpdatedEvent'];
+  Event: ResolversTypes['VestingClaimedEvent'] | ResolversTypes['VestingCliffAndFlowExecutedEvent'] | ResolversTypes['VestingEndExecutedEvent'] | ResolversTypes['VestingEndFailedEvent'] | ResolversTypes['VestingScheduleCreatedEvent'] | ResolversTypes['VestingScheduleDeletedEvent'] | ResolversTypes['VestingScheduleEndDateUpdatedEvent'] | ResolversTypes['VestingScheduleUpdatedEvent'];
   Event_filter: Event_Filter;
   Event_orderBy: Event_OrderBy;
   Float: ResolverTypeWrapper<Scalars['Float']>;
@@ -2663,6 +2980,9 @@ export type ResolversTypes = ResolversObject<{
   VestingScheduleDeletedEvent: ResolverTypeWrapper<VestingScheduleDeletedEvent>;
   VestingScheduleDeletedEvent_filter: VestingScheduleDeletedEvent_Filter;
   VestingScheduleDeletedEvent_orderBy: VestingScheduleDeletedEvent_OrderBy;
+  VestingScheduleEndDateUpdatedEvent: ResolverTypeWrapper<VestingScheduleEndDateUpdatedEvent>;
+  VestingScheduleEndDateUpdatedEvent_filter: VestingScheduleEndDateUpdatedEvent_Filter;
+  VestingScheduleEndDateUpdatedEvent_orderBy: VestingScheduleEndDateUpdatedEvent_OrderBy;
   VestingScheduleUpdatedEvent: ResolverTypeWrapper<VestingScheduleUpdatedEvent>;
   VestingScheduleUpdatedEvent_filter: VestingScheduleUpdatedEvent_Filter;
   VestingScheduleUpdatedEvent_orderBy: VestingScheduleUpdatedEvent_OrderBy;
@@ -2681,7 +3001,7 @@ export type ResolversParentTypes = ResolversObject<{
   Block_height: Block_Height;
   Boolean: Scalars['Boolean'];
   Bytes: Scalars['Bytes'];
-  Event: ResolversParentTypes['VestingClaimedEvent'] | ResolversParentTypes['VestingCliffAndFlowExecutedEvent'] | ResolversParentTypes['VestingEndExecutedEvent'] | ResolversParentTypes['VestingEndFailedEvent'] | ResolversParentTypes['VestingScheduleCreatedEvent'] | ResolversParentTypes['VestingScheduleDeletedEvent'] | ResolversParentTypes['VestingScheduleUpdatedEvent'];
+  Event: ResolversParentTypes['VestingClaimedEvent'] | ResolversParentTypes['VestingCliffAndFlowExecutedEvent'] | ResolversParentTypes['VestingEndExecutedEvent'] | ResolversParentTypes['VestingEndFailedEvent'] | ResolversParentTypes['VestingScheduleCreatedEvent'] | ResolversParentTypes['VestingScheduleDeletedEvent'] | ResolversParentTypes['VestingScheduleEndDateUpdatedEvent'] | ResolversParentTypes['VestingScheduleUpdatedEvent'];
   Event_filter: Event_Filter;
   Float: Scalars['Float'];
   ID: Scalars['ID'];
@@ -2708,6 +3028,8 @@ export type ResolversParentTypes = ResolversObject<{
   VestingScheduleCreatedEvent_filter: VestingScheduleCreatedEvent_Filter;
   VestingScheduleDeletedEvent: VestingScheduleDeletedEvent;
   VestingScheduleDeletedEvent_filter: VestingScheduleDeletedEvent_Filter;
+  VestingScheduleEndDateUpdatedEvent: VestingScheduleEndDateUpdatedEvent;
+  VestingScheduleEndDateUpdatedEvent_filter: VestingScheduleEndDateUpdatedEvent_Filter;
   VestingScheduleUpdatedEvent: VestingScheduleUpdatedEvent;
   VestingScheduleUpdatedEvent_filter: VestingScheduleUpdatedEvent_Filter;
   VestingSchedule_filter: VestingSchedule_Filter;
@@ -2744,7 +3066,7 @@ export interface BytesScalarConfig extends GraphQLScalarTypeConfig<ResolversType
 }
 
 export type EventResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Event'] = ResolversParentTypes['Event']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'VestingClaimedEvent' | 'VestingCliffAndFlowExecutedEvent' | 'VestingEndExecutedEvent' | 'VestingEndFailedEvent' | 'VestingScheduleCreatedEvent' | 'VestingScheduleDeletedEvent' | 'VestingScheduleUpdatedEvent', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'VestingClaimedEvent' | 'VestingCliffAndFlowExecutedEvent' | 'VestingEndExecutedEvent' | 'VestingEndFailedEvent' | 'VestingScheduleCreatedEvent' | 'VestingScheduleDeletedEvent' | 'VestingScheduleEndDateUpdatedEvent' | 'VestingScheduleUpdatedEvent', ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   blockNumber?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   logIndex?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
@@ -2775,6 +3097,8 @@ export type QueryResolvers<ContextType = MeshContext, ParentType extends Resolve
   vestingScheduleUpdatedEvents?: Resolver<Array<ResolversTypes['VestingScheduleUpdatedEvent']>, ParentType, ContextType, RequireFields<QueryVestingScheduleUpdatedEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
   vestingClaimedEvent?: Resolver<Maybe<ResolversTypes['VestingClaimedEvent']>, ParentType, ContextType, RequireFields<QueryVestingClaimedEventArgs, 'id' | 'subgraphError'>>;
   vestingClaimedEvents?: Resolver<Array<ResolversTypes['VestingClaimedEvent']>, ParentType, ContextType, RequireFields<QueryVestingClaimedEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
+  vestingScheduleEndDateUpdatedEvent?: Resolver<Maybe<ResolversTypes['VestingScheduleEndDateUpdatedEvent']>, ParentType, ContextType, RequireFields<QueryVestingScheduleEndDateUpdatedEventArgs, 'id' | 'subgraphError'>>;
+  vestingScheduleEndDateUpdatedEvents?: Resolver<Array<ResolversTypes['VestingScheduleEndDateUpdatedEvent']>, ParentType, ContextType, RequireFields<QueryVestingScheduleEndDateUpdatedEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
   vestingSchedule?: Resolver<Maybe<ResolversTypes['VestingSchedule']>, ParentType, ContextType, RequireFields<QueryVestingScheduleArgs, 'id' | 'subgraphError'>>;
   vestingSchedules?: Resolver<Array<ResolversTypes['VestingSchedule']>, ParentType, ContextType, RequireFields<QueryVestingSchedulesArgs, 'skip' | 'first' | 'subgraphError'>>;
   tokenSenderReceiverCursor?: Resolver<Maybe<ResolversTypes['TokenSenderReceiverCursor']>, ParentType, ContextType, RequireFields<QueryTokenSenderReceiverCursorArgs, 'id' | 'subgraphError'>>;
@@ -2801,6 +3125,8 @@ export type SubscriptionResolvers<ContextType = MeshContext, ParentType extends 
   vestingScheduleUpdatedEvents?: SubscriptionResolver<Array<ResolversTypes['VestingScheduleUpdatedEvent']>, "vestingScheduleUpdatedEvents", ParentType, ContextType, RequireFields<SubscriptionVestingScheduleUpdatedEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
   vestingClaimedEvent?: SubscriptionResolver<Maybe<ResolversTypes['VestingClaimedEvent']>, "vestingClaimedEvent", ParentType, ContextType, RequireFields<SubscriptionVestingClaimedEventArgs, 'id' | 'subgraphError'>>;
   vestingClaimedEvents?: SubscriptionResolver<Array<ResolversTypes['VestingClaimedEvent']>, "vestingClaimedEvents", ParentType, ContextType, RequireFields<SubscriptionVestingClaimedEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
+  vestingScheduleEndDateUpdatedEvent?: SubscriptionResolver<Maybe<ResolversTypes['VestingScheduleEndDateUpdatedEvent']>, "vestingScheduleEndDateUpdatedEvent", ParentType, ContextType, RequireFields<SubscriptionVestingScheduleEndDateUpdatedEventArgs, 'id' | 'subgraphError'>>;
+  vestingScheduleEndDateUpdatedEvents?: SubscriptionResolver<Array<ResolversTypes['VestingScheduleEndDateUpdatedEvent']>, "vestingScheduleEndDateUpdatedEvents", ParentType, ContextType, RequireFields<SubscriptionVestingScheduleEndDateUpdatedEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
   vestingSchedule?: SubscriptionResolver<Maybe<ResolversTypes['VestingSchedule']>, "vestingSchedule", ParentType, ContextType, RequireFields<SubscriptionVestingScheduleArgs, 'id' | 'subgraphError'>>;
   vestingSchedules?: SubscriptionResolver<Array<ResolversTypes['VestingSchedule']>, "vestingSchedules", ParentType, ContextType, RequireFields<SubscriptionVestingSchedulesArgs, 'skip' | 'first' | 'subgraphError'>>;
   tokenSenderReceiverCursor?: SubscriptionResolver<Maybe<ResolversTypes['TokenSenderReceiverCursor']>, "tokenSenderReceiverCursor", ParentType, ContextType, RequireFields<SubscriptionTokenSenderReceiverCursorArgs, 'id' | 'subgraphError'>>;
@@ -2938,6 +3264,7 @@ export type VestingScheduleResolvers<ContextType = MeshContext, ParentType exten
   claimValidityDate?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   claimedAt?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   remainderAmount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  totalAmount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -2980,6 +3307,27 @@ export type VestingScheduleDeletedEventResolvers<ContextType = MeshContext, Pare
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type VestingScheduleEndDateUpdatedEventResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['VestingScheduleEndDateUpdatedEvent'] = ResolversParentTypes['VestingScheduleEndDateUpdatedEvent']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  blockNumber?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  logIndex?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  order?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  addresses?: Resolver<Array<ResolversTypes['Bytes']>, ParentType, ContextType>;
+  timestamp?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  transactionHash?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
+  gasPrice?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  superToken?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
+  sender?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
+  receiver?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
+  oldEndDate?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  endDate?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  previousFlowRate?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  newFlowRate?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  remainderAmount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type VestingScheduleUpdatedEventResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['VestingScheduleUpdatedEvent'] = ResolversParentTypes['VestingScheduleUpdatedEvent']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   blockNumber?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
@@ -2996,6 +3344,12 @@ export type VestingScheduleUpdatedEventResolvers<ContextType = MeshContext, Pare
   oldEndDate?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   endDate?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   remainderAmount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  oldRemainderAmount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  flowRate?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  oldFlowRate?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  totalAmount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  oldTotalAmount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  settledAmount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -3032,6 +3386,7 @@ export type Resolvers<ContextType = MeshContext> = ResolversObject<{
   VestingSchedule?: VestingScheduleResolvers<ContextType>;
   VestingScheduleCreatedEvent?: VestingScheduleCreatedEventResolvers<ContextType>;
   VestingScheduleDeletedEvent?: VestingScheduleDeletedEventResolvers<ContextType>;
+  VestingScheduleEndDateUpdatedEvent?: VestingScheduleEndDateUpdatedEventResolvers<ContextType>;
   VestingScheduleUpdatedEvent?: VestingScheduleUpdatedEventResolvers<ContextType>;
   _Block_?: _Block_Resolvers<ContextType>;
   _Meta_?: _Meta_Resolvers<ContextType>;
@@ -3123,6 +3478,12 @@ const merger = new(BareMerger as any)({
     get documents() {
       return [
       {
+        document: VestingScheduleEventsDocument,
+        get rawSDL() {
+          return printWithCache(VestingScheduleEventsDocument);
+        },
+        location: 'VestingScheduleEventsDocument.graphql'
+      },{
         document: PollDocument,
         get rawSDL() {
           return printWithCache(PollDocument);
@@ -3178,19 +3539,69 @@ export function getBuiltGraphSDK<TGlobalContext = any, TOperationContext = any>(
   const sdkRequester$ = getBuiltGraphClient().then(({ sdkRequesterFactory }) => sdkRequesterFactory(globalContext));
   return getSdk<TOperationContext, TGlobalContext>((...args) => sdkRequester$.then(sdkRequester => sdkRequester(...args)));
 }
+export type VestingScheduleEventsQueryVariables = Exact<{
+  where?: Event_Filter;
+  skip?: Scalars['Int'];
+  first?: Scalars['Int'];
+  orderBy?: Event_OrderBy;
+  orderDirection?: OrderDirection;
+  block?: InputMaybe<Block_Height>;
+}>;
+
+
+export type VestingScheduleEventsQuery = { events: Array<(
+    { __typename: 'VestingClaimedEvent' }
+    & Pick<VestingClaimedEvent, 'id' | 'blockNumber' | 'transactionHash' | 'timestamp' | 'name' | 'order' | 'logIndex' | 'gasPrice' | 'superToken' | 'sender' | 'receiver' | 'claimer'>
+  ) | (
+    { __typename: 'VestingCliffAndFlowExecutedEvent' }
+    & Pick<VestingCliffAndFlowExecutedEvent, 'id' | 'blockNumber' | 'transactionHash' | 'timestamp' | 'name' | 'order' | 'logIndex' | 'gasPrice' | 'superToken' | 'sender' | 'receiver' | 'cliffAndFlowDate' | 'flowRate' | 'cliffAmount' | 'flowDelayCompensation'>
+  ) | (
+    { __typename: 'VestingEndExecutedEvent' }
+    & Pick<VestingEndExecutedEvent, 'id' | 'blockNumber' | 'transactionHash' | 'timestamp' | 'name' | 'order' | 'logIndex' | 'gasPrice' | 'superToken' | 'sender' | 'receiver' | 'endDate' | 'earlyEndCompensation' | 'didCompensationFail'>
+  ) | (
+    { __typename: 'VestingEndFailedEvent' }
+    & Pick<VestingEndFailedEvent, 'id' | 'blockNumber' | 'transactionHash' | 'timestamp' | 'name' | 'order' | 'logIndex' | 'gasPrice' | 'superToken' | 'sender' | 'receiver' | 'endDate'>
+  ) | (
+    { __typename: 'VestingScheduleCreatedEvent' }
+    & Pick<VestingScheduleCreatedEvent, 'id' | 'blockNumber' | 'transactionHash' | 'timestamp' | 'name' | 'order' | 'logIndex' | 'gasPrice' | 'superToken' | 'sender' | 'receiver' | 'startDate' | 'cliffDate' | 'flowRate' | 'endDate' | 'cliffAmount' | 'claimValidityDate' | 'remainderAmount'>
+  ) | (
+    { __typename: 'VestingScheduleDeletedEvent' }
+    & Pick<VestingScheduleDeletedEvent, 'id' | 'blockNumber' | 'transactionHash' | 'timestamp' | 'name' | 'order' | 'logIndex' | 'gasPrice' | 'superToken' | 'sender' | 'receiver'>
+  ) | (
+    { __typename: 'VestingScheduleEndDateUpdatedEvent' }
+    & Pick<VestingScheduleEndDateUpdatedEvent, 'id' | 'blockNumber' | 'transactionHash' | 'timestamp' | 'name' | 'order' | 'logIndex' | 'gasPrice'>
+  ) | (
+    { __typename: 'VestingScheduleUpdatedEvent' }
+    & Pick<VestingScheduleUpdatedEvent, 'id' | 'blockNumber' | 'transactionHash' | 'timestamp' | 'name' | 'order' | 'logIndex' | 'gasPrice' | 'superToken' | 'sender' | 'receiver' | 'oldEndDate' | 'endDate' | 'oldRemainderAmount' | 'remainderAmount' | 'oldFlowRate' | 'flowRate' | 'totalAmount' | 'oldTotalAmount' | 'settledAmount'>
+  )> };
+
+export type VestingCliffAndFlowExecutedEventFragment = Pick<VestingCliffAndFlowExecutedEvent, 'superToken' | 'sender' | 'receiver' | 'cliffAndFlowDate' | 'flowRate' | 'cliffAmount' | 'flowDelayCompensation'>;
+
+export type VestingEndExecutedEventFragment = Pick<VestingEndExecutedEvent, 'superToken' | 'sender' | 'receiver' | 'endDate' | 'earlyEndCompensation' | 'didCompensationFail'>;
+
+export type VestingEndFailedEventFragment = Pick<VestingEndFailedEvent, 'superToken' | 'sender' | 'receiver' | 'endDate'>;
+
+export type VestingScheduleCreatedEventFragment = Pick<VestingScheduleCreatedEvent, 'superToken' | 'sender' | 'receiver' | 'startDate' | 'cliffDate' | 'flowRate' | 'endDate' | 'cliffAmount' | 'claimValidityDate' | 'remainderAmount'>;
+
+export type VestingScheduleDeletedEventFragment = Pick<VestingScheduleDeletedEvent, 'superToken' | 'sender' | 'receiver'>;
+
+export type VestingScheduleUpdatedEventFragment = Pick<VestingScheduleUpdatedEvent, 'superToken' | 'sender' | 'receiver' | 'oldEndDate' | 'endDate' | 'oldRemainderAmount' | 'remainderAmount' | 'oldFlowRate' | 'flowRate' | 'totalAmount' | 'oldTotalAmount' | 'settledAmount'>;
+
+export type VestingClaimedEventFragment = Pick<VestingClaimedEvent, 'superToken' | 'sender' | 'receiver' | 'claimer'>;
+
 export type PollQueryVariables = Exact<{
   block: Block_Height;
 }>;
 
 
-export type PollQuery = { events: Array<Pick<VestingClaimedEvent, 'order'> | Pick<VestingCliffAndFlowExecutedEvent, 'order'> | Pick<VestingEndExecutedEvent, 'order'> | Pick<VestingEndFailedEvent, 'order'> | Pick<VestingScheduleCreatedEvent, 'order'> | Pick<VestingScheduleDeletedEvent, 'order'> | Pick<VestingScheduleUpdatedEvent, 'order'>> };
+export type PollQuery = { events: Array<Pick<VestingClaimedEvent, 'order'> | Pick<VestingCliffAndFlowExecutedEvent, 'order'> | Pick<VestingEndExecutedEvent, 'order'> | Pick<VestingEndFailedEvent, 'order'> | Pick<VestingScheduleCreatedEvent, 'order'> | Pick<VestingScheduleDeletedEvent, 'order'> | Pick<VestingScheduleEndDateUpdatedEvent, 'order'> | Pick<VestingScheduleUpdatedEvent, 'order'>> };
 
 export type GetVestingScheduleQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type GetVestingScheduleQuery = { vestingSchedule?: Maybe<Pick<VestingSchedule, 'id' | 'superToken' | 'sender' | 'receiver' | 'flowRate' | 'createdAt' | 'deletedAt' | 'startDate' | 'claimedAt' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowExpirationAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'endDateValidAt' | 'endExecutedAt' | 'failedAt' | 'didEarlyEndCompensationFail' | 'earlyEndCompensation' | 'claimValidityDate' | 'remainderAmount' | 'contractVersion'>> };
+export type GetVestingScheduleQuery = { vestingSchedule?: Maybe<Pick<VestingSchedule, 'id' | 'superToken' | 'sender' | 'receiver' | 'flowRate' | 'createdAt' | 'deletedAt' | 'startDate' | 'claimedAt' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowExpirationAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'endDateValidAt' | 'endExecutedAt' | 'failedAt' | 'didEarlyEndCompensationFail' | 'earlyEndCompensation' | 'claimValidityDate' | 'remainderAmount' | 'contractVersion' | 'totalAmount'>> };
 
 export type GetVestingSchedulesQueryVariables = Exact<{
   where?: InputMaybe<VestingSchedule_Filter>;
@@ -3199,10 +3610,84 @@ export type GetVestingSchedulesQueryVariables = Exact<{
 }>;
 
 
-export type GetVestingSchedulesQuery = { vestingSchedules: Array<Pick<VestingSchedule, 'id' | 'superToken' | 'sender' | 'receiver' | 'flowRate' | 'createdAt' | 'deletedAt' | 'startDate' | 'claimedAt' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowExpirationAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'endDateValidAt' | 'endExecutedAt' | 'failedAt' | 'didEarlyEndCompensationFail' | 'earlyEndCompensation' | 'claimValidityDate' | 'remainderAmount' | 'contractVersion'>> };
+export type GetVestingSchedulesQuery = { vestingSchedules: Array<Pick<VestingSchedule, 'id' | 'superToken' | 'sender' | 'receiver' | 'flowRate' | 'createdAt' | 'deletedAt' | 'startDate' | 'claimedAt' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowExpirationAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'endDateValidAt' | 'endExecutedAt' | 'failedAt' | 'didEarlyEndCompensationFail' | 'earlyEndCompensation' | 'claimValidityDate' | 'remainderAmount' | 'contractVersion' | 'totalAmount'>> };
 
-export type VestingSchedulePartFragment = Pick<VestingSchedule, 'id' | 'superToken' | 'sender' | 'receiver' | 'flowRate' | 'createdAt' | 'deletedAt' | 'startDate' | 'claimedAt' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowExpirationAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'endDateValidAt' | 'endExecutedAt' | 'failedAt' | 'didEarlyEndCompensationFail' | 'earlyEndCompensation' | 'claimValidityDate' | 'remainderAmount' | 'contractVersion'>;
+export type VestingSchedulePartFragment = Pick<VestingSchedule, 'id' | 'superToken' | 'sender' | 'receiver' | 'flowRate' | 'createdAt' | 'deletedAt' | 'startDate' | 'claimedAt' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowExpirationAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'endDateValidAt' | 'endExecutedAt' | 'failedAt' | 'didEarlyEndCompensationFail' | 'earlyEndCompensation' | 'claimValidityDate' | 'remainderAmount' | 'contractVersion' | 'totalAmount'>;
 
+export const VestingCliffAndFlowExecutedEventFragmentDoc = gql`
+    fragment vestingCliffAndFlowExecutedEvent on VestingCliffAndFlowExecutedEvent {
+  superToken
+  sender
+  receiver
+  cliffAndFlowDate
+  flowRate
+  cliffAmount
+  flowDelayCompensation
+}
+    ` as unknown as DocumentNode<VestingCliffAndFlowExecutedEventFragment, unknown>;
+export const VestingEndExecutedEventFragmentDoc = gql`
+    fragment vestingEndExecutedEvent on VestingEndExecutedEvent {
+  superToken
+  sender
+  receiver
+  endDate
+  earlyEndCompensation
+  didCompensationFail
+}
+    ` as unknown as DocumentNode<VestingEndExecutedEventFragment, unknown>;
+export const VestingEndFailedEventFragmentDoc = gql`
+    fragment vestingEndFailedEvent on VestingEndFailedEvent {
+  superToken
+  sender
+  receiver
+  endDate
+}
+    ` as unknown as DocumentNode<VestingEndFailedEventFragment, unknown>;
+export const VestingScheduleCreatedEventFragmentDoc = gql`
+    fragment vestingScheduleCreatedEvent on VestingScheduleCreatedEvent {
+  superToken
+  sender
+  receiver
+  startDate
+  cliffDate
+  flowRate
+  endDate
+  cliffAmount
+  claimValidityDate
+  remainderAmount
+}
+    ` as unknown as DocumentNode<VestingScheduleCreatedEventFragment, unknown>;
+export const VestingScheduleDeletedEventFragmentDoc = gql`
+    fragment vestingScheduleDeletedEvent on VestingScheduleDeletedEvent {
+  superToken
+  sender
+  receiver
+}
+    ` as unknown as DocumentNode<VestingScheduleDeletedEventFragment, unknown>;
+export const VestingScheduleUpdatedEventFragmentDoc = gql`
+    fragment vestingScheduleUpdatedEvent on VestingScheduleUpdatedEvent {
+  superToken
+  sender
+  receiver
+  oldEndDate
+  endDate
+  oldRemainderAmount
+  remainderAmount
+  oldFlowRate
+  flowRate
+  totalAmount
+  oldTotalAmount
+  settledAmount
+}
+    ` as unknown as DocumentNode<VestingScheduleUpdatedEventFragment, unknown>;
+export const VestingClaimedEventFragmentDoc = gql`
+    fragment vestingClaimedEvent on VestingClaimedEvent {
+  superToken
+  sender
+  receiver
+  claimer
+}
+    ` as unknown as DocumentNode<VestingClaimedEventFragment, unknown>;
 export const VestingSchedulePartFragmentDoc = gql`
     fragment VestingSchedulePart on VestingSchedule {
   id
@@ -3228,8 +3713,58 @@ export const VestingSchedulePartFragmentDoc = gql`
   claimValidityDate
   remainderAmount
   contractVersion
+  totalAmount
 }
     ` as unknown as DocumentNode<VestingSchedulePartFragment, unknown>;
+export const VestingScheduleEventsDocument = gql`
+    query vestingScheduleEvents($where: Event_filter! = {}, $skip: Int! = 0, $first: Int! = 1000, $orderBy: Event_orderBy! = timestamp, $orderDirection: OrderDirection! = desc, $block: Block_height) {
+  events(
+    where: $where
+    block: $block
+    skip: $skip
+    first: $first
+    orderBy: $orderBy
+    orderDirection: $orderDirection
+  ) {
+    id
+    blockNumber
+    transactionHash
+    timestamp
+    name
+    order
+    logIndex
+    gasPrice
+    __typename
+    ... on VestingCliffAndFlowExecutedEvent {
+      ...vestingCliffAndFlowExecutedEvent
+    }
+    ... on VestingEndExecutedEvent {
+      ...vestingEndExecutedEvent
+    }
+    ... on VestingEndFailedEvent {
+      ...vestingEndFailedEvent
+    }
+    ... on VestingScheduleCreatedEvent {
+      ...vestingScheduleCreatedEvent
+    }
+    ... on VestingScheduleDeletedEvent {
+      ...vestingScheduleDeletedEvent
+    }
+    ... on VestingScheduleUpdatedEvent {
+      ...vestingScheduleUpdatedEvent
+    }
+    ... on VestingClaimedEvent {
+      ...vestingClaimedEvent
+    }
+  }
+}
+    ${VestingCliffAndFlowExecutedEventFragmentDoc}
+${VestingEndExecutedEventFragmentDoc}
+${VestingEndFailedEventFragmentDoc}
+${VestingScheduleCreatedEventFragmentDoc}
+${VestingScheduleDeletedEventFragmentDoc}
+${VestingScheduleUpdatedEventFragmentDoc}
+${VestingClaimedEventFragmentDoc}` as unknown as DocumentNode<VestingScheduleEventsQuery, VestingScheduleEventsQueryVariables>;
 export const PollDocument = gql`
     query poll($block: Block_height!) {
   events(block: $block, first: 1) {
@@ -3260,9 +3795,13 @@ export const GetVestingSchedulesDocument = gql`
 
 
 
+
 export type Requester<C = {}, E = unknown> = <R, V>(doc: DocumentNode, vars?: V, options?: C) => Promise<R> | AsyncIterable<R>
 export function getSdk<C, E>(requester: Requester<C, E>) {
   return {
+    vestingScheduleEvents(variables?: VestingScheduleEventsQueryVariables, options?: C): Promise<VestingScheduleEventsQuery> {
+      return requester<VestingScheduleEventsQuery, VestingScheduleEventsQueryVariables>(VestingScheduleEventsDocument, variables, options) as Promise<VestingScheduleEventsQuery>;
+    },
     poll(variables: PollQueryVariables, options?: C): Promise<PollQuery> {
       return requester<PollQuery, PollQueryVariables>(PollDocument, variables, options) as Promise<PollQuery>;
     },

@@ -2,6 +2,7 @@ import {
   GetVestingScheduleQuery
 } from "../../vesting-subgraph/.graphclient";
 import { dateNowSeconds } from "../../utils/dateUtils";
+import { VestingVersion } from "../network/networks";
 
 interface VestingStatus {
   title: string;
@@ -124,6 +125,7 @@ export const vestingStatuses = {
   },
 } as const satisfies Record<string, VestingStatus>;
 
+// Keep it serializable!
 export interface VestingSchedule {
   id: string;
   superToken: string;
@@ -148,8 +150,9 @@ export interface VestingSchedule {
   claimValidityDate: number;
   claimedAt?: number;
   remainderAmount: string;
-  version: "v1" | "v2";
+  version: VestingVersion;
   transactionHash: string;
+  totalAmount: string;
 }
 
 export type SubgraphVestingSchedule = NonNullable<
@@ -195,6 +198,7 @@ export const mapSubgraphVestingSchedule = (
       : "0",
     version: vestingSchedule.contractVersion,
     transactionHash: vestingSchedule.id.split("-")[0],
+    totalAmount: vestingSchedule.totalAmount
   };
   return {
     ...mappedVestingSchedule,
