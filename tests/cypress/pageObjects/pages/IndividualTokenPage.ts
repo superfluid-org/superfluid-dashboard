@@ -154,7 +154,7 @@ export class IndividualTokenPage extends BasePage {
   ) {
     this.hasText(PUBLISHERS, BasePage.shortenHex(address), 0);
     this.hasText(AMOUNT_RECEIVED, amount, 0);
-    this.hasText(STATUS, status, 0, { timeout: 45000 });
+    this.hasText(STATUS, status, 0, { timeout: LOADING_TIMEOUT });
     let fromToDate = when === 'now' ? format(Date.now(), 'd MMM. yyyy') : when;
     this.hasText(LAST_UPDATED_AT, fromToDate, 0);
   }
@@ -228,7 +228,9 @@ export class IndividualTokenPage extends BasePage {
     cy.get('body').then((body) => {
       if (body.find(REVOKE_BUTTON).length > 0) {
         this.click(REVOKE_BUTTON);
-        this.isVisible(OK_BUTTON, undefined, { timeout: 45000 }).click();
+        this.isVisible(OK_BUTTON, undefined, {
+          timeout: LOADING_TIMEOUT,
+        }).click();
         this.isNotVisible(`${TX_DRAWER_BUTTON} span`, undefined, {
           timeout: 60000,
         });
@@ -244,7 +246,9 @@ export class IndividualTokenPage extends BasePage {
     cy.get('body').then((body) => {
       if (body.find(APPROVE_BUTTON).length > 0) {
         this.click(APPROVE_BUTTON);
-        this.isVisible(OK_BUTTON, undefined, { timeout: 45000 }).click();
+        this.isVisible(OK_BUTTON, undefined, {
+          timeout: LOADING_TIMEOUT,
+        }).click();
         this.isNotVisible(`${TX_DRAWER_BUTTON} span`, undefined, {
           timeout: 60000,
         });

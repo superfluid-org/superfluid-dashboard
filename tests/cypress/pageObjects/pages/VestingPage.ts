@@ -8,6 +8,7 @@ import {
   STOP_VIEWING_BUTTON,
 } from './Common';
 import { networksBySlug } from '../../superData/networks';
+import { LOADING_TIMEOUT } from '../../support/helpers/constants';
 
 const NO_CREATED_TITLE = '[data-cy=no-created-schedules-title]';
 const NO_CREATED_DESC = '[data-cy=no-created-schedules-description]';
@@ -252,7 +253,7 @@ export class VestingPage extends BasePage {
     SendPage.overrideNextGasPrice();
     this.click(CREATE_SCHEDULE_TX_BUTTON);
     this.hasText(APPROVAL_MESSAGE, 'Waiting for transaction approval...');
-    // cy.get(OK_BUTTON, {timeout: 45000}).should("be.visible").click()
+    // cy.get(OK_BUTTON, {timeout: LOADING_TIMEOUT}).should("be.visible").click()
     // this.click(TX_DRAWER_BUTTON)
     // WrapPage.validatePendingTransaction("Create Vesting Schedule" , "avalanche-fuji")
   }
@@ -313,7 +314,9 @@ export class VestingPage extends BasePage {
       if (body.find(FORWARD_BUTTON).length > 0) {
         this.clickFirstVisible(VESTING_ROWS);
         this.clickFirstVisible(DELETE_SCHEDULE_BUTTON);
-        this.isVisible(OK_BUTTON, undefined, { timeout: 45000 }).click();
+        this.isVisible(OK_BUTTON, undefined, {
+          timeout: LOADING_TIMEOUT,
+        }).click();
         this.isNotVisible(`${TX_DRAWER_BUTTON} span`, undefined, {
           timeout: 60000,
         });
@@ -360,14 +363,14 @@ export class VestingPage extends BasePage {
 
   static openLastCreatedSchedule() {
     this.doesNotExist(`${CREATED_TABLE} ${LOADING_SKELETONS}`, undefined, {
-      timeout: 45000,
+      timeout: LOADING_TIMEOUT,
     });
     this.clickFirstVisible(VESTING_ROWS);
   }
 
   static openCreatedSchedule() {
     this.doesNotExist(`${CREATED_TABLE} ${LOADING_SKELETONS}`, undefined, {
-      timeout: 45000,
+      timeout: LOADING_TIMEOUT,
     });
     this.click(VESTING_ROWS, 0);
   }

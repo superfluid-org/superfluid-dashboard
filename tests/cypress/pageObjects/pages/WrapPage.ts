@@ -139,7 +139,7 @@ export class WrapPage extends BasePage {
 
   static clickSelectTokenButton() {
     this.click(SELECT_TOKEN_BUTTON);
-    this.exists(TOKEN_SEARCH_RESULTS, undefined, { timeout: 45000 });
+    this.exists(TOKEN_SEARCH_RESULTS, undefined, { timeout: LOADING_TIMEOUT });
   }
 
   static validateWrapTokenSelectionBalances(network: string) {

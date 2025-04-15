@@ -7,6 +7,7 @@ import {
   CONNECTED_WALLET,
   WALLET_CONNECTION_STATUS,
 } from './Common';
+import { LOADING_TIMEOUT } from '../../support/helpers/constants';
 
 const GNOSIS_BUTTONS = '.MuiButton-contained';
 const GNOSIS_SAFE_WALLET_OPTION = '[data-testid=wallet-selector-external-safe]';
@@ -70,11 +71,11 @@ export class GnosisSafe extends BasePage {
     cy.get(GNOSIS_BUTTONS, { timeout: 30000 }).contains('Continue').click();
     cy.wait(1000);
     this.isVisible(LOADING_SPINNER);
-    this.doesNotExist(LOADING_SPINNER, undefined, { timeout: 45000 });
+    this.doesNotExist(LOADING_SPINNER, undefined, { timeout: LOADING_TIMEOUT });
   }
 
   static validateThatDashboardLoaded() {
-    cy.frameLoaded(SUPERFLUID_IFRAME, { timeout: 45000 });
+    cy.frameLoaded(SUPERFLUID_IFRAME, { timeout: LOADING_TIMEOUT });
   }
 
   static connectGnosisSafeWallet() {
