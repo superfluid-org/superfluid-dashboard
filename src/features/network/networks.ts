@@ -383,7 +383,12 @@ export const networkDefinition = {
         START_DATE_VALID_AFTER_IN_SECONDS: DEFAULT_MAINNET_START_DATE_VALID_AFTER_IN_SECONDS,
         END_DATE_VALID_BEFORE_IN_SECONDS: DEFAULT_MAINNET_END_DATE_VALID_BEFORE_IN_SECONDS
       },
-      v3: undefined,
+      v3: {
+        address: vestingContractAddresses_v3[chain.optimism.id],
+        MIN_VESTING_DURATION_IN_SECONDS: DEFAULT_MAINNET_MIN_VESTING_DURATION_IN_SECONDS,
+        START_DATE_VALID_AFTER_IN_SECONDS: DEFAULT_MAINNET_START_DATE_VALID_AFTER_IN_SECONDS,
+        END_DATE_VALID_BEFORE_IN_SECONDS: DEFAULT_MAINNET_END_DATE_VALID_BEFORE_IN_SECONDS
+      },
     },
     vestingSubgraphUrl: vestingSubgraphUrls.optimism,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.optimism,

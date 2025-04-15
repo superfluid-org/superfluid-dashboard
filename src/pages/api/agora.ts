@@ -188,6 +188,10 @@ const tokenAddresses = {
 
 const agoraApiEndpoints = {
     // [optimismSepolia.id]: "https://op-atlas-git-stepan-rewards-api-mock-voteagora.vercel.app/api/v1/rewards/7/onchain-builders",
+    [optimism.id]: {
+        onchain_builders: `${APP_URL}/api/mock`,
+        dev_tooling: "https://op-atlas-git-stepan-rewards-api-mock-voteagora.vercel.app/api/v1/rewards/7/dev-tooling",
+    },
     [optimismSepolia.id]: {
         onchain_builders: `${APP_URL}/api/mock`,
         dev_tooling: "https://op-atlas-git-stepan-rewards-api-mock-voteagora.vercel.app/api/v1/rewards/7/dev-tooling",
