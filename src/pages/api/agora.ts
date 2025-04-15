@@ -5,13 +5,16 @@ import { Effect as E, Logger, LogLevel, pipe } from 'effect'
 import { uniq } from 'lodash'
 import { tryGetBuiltGraphSdkForNetwork } from '../../vesting-subgraph/vestingSubgraphApi'
 import { optimism, optimismSepolia } from 'viem/chains'
-import { Address, createPublicClient, getAddress, http, isAddress } from 'viem'
+import { Address, createPublicClient, http, isAddress } from 'viem'
 import { mapSubgraphVestingSchedule, VestingSchedule } from '../../features/vesting/types'
 import { UnitOfTime } from '../../features/send/FlowRateInput'
 import { allNetworks, findNetworkOrThrow } from '../../features/network/networks'
 import { getUnixTime } from 'date-fns'
 import { cfaV1ForwarderAbi, cfaV1ForwarderAddress, superTokenAbi } from '../../generated'
 import { ACL_CREATE_PERMISSION, ACL_DELETE_PERMISSION } from '../../utils/constants'
+import { getAddress as getAddress_ } from "ethers/lib/utils"
+
+const getAddress = (address: string) => getAddress_(address) as Address;
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL;
 
@@ -136,6 +139,9 @@ export type ProjectsOverview = {
 
 export type ProjectState = {
     agoraEntry: AgoraResponseEntry
+
+    agoraTotalAmount: string
+    subgraphTotalAmount: string
 
     currentWallet: Address
     previousWallet: Address | null
@@ -313,7 +319,7 @@ export default async function handler(
         // TODO: I should change this logic to only do the tranch times calculation for first tranch. Otherwise, I'm better off looking at existing schedules.
 
         const currentTranchCount = dataFromAgora[0].amounts.length;
-        const startOfTranchOne = getUnixTime(new Date()) + 5 * UnitOfTime.Minute;
+        const startOfTranchOne = getUnixTime(new Date()) + 4 * UnitOfTime.Minute;
         const tranchDuration = 604800 * UnitOfTime.Second;
 
         // Calculate which tranch index is current (0-based)
@@ -566,7 +572,8 @@ export default async function handler(
                         }
                     }
 
-                    return actions;
+                    return actions
+                        .filter(x => x.type !== "stop-vesting-schedule"); // Filter out stop vesting schedules for now as we don't need to do anything.
                 });
 
                 const projectState: ProjectState = {
@@ -579,7 +586,9 @@ export default async function handler(
                         tranch: index + 1,
                         amount: amount
                     })),
-                    allRelevantSchedules: allRelevantVestingSchedules
+                    allRelevantSchedules: allRelevantVestingSchedules,
+                    agoraTotalAmount: agoraTotalAmount.toString(),
+                    subgraphTotalAmount: subgraphTotalAmount.toString()
                 };
                 return projectState;
             });
@@ -655,6 +664,8 @@ export default async function handler(
                     }
                 })
             }
+
+
 
             return result;
         })

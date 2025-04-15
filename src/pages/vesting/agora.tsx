@@ -36,7 +36,7 @@ const ActionsList: FC<{ actions: (ProjectActions | AllowanceActions)[] }> = ({ a
     }
 
     return (
-        <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
+        <List dense sx={{ width: '100%', bgcolor: 'background.paper', p: 0.5 }}>
             {actions.map((action, index) => {
                 // For calculating differences in update actions
                 const formatAmount = (amount: string) => {
@@ -70,12 +70,9 @@ const ActionsList: FC<{ actions: (ProjectActions | AllowanceActions)[] }> = ({ a
                         break;
 
                     case "stop-vesting-schedule":
-                        // Since end date isn't in the type yet, we'll add dummy code
-                        const dummyEndDate = new Date().toLocaleString();
-
                         icon = <StopIcon color="error" />;
                         primaryText = `Stop Vesting Schedule for ${action.payload.receiver.slice(0, 6)}...${action.payload.receiver.slice(-4)}`;
-                        secondaryText = `End Date: ${dummyEndDate}`;
+                        // secondaryText = `End Date: ${action.payload.endDate}`;
                         break;
 
                     case "increase-token-allowance":
@@ -98,14 +95,15 @@ const ActionsList: FC<{ actions: (ProjectActions | AllowanceActions)[] }> = ({ a
 
                 return (
                     <Fragment key={index}>
-                        <ListItem alignItems="flex-start">
+                        <ListItem alignItems="flex-start" sx={{ p: 1 }}>
                             <ListItemIcon>{icon}</ListItemIcon>
                             <ListItemText
+                                primaryTypographyProps={{ variant: "h7" }}
                                 primary={primaryText}
                                 secondary={
                                     <Typography
                                         sx={{ display: 'inline' }}
-                                        component="span"
+                                        component="span"    
                                         variant="body2"
                                         color="text.primary"
                                     >
@@ -141,7 +139,7 @@ const AgoraPage: NextPageWithLayout = () => {
             localStorage.setItem('selectedTranch', tranch.toString());
         }
     }, [tranch]);
-    
+
     const [roundType, setRoundType] = useState<RoundType>("onchain_builders");
     const handleRoundTypeChange = (
         event: React.MouseEvent<HTMLElement>,
@@ -432,11 +430,42 @@ function Row(props: { currentTranchNo: number, chainId: number, superTokenAddres
                                         </Box>
                                     </Box>
                                 )}
+
+                                <Box sx={{ display: 'flex', mb: 1 }}>
+                                    <Typography variant="body2" color="text.secondary" sx={{ width: 120 }}>
+                                        Agora total:
+                                    </Typography>
+                                    <Typography variant="body2">
+                                        {state.agoraTotalAmount ? `${formatEther(BigInt(state.agoraTotalAmount))} ${token?.symbol}` : '—'}
+                                    </Typography>
+                                </Box>
+                                <Box sx={{ display: 'flex', mb: 1 }}>
+                                    <Typography variant="body2" color="text.secondary" sx={{ width: 120 }}>
+                                        Vesting total:
+                                    </Typography>
+                                    <Typography variant="body2">
+                                        {state.subgraphTotalAmount ? `${formatEther(BigInt(state.subgraphTotalAmount))} ${token?.symbol}` : '—'}
+                                    </Typography>
+                                </Box>
                             </Box>
 
                             <Box sx={{ mt: 2 }}>
+                                <Typography variant="body2" color="text.secondary" gutterBottom>
+                                    Vesting schedules:
+                                </Typography>
                                 <ProjectVestingSchedulesTables project={state} />
                             </Box>
+
+                            {state.todo.length > 0 && (
+                                <Box sx={{ mt: 3 }}>
+                                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                                        Pending Actions ({state.todo.length}):
+                                    </Typography>
+                                    <Paper elevation={1} sx={{ p: 2 }}>
+                                        <ActionsList actions={state.todo} />
+                                    </Paper>
+                                </Box>
+                            )}
                         </Box>
                     </Collapse>
                 </TableCell>

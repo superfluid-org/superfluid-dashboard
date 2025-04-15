@@ -27,7 +27,7 @@ export const tranch2 = [
         "projectId": "0x9cc8d3f8aa6793dba4176f706571c16650bb6343bb7c56ac9dd249d6db3b2a88",
         "projectName": "Project 3",
         "wallets": [
-            "0x7890123456789012345678901234567890abcdef"
+            "0x3f1c9a8c5d2e4b7a1e0f6d8c9b3a7e2f4c0d9e7b"
         ],
         "KYCStatusCompleted": false,
         "amounts": [
