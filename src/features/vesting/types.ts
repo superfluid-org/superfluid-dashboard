@@ -157,7 +157,7 @@ export interface VestingSchedule {
 
 export type SubgraphVestingSchedule = NonNullable<
   Required<GetVestingScheduleQuery>["vestingSchedule"]
-> & { totalAmount?: string };
+>;
 
 export const mapSubgraphVestingSchedule = (
   vestingSchedule: SubgraphVestingSchedule
@@ -198,16 +198,7 @@ export const mapSubgraphVestingSchedule = (
       : "0",
     version: vestingSchedule.contractVersion,
     transactionHash: vestingSchedule.id.split("-")[0],
-    totalAmount:
-      vestingSchedule.totalAmount
-      ?? calculateTotalVestedAmount_v1_v2(
-        vestingSchedule.cliffAndFlowDate,
-        vestingSchedule.endDate,
-        vestingSchedule.flowRate,
-        vestingSchedule.cliffAmount,
-        vestingSchedule.remainderAmount
-      ),
-
+    totalAmount: vestingSchedule.totalAmount
   };
   return {
     ...mappedVestingSchedule,
@@ -284,16 +275,3 @@ const getVestingStatus = (vestingSchedule: Omit<VestingSchedule, "status">) => {
 
   return vestingStatuses.ScheduledStart;
 };
-
-export function calculateTotalVestedAmount_v1_v2(
-  cliffAndFlowDate: string,
-  endDate: string,
-  flowRate: string,
-  cliffAmount: string,
-  remainderAmount: string
-): string {
-  const vestingDuration = BigInt(endDate) - BigInt(cliffAndFlowDate);
-  const vestedAfterCliff = BigInt(vestingDuration) * BigInt(flowRate);
-
-  return (BigInt(cliffAmount) + BigInt(remainderAmount) + vestedAfterCliff).toString();
-}

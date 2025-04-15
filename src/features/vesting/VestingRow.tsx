@@ -54,6 +54,7 @@ const VestingRow: FC<VestingRowProps> = ({
     pendingCreate,
     cliffAndFlowDate,
     remainderAmount,
+    totalAmount,
     version
   } = vestingSchedule;
 
@@ -102,14 +103,6 @@ const VestingRow: FC<VestingRowProps> = ({
   const { visibleAddress } = useVisibleAddress();
 
   const superTokenQuery = useTokenQuery({ chainId: network.id, id: superTokenAddress, onlySuperToken: true });
-
-  const totalAmount = useMemo(() => {
-    return BigNumber.from(endDate - cliffAndFlowDate)
-      .mul(BigNumber.from(flowRate))
-      .add(BigNumber.from(cliffAmount))
-      .add(BigNumber.from(remainderAmount))
-      .toString();
-  }, [flowRate, endDate, cliffAndFlowDate, cliffAmount, remainderAmount]);
 
   const isSender = visibleAddress?.toLowerCase() === sender.toLowerCase()
   const isReceiver = visibleAddress?.toLowerCase() === receiver.toLowerCase()

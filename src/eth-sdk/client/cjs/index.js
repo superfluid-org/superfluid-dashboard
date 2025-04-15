@@ -18,7 +18,7 @@ function getContract(address, abi, defaultSignerOrProvider) {
 }
 function getOptimismSepoliaSdk(defaultSignerOrProvider) {
     return {
-        "vestingScheduler_v3": getContract('0xb35029994F9EeC1C05A8021b368f98a65e9938a1', vestingScheduler_v3_json_1.default, defaultSignerOrProvider),
+        "vestingScheduler_v3": getContract('0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E', vestingScheduler_v3_json_1.default, defaultSignerOrProvider),
         "vestingScheduler_v2": getContract('0x3aa62b96f44D0f8892BeBBC819DE8e02E9DE69A8', vestingScheduler_v2_json_1.default, defaultSignerOrProvider),
         "vestingScheduler": getContract('0x27444c0235a4D921F3106475faeba0B5e7ABDD7a', vestingScheduler_json_1.default, defaultSignerOrProvider),
     };

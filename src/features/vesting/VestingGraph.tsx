@@ -12,7 +12,6 @@ import {
   getFilteredStartDate,
 } from "../../utils/chartUtils";
 import {
-  calculateVestingScheduleAllocated,
   mapVestingActualDataPoints,
   mapVestingExpectedDataPoints,
 } from "../../utils/vestingUtils";
@@ -44,7 +43,7 @@ const VestingGraph: FC<VestingGraphProps> = ({
     } = vestingSchedule;
 
     const totalVesting = Number(
-      formatEther(calculateVestingScheduleAllocated(vestingSchedule).toString())
+      formatEther(vestingSchedule.totalAmount)
     );
 
     const currentDate = new Date();

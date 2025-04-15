@@ -282,101 +282,6 @@ export declare class VestingScheduler_v3__factory {
         }, {
             readonly indexed: false;
             readonly internalType: "uint32";
-            readonly name: "oldEndDate";
-            readonly type: "uint32";
-        }, {
-            readonly indexed: false;
-            readonly internalType: "uint32";
-            readonly name: "endDate";
-            readonly type: "uint32";
-        }, {
-            readonly indexed: false;
-            readonly internalType: "int96";
-            readonly name: "previousFlowRate";
-            readonly type: "int96";
-        }, {
-            readonly indexed: false;
-            readonly internalType: "int96";
-            readonly name: "newFlowRate";
-            readonly type: "int96";
-        }, {
-            readonly indexed: false;
-            readonly internalType: "uint96";
-            readonly name: "remainderAmount";
-            readonly type: "uint96";
-        }];
-        readonly name: "VestingScheduleEndDateUpdated";
-        readonly type: "event";
-    }, {
-        readonly anonymous: false;
-        readonly inputs: readonly [{
-            readonly indexed: true;
-            readonly internalType: "contract ISuperToken";
-            readonly name: "superToken";
-            readonly type: "address";
-        }, {
-            readonly indexed: true;
-            readonly internalType: "address";
-            readonly name: "sender";
-            readonly type: "address";
-        }, {
-            readonly indexed: true;
-            readonly internalType: "address";
-            readonly name: "receiver";
-            readonly type: "address";
-        }, {
-            readonly indexed: false;
-            readonly internalType: "int96";
-            readonly name: "previousFlowRate";
-            readonly type: "int96";
-        }, {
-            readonly indexed: false;
-            readonly internalType: "int96";
-            readonly name: "newFlowRate";
-            readonly type: "int96";
-        }, {
-            readonly indexed: false;
-            readonly internalType: "uint256";
-            readonly name: "previousTotalAmount";
-            readonly type: "uint256";
-        }, {
-            readonly indexed: false;
-            readonly internalType: "uint256";
-            readonly name: "newTotalAmount";
-            readonly type: "uint256";
-        }, {
-            readonly indexed: false;
-            readonly internalType: "uint96";
-            readonly name: "remainderAmount";
-            readonly type: "uint96";
-        }];
-        readonly name: "VestingScheduleTotalAmountUpdated";
-        readonly type: "event";
-    }, {
-        readonly anonymous: false;
-        readonly inputs: readonly [{
-            readonly indexed: true;
-            readonly internalType: "contract ISuperToken";
-            readonly name: "superToken";
-            readonly type: "address";
-        }, {
-            readonly indexed: true;
-            readonly internalType: "address";
-            readonly name: "sender";
-            readonly type: "address";
-        }, {
-            readonly indexed: true;
-            readonly internalType: "address";
-            readonly name: "receiver";
-            readonly type: "address";
-        }, {
-            readonly indexed: false;
-            readonly internalType: "uint32";
-            readonly name: "oldEndDate";
-            readonly type: "uint32";
-        }, {
-            readonly indexed: false;
-            readonly internalType: "uint32";
             readonly name: "endDate";
             readonly type: "uint32";
         }, {
@@ -384,6 +289,21 @@ export declare class VestingScheduler_v3__factory {
             readonly internalType: "uint96";
             readonly name: "remainderAmount";
             readonly type: "uint96";
+        }, {
+            readonly indexed: false;
+            readonly internalType: "int96";
+            readonly name: "flowRate";
+            readonly type: "int96";
+        }, {
+            readonly indexed: false;
+            readonly internalType: "uint256";
+            readonly name: "totalAmount";
+            readonly type: "uint256";
+        }, {
+            readonly indexed: false;
+            readonly internalType: "uint256";
+            readonly name: "settledAmount";
+            readonly type: "uint256";
         }];
         readonly name: "VestingScheduleUpdated";
         readonly type: "event";
@@ -436,11 +356,11 @@ export declare class VestingScheduler_v3__factory {
         readonly name: "accountings";
         readonly outputs: readonly [{
             readonly internalType: "uint256";
-            readonly name: "alreadyVestedAmount";
+            readonly name: "settledAmount";
             readonly type: "uint256";
         }, {
             readonly internalType: "uint256";
-            readonly name: "lastUpdated";
+            readonly name: "settledDate";
             readonly type: "uint256";
         }];
         readonly stateMutability: "view";
@@ -994,7 +914,7 @@ export declare class VestingScheduler_v3__factory {
             readonly type: "address";
         }, {
             readonly internalType: "uint32";
-            readonly name: "endDate";
+            readonly name: "newEndDate";
             readonly type: "uint32";
         }];
         readonly name: "updateVestingSchedule";
@@ -1052,7 +972,7 @@ export declare class VestingScheduler_v3__factory {
             readonly type: "address";
         }, {
             readonly internalType: "uint32";
-            readonly name: "endDate";
+            readonly name: "newEndDate";
             readonly type: "uint32";
         }];
         readonly name: "updateVestingScheduleFlowRateFromEndDate";

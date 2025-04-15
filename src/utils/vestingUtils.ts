@@ -188,24 +188,6 @@ export function mapVestingExpectedDataPoints(
   }, []);
 }
 
-export function calculateVestingScheduleAllocated(
-  vestingSchedule: VestingSchedule
-): BigNumber {
-  const { cliffAmount, cliffAndFlowDate, flowRate, endDate, remainderAmount } = vestingSchedule;
-  const secondsVesting = endDate - cliffAndFlowDate;
-  return BigNumber.from(secondsVesting).mul(flowRate).add(cliffAmount).add(remainderAmount);
-}
-
-export function calculateVestingSchedulesAllocated(
-  vestingSchedules: VestingSchedule[]
-): BigNumber {
-  return vestingSchedules.reduce(
-    (total, vestingSchedule) =>
-      total.add(calculateVestingScheduleAllocated(vestingSchedule)),
-    BigNumber.from(0)
-  );
-}
-
 export function vestingScheduleToTokenBalance(
   vestingSchedule: VestingSchedule
 ): TokenBalance | null {
@@ -302,4 +284,15 @@ export function getBalanceAtTimestamp(
   return BigNumber.from(unixTimestamp - tokenBalance.timestamp).mul(
     tokenBalance.totalNetFlowRate
   );
+}
+
+export function calculateVestingScheduleAllocated(
+  cliffAndFlowDate: number,
+  endDate: number,
+  flowRate: string,
+  cliffAmount: string,
+  remainderAmount: string
+): BigNumber {
+  const secondsVesting = endDate - cliffAndFlowDate;
+  return BigNumber.from(secondsVesting).mul(flowRate).add(cliffAmount).add(remainderAmount);
 }

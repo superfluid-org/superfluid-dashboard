@@ -19,22 +19,6 @@ query getVestingSchedules(
   }
 }
 
-query getVestingSchedulesV3(
-  $where: VestingSchedule_filter = {}
-  $orderBy: VestingSchedule_orderBy = id
-  $orderDirection: OrderDirection = asc
-) {
-  vestingSchedules(
-    first: 1000
-    where: $where
-    orderBy: $orderBy
-    orderDirection: $orderDirection
-  ) {
-    ...VestingSchedulePart
-    totalAmount
-  }
-}
-
 fragment VestingSchedulePart on VestingSchedule {
   id
   superToken
@@ -59,4 +43,5 @@ fragment VestingSchedulePart on VestingSchedule {
   claimValidityDate
   remainderAmount
   contractVersion
+  totalAmount
 }

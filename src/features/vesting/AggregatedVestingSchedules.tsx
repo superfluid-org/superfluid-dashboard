@@ -6,7 +6,6 @@ import { FC, useMemo } from "react";
 import { TokenBalance } from "../../utils/chartUtils";
 import {
   aggregateTokenBalances,
-  calculateVestingSchedulesAllocated,
   vestingScheduleToTokenBalance,
 } from "../../utils/vestingUtils";
 import NetworkIcon from "../network/NetworkIcon";
@@ -19,6 +18,7 @@ import useTokenPrice from "../tokenPrice/useTokenPrice";
 import { VestingSchedule } from "./types";
 import { VestingDataCardContent } from "./VestingDataCard";
 import { useTokenQuery } from "../../hooks/useTokenQuery";
+import { BigNumber } from "ethers";
 
 interface VestingTokenAggregationRowProps {
   tokenAddress: Address;
@@ -37,7 +37,7 @@ const VestingTokenAggregationRow: FC<VestingTokenAggregationRowProps> = ({
   const token = tokenQuery.data;
 
   const allocated = useMemo(
-    () => calculateVestingSchedulesAllocated(vestingSchedules).toString(),
+    () => vestingSchedules.reduce((total, vestingSchedule) => total.add(vestingSchedule.totalAmount), BigNumber.from(0)).toString(),
     [vestingSchedules]
   );
 

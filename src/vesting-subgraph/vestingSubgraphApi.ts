@@ -69,16 +69,11 @@ export const vestingSubgraphApi = createApi({
     >({
       queryFn: async ({ chainId, ...variables }) => {
         const sdk = tryGetBuiltGraphSdkForNetwork(chainId);
-
-        const network = tryFindNetwork(allNetworks, chainId);
-
+        
         const subgraphVestingSchedules = await (async () => {
           if (!sdk) return EMPTY_ARRAY;
           
-          return network?.id === chainIds.optimismSepolia
-            // TODO: remove this when subgraph with `totalAmount` deployed to all networks
-            ? (await sdk.getVestingSchedulesV3(variables)).vestingSchedules
-            : (await sdk.getVestingSchedules(variables)).vestingSchedules;
+          return (await sdk.getVestingSchedules(variables)).vestingSchedules;
         })();
 
         return {

@@ -38,7 +38,6 @@ import {
   mapActivitiesFromEvents,
 } from "../../../utils/activityUtils";
 import { dateNowSeconds } from "../../../utils/dateUtils";
-import { calculateVestingScheduleAllocated } from "../../../utils/vestingUtils";
 import { vestingSubgraphApi } from "../../../vesting-subgraph/vestingSubgraphApi";
 import Page404 from "../../404";
 import { NextPageWithLayout } from "../../_app";
@@ -248,7 +247,7 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
 
   const expectedVestedBalance = useMemo(() => {
     if (!vestingSchedule) return undefined;
-    return calculateVestingScheduleAllocated(vestingSchedule).toString();
+    return vestingSchedule.totalAmount;
   }, [vestingSchedule]);
 
   if (vestingScheduleQuery.isLoading || tokenQuery.isLoading) {
