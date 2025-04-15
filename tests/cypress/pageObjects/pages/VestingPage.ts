@@ -257,8 +257,8 @@ export class VestingPage extends BasePage {
     // WrapPage.validatePendingTransaction("Create Vesting Schedule" , "avalanche-fuji")
   }
 
-  static validateFormError(error: string) {
-    this.hasText(FORM_ERROR, error, 0);
+  static validateFormError(error: string, index: number) {
+    this.hasText(FORM_ERROR, error, index);
     this.isDisabled(PREVIEW_SCHEDULE_BUTTON);
   }
 
