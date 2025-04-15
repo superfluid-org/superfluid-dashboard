@@ -4,6 +4,7 @@ import { networksBySlug } from '../../superData/networks';
 import { Common, TOKEN_ANIMATION, TOKEN_BALANCE } from './Common';
 import { ethers } from 'ethers';
 import { RANDOM_VALUE_DURING_TEST } from './SendPage';
+import { LOADING_TIMEOUT } from '../../support/helpers/constants';
 
 const TOKEN_GRAPH = '[data-cy=token-graph]';
 const LIQUIDATION_DATE = '[data-cy=liquidation-date]';

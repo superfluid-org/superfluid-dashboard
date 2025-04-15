@@ -9,6 +9,7 @@ import {
   STOP_VIEWING_BUTTON,
   TOKEN_SEARCH_RESULTS,
 } from './Common';
+import { LOADING_TIMEOUT } from '../../support/helpers/constants';
 
 const WRAP_TAB = '[data-cy=wrap-toggle]';
 const UNWRAP_TAB = '[data-cy=unwrap-toggle]';
