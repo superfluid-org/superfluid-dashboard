@@ -1,6 +1,6 @@
 import { miniSerializeError } from "@reduxjs/toolkit";
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
-import { getSerializeQueryArgs } from "@superfluid-finance/sdk-redux";
+import { getFramework, getSerializeQueryArgs, SubgraphEndpointBuilder } from "@superfluid-finance/sdk-redux";
 import {
   allNetworks,
   tryFindNetwork,
@@ -17,7 +17,23 @@ import {
   PollQueryVariables,
 } from "./.graphclient";
 import { EMPTY_ARRAY } from "../utils/constants";
-import { chainIds } from "../features/network/networkConstants";
+import { createVestingEventEndpoints } from "../features/redux/endpoints/vestingSchedulerEventsEndpoints";
+
+export const tryGetSubgraphClientForNetwork = async (chainId: number) => {
+  const network = tryFindNetwork(allNetworks, chainId);
+  
+  if (network?.vestingSubgraphUrl) {
+    const framework = await getFramework(chainId);
+
+    // TODO: Hacky solution until SubgraphClient is exported from SDK-core.
+    const subgraphClientClone = Object.assign(Object.create(Object.getPrototypeOf(framework.query.subgraphClient)), framework.query.subgraphClient) as typeof framework.query.subgraphClient;
+
+    // @ts-ignore
+    subgraphClientClone.subgraphUrl = network.vestingSubgraphUrl;
+
+    return subgraphClientClone;
+  }
+};
 
 export const tryGetBuiltGraphSdkForNetwork = (chainId: number) => {
   const network = tryFindNetwork(allNetworks, chainId);
@@ -37,6 +53,7 @@ export const vestingSubgraphApi = createApi({
   refetchOnReconnect: true,
   serializeQueryArgs: getSerializeQueryArgs(),
   endpoints: (build) => ({
+    ...createVestingEventEndpoints(build as SubgraphEndpointBuilder),
     getVestingSchedule: build.query<
       { vestingSchedule: VestingSchedule | null },
       { chainId: number } & GetVestingScheduleQueryVariables

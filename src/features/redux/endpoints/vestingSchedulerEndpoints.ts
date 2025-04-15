@@ -868,5 +868,5 @@ export const vestingSchedulerQueryEndpoints = {
         };
       },
     }),
-  }),
+  })
 };

@@ -3478,6 +3478,12 @@ const merger = new(BareMerger as any)({
     get documents() {
       return [
       {
+        document: VestingScheduleEventsDocument,
+        get rawSDL() {
+          return printWithCache(VestingScheduleEventsDocument);
+        },
+        location: 'VestingScheduleEventsDocument.graphql'
+      },{
         document: PollDocument,
         get rawSDL() {
           return printWithCache(PollDocument);
@@ -3533,6 +3539,56 @@ export function getBuiltGraphSDK<TGlobalContext = any, TOperationContext = any>(
   const sdkRequester$ = getBuiltGraphClient().then(({ sdkRequesterFactory }) => sdkRequesterFactory(globalContext));
   return getSdk<TOperationContext, TGlobalContext>((...args) => sdkRequester$.then(sdkRequester => sdkRequester(...args)));
 }
+export type VestingScheduleEventsQueryVariables = Exact<{
+  where?: Event_Filter;
+  skip?: Scalars['Int'];
+  first?: Scalars['Int'];
+  orderBy?: Event_OrderBy;
+  orderDirection?: OrderDirection;
+  block?: InputMaybe<Block_Height>;
+}>;
+
+
+export type VestingScheduleEventsQuery = { events: Array<(
+    { __typename: 'VestingClaimedEvent' }
+    & Pick<VestingClaimedEvent, 'id' | 'blockNumber' | 'transactionHash' | 'timestamp' | 'name' | 'order' | 'logIndex' | 'gasPrice' | 'superToken' | 'sender' | 'receiver' | 'claimer'>
+  ) | (
+    { __typename: 'VestingCliffAndFlowExecutedEvent' }
+    & Pick<VestingCliffAndFlowExecutedEvent, 'id' | 'blockNumber' | 'transactionHash' | 'timestamp' | 'name' | 'order' | 'logIndex' | 'gasPrice' | 'superToken' | 'sender' | 'receiver' | 'cliffAndFlowDate' | 'flowRate' | 'cliffAmount' | 'flowDelayCompensation'>
+  ) | (
+    { __typename: 'VestingEndExecutedEvent' }
+    & Pick<VestingEndExecutedEvent, 'id' | 'blockNumber' | 'transactionHash' | 'timestamp' | 'name' | 'order' | 'logIndex' | 'gasPrice' | 'superToken' | 'sender' | 'receiver' | 'endDate' | 'earlyEndCompensation' | 'didCompensationFail'>
+  ) | (
+    { __typename: 'VestingEndFailedEvent' }
+    & Pick<VestingEndFailedEvent, 'id' | 'blockNumber' | 'transactionHash' | 'timestamp' | 'name' | 'order' | 'logIndex' | 'gasPrice' | 'superToken' | 'sender' | 'receiver' | 'endDate'>
+  ) | (
+    { __typename: 'VestingScheduleCreatedEvent' }
+    & Pick<VestingScheduleCreatedEvent, 'id' | 'blockNumber' | 'transactionHash' | 'timestamp' | 'name' | 'order' | 'logIndex' | 'gasPrice' | 'superToken' | 'sender' | 'receiver' | 'startDate' | 'cliffDate' | 'flowRate' | 'endDate' | 'cliffAmount' | 'claimValidityDate' | 'remainderAmount'>
+  ) | (
+    { __typename: 'VestingScheduleDeletedEvent' }
+    & Pick<VestingScheduleDeletedEvent, 'id' | 'blockNumber' | 'transactionHash' | 'timestamp' | 'name' | 'order' | 'logIndex' | 'gasPrice' | 'superToken' | 'sender' | 'receiver'>
+  ) | (
+    { __typename: 'VestingScheduleEndDateUpdatedEvent' }
+    & Pick<VestingScheduleEndDateUpdatedEvent, 'id' | 'blockNumber' | 'transactionHash' | 'timestamp' | 'name' | 'order' | 'logIndex' | 'gasPrice'>
+  ) | (
+    { __typename: 'VestingScheduleUpdatedEvent' }
+    & Pick<VestingScheduleUpdatedEvent, 'id' | 'blockNumber' | 'transactionHash' | 'timestamp' | 'name' | 'order' | 'logIndex' | 'gasPrice' | 'superToken' | 'sender' | 'receiver' | 'oldEndDate' | 'endDate' | 'oldRemainderAmount' | 'remainderAmount' | 'oldFlowRate' | 'flowRate' | 'totalAmount' | 'oldTotalAmount' | 'settledAmount'>
+  )> };
+
+export type VestingCliffAndFlowExecutedEventFragment = Pick<VestingCliffAndFlowExecutedEvent, 'superToken' | 'sender' | 'receiver' | 'cliffAndFlowDate' | 'flowRate' | 'cliffAmount' | 'flowDelayCompensation'>;
+
+export type VestingEndExecutedEventFragment = Pick<VestingEndExecutedEvent, 'superToken' | 'sender' | 'receiver' | 'endDate' | 'earlyEndCompensation' | 'didCompensationFail'>;
+
+export type VestingEndFailedEventFragment = Pick<VestingEndFailedEvent, 'superToken' | 'sender' | 'receiver' | 'endDate'>;
+
+export type VestingScheduleCreatedEventFragment = Pick<VestingScheduleCreatedEvent, 'superToken' | 'sender' | 'receiver' | 'startDate' | 'cliffDate' | 'flowRate' | 'endDate' | 'cliffAmount' | 'claimValidityDate' | 'remainderAmount'>;
+
+export type VestingScheduleDeletedEventFragment = Pick<VestingScheduleDeletedEvent, 'superToken' | 'sender' | 'receiver'>;
+
+export type VestingScheduleUpdatedEventFragment = Pick<VestingScheduleUpdatedEvent, 'superToken' | 'sender' | 'receiver' | 'oldEndDate' | 'endDate' | 'oldRemainderAmount' | 'remainderAmount' | 'oldFlowRate' | 'flowRate' | 'totalAmount' | 'oldTotalAmount' | 'settledAmount'>;
+
+export type VestingClaimedEventFragment = Pick<VestingClaimedEvent, 'superToken' | 'sender' | 'receiver' | 'claimer'>;
+
 export type PollQueryVariables = Exact<{
   block: Block_Height;
 }>;
@@ -3558,6 +3614,80 @@ export type GetVestingSchedulesQuery = { vestingSchedules: Array<Pick<VestingSch
 
 export type VestingSchedulePartFragment = Pick<VestingSchedule, 'id' | 'superToken' | 'sender' | 'receiver' | 'flowRate' | 'createdAt' | 'deletedAt' | 'startDate' | 'claimedAt' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowExpirationAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'endDateValidAt' | 'endExecutedAt' | 'failedAt' | 'didEarlyEndCompensationFail' | 'earlyEndCompensation' | 'claimValidityDate' | 'remainderAmount' | 'contractVersion' | 'totalAmount'>;
 
+export const VestingCliffAndFlowExecutedEventFragmentDoc = gql`
+    fragment vestingCliffAndFlowExecutedEvent on VestingCliffAndFlowExecutedEvent {
+  superToken
+  sender
+  receiver
+  cliffAndFlowDate
+  flowRate
+  cliffAmount
+  flowDelayCompensation
+}
+    ` as unknown as DocumentNode<VestingCliffAndFlowExecutedEventFragment, unknown>;
+export const VestingEndExecutedEventFragmentDoc = gql`
+    fragment vestingEndExecutedEvent on VestingEndExecutedEvent {
+  superToken
+  sender
+  receiver
+  endDate
+  earlyEndCompensation
+  didCompensationFail
+}
+    ` as unknown as DocumentNode<VestingEndExecutedEventFragment, unknown>;
+export const VestingEndFailedEventFragmentDoc = gql`
+    fragment vestingEndFailedEvent on VestingEndFailedEvent {
+  superToken
+  sender
+  receiver
+  endDate
+}
+    ` as unknown as DocumentNode<VestingEndFailedEventFragment, unknown>;
+export const VestingScheduleCreatedEventFragmentDoc = gql`
+    fragment vestingScheduleCreatedEvent on VestingScheduleCreatedEvent {
+  superToken
+  sender
+  receiver
+  startDate
+  cliffDate
+  flowRate
+  endDate
+  cliffAmount
+  claimValidityDate
+  remainderAmount
+}
+    ` as unknown as DocumentNode<VestingScheduleCreatedEventFragment, unknown>;
+export const VestingScheduleDeletedEventFragmentDoc = gql`
+    fragment vestingScheduleDeletedEvent on VestingScheduleDeletedEvent {
+  superToken
+  sender
+  receiver
+}
+    ` as unknown as DocumentNode<VestingScheduleDeletedEventFragment, unknown>;
+export const VestingScheduleUpdatedEventFragmentDoc = gql`
+    fragment vestingScheduleUpdatedEvent on VestingScheduleUpdatedEvent {
+  superToken
+  sender
+  receiver
+  oldEndDate
+  endDate
+  oldRemainderAmount
+  remainderAmount
+  oldFlowRate
+  flowRate
+  totalAmount
+  oldTotalAmount
+  settledAmount
+}
+    ` as unknown as DocumentNode<VestingScheduleUpdatedEventFragment, unknown>;
+export const VestingClaimedEventFragmentDoc = gql`
+    fragment vestingClaimedEvent on VestingClaimedEvent {
+  superToken
+  sender
+  receiver
+  claimer
+}
+    ` as unknown as DocumentNode<VestingClaimedEventFragment, unknown>;
 export const VestingSchedulePartFragmentDoc = gql`
     fragment VestingSchedulePart on VestingSchedule {
   id
@@ -3586,6 +3716,55 @@ export const VestingSchedulePartFragmentDoc = gql`
   totalAmount
 }
     ` as unknown as DocumentNode<VestingSchedulePartFragment, unknown>;
+export const VestingScheduleEventsDocument = gql`
+    query vestingScheduleEvents($where: Event_filter! = {}, $skip: Int! = 0, $first: Int! = 1000, $orderBy: Event_orderBy! = timestamp, $orderDirection: OrderDirection! = desc, $block: Block_height) {
+  events(
+    where: $where
+    block: $block
+    skip: $skip
+    first: $first
+    orderBy: $orderBy
+    orderDirection: $orderDirection
+  ) {
+    id
+    blockNumber
+    transactionHash
+    timestamp
+    name
+    order
+    logIndex
+    gasPrice
+    __typename
+    ... on VestingCliffAndFlowExecutedEvent {
+      ...vestingCliffAndFlowExecutedEvent
+    }
+    ... on VestingEndExecutedEvent {
+      ...vestingEndExecutedEvent
+    }
+    ... on VestingEndFailedEvent {
+      ...vestingEndFailedEvent
+    }
+    ... on VestingScheduleCreatedEvent {
+      ...vestingScheduleCreatedEvent
+    }
+    ... on VestingScheduleDeletedEvent {
+      ...vestingScheduleDeletedEvent
+    }
+    ... on VestingScheduleUpdatedEvent {
+      ...vestingScheduleUpdatedEvent
+    }
+    ... on VestingClaimedEvent {
+      ...vestingClaimedEvent
+    }
+  }
+}
+    ${VestingCliffAndFlowExecutedEventFragmentDoc}
+${VestingEndExecutedEventFragmentDoc}
+${VestingEndFailedEventFragmentDoc}
+${VestingScheduleCreatedEventFragmentDoc}
+${VestingScheduleDeletedEventFragmentDoc}
+${VestingScheduleUpdatedEventFragmentDoc}
+${VestingClaimedEventFragmentDoc}` as unknown as DocumentNode<VestingScheduleEventsQuery, VestingScheduleEventsQueryVariables>;
 export const PollDocument = gql`
     query poll($block: Block_height!) {
   events(block: $block, first: 1) {
@@ -3616,9 +3795,13 @@ export const GetVestingSchedulesDocument = gql`
 
 
 
+
 export type Requester<C = {}, E = unknown> = <R, V>(doc: DocumentNode, vars?: V, options?: C) => Promise<R> | AsyncIterable<R>
 export function getSdk<C, E>(requester: Requester<C, E>) {
   return {
+    vestingScheduleEvents(variables?: VestingScheduleEventsQueryVariables, options?: C): Promise<VestingScheduleEventsQuery> {
+      return requester<VestingScheduleEventsQuery, VestingScheduleEventsQueryVariables>(VestingScheduleEventsDocument, variables, options) as Promise<VestingScheduleEventsQuery>;
+    },
     poll(variables: PollQueryVariables, options?: C): Promise<PollQuery> {
       return requester<PollQuery, PollQueryVariables>(PollDocument, variables, options) as Promise<PollQuery>;
     },

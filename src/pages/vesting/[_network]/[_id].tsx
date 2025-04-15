@@ -42,6 +42,7 @@ import { vestingSubgraphApi } from "../../../vesting-subgraph/vestingSubgraphApi
 import Page404 from "../../404";
 import { NextPageWithLayout } from "../../_app";
 import { useTokenQuery } from "../../../hooks/useTokenQuery";
+import { VestingScheduleUpdatedEvent } from "../../../vesting-subgraph/vestingEvents";
 
 interface VestingLegendItemProps {
   title: string;
@@ -65,6 +66,7 @@ const VestingLegendItem: FC<VestingLegendItemProps> = ({ title, color }) => (
 export type VestingActivities = (
   | Activity<FlowUpdatedEvent>
   | Activity<TransferEvent>
+  // | Activity<VestingScheduleUpdatedEvent>
 )[];
 
 const VestingScheduleDetailsPage: NextPageWithLayout = () => {

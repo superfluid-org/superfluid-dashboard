@@ -1,0 +1,116 @@
+query vestingScheduleEvents(
+    $where: Event_filter! = {}
+    $skip: Int! = 0
+    $first: Int! = 1000
+    $orderBy: Event_orderBy! = timestamp
+    $orderDirection: OrderDirection! = desc
+    $block: Block_height
+) {
+    events(
+        where: $where
+        block: $block
+        skip: $skip
+        first: $first
+        orderBy: $orderBy
+        orderDirection: $orderDirection
+    ) {
+        id
+        blockNumber
+        transactionHash
+        timestamp
+        name
+        order
+        logIndex
+        gasPrice
+        __typename
+        ... on VestingCliffAndFlowExecutedEvent {
+            ...vestingCliffAndFlowExecutedEvent
+        }
+        ... on VestingEndExecutedEvent {
+            ...vestingEndExecutedEvent
+        }
+        ... on VestingEndFailedEvent {
+            ...vestingEndFailedEvent
+        }
+        ... on VestingScheduleCreatedEvent {
+            ...vestingScheduleCreatedEvent
+        }
+        ... on VestingScheduleDeletedEvent {
+            ...vestingScheduleDeletedEvent
+        }
+        ... on VestingScheduleUpdatedEvent {
+            ...vestingScheduleUpdatedEvent
+        }
+        ... on VestingClaimedEvent {
+            ...vestingClaimedEvent
+        }
+    }
+}
+
+fragment vestingCliffAndFlowExecutedEvent on VestingCliffAndFlowExecutedEvent {
+    superToken
+    sender
+    receiver
+    cliffAndFlowDate
+    flowRate
+    cliffAmount
+    flowDelayCompensation
+}
+
+fragment vestingEndExecutedEvent on VestingEndExecutedEvent {
+    superToken
+    sender
+    receiver
+    endDate
+    earlyEndCompensation
+    didCompensationFail
+}
+
+fragment vestingEndFailedEvent on VestingEndFailedEvent {
+    superToken
+    sender
+    receiver
+    endDate
+}
+
+fragment vestingScheduleCreatedEvent on VestingScheduleCreatedEvent {
+    superToken
+    sender
+    receiver
+    startDate
+    cliffDate
+    flowRate
+    endDate
+    cliffAmount
+    claimValidityDate
+    remainderAmount
+}
+
+fragment vestingScheduleDeletedEvent on VestingScheduleDeletedEvent {
+    superToken
+    sender
+    receiver
+}
+
+fragment vestingScheduleUpdatedEvent on VestingScheduleUpdatedEvent {
+    superToken
+    sender
+    receiver
+    oldEndDate
+    endDate
+    oldRemainderAmount
+    remainderAmount
+    oldFlowRate
+    flowRate
+    totalAmount
+    oldTotalAmount
+    settledAmount
+}
+
+fragment vestingClaimedEvent on VestingClaimedEvent {
+    superToken
+    sender
+    receiver
+    claimer
+}
+
