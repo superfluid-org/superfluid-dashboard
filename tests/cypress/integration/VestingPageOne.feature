@@ -31,7 +31,7 @@ Feature: Vesting page first batch of test cases
     And User inputs "2" "year" as the cliff period
     And User inputs "3" as the total vested amount
     And User inputs "4" "year" as the total vesting period
-    Then "You can’t vest to yourself. Choose a different wallet." error is shown in the form
+    Then "You can’t vest to yourself. Choose a different wallet." error on index "0" is shown in the form
 
   Scenario: Creation form - Cliff amount has to be less than total amount
     Given Transactional account bob is connected to the dashboard on opsepolia
@@ -45,7 +45,7 @@ Feature: Vesting page first batch of test cases
     And User inputs "2" "year" as the cliff period
     And User inputs "1" as the total vested amount
     And User inputs "4" "year" as the total vesting period
-    Then "Cliff amount has to be less than total amount." error is shown in the form
+    Then "Cliff amount has to be less than total amount." error on index "0" is shown in the form
 
   Scenario: Creation form - Top-up warning message
     Given Transactional account bob is connected to the dashboard on opsepolia
@@ -67,7 +67,7 @@ Feature: Vesting page first batch of test cases
     And User inputs "4" "year" as the cliff period
     And User inputs "1" as the total vested amount
     And User inputs "1" "year" as the total vesting period
-    Then "The vesting end date has to be at least 420 minutes from the start or the cliff." error is shown in the form
+    Then "The vesting end date has to be at least 420 minutes from the start or the cliff." error on index "0" is shown in the form
 
   Scenario: Creation form - Total vesting period has to be atleast 420 minutes after start
     Given Transactional account bob is connected to the dashboard on opsepolia
@@ -81,7 +81,7 @@ Feature: Vesting page first batch of test cases
     And User inputs "30" "minute" as the cliff period
     And User inputs "2" as the total vested amount
     And User inputs "59" "minute" as the total vesting period
-    Then "The vesting end date has to be at least 420 minutes from the start or the cliff." error is shown in the form
+    Then "The vesting end date has to be at least 420 minutes from the start or the cliff." error on index "0" is shown in the form
 
   Scenario: Creation form - Vesting period less than 10 years
     Given Transactional account bob is connected to the dashboard on opsepolia
@@ -92,7 +92,7 @@ Feature: Vesting page first batch of test cases
     And User inputs a date "1" "year" into the future into the vesting start date field
     And User inputs "2" as the total vested amount
     And User inputs "11" "year" as the total vesting period
-    Then "The vesting period has to be less than 10 years." error is shown in the form
+    Then "The vesting period has to be less than 10 years." error on index "0" is shown in the form
 
   Scenario: Creation form - Existing schedule
     Given Transactional account john is connected to the dashboard on opsepolia
@@ -106,7 +106,7 @@ Feature: Vesting page first batch of test cases
     And User inputs "2" "year" as the cliff period
     And User inputs "3" as the total vested amount
     And User inputs "4" "year" as the total vesting period
-    Then "There already exists a vesting schedule between the accounts for the token. To create a new schedule, the active schedule needs to end or be deleted." error is shown in the form
+    Then "There already exists a vesting schedule between the accounts for the token. To create a new schedule, the active schedule needs to end or be deleted." error on index "0" is shown in the form
 
   Scenario: Creating a vesting schedule with a cliff
     Given HDWallet transactions are rejected
