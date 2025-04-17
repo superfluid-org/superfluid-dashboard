@@ -2,6 +2,7 @@ import { BasePage } from '../BasePage';
 import { networksBySlug } from '../../superData/networks';
 import { format } from 'date-fns';
 import { CONNECT_WALLET_BUTTON, TOKEN_SEARCH_RESULTS } from './Common';
+import { LOADING_TIMEOUT } from '../../support/helpers/constants';
 
 export const RANDOM_VALUE_DURING_TEST = Math.floor(Math.random() * 10) + 2;
 const RECEIVER_BUTTON = '[data-cy=address-button]';
@@ -99,7 +100,9 @@ export class TransferPage extends BasePage {
 
   static clickTransferButton() {
     cy.get(TRANSFER_BUTTON).as('transferButton');
-    this.isNotDisabled('@transferButton', undefined, { timeout: 45000 });
+    this.isNotDisabled('@transferButton', undefined, {
+      timeout: LOADING_TIMEOUT,
+    });
     this.click('@transferButton');
   }
 

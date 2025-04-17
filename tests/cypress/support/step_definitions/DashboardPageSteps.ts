@@ -1,5 +1,5 @@
-import { Given, Then } from "@badeball/cypress-cucumber-preprocessor";
-import { DashboardPage } from "../../pageObjects/pages/DashboardPage";
+import { Given, Then } from '@badeball/cypress-cucumber-preprocessor';
+import { DashboardPage } from '../../pageObjects/pages/DashboardPage';
 
 Given(
   /^Correct "([^"]*)" wallet balances are shown for the "([^"]*)"$/,
@@ -68,6 +68,13 @@ Given(
   /^Cancel button is disabled on all streams on "([^"]*)"$/,
   (network: string) => {
     DashboardPage.validateAllCancelButtonsDisabledForToken(network);
+  }
+);
+
+Given(
+  /^Cancel button is not displayed on all streams on "([^"]*)"$/,
+  (network: string) => {
+    DashboardPage.validateAllCancelButtonsNotDisplayedForToken(network);
   }
 );
 

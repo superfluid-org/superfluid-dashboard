@@ -5,6 +5,7 @@ import {
   testNetworks,
 } from '../../superData/networks';
 import { Common, CONNECT_WALLET_BUTTON } from './Common';
+import { LOADING_TIMEOUT } from '../../support/helpers/constants';
 
 const NETWORK_SNAPSHOT_TABLE_APPENDIX = '-token-snapshot-table]';
 const TOKEN_SYMBOLS = '[data-cy=token-symbol]';
@@ -148,6 +149,16 @@ export class DashboardPage extends BasePage {
     });
   }
 
+  static validateAllCancelButtonsNotDisplayedForToken(network: string) {
+    cy.fixture('networkSpecificData').then((networkSpecificData) => {
+      cy.get(
+        `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${networkSpecificData[
+          network
+        ].ongoingStreamsAccount.tokenValues.tokenAddress.toLowerCase()}-streams-table] ${STREAM_ROWS} ${CANCEL_BUTTONS}`
+      ).should('not.exist');
+    });
+  }
+
   static hoverOnFirstCancelButton(network: string) {
     this.trigger(
       `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} ${SWITCH_NETWORK_BUTTON}`,
@@ -240,7 +251,7 @@ export class DashboardPage extends BasePage {
       this.isVisible(
         `[data-cy=${selectedNetwork}${NETWORK_SNAPSHOT_TABLE_APPENDIX}`,
         undefined,
-        { timeout: 45000 }
+        { timeout: LOADING_TIMEOUT }
       );
       this.click(
         `[data-cy=${selectedNetwork}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy="${selectedToken}-cell"]`
@@ -270,15 +281,15 @@ export class DashboardPage extends BasePage {
 
   static validateNoButtonsInLastStreamRow() {
     cy.get(STREAM_ROWS)
-      .first({ timeout: 45000 })
+      .first({ timeout: LOADING_TIMEOUT })
       .find(CANCEL_BUTTONS)
       .should('not.exist');
     cy.get(STREAM_ROWS)
-      .first({ timeout: 45000 })
+      .first({ timeout: LOADING_TIMEOUT })
       .find(SWITCH_NETWORK_BUTTON)
       .should('not.exist');
     cy.get(STREAM_ROWS)
-      .first({ timeout: 45000 })
+      .first({ timeout: LOADING_TIMEOUT })
       .find(MODIFY_STREAM_BUTTON)
       .should('not.exist');
   }

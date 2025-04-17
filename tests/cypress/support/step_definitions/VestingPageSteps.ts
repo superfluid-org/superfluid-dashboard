@@ -11,9 +11,12 @@ Then(/^No created vesting schedules message is shown$/, function () {
 Given(/^User clicks on the create vesting schedule button$/, function () {
   VestingPage.clickCreateScheduleButton();
 });
-Then(/^"([^"]*)" error is shown in the form$/, function (error: string) {
-  VestingPage.validateFormError(error);
-});
+Then(
+  /^"([^"]*)" error on index "(\d+)" is shown in the form$/,
+  function (error: string, index: number) {
+    VestingPage.validateFormError(error, index);
+  }
+);
 Given(
   /^User inputs a date "(\d+)" "([^"]*)" into the future into the vesting start date field$/,
   function (amount: number, timeUnit: string) {

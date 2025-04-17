@@ -9,6 +9,7 @@ import {
   TOKEN_BALANCE,
   TOKEN_SEARCH_RESULTS,
 } from './Common';
+import { LOADING_TIMEOUT } from '../../support/helpers/constants';
 
 export const RANDOM_VALUE_DURING_TEST = Math.floor(Math.random() * 10) + 2;
 const SEND_BUTTON = '[data-cy=send-transaction-button]';
@@ -627,7 +628,7 @@ export class SendPage extends BasePage {
 
   static clickSendButton() {
     cy.get(SEND_BUTTON).as('sendButton');
-    this.isNotDisabled('@sendButton', undefined, { timeout: 45000 });
+    this.isNotDisabled('@sendButton', undefined, { timeout: LOADING_TIMEOUT });
     this.click('@sendButton');
   }
 
@@ -643,12 +644,14 @@ export class SendPage extends BasePage {
   }
 
   static validateDisabledStartDateField() {
-    this.isDisabled(`${START_DATE} input`, undefined, { timeout: 45000 });
+    this.isDisabled(`${START_DATE} input`, undefined, {
+      timeout: LOADING_TIMEOUT,
+    });
   }
 
   static validateSetFlowRate(flowrate: string) {
     this.hasValue(`${FLOW_RATE_INPUT} input`, flowrate, undefined, {
-      timeout: 45000,
+      timeout: LOADING_TIMEOUT,
     });
   }
 

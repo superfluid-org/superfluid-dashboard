@@ -29,7 +29,8 @@ Feature: Vesting page require receiver to claim test cases
     And User inputs "2" "year" as the cliff period
     And User inputs "3" as the total vested amount
     And User inputs "4" "year" as the total vesting period
-    Then "Don’t forget to top up for the vesting schedule!Remember to top up your Super Token balance in time for the cliff amount and vesting stream." error is shown in the form
+    Then "There already exists a vesting schedule between the accounts for the token. To create a new schedule, the active schedule needs to end or be deleted." error on index "0" is shown in the form
+    Then "Don’t forget to top up for the vesting schedule!Remember to top up your Super Token balance in time for the cliff amount and vesting stream." error on index "1" is shown in the form
 
   Scenario: Deleting a vesting schedule
     Given HDWallet transactions are rejected

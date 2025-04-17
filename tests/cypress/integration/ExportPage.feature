@@ -102,8 +102,8 @@ Feature: Export Stream Data page test cases
     And User searches for "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40" as the accountable account
     And User selects "0x618ada3f9f7BC1B2f2765Ba1728BEc5057B3DE40" from the search section
     And User clicks the OK button
-    And User changes the export start date to "01/23"
-    And User changes the export end date with date picker to "Jan" "2023"
+    And User changes the export start date to "01/25"
+    And User changes the export end date with date picker to "Jan" "2025"
     And User clicks on the export preview button
     And User exports the CSV
     Then CSV contains the correct data

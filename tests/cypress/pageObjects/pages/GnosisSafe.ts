@@ -7,6 +7,7 @@ import {
   CONNECTED_WALLET,
   WALLET_CONNECTION_STATUS,
 } from './Common';
+import { LOADING_TIMEOUT } from '../../support/helpers/constants';
 
 const GNOSIS_BUTTONS = '.MuiButton-contained';
 const GNOSIS_SAFE_WALLET_OPTION = '[data-testid=wallet-selector-external-safe]';
@@ -64,23 +65,15 @@ export class GnosisSafe extends BasePage {
   static continueDisclaimer() {
     //The disclaimer is quite annoying and messes up when cypress quickly clicks on it
     //Waiting for other stuff to be visible / not be visible / exist / not exist didn't help here :(
-    cy.get(GNOSIS_BUTTONS, { timeout: 30000 }).contains('I understand').click();
-    cy.get(GNOSIS_BUTTONS).contains('I understand').should('not.exist');
-    cy.wait(1000);
     cy.get(GNOSIS_BUTTONS, { timeout: 30000 }).contains('Accept all').click();
     cy.get(GNOSIS_BUTTONS).contains('Accept all').should('not.exist');
     cy.wait(1000);
     cy.get(GNOSIS_BUTTONS, { timeout: 30000 }).contains('Continue').click();
     cy.wait(1000);
-    cy.get(GNOSIS_BUTTONS, { timeout: 30000 }).contains('Continue').click();
-    cy.get(GNOSIS_BUTTONS).contains('Continue').should('not.exist');
-    cy.wait(1000);
-    // this.isVisible(LOADING_SPINNER);
-    // this.doesNotExist(LOADING_SPINNER, undefined, { timeout: 45000 });
   }
 
   static validateThatDashboardLoaded() {
-    cy.frameLoaded(SUPERFLUID_IFRAME, { timeout: 45000 });
+    cy.frameLoaded(SUPERFLUID_IFRAME, { timeout: LOADING_TIMEOUT });
   }
 
   static connectGnosisSafeWallet() {
@@ -117,7 +110,7 @@ export class GnosisSafe extends BasePage {
     );
     Cypress.config('baseUrl', 'https://app.superfluid.org');
     cy.wait(1000);
-    cy.get(GNOSIS_BUTTONS, { timeout: 30000 }).contains('I understand').click();
+    // cy.get(GNOSIS_BUTTONS, { timeout: 30000 }).contains('I understand').click();
     cy.get(GNOSIS_BUTTONS, { timeout: 30000 }).contains('Accept all').click();
   }
 

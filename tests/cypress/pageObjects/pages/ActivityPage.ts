@@ -9,6 +9,7 @@ import { format } from 'date-fns';
 import { DataTable, Then } from '@badeball/cypress-cucumber-preprocessor';
 import superfluidMetadata from '@superfluid-finance/metadata';
 import { ethers } from 'ethers';
+import { LOADING_TIMEOUT } from '../../support/helpers/constants';
 
 const ACTIVITY_TYPE = '[data-cy=activity]';
 const ACTIVITY_NAME = `${ACTIVITY_TYPE} h6`;
@@ -221,8 +222,8 @@ export class ActivityPage extends BasePage {
   }
 
   static waitForSkeletonsToDisappear() {
-    this.isVisible(SKELETON_ROW, undefined, { timeout: 45000 });
-    this.doesNotExist(SKELETON_ROW, undefined, { timeout: 45000 });
+    this.isVisible(SKELETON_ROW, undefined, { timeout: LOADING_TIMEOUT });
+    this.doesNotExist(SKELETON_ROW, undefined, { timeout: LOADING_TIMEOUT });
   }
 
   static validateNoEntriesVisibleByNetwork(network: string) {

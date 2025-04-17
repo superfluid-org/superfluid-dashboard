@@ -3,6 +3,7 @@ import { networksBySlug } from '../../superData/networks';
 import HDWalletProvider from '@truffle/hdwallet-provider';
 import { ProviderAdapter } from '@truffle/encoder';
 import { http, createPublicClient } from 'viem';
+import { LOADING_TIMEOUT } from '../../support/helpers/constants';
 
 export const TOP_BAR_NETWORK_BUTTON = '[data-cy=top-bar-network-button]';
 export const CONNECTED_WALLET = '[data-cy=wallet-connection-status] h6';
@@ -1256,7 +1257,7 @@ export class Common extends BasePage {
 
   static openTokenSelection() {
     this.click(SELECT_TOKEN_BUTTON);
-    this.exists(TOKEN_SEARCH_RESULTS, undefined, { timeout: 45000 });
+    this.exists(TOKEN_SEARCH_RESULTS, undefined, { timeout: LOADING_TIMEOUT });
   }
 
   static searchForTokenInTokenList(token: string) {
