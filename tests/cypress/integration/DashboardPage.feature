@@ -43,10 +43,10 @@ Feature: Dashboard Page test cases
     Then "optimism" streams are shown with the correct values in dashboard page
     And Cancel and Edit buttons are visible
     And User clicks on "polygon" "POLx" row
-    And Cancel button is disabled on all streams on "polygon"
-    And User hovers on the first "polygon" stream cancel button
-    Then A tooltip asking user to switch to "polygon" is shown
+    And Cancel button is not displayed on all streams on "polygon"
 
+  # And User hovers on the first "polygon" stream cancel button
+  # Then A tooltip asking user to switch to "polygon" is shown
   Scenario: Changing token stream table pages and amount of results shown
     Given "Dashboard Page" is open without connecting a wallet
     And User uses view mode to look at "accountWithLotsOfData"

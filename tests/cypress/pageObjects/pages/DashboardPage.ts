@@ -149,6 +149,16 @@ export class DashboardPage extends BasePage {
     });
   }
 
+  static validateAllCancelButtonsNotDisplayedForToken(network: string) {
+    cy.fixture('networkSpecificData').then((networkSpecificData) => {
+      cy.get(
+        `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${networkSpecificData[
+          network
+        ].ongoingStreamsAccount.tokenValues.tokenAddress.toLowerCase()}-streams-table] ${STREAM_ROWS} ${CANCEL_BUTTONS}`
+      ).should('not.exist');
+    });
+  }
+
   static hoverOnFirstCancelButton(network: string) {
     this.trigger(
       `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} ${SWITCH_NETWORK_BUTTON}`,
