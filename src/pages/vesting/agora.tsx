@@ -29,6 +29,7 @@ import JSZip from "jszip";
 import { mapProjectStateIntoGnosisSafeBatch } from "../../features/redux/endpoints/vestingAgoraEndpoints";
 import { TxBuilder } from "../../libs/gnosis-tx-builder";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
+import Amount from "../../features/token/Amount";
 
 // Updated ActionsList component without the badges
 const ActionsList: FC<{ actions: (ProjectActions | AllowanceActions)[], tokenSymbol: string | undefined }> = ({ actions, tokenSymbol = "" }) => {
@@ -104,7 +105,7 @@ const ActionsList: FC<{ actions: (ProjectActions | AllowanceActions)[], tokenSym
                                 secondary={
                                     <Typography
                                         sx={{ display: 'inline' }}
-                                        component="span"    
+                                        component="span"
                                         variant="body2"
                                         color="text.primary"
                                     >
@@ -306,27 +307,26 @@ const AgoraPage: NextPageWithLayout = () => {
                     <TableHead>
                         <TableRow>
                             <TableCell align="center" colSpan={3}>
-
                             </TableCell>
                             <TableCell align="center" colSpan={6}>
                                 Tranches
                             </TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell></TableCell>
+                            <TableCell size="small"></TableCell>
                             <TableCell>Project Name</TableCell>
-                            <TableCell align="center" sx={{ borderRight: 1, borderColor: 'divider' }}>KYC</TableCell>
-                            <TableCell sx={{ bgcolor: currentTranchNo === 1 ? 'action.hover' : "" }} >Tranch 1</TableCell>
-                            <TableCell sx={{ bgcolor: currentTranchNo === 2 ? 'action.hover' : "" }} >Tranch 2</TableCell>
-                            <TableCell sx={{ bgcolor: currentTranchNo === 3 ? 'action.hover' : "" }} >Tranch 3</TableCell>
-                            <TableCell sx={{ bgcolor: currentTranchNo === 4 ? 'action.hover' : "" }} >Tranch 4</TableCell>
-                            <TableCell sx={{ bgcolor: currentTranchNo === 5 ? 'action.hover' : "" }} >Tranch 5</TableCell>
-                            <TableCell sx={{ bgcolor: currentTranchNo === 6 ? 'action.hover' : "" }} >Tranch 6</TableCell>
+                            <TableCell size="small" align="center" sx={{ borderRight: 1, borderColor: 'divider' }}>KYC</TableCell>
+                            <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 1 ? 'action.hover' : "" }} >Tranch 1</TableCell>
+                            <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 2 ? 'action.hover' : "" }} >Tranch 2</TableCell>
+                            <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 3 ? 'action.hover' : "" }} >Tranch 3</TableCell>
+                            <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 4 ? 'action.hover' : "" }} >Tranch 4</TableCell>
+                            <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 5 ? 'action.hover' : "" }} >Tranch 5</TableCell>
+                            <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 6 ? 'action.hover' : "" }} >Tranch 6</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {rows.map((row) => (
-                            <Row key={row.agoraEntry.projectId} currentTranchNo={currentTranchNo} chainId={projectsOverview.chainId} superTokenAddress={projectsOverview.superTokenAddress} state={row} />
+                            <Row key={row.agoraEntry.id} currentTranchNo={currentTranchNo} chainId={projectsOverview.chainId} superTokenAddress={projectsOverview.superTokenAddress} state={row} />
                         ))}
                     </TableBody>
                 </Table>
@@ -356,6 +356,14 @@ const AgoraPage: NextPageWithLayout = () => {
     );
 };
 
+// # Row
+
+const tranchColumnSxProps = {
+  whiteSpace: 'nowrap',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+} as const;
+
 function Row(props: { currentTranchNo: number, chainId: number, superTokenAddress: string, state: ProjectState }) {
     const { state, currentTranchNo } = props;
     const [open, setOpen] = useState(false);
@@ -374,42 +382,93 @@ function Row(props: { currentTranchNo: number, chainId: number, superTokenAddres
 
     return (
         <>
-            <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
-                <TableCell>
+          <TableRow
+              sx={{
+                  '& > *': { borderBottom: 'unset' },
+                  opacity: state.agoraEntry.KYCStatusCompleted ? 1 : 0.6
+              }}
+          >
+                <TableCell size="small" align="center" sx={{
+                  py: 0.5,
+                  pr: 0,
+                  pl: 1
+                }}>
                     <IconButton
                         aria-label="expand row"
                         size="small"
                         onClick={() => setOpen(!open)}
+                        sx={{
+                          m: 0,
+                          minWidth: "75px"
+                        }}
                     >
-                        {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                      {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                     </IconButton>
                 </TableCell>
-                <TableCell>{state.agoraEntry.projectName}</TableCell>
-                <TableCell align="center" sx={{ borderRight: 1, borderColor: 'divider' }}>{state.agoraEntry.KYCStatusCompleted ? <DoneIcon fontSize="small" /> : <CloseIcon fontSize="small" />}</TableCell>
-                <TableCell sx={{ bgcolor: currentTranchNo === 1 ? 'action.hover' : "" }}>{allocations[0]?.amount ? `${formatEther(BigInt(allocations[0]!.amount))} ${token?.symbol}` : '—'}</TableCell>
-                <TableCell sx={{ bgcolor: currentTranchNo === 2 ? 'action.hover' : "" }}>{allocations[1]?.amount ? `${formatEther(BigInt(allocations[1]!.amount))} ${token?.symbol}` : '—'}</TableCell>
-                <TableCell sx={{ bgcolor: currentTranchNo === 3 ? 'action.hover' : "" }}>{allocations[2]?.amount ? `${formatEther(BigInt(allocations[2]!.amount))} ${token?.symbol}` : '—'}</TableCell>
-                <TableCell sx={{ bgcolor: currentTranchNo === 4 ? 'action.hover' : "" }}>{allocations[3]?.amount ? `${formatEther(BigInt(allocations[3]!.amount))} ${token?.symbol}` : '—'}</TableCell>
-                <TableCell sx={{ bgcolor: currentTranchNo === 5 ? 'action.hover' : "" }}>{allocations[4]?.amount ? `${formatEther(BigInt(allocations[4]!.amount))} ${token?.symbol}` : '—'}</TableCell>
-                <TableCell sx={{ bgcolor: currentTranchNo === 6 ? 'action.hover' : "" }}>{allocations[5]?.amount ? `${formatEther(BigInt(allocations[5]!.amount))} ${token?.symbol}` : '—'}</TableCell>
+                <TableCell sx={{
+                  whiteSpace: 'nowrap',
+                  maxWidth: '200px',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
+                }}>
+                  {state.agoraEntry.projectNames.map((name) => (
+                    <Typography
+                      key={name}
+                      component="span"
+                      variant="body2"
+                      noWrap
+                    >
+                      {name}
+                    </Typography>
+                  ))}
+                </TableCell>
+                <TableCell size="small" align="center" sx={{ borderRight: 1, borderColor: 'divider' }}>
+                  <Stack component="span" direction="column" justifyContent="center">
+                    {state.agoraEntry.KYCStatusCompleted ? <DoneIcon sx={{fontSize: 16}} /> : <CloseIcon sx={{fontSize: 16}} />}
+                  </Stack>
+                </TableCell>
+                <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 1 ? 'action.hover' : "" }}>
+                    {allocations[0]?.amount ? (<Stack direction="row" justifyContent="space-between" alignItems="center" gap={1.5}><Amount wei={allocations[0]!.amount} disableRounding mono /><Typography variant="tooltip" color="text.secondary">{token?.symbol}</Typography></Stack>) : '—'}
+                </TableCell>
+                <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 2 ? 'action.hover' : "" }}>
+                    {allocations[1]?.amount ? (<Stack direction="row" justifyContent="space-between" alignItems="center" gap={1.5}><Amount wei={allocations[1]!.amount} disableRounding mono /><Typography variant="tooltip" color="text.secondary">{token?.symbol}</Typography></Stack>) : '—'}
+                </TableCell>
+                <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 3 ? 'action.hover' : "" }}>
+                    {allocations[2]?.amount ? (<Stack direction="row" justifyContent="space-between" alignItems="center" gap={1.5}><Amount wei={allocations[2]!.amount} disableRounding mono /><Typography variant="tooltip" color="text.secondary">{token?.symbol}</Typography></Stack>) : '—'}
+                </TableCell>
+                <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 4 ? 'action.hover' : "" }}>
+                    {allocations[3]?.amount ? (<Stack direction="row" justifyContent="space-between" alignItems="center" gap={1.5}><Amount wei={allocations[3]!.amount} disableRounding mono /><Typography variant="tooltip" color="text.secondary">{token?.symbol}</Typography></Stack>) : '—'}
+                </TableCell>
+                <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 5 ? 'action.hover' : "" }}>
+                    {allocations[4]?.amount ? (<Stack direction="row" justifyContent="space-between" alignItems="center" gap={1.5}><Amount wei={allocations[4]!.amount} disableRounding mono /><Typography variant="tooltip" color="text.secondary">{token?.symbol}</Typography></Stack>) : '—'}
+                </TableCell>
+                <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 6 ? 'action.hover' : "" }}>
+                    {allocations[5]?.amount ? (<Stack direction="row" justifyContent="space-between" alignItems="center" gap={1.5}><Amount wei={allocations[5]!.amount} disableRounding mono /><Typography variant="tooltip" color="text.secondary">{token?.symbol}</Typography></Stack>) : '—'}
+                </TableCell>
             </TableRow>
 
             <TableRow>
                 <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={9}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         <Box sx={{ p: 2 }}>
-                            {/* <Typography variant="subtitle1" gutterBottom>
-                                Wallet Information
-                            </Typography> */}
+                            <Box sx={{ ml: 1, mt: 1 }}>
+                                <Box sx={{ display: 'flex', mb: 1 }}>
+                                    <Typography variant="body2" color="text.secondary" sx={{ width: 120 }}>
+                                        Project names:
+                                    </Typography>
+                                    <Typography
+                                        variant="body2"
+                                    >
+                                        {state.agoraEntry.projectNames.join(', ')}
+                                    </Typography>
+                                </Box>
 
-                            <Box sx={{ ml: 2, mt: 1 }}>
                                 <Box sx={{ display: 'flex', mb: 1 }}>
                                     <Typography variant="body2" color="text.secondary" sx={{ width: 120 }}>
                                         Current wallet:
                                     </Typography>
                                     <Typography
-                                        variant="body2"
-                                        sx={{ fontFamily: 'monospace' }}
+                                        variant="body2mono"
                                     >
                                         {state.currentWallet}
                                     </Typography>
@@ -455,12 +514,16 @@ function Row(props: { currentTranchNo: number, chainId: number, superTokenAddres
                                 </Box>
                             </Box>
 
-                            <Box sx={{ mt: 2 }}>
-                                <Typography variant="body2" color="text.secondary" gutterBottom>
-                                    Vesting schedules:
-                                </Typography>
-                                <ProjectVestingSchedulesTables project={state} />
-                            </Box>
+                            {
+                              state.allRelevantSchedules.length > 0 && (
+                                <Box sx={{ mt: 2 }}>
+                                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                                        Vesting schedules:
+                                    </Typography>
+                                    <ProjectVestingSchedulesTables project={state} />
+                                </Box>
+                              )
+                            }
 
                             {state.todo.length > 0 && (
                                 <Box sx={{ mt: 3 }}>

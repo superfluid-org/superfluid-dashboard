@@ -10,6 +10,7 @@ const SimpleVestingHeader: FC = () => {
   const { network } = useExpectedNetwork();
 
   const doesNetworkSupportBatchVesting = !!network.vestingContractAddress.v2;
+  const doesNetworkSupportAgora = !!network.vestingContractAddress.v3;
 
   return (
     <Stack
@@ -23,15 +24,17 @@ const SimpleVestingHeader: FC = () => {
       </Typography>
 
       <Stack direction="row" gap={1}>
-        <Button
-          LinkComponent={Link}
-          href="/vesting/agora"
-          data-cy="agora-link-button"
-          color="primary"
-          variant="outlined"
-        >
-          Agora
-        </Button>
+        {doesNetworkSupportAgora && (
+          <Button
+            LinkComponent={Link}
+            href="/vesting/agora"
+            data-cy="agora-link-button"
+            color="primary"
+            variant="outlined"
+          >
+            Agora
+          </Button>
+        )}
 
         {accountAddress && (
           <Button
@@ -45,19 +48,17 @@ const SimpleVestingHeader: FC = () => {
           </Button>
         )}
 
-        {
-          accountAddress && doesNetworkSupportBatchVesting && (
-            <Button
-              LinkComponent={Link}
-              href="/vesting/batch-create"
-              data-cy="create-batch-schedule-button"
-              color="primary"
-              variant="contained"
-            >
-              Create Batch of Vesting Schedules
-            </Button>
-          )
-        }
+        {accountAddress && doesNetworkSupportBatchVesting && (
+          <Button
+            LinkComponent={Link}
+            href="/vesting/batch-create"
+            data-cy="create-batch-schedule-button"
+            color="primary"
+            variant="contained"
+          >
+            Create Batch of Vesting Schedules
+          </Button>
+        )}
       </Stack>
     </Stack>
   );

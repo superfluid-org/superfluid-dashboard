@@ -20,11 +20,12 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL;
 
 // Note: Pre-defining this because yup was not able to infer the types correctly for the transforms...
 type AgoraResponseEntry = {
-    projectId: string,
-    projectName: string,
-    KYCStatusCompleted: boolean,
-    amounts: string[],
-    wallets: Address[]
+  id: string,
+  projectIds: string[],
+  projectNames: string[],
+  KYCStatusCompleted: boolean,
+  amounts: string[],
+  wallets: Address[]
 };
 type AgoraResponse = Array<AgoraResponseEntry>;
 
@@ -36,8 +37,9 @@ type AgoraResponse = Array<AgoraResponseEntry>;
 // Hmm, could I figure out that data by looking at all the vesting schedles???
 
 export const agoraResponseEntrySchema = yup.object({
-    projectId: yup.string().required('Project ID is required'),
-    projectName: yup.string().required('Project name is required'),
+    id: yup.string().required('ID is required'),
+    projectIds: yup.array().of(yup.string().required('Project ID is required')),
+    projectNames: yup.array().of(yup.string().required('Project name is required')),
     // Note about wallets: not able to get the output to be `Address` for some reason
     wallets: yup.array().of(
         yup.string().required().transform(getAddress)
@@ -190,10 +192,11 @@ const agoraApiEndpoints = {
     // [optimismSepolia.id]: "https://op-atlas-git-stepan-rewards-api-mock-voteagora.vercel.app/api/v1/rewards/7/onchain-builders",
     [optimism.id]: {
         onchain_builders: `${APP_URL}/api/mock`,
-        dev_tooling: "https://op-atlas-git-stepan-rewards-api-mock-voteagora.vercel.app/api/v1/rewards/7/dev-tooling",
+        dev_tooling: "https://op-atlas-git-stepan-rewards-claiming-voteagora.vercel.app/api/v1/rewards/7/onchain-builders",
     },
     [optimismSepolia.id]: {
-        onchain_builders: `${APP_URL}/api/mock`,
+        // onchain_builders: `${APP_URL}/api/mock`,
+        onchain_builders: "https://op-atlas-git-stepan-rewards-claiming-voteagora.vercel.app/api/v1/rewards/7/onchain-builders",
         dev_tooling: "https://op-atlas-git-stepan-rewards-api-mock-voteagora.vercel.app/api/v1/rewards/7/dev-tooling",
     },
 } as const satisfies Record<number, Record<RoundType, string>>;
@@ -374,15 +377,15 @@ export default async function handler(
                     const duplicateEntry = duplicateWallets.find(d => d.wallet === wallet);
 
                     if (duplicateEntry) {
-                        duplicateEntry.projects.push(row.projectName);
+                        duplicateEntry.projects.push(row.id);
                     } else {
                         duplicateWallets.push({
                             wallet,
-                            projects: [existingProject!, row.projectName]
+                            projects: [existingProject!, row.id]
                         });
                     }
                 } else {
-                    walletToRowMap.set(wallet, row.projectName);
+                    walletToRowMap.set(wallet, row.id);
                 }
             }
         }
