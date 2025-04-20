@@ -1,35 +1,35 @@
-import { useQuery } from "@tanstack/react-query";
-import { NextPageWithLayout } from "../_app";
-import { useVisibleAddress } from "../../features/wallet/VisibleAddressContext";
-import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
-import { ProjectActions, AgoraResponseData, ProjectsOverview, ProjectState, AllowanceActions, RoundType, roundTypes } from "../api/agora";
-import { TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Collapse, Box, Typography, IconButton, Container, FormControl, InputLabel, Select, MenuItem, List, ListItem, ListItemText, Divider, ListItemIcon, Button, useMediaQuery, Badge, Stack, ToggleButton, ToggleButtonGroup } from "@mui/material";
-import { FC, Fragment, useEffect, useMemo, useState } from "react";
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import DoneIcon from '@mui/icons-material/Done';
-import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
-import UpdateIcon from '@mui/icons-material/Update';
-import StopIcon from '@mui/icons-material/Stop';
+import CloseIcon from '@mui/icons-material/Close';
+import DoneIcon from '@mui/icons-material/Done';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import SecurityIcon from '@mui/icons-material/Security';
+import StopIcon from '@mui/icons-material/Stop';
+import UpdateIcon from '@mui/icons-material/Update';
+import { Box, Button, Collapse, Container, Divider, FormControl, IconButton, InputLabel, List, ListItem, ListItemIcon, ListItemText, MenuItem, Paper, Select, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
+import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { useQuery } from "@tanstack/react-query";
+import JSZip from "jszip";
+import NextLink from "next/link";
+import { useRouter } from "next/router";
+import { FC, Fragment, useEffect, useMemo, useState } from "react";
 import { formatEther } from "viem";
-import { BigLoader } from "../../features/vesting/BigLoader";
-import ConnectionBoundary from "../../features/transactionBoundary/ConnectionBoundary";
+import { useAccount } from "wagmi";
+import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
+import { mapProjectStateIntoGnosisSafeBatch } from "../../features/redux/endpoints/vestingAgoraEndpoints";
 import { rpcApi } from "../../features/redux/store";
+import Amount from "../../features/token/Amount";
+import ConnectionBoundary from "../../features/transactionBoundary/ConnectionBoundary";
 import { TransactionBoundary } from "../../features/transactionBoundary/TransactionBoundary";
 import { TransactionButton, transactionButtonDefaultProps } from "../../features/transactionBoundary/TransactionButton";
 import { TransactionDialogActions, TransactionDialogButton } from "../../features/transactionBoundary/TransactionDialog";
-import NextLink from "next/link";
-import { useAccount } from "wagmi";
+import { BigLoader } from "../../features/vesting/BigLoader";
 import VestingRow from "../../features/vesting/VestingRow";
-import { useRouter } from "next/router";
+import { useVisibleAddress } from "../../features/wallet/VisibleAddressContext";
 import { useTokenQuery } from "../../hooks/useTokenQuery";
-import JSZip from "jszip";
-import { mapProjectStateIntoGnosisSafeBatch } from "../../features/redux/endpoints/vestingAgoraEndpoints";
 import { TxBuilder } from "../../libs/gnosis-tx-builder";
-import { skipToken } from "@reduxjs/toolkit/dist/query";
-import Amount from "../../features/token/Amount";
+import { NextPageWithLayout } from "../_app";
+import { AgoraResponseData, AllowanceActions, ProjectActions, ProjectsOverview, ProjectState, RoundType, roundTypes } from "../api/agora";
 
 // Updated ActionsList component without the badges
 const ActionsList: FC<{ actions: (ProjectActions | AllowanceActions)[], tokenSymbol: string | undefined }> = ({ actions, tokenSymbol = "" }) => {
@@ -364,6 +364,36 @@ const tranchColumnSxProps = {
   textOverflow: 'ellipsis',
 } as const;
 
+const TranchCell: FC<{
+  currentTranchNo: number
+  tranchNo: number
+  allocation?: { amount: string }
+  tokenSymbol?: string
+}> = ({ currentTranchNo, tranchNo, allocation, tokenSymbol }) => {
+  return (
+    <TableCell
+      sx={{
+        ...tranchColumnSxProps,
+        bgcolor: currentTranchNo === tranchNo ? 'action.hover' : ""
+      }}
+    >
+      {allocation?.amount ? (
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          gap={1.5}
+        >
+          <Amount wei={allocation.amount} disableRounding mono />
+          <Typography variant="tooltip" color="text.secondary">
+            {tokenSymbol}
+          </Typography>
+        </Stack>
+      ) : '—'}
+    </TableCell>
+  );
+};
+
 function Row(props: { currentTranchNo: number, chainId: number, superTokenAddress: string, state: ProjectState }) {
     const { state, currentTranchNo } = props;
     const [open, setOpen] = useState(false);
@@ -427,24 +457,15 @@ function Row(props: { currentTranchNo: number, chainId: number, superTokenAddres
                     {state.agoraEntry.KYCStatusCompleted ? <DoneIcon sx={{fontSize: 16}} /> : <CloseIcon sx={{fontSize: 16}} />}
                   </Stack>
                 </TableCell>
-                <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 1 ? 'action.hover' : "" }}>
-                    {allocations[0]?.amount ? (<Stack direction="row" justifyContent="space-between" alignItems="center" gap={1.5}><Amount wei={allocations[0]!.amount} disableRounding mono /><Typography variant="tooltip" color="text.secondary">{token?.symbol}</Typography></Stack>) : '—'}
-                </TableCell>
-                <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 2 ? 'action.hover' : "" }}>
-                    {allocations[1]?.amount ? (<Stack direction="row" justifyContent="space-between" alignItems="center" gap={1.5}><Amount wei={allocations[1]!.amount} disableRounding mono /><Typography variant="tooltip" color="text.secondary">{token?.symbol}</Typography></Stack>) : '—'}
-                </TableCell>
-                <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 3 ? 'action.hover' : "" }}>
-                    {allocations[2]?.amount ? (<Stack direction="row" justifyContent="space-between" alignItems="center" gap={1.5}><Amount wei={allocations[2]!.amount} disableRounding mono /><Typography variant="tooltip" color="text.secondary">{token?.symbol}</Typography></Stack>) : '—'}
-                </TableCell>
-                <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 4 ? 'action.hover' : "" }}>
-                    {allocations[3]?.amount ? (<Stack direction="row" justifyContent="space-between" alignItems="center" gap={1.5}><Amount wei={allocations[3]!.amount} disableRounding mono /><Typography variant="tooltip" color="text.secondary">{token?.symbol}</Typography></Stack>) : '—'}
-                </TableCell>
-                <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 5 ? 'action.hover' : "" }}>
-                    {allocations[4]?.amount ? (<Stack direction="row" justifyContent="space-between" alignItems="center" gap={1.5}><Amount wei={allocations[4]!.amount} disableRounding mono /><Typography variant="tooltip" color="text.secondary">{token?.symbol}</Typography></Stack>) : '—'}
-                </TableCell>
-                <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 6 ? 'action.hover' : "" }}>
-                    {allocations[5]?.amount ? (<Stack direction="row" justifyContent="space-between" alignItems="center" gap={1.5}><Amount wei={allocations[5]!.amount} disableRounding mono /><Typography variant="tooltip" color="text.secondary">{token?.symbol}</Typography></Stack>) : '—'}
-                </TableCell>
+                {[1, 2, 3, 4, 5, 6].map(tranchNo => (
+                  <TranchCell
+                    key={tranchNo}
+                    currentTranchNo={currentTranchNo}
+                    tranchNo={tranchNo}
+                    allocation={allocations[tranchNo - 1]}
+                    tokenSymbol={token?.symbol}
+                  />
+                ))}
             </TableRow>
 
             <TableRow>
