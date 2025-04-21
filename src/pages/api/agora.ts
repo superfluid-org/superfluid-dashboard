@@ -327,7 +327,7 @@ export default async function handler(
 
         const currentTranchCount = dataFromAgora[0].amounts.length;
         const startOfTranchOne = getUnixTime(new Date()) + 4 * UnitOfTime.Minute;
-        const tranchDuration = 604800 * UnitOfTime.Second;
+        const tranchDuration = 1 * UnitOfTime.Month;
 
         // Calculate which tranch index is current (0-based)
         const currentTranchIndex = currentTranchCount - 1;
