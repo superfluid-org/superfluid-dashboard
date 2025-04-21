@@ -635,7 +635,8 @@ export const ExecuteTranchUpdateTransactionButton: FC<Props> = ({
                 getOverrides,
                 setDialogLoadingInfo,
                 setDialogSuccessActions,
-                txAnalytics
+                txAnalytics,
+                closeDialog
             }) =>
                 isVisible && (
                     <TransactionButton
@@ -659,14 +660,13 @@ export const ExecuteTranchUpdateTransactionButton: FC<Props> = ({
 
                             setDialogSuccessActions(
                                 <TransactionDialogActions>
-                                    <NextLink href="/vesting" passHref legacyBehavior>
-                                        <TransactionDialogButton
-                                            data-cy="ok-button"
-                                            color="primary"
-                                        >
-                                            OK
-                                        </TransactionDialogButton>
-                                    </NextLink>
+                                    <TransactionDialogButton
+                                        data-cy="ok-button"
+                                        color="primary"
+                                        onClick={closeDialog}
+                                    >
+                                        OK
+                                    </TransactionDialogButton>
                                 </TransactionDialogActions>
                             );
                         }}>
