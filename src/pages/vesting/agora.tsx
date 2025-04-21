@@ -1,18 +1,15 @@
-import { Box, Button, Container, FormControl, InputLabel, MenuItem, Paper, Select, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
+import { Box, Button, Container, FormControl, InputLabel, MenuItem, Paper, Select, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
-import ConnectionBoundary from "../../features/transactionBoundary/ConnectionBoundary";
 import { BigLoader } from "../../features/vesting/BigLoader";
 import { useVisibleAddress } from "../../features/wallet/VisibleAddressContext";
 import { useTokenQuery } from "../../hooks/useTokenQuery";
 import { NextPageWithLayout } from "../_app";
-import { Actions, AgoraResponseData, RoundType, roundTypes } from "../api/agora";
-import { DownloadGnosisSafeTransactionButton, ExecuteTranchUpdateTransactionButton } from '../../features/vesting/agora/buttons';
-import { ActionsList } from '../../features/vesting/agora/ActionsList';
-import { ProjectsTable } from '../../features/vesting/agora/ProjectsTable';
+import { AgoraResponseData, RoundType, roundTypes } from "../api/agora";
+import { PrimaryPageContent } from "../../features/vesting/agora/PrimaryPageContent";
 
 const AgoraPage: NextPageWithLayout = () => {
     const { visibleAddress } = useVisibleAddress();
@@ -50,18 +47,6 @@ const AgoraPage: NextPageWithLayout = () => {
         enabled: !!visibleAddress && !!network.id && !!tranch
     });
 
-    const errorMessage = data?.success === false ? data.message : error_?.message;
-
-    const rows = useMemo(() => {
-        if (!data?.success) return [];
-        return [...data.projectsOverview.projects].sort((a, b) => {
-            // Sort KYC completed first, non-KYC last
-            if (a.agoraEntry.KYCStatusCompleted && !b.agoraEntry.KYCStatusCompleted) return -1;
-            if (!a.agoraEntry.KYCStatusCompleted && b.agoraEntry.KYCStatusCompleted) return 1;
-            return 0;
-        });
-    }, [data]);
-
     const projectsOverview = data?.success ? data.projectsOverview : null;
 
     const { data: token } = useTokenQuery(projectsOverview ? {
@@ -69,15 +54,7 @@ const AgoraPage: NextPageWithLayout = () => {
         id: projectsOverview?.superTokenAddress
     } : skipToken);
 
-    const allActions = useMemo(() => {
-        if (!data?.success) return [];
-        return [
-            ...(data.projectsOverview.allowanceActions || []),
-            ...rows.flatMap(row => row.projectActions),
-        ];
-    }, [data, rows]);
-
-    const [actionsToExecute, setActionsToExecute] = useState<Actions[]>([]);
+    const errorMessage = data?.success === false ? data.message : error_?.message;
 
     if (isLoading || isWalletConnecting) {
         // TODO: use skeleton table?
@@ -144,8 +121,6 @@ const AgoraPage: NextPageWithLayout = () => {
         return null;
     }
 
-    const areButtonsDisabled = allActions.length === 0;
-
     return (
         <Container key={roundType} maxWidth="xl" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <Box sx={{ mb: 3, mt: 2 }}>
@@ -191,32 +166,11 @@ const AgoraPage: NextPageWithLayout = () => {
                 </ToggleButtonGroup>
             </Box>
 
-            <Typography variant="h6" gutterBottom>
-                Projects Overview
-            </Typography>
+            <PrimaryPageContent
+                projectsOverview={projectsOverview}
+                token={token}
+            />
 
-            <ProjectsTable projectsOverview={projectsOverview} rows={rows} />
-
-            <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
-                Pending Actions ({allActions.length})
-            </Typography>
-
-            <Paper elevation={1} sx={{ p: 2 }}>
-                <ActionsList actions={allActions} tokenSymbol={token?.symbol} onSelectionChange={setActionsToExecute} />
-            </Paper>
-
-            <ConnectionBoundary expectedNetwork={network}>
-                {
-                    projectsOverview && (
-                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 4 }}>
-                            <Stack direction="column" spacing={1.25} sx={{ width: 'auto' }}>
-                                <ExecuteTranchUpdateTransactionButton isDisabled={areButtonsDisabled} projectsOverview={projectsOverview} actionsToExecute={actionsToExecute} />
-                                <DownloadGnosisSafeTransactionButton isDisabled={areButtonsDisabled} projectsOverview={projectsOverview} actionsToExecute={actionsToExecute} />
-                            </Stack>
-                        </Box>
-                    )
-                }
-            </ConnectionBoundary>
         </Container>
     );
 };
