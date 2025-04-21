@@ -12,7 +12,13 @@ import {
 } from "./buttons";
 import { ProjectsTable } from "./ProjectsTable";
 import { TokenMinimal } from "../../redux/endpoints/tokenTypes";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
+import { useStore, useSelector } from '@xstate/store/react';
+import { produce } from "immer";
+
+export type SelectableActions = Actions & {
+    selected: boolean
+}
 
 export function PrimaryPageContent(props: {
     projectsOverview: ProjectsOverview;
@@ -31,16 +37,49 @@ export function PrimaryPageContent(props: {
         });
     }, [projectsOverview]);
 
-    const allActions = useMemo(() => {
+    const initialAllSelectableActions: SelectableActions[] = useMemo(() => {
         return [
-            ...projectsOverview.allowanceActions,
-            ...projects.flatMap((row) => row.projectActions),
-        ];
-    }, [projects, projectsOverview]);
+            ...projectsOverview.allowanceActions.map(action => ({
+                ...action,
+                selected: false,
+            })),
+            ...projectsOverview.projects.flatMap((project) => project.projectActions.map(action => ({
+                ...action,
+                selected: false
+            })))
+        ]
+    }, [projectsOverview]);
 
-    const [actionsToExecute, setActionsToExecute] = useState<Actions[]>([]);
+    const store = useStore({
+        context: {
+            allSelectableActions: initialAllSelectableActions,
+        },
+        on: {
+            selectAction: (context, action: { id: string }) => {
+                return produce(context, draft => {
+                    const selectedAction = draft.allSelectableActions.find((x) => x.id === action.id);
+                    if (!selectedAction) {
+                        throw new Error(`Action with id ${action.id} not found`);
+                    }
+                    selectedAction.selected = true;
+                });
+            },
+            deselectAction: (context, action: { id: string }) => {
+                return produce(context, draft => {
+                    const deselectedAction = draft.allSelectableActions.find((x) => x.id === action.id);
+                    if (!deselectedAction) {
+                        throw new Error(`Action with id ${action.id} not found`);
+                    }
+                    deselectedAction.selected = false;
+                });
+            },
+        },
+    });
 
-    const areButtonsDisabled = allActions.length === 0;
+    const allSelectableActions = useSelector(store, (store) => store.context.allSelectableActions);
+    const actionsToExecute = useMemo(() => allSelectableActions.filter(x => x.selected), [allSelectableActions]);
+
+    const areButtonsDisabled = initialAllSelectableActions.length === 0;
 
     return (
         <>
@@ -48,17 +87,24 @@ export function PrimaryPageContent(props: {
                 Projects Overview
             </Typography>
 
-            <ProjectsTable projectsOverview={projectsOverview} rows={projects} />
+            <ProjectsTable
+                projectsOverview={projectsOverview}
+                rows={projects}
+                allSelectableActions={allSelectableActions}
+                selectAction={store.trigger.selectAction}
+                deselectAction={store.trigger.deselectAction}
+            />
 
             <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
-                Pending Actions ({allActions.length})
+                Pending Actions ({allSelectableActions.length})
             </Typography>
 
             <Paper elevation={1} sx={{ p: 2 }}>
                 <ActionsList
-                    actions={allActions}
+                    actions={allSelectableActions}
                     tokenSymbol={token?.symbol}
-                    onSelectionChange={setActionsToExecute}
+                    selectAction={store.trigger.selectAction}
+                    deselectAction={store.trigger.deselectAction}
                 />
             </Paper>
 

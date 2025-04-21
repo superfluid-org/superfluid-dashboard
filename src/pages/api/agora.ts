@@ -5,7 +5,7 @@ import { Effect as E, Logger, LogLevel, pipe } from 'effect'
 import { uniq } from 'lodash'
 import { tryGetBuiltGraphSdkForNetwork } from '../../vesting-subgraph/vestingSubgraphApi'
 import { optimism, optimismSepolia } from 'viem/chains'
-import { Address, createPublicClient, http, isAddress } from 'viem'
+import { Address, createPublicClient, http, isAddress, stringToHex } from 'viem'
 import { mapSubgraphVestingSchedule, VestingSchedule } from '../../features/vesting/types'
 import { UnitOfTime } from '../../features/send/FlowRateInput'
 import { allNetworks, findNetworkOrThrow } from '../../features/network/networks'
@@ -20,12 +20,12 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL;
 
 // Note: Pre-defining this because yup was not able to infer the types correctly for the transforms...
 type AgoraResponseEntry = {
-  id: string,
-  projectIds: string[],
-  projectNames: string[],
-  KYCStatusCompleted: boolean,
-  amounts: string[],
-  wallets: Address[]
+    id: string,
+    projectIds: string[],
+    projectNames: string[],
+    KYCStatusCompleted: boolean,
+    amounts: string[],
+    wallets: Address[]
 };
 type AgoraResponse = Array<AgoraResponseEntry>;
 
@@ -80,6 +80,7 @@ type TranchPlan = {
 type ActionType = "create-vesting-schedule" | "update-vesting-schedule" | "stop-vesting-schedule" | "increase-token-allowance" | "increase-flow-operator-permissions"
 
 type Action<TType extends ActionType, TPayload extends Record<string, unknown>> = {
+    id: string
     type: TType
     payload: TPayload
 }
@@ -475,6 +476,13 @@ export default async function handler(
                 const actions = yield* E.gen(function* () {
                     const actions: ProjectActions[] = [];
 
+                    function pushAction(action: Omit<ProjectActions, "id">) {
+                        actions.push({
+                            ...action,
+                            id: stringToHex(`${row.id}-${action.type}-${JSON.stringify(action.payload)}`).slice(2)
+                        } as ProjectActions)
+                    }
+
                     if (!row.KYCStatusCompleted) {
                         return [];
                     }
@@ -484,26 +492,26 @@ export default async function handler(
                         .reduce((sum, amount) => sum + BigInt(amount || 0), 0n);
                     const didKycGetJustApproved = allRelevantVestingSchedules.length === 0;
                     const cliffAmount = 0n; // Note: Cliff will always be 0. We decided to disable this feature.
-                      // didKycGetJustApproved ? sumOfPreviousTranches : 0n;
+                    // didKycGetJustApproved ? sumOfPreviousTranches : 0n;
                     const totalAmount = agoraCurrentAmount + cliffAmount;
                     const currentTranch = tranchPlan.tranches[tranchPlan.currentTranchCount - 1];
 
                     const hasProjectJustChangedWallet = !!previousWalletVestingSchedule;
                     if (hasProjectJustChangedWallet) {
-                        actions.push({
+                        pushAction({
                             type: "stop-vesting-schedule",
                             payload: {
                                 superToken: token,
                                 sender,
-                                receiver: agoraPreviousWallet, // Make sure to use previous wallet here!
+                                receiver: agoraPreviousWallet!, // Make sure to use previous wallet here!
                             }
-                        } as StopVestingScheduleAction)
+                        })
                     }
 
                     const isAlreadyVestingToRightWallet = !!currentWalletVestingSchedule;
                     if (!isAlreadyVestingToRightWallet) {
                         if (didKycGetJustApproved) {
-                            actions.push({
+                            pushAction({
                                 type: "create-vesting-schedule",
                                 payload: {
                                     superToken: token,
@@ -516,9 +524,9 @@ export default async function handler(
                                     cliffPeriod: cliffAmount > 0n ? 1 : 0,
                                     claimPeriod: getClaimPeriod(currentTranch.startTimestamp)
                                 }
-                            } as CreateVestingScheduleAction)
+                            })
                         } else {
-                            actions.push({
+                            pushAction({
                                 type: "create-vesting-schedule",
                                 payload: {
                                     superToken: token,
@@ -531,21 +539,21 @@ export default async function handler(
                                     cliffPeriod: 0,
                                     claimPeriod: getClaimPeriod(currentTranch.startTimestamp)
                                 }
-                            } as CreateVestingScheduleAction)
+                            })
                         }
                     } else {
                         // isAlreadyVestingToRightWallet === true
 
                         const isFundingJustStoppedForProject = agoraCurrentAmount === 0n;
                         if (isFundingJustStoppedForProject) {
-                            actions.push({
+                            pushAction({
                                 type: "stop-vesting-schedule",
                                 payload: {
                                     superToken: token,
                                     sender,
                                     receiver: agoraCurrentWallet, // Make sure to use current wallet here.
                                 }
-                            } as StopVestingScheduleAction)
+                            })
                         }
 
                         const isFundingJustChangedForProject = agoraTotalAmount > subgraphTotalAmount;
@@ -555,18 +563,18 @@ export default async function handler(
 
                         if (isFundingJustChangedForProject) {
                             if (agoraCurrentAmount === 0n) {
-                                actions.push({
+                                pushAction({
                                     type: "stop-vesting-schedule",
                                     payload: {
                                         superToken: token,
                                         sender,
                                         receiver: agoraCurrentWallet,
                                     }
-                                } as StopVestingScheduleAction)
+                                })
                             } else {
                                 const newTotalAmount = BigInt(currentWalletVestingSchedule.totalAmount) + missingAmount;
 
-                                actions.push({
+                                pushAction({
                                     type: "update-vesting-schedule",
                                     payload: {
                                         superToken: token,
@@ -576,13 +584,13 @@ export default async function handler(
                                         previousTotalAmount: currentWalletVestingSchedule.totalAmount,
                                         endDate: currentTranch.endTimestamp
                                     }
-                                } as UpdateVestingScheduleAction)
+                                })
                             }
                         }
                     }
 
                     return actions
-                        .filter(x => x.type !== "stop-vesting-schedule"); // Filter out stop vesting schedules for now as we don't need to do anything.
+                        .filter(x => x.type !== "stop-vesting-schedule") // Filter out stop vesting schedules for now as we don't need to do anything.
                 });
 
                 const projectState: ProjectState = {
@@ -611,7 +619,14 @@ export default async function handler(
         });
 
         const allowanceActions = yield* E.gen(function* () {
-            const result: AllowanceActions[] = [];
+            const actions: AllowanceActions[] = [];
+
+            const pushAction = (action: Omit<AllowanceActions, 'id'>) => {
+                actions.push({
+                    ...action,
+                    id: stringToHex(`${action.type}-${JSON.stringify(action.payload)}`).slice(2)
+                } as AllowanceActions)
+            }
 
             const flowOperatorData = yield* E.tryPromise({
                 try: () => publicClient.readContract({
@@ -636,7 +651,7 @@ export default async function handler(
                 }, 0n);
 
             if (needsMorePermissions || neededFlowRateAllowance > 0n) {
-                result.push({
+                pushAction({
                     type: "increase-flow-operator-permissions",
                     payload: {
                         superToken: token,
@@ -663,7 +678,7 @@ export default async function handler(
                 .reduce((sum, row) => sum + BigInt(row.amounts.reduce((sum, amount) => sum + BigInt(amount || 0), 0n)), 0n);
             const missingAllowance = agoraTotalAmountOfAllProjects - tokenAllowance;
             if (missingAllowance > 0n) {
-                result.push({
+                pushAction({
                     type: "increase-token-allowance",
                     payload: {
                         superToken: token,
@@ -674,7 +689,7 @@ export default async function handler(
                 })
             }
 
-            return result;
+            return actions;
         })
 
         return {

@@ -22,8 +22,6 @@ export default async function handler(
     // Get the tranch parameter from the query
     const tranchParam = req.query.tranch;
 
-    console.log("foo")
-    
     // Validate that tranch is provided and is a number
     if (!tranchParam || typeof tranchParam !== 'string') {
         return res.status(400).json({
@@ -31,7 +29,7 @@ export default async function handler(
             message: 'Tranch parameter is required as a query parameter'
         });
     }
-    
+
     const tranch = parseInt(tranchParam, 10);
     if (isNaN(tranch)) {
         return res.status(400).json({

@@ -8,126 +8,147 @@ import { useTokenQuery } from '../../../hooks/useTokenQuery';
 import { ProjectsOverview, ProjectState } from '../../../pages/api/agora';
 import { ActionsList } from './ActionsList';
 import { ProjectVestingSchedulesTables } from './ProjectVestingSchedulesTable';
+import { SelectableActions } from './PrimaryPageContent';
 
 export function ProjectsTable(props: {
-  projectsOverview: ProjectsOverview,
-  rows: ProjectState[]
+    projectsOverview: ProjectsOverview,
+    rows: ProjectState[]
+    allSelectableActions: SelectableActions[],
+    selectAction: (action: { id: string }) => void
+    deselectAction: (action: { id: string }) => void
 }) {
-  const { projectsOverview, rows } = props;
+    const { projectsOverview, rows, allSelectableActions, selectAction, deselectAction } = props;
 
-  const currentTranchNo = projectsOverview.tranchPlan.currentTranchCount;
+    const currentTranchNo = projectsOverview.tranchPlan.currentTranchCount;
 
-  return (
-    <TableContainer component={Paper}>
-        <Table aria-label="collapsible table">
-            <TableHead>
-                <TableRow>
-                    <TableCell align="center" colSpan={3}>
-                    </TableCell>
-                    <TableCell align="center" colSpan={6}>
-                        Tranches
-                    </TableCell>
-                </TableRow>
-                <TableRow>
-                    <TableCell size="small">
-                    </TableCell>
-                    <TableCell size="small" align="center" sx={{ px: 1.5 }}>Status</TableCell>
-                    <TableCell>Project Name(s)</TableCell>
-                    <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 1 ? 'action.hover' : "" }} >Tranch 1</TableCell>
-                    <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 2 ? 'action.hover' : "" }} >Tranch 2</TableCell>
-                    <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 3 ? 'action.hover' : "" }} >Tranch 3</TableCell>
-                    <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 4 ? 'action.hover' : "" }} >Tranch 4</TableCell>
-                    <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 5 ? 'action.hover' : "" }} >Tranch 5</TableCell>
-                    <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 6 ? 'action.hover' : "" }} >Tranch 6</TableCell>
-                </TableRow>
-            </TableHead>
-            <TableBody>
-                {rows.map((row) => (
-                    <Row key={row.agoraEntry.id} currentTranchNo={currentTranchNo} chainId={projectsOverview.chainId} superTokenAddress={projectsOverview.superTokenAddress} state={row} />
-                ))}
-            </TableBody>
-        </Table>
-    </TableContainer>
-  );
+    return (
+        <TableContainer component={Paper}>
+            <Table aria-label="collapsible table">
+                <TableHead>
+                    <TableRow>
+                        <TableCell align="center" colSpan={3}>
+                        </TableCell>
+                        <TableCell align="center" colSpan={6}>
+                            Tranches
+                        </TableCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableCell size="small">
+                        </TableCell>
+                        <TableCell size="small" align="center" sx={{ px: 1.5 }}>Status</TableCell>
+                        <TableCell>Project Name(s)</TableCell>
+                        <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 1 ? 'action.hover' : "" }} >Tranch 1</TableCell>
+                        <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 2 ? 'action.hover' : "" }} >Tranch 2</TableCell>
+                        <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 3 ? 'action.hover' : "" }} >Tranch 3</TableCell>
+                        <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 4 ? 'action.hover' : "" }} >Tranch 4</TableCell>
+                        <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 5 ? 'action.hover' : "" }} >Tranch 5</TableCell>
+                        <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 6 ? 'action.hover' : "" }} >Tranch 6</TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {rows.map((row) => (
+                        <Row
+                            key={row.agoraEntry.id}
+                            currentTranchNo={currentTranchNo}
+                            chainId={projectsOverview.chainId}
+                            superTokenAddress={projectsOverview.superTokenAddress}
+                            state={row}
+                            allSelectableActions={allSelectableActions}
+                            selectAction={selectAction}
+                            deselectAction={deselectAction}
+                        />
+                    ))}
+                </TableBody>
+            </Table>
+        </TableContainer>
+    );
 }
 
 // # Row
 
 const tranchColumnSxProps = {
-  whiteSpace: 'nowrap',
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  px: 3,
-  borderRight: 1,
-  borderLeft: 1,
-  borderColor: 'divider'
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    px: 3,
+    borderRight: 1,
+    borderLeft: 1,
+    borderColor: 'divider'
 } as const;
 
 const TranchCell: FC<{
-  currentTranchNo: number
-  tranchNo: number
-  allocation?: { amount: string }
-  tokenSymbol?: string
+    currentTranchNo: number
+    tranchNo: number
+    allocation?: { amount: string }
+    tokenSymbol?: string
 }> = ({ currentTranchNo, tranchNo, allocation, tokenSymbol }) => {
-  return (
-    <TableCell
-      sx={{
-        ...tranchColumnSxProps,
-        bgcolor: currentTranchNo === tranchNo ? 'action.hover' : ""
-      }}
-    >
-      {allocation?.amount ? (
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-          gap={1.5}
+    return (
+        <TableCell
+            sx={{
+                ...tranchColumnSxProps,
+                bgcolor: currentTranchNo === tranchNo ? 'action.hover' : ""
+            }}
         >
-          <Amount wei={allocation.amount} disableRounding mono />
-          <Typography variant="tooltip" color="text.secondary">
-            {tokenSymbol}
-          </Typography>
-        </Stack>
-      ) : '—'}
-    </TableCell>
-  );
+            {allocation?.amount ? (
+                <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    gap={1.5}
+                >
+                    <Amount wei={allocation.amount} disableRounding mono />
+                    <Typography variant="tooltip" color="text.secondary">
+                        {tokenSymbol}
+                    </Typography>
+                </Stack>
+            ) : '—'}
+        </TableCell>
+    );
 };
 
 function Status(props: { state: ProjectState }) {
 
-  const getStatusInfo = () => {
-    if (!props.state.agoraEntry.KYCStatusCompleted) {
-      return { color: "text.disabled", message: "KYC not done" };
-    }
-    else if (props.state.projectActions.length > 0) {
-      return { color: "warning.main", message: "Actions pending" };
-    } else if (props.state.agoraTotalAmount !== props.state.subgraphTotalAmount) {
-      return { color: "error.main", message: "Mismatch of amounts" };
-    } else {
-      return { color: "success.main", message: "All good" };
-    }
-  };
+    const getStatusInfo = () => {
+        if (!props.state.agoraEntry.KYCStatusCompleted) {
+            return { color: "text.disabled", message: "KYC not done" };
+        }
+        else if (props.state.projectActions.length > 0) {
+            return { color: "warning.main", message: "Actions pending" };
+        } else if (props.state.agoraTotalAmount !== props.state.subgraphTotalAmount) {
+            return { color: "error.main", message: "Mismatch of amounts" };
+        } else {
+            return { color: "success.main", message: "All good" };
+        }
+    };
 
-  const statusInfo = getStatusInfo();
+    const statusInfo = getStatusInfo();
 
-  return (
-    <Tooltip title={statusInfo.message} arrow>
-      <Box
-        sx={{
-          width: 14,
-          height: 14,
-          borderRadius: '50%',
-          bgcolor: statusInfo.color,
-          display: 'inline-block',
-          verticalAlign: 'middle'
-        }}
-      />
-    </Tooltip>
-  );
+    return (
+        <Tooltip title={statusInfo.message} arrow>
+            <Box
+                sx={{
+                    width: 14,
+                    height: 14,
+                    borderRadius: '50%',
+                    bgcolor: statusInfo.color,
+                    display: 'inline-block',
+                    verticalAlign: 'middle'
+                }}
+            />
+        </Tooltip>
+    );
 }
 
-function Row(props: { currentTranchNo: number, chainId: number, superTokenAddress: string, state: ProjectState }) {
-    const { state, currentTranchNo } = props;
+function Row(props: {
+    currentTranchNo: number,
+    chainId: number,
+    superTokenAddress: string,
+    state: ProjectState,
+    allSelectableActions: SelectableActions[],
+    selectAction: (action: { id: string }) => void,
+    deselectAction: (action: { id: string }) => void
+}) {
+    const { state, currentTranchNo, allSelectableActions, selectAction, deselectAction } = props;
     const [open, setOpen] = useState(false);
 
     const allocations = useMemo(() => {
@@ -142,60 +163,65 @@ function Row(props: { currentTranchNo: number, chainId: number, superTokenAddres
         id: props.superTokenAddress
     });
 
+    const selectableActions = useMemo(() => {
+        const projectActionIds = state.projectActions.map(x => x.id);
+        return allSelectableActions.filter(x => projectActionIds.includes(x.id));
+    }, [allSelectableActions, state]);
+
     return (
         <>
-          <TableRow
-              sx={{
-                  '& > *': { borderBottom: 'unset' },
-                  opacity: state.agoraEntry.KYCStatusCompleted ? 1 : 0.6
-              }}
-          >
+            <TableRow
+                sx={{
+                    '& > *': { borderBottom: 'unset' },
+                    opacity: state.agoraEntry.KYCStatusCompleted ? 1 : 0.6
+                }}
+            >
                 <TableCell size="small" align="center" sx={{
-                  py: 0.5,
-                  pr: 0,
-                  pl: 1
+                    py: 0.5,
+                    pr: 0,
+                    pl: 1
                 }}>
                     <IconButton
                         aria-label="expand row"
                         size="small"
                         onClick={() => setOpen(!open)}
                         sx={{
-                          m: 0,
-                          minWidth: "75px"
+                            m: 0,
+                            minWidth: "75px"
                         }}
                     >
-                      {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                        {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                     </IconButton>
                 </TableCell>
                 <TableCell size="small" align="center" sx={{ px: 1.5 }}>
-                  <Status state={state} />
+                    <Status state={state} />
                 </TableCell>
                 <TableCell sx={{
-                  whiteSpace: 'nowrap',
-                  maxWidth: '200px',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis'
+                    whiteSpace: 'nowrap',
+                    maxWidth: '200px',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis'
                 }}>
-                  {state.agoraEntry.projectNames.map((name) => (
-                    <Typography
-                      key={name}
-                      component="span"
-                      variant="body2"
-                      noWrap
-                      display="block"
-                    >
-                      {name}
-                    </Typography>
-                  ))}
+                    {state.agoraEntry.projectNames.map((name) => (
+                        <Typography
+                            key={name}
+                            component="span"
+                            variant="body2"
+                            noWrap
+                            display="block"
+                        >
+                            {name}
+                        </Typography>
+                    ))}
                 </TableCell>
                 {[1, 2, 3, 4, 5, 6].map(tranchNo => (
-                  <TranchCell
-                    key={tranchNo}
-                    currentTranchNo={currentTranchNo}
-                    tranchNo={tranchNo}
-                    allocation={allocations[tranchNo - 1]}
-                    tokenSymbol={token?.symbol}
-                  />
+                    <TranchCell
+                        key={tranchNo}
+                        currentTranchNo={currentTranchNo}
+                        tranchNo={tranchNo}
+                        allocation={allocations[tranchNo - 1]}
+                        tokenSymbol={token?.symbol}
+                    />
                 ))}
             </TableRow>
 
@@ -267,14 +293,14 @@ function Row(props: { currentTranchNo: number, chainId: number, superTokenAddres
                             </Box>
 
                             {
-                              state.allRelevantSchedules.length > 0 && (
-                                <Box sx={{ mt: 2 }}>
-                                    <Typography variant="body2" color="text.secondary" gutterBottom>
-                                        Vesting schedules:
-                                    </Typography>
-                                    <ProjectVestingSchedulesTables project={state} />
-                                </Box>
-                              )
+                                state.allRelevantSchedules.length > 0 && (
+                                    <Box sx={{ mt: 2 }}>
+                                        <Typography variant="body2" color="text.secondary" gutterBottom>
+                                            Vesting schedules:
+                                        </Typography>
+                                        <ProjectVestingSchedulesTables project={state} />
+                                    </Box>
+                                )
                             }
 
                             {state.projectActions.length > 0 && (
@@ -283,7 +309,12 @@ function Row(props: { currentTranchNo: number, chainId: number, superTokenAddres
                                         Pending Actions ({state.projectActions.length}):
                                     </Typography>
                                     <Paper elevation={1} sx={{ p: 2 }}>
-                                        <ActionsList actions={state.projectActions} tokenSymbol={token?.symbol} />
+                                        <ActionsList
+                                            actions={selectableActions}
+                                            tokenSymbol={token?.symbol}
+                                            selectAction={selectAction}
+                                            deselectAction={deselectAction}
+                                        />
                                     </Paper>
                                 </Box>
                             )}

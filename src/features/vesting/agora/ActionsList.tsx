@@ -1,116 +1,44 @@
 import { Checkbox, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography } from "@mui/material";
-import { FC, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { formatEther } from "viem";
 import { Actions } from "../../../pages/api/agora";
+import { SelectableActions } from "./PrimaryPageContent";
 
 // Updated ActionsList component as a MUI table with checkboxes
 export const ActionsList: FC<{
-  actions: Actions[],
-  tokenSymbol: string | undefined,
-  onSelectionChange?: (selectedActions: Actions[]) => void }> = ({ actions, tokenSymbol = "", onSelectionChange }
-) => {
-    const [selected, setSelected] = useState<number[]>([]);
+    actions: SelectableActions[],
+    tokenSymbol: string | undefined,
+    selectAction: (action: { id: string }) => void;
+    deselectAction: (action: { id: string }) => void;
+}> = ({ actions, tokenSymbol, selectAction, deselectAction }) => {
+    const selected = useMemo(() => {
+        const selectedActions = actions.filter(action => action.selected);
+        return selectedActions;
+    }, [actions])
 
-    // Update selected actions callback whenever selection changes
-    useEffect(() => {
-        if (onSelectionChange) {
-            const selectedActions = selected.map(index => actions[index]);
-            onSelectionChange(selectedActions);
+    const handleClick = useCallback((action: SelectableActions) => {
+        if (action.selected) {
+            deselectAction({ id: action.id });
+        } else {
+            selectAction({ id: action.id });
         }
-    }, [selected, actions, onSelectionChange]);
+    }, [selectAction, deselectAction])
 
-    const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleSelectAllClick = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.checked) {
-            const newSelected = actions.map((_, index) => index);
-            setSelected(newSelected);
-            return;
+            for (const action of actions) {
+                if (!action.selected) {
+                    selectAction({ id: action.id });
+                }
+            }
+        } else {
+            for (const action of actions) {
+                if (action.selected) {
+                    deselectAction({ id: action.id });
+                }
+            }
         }
-        setSelected([]);
-    };
-
-    const handleClick = (_event: React.MouseEvent<unknown>, index: number) => {
-        const selectedIndex = selected.indexOf(index);
-        let newSelected: number[] = [];
-
-        if (selectedIndex === -1) {
-            newSelected = newSelected.concat(selected, index);
-        } else if (selectedIndex === 0) {
-            newSelected = newSelected.concat(selected.slice(1));
-        } else if (selectedIndex === selected.length - 1) {
-            newSelected = newSelected.concat(selected.slice(0, -1));
-        } else if (selectedIndex > 0) {
-            newSelected = newSelected.concat(
-                selected.slice(0, selectedIndex),
-                selected.slice(selectedIndex + 1),
-            );
-        }
-
-        setSelected(newSelected);
-    };
-
-    const isSelected = (index: number) => selected.indexOf(index) !== -1;
-
-    // Helper function for formatting amounts
-    const formatAmount = (amount: string) => {
-        const amountBigInt = BigInt(amount);
-        return `${formatEther(amountBigInt)} ${tokenSymbol}`;
-    };
-
-    // Helper function for formatting receiver addresses
-    const formatReceiver = (address: string) => {
-        return `${address.slice(0, 6)}...${address.slice(-4)}`;
-    };
-
-    // Get action details based on action type
-    const getActionDetails = (action: Actions) => {
-        let actionType = "";
-        let receiver = "";
-        let amount = "";
-        let fromDate: Date | undefined;
-        let toDate: Date | undefined;
-
-        switch (action.type) {
-            case "create-vesting-schedule":
-                actionType = "Create Vesting Schedule";
-                receiver = formatReceiver(action.payload.receiver);
-                amount = formatAmount(action.payload.totalAmount);
-                fromDate = new Date(action.payload.startDate * 1000);
-                toDate = new Date((action.payload.startDate + action.payload.totalDuration) * 1000);
-                break;
-
-            case "update-vesting-schedule":
-                const prevAmount = formatAmount(action.payload.previousTotalAmount);
-                const newAmount = formatAmount(action.payload.totalAmount);
-                const isDifference = action.payload.previousTotalAmount !== action.payload.totalAmount;
-
-                actionType = "Update Vesting Schedule";
-                receiver = formatReceiver(action.payload.receiver);
-                amount = isDifference ? `${prevAmount} → ${newAmount}` : `${newAmount} (unchanged)`;
-                break;
-
-            case "stop-vesting-schedule":
-                actionType = "Stop Vesting Schedule";
-                receiver = formatReceiver(action.payload.receiver);
-                break;
-
-            case "increase-token-allowance":
-                actionType = "Increase Token Allowance";
-                receiver = formatReceiver(action.payload.receiver);
-                amount = formatAmount(action.payload.allowanceDelta);
-                break;
-
-            case "increase-flow-operator-permissions":
-                actionType = "Increase Flow Operator Permissions";
-                receiver = formatReceiver(action.payload.receiver);
-                amount = `${formatAmount(action.payload.flowRateAllowanceDelta)} per second`;
-                break;
-
-            default:
-                actionType = `Unknown Action: ${(action as any).type}`;
-        }
-
-        return { actionType, receiver, amount, fromDate, toDate };
-    };
+    }, [selectAction, deselectAction, actions])
 
     if (actions.length === 0) {
         return <Typography variant="body2" color="text.secondary">No actions needed</Typography>;
@@ -138,22 +66,21 @@ export const ActionsList: FC<{
                 </TableHead>
                 <TableBody>
                     {actions.map((action, index) => {
-                        const isItemSelected = isSelected(index);
-                        const { actionType, receiver, amount, fromDate, toDate } = getActionDetails(action);
+                        const { actionType, receiver, amount, fromDate, toDate } = getActionDetails(action, tokenSymbol);
 
                         return (
                             <TableRow
                                 hover
-                                onClick={(event) => handleClick(event, index)}
+                                onClick={() => handleClick(action)}
                                 role="checkbox"
-                                aria-checked={isItemSelected}
+                                aria-checked={action.selected}
                                 tabIndex={-1}
                                 key={index}
-                                selected={isItemSelected}
+                                selected={action.selected}
                             >
                                 <TableCell padding="checkbox">
                                     <Checkbox
-                                        checked={isItemSelected}
+                                        checked={action.selected}
                                         inputProps={{ 'aria-labelledby': `action-${index}` }}
                                     />
                                 </TableCell>
@@ -195,4 +122,66 @@ export const ActionsList: FC<{
             </Table>
         </TableContainer>
     );
+};
+
+// Helper function for formatting amounts
+const formatAmount = (amount: string, tokenSymbol: string | undefined) => {
+    const amountBigInt = BigInt(amount);
+    return `${formatEther(amountBigInt)} ${tokenSymbol}`;
+};
+
+// Helper function for formatting receiver addresses
+const formatReceiver = (address: string) => {
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
+};
+
+// Get action details based on action type
+const getActionDetails = (action: Actions, tokenSymbol: string | undefined) => {
+    let actionType = "";
+    let receiver = "";
+    let amount = "";
+    let fromDate: Date | undefined;
+    let toDate: Date | undefined;
+
+    switch (action.type) {
+        case "create-vesting-schedule":
+            actionType = "Create Vesting Schedule";
+            receiver = formatReceiver(action.payload.receiver);
+            amount = formatAmount(action.payload.totalAmount, tokenSymbol);
+            fromDate = new Date(action.payload.startDate * 1000);
+            toDate = new Date((action.payload.startDate + action.payload.totalDuration) * 1000);
+            break;
+
+        case "update-vesting-schedule":
+            const prevAmount = formatAmount(action.payload.previousTotalAmount, tokenSymbol);
+            const newAmount = formatAmount(action.payload.totalAmount, tokenSymbol);
+            const isDifference = action.payload.previousTotalAmount !== action.payload.totalAmount;
+
+            actionType = "Update Vesting Schedule";
+            receiver = formatReceiver(action.payload.receiver);
+            amount = isDifference ? `${prevAmount} → ${newAmount}` : `${newAmount} (unchanged)`;
+            break;
+
+        case "stop-vesting-schedule":
+            actionType = "Stop Vesting Schedule";
+            receiver = formatReceiver(action.payload.receiver);
+            break;
+
+        case "increase-token-allowance":
+            actionType = "Increase Token Allowance";
+            receiver = formatReceiver(action.payload.receiver);
+            amount = formatAmount(action.payload.allowanceDelta, tokenSymbol);
+            break;
+
+        case "increase-flow-operator-permissions":
+            actionType = "Increase Flow Operator Permissions";
+            receiver = formatReceiver(action.payload.receiver);
+            amount = `${formatAmount(action.payload.flowRateAllowanceDelta, tokenSymbol)} per second`;
+            break;
+
+        default:
+            actionType = `Unknown Action: ${(action as any).type}`;
+    }
+
+    return { actionType, receiver, amount, fromDate, toDate };
 };
