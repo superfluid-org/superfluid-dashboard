@@ -195,8 +195,8 @@ const agoraApiEndpoints = {
         dev_tooling: "https://op-atlas-git-stepan-rewards-claiming-voteagora.vercel.app/api/v1/rewards/7/onchain-builders",
     },
     [optimismSepolia.id]: {
-        // onchain_builders: `${APP_URL}/api/mock`,
-        onchain_builders: "https://op-atlas-git-stepan-rewards-claiming-voteagora.vercel.app/api/v1/rewards/7/onchain-builders",
+        onchain_builders: `${APP_URL}/api/mock`,
+        // onchain_builders: "https://op-atlas-git-stepan-rewards-claiming-voteagora.vercel.app/api/v1/rewards/7/onchain-builders",
         dev_tooling: "https://op-atlas-git-stepan-rewards-api-mock-voteagora.vercel.app/api/v1/rewards/7/dev-tooling",
     },
 } as const satisfies Record<number, Record<RoundType, string>>;
@@ -671,8 +671,6 @@ export default async function handler(
                     }
                 })
             }
-
-
 
             return result;
         })

@@ -254,7 +254,7 @@ const AgoraPage: NextPageWithLayout = () => {
     const areButtonsDisabled = allActions.length === 0;
 
     return (
-        <Container key={roundType} maxWidth="lg" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Container key={roundType} maxWidth="xl" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <Box sx={{ mb: 3, mt: 2 }}>
                 <Typography variant="h6" gutterBottom>
                     Tranch (Temporary selection for mock API)
@@ -314,8 +314,8 @@ const AgoraPage: NextPageWithLayout = () => {
                         </TableRow>
                         <TableRow>
                             <TableCell size="small"></TableCell>
-                            <TableCell>Project Name</TableCell>
-                            <TableCell size="small" align="center" sx={{ borderRight: 1, borderColor: 'divider' }}>KYC</TableCell>
+                            <TableCell>Project Name(s)</TableCell>
+                            <TableCell size="small" align="center" sx={{ borderRight: 1, borderColor: 'divider', px: 1.5 }}>KYC</TableCell>
                             <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 1 ? 'action.hover' : "" }} >Tranch 1</TableCell>
                             <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 2 ? 'action.hover' : "" }} >Tranch 2</TableCell>
                             <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 3 ? 'action.hover' : "" }} >Tranch 3</TableCell>
@@ -362,6 +362,10 @@ const tranchColumnSxProps = {
   whiteSpace: 'nowrap',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
+  px: 3,
+  borderRight: 1,
+  borderLeft: 1,
+  borderColor: 'divider'
 } as const;
 
 const TranchCell: FC<{
@@ -447,12 +451,13 @@ function Row(props: { currentTranchNo: number, chainId: number, superTokenAddres
                       component="span"
                       variant="body2"
                       noWrap
+                      display="block"
                     >
                       {name}
                     </Typography>
                   ))}
                 </TableCell>
-                <TableCell size="small" align="center" sx={{ borderRight: 1, borderColor: 'divider' }}>
+                <TableCell size="small" align="center" sx={{ px: 1.5 }}>
                   <Stack component="span" direction="column" justifyContent="center">
                     {state.agoraEntry.KYCStatusCompleted ? <DoneIcon sx={{fontSize: 16}} /> : <CloseIcon sx={{fontSize: 16}} />}
                   </Stack>
@@ -475,7 +480,7 @@ function Row(props: { currentTranchNo: number, chainId: number, superTokenAddres
                             <Box sx={{ ml: 1, mt: 1 }}>
                                 <Box sx={{ display: 'flex', mb: 1 }}>
                                     <Typography variant="body2" color="text.secondary" sx={{ width: 120 }}>
-                                        Project names:
+                                        Project name(s):
                                     </Typography>
                                     <Typography
                                         variant="body2"
