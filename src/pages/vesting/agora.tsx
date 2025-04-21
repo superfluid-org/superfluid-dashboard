@@ -6,7 +6,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import SecurityIcon from '@mui/icons-material/Security';
 import StopIcon from '@mui/icons-material/Stop';
 import UpdateIcon from '@mui/icons-material/Update';
-import { Box, Button, Collapse, Container, Divider, FormControl, IconButton, InputLabel, List, ListItem, ListItemIcon, ListItemText, MenuItem, Paper, Select, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
+import { Box, Button, Collapse, Container, Divider, FormControl, IconButton, InputLabel, List, ListItem, ListItemIcon, ListItemText, MenuItem, Paper, Select, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, ToggleButton, ToggleButtonGroup, Tooltip, Typography } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { useQuery } from "@tanstack/react-query";
 import JSZip from "jszip";
@@ -313,9 +313,10 @@ const AgoraPage: NextPageWithLayout = () => {
                             </TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell size="small"></TableCell>
+                            <TableCell size="small">
+                            </TableCell>
+                            <TableCell size="small" align="center" sx={{ px: 1.5 }}>Status</TableCell>
                             <TableCell>Project Name(s)</TableCell>
-                            <TableCell size="small" align="center" sx={{ borderRight: 1, borderColor: 'divider', px: 1.5 }}>KYC</TableCell>
                             <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 1 ? 'action.hover' : "" }} >Tranch 1</TableCell>
                             <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 2 ? 'action.hover' : "" }} >Tranch 2</TableCell>
                             <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 3 ? 'action.hover' : "" }} >Tranch 3</TableCell>
@@ -398,6 +399,38 @@ const TranchCell: FC<{
   );
 };
 
+function Status(props: { state: ProjectState }) {
+
+  const getStatusInfo = () => {
+    if (!props.state.agoraEntry.KYCStatusCompleted) {
+      return { color: "text.disabled", message: "KYC not done" };
+    }
+    else if (props.state.todo.length > 0) {
+      return { color: "warning.main", message: "Actions pending" };
+    } else if (props.state.agoraTotalAmount !== props.state.subgraphTotalAmount) {
+      return { color: "error.main", message: "Mismatch of amounts" };
+    } else {
+      return { color: "success.main", message: "All good" };
+    }
+  };
+
+  const statusInfo = getStatusInfo();
+
+  return (
+    <Tooltip title={statusInfo.message} arrow>
+      <Box
+        sx={{
+          width: 16,
+          height: 16,
+          borderRadius: '50%',
+          bgcolor: statusInfo.color,
+          display: 'inline-block'
+        }}
+      />
+    </Tooltip>
+  );
+}
+
 function Row(props: { currentTranchNo: number, chainId: number, superTokenAddress: string, state: ProjectState }) {
     const { state, currentTranchNo } = props;
     const [open, setOpen] = useState(false);
@@ -439,6 +472,9 @@ function Row(props: { currentTranchNo: number, chainId: number, superTokenAddres
                       {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                     </IconButton>
                 </TableCell>
+                <TableCell size="small" align="center" sx={{ px: 1.5 }}>
+                  <Status state={state} />
+                </TableCell>
                 <TableCell sx={{
                   whiteSpace: 'nowrap',
                   maxWidth: '200px',
@@ -456,11 +492,6 @@ function Row(props: { currentTranchNo: number, chainId: number, superTokenAddres
                       {name}
                     </Typography>
                   ))}
-                </TableCell>
-                <TableCell size="small" align="center" sx={{ px: 1.5 }}>
-                  <Stack component="span" direction="column" justifyContent="center">
-                    {state.agoraEntry.KYCStatusCompleted ? <DoneIcon sx={{fontSize: 16}} /> : <CloseIcon sx={{fontSize: 16}} />}
-                  </Stack>
                 </TableCell>
                 {[1, 2, 3, 4, 5, 6].map(tranchNo => (
                   <TranchCell
