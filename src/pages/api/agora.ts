@@ -482,7 +482,8 @@ export default async function handler(
                         .slice(0, -1)
                         .reduce((sum, amount) => sum + BigInt(amount || 0), 0n);
                     const didKycGetJustApproved = allRelevantVestingSchedules.length === 0;
-                    const cliffAmount = didKycGetJustApproved ? sumOfPreviousTranches : 0n;
+                    const cliffAmount = 0n; // Note: Cliff will always be 0. We decided to disable this feature.
+                      // didKycGetJustApproved ? sumOfPreviousTranches : 0n;
                     const totalAmount = agoraCurrentAmount + cliffAmount;
                     const currentTranch = tranchPlan.tranches[tranchPlan.currentTranchCount - 1];
 
