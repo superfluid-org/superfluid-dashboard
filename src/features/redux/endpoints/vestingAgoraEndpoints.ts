@@ -1,6 +1,6 @@
 import { Operation, SuperToken__factory } from "@superfluid-finance/sdk-core";
 import { BaseSuperTokenMutation, getFramework, registerNewTransaction, RpcEndpointBuilder, TransactionInfo, TransactionTitle } from "@superfluid-finance/sdk-redux";
-import { type ProjectsOverview } from "../../../pages/api/agora";
+import { AllowanceActions, ProjectActions, type ProjectsOverview } from "../../../pages/api/agora";
 import { allNetworks, findNetworkOrThrow } from "../../network/networks";
 import { getVestingScheduler } from "../../../eth-sdk/getEthSdk";
 import { Signer } from "ethers";
@@ -8,7 +8,9 @@ import { BatchTransaction } from "../../../libs/gnosis-tx-builder/types";
 import { constantFlowAgreementV1Abi, superfluidAbi, superfluidAddress, superTokenAbi, vestingSchedulerV3Abi } from "../../../generated";
 import { encodeFunctionData, getAbiItem } from "viem";
 
-export interface ExecuteTranchUpdate extends BaseSuperTokenMutation, ProjectsOverview {
+export interface ExecuteTranchUpdate extends BaseSuperTokenMutation {
+  projectsOverview: ProjectsOverview,
+  actionsToExecute: (AllowanceActions | ProjectActions)[]
 }
 
 export const vestingAgoraEndpoints = {
@@ -18,16 +20,22 @@ export const vestingAgoraEndpoints = {
             ExecuteTranchUpdate
         >({
             queryFn: async (
-                { signer, ...arg },
+                { signer, projectsOverview, actionsToExecute, ...arg },
                 { dispatch }
             ) => {
 
+                const { senderAddress} = projectsOverview;
+
+                if (arg.chainId !== projectsOverview.chainId) {
+                    throw new Error("Chain ID does not match");
+                }
+
                 const signerAddress = await signer.getAddress();
-                if (signerAddress !== arg.senderAddress) {
+                if (signerAddress !== senderAddress) {
                     throw new Error("Signer address does not match sender address");
                 }
 
-                const subOperations = await mapProjectStateIntoOperations(arg, signer);
+                const subOperations = await mapProjectStateIntoOperations(projectsOverview, actionsToExecute, signer);
 
                 const framework = await getFramework(arg.chainId);
                 const executable = framework.batchCall(
@@ -68,16 +76,15 @@ type SubOperation = {
     title: TransactionTitle;
 };
 
-async function mapProjectStateIntoOperations(state: ProjectsOverview, signer: Signer): Promise<SubOperation[]> {
-    
+async function mapProjectStateIntoOperations(state: ProjectsOverview, actionsToExecute: (AllowanceActions | ProjectActions)[], signer: Signer): Promise<SubOperation[]> {
+
     const operations: SubOperation[] = [];
 
     const network = findNetworkOrThrow(allNetworks, state.chainId);
     const vestingScheduler = getVestingScheduler(network.id, signer, 'v3');
     const framework = await getFramework(network.id);
-    const allActions = [...state.allowanceActions, ...state.projects.flatMap(project => project.todo)];
 
-    for (const action of allActions) {
+    for (const action of actionsToExecute) {
         switch (action.type) {
             case "increase-token-allowance": {
                 const superTokenContract = SuperToken__factory.connect(
@@ -102,7 +109,7 @@ async function mapProjectStateIntoOperations(state: ProjectsOverview, signer: Si
             case "increase-flow-operator-permissions": {
                 const superToken = await framework.loadSuperToken(action.payload.superToken);
                 operations.push({
-                    operation: await superToken.increaseFlowRateAllowanceWithPermissions({
+                    operation: superToken.increaseFlowRateAllowanceWithPermissions({
                         flowOperator: vestingScheduler.address,
                         flowRateAllowanceDelta: action.payload.flowRateAllowanceDelta,
                         permissionsDelta: action.payload.permissionsDelta
@@ -165,7 +172,7 @@ async function mapProjectStateIntoOperations(state: ProjectsOverview, signer: Si
     return operations;
 }
 
-export const mapProjectStateIntoGnosisSafeBatch = (state: ProjectsOverview) => {
+export const mapProjectStateIntoGnosisSafeBatch = (state: ProjectsOverview, actionsToExecute: (AllowanceActions | ProjectActions)[]) => {
     const transactions: BatchTransaction[] = []
 
     const network = findNetworkOrThrow(allNetworks, state.chainId);
@@ -174,8 +181,7 @@ export const mapProjectStateIntoGnosisSafeBatch = (state: ProjectsOverview) => {
         throw new Error("Vesting contract not found");
     }
 
-    const allActions = [...state.allowanceActions, ...state.projects.flatMap(project => project.todo)];
-    for (const action of allActions) {
+    for (const action of actionsToExecute) {
         switch (action.type) {
             case "increase-token-allowance": {
                 const args = [

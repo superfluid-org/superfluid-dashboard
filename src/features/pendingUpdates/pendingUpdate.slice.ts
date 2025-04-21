@@ -394,9 +394,9 @@ export const pendingUpdateSlice = createSlice({
         const { chainId, hash: transactionHash, signerAddress: senderAddress } = action.payload;
 
         const pendingUpdatesToAdd = [];
-        const { projects } = action.meta.arg.originalArgs;
-        const createVestingScheduleActions = projects.flatMap(project => project.todo.filter(x => x.type === "create-vesting-schedule"));
-        const updateVestingScheduleActions = projects.flatMap(project => project.todo.filter(x => x.type === "update-vesting-schedule"));
+        const { actionsToExecute } = action.meta.arg.originalArgs;
+        const createVestingScheduleActions = actionsToExecute.filter(x => x.type === "create-vesting-schedule");
+        const updateVestingScheduleActions = actionsToExecute.filter(x => x.type === "update-vesting-schedule");
 
         for (const [index, actions] of createVestingScheduleActions.entries()) {
           const {
@@ -435,7 +435,7 @@ export const pendingUpdateSlice = createSlice({
             superToken,
             receiver
           } = actions.payload;
-          
+
           const pendingUpdate: PendingVestingScheduleUpdate = {
             chainId,
             transactionHash,

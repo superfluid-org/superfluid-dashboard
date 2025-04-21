@@ -6,7 +6,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import SecurityIcon from '@mui/icons-material/Security';
 import StopIcon from '@mui/icons-material/Stop';
 import UpdateIcon from '@mui/icons-material/Update';
-import { Box, Button, Collapse, Container, Divider, FormControl, IconButton, InputLabel, List, ListItem, ListItemIcon, ListItemText, MenuItem, Paper, Select, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, ToggleButton, ToggleButtonGroup, Tooltip, Typography } from "@mui/material";
+import { Box, Button, Checkbox, Collapse, Container, Divider, FormControl, IconButton, InputLabel, List, ListItem, ListItemIcon, ListItemText, MenuItem, Paper, Select, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, ToggleButton, ToggleButtonGroup, Tooltip, Typography } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { useQuery } from "@tanstack/react-query";
 import JSZip from "jszip";
@@ -31,94 +31,197 @@ import { TxBuilder } from "../../libs/gnosis-tx-builder";
 import { NextPageWithLayout } from "../_app";
 import { AgoraResponseData, AllowanceActions, ProjectActions, ProjectsOverview, ProjectState, RoundType, roundTypes } from "../api/agora";
 
-// Updated ActionsList component without the badges
-const ActionsList: FC<{ actions: (ProjectActions | AllowanceActions)[], tokenSymbol: string | undefined }> = ({ actions, tokenSymbol = "" }) => {
+// Updated ActionsList component as a MUI table with checkboxes
+const ActionsList: FC<{
+  actions: (ProjectActions | AllowanceActions)[],
+  tokenSymbol: string | undefined,
+  onSelectionChange?: (selectedActions: (ProjectActions | AllowanceActions)[]) => void }> = ({ actions, tokenSymbol = "", onSelectionChange }
+) => {
+    const [selected, setSelected] = useState<number[]>([]);
+
+    // Update selected actions callback whenever selection changes
+    useEffect(() => {
+        if (onSelectionChange) {
+            const selectedActions = selected.map(index => actions[index]);
+            onSelectionChange(selectedActions);
+        }
+    }, [selected, actions, onSelectionChange]);
+
+    const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.checked) {
+            const newSelected = actions.map((_, index) => index);
+            setSelected(newSelected);
+            return;
+        }
+        setSelected([]);
+    };
+
+    const handleClick = (_event: React.MouseEvent<unknown>, index: number) => {
+        const selectedIndex = selected.indexOf(index);
+        let newSelected: number[] = [];
+
+        if (selectedIndex === -1) {
+            newSelected = newSelected.concat(selected, index);
+        } else if (selectedIndex === 0) {
+            newSelected = newSelected.concat(selected.slice(1));
+        } else if (selectedIndex === selected.length - 1) {
+            newSelected = newSelected.concat(selected.slice(0, -1));
+        } else if (selectedIndex > 0) {
+            newSelected = newSelected.concat(
+                selected.slice(0, selectedIndex),
+                selected.slice(selectedIndex + 1),
+            );
+        }
+
+        setSelected(newSelected);
+    };
+
+    const isSelected = (index: number) => selected.indexOf(index) !== -1;
+
+    // Helper function for formatting amounts
+    const formatAmount = (amount: string) => {
+        const amountBigInt = BigInt(amount);
+        return `${formatEther(amountBigInt)} ${tokenSymbol}`;
+    };
+
+    // Helper function for formatting receiver addresses
+    const formatReceiver = (address: string) => {
+        return `${address.slice(0, 6)}...${address.slice(-4)}`;
+    };
+
+    // Get action details based on action type
+    const getActionDetails = (action: ProjectActions | AllowanceActions) => {
+        let actionType = "";
+        let receiver = "";
+        let amount = "";
+        let fromDate: Date | undefined;
+        let toDate: Date | undefined;
+
+        switch (action.type) {
+            case "create-vesting-schedule":
+                actionType = "Create Vesting Schedule";
+                receiver = formatReceiver(action.payload.receiver);
+                amount = formatAmount(action.payload.totalAmount);
+                fromDate = new Date(action.payload.startDate * 1000);
+                toDate = new Date((action.payload.startDate + action.payload.totalDuration) * 1000);
+                break;
+
+            case "update-vesting-schedule":
+                const prevAmount = formatAmount(action.payload.previousTotalAmount);
+                const newAmount = formatAmount(action.payload.totalAmount);
+                const isDifference = action.payload.previousTotalAmount !== action.payload.totalAmount;
+
+                actionType = "Update Vesting Schedule";
+                receiver = formatReceiver(action.payload.receiver);
+                amount = isDifference ? `${prevAmount} → ${newAmount}` : `${newAmount} (unchanged)`;
+                break;
+
+            case "stop-vesting-schedule":
+                actionType = "Stop Vesting Schedule";
+                receiver = formatReceiver(action.payload.receiver);
+                break;
+
+            case "increase-token-allowance":
+                actionType = "Increase Token Allowance";
+                receiver = formatReceiver(action.payload.receiver);
+                amount = formatAmount(action.payload.allowanceDelta);
+                break;
+
+            case "increase-flow-operator-permissions":
+                actionType = "Increase Flow Operator Permissions";
+                receiver = formatReceiver(action.payload.receiver);
+                amount = `${formatAmount(action.payload.flowRateAllowanceDelta)} per second`;
+                break;
+
+            default:
+                actionType = `Unknown Action: ${(action as any).type}`;
+        }
+
+        return { actionType, receiver, amount, fromDate, toDate };
+    };
+
     if (actions.length === 0) {
         return <Typography variant="body2" color="text.secondary">No actions needed</Typography>;
     }
 
     return (
-        <List dense sx={{ width: '100%', bgcolor: 'background.paper', p: 0.5 }}>
-            {actions.map((action, index) => {
-                // For calculating differences in update actions
-                const formatAmount = (amount: string) => {
-                    const amountBigInt = BigInt(amount);
-                    return `${formatEther(amountBigInt)} ${tokenSymbol}`;
-                };
-
-                // Determine icon and content based on action type
-                let icon, primaryText, secondaryText;
-
-                switch (action.type) {
-                    case "create-vesting-schedule":
-                        const startDate = new Date(action.payload.startDate * 1000).toLocaleString();
-                        const endDate = new Date((action.payload.startDate + action.payload.totalDuration) * 1000).toLocaleString();
-
-                        icon = <AddIcon color="success" />;
-                        primaryText = `Create Vesting Schedule for ${action.payload.receiver.slice(0, 6)}...${action.payload.receiver.slice(-4)}`;
-                        secondaryText = `Amount: ${formatAmount(action.payload.totalAmount)} | Start: ${startDate} | End: ${endDate}`;
-                        break;
-
-                    case "update-vesting-schedule":
-                        const prevAmount = formatAmount(action.payload.previousTotalAmount);
-                        const newAmount = formatAmount(action.payload.totalAmount);
-                        const isDifference = action.payload.previousTotalAmount !== action.payload.totalAmount;
-
-                        icon = <UpdateIcon color="primary" />;
-                        primaryText = `Update Vesting Schedule for ${action.payload.receiver.slice(0, 6)}...${action.payload.receiver.slice(-4)}`;
-                        secondaryText = isDifference ?
-                            `Amount: ${prevAmount} → ${newAmount}` :
-                            `Amount: ${newAmount} (unchanged)`;
-                        break;
-
-                    case "stop-vesting-schedule":
-                        icon = <StopIcon color="error" />;
-                        primaryText = `Stop Vesting Schedule for ${action.payload.receiver.slice(0, 6)}...${action.payload.receiver.slice(-4)}`;
-                        // secondaryText = `End Date: ${action.payload.endDate}`;
-                        break;
-
-                    case "increase-token-allowance":
-                        icon = <SecurityIcon color="primary" />;
-                        primaryText = `Increase Token Allowance for ${action.payload.receiver.slice(0, 6)}...${action.payload.receiver.slice(-4)}`;
-                        secondaryText = `Additional Allowance: ${formatAmount(action.payload.allowanceDelta)}`;
-                        break;
-
-                    case "increase-flow-operator-permissions":
-                        icon = <SecurityIcon color="primary" />;
-                        primaryText = `Increase Flow Operator Permissions for ${action.payload.receiver.slice(0, 6)}...${action.payload.receiver.slice(-4)}`;
-                        secondaryText = `Flow Rate Allowance: ${formatAmount(action.payload.flowRateAllowanceDelta)} per second`;
-                        break;
-
-                    default:
-                        icon = <IconButton>?</IconButton>;
-                        primaryText = `Unknown Action: ${(action as any).type}`;
-                        secondaryText = "Details not available";
-                }
-
-                return (
-                    <Fragment key={index}>
-                        <ListItem alignItems="flex-start" sx={{ p: 1 }}>
-                            <ListItemIcon>{icon}</ListItemIcon>
-                            <ListItemText
-                                primaryTypographyProps={{ variant: "h7" }}
-                                primary={primaryText}
-                                secondary={
-                                    <Typography
-                                        sx={{ display: 'inline' }}
-                                        component="span"
-                                        variant="body2"
-                                        color="text.primary"
-                                    >
-                                        {secondaryText}
-                                    </Typography>
-                                }
+        <TableContainer>
+            <Table size="small" aria-label="actions table">
+                <TableHead>
+                    <TableRow>
+                        <TableCell padding="checkbox">
+                            <Checkbox
+                                indeterminate={selected.length > 0 && selected.length < actions.length}
+                                checked={actions.length > 0 && selected.length === actions.length}
+                                onChange={handleSelectAllClick}
+                                inputProps={{ 'aria-label': 'select all actions' }}
                             />
-                        </ListItem>
-                        {index < actions.length - 1 && <Divider variant="inset" component="li" />}
-                    </Fragment>
-                );
-            })}
-        </List>
+                        </TableCell>
+                        <TableCell>Action Type</TableCell>
+                        <TableCell>Receiver</TableCell>
+                        <TableCell>Amount</TableCell>
+                        <TableCell>From Date</TableCell>
+                        <TableCell>To Date</TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {actions.map((action, index) => {
+                        const isItemSelected = isSelected(index);
+                        const { actionType, receiver, amount, fromDate, toDate } = getActionDetails(action);
+
+                        return (
+                            <TableRow
+                                hover
+                                onClick={(event) => handleClick(event, index)}
+                                role="checkbox"
+                                aria-checked={isItemSelected}
+                                tabIndex={-1}
+                                key={index}
+                                selected={isItemSelected}
+                            >
+                                <TableCell padding="checkbox">
+                                    <Checkbox
+                                        checked={isItemSelected}
+                                        inputProps={{ 'aria-labelledby': `action-${index}` }}
+                                    />
+                                </TableCell>
+                                <TableCell id={`action-${index}`}>
+                                    {actionType}
+                                </TableCell>
+                                <TableCell>{receiver}</TableCell>
+                                <TableCell>{amount}</TableCell>
+                                <TableCell>
+                                    {fromDate ? (
+                                        <Tooltip title={
+                                            <>
+                                                {Intl.DateTimeFormat().resolvedOptions().timeZone}
+                                                <br />
+                                                {fromDate.toLocaleString()}
+                                            </>
+                                        } arrow>
+                                            <span>{fromDate.toLocaleDateString()}</span>
+                                        </Tooltip>
+                                    ) : null}
+                                </TableCell>
+                                <TableCell>
+                                    {toDate ? (
+                                        <Tooltip title={
+                                            <>
+                                                {Intl.DateTimeFormat().resolvedOptions().timeZone}
+                                                <br />
+                                                {toDate.toLocaleString()}
+                                            </>
+                                        } arrow>
+                                            <span>{toDate.toLocaleDateString()}</span>
+                                        </Tooltip>
+                                    ) : null}
+                                </TableCell>
+                            </TableRow>
+                        );
+                    })}
+                </TableBody>
+            </Table>
+        </TableContainer>
     );
 };
 
@@ -184,6 +287,8 @@ const AgoraPage: NextPageWithLayout = () => {
             ...rows.flatMap(row => row.todo),
         ];
     }, [data, rows]);
+
+    const [actionsToExecute, setActionsToExecute] = useState<(ProjectActions | AllowanceActions)[]>([]);
 
     if (isLoading || isWalletConnecting) {
         // TODO: use skeleton table?
@@ -338,7 +443,7 @@ const AgoraPage: NextPageWithLayout = () => {
             </Typography>
 
             <Paper elevation={1} sx={{ p: 2 }}>
-                <ActionsList actions={allActions} tokenSymbol={token?.symbol} />
+                <ActionsList actions={allActions} tokenSymbol={token?.symbol} onSelectionChange={setActionsToExecute} />
             </Paper>
 
             <ConnectionBoundary expectedNetwork={network}>
@@ -346,8 +451,8 @@ const AgoraPage: NextPageWithLayout = () => {
                     projectsOverview && (
                         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 4 }}>
                             <Stack direction="column" spacing={1.25} sx={{ width: 'auto' }}>
-                                <ExecuteTranchUpdateTransactionButton isDisabled={areButtonsDisabled} projectsOverview={projectsOverview} />
-                                <DownloadGnosisSafeTransactionButton isDisabled={areButtonsDisabled} projectsOverview={projectsOverview} />
+                                <ExecuteTranchUpdateTransactionButton isDisabled={areButtonsDisabled} projectsOverview={projectsOverview} actionsToExecute={actionsToExecute} />
+                                <DownloadGnosisSafeTransactionButton isDisabled={areButtonsDisabled} projectsOverview={projectsOverview} actionsToExecute={actionsToExecute} />
                             </Stack>
                         </Box>
                     )
@@ -420,11 +525,12 @@ function Status(props: { state: ProjectState }) {
     <Tooltip title={statusInfo.message} arrow>
       <Box
         sx={{
-          width: 16,
-          height: 16,
+          width: 14,
+          height: 14,
           borderRadius: '50%',
           bgcolor: statusInfo.color,
-          display: 'inline-block'
+          display: 'inline-block',
+          verticalAlign: 'middle'
         }}
       />
     </Tooltip>
@@ -606,20 +712,21 @@ export default AgoraPage;
 type Props = {
     isDisabled: boolean;
     projectsOverview: ProjectsOverview;
+    actionsToExecute: (AllowanceActions | ProjectActions)[]
 }
 
 export const DownloadGnosisSafeTransactionButton: FC<Props> = ({
     isDisabled,
-    projectsOverview
+    projectsOverview,
+    actionsToExecute
 }) => {
-
     return (
         <Button {...transactionButtonDefaultProps} disabled={isDisabled} variant="outlined" onClick={async () => {
             const zip = new JSZip();
             const zipName = `execute-tranch-${projectsOverview.tranchPlan.currentTranchCount}_for_safe_tx-builder`;
             const batchFolder = zip.folder(zipName);
 
-            const transactions = mapProjectStateIntoGnosisSafeBatch(projectsOverview);
+            const transactions = mapProjectStateIntoGnosisSafeBatch(projectsOverview, actionsToExecute);
 
             const safeTxBuilderJSON = TxBuilder.batch(undefined, transactions, {
                 chainId: projectsOverview.chainId
@@ -652,7 +759,8 @@ export const DownloadGnosisSafeTransactionButton: FC<Props> = ({
 
 export const ExecuteTranchUpdateTransactionButton: FC<Props> = ({
     isDisabled,
-    projectsOverview
+    projectsOverview,
+    actionsToExecute
 }) => {
     const [executeTranchUpdate, executeTranchUpdateResult] =
         rpcApi.useExecuteTranchUpdateMutation();
@@ -680,13 +788,16 @@ export const ExecuteTranchUpdateTransactionButton: FC<Props> = ({
                                     color="text.secondary"
                                     translate="yes"
                                 >
-                                    You are executing a tranch update.
+                                    You are executing a tranch update with {actionsToExecute.length} actions.
                                 </Typography>
                             );
 
                             executeTranchUpdate({
                                 signer,
-                                ...projectsOverview
+                                superTokenAddress: projectsOverview.superTokenAddress,
+                                chainId: projectsOverview.chainId,
+                                projectsOverview,
+                                actionsToExecute
                             }).unwrap();
 
                             setDialogSuccessActions(
