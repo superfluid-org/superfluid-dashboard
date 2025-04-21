@@ -127,8 +127,9 @@ type SetFlowOperatorPermissionsAction = Action<"increase-flow-operator-permissio
     flowRateAllowanceDelta: string
 }>
 
-export type ProjectActions = CreateVestingScheduleAction | UpdateVestingScheduleAction | StopVestingScheduleAction
 export type AllowanceActions = TokenAllowanceAction | SetFlowOperatorPermissionsAction
+export type ProjectActions = CreateVestingScheduleAction | UpdateVestingScheduleAction | StopVestingScheduleAction
+export type Actions = AllowanceActions | ProjectActions
 
 export type ProjectsOverview = {
     chainId: number
@@ -156,7 +157,7 @@ export type ProjectState = {
         amount: string
     }[]
 
-    todo: ProjectActions[]
+    projectActions: ProjectActions[]
 }
 
 
@@ -589,7 +590,7 @@ export default async function handler(
                     currentWallet: agoraCurrentWallet,
                     previousWallet: agoraPreviousWallet,
                     activeSchedule: currentWalletVestingSchedule,
-                    todo: actions,
+                    projectActions: actions,
                     allocations: row.amounts.map((amount, index) => ({
                         tranch: index + 1,
                         amount: amount
@@ -626,7 +627,7 @@ export default async function handler(
             const expectedPermissions = existingPermissions | permissionsDelta;
             const needsMorePermissions = existingPermissions !== expectedPermissions;
             const neededFlowRateAllowance = projectStates
-                .flatMap(x => x.todo)
+                .flatMap(x => x.projectActions)
                 .filter(x => x.type === "create-vesting-schedule")
                 .reduce((sum, action) => {
                     const streamedAmount = BigInt(action.payload.totalAmount) - BigInt(action.payload.cliffAmount);

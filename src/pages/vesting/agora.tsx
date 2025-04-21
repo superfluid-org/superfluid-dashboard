@@ -9,7 +9,7 @@ import { BigLoader } from "../../features/vesting/BigLoader";
 import { useVisibleAddress } from "../../features/wallet/VisibleAddressContext";
 import { useTokenQuery } from "../../hooks/useTokenQuery";
 import { NextPageWithLayout } from "../_app";
-import { AgoraResponseData, AllowanceActions, ProjectActions, RoundType, roundTypes } from "../api/agora";
+import { Actions, AgoraResponseData, RoundType, roundTypes } from "../api/agora";
 import { DownloadGnosisSafeTransactionButton, ExecuteTranchUpdateTransactionButton } from '../../features/vesting/agora/buttons';
 import { ActionsList } from '../../features/vesting/agora/ActionsList';
 import { ProjectsTable } from '../../features/vesting/agora/ProjectsTable';
@@ -73,11 +73,11 @@ const AgoraPage: NextPageWithLayout = () => {
         if (!data?.success) return [];
         return [
             ...(data.projectsOverview.allowanceActions || []),
-            ...rows.flatMap(row => row.todo),
+            ...rows.flatMap(row => row.projectActions),
         ];
     }, [data, rows]);
 
-    const [actionsToExecute, setActionsToExecute] = useState<(ProjectActions | AllowanceActions)[]>([]);
+    const [actionsToExecute, setActionsToExecute] = useState<Actions[]>([]);
 
     if (isLoading || isWalletConnecting) {
         // TODO: use skeleton table?

@@ -99,7 +99,7 @@ function Status(props: { state: ProjectState }) {
     if (!props.state.agoraEntry.KYCStatusCompleted) {
       return { color: "text.disabled", message: "KYC not done" };
     }
-    else if (props.state.todo.length > 0) {
+    else if (props.state.projectActions.length > 0) {
       return { color: "warning.main", message: "Actions pending" };
     } else if (props.state.agoraTotalAmount !== props.state.subgraphTotalAmount) {
       return { color: "error.main", message: "Mismatch of amounts" };
@@ -277,13 +277,13 @@ function Row(props: { currentTranchNo: number, chainId: number, superTokenAddres
                               )
                             }
 
-                            {state.todo.length > 0 && (
+                            {state.projectActions.length > 0 && (
                                 <Box sx={{ mt: 3 }}>
                                     <Typography variant="body2" color="text.secondary" gutterBottom>
-                                        Pending Actions ({state.todo.length}):
+                                        Pending Actions ({state.projectActions.length}):
                                     </Typography>
                                     <Paper elevation={1} sx={{ p: 2 }}>
-                                        <ActionsList actions={state.todo} tokenSymbol={token?.symbol} />
+                                        <ActionsList actions={state.projectActions} tokenSymbol={token?.symbol} />
                                     </Paper>
                                 </Box>
                             )}

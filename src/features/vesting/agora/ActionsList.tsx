@@ -1,13 +1,13 @@
 import { Checkbox, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography } from "@mui/material";
 import { FC, useEffect, useState } from "react";
 import { formatEther } from "viem";
-import { ProjectActions, AllowanceActions } from "../../../pages/api/agora";
+import { Actions } from "../../../pages/api/agora";
 
 // Updated ActionsList component as a MUI table with checkboxes
 export const ActionsList: FC<{
-  actions: (ProjectActions | AllowanceActions)[],
+  actions: Actions[],
   tokenSymbol: string | undefined,
-  onSelectionChange?: (selectedActions: (ProjectActions | AllowanceActions)[]) => void }> = ({ actions, tokenSymbol = "", onSelectionChange }
+  onSelectionChange?: (selectedActions: Actions[]) => void }> = ({ actions, tokenSymbol = "", onSelectionChange }
 ) => {
     const [selected, setSelected] = useState<number[]>([]);
 
@@ -62,7 +62,7 @@ export const ActionsList: FC<{
     };
 
     // Get action details based on action type
-    const getActionDetails = (action: ProjectActions | AllowanceActions) => {
+    const getActionDetails = (action: Actions) => {
         let actionType = "";
         let receiver = "";
         let amount = "";

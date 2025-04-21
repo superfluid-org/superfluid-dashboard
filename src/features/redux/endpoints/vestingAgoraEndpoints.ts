@@ -1,6 +1,6 @@
 import { Operation, SuperToken__factory } from "@superfluid-finance/sdk-core";
 import { BaseSuperTokenMutation, getFramework, registerNewTransaction, RpcEndpointBuilder, TransactionInfo, TransactionTitle } from "@superfluid-finance/sdk-redux";
-import { AllowanceActions, ProjectActions, type ProjectsOverview } from "../../../pages/api/agora";
+import { Actions, AllowanceActions, ProjectActions, type ProjectsOverview } from "../../../pages/api/agora";
 import { allNetworks, findNetworkOrThrow } from "../../network/networks";
 import { getVestingScheduler } from "../../../eth-sdk/getEthSdk";
 import { Signer } from "ethers";
@@ -10,7 +10,7 @@ import { encodeFunctionData, getAbiItem } from "viem";
 
 export interface ExecuteTranchUpdate extends BaseSuperTokenMutation {
   projectsOverview: ProjectsOverview,
-  actionsToExecute: (AllowanceActions | ProjectActions)[]
+  actionsToExecute: Actions[]
 }
 
 export const vestingAgoraEndpoints = {
@@ -76,7 +76,7 @@ type SubOperation = {
     title: TransactionTitle;
 };
 
-async function mapProjectStateIntoOperations(state: ProjectsOverview, actionsToExecute: (AllowanceActions | ProjectActions)[], signer: Signer): Promise<SubOperation[]> {
+async function mapProjectStateIntoOperations(state: ProjectsOverview, actionsToExecute: Actions[], signer: Signer): Promise<SubOperation[]> {
 
     const operations: SubOperation[] = [];
 
@@ -172,7 +172,7 @@ async function mapProjectStateIntoOperations(state: ProjectsOverview, actionsToE
     return operations;
 }
 
-export const mapProjectStateIntoGnosisSafeBatch = (state: ProjectsOverview, actionsToExecute: (AllowanceActions | ProjectActions)[]) => {
+export const mapProjectStateIntoGnosisSafeBatch = (state: ProjectsOverview, actionsToExecute: Actions[]) => {
     const transactions: BatchTransaction[] = []
 
     const network = findNetworkOrThrow(allNetworks, state.chainId);

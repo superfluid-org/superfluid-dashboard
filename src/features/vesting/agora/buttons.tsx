@@ -6,13 +6,13 @@ import { rpcApi } from "../../redux/store";
 import { TransactionButton, transactionButtonDefaultProps } from "../../transactionBoundary/TransactionButton";
 import { TransactionDialogActions, TransactionDialogButton } from "../../transactionBoundary/TransactionDialog";
 import { TxBuilder } from "../../../libs/gnosis-tx-builder";
-import { ProjectsOverview, AllowanceActions, ProjectActions } from "../../../pages/api/agora";
+import { ProjectsOverview, Actions } from "../../../pages/api/agora";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 
 type Props = {
     isDisabled: boolean;
     projectsOverview: ProjectsOverview;
-    actionsToExecute: (AllowanceActions | ProjectActions)[]
+    actionsToExecute: Actions[]
 }
 
 export const DownloadGnosisSafeTransactionButton: FC<Props> = ({
