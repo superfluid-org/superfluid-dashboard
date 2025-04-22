@@ -323,11 +323,10 @@ export class SendPage extends BasePage {
     address: string
   ) {
     this.getSelectedToken(token).then((selectedToken) => {
-      this.forceClick(RECEIVER_BUTTON);
       cy.wait(ACTION_TIMEOUT);
+      this.click(RECEIVER_BUTTON);
       this.isVisible(RECENT_ENTRIES, undefined, { timeout: 30000 });
       this.type(ADDRESS_DIALOG_INPUT, address);
-      cy.wait(ACTION_TIMEOUT);
       cy.get('body').then((body) => {
         if (body.find('[role=presentation]').length > 0) {
           body.find('[role=presentation]').click();

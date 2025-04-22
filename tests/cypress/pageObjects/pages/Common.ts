@@ -3,7 +3,10 @@ import { networksBySlug } from '../../superData/networks';
 import HDWalletProvider from '@truffle/hdwallet-provider';
 import { ProviderAdapter } from '@truffle/encoder';
 import { http, createPublicClient } from 'viem';
-import { LOADING_TIMEOUT } from '../../support/helpers/constants';
+import {
+  ACTION_TIMEOUT,
+  LOADING_TIMEOUT,
+} from '../../support/helpers/constants';
 
 export const TOP_BAR_NETWORK_BUTTON = '[data-cy=top-bar-network-button]';
 export const CONNECTED_WALLET = '[data-cy=wallet-connection-status] h6';
@@ -1256,6 +1259,7 @@ export class Common extends BasePage {
   }
 
   static openTokenSelection() {
+    cy.wait(ACTION_TIMEOUT);
     this.click(SELECT_TOKEN_BUTTON);
     this.exists(TOKEN_SEARCH_RESULTS, undefined, { timeout: LOADING_TIMEOUT });
   }
@@ -1274,6 +1278,7 @@ export class Common extends BasePage {
   }
 
   static receiverDialog() {
+    cy.wait(ACTION_TIMEOUT);
     this.click(RECEIVER_BUTTON);
   }
 
@@ -1288,6 +1293,7 @@ export class Common extends BasePage {
   }
 
   static searchForReceiver(ensNameOrAddress: string, index = 0) {
+    cy.wait(ACTION_TIMEOUT);
     this.click(RECEIVER_BUTTON, index);
     this.type(ADDRESS_DIALOG_INPUT, ensNameOrAddress);
     cy.wrap(ensNameOrAddress).as('ensNameOrAddress');

@@ -33,14 +33,13 @@ const FORM_ERROR = '.MuiAlert-message';
 export class TransferPage extends BasePage {
   static inputTransferTestData(isConnected: string) {
     const connected = isConnected === 'with';
-    this.click(RECEIVER_BUTTON);
     cy.wait(ACTION_TIMEOUT);
+    this.click(RECEIVER_BUTTON);
     cy.fixture('commonData').then((commonData) => {
       this.type(
         `${ADDRESS_DIALOG_INPUT} input`,
         commonData.staticBalanceAccount
       );
-      cy.wait(ACTION_TIMEOUT);
       this.doesNotExist(ADDRESS_DIALOG_INPUT);
       this.hasText(ADDRESS_BUTTON_TEXT, commonData.staticBalanceAccount);
       this.click(SELECT_TOKEN_BUTTON);
@@ -84,10 +83,9 @@ export class TransferPage extends BasePage {
 
   static inputTransferDetails(amount: string, token: string, address: string) {
     this.getSelectedToken(token).then((selectedToken) => {
+      cy.wait(ACTION_TIMEOUT);
       this.click(RECEIVER_BUTTON);
-      cy.wait(ACTION_TIMEOUT);
       this.type(`${ADDRESS_DIALOG_INPUT} input`, address);
-      cy.wait(ACTION_TIMEOUT);
       cy.get('body').then((body) => {
         if (body.find('[role=presentation]').length > 0) {
           body.find('[role=presentation]').click();
