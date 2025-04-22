@@ -2,7 +2,10 @@ import { BasePage } from '../BasePage';
 import { networksBySlug } from '../../superData/networks';
 import { format } from 'date-fns';
 import { CONNECT_WALLET_BUTTON, TOKEN_SEARCH_RESULTS } from './Common';
-import { LOADING_TIMEOUT } from '../../support/helpers/constants';
+import {
+  ACTION_TIMEOUT,
+  LOADING_TIMEOUT,
+} from '../../support/helpers/constants';
 
 export const RANDOM_VALUE_DURING_TEST = Math.floor(Math.random() * 10) + 2;
 const RECEIVER_BUTTON = '[data-cy=address-button]';
@@ -31,13 +34,13 @@ export class TransferPage extends BasePage {
   static inputTransferTestData(isConnected: string) {
     const connected = isConnected === 'with';
     this.click(RECEIVER_BUTTON);
-    this.invoke(ADDRESS_DIALOG_INPUT, 'show');
+    cy.wait(ACTION_TIMEOUT);
     cy.fixture('commonData').then((commonData) => {
       this.type(
         `${ADDRESS_DIALOG_INPUT} input`,
         commonData.staticBalanceAccount
       );
-      cy.wait(2000);
+      cy.wait(ACTION_TIMEOUT);
       this.doesNotExist(ADDRESS_DIALOG_INPUT);
       this.hasText(ADDRESS_BUTTON_TEXT, commonData.staticBalanceAccount);
       this.click(SELECT_TOKEN_BUTTON);
@@ -82,9 +85,9 @@ export class TransferPage extends BasePage {
   static inputTransferDetails(amount: string, token: string, address: string) {
     this.getSelectedToken(token).then((selectedToken) => {
       this.click(RECEIVER_BUTTON);
-      this.invoke(ADDRESS_DIALOG_INPUT, 'show');
+      cy.wait(ACTION_TIMEOUT);
       this.type(`${ADDRESS_DIALOG_INPUT} input`, address);
-      cy.wait(2000);
+      cy.wait(ACTION_TIMEOUT);
       cy.get('body').then((body) => {
         if (body.find('[role=presentation]').length > 0) {
           body.find('[role=presentation]').click();
