@@ -2,6 +2,7 @@ import { FC, PropsWithChildren, useEffect, useState } from "react";
 import { WagmiProvider } from "wagmi";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { wagmiConfig, resolvedWagmiClients } from "./wagmiConfig";
+import { WalletWeirdnessHandler } from "../../components/WalletWeirdnessHandler/WalletWeirdnessHandler";
 
 export { wagmiConfig, resolvedWagmiClients };
 
@@ -22,6 +23,7 @@ const WagmiManager: FC<PropsWithChildren> = ({ children }) => {
     >
       <QueryClientProvider client={tanstackQueryClient}>
         {children}
+        <WalletWeirdnessHandler />
       </QueryClientProvider>
     </WagmiProvider>
   );

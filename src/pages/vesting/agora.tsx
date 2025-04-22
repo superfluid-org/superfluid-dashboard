@@ -55,10 +55,6 @@ const AgoraPage: NextPageWithLayout = () => {
 
     const projectsOverview = data?.success ? data.projectsOverview : null;
 
-    console.log({
-        projectsOverview
-    })
-
     const { data: token } = useTokenQuery(projectsOverview ? {
         chainId: network.id,
         id: projectsOverview?.superTokenAddress
