@@ -13,6 +13,7 @@ import {
   pendingUpdateSlice,
 } from "../pendingUpdates/pendingUpdate.slice";
 import { vestingSubgraphApi } from "../../vesting-subgraph/vestingSubgraphApi";
+import { tanstackQueryClient } from "../wallet/WagmiManager";
 
 // WARNING: This shouldn't be set up more than once in the app.
 export const useVestingTransactionTracking = () => {
@@ -83,6 +84,7 @@ export const useVestingTransactionTracking = () => {
                     },
                   ])
                 );
+                tanstackQueryClient.invalidateQueries({ queryKey: ["agora"] })
               }
             });
           }

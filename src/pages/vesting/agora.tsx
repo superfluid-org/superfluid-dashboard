@@ -1,7 +1,7 @@
 import { Box, Button, Container, FormControl, InputLabel, MenuItem, Paper, Select, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAccount } from "wagmi";
 import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
 import { BigLoader } from "../../features/vesting/BigLoader";
@@ -53,6 +53,12 @@ const AgoraPage: NextPageWithLayout = () => {
         chainId: network.id,
         id: projectsOverview?.superTokenAddress
     } : skipToken);
+
+    const key = useMemo(() => {
+        const allowanceActions = projectsOverview?.allowanceActions ?? []
+        const projectActions = projectsOverview?.projects?.flatMap(x => x.projectActions) ?? []
+        return `${roundType}-${tranch}-${allowanceActions.length}-${projectActions.length}`
+    }, [roundType, tranch, projectsOverview]);
 
     const errorMessage = data?.success === false ? data.message : error_?.message;
 
@@ -123,6 +129,7 @@ const AgoraPage: NextPageWithLayout = () => {
 
     return (
         <Container key={roundType} maxWidth="xl" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+
             <Box sx={{ mb: 3, mt: 2 }}>
                 <Typography variant="h6" gutterBottom>
                     Tranch (Temporary selection for mock API)
@@ -167,6 +174,7 @@ const AgoraPage: NextPageWithLayout = () => {
             </Box>
 
             <PrimaryPageContent
+                key={key}
                 projectsOverview={projectsOverview}
                 token={token}
             />

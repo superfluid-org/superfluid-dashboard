@@ -5,7 +5,7 @@ import { wagmiConfig, resolvedWagmiClients } from "./wagmiConfig";
 
 export { wagmiConfig, resolvedWagmiClients };
 
-const tanstackQueryClient = new QueryClient();
+export const tanstackQueryClient = new QueryClient();
 
 const WagmiManager: FC<PropsWithChildren> = ({ children }) => {
   const [reconnectOnMount, setReconnectOnMount] = useState(false);
