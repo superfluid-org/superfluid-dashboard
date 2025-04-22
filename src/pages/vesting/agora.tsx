@@ -44,21 +44,25 @@ const AgoraPage: NextPageWithLayout = () => {
     const { data, isLoading, error: error_ } = useQuery({
         queryKey: ['agora', visibleAddress ?? null, network.id, tranch, roundType],
         queryFn: () => fetch(`/api/agora?sender=${visibleAddress}&chainId=${network.id}&tranch=${tranch}&type=${roundType}`).then(async (res) => (await res.json()) as AgoraResponseData),
-        enabled: !!visibleAddress && !!network.id && !!tranch
+        enabled: !!visibleAddress && !!network.id && !!tranch,
+
+        // No need to refetch once it's computed.
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
+        staleTime:  1200_000 // 20 minutes
     });
 
     const projectsOverview = data?.success ? data.projectsOverview : null;
+
+    console.log({
+        projectsOverview
+    })
 
     const { data: token } = useTokenQuery(projectsOverview ? {
         chainId: network.id,
         id: projectsOverview?.superTokenAddress
     } : skipToken);
-
-    const key = useMemo(() => {
-        const allowanceActions = projectsOverview?.allowanceActions ?? []
-        const projectActions = projectsOverview?.projects?.flatMap(x => x.projectActions) ?? []
-        return `${roundType}-${tranch}-${allowanceActions.length}-${projectActions.length}`
-    }, [roundType, tranch, projectsOverview]);
 
     const errorMessage = data?.success === false ? data.message : error_?.message;
 
@@ -174,7 +178,7 @@ const AgoraPage: NextPageWithLayout = () => {
             </Box>
 
             <PrimaryPageContent
-                key={key}
+                key={projectsOverview.key}
                 projectsOverview={projectsOverview}
                 token={token}
             />

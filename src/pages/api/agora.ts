@@ -5,7 +5,7 @@ import { Effect as E, Logger, LogLevel, pipe } from 'effect'
 import { uniq } from 'lodash'
 import { tryGetBuiltGraphSdkForNetwork } from '../../vesting-subgraph/vestingSubgraphApi'
 import { optimism, optimismSepolia } from 'viem/chains'
-import { Address, createPublicClient, http, isAddress, stringToHex } from 'viem'
+import { Address, createPublicClient, http, isAddress, sha256, stringToHex } from 'viem'
 import { mapSubgraphVestingSchedule, VestingSchedule } from '../../features/vesting/types'
 import { UnitOfTime } from '../../features/send/FlowRateInput'
 import { allNetworks, findNetworkOrThrow } from '../../features/network/networks'
@@ -133,6 +133,7 @@ export type ProjectActions = CreateVestingScheduleAction | UpdateVestingSchedule
 export type Actions = AllowanceActions | ProjectActions
 
 export type ProjectsOverview = {
+    key: string
     chainId: number
     superTokenAddress: string
     senderAddress: string
@@ -479,7 +480,7 @@ export default async function handler(
                     function pushAction(action: Omit<ProjectActions, "id">) {
                         actions.push({
                             ...action,
-                            id: stringToHex(`${row.id}-${action.type}-${JSON.stringify(action.payload)}`).slice(2)
+                            id: sha256(stringToHex(`${row.id}-${action.type}-${JSON.stringify(action.payload)}`))
                         } as ProjectActions)
                     }
 
@@ -624,7 +625,7 @@ export default async function handler(
             const pushAction = (action: Omit<AllowanceActions, 'id'>) => {
                 actions.push({
                     ...action,
-                    id: stringToHex(`${action.type}-${JSON.stringify(action.payload)}`).slice(2)
+                    id: sha256(stringToHex(`${action.type}-${JSON.stringify(action.payload)}`))
                 } as AllowanceActions)
             }
 
@@ -692,7 +693,16 @@ export default async function handler(
             return actions;
         })
 
+        const key = sha256(stringToHex([
+            chainId.toString(),
+            sender,
+            token,
+            ...projectStates.flatMap(x => x.projectActions.map(x => x.id)),
+            ...allowanceActions.map(x => x.id)
+        ].sort().join("")))
+
         return {
+            key,
             chainId,
             senderAddress: sender,
             superTokenAddress: token,
