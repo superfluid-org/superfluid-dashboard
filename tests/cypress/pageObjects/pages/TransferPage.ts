@@ -31,8 +31,13 @@ export class TransferPage extends BasePage {
   static inputTransferTestData(isConnected: string) {
     const connected = isConnected === 'with';
     this.click(RECEIVER_BUTTON);
+    this.invoke(ADDRESS_DIALOG_INPUT, 'show');
     cy.fixture('commonData').then((commonData) => {
-      this.type(ADDRESS_DIALOG_INPUT, commonData.staticBalanceAccount);
+      this.type(
+        `${ADDRESS_DIALOG_INPUT} input`,
+        commonData.staticBalanceAccount
+      );
+      cy.wait(2000);
       this.doesNotExist(ADDRESS_DIALOG_INPUT);
       this.hasText(ADDRESS_BUTTON_TEXT, commonData.staticBalanceAccount);
       this.click(SELECT_TOKEN_BUTTON);
