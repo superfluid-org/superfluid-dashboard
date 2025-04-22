@@ -9,7 +9,10 @@ import {
   TOKEN_BALANCE,
   TOKEN_SEARCH_RESULTS,
 } from './Common';
-import { LOADING_TIMEOUT } from '../../support/helpers/constants';
+import {
+  ACTION_TIMEOUT,
+  LOADING_TIMEOUT,
+} from '../../support/helpers/constants';
 
 export const RANDOM_VALUE_DURING_TEST = Math.floor(Math.random() * 10) + 2;
 const SEND_BUTTON = '[data-cy=send-transaction-button]';
@@ -320,10 +323,11 @@ export class SendPage extends BasePage {
     address: string
   ) {
     this.getSelectedToken(token).then((selectedToken) => {
-      this.click(RECEIVER_BUTTON);
+      this.forceClick(RECEIVER_BUTTON);
+      cy.wait(ACTION_TIMEOUT);
       this.isVisible(RECENT_ENTRIES, undefined, { timeout: 30000 });
       this.type(ADDRESS_DIALOG_INPUT, address);
-      cy.wait(2000);
+      cy.wait(ACTION_TIMEOUT);
       cy.get('body').then((body) => {
         if (body.find('[role=presentation]').length > 0) {
           body.find('[role=presentation]').click();
