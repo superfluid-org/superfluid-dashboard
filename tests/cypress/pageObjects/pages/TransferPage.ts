@@ -77,7 +77,8 @@ export class TransferPage extends BasePage {
   static inputTransferDetails(amount: string, token: string, address: string) {
     this.getSelectedToken(token).then((selectedToken) => {
       this.click(RECEIVER_BUTTON);
-      this.type(ADDRESS_DIALOG_INPUT, address);
+      this.invoke(ADDRESS_DIALOG_INPUT, 'show');
+      this.type(`${ADDRESS_DIALOG_INPUT} input`, address);
       cy.wait(2000);
       cy.get('body').then((body) => {
         if (body.find('[role=presentation]').length > 0) {

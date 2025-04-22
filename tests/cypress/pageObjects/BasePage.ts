@@ -99,6 +99,21 @@ export class BasePage {
     this.get(selector, index, options).click({ force: true });
   }
 
+  static invoke(
+    selector: string,
+    method: string,
+    value?: any,
+    index?: number,
+    options?: Partial<
+      Cypress.Loggable &
+        Cypress.Timeoutable &
+        Cypress.Withinable &
+        Cypress.Shadow
+    >
+  ) {
+    this.get(selector, index, options).invoke(method, value);
+  }
+
   static select(
     selector: string,
     selectionOption: string,
