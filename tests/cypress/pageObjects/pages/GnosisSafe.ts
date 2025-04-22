@@ -11,7 +11,7 @@ import { LOADING_TIMEOUT } from '../../support/helpers/constants';
 
 const GNOSIS_BUTTONS = '.MuiButton-contained';
 const GNOSIS_SAFE_WALLET_OPTION = '[data-testid=wallet-selector-external-safe]';
-const SUPERFLUID_IFRAME = 'iframe[title*="Superfluid"]';
+const SUPERFLUID_IFRAME = 'iframe[src*="superfluid"]';
 const LOADING_SPINNER = '.MuiCircularProgress-root';
 const GNOSIS_WARNING_CHECKBOX = '.PrivateSwitchBase-input';
 const CUSTOM_APP_URL_FIELD = 'input[name=appUrl]';
