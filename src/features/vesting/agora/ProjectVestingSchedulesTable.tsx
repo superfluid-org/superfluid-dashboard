@@ -20,7 +20,7 @@ export const ProjectVestingSchedulesTables: FC<{
 
     return (
         <TableContainer component={Paper}>
-            <Table>
+            <Table size="small">
                 <TableBody>
                     {
                         project.allRelevantSchedules

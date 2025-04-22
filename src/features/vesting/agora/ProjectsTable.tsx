@@ -23,7 +23,7 @@ export function ProjectsTable(props: {
 
     return (
         <TableContainer component={Paper}>
-            <Table aria-label="collapsible table">
+            <Table size="small" aria-label="projects overview table">
                 <TableHead>
                     <TableRow>
                         <TableCell align="center" colSpan={3}>
@@ -33,9 +33,9 @@ export function ProjectsTable(props: {
                         </TableCell>
                     </TableRow>
                     <TableRow>
-                        <TableCell size="small">
+                        <TableCell padding="checkbox">
                         </TableCell>
-                        <TableCell size="small" align="center" sx={{ px: 1.5 }}>Status</TableCell>
+                        <TableCell padding="checkbox">Status</TableCell>
                         <TableCell>Project Name(s)</TableCell>
                         <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 1 ? 'action.hover' : "" }} >Tranch 1</TableCell>
                         <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 2 ? 'action.hover' : "" }} >Tranch 2</TableCell>
@@ -163,7 +163,7 @@ function Row(props: {
         id: props.superTokenAddress
     });
 
-    const selectableActions = useMemo(() => {
+    const projectSelectableActions = useMemo(() => {
         const projectActionIds = state.projectActions.map(x => x.id);
         return allSelectableActions.filter(x => projectActionIds.includes(x.id));
     }, [allSelectableActions, state]);
@@ -176,17 +176,14 @@ function Row(props: {
                     opacity: state.agoraEntry.KYCStatusCompleted ? 1 : 0.6
                 }}
             >
-                <TableCell size="small" align="center" sx={{
-                    py: 0.5,
-                    pr: 0,
-                    pl: 1
-                }}>
+                <TableCell align="center" padding="none" sx={{ px: 0.5, py: 0.5 }}>
                     <IconButton
                         aria-label="expand row"
                         size="small"
                         onClick={() => setOpen(!open)}
                         sx={{
                             m: 0,
+                            p: 0.5,
                             minWidth: "75px"
                         }}
                     >
@@ -308,14 +305,12 @@ function Row(props: {
                                     <Typography variant="body2" color="text.secondary" gutterBottom>
                                         Pending Actions ({state.projectActions.length}):
                                     </Typography>
-                                    <Paper elevation={1} sx={{ p: 2 }}>
-                                        <ActionsList
-                                            actions={selectableActions}
-                                            tokenSymbol={token?.symbol}
-                                            selectAction={selectAction}
-                                            deselectAction={deselectAction}
-                                        />
-                                    </Paper>
+                                    <ActionsList
+                                        actions={projectSelectableActions}
+                                        tokenSymbol={token?.symbol}
+                                        selectAction={selectAction}
+                                        deselectAction={deselectAction}
+                                    />
                                 </Box>
                             )}
                         </Box>

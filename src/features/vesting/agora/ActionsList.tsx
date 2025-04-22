@@ -1,8 +1,10 @@
-import { Checkbox, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography } from "@mui/material";
+import { Checkbox, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography } from "@mui/material";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { formatEther } from "viem";
 import { Actions } from "../../../pages/api/agora";
 import { SelectableActions } from "./PrimaryPageContent";
+import AddressName from "../../../components/AddressName/AddressName";
+import AddressCopyTooltip from "../../common/AddressCopyTooltip";
 
 // Updated ActionsList component as a MUI table with checkboxes
 export const ActionsList: FC<{
@@ -11,6 +13,7 @@ export const ActionsList: FC<{
     selectAction: (action: { id: string }) => void;
     deselectAction: (action: { id: string }) => void;
 }> = ({ actions, tokenSymbol, selectAction, deselectAction }) => {
+
     const selected = useMemo(() => {
         const selectedActions = actions.filter(action => action.selected);
         return selectedActions;
@@ -45,7 +48,7 @@ export const ActionsList: FC<{
     }
 
     return (
-        <TableContainer>
+        <TableContainer component={Paper}>
             <Table size="small" aria-label="actions table">
                 <TableHead>
                     <TableRow>
@@ -84,10 +87,16 @@ export const ActionsList: FC<{
                                         inputProps={{ 'aria-labelledby': `action-${index}` }}
                                     />
                                 </TableCell>
-                                <TableCell id={`action-${index}`}>
+                                <TableCell>
                                     {actionType}
                                 </TableCell>
-                                <TableCell>{receiver}</TableCell>
+                                <TableCell>
+                                    <AddressCopyTooltip address={receiver}>
+                                        <span>
+                                            <AddressName address={receiver} />
+                                        </span>
+                                    </AddressCopyTooltip>
+                                </TableCell>
                                 <TableCell>{amount}</TableCell>
                                 <TableCell>
                                     {fromDate ? (
@@ -130,11 +139,6 @@ const formatAmount = (amount: string, tokenSymbol: string | undefined) => {
     return `${formatEther(amountBigInt)} ${tokenSymbol}`;
 };
 
-// Helper function for formatting receiver addresses
-const formatReceiver = (address: string) => {
-    return `${address.slice(0, 6)}...${address.slice(-4)}`;
-};
-
 // Get action details based on action type
 const getActionDetails = (action: Actions, tokenSymbol: string | undefined) => {
     let actionType = "";
@@ -146,7 +150,7 @@ const getActionDetails = (action: Actions, tokenSymbol: string | undefined) => {
     switch (action.type) {
         case "create-vesting-schedule":
             actionType = "Create Vesting Schedule";
-            receiver = formatReceiver(action.payload.receiver);
+            receiver = action.payload.receiver;
             amount = formatAmount(action.payload.totalAmount, tokenSymbol);
             fromDate = new Date(action.payload.startDate * 1000);
             toDate = new Date((action.payload.startDate + action.payload.totalDuration) * 1000);
@@ -158,25 +162,25 @@ const getActionDetails = (action: Actions, tokenSymbol: string | undefined) => {
             const isDifference = action.payload.previousTotalAmount !== action.payload.totalAmount;
 
             actionType = "Update Vesting Schedule";
-            receiver = formatReceiver(action.payload.receiver);
+            receiver = action.payload.receiver;
             amount = isDifference ? `${prevAmount} → ${newAmount}` : `${newAmount} (unchanged)`;
             break;
 
         case "stop-vesting-schedule":
             actionType = "Stop Vesting Schedule";
-            receiver = formatReceiver(action.payload.receiver);
+            receiver = action.payload.receiver;
             break;
 
         case "increase-token-allowance":
             actionType = "Increase Token Allowance";
-            receiver = formatReceiver(action.payload.receiver);
+            receiver = action.payload.receiver;
             amount = formatAmount(action.payload.allowanceDelta, tokenSymbol);
             break;
 
         case "increase-flow-operator-permissions":
             actionType = "Increase Flow Operator Permissions";
-            receiver = formatReceiver(action.payload.receiver);
-            amount = `${formatAmount(action.payload.flowRateAllowanceDelta, tokenSymbol)} per second`;
+            receiver = action.payload.receiver;
+            amount = `${formatAmount(action.payload.flowRateAllowanceDelta, tokenSymbol)}/second`;
             break;
 
         default:

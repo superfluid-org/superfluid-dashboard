@@ -56,6 +56,9 @@ export function PrimaryPageContent(props: {
         },
         on: {
             selectAction: (context, action: { id: string }) => {
+                console.log({
+                    action
+                })
                 return produce(context, draft => {
                     const selectedAction = draft.allSelectableActions.find((x) => x.id === action.id);
                     if (!selectedAction) {
@@ -99,14 +102,12 @@ export function PrimaryPageContent(props: {
                 Pending Actions ({allSelectableActions.length})
             </Typography>
 
-            <Paper elevation={1} sx={{ p: 2 }}>
-                <ActionsList
-                    actions={allSelectableActions}
-                    tokenSymbol={token?.symbol}
-                    selectAction={store.trigger.selectAction}
-                    deselectAction={store.trigger.deselectAction}
-                />
-            </Paper>
+            <ActionsList
+                actions={allSelectableActions}
+                tokenSymbol={token?.symbol}
+                selectAction={store.trigger.selectAction}
+                deselectAction={store.trigger.deselectAction}
+            />
 
             <ConnectionBoundary>
                 {projectsOverview && (
