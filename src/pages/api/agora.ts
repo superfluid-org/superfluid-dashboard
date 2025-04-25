@@ -698,15 +698,32 @@ export default async function handler(
         }
     })
 
-    const projectsOverview = await E.runPromise(
+    const effectResult = await E.runPromise(
         pipe(
             mainEffect,
+            E.tapError((error) => E.logError("Error in the main pipeline", { cause: error })), // Directly log the error object
+            E.match({
+                onSuccess: (projectsOverview): AgoraResponseData => ({
+                    success: true,
+                    projectsOverview
+                }),
+                onFailure: (error): AgoraResponseData => { // error type is still inferred
+                    // Determine the user-facing error message based on the error type
+                    const userMessage = error instanceof AgoraError ? "Agora API error occurred." :
+                                        error instanceof SubgraphError ? "Subgraph data retrieval error occurred." :
+                                        error instanceof PublicClientRpcError ? "RPC interaction error occurred." :
+                                        "An unexpected error occurred.";
+
+                    return {
+                        success: false,
+                        message: userMessage
+                    };
+                }
+            }),
+            // Apply overall logging level configuration
             Logger.withMinimumLogLevel(process.env.NODE_ENV === 'development' ? LogLevel.Trace : LogLevel.Info)
         )
     );
 
-    res.status(200).json({
-        success: true,
-        projectsOverview
-    })
+    res.status(effectResult.success ? 200 : 500).json(effectResult);
 }
