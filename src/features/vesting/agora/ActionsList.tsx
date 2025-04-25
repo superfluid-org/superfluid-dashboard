@@ -5,6 +5,7 @@ import { Actions } from "../../../pages/api/agora";
 import { SelectableActions } from "./PrimaryPageContent";
 import AddressName from "../../../components/AddressName/AddressName";
 import AddressCopyTooltip from "../../common/AddressCopyTooltip";
+import { UnitOfTime } from "../../send/FlowRateInput";
 
 // Updated ActionsList component as a MUI table with checkboxes
 export const ActionsList: FC<{
@@ -180,7 +181,7 @@ const getActionDetails = (action: Actions, tokenSymbol: string | undefined) => {
         case "increase-flow-operator-permissions":
             actionType = "Increase Flow Operator Permissions";
             receiver = action.payload.receiver;
-            amount = `${formatAmount(action.payload.flowRateAllowanceDelta, tokenSymbol)}/second`;
+            amount = `${formatAmount((BigInt(action.payload.flowRateAllowanceDelta) * BigInt(UnitOfTime.Month)).toString(), tokenSymbol)}/month`;
             break;
 
         default:
