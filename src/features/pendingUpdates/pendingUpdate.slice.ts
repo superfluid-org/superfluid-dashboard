@@ -339,7 +339,7 @@ export const pendingUpdateSlice = createSlice({
           endDateTimestamp,
           flowRateWei: flowRate.toString(),
           relevantSubgraph: "Vesting",
-          version: "v2"
+          version: "v3"
         };
         pendingUpdateAdapter.addOne(state, pendingUpdate);
       }
@@ -378,7 +378,7 @@ export const pendingUpdateSlice = createSlice({
             endDateTimestamp,
             flowRateWei: flowRate.toString(),
             relevantSubgraph: "Vesting",
-            version: "v2"
+            version: "v3"
           };
           pendingUpdatesToAdd.push(pendingUpdate);
         }

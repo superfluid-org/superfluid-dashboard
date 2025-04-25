@@ -18,7 +18,7 @@ import { getAddress } from "../../utils/memoizedEthersUtils";
 import { vestingSubgraphApi } from "../../vesting-subgraph/vestingSubgraphApi";
 import { CopyIconBtn } from "../common/CopyIconBtn";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
-import { Network, VestingVersion } from "../network/networks";
+import { Network } from "../network/networks";
 import {
   mapPendingToVestingSchedule,
   useAddressPendingVestingSchedules,
@@ -32,6 +32,7 @@ import { orderBy, uniqBy } from "lodash";
 import { useVestingVersion } from "../../hooks/useVestingVersion";
 import { EMPTY_ARRAY } from "../../utils/constants";
 import { useWhitelist } from "../../hooks/useWhitelist";
+import { VestingVersion } from "../network/networkConstants";
 
 interface ExecutionWhitelistInfoProps {
   whitelisted: boolean;

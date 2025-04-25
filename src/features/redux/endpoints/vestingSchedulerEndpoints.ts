@@ -9,7 +9,7 @@ import {
   TransactionTitle,
 } from "@superfluid-finance/sdk-redux";
 import { BigNumber } from "ethers";
-import { getVestingScheduler } from "../../../eth-sdk/getEthSdk";
+import { getVestingScheduler, VestingSchedulerType } from "../../../eth-sdk/getEthSdk";
 import {
   isCloseToUnlimitedFlowRateAllowance,
   isCloseToUnlimitedTokenAllowance,
@@ -17,11 +17,12 @@ import {
 import { UnitOfTime } from "../../send/FlowRateInput";
 import { getUnixTime } from "date-fns";
 import { getMaximumNeededTokenAllowance } from "../../vesting/VestingSchedulesAllowancesTable/calculateRequiredAccessForActiveVestingSchedule";
-import { allNetworks, findNetworkOrThrow, VestingVersion } from "../../network/networks";
+import { allNetworks, findNetworkOrThrow } from "../../network/networks";
 import { resolvedWagmiClients } from "../../wallet/wagmiConfig";
 import { vestingSchedulerAbi, vestingSchedulerAddress, vestingSchedulerV2Abi, vestingSchedulerV2Address } from "../../../generated";
 import { getClaimPeriodInSeconds, getClaimValidityDate } from "../../vesting/claimPeriod";
 import { ACL_CREATE_PERMISSION, ACL_DELETE_PERMISSION } from "../../../utils/constants";
+import { VestingVersion } from "../../network/networkConstants";
 
 export const MAX_VESTING_DURATION_IN_YEARS = 10;
 export const MAX_VESTING_DURATION_IN_SECONDS =
@@ -36,7 +37,7 @@ export interface CreateVestingSchedule extends BaseSuperTokenMutation {
   endDateTimestamp: number;
   cliffTransferAmountWei: string;
   claimEnabled: boolean;
-  version: VestingVersion;
+  version: "v3";
 }
 
 export interface CreateVestingScheduleFromAmountAndDuration
@@ -45,9 +46,11 @@ export interface CreateVestingScheduleFromAmountAndDuration
   receiverAddress: string;
   startDateTimestamp: number;
   cliffPeriodInSeconds: number;
+  cliffTransferAmountWei: string;
   totalDurationInSeconds: number;
   totalAmountWei: string;
   claimEnabled: boolean;
+  version: "v3";
 }
 
 export interface ClaimVestingSchedule extends BaseSuperTokenMutation {
@@ -211,46 +214,29 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
         });
       }
 
-      const createVestingSchedule =
-        version === "v2"
-          ? await getVestingScheduler(
-              chainId,
-              signer,
-              "v2"
-            ).populateTransaction[
-              "createVestingSchedule(address,address,uint32,uint32,int96,uint256,uint32,uint32,bytes)"
-            ](
-              superTokenAddress,
-              arg.receiverAddress,
-              arg.startDateTimestamp,
-              arg.cliffDateTimestamp,
-              arg.flowRateWei,
-              arg.cliffTransferAmountWei,
-              arg.endDateTimestamp,
-              claimValidityDate ?? 0,
-              []
-            )
-          : await getVestingScheduler(
-              chainId,
-              signer,
-              "v1"
-            ).populateTransaction.createVestingSchedule(
-              superTokenAddress,
-              arg.receiverAddress,
-              arg.startDateTimestamp,
-              arg.cliffDateTimestamp,
-              arg.flowRateWei,
-              arg.cliffTransferAmountWei,
-              arg.endDateTimestamp,
-              []
-            );
+      const createVestingSchedule = getVestingScheduler(
+        chainId,
+        signer,
+        version
+      ).populateTransaction[
+        "createVestingSchedule(address,address,uint32,uint32,int96,uint256,uint32,uint32)"
+      ](
+        superTokenAddress,
+        arg.receiverAddress,
+        arg.startDateTimestamp,
+        arg.cliffDateTimestamp,
+        arg.flowRateWei,
+        arg.cliffTransferAmountWei,
+        arg.endDateTimestamp,
+        claimValidityDate ?? 0
+      )
 
       subOperations.push({
-        operation: await framework.host.callAppAction(
-          vestingScheduler.address,
-          createVestingSchedule.data!
+        operation: new Operation(
+          createVestingSchedule,
+          'ERC2771_FORWARD_CALL'
         ),
-        title: "Create Vesting Schedule",
+        title: "Create Vesting Schedule"
       });
 
       const signerAddress = await signer.getAddress();
@@ -289,10 +275,10 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
     CreateVestingScheduleFromAmountAndDuration
   >({
     queryFn: async (
-      { chainId, signer, superTokenAddress, senderAddress, ...arg },
+      { chainId, signer, superTokenAddress, senderAddress, version, ...arg },
       { dispatch }
     ) => {
-      const vestingScheduler = getVestingScheduler(chainId, signer, "v2");
+      const vestingScheduler = getVestingScheduler(chainId, signer, version);
 
       const framework = await getFramework(chainId);
       const superToken = await framework.loadSuperToken(superTokenAddress);
@@ -321,7 +307,7 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
             providerOrSigner: signer,
           }),
           superTokenContract.allowance(senderAddress, vestingScheduler.address),
-          vestingScheduler.mapCreateVestingScheduleParams(
+          vestingScheduler["mapCreateVestingScheduleParams(address,address,address,uint256,uint32,uint32,uint32,uint32,uint256)"](
             superTokenAddress,
             senderAddress,
             arg.receiverAddress,
@@ -329,20 +315,21 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
             arg.totalDurationInSeconds,
             arg.startDateTimestamp,
             arg.cliffPeriodInSeconds,
-            claimPeriodInSeconds
+            claimPeriodInSeconds,
+            arg.cliffTransferAmountWei
           ),
         ]);
 
       const maximumNeededTokenAllowance =
-        await vestingScheduler.getMaximumNeededTokenAllowance({
+        await vestingScheduler["getMaximumNeededTokenAllowance((uint32,uint32,int96,uint256,uint96,uint32))"]({
           cliffAndFlowDate: params.cliffDate
             ? params.cliffDate
             : params.startDate,
           endDate: params.endDate,
-          flowRate: params.flowRate,
           cliffAmount: params.cliffAmount,
+          flowRate: params.flowRate,
           remainderAmount: params.remainderAmount,
-          claimValidityDate: params.claimValidityDate,
+          claimValidityDate: params.claimValidityDate
         });
 
       const existingPermissions = Number(flowOperatorData.permissions);
@@ -403,8 +390,8 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
         });
       }
 
-      const createVestingSchedule = await vestingScheduler.populateTransaction[
-        "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32,bytes)"
+      const createVestingSchedule = vestingScheduler.populateTransaction[
+        "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32,uint256)"
       ](
         superTokenAddress,
         arg.receiverAddress,
@@ -413,13 +400,13 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
         arg.startDateTimestamp,
         arg.cliffPeriodInSeconds,
         claimPeriodInSeconds,
-        []
+        arg.cliffTransferAmountWei
       );
 
       subOperations.push({
-        operation: await framework.host.callAppAction(
-          vestingScheduler.address,
-          createVestingSchedule.data!
+        operation: new Operation(
+          createVestingSchedule,
+          'ERC2771_FORWARD_CALL'
         ),
         title: "Create Vesting Schedule",
       });
@@ -449,7 +436,7 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
           chainId,
           hash: transactionResponse.hash,
           subTransactionTitles,
-        },
+        }
       };
     },
   }),
@@ -593,7 +580,7 @@ export const vestingSchedulerMutationEndpoints = {
           overrides,
           transactionExtraData,
           deleteFlow,
-          version,
+          version
         },
         { dispatch }
       ) => {
@@ -618,20 +605,36 @@ export const vestingSchedulerMutationEndpoints = {
           });
         }
 
-        const deleteVestingSchedule =
-          await vestingScheduler.populateTransaction.deleteVestingSchedule(
-            superTokenAddress,
-            receiverAddress,
-            [],
-            overrides
-          );
-        batchedOperations.push({
-          operation: await framework.host.callAppAction(
-            vestingScheduler.address,
-            deleteVestingSchedule.data!
-          ),
-          title: "Delete Vesting Schedule",
-        });
+        if (version === "v3") {
+          const deleteVestingSchedule =
+            (vestingScheduler as VestingSchedulerType<"v3">).populateTransaction.deleteVestingSchedule(
+              superTokenAddress,
+              receiverAddress,
+              overrides
+            );
+          batchedOperations.push({
+            operation: new Operation(
+              deleteVestingSchedule,
+              'ERC2771_FORWARD_CALL'
+            ),
+            title: "Delete Vesting Schedule",
+          });
+        } else {
+          const deleteVestingSchedule =
+            await vestingScheduler.populateTransaction.deleteVestingSchedule(
+              superTokenAddress,
+              receiverAddress,
+              [],
+              overrides
+            );
+          batchedOperations.push({
+            operation: await framework.host.callAppAction(
+              vestingScheduler.address,
+              deleteVestingSchedule.data!
+            ),
+            title: "Delete Vesting Schedule",
+          });
+        }
 
         const executable =
           batchedOperations.length === 1

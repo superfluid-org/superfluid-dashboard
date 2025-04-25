@@ -73,9 +73,18 @@ export const vestingContractAddresses_v2 = {
   base: "0x7b77A34b8B76B66E97a5Ae01aD052205d5cbe257",
 } as const;
 
+export type VestingVersion = "v1" | "v2" | "v3";
+
 export const vestingContractAddresses_v3 = {
   [chainIds.optimismSepolia]: "0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C",
-  [chainIds.optimism]: "0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4"
+  [chainIds.optimism]: "0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4",
+  [chainIds.gnosis]: "0x625F04c9B91ECdfbeb7021271749212388F12c11",
+  [chainIds.polygon]: "0x488913833474bbD9B11f844FdC2f0897FAc0Ca43",
+  [chainIds.arbitrum]: "0xc3069bDE869912E3d9B965F35D7764Fc92BccE67",
+  [chainIds.avalanche]: "0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf",
+  [chainIds.bsc]: "0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3",
+  [chainIds.mainnet]: "0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C",
+  [chainIds.base]: "0x6Bf35A170056eDf9aEba159dce4a640cfCef9312",
 } as const;
 
 export const vestingSubgraphUrls = {

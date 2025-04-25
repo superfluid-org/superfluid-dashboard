@@ -1,6 +1,7 @@
 import { ToggleButtonGroup, ToggleButton } from "@mui/material";
 import { useVestingVersion } from "../../hooks/useVestingVersion";
-import { Network, VestingVersion } from "../network/networks";
+import { Network } from "../network/networks";
+import { VestingVersion } from "../network/networkConstants";
 
 export function VestingVersionToggle(props: {
     network: Network

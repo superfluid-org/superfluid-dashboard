@@ -2,10 +2,11 @@ import { Typography } from "@mui/material";
 import { BigNumber, Signer } from "ethers";
 import { FC, ReactNode, useCallback } from "react";
 import { useAnalytics } from "../../analytics/useAnalytics";
-import { doesNetworkSupportVesting, Network, VestingVersion } from "../../network/networks";
+import { doesNetworkSupportVesting, Network } from "../../network/networks";
 import { rpcApi } from "../../redux/store";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
+import { VestingVersion } from "../../network/networkConstants";
 
 interface FixVestingPermissionsBtnProps {
   network: Network;

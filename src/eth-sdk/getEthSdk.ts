@@ -7,6 +7,7 @@ import {
   FlowScheduler__factory
 } from "./client/esm/types/factories/mainnet";
 import { AutoWrapManager, AutoWrapStrategy, VestingScheduler, VestingScheduler_v2, VestingScheduler_v3 } from "./client/esm/types";
+import { VestingVersion } from "../features/network/networkConstants";
 
 export const getFlowScheduler = (
   chainId: number,
@@ -28,11 +29,9 @@ export const getFlowScheduler = (
   );
 };
 
-// Define a generic type for versions
-type Version = 'v1' | 'v2' | 'v3';
-type VestingSchedulerType<T extends Version> = T extends 'v1' ? VestingScheduler : T extends 'v2' ? VestingScheduler_v2 : VestingScheduler_v3;
+export type VestingSchedulerType<T extends VestingVersion> = T extends 'v1' ? VestingScheduler : T extends 'v2' ? VestingScheduler_v2 : VestingScheduler_v3;
 
-export const getVestingScheduler = <T extends Version>(
+export const getVestingScheduler = <T extends VestingVersion>(
   chainId: number,
   providerOrSigner: providers.Provider | Signer,
   version: T

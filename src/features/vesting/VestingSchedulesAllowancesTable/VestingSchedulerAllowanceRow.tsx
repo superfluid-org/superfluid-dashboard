@@ -28,7 +28,7 @@ import {
   isCloseToUnlimitedFlowRateAllowance,
   isCloseToUnlimitedTokenAllowance,
 } from "../../../utils/isCloseToUnlimitedAllowance";
-import { Network, VestingVersion } from "../../network/networks";
+import { Network } from "../../network/networks";
 import { rpcApi } from "../../redux/store";
 import Amount from "../../token/Amount";
 import TokenIcon from "../../token/TokenIcon";
@@ -41,6 +41,7 @@ import DisableAutoWrapTransactionButton from "../transactionButtons/DisableAutoW
 import AutoWrapEnableDialog from "../dialogs/AutoWrapEnableDialog";
 import ConnectionBoundaryButton from "../../transactionBoundary/ConnectionBoundaryButton";
 import { useTokenQuery } from "../../../hooks/useTokenQuery";
+import { VestingVersion } from "../../network/networkConstants";
 
 export const EditIconWrapper = styled(Avatar)(({ theme }) => ({
   width: "50px",

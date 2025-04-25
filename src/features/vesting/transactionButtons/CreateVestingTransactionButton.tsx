@@ -2,7 +2,6 @@ import { Typography } from "@mui/material";
 import NextLink from "next/link";
 import { FC, useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
-import { useAnalytics } from "../../analytics/useAnalytics";
 import { rpcApi } from "../../redux/store";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
@@ -15,8 +14,6 @@ import { ValidVestingForm } from "../CreateVestingFormProvider";
 import { CreateVestingCardView } from "../CreateVestingSection";
 import { parseEtherOrZero } from "../../../utils/tokenUtils";
 import { useConnectionBoundary } from "../../transactionBoundary/ConnectionBoundary";
-import { useVestingVersion } from "../../../hooks/useVestingVersion";
-import { BigNumber } from "ethers";
 import Decimal from "decimal.js";
 
 interface Props {
@@ -29,17 +26,9 @@ export const CreateVestingTransactionButton: FC<Props> = ({
   isVisible: isVisible_,
 }) => {
   const { expectedNetwork } = useConnectionBoundary();
-  const { vestingVersion } = useVestingVersion({ network: expectedNetwork });
 
-  const isVestingV2Enabled = vestingVersion === "v2";
-
-  const [createVestingScheduleFromAmountAndDuration, createVestingScheduleFromAmountAndDurationResult] =
+  const [createVestingScheduleFromAmountAndDuration, mutationResult] =
     rpcApi.useCreateVestingScheduleFromAmountAndDurationMutation();
-
-  const [createVestingSchedule, createVestingScheduleResult] =
-    rpcApi.useCreateVestingScheduleMutation();
-
-  const mutationResult = isVestingV2Enabled ? createVestingScheduleFromAmountAndDurationResult : createVestingScheduleResult;
 
   const { formState: { isValid, isValidating }, handleSubmit } = useFormContext<ValidVestingForm>();
 
@@ -67,9 +56,8 @@ export const CreateVestingTransactionButton: FC<Props> = ({
               handleSubmit(
                 async (validData) => {
                   const {
-                    data: { receiverAddress, superTokenAddress, claimEnabled: claimEnabled_ },
+                    data: { receiverAddress, superTokenAddress, claimEnabled },
                   } = validData;
-                  const claimEnabled = isVestingV2Enabled && claimEnabled_;
 
                   const {
                     startDateTimestamp,
@@ -114,26 +102,15 @@ export const CreateVestingTransactionButton: FC<Props> = ({
                     totalDurationInSeconds: Math.round(validData.data.vestingPeriod.numerator * validData.data.vestingPeriod.denominator),
                     cliffPeriodInSeconds: validData.data.cliffEnabled ? Math.round(validData.data.cliffPeriod.numerator! * validData.data.cliffPeriod.denominator) : 0,
                     cliffTransferAmountWei: cliffAmount.toString(),
-                    claimEnabled: !!claimEnabled
+                    claimEnabled: !!claimEnabled,
+                    version: "v3" as const
                   };
 
-                  const isLinearCliff = isCliffPeriodLinear({
-                    totalAmountWei: primaryArgsFromAmountAndDuration.totalAmountWei,
-                    totalDurationInSeconds: primaryArgsFromAmountAndDuration.totalDurationInSeconds,
-                    cliffPeriodInSeconds: primaryArgsFromAmountAndDuration.cliffPeriodInSeconds,
-                    cliffTransferAmountWei: primaryArgs.cliffTransferAmountWei,
-                  });
-
-                  ((isVestingV2Enabled && isLinearCliff) ? createVestingScheduleFromAmountAndDuration({
+                  createVestingScheduleFromAmountAndDuration({
                     ...primaryArgsFromAmountAndDuration,
                     signer,
                     overrides: await getOverrides(),
-                  }) : createVestingSchedule({
-                    ...primaryArgs,
-                    signer,
-                    version: vestingVersion,
-                    overrides: await getOverrides()
-                  }))
+                  })
                     .unwrap()
                     .then(
                       ...txAnalytics("Create Vesting Schedule", primaryArgs)

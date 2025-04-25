@@ -83,8 +83,6 @@ type VestingContractInfo = {
   END_DATE_VALID_BEFORE_IN_SECONDS: number
 }
 
-export type VestingVersion = keyof Network["vestingContractAddress"];
-
 export const doesNetworkSupportVesting = (network: Network) => {
   return Boolean(network.vestingContractAddress.v1 || network.vestingContractAddress.v2 || network.vestingContractAddress.v3);
 }
