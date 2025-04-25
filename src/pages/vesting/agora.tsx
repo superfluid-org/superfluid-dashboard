@@ -11,6 +11,7 @@ import { NextPageWithLayout } from "../_app";
 import { AgoraResponseData } from "../api/agora";
 import { PrimaryPageContent } from "../../features/vesting/agora/PrimaryPageContent";
 import { RoundType, roundTypes } from "../../features/vesting/agora/constants";
+import { optimismSepolia } from "wagmi/chains";
 
 const AgoraPage: NextPageWithLayout = () => {
     const { visibleAddress } = useVisibleAddress();
@@ -51,7 +52,7 @@ const AgoraPage: NextPageWithLayout = () => {
         refetchOnMount: false,
         refetchOnWindowFocus: false,
         refetchOnReconnect: false,
-        staleTime:  1200_000 // 20 minutes
+        staleTime: 1200_000 // 20 minutes
     });
 
     const projectsOverview = data?.success ? data.projectsOverview : null;
@@ -131,28 +132,32 @@ const AgoraPage: NextPageWithLayout = () => {
     return (
         <Container key={roundType} maxWidth="xl" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
 
-            <Box sx={{ mb: 3, mt: 2 }}>
-                <Typography variant="h6" gutterBottom>
-                    Tranch (Temporary selection for mock API)
-                </Typography>
-                <FormControl sx={{ minWidth: 120 }}>
-                    <InputLabel id="tranch-select-label">Tranch</InputLabel>
-                    <Select
-                        labelId="tranch-select-label"
-                        id="tranch-select"
-                        value={tranch}
-                        label="Tranch"
-                        onChange={(e) => setTranch(Number(e.target.value))}
-                    >
-                        <MenuItem value={1}>Tranch 1</MenuItem>
-                        <MenuItem value={2}>Tranch 2</MenuItem>
-                        <MenuItem value={3}>Tranch 3</MenuItem>
-                        <MenuItem value={4}>Tranch 4</MenuItem>
-                        <MenuItem value={5}>Tranch 5</MenuItem>
-                        <MenuItem value={6}>Tranch 6</MenuItem>
-                    </Select>
-                </FormControl>
-            </Box>
+            {
+                network.id === optimismSepolia.id && (
+                    <Box sx={{ mb: 3, mt: 2 }}>
+                        <Typography variant="h6" gutterBottom>
+                            Tranch (Temporary selection for mock API)
+                        </Typography>
+                        <FormControl sx={{ minWidth: 120 }}>
+                            <InputLabel id="tranch-select-label">Tranch</InputLabel>
+                            <Select
+                                labelId="tranch-select-label"
+                                id="tranch-select"
+                                value={tranch}
+                                label="Tranch"
+                                onChange={(e) => setTranch(Number(e.target.value))}
+                            >
+                                <MenuItem value={1}>Tranch 1</MenuItem>
+                                <MenuItem value={2}>Tranch 2</MenuItem>
+                                <MenuItem value={3}>Tranch 3</MenuItem>
+                                <MenuItem value={4}>Tranch 4</MenuItem>
+                                <MenuItem value={5}>Tranch 5</MenuItem>
+                                <MenuItem value={6}>Tranch 6</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </Box>
+                )
+            }
 
             <Box sx={{ mb: 3 }}>
                 <Typography variant="h6" gutterBottom>
