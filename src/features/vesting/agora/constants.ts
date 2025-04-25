@@ -30,10 +30,22 @@ export const validChainIds = Object.keys(agoraApiEndpoints).map(Number);
 
 export const agoraSenderAddresses = {
     [optimism.id]: {
-        onchain_builders: `0x823557699A455F3c2C6f964017880f3f3a6583Ac`,
-        dev_tooling: "0xA2928CC2D210bC42d8ffe5Ad8b1314E872F5fb54"
+        onchain_builders: "0x823557699A455F3c2C6f964017880f3f3a6583Ac".toLowerCase() as Address,
+        dev_tooling: "0xA2928CC2D210bC42d8ffe5Ad8b1314E872F5fb54".toLowerCase() as Address
     },
     [optimismSepolia.id]: null
-} as const satisfies Record<number, Record<RoundType, string> | null>;
+} as const satisfies Record<number, Record<RoundType, Address> | null>;
+
+export const isAgoraSender = (chainId: number, address: Address) => {
+    const addressLowerCased = address.toLowerCase();
+    if (chainId === optimism.id) {
+        return addressLowerCased === agoraSenderAddresses[optimism.id].dev_tooling ||
+            addressLowerCased === agoraSenderAddresses[optimism.id].onchain_builders;
+    }
+    if (chainId === optimismSepolia.id) {
+        return true;
+    }
+    return false;
+}
 
 export const START_TIMESTAMP_OF_FIRST_TRANCH_ON_OPTIMISM = 1745748000;

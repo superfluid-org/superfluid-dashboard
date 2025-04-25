@@ -1,6 +1,5 @@
 import {
-    Typography,
-    Paper,
+    Typography
 } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { Actions, ProjectsOverview } from "../../../pages/api/agora";
@@ -15,6 +14,8 @@ import { TokenMinimal } from "../../redux/endpoints/tokenTypes";
 import { useMemo } from "react";
 import { useStore, useSelector } from '@xstate/store/react';
 import { produce } from "immer";
+import { isAgoraSender } from "./constants";
+import { Address } from "viem";
 
 export type SelectableActions = Actions & {
     selected: boolean
@@ -82,7 +83,11 @@ export function PrimaryPageContent(props: {
     const allSelectableActions = useSelector(store, (store) => store.context.allSelectableActions);
     const actionsToExecute = useMemo(() => allSelectableActions.filter(x => x.selected), [allSelectableActions]);
 
-    const areButtonsDisabled = initialAllSelectableActions.length === 0;
+    const isAgoraWhitelistedWallet = useMemo(() =>
+        isAgoraSender(projectsOverview.chainId, projectsOverview.senderAddress as Address),
+        [projectsOverview]
+    );
+    const areButtonsDisabled = initialAllSelectableActions.length === 0 || !isAgoraWhitelistedWallet;
 
     return (
         <>

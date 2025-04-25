@@ -4,13 +4,15 @@ import { useAccount } from "wagmi";
 import { FC } from "react";
 import Link from "../common/Link";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
+import { isAgoraSender, validChainIds } from "./agora/constants";
 
 const SimpleVestingHeader: FC = () => {
   const { address: accountAddress } = useAccount();
   const { network } = useExpectedNetwork();
 
   const doesNetworkSupportBatchVesting = !!network.vestingContractAddress.v2;
-  const doesNetworkSupportAgora = !!network.vestingContractAddress.v3;
+  const doesNetworkSupportAgora = validChainIds.includes(network.id);
+  const isAgoraWhitelistedWallet = accountAddress && isAgoraSender(network.id, accountAddress);
 
   return (
     <Stack
@@ -24,7 +26,7 @@ const SimpleVestingHeader: FC = () => {
       </Typography>
 
       <Stack direction="row" gap={1}>
-        {doesNetworkSupportAgora && (
+        {doesNetworkSupportAgora && isAgoraWhitelistedWallet && (
           <Button
             LinkComponent={Link}
             href="/vesting/agora"
