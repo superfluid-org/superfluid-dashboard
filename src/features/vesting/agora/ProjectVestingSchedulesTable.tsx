@@ -19,7 +19,10 @@ export const ProjectVestingSchedulesTables: FC<{
     }
 
     return (
-        <TableContainer component={Paper}>
+        <TableContainer 
+            component={Paper} 
+            elevation={0}
+        >
             <Table size="small">
                 <TableBody>
                     {

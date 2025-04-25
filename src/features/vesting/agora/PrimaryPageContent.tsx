@@ -57,9 +57,6 @@ export function PrimaryPageContent(props: {
         },
         on: {
             selectAction: (context, action: { id: string }) => {
-                console.log({
-                    action
-                })
                 return produce(context, draft => {
                     const selectedAction = draft.allSelectableActions.find((x) => x.id === action.id);
                     if (!selectedAction) {
@@ -89,10 +86,17 @@ export function PrimaryPageContent(props: {
     );
     const areButtonsDisabled = initialAllSelectableActions.length === 0 || !isAgoraWhitelistedWallet;
 
+    const { projectCount, rowCount } = useMemo(() => {
+        return {
+            projectCount: projectsOverview.projects.flatMap(x => x.agoraEntry.projectNames).length,
+            rowCount: projectsOverview.projects.length
+        }
+    }, [projectsOverview]);
+
     return (
         <>
             <Typography variant="h6" gutterBottom>
-                Projects Overview
+                Projects Overview ({projectCount} projects, {rowCount} rows)
             </Typography>
 
             <ProjectsTable

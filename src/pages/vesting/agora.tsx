@@ -132,6 +132,10 @@ const AgoraPage: NextPageWithLayout = () => {
     return (
         <Container key={roundType} maxWidth="xl" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
 
+            <Typography variant="h4" component="h1" gutterBottom sx={{ mt: 2 }}>
+                Retro Funding
+            </Typography>
+
             {
                 network.id === optimismSepolia.id && (
                     <Box sx={{ mb: 3, mt: 2 }}>

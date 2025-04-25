@@ -53,7 +53,7 @@ export const ActionsList: FC<{
             <Table size="small" aria-label="actions table">
                 <TableHead>
                     <TableRow>
-                        <TableCell padding="checkbox">
+                        <TableCell padding="checkbox" align="center">
                             <Checkbox
                                 indeterminate={selected.length > 0 && selected.length < actions.length}
                                 checked={actions.length > 0 && selected.length === actions.length}
@@ -75,17 +75,15 @@ export const ActionsList: FC<{
                         return (
                             <TableRow
                                 hover
-                                onClick={() => handleClick(action)}
-                                role="checkbox"
-                                aria-checked={action.selected}
                                 tabIndex={-1}
                                 key={index}
-                                selected={action.selected}
                             >
-                                <TableCell padding="checkbox">
+                                <TableCell padding="checkbox" align="center">
                                     <Checkbox
+                                        size="small"
                                         checked={action.selected}
                                         inputProps={{ 'aria-labelledby': `action-${index}` }}
+                                        onClick={() => handleClick(action)}
                                     />
                                 </TableCell>
                                 <TableCell>
