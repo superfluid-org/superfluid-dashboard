@@ -4,7 +4,7 @@ import { testWeiAmount } from '../../utils/yupUtils'
 import { Effect as E, Logger, LogLevel, pipe } from 'effect'
 import { uniq } from 'lodash'
 import { tryGetBuiltGraphSdkForNetwork } from '../../vesting-subgraph/vestingSubgraphApi'
-import { optimism, optimismSepolia } from 'viem/chains'
+import { optimism } from 'viem/chains'
 import { Address, createPublicClient, http, isAddress, sha256, stringToHex } from 'viem'
 import { mapSubgraphVestingSchedule, VestingSchedule } from '../../features/vesting/types'
 import { UnitOfTime } from '../../features/send/FlowRateInput'
@@ -13,10 +13,9 @@ import { getUnixTime } from 'date-fns'
 import { cfaV1ForwarderAbi, cfaV1ForwarderAddress, superTokenAbi } from '../../generated'
 import { ACL_CREATE_PERMISSION, ACL_DELETE_PERMISSION } from '../../utils/constants'
 import { getAddress as getAddress_ } from "ethers/lib/utils"
+import { agoraApiEndpoints, RoundType, roundTypes, START_TIMESTAMP_OF_FIRST_TRANCH_ON_OPTIMISM, tokenAddresses, validChainIds } from '../../features/vesting/agora/constants'
 
 const getAddress = (address: string) => getAddress_(address) as Address;
-
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL;
 
 // Note: Pre-defining this because yup was not able to infer the types correctly for the transforms...
 type AgoraResponseEntry = {
@@ -58,12 +57,6 @@ export const agoraResponseEntrySchema = yup.object({
 }) as unknown as yup.Schema<AgoraResponseEntry>;
 
 export const agoraResponseSchema = yup.array().of(agoraResponseEntrySchema).required('Response array is required') as unknown as yup.Schema<AgoraResponse>;
-
-export type RoundType = "onchain_builders" | "dev_tooling"
-export const roundTypes: Record<RoundType, RoundType> = {
-    onchain_builders: "onchain_builders",
-    dev_tooling: "dev_tooling",
-} as const satisfies Record<RoundType, RoundType>;
 
 // Map this data into a more readable state...
 type TranchPlan = {
@@ -186,26 +179,6 @@ class PublicClientRpcError extends Error {
     readonly _tag = 'PublicClientRpcError'
 }
 
-const tokenAddresses = {
-    [optimism.id]: "0x1828Bff08BD244F7990edDCd9B19cc654b33cDB4" as const,
-    [optimismSepolia.id]: "0x0043d7c85C8b96a49A72A92C0B48CdC4720437d7" as const, // ETHx actually
-}
-
-const agoraApiEndpoints = {
-    // [optimismSepolia.id]: "https://op-atlas-git-stepan-rewards-api-mock-voteagora.vercel.app/api/v1/rewards/7/onchain-builders",
-    [optimism.id]: {
-        onchain_builders: `${APP_URL}/api/mock`,
-        dev_tooling: "https://op-atlas-git-stepan-rewards-claiming-voteagora.vercel.app/api/v1/rewards/7/onchain-builders",
-    },
-    [optimismSepolia.id]: {
-        onchain_builders: `${APP_URL}/api/mock`,
-        // onchain_builders: "https://op-atlas-git-stepan-rewards-claiming-voteagora.vercel.app/api/v1/rewards/7/onchain-builders",
-        dev_tooling: "https://op-atlas-git-stepan-rewards-api-mock-voteagora.vercel.app/api/v1/rewards/7/dev-tooling",
-    },
-} as const satisfies Record<number, Record<RoundType, string>>;
-
-const validChainIds = Object.keys(agoraApiEndpoints).map(Number);
-
 export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<AgoraResponseData>
@@ -292,12 +265,25 @@ export default async function handler(
     }
 
     const token = tokenAddresses[network.id as keyof typeof tokenAddresses];
+    const isProd = chainId === optimism.id;
 
     const main = E.gen(function* () {
 
         const dataFromAgora = yield* pipe(
             E.tryPromise({
-                try: () => fetch(agoraApiEndpoint + `?tranch=${tranch}`).then(res => res.json()),
+                try: async () => {
+                    if (isProd) {
+                        const res = await fetch(agoraApiEndpoint, {
+                            headers: {
+                                'Authorization': `Bearer ${process.env.AGORA_API_KEY}`
+                            }
+                        })
+                        return await res.json()
+                    } else {
+                        const res = await fetch(agoraApiEndpoint + `?tranch=${tranch}`)
+                        return await res.json()
+                    }
+                },
                 catch: (error) => {
                     return new AgoraError("Failed to fetch data from Agora", { cause: error })
                 }
@@ -326,10 +312,15 @@ export default async function handler(
             E.tap((x) => E.logTrace(`Validated ${x.length} rows from Agora`))
         );
 
-        // TODO: I should change this logic to only do the tranch times calculation for first tranch. Otherwise, I'm better off looking at existing schedules.
+        const startOfTranchOne = function() {
+            if (isProd) {
+                return START_TIMESTAMP_OF_FIRST_TRANCH_ON_OPTIMISM;
+            } else {
+                return getUnixTime(new Date()) + 4 * UnitOfTime.Minute;
+            }
+        }()
 
         const currentTranchCount = dataFromAgora[0].amounts.length;
-        const startOfTranchOne = getUnixTime(new Date()) + 4 * UnitOfTime.Minute;
         const tranchDuration = 1 * UnitOfTime.Month;
 
         // Calculate which tranch index is current (0-based)
@@ -357,7 +348,7 @@ export default async function handler(
                 };
             })
         }
-        const claimEndDate = tranchPlan.tranches[tranchPlan.tranches.length - 1].endTimestamp + 1 * UnitOfTime.Year;
+        const claimEndDate = tranchPlan.tranches[tranchPlan.tranches.length - 1].endTimestamp + UnitOfTime.Year;
         function getClaimPeriod(startTimestamp: number) {
             if (startTimestamp > claimEndDate) {
                 throw new Error("Start timestamp is after claim end date. This shouldn't happen. Please investigate!");
@@ -419,7 +410,6 @@ export default async function handler(
                 try: () => {
                     return subgraphSdk.getVestingSchedules({
                         where: {
-                            // TODO: add cut-off dates here? Answer: Might not be necessary because these are brand new.
                             superToken: token.toLowerCase(),
                             sender: sender.toLowerCase(),
                             receiver_in: allReceiverAddresses_bothActiveAndInactive.map(x => x.toLowerCase()), // Note: Can this go over any limits? Answer: not too worried...
@@ -442,7 +432,6 @@ export default async function handler(
                     .filter(x => !x.status.isDeleted) // TODO: Consider this filter...
             )
         );
-        // TODO: I know this has too many vesting schedules. I'll not perfect the filtering just yet.
 
         // # Map into project states
         const projectStates = yield* E.forEach(dataFromAgora, (row) => {
@@ -488,7 +477,7 @@ export default async function handler(
                         return [];
                     }
 
-                    const sumOfPreviousTranches = row.amounts
+                    const _sumOfPreviousTranches = row.amounts
                         .slice(0, -1)
                         .reduce((sum, amount) => sum + BigInt(amount || 0), 0n);
                     const didKycGetJustApproved = allRelevantVestingSchedules.length === 0;
@@ -718,7 +707,7 @@ export default async function handler(
     const projectsOverview = await E.runPromise(
         pipe(
             main,
-            Logger.withMinimumLogLevel(LogLevel.Trace) // TODO: make this work only in dev mode
+            Logger.withMinimumLogLevel(process.env.NODE_ENV === 'development' ? LogLevel.Trace : LogLevel.Info)
         )
     );
 

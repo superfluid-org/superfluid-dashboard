@@ -552,6 +552,20 @@ export declare class VestingScheduler_v3__factory {
             readonly type: "address";
         }, {
             readonly internalType: "address";
+            readonly name: "receiver";
+            readonly type: "address";
+        }];
+        readonly name: "endVestingScheduleNow";
+        readonly outputs: readonly [];
+        readonly stateMutability: "nonpayable";
+        readonly type: "function";
+    }, {
+        readonly inputs: readonly [{
+            readonly internalType: "contract ISuperToken";
+            readonly name: "superToken";
+            readonly type: "address";
+        }, {
+            readonly internalType: "address";
             readonly name: "sender";
             readonly type: "address";
         }, {

@@ -1,15 +1,16 @@
 import { Box, Button, Container, FormControl, InputLabel, MenuItem, Paper, Select, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
 import { BigLoader } from "../../features/vesting/BigLoader";
 import { useVisibleAddress } from "../../features/wallet/VisibleAddressContext";
 import { useTokenQuery } from "../../hooks/useTokenQuery";
 import { NextPageWithLayout } from "../_app";
-import { AgoraResponseData, RoundType, roundTypes } from "../api/agora";
+import { AgoraResponseData } from "../api/agora";
 import { PrimaryPageContent } from "../../features/vesting/agora/PrimaryPageContent";
+import { RoundType, roundTypes } from "../../features/vesting/agora/constants";
 
 const AgoraPage: NextPageWithLayout = () => {
     const { visibleAddress } = useVisibleAddress();

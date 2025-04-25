@@ -693,6 +693,24 @@ const _abi = [
             },
             {
                 internalType: "address",
+                name: "receiver",
+                type: "address",
+            },
+        ],
+        name: "endVestingScheduleNow",
+        outputs: [],
+        stateMutability: "nonpayable",
+        type: "function",
+    },
+    {
+        inputs: [
+            {
+                internalType: "contract ISuperToken",
+                name: "superToken",
+                type: "address",
+            },
+            {
+                internalType: "address",
                 name: "sender",
                 type: "address",
             },

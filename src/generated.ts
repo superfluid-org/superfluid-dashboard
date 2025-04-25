@@ -6487,8 +6487,8 @@ export const vestingSchedulerV2Config = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const vestingSchedulerV3Abi = [
   {
@@ -6968,6 +6968,20 @@ export const vestingSchedulerV3Abi = [
         internalType: 'contract ISuperToken',
         type: 'address',
       },
+      { name: 'receiver', internalType: 'address', type: 'address' },
+    ],
+    name: 'endVestingScheduleNow',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'superToken',
+        internalType: 'contract ISuperToken',
+        type: 'address',
+      },
       { name: 'sender', internalType: 'address', type: 'address' },
       { name: 'receiver', internalType: 'address', type: 'address' },
     ],
@@ -7251,17 +7265,17 @@ export const vestingSchedulerV3Abi = [
 ] as const
 
 /**
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const vestingSchedulerV3Address = {
-  10: '0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9',
-  11155420: '0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E',
+  10: '0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4',
+  11155420: '0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C',
 } as const
 
 /**
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const vestingSchedulerV3Config = {
   address: vestingSchedulerV3Address,
@@ -17515,8 +17529,8 @@ export const useVestingSchedulerV2VestingScheduleUpdatedEvent =
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3Read = /*#__PURE__*/ createUseReadContract({
   abi: vestingSchedulerV3Abi,
@@ -17526,8 +17540,8 @@ export const useVestingSchedulerV3Read = /*#__PURE__*/ createUseReadContract({
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"END_DATE_VALID_BEFORE"`
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3EndDateValidBefore =
   /*#__PURE__*/ createUseReadContract({
@@ -17539,8 +17553,8 @@ export const useVestingSchedulerV3EndDateValidBefore =
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"HOST"`
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3Host = /*#__PURE__*/ createUseReadContract({
   abi: vestingSchedulerV3Abi,
@@ -17551,8 +17565,8 @@ export const useVestingSchedulerV3Host = /*#__PURE__*/ createUseReadContract({
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"MIN_VESTING_DURATION"`
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3MinVestingDuration =
   /*#__PURE__*/ createUseReadContract({
@@ -17564,8 +17578,8 @@ export const useVestingSchedulerV3MinVestingDuration =
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"START_DATE_VALID_AFTER"`
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3StartDateValidAfter =
   /*#__PURE__*/ createUseReadContract({
@@ -17577,8 +17591,8 @@ export const useVestingSchedulerV3StartDateValidAfter =
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"accountings"`
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3Accountings =
   /*#__PURE__*/ createUseReadContract({
@@ -17590,8 +17604,8 @@ export const useVestingSchedulerV3Accountings =
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"getMaximumNeededTokenAllowance"`
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3GetMaximumNeededTokenAllowance =
   /*#__PURE__*/ createUseReadContract({
@@ -17603,8 +17617,8 @@ export const useVestingSchedulerV3GetMaximumNeededTokenAllowance =
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"getTotalVestedAmount"`
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3GetTotalVestedAmount =
   /*#__PURE__*/ createUseReadContract({
@@ -17616,8 +17630,8 @@ export const useVestingSchedulerV3GetTotalVestedAmount =
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"getVestingSchedule"`
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3GetVestingSchedule =
   /*#__PURE__*/ createUseReadContract({
@@ -17629,8 +17643,8 @@ export const useVestingSchedulerV3GetVestingSchedule =
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"isTrustedForwarder"`
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3IsTrustedForwarder =
   /*#__PURE__*/ createUseReadContract({
@@ -17642,8 +17656,8 @@ export const useVestingSchedulerV3IsTrustedForwarder =
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"mapCreateVestingScheduleParams"`
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3MapCreateVestingScheduleParams =
   /*#__PURE__*/ createUseReadContract({
@@ -17655,8 +17669,8 @@ export const useVestingSchedulerV3MapCreateVestingScheduleParams =
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"versionRecipient"`
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3VersionRecipient =
   /*#__PURE__*/ createUseReadContract({
@@ -17668,8 +17682,8 @@ export const useVestingSchedulerV3VersionRecipient =
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"vestingSchedules"`
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3VestingSchedules =
   /*#__PURE__*/ createUseReadContract({
@@ -17681,8 +17695,8 @@ export const useVestingSchedulerV3VestingSchedules =
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3Write = /*#__PURE__*/ createUseWriteContract({
   abi: vestingSchedulerV3Abi,
@@ -17692,8 +17706,8 @@ export const useVestingSchedulerV3Write = /*#__PURE__*/ createUseWriteContract({
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"createAndExecuteVestingScheduleFromAmountAndDuration"`
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3CreateAndExecuteVestingScheduleFromAmountAndDuration =
   /*#__PURE__*/ createUseWriteContract({
@@ -17705,8 +17719,8 @@ export const useVestingSchedulerV3CreateAndExecuteVestingScheduleFromAmountAndDu
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"createVestingSchedule"`
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3CreateVestingSchedule =
   /*#__PURE__*/ createUseWriteContract({
@@ -17718,8 +17732,8 @@ export const useVestingSchedulerV3CreateVestingSchedule =
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"createVestingScheduleFromAmountAndDuration"`
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3CreateVestingScheduleFromAmountAndDuration =
   /*#__PURE__*/ createUseWriteContract({
@@ -17731,8 +17745,8 @@ export const useVestingSchedulerV3CreateVestingScheduleFromAmountAndDuration =
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"deleteVestingSchedule"`
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3DeleteVestingSchedule =
   /*#__PURE__*/ createUseWriteContract({
@@ -17742,10 +17756,23 @@ export const useVestingSchedulerV3DeleteVestingSchedule =
   })
 
 /**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"endVestingScheduleNow"`
+ *
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
+ */
+export const useVestingSchedulerV3EndVestingScheduleNow =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    functionName: 'endVestingScheduleNow',
+  })
+
+/**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"executeCliffAndFlow"`
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3ExecuteCliffAndFlow =
   /*#__PURE__*/ createUseWriteContract({
@@ -17757,8 +17784,8 @@ export const useVestingSchedulerV3ExecuteCliffAndFlow =
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"executeEndVesting"`
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3ExecuteEndVesting =
   /*#__PURE__*/ createUseWriteContract({
@@ -17770,8 +17797,8 @@ export const useVestingSchedulerV3ExecuteEndVesting =
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"updateVestingSchedule"`
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3UpdateVestingSchedule =
   /*#__PURE__*/ createUseWriteContract({
@@ -17783,8 +17810,8 @@ export const useVestingSchedulerV3UpdateVestingSchedule =
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"updateVestingScheduleFlowRateFromAmount"`
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3UpdateVestingScheduleFlowRateFromAmount =
   /*#__PURE__*/ createUseWriteContract({
@@ -17796,8 +17823,8 @@ export const useVestingSchedulerV3UpdateVestingScheduleFlowRateFromAmount =
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"updateVestingScheduleFlowRateFromAmountAndEndDate"`
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3UpdateVestingScheduleFlowRateFromAmountAndEndDate =
   /*#__PURE__*/ createUseWriteContract({
@@ -17809,8 +17836,8 @@ export const useVestingSchedulerV3UpdateVestingScheduleFlowRateFromAmountAndEndD
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"updateVestingScheduleFlowRateFromEndDate"`
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3UpdateVestingScheduleFlowRateFromEndDate =
   /*#__PURE__*/ createUseWriteContract({
@@ -17822,8 +17849,8 @@ export const useVestingSchedulerV3UpdateVestingScheduleFlowRateFromEndDate =
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const usePrepareVestingSchedulerV3Write =
   /*#__PURE__*/ createUseSimulateContract({
@@ -17834,8 +17861,8 @@ export const usePrepareVestingSchedulerV3Write =
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"createAndExecuteVestingScheduleFromAmountAndDuration"`
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const usePrepareVestingSchedulerV3CreateAndExecuteVestingScheduleFromAmountAndDuration =
   /*#__PURE__*/ createUseSimulateContract({
@@ -17847,8 +17874,8 @@ export const usePrepareVestingSchedulerV3CreateAndExecuteVestingScheduleFromAmou
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"createVestingSchedule"`
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const usePrepareVestingSchedulerV3CreateVestingSchedule =
   /*#__PURE__*/ createUseSimulateContract({
@@ -17860,8 +17887,8 @@ export const usePrepareVestingSchedulerV3CreateVestingSchedule =
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"createVestingScheduleFromAmountAndDuration"`
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const usePrepareVestingSchedulerV3CreateVestingScheduleFromAmountAndDuration =
   /*#__PURE__*/ createUseSimulateContract({
@@ -17873,8 +17900,8 @@ export const usePrepareVestingSchedulerV3CreateVestingScheduleFromAmountAndDurat
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"deleteVestingSchedule"`
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const usePrepareVestingSchedulerV3DeleteVestingSchedule =
   /*#__PURE__*/ createUseSimulateContract({
@@ -17884,10 +17911,23 @@ export const usePrepareVestingSchedulerV3DeleteVestingSchedule =
   })
 
 /**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"endVestingScheduleNow"`
+ *
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
+ */
+export const usePrepareVestingSchedulerV3EndVestingScheduleNow =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: vestingSchedulerV3Abi,
+    address: vestingSchedulerV3Address,
+    functionName: 'endVestingScheduleNow',
+  })
+
+/**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"executeCliffAndFlow"`
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const usePrepareVestingSchedulerV3ExecuteCliffAndFlow =
   /*#__PURE__*/ createUseSimulateContract({
@@ -17899,8 +17939,8 @@ export const usePrepareVestingSchedulerV3ExecuteCliffAndFlow =
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"executeEndVesting"`
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const usePrepareVestingSchedulerV3ExecuteEndVesting =
   /*#__PURE__*/ createUseSimulateContract({
@@ -17912,8 +17952,8 @@ export const usePrepareVestingSchedulerV3ExecuteEndVesting =
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"updateVestingSchedule"`
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const usePrepareVestingSchedulerV3UpdateVestingSchedule =
   /*#__PURE__*/ createUseSimulateContract({
@@ -17925,8 +17965,8 @@ export const usePrepareVestingSchedulerV3UpdateVestingSchedule =
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"updateVestingScheduleFlowRateFromAmount"`
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const usePrepareVestingSchedulerV3UpdateVestingScheduleFlowRateFromAmount =
   /*#__PURE__*/ createUseSimulateContract({
@@ -17938,8 +17978,8 @@ export const usePrepareVestingSchedulerV3UpdateVestingScheduleFlowRateFromAmount
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"updateVestingScheduleFlowRateFromAmountAndEndDate"`
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const usePrepareVestingSchedulerV3UpdateVestingScheduleFlowRateFromAmountAndEndDate =
   /*#__PURE__*/ createUseSimulateContract({
@@ -17951,8 +17991,8 @@ export const usePrepareVestingSchedulerV3UpdateVestingScheduleFlowRateFromAmount
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"updateVestingScheduleFlowRateFromEndDate"`
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const usePrepareVestingSchedulerV3UpdateVestingScheduleFlowRateFromEndDate =
   /*#__PURE__*/ createUseSimulateContract({
@@ -17964,8 +18004,8 @@ export const usePrepareVestingSchedulerV3UpdateVestingScheduleFlowRateFromEndDat
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link vestingSchedulerV3Abi}__
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3Event =
   /*#__PURE__*/ createUseWatchContractEvent({
@@ -17976,8 +18016,8 @@ export const useVestingSchedulerV3Event =
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `eventName` set to `"VestingClaimed"`
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3VestingClaimedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
@@ -17989,8 +18029,8 @@ export const useVestingSchedulerV3VestingClaimedEvent =
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `eventName` set to `"VestingCliffAndFlowExecuted"`
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3VestingCliffAndFlowExecutedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
@@ -18002,8 +18042,8 @@ export const useVestingSchedulerV3VestingCliffAndFlowExecutedEvent =
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `eventName` set to `"VestingEndExecuted"`
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3VestingEndExecutedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
@@ -18015,8 +18055,8 @@ export const useVestingSchedulerV3VestingEndExecutedEvent =
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `eventName` set to `"VestingEndFailed"`
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3VestingEndFailedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
@@ -18028,8 +18068,8 @@ export const useVestingSchedulerV3VestingEndFailedEvent =
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `eventName` set to `"VestingScheduleCreated"`
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3VestingScheduleCreatedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
@@ -18041,8 +18081,8 @@ export const useVestingSchedulerV3VestingScheduleCreatedEvent =
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `eventName` set to `"VestingScheduleDeleted"`
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3VestingScheduleDeletedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
@@ -18054,8 +18094,8 @@ export const useVestingSchedulerV3VestingScheduleDeletedEvent =
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `eventName` set to `"VestingScheduleUpdated"`
  *
- * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x0258CcE720aBa68Bf2b645b594Fe1340CF4a65E9)
- * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0xA52b0ED990a3e73754F4cA446a3A81e0499BE59E)
+ * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3VestingScheduleUpdatedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
