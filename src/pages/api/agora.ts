@@ -278,10 +278,10 @@ export default async function handler(
                                 'Authorization': `Bearer ${process.env.AGORA_API_KEY}`
                             }
                         })
-                        return await res.json()
+                        return await res.json() as AgoraResponse
                     } else {
                         const res = await fetch(agoraApiEndpoint + `?tranch=${tranch}`)
-                        return await res.json()
+                        return await res.json() as AgoraResponse
                     }
                 },
                 catch: (error) => {
@@ -291,18 +291,18 @@ export default async function handler(
             E.retry({
                 times: 5
             }),
-            E.tap(() => E.logTrace("Fetched data from Agora")),
             E.map(x => {
                 if (!Array.isArray(x)) {
-                    return E.fail(new AgoraError("Invalid data from Agora: response is not an array"))
+                    throw new AgoraError("Invalid data from Agora: response is not an array")
                 }
                 return x;
             }),
+            E.tap((x) => E.logTrace(`Fetched ${x.length} rows from Agora.`)),
             E.flatMap(response => E.forEach(response, entry =>
                 E.tryPromise(() => agoraResponseEntrySchema.validate(entry))
                     .pipe(
                         E.catchAll(error =>
-                            E.logError(`Invalid data from Agora for project ${entry.projectId || 'unknown'}: validation failed`, { cause: error }).pipe(
+                            E.logError(`Invalid data from Agora for project ${entry.projectIds.join(', ') || 'unknown'}: validation failed`, { cause: error }).pipe(
                                 E.flatMap(() => E.succeed(null))
                             )
                         )
