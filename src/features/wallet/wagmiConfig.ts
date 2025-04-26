@@ -8,6 +8,7 @@ import { Address, createWalletClient } from "viem";
 
 import { createAppKit } from '@reown/appkit/react'
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
+import { CustomRpcUrlMap } from '@reown/appkit-common'
 
 const metadata = {
   name: 'Superfluid Dashboard',
@@ -18,17 +19,22 @@ const metadata = {
 
 const projectId = appConfig.walletConnectProjectId;
 
-const appTransports = allNetworks.reduce<Record<number, Transport>>((acc, x) => {
+const customRpcUrls = allNetworks.reduce<CustomRpcUrlMap>((acc, x) => {
   const chainId = x.id;
 
-  const transport = fallback([
-    http(x.rpcUrls.superfluid.http[0]), // Prioritize Superfluid API
-    http(x.rpcUrls.default.http[0]) // Fallback to wagmi-defined default public RPC
-  ], {
-    rank: false
-  })
+  // const transport = fallback([
+  //   http(x.rpcUrls.superfluid.http[0]), // Prioritize Superfluid API
+  //   http(x.rpcUrls.default.http[0]) // Fallback to wagmi-defined default public RPC
+  // ], {
+  //   rank: false
+  // })
 
-  acc[chainId] = transport;
+  acc[`eip155:${chainId}`] = [{
+    url: x.rpcUrls.superfluid.http[0],
+  }, {
+    url: x.rpcUrls.default.http[0]
+  }];
+
   return acc;
 }, {});
 
@@ -116,6 +122,7 @@ if (needsTestConnector) {
 const wagmiAdapter = new WagmiAdapter({
   ssr: false,
   networks: allNetworks,
+  customRpcUrls,
   projectId,
   connectors: [
     safe({
@@ -130,7 +137,6 @@ const wagmiAdapter = new WagmiAdapter({
     }),
     ...testConnectors,
   ],
-  transports: appTransports,
   batch: {
     // NOTE: It is very important to enable the multicall support, otherwise token balance queries will run into rate limits.
     multicall: {
@@ -139,11 +145,15 @@ const wagmiAdapter = new WagmiAdapter({
   }
 })
 
+// @ts-ignore
+// wagmiAdapter.wagmiConfig._internal.transports = appTransports;
+
 export const wagmiConfig = wagmiAdapter.wagmiConfig;
 
 const _appKit = createAppKit({
   adapters: [wagmiAdapter],
   networks: allNetworks,
+  customRpcUrls,
   metadata: metadata,
   projectId,
   features: {
