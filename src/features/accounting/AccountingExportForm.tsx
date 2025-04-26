@@ -184,16 +184,18 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
                   render={({ field: { value, onChange } }) => (
                     <DatePicker
                       views={["year", "month"]}
-                      inputFormat="MM/yy"
+                      format={"MM/yy"}
                       minDate={MIN_DATE}
                       maxDate={endDate || MAX_DATE}
                       value={value}
                       onChange={(date) =>
                         onChange(date ? startOfMonth(date) : null)
                       }
-                      renderInput={(params: any) => (
-                        <TextField {...params} helperText={null} />
-                      )}
+                      slots={{
+                        textField: (params) => (
+                          <TextField {...params} helperText={null} />
+                        ),
+                      }}
                     />
                   )}
                 />
@@ -204,16 +206,18 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
                   render={({ field: { value, onChange } }) => (
                     <DatePicker
                       views={["year", "month"]}
-                      inputFormat="MM/yy"
+                      format="MM/yy"
                       minDate={startDate || MIN_DATE}
                       maxDate={MAX_DATE}
                       value={value}
                       onChange={(date) =>
                         onChange(date ? endOfMonth(date) : null)
                       }
-                      renderInput={(params: any) => (
-                        <TextField {...params} helperText={null} />
-                      )}
+                      slots={{
+                        textField: (params) => (
+                          <TextField {...params} helperText={null} />
+                        ),
+                      }}
                     />
                   )}
                 />
@@ -302,7 +306,7 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
         <Button
           data-cy={"export-preview-button"}
           variant="contained"
-          size="xl"
+          size="large"
           onClick={submitAccountingForm}
           disabled={!isFormValid}
         >

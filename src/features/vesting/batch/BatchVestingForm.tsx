@@ -12,7 +12,6 @@ import TooltipWithIcon from "../../common/TooltipWithIcon";
 import { ValidationSummary } from "../ValidationSummary";
 import Papa from "papaparse";
 import { csvSchema, headerSchema } from "./types";
-import { LoadingButton } from "@mui/lab";
 import { transactionButtonDefaultProps } from "../../transactionBoundary/TransactionButton";
 import { BatchReceiversTable } from "./BatchReceiversTable";
 import { ValidationError } from "yup";
@@ -173,9 +172,9 @@ const FileController = memo(function FileController() {
             render={({ field: { value, onChange, ...field } }) => {
                 return (
                     <>
-                        <LoadingButton {...transactionButtonDefaultProps} variant={hasSchedules ? "outlined" : "contained"} onClick={() => fileInputRef.current?.click()}>
+                        <Button {...transactionButtonDefaultProps} variant={hasSchedules ? "outlined" : "contained"} onClick={() => fileInputRef.current?.click()}>
                             {hasSchedules ? "Change CSV" : "Upload CSV"}
-                        </LoadingButton>
+                        </Button>
                         <Input
                             {...field}
                             style={{ display: 'none' }}

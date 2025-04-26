@@ -13,6 +13,7 @@ const isOnNetlify = !!netlifyContext;
 const interfaceFeeAddress = process.env.INTERFACE_FEE_ADDRESS;
 const shouldInstrumentCode = "INSTRUMENT_CODE" in process.env;
 const appUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : process.env.URL ?? "http://localhost:3000";
+const enableReactCompiler = process.env.NODE_ENV !== "development";
 
 function withSentryIfNecessary(nextConfig) {
   console.log({
@@ -81,7 +82,8 @@ const moduleExports = {
   // modularizeImports: // It's enabled automatically for many packages in use: https://nextjs.org/docs/app/api-reference/next-config-js/optimizePackageImports
   experimental: {
     forceSwcTransforms: !shouldInstrumentCode, // .babelrc.js existence is because of code instrumentation.
-    cpus: isOnNetlify ? 6 : undefined // Fixes the issue of memory running out on Netlify (error 127)
+    cpus: isOnNetlify ? 6 : undefined, // Fixes the issue of memory running out on Netlify (error 127)
+    reactCompiler: enableReactCompiler
   },
   eslint: {
     ignoreDuringBuilds: isOnNetlify,

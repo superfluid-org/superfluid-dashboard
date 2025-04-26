@@ -10,6 +10,7 @@ import createEmotionServer from "@emotion/server/create-instance";
 import createEmotionCache from "../features/theme/createEmotionCache";
 import { MyAppProps } from "./_app";
 import { AppType } from "next/app";
+import { JSX } from "react";
 
 interface MyDocumentProps extends DocumentProps {
   emotionStyleTags: JSX.Element[];

@@ -1,4 +1,3 @@
-import { LoadingButton } from "@mui/lab";
 import { Button, ButtonProps } from "@mui/material";
 import { FC, PropsWithChildren } from "react";
 import { useConnectionBoundary } from "./ConnectionBoundary";
@@ -45,7 +44,7 @@ const ConnectionBoundaryButton: FC<
 
   if (!(isConnected || (isImpersonated && allowImpersonation))) {
     return (
-      <LoadingButton
+      <Button
         data-cy={"connect-wallet-button"}
         {...ButtonProps}
         loading={isConnecting}
@@ -53,7 +52,7 @@ const ConnectionBoundaryButton: FC<
         onClick={connectWallet}
       >
         <span>Connect Wallet</span>
-      </LoadingButton>
+      </Button>
     );
   }
 

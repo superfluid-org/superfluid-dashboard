@@ -1,6 +1,6 @@
 import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
 import { IconButton, Tooltip, TooltipProps } from "@mui/material";
-import { FC, useCallback, useState } from "react";
+import { FC, useCallback, useState, JSX } from "react";
 import copyToClipboard from "../../utils/copyToClipboard";
 
 type CopyFunctionChildren = ({ copy }: { copy: () => void }) => JSX.Element;

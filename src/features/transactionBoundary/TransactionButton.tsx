@@ -1,7 +1,6 @@
 import { FC, ReactNode } from "react";
 import { useTransactionBoundary } from "./TransactionBoundary";
 import { Button, ButtonProps } from "@mui/material";
-import { LoadingButton } from "@mui/lab";
 import { Signer } from "ethers";
 import ConnectionBoundaryButton, {
   ConnectionBoundaryButtonProps,
@@ -47,7 +46,7 @@ export const TransactionButton: FC<TransactionButtonProps> = ({
       ButtonProps={buttonProps}
       {...ConnectionBoundaryButtonProps}
     >
-      <LoadingButton
+      <Button
         {...(dataCy ? { "data-cy": dataCy } : {})}
         color="primary"
         {...buttonProps}
@@ -59,7 +58,7 @@ export const TransactionButton: FC<TransactionButtonProps> = ({
         }}
       >
         <span>{children}</span>
-      </LoadingButton>
+      </Button>
     </ConnectionBoundaryButton>
   );
 };

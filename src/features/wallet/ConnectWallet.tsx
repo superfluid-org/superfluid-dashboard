@@ -1,6 +1,5 @@
 import AccountBalanceWalletOutlinedIcon from "@mui/icons-material/AccountBalanceWalletOutlined";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
-import { LoadingButton } from "@mui/lab";
 import {
   Button,
   ButtonProps,
@@ -151,7 +150,7 @@ const ConnectWallet: FC<ConnectWalletProps> = ({
   }
 
   return (
-    <LoadingButton
+    <Button
       data-cy={"connect-wallet-button"}
       loading={isReconnecting}
       variant="contained"
@@ -170,7 +169,7 @@ const ConnectWallet: FC<ConnectWalletProps> = ({
         }}
       />
       Connect Wallet
-    </LoadingButton>
+    </Button>
   );
 };
 

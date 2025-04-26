@@ -15,7 +15,6 @@ import { CopyIconBtn } from "../../features/common/CopyIconBtn";
 
 import { useNotificationChannels } from "../../hooks/useNotificationChannels";
 import shortenHex from "../../utils/shortenHex";
-import { LoadingButton } from "@mui/lab";
 import { useImpersonation } from "../../features/impersonation/ImpersonationContext";
 import NoWalletConnected from "../NoWalletConnected/NoWalletConnected";
 
@@ -43,7 +42,7 @@ const NotificationSettings: FC = () => {
 
             {/* 
             
-            <LoadingButton
+            <Button
               disabled={isImpersonated}
               data-cy={"notification-button"}
               variant="contained"
@@ -52,7 +51,7 @@ const NotificationSettings: FC = () => {
             >
               {channels.PUSH.subscription.isSubscribed ? "Disable" : "Enable"}{" "}
               Notifications
-            </LoadingButton> */}
+            </Button> */}
           </Stack>
 
           <Typography variant="body1" color="secondary">

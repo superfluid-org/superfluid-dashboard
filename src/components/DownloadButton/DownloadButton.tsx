@@ -1,5 +1,5 @@
 import { styled } from "@mui/material";
-import { FC, useRef } from "react";
+import { FC, useRef, JSX } from "react";
 
 const HiddenLink = styled("a")({ display: "none" });
 

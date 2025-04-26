@@ -90,7 +90,7 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
   );
 
   return (
-    <ListItem data-cy={"transaction"} button sx={{ cursor: "default" }}>
+    <ListItem data-cy={"transaction"} component="button" sx={{ cursor: "default" }}>
       <ListItemAvatar>
         <TransactionListItemAvatar status={transaction.status} />
       </ListItemAvatar>

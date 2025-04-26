@@ -315,9 +315,10 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({ }) => {
     [currency, mappedAddresses, lowerCaseAddresses]
   );
 
-  const [pageSize, setPageSize] = useState(10);
-
-  const onPageSizeChange = (newPageSize: number) => setPageSize(newPageSize);
+  const [paginationModel, setPaginationModel] = useState({
+    pageSize: 10,
+    page: 0,
+  });
 
   return (
     <Paper elevation={1}>
@@ -335,15 +336,15 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({ }) => {
             sortModel: [{ field: "date", sort: "asc" }],
           },
         }}
-        disableSelectionOnClick
+        disableRowSelectionOnClick
         rows={virtualStreamPeriods}
         columns={columns}
-        pageSize={pageSize}
+        paginationModel={paginationModel}
+        onPaginationModelChange={setPaginationModel}
         loading={
           streamPeriodsResponse.isLoading || streamPeriodsResponse.isFetching
         }
-        rowsPerPageOptions={[10, 25, 50]}
-        onPageSizeChange={onPageSizeChange}
+        pageSizeOptions={[10, 25, 50]}
         components={{
           Toolbar: CustomToolbar,
         }}

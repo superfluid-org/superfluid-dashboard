@@ -1,4 +1,3 @@
-import { LoadingButton } from "@mui/lab";
 import {
   Alert,
   AlertTitle,
@@ -14,7 +13,6 @@ import {
   useTheme,
 } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
-import NextLink from "next/link";
 import { FC, useCallback } from "react";
 import useAddressName from "../../hooks/useAddressName";
 import { getAddress } from "../../utils/memoizedEthersUtils";
@@ -162,7 +160,7 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
                     claimTestTokensResponse.error === 405) ||
                   claimTestTokensResponse.isSuccess
                 ) && (
-                  <LoadingButton
+                  <Button
                     data-cy={"claim-button"}
                     size="xl"
                     fullWidth
@@ -172,7 +170,7 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
                     onClick={claimTokens}
                   >
                     {hasClaimedTokens ? "Tokens Claimed" : "Claim"}
-                  </LoadingButton>
+                  </Button>
                 )}
 
                 {hasClaimedTokens && claimTestTokensResponse.isSuccess && (

@@ -45,7 +45,6 @@ import StreamActiveFilter, {
 } from "../features/streamsTable/StreamActiveFilter";
 import { getAddress } from "../utils/memoizedEthersUtils";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
-import { LoadingButton } from "@mui/lab";
 import { publicClientToProvider } from "../utils/wagmiEthersAdapters";
 import { resolvedWagmiClients } from "../features/wallet/WagmiManager";
 import { efpApi } from "../features/efp/efpApi.slice";
@@ -466,7 +465,7 @@ const AddressBook: NextPage = () => {
             <>
               <ReadFileButton onLoaded={onImport} mimeType=".csv">
                 {({ selectFile }) => (
-                  <LoadingButton
+                  <Button
                     data-cy={"import-button"}
                     variant="outlined"
                     color="secondary"
@@ -474,7 +473,7 @@ const AddressBook: NextPage = () => {
                     loading={isImportInProgress}
                   >
                     Import
-                  </LoadingButton>
+                  </Button>
                 )}
               </ReadFileButton>
 

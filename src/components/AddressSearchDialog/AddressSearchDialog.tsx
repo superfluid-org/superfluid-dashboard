@@ -39,7 +39,6 @@ import {
   Network,
 } from "../../features/network/networks";
 import NetworkSelect from "../NetworkSelect/NetworkSelect";
-import { LoadingButton } from "@mui/lab";
 import { ensApi } from "../../features/ens/ensApi.slice";
 import AddressSearchIndex from "../../features/send/AddressSearchIndex";
 import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
@@ -479,7 +478,7 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
         )}
         {mode === "addressBook" && (
           <Box sx={{ p: 2, display: "flex", justifyContent: "center" }}>
-            <LoadingButton
+            <Button
               data-cy={"save-button"}
               loading={isContractDetectionLoading || ensQuery.isFetching}
               disabled={
@@ -504,7 +503,7 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
               }}
             >
               Save
-            </LoadingButton>
+            </Button>
           </Box>
         )}
       </DialogContent>

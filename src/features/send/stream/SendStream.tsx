@@ -1079,15 +1079,17 @@ const StartDateController = memo(function StartDateController(
         name="data.startTimestamp"
         render={({ field: { onChange, onBlur } }) => (
           <DateTimePicker
-            renderInput={(props) => (
-              <TextField
-                data-cy={"start-date"}
-                fullWidth
-                autoComplete="off"
-                {...props}
-                onBlur={onBlur}
-              />
-            )}
+            slots={{
+              textField: (props) => (
+                <TextField
+                  data-cy={"start-date"}
+                  fullWidth
+                  autoComplete="off"
+                  {...props}
+                  onBlur={onBlur}
+                />
+              ),
+            }}
             value={props.startDate}
             minDateTime={props.MIN_DATE}
             maxDateTime={props.startDateMax}
@@ -1115,32 +1117,34 @@ const EndDateController = memo(function EndDateController(
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-    <Controller
-      control={control}
-      name="data.endTimestamp"
-      render={({ field: { onChange, onBlur } }) => (
-        <DateTimePicker
-          renderInput={(props) => (
-            <TextField
-              data-cy={"end-date"}
-              fullWidth
-              autoComplete="off"
-              {...props}
-              onBlur={onBlur}
-            />
-          )}
-          value={props.endDate}
-          minDateTime={props.endDateMin}
-          maxDateTime={props.MAX_DATE}
-          ampm={false}
-          onChange={(date: Date | null) => {
-            const endTimestamp = date ? getTimeInSeconds(date) : null;
-            onChange(endTimestamp);
-          }}
-          disablePast
-        />
-      )}
-    />
-  </LocalizationProvider>
+      <Controller
+        control={control}
+        name="data.endTimestamp"
+        render={({ field: { onChange, onBlur } }) => (
+          <DateTimePicker
+            slots={{
+              textField: (props) => (
+                <TextField
+                  data-cy={"end-date"}
+                  fullWidth
+                  autoComplete="off"
+                  {...props}
+                  onBlur={onBlur}
+                />
+              ),
+            }}
+            value={props.endDate}
+            minDateTime={props.endDateMin}
+            maxDateTime={props.MAX_DATE}
+            ampm={false}
+            onChange={(date: Date | null) => {
+              const endTimestamp = date ? getTimeInSeconds(date) : null;
+              onChange(endTimestamp);
+            }}
+            disablePast
+          />
+        )}
+      />
+    </LocalizationProvider>
   )
 })
