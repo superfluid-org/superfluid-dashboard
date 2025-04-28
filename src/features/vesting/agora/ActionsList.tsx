@@ -13,7 +13,8 @@ export const ActionsList: FC<{
     tokenSymbol: string | undefined,
     selectAction: (action: { id: string }) => void;
     deselectAction: (action: { id: string }) => void;
-}> = ({ actions, tokenSymbol, selectAction, deselectAction }) => {
+    elevation?: number;
+}> = ({ actions, tokenSymbol, selectAction, deselectAction, elevation }) => {
 
     const selected = useMemo(() => {
         const selectedActions = actions.filter(action => action.selected);
@@ -49,7 +50,10 @@ export const ActionsList: FC<{
     }
 
     return (
-        <TableContainer component={Paper}>
+        <TableContainer
+            component={Paper}
+            elevation={elevation}
+        >
             <Table size="small" aria-label="actions table">
                 <TableHead>
                     <TableRow>

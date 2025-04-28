@@ -310,6 +310,7 @@ function Row(props: {
                                         tokenSymbol={token?.symbol}
                                         selectAction={selectAction}
                                         deselectAction={deselectAction}
+                                        elevation={0}
                                     />
                                 </Box>
                             )}

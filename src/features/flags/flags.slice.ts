@@ -10,7 +10,7 @@ import { Address } from "@superfluid-finance/sdk-core";
 import { getAddress } from "../../utils/memoizedEthersUtils";
 import faucetApi from "../faucet/faucetApi.slice";
 import { RootState } from "../redux/store";
-import { VestingVersion } from "../network/networks";
+import { VestingVersion } from "../network/networkConstants";
 
 export enum Flag {
   TestTokensReceived = "test-tokens-received",

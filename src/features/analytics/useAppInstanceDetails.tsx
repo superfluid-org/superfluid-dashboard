@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { useAccount } from "wagmi";
 import { useLayoutContext } from "../layout/LayoutContext";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
+import { useAppKitAccount } from "@reown/appkit/react";
 
 export const supportId = customAlphabet("6789BCDFGHJKLMNPQRTWbcdfghjkmnpqrtwz")(
   8
@@ -46,10 +47,16 @@ export const useAppInstanceDetails = () => {
   const { transactionDrawerOpen } = useLayoutContext();
   const {
     connector: activeConnector,
-    isConnected,
-    address: activeAccountAddress,
+    isConnected: isWagmiConnected,
     chain: activeChain
   } = useAccount();
+
+  const {
+    isConnected: isAppKitConnected,
+    address: activeAccountAddress
+  } = useAppKitAccount();
+  
+  const isConnected = isWagmiConnected && isAppKitConnected;
 
   return useMemo<AppInstanceDetails>(() => {
     const networkObj: AppInstanceDetails["appInstance"]["expectedNetwork"] = {
@@ -62,18 +69,18 @@ export const useAppInstanceDetails = () => {
     const walletObj: AppInstanceDetails["appInstance"]["wallet"] = {
       ...(isConnected && activeConnector && activeAccountAddress
         ? {
-            isConnected: true,
-            isReconnected: false, // TODO(KK): This possibly doesn't work correctly.
-            address: activeAccountAddress,
-            connector: activeConnector.name,
-            connectorId: activeConnector.id,
-            ...(activeChain
-              ? {
-                  network: activeChain.name,
-                  networkId: activeChain.id,
-                }
-              : {}),
-          }
+          isConnected: true,
+          isReconnected: false, // TODO(KK): This possibly doesn't work correctly.
+          address: activeAccountAddress,
+          connector: activeConnector.name,
+          connectorId: activeConnector.id,
+          ...(activeChain
+            ? {
+              network: activeChain.name,
+              networkId: activeChain.id,
+            }
+            : {}),
+        }
         : { isConnected: false }),
     };
 

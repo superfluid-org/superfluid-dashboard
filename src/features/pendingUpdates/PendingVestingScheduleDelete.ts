@@ -3,7 +3,7 @@ import { PendingUpdate } from "./PendingUpdate";
 import { pendingUpdateSelectors } from "./pendingUpdate.slice";
 import { useAppSelector } from "../redux/store";
 import { DeleteVestingSchedule } from "../redux/endpoints/vestingSchedulerEndpoints";
-import { VestingVersion } from "../network/networks";
+import { VestingVersion } from "../network/networkConstants";
 
 export interface PendingVestingScheduleDeletion
   extends PendingUpdate,

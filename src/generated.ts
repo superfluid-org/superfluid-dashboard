@@ -6487,7 +6487,14 @@ export const vestingSchedulerV2Config = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const vestingSchedulerV3Abi = [
@@ -7265,16 +7272,37 @@ export const vestingSchedulerV3Abi = [
 ] as const
 
 /**
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const vestingSchedulerV3Address = {
+  1: '0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C',
   10: '0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4',
+  56: '0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3',
+  100: '0x625F04c9B91ECdfbeb7021271749212388F12c11',
+  137: '0x488913833474bbD9B11f844FdC2f0897FAc0Ca43',
+  8453: '0x6Bf35A170056eDf9aEba159dce4a640cfCef9312',
+  42161: '0xc3069bDE869912E3d9B965F35D7764Fc92BccE67',
+  43114: '0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf',
   11155420: '0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C',
 } as const
 
 /**
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const vestingSchedulerV3Config = {
@@ -17529,7 +17557,14 @@ export const useVestingSchedulerV2VestingScheduleUpdatedEvent =
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3Read = /*#__PURE__*/ createUseReadContract({
@@ -17540,7 +17575,14 @@ export const useVestingSchedulerV3Read = /*#__PURE__*/ createUseReadContract({
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"END_DATE_VALID_BEFORE"`
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3EndDateValidBefore =
@@ -17553,7 +17595,14 @@ export const useVestingSchedulerV3EndDateValidBefore =
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"HOST"`
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3Host = /*#__PURE__*/ createUseReadContract({
@@ -17565,7 +17614,14 @@ export const useVestingSchedulerV3Host = /*#__PURE__*/ createUseReadContract({
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"MIN_VESTING_DURATION"`
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3MinVestingDuration =
@@ -17578,7 +17634,14 @@ export const useVestingSchedulerV3MinVestingDuration =
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"START_DATE_VALID_AFTER"`
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3StartDateValidAfter =
@@ -17591,7 +17654,14 @@ export const useVestingSchedulerV3StartDateValidAfter =
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"accountings"`
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3Accountings =
@@ -17604,7 +17674,14 @@ export const useVestingSchedulerV3Accountings =
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"getMaximumNeededTokenAllowance"`
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3GetMaximumNeededTokenAllowance =
@@ -17617,7 +17694,14 @@ export const useVestingSchedulerV3GetMaximumNeededTokenAllowance =
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"getTotalVestedAmount"`
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3GetTotalVestedAmount =
@@ -17630,7 +17714,14 @@ export const useVestingSchedulerV3GetTotalVestedAmount =
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"getVestingSchedule"`
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3GetVestingSchedule =
@@ -17643,7 +17734,14 @@ export const useVestingSchedulerV3GetVestingSchedule =
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"isTrustedForwarder"`
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3IsTrustedForwarder =
@@ -17656,7 +17754,14 @@ export const useVestingSchedulerV3IsTrustedForwarder =
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"mapCreateVestingScheduleParams"`
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3MapCreateVestingScheduleParams =
@@ -17669,7 +17774,14 @@ export const useVestingSchedulerV3MapCreateVestingScheduleParams =
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"versionRecipient"`
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3VersionRecipient =
@@ -17682,7 +17794,14 @@ export const useVestingSchedulerV3VersionRecipient =
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"vestingSchedules"`
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3VestingSchedules =
@@ -17695,7 +17814,14 @@ export const useVestingSchedulerV3VestingSchedules =
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3Write = /*#__PURE__*/ createUseWriteContract({
@@ -17706,7 +17832,14 @@ export const useVestingSchedulerV3Write = /*#__PURE__*/ createUseWriteContract({
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"createAndExecuteVestingScheduleFromAmountAndDuration"`
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3CreateAndExecuteVestingScheduleFromAmountAndDuration =
@@ -17719,7 +17852,14 @@ export const useVestingSchedulerV3CreateAndExecuteVestingScheduleFromAmountAndDu
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"createVestingSchedule"`
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3CreateVestingSchedule =
@@ -17732,7 +17872,14 @@ export const useVestingSchedulerV3CreateVestingSchedule =
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"createVestingScheduleFromAmountAndDuration"`
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3CreateVestingScheduleFromAmountAndDuration =
@@ -17745,7 +17892,14 @@ export const useVestingSchedulerV3CreateVestingScheduleFromAmountAndDuration =
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"deleteVestingSchedule"`
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3DeleteVestingSchedule =
@@ -17758,7 +17912,14 @@ export const useVestingSchedulerV3DeleteVestingSchedule =
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"endVestingScheduleNow"`
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3EndVestingScheduleNow =
@@ -17771,7 +17932,14 @@ export const useVestingSchedulerV3EndVestingScheduleNow =
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"executeCliffAndFlow"`
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3ExecuteCliffAndFlow =
@@ -17784,7 +17952,14 @@ export const useVestingSchedulerV3ExecuteCliffAndFlow =
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"executeEndVesting"`
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3ExecuteEndVesting =
@@ -17797,7 +17972,14 @@ export const useVestingSchedulerV3ExecuteEndVesting =
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"updateVestingSchedule"`
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3UpdateVestingSchedule =
@@ -17810,7 +17992,14 @@ export const useVestingSchedulerV3UpdateVestingSchedule =
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"updateVestingScheduleFlowRateFromAmount"`
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3UpdateVestingScheduleFlowRateFromAmount =
@@ -17823,7 +18012,14 @@ export const useVestingSchedulerV3UpdateVestingScheduleFlowRateFromAmount =
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"updateVestingScheduleFlowRateFromAmountAndEndDate"`
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3UpdateVestingScheduleFlowRateFromAmountAndEndDate =
@@ -17836,7 +18032,14 @@ export const useVestingSchedulerV3UpdateVestingScheduleFlowRateFromAmountAndEndD
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"updateVestingScheduleFlowRateFromEndDate"`
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3UpdateVestingScheduleFlowRateFromEndDate =
@@ -17849,7 +18052,14 @@ export const useVestingSchedulerV3UpdateVestingScheduleFlowRateFromEndDate =
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const usePrepareVestingSchedulerV3Write =
@@ -17861,7 +18071,14 @@ export const usePrepareVestingSchedulerV3Write =
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"createAndExecuteVestingScheduleFromAmountAndDuration"`
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const usePrepareVestingSchedulerV3CreateAndExecuteVestingScheduleFromAmountAndDuration =
@@ -17874,7 +18091,14 @@ export const usePrepareVestingSchedulerV3CreateAndExecuteVestingScheduleFromAmou
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"createVestingSchedule"`
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const usePrepareVestingSchedulerV3CreateVestingSchedule =
@@ -17887,7 +18111,14 @@ export const usePrepareVestingSchedulerV3CreateVestingSchedule =
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"createVestingScheduleFromAmountAndDuration"`
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const usePrepareVestingSchedulerV3CreateVestingScheduleFromAmountAndDuration =
@@ -17900,7 +18131,14 @@ export const usePrepareVestingSchedulerV3CreateVestingScheduleFromAmountAndDurat
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"deleteVestingSchedule"`
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const usePrepareVestingSchedulerV3DeleteVestingSchedule =
@@ -17913,7 +18151,14 @@ export const usePrepareVestingSchedulerV3DeleteVestingSchedule =
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"endVestingScheduleNow"`
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const usePrepareVestingSchedulerV3EndVestingScheduleNow =
@@ -17926,7 +18171,14 @@ export const usePrepareVestingSchedulerV3EndVestingScheduleNow =
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"executeCliffAndFlow"`
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const usePrepareVestingSchedulerV3ExecuteCliffAndFlow =
@@ -17939,7 +18191,14 @@ export const usePrepareVestingSchedulerV3ExecuteCliffAndFlow =
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"executeEndVesting"`
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const usePrepareVestingSchedulerV3ExecuteEndVesting =
@@ -17952,7 +18211,14 @@ export const usePrepareVestingSchedulerV3ExecuteEndVesting =
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"updateVestingSchedule"`
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const usePrepareVestingSchedulerV3UpdateVestingSchedule =
@@ -17965,7 +18231,14 @@ export const usePrepareVestingSchedulerV3UpdateVestingSchedule =
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"updateVestingScheduleFlowRateFromAmount"`
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const usePrepareVestingSchedulerV3UpdateVestingScheduleFlowRateFromAmount =
@@ -17978,7 +18251,14 @@ export const usePrepareVestingSchedulerV3UpdateVestingScheduleFlowRateFromAmount
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"updateVestingScheduleFlowRateFromAmountAndEndDate"`
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const usePrepareVestingSchedulerV3UpdateVestingScheduleFlowRateFromAmountAndEndDate =
@@ -17991,7 +18271,14 @@ export const usePrepareVestingSchedulerV3UpdateVestingScheduleFlowRateFromAmount
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `functionName` set to `"updateVestingScheduleFlowRateFromEndDate"`
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const usePrepareVestingSchedulerV3UpdateVestingScheduleFlowRateFromEndDate =
@@ -18004,7 +18291,14 @@ export const usePrepareVestingSchedulerV3UpdateVestingScheduleFlowRateFromEndDat
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link vestingSchedulerV3Abi}__
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3Event =
@@ -18016,7 +18310,14 @@ export const useVestingSchedulerV3Event =
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `eventName` set to `"VestingClaimed"`
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3VestingClaimedEvent =
@@ -18029,7 +18330,14 @@ export const useVestingSchedulerV3VestingClaimedEvent =
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `eventName` set to `"VestingCliffAndFlowExecuted"`
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3VestingCliffAndFlowExecutedEvent =
@@ -18042,7 +18350,14 @@ export const useVestingSchedulerV3VestingCliffAndFlowExecutedEvent =
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `eventName` set to `"VestingEndExecuted"`
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3VestingEndExecutedEvent =
@@ -18055,7 +18370,14 @@ export const useVestingSchedulerV3VestingEndExecutedEvent =
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `eventName` set to `"VestingEndFailed"`
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3VestingEndFailedEvent =
@@ -18068,7 +18390,14 @@ export const useVestingSchedulerV3VestingEndFailedEvent =
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `eventName` set to `"VestingScheduleCreated"`
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3VestingScheduleCreatedEvent =
@@ -18081,7 +18410,14 @@ export const useVestingSchedulerV3VestingScheduleCreatedEvent =
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `eventName` set to `"VestingScheduleDeleted"`
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3VestingScheduleDeletedEvent =
@@ -18094,7 +18430,14 @@ export const useVestingSchedulerV3VestingScheduleDeletedEvent =
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link vestingSchedulerV3Abi}__ and `eventName` set to `"VestingScheduleUpdated"`
  *
+ * - [__View Contract on Ethereum Etherscan__](https://etherscan.io/address/0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C)
  * - [__View Contract on Op Mainnet Optimism Explorer__](https://optimistic.etherscan.io/address/0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4)
+ * - [__View Contract on Bnb Smart Chain Bsc Scan__](https://bscscan.com/address/0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3)
+ * - [__View Contract on Gnosis Gnosisscan__](https://gnosisscan.io/address/0x625F04c9B91ECdfbeb7021271749212388F12c11)
+ * - [__View Contract on Polygon Polygon Scan__](https://polygonscan.com/address/0x488913833474bbD9B11f844FdC2f0897FAc0Ca43)
+ * - [__View Contract on Base Basescan__](https://basescan.org/address/0x6Bf35A170056eDf9aEba159dce4a640cfCef9312)
+ * - [__View Contract on Arbitrum One Arbiscan__](https://arbiscan.io/address/0xc3069bDE869912E3d9B965F35D7764Fc92BccE67)
+ * - [__View Contract on Avalanche Snow Trace__](https://snowtrace.io/address/0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf)
  * - [__View Contract on Op Sepolia Blockscout__](https://optimism-sepolia.blockscout.com/address/0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C)
  */
 export const useVestingSchedulerV3VestingScheduleUpdatedEvent =

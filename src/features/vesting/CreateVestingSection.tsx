@@ -16,8 +16,6 @@ import { WhitelistVestingOverlay } from "./WhitelistVestingOverlay";
 import CreateVestingPreview from "./CreateVestingPreview";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { BackButton } from "./BackButton";
-import { VestingVersionToggle } from "./VestingVersionToggle";
-import { doesNetworkSupportVestingV2orV3 } from "../network/networks";
 
 export enum CreateVestingCardView {
   Form = 0,
@@ -50,7 +48,6 @@ export const CreateVestingSection: FC<CreateVestingSectionProps> = ({
   );
 
   const { address: accountAddress } = useAccount();
-  const showVestingToggle = view === CreateVestingCardView.Form && !!accountAddress && doesNetworkSupportVestingV2orV3(network);
 
   return (
     <Box>
@@ -67,12 +64,6 @@ export const CreateVestingSection: FC<CreateVestingSectionProps> = ({
           <Typography component="h2" variant="h5" flex={1}>
             Create a Vesting Schedule
           </Typography>
-
-          {
-            showVestingToggle && (
-              <VestingVersionToggle network={network} />
-            )
-          }
 
         </Stack>
 

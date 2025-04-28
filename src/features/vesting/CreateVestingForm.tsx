@@ -75,9 +75,6 @@ const CreateVestingForm = memo(function CreateVestingForm(props: {
   const { watch } = useFormContext<PartialVestingForm>();
   const [cliffEnabled, setupAutoWrap] = watch(["data.cliffEnabled", "data.setupAutoWrap"]);
 
-  const { vestingVersion } = useVestingVersion();
-  const isClaimFeatureEnabled = vestingVersion === "v2" || vestingVersion === "v3";
-
   const { visibleAddress } = useVisibleAddress();
 
   const queryAutoWrap =
@@ -127,14 +124,10 @@ const CreateVestingForm = memo(function CreateVestingForm(props: {
           <ReceiverController isBelowMd={isBelowMd} />
         </FormGroup>
 
-        {
-          isClaimFeatureEnabled && (
-            <Stack data-cy="claim-switch-and-tooltip" direction="row" alignItems="center">
-              <ClaimController />
-              <TooltipWithIcon title={VestingTooltips.Claim} />
-            </Stack>
-          )
-        }
+        <Stack data-cy="claim-switch-and-tooltip" direction="row" alignItems="center">
+          <ClaimController />
+          <TooltipWithIcon title={VestingTooltips.Claim} />
+        </Stack>
 
         <Box
           sx={{

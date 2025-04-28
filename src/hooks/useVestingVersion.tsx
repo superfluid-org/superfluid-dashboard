@@ -4,8 +4,9 @@ import { useExpectedNetwork } from "../features/network/ExpectedNetworkContext";
 import { Flag, setVestingSchedulerFlag } from "../features/flags/flags.slice";
 import { getAddress } from "../utils/memoizedEthersUtils";
 import { useCallback, useMemo } from "react";
-import { Network, VestingVersion } from "../features/network/networks";
+import { Network } from "../features/network/networks";
 import { useDispatch } from "react-redux";
+import { VestingVersion } from "../features/network/networkConstants";
 
 export const useVestingVersion = (props?: { network?: Network }) => {
     const { network: expectedNetwork } = useExpectedNetwork();

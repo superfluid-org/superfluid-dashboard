@@ -145,6 +145,9 @@ const wagmiAdapter = new WagmiAdapter({
   }
 })
 
+// @ts-ignore
+// wagmiAdapter.wagmiConfig._internal.transports = appTransports;
+
 export const wagmiConfig = wagmiAdapter.wagmiConfig;
 
 const _appKit = createAppKit({

@@ -2,7 +2,7 @@ import {
   GetVestingScheduleQuery
 } from "../../vesting-subgraph/.graphclient";
 import { dateNowSeconds } from "../../utils/dateUtils";
-import { VestingVersion } from "../network/networks";
+import { VestingVersion } from "../network/networkConstants";
 
 interface VestingStatus {
   title: string;

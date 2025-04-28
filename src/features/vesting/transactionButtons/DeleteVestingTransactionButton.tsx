@@ -20,7 +20,7 @@ import { Typography } from "@mui/material";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import { useAnalytics } from "../../analytics/useAnalytics";
 import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
-import { VestingVersion } from "../../network/networks";
+import { VestingVersion } from "../../network/networkConstants";
 
 export const DeleteVestingTransactionButton: FC<{
   superTokenAddress: string;

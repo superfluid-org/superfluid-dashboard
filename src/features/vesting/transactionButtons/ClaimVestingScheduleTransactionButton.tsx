@@ -19,7 +19,7 @@ import { Typography } from "@mui/material";
 import { useAnalytics } from "../../analytics/useAnalytics";
 import { usePendingVestingScheduleClaim } from "../../pendingUpdates/PendingVestingScheduleClaim";
 import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
-import { VestingVersion } from "../../network/networks";
+import { VestingVersion } from "../../network/networkConstants";
 
 export const ClaimVestingScheduleTransactionButton: FC<{
   superTokenAddress: string;
