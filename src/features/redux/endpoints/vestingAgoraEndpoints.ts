@@ -195,13 +195,11 @@ export const mapProjectStateIntoGnosisSafeBatch = (state: ProjectsOverview, acti
                     args
                 })
 
+                const argNames = functionAbi.inputs.map(input => input.name);
                 transactions.push({
                     to: action.payload.superToken,
                     contractMethod: functionAbi,
-                    contractInputsValues: args.reduce((acc, arg, index) => {
-                        acc[`arg${index}`] = arg.toString();
-                        return acc;
-                    }, {} as Record<string, string>)
+                    contractInputsValues: mapArgsIntoContractInputsValues(argNames, args)
                 })
 
                 break;
@@ -233,10 +231,11 @@ export const mapProjectStateIntoGnosisSafeBatch = (state: ProjectsOverview, acti
                     args
                 })
 
+                const argNames = functionAbi.inputs.map(input => input.name);
                 transactions.push({
                     to: superfluidAddress[network.id as keyof typeof superfluidAddress],
                     contractMethod: functionAbi,
-                    contractInputsValues: mapArgsIntoContractInputsValues(args)
+                    contractInputsValues: mapArgsIntoContractInputsValues(argNames, args)
                 });
 
                 break;
@@ -257,10 +256,11 @@ export const mapProjectStateIntoGnosisSafeBatch = (state: ProjectsOverview, acti
                     name: 'createVestingScheduleFromAmountAndDuration',
                     args
                 })
+                const argNames = functionAbi.inputs.map(input => input.name);
                 transactions.push({
                     to: vestingContractInfo.address,
                     contractMethod: functionAbi,
-                    contractInputsValues: mapArgsIntoContractInputsValues(args)
+                    contractInputsValues: mapArgsIntoContractInputsValues(argNames, args)
                 })
                 break;
             }
@@ -276,10 +276,11 @@ export const mapProjectStateIntoGnosisSafeBatch = (state: ProjectsOverview, acti
                     name: 'updateVestingScheduleFlowRateFromAmountAndEndDate',
                     args
                 })
+                const argNames = functionAbi.inputs.map(input => input.name);
                 transactions.push({
                     to: vestingContractInfo.address,
                     contractMethod: functionAbi,
-                    contractInputsValues: mapArgsIntoContractInputsValues(args)
+                    contractInputsValues: mapArgsIntoContractInputsValues(argNames, args)
                 })
                 break;
             }
@@ -292,9 +293,13 @@ export const mapProjectStateIntoGnosisSafeBatch = (state: ProjectsOverview, acti
     return transactions;
 }
 
-function mapArgsIntoContractInputsValues(args: ReadonlyArray<(string | bigint | number)>) {
-    return args.reduce((acc, arg, index) => {
-        acc[`arg${index}`] = arg.toString();
+function mapArgsIntoContractInputsValues(argNames: string[], args: ReadonlyArray<(string | bigint | number)>) {
+    if (argNames.length !== args.length) {
+        throw new Error("Argument names and values length mismatch");
+    }
+
+    return argNames.reduce((acc, argName, index) => {
+        acc[argName] = args[index].toString();
         return acc;
     }, {} as Record<string, string>)
 }
