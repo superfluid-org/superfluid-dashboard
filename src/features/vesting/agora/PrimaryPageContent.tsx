@@ -86,17 +86,18 @@ export function PrimaryPageContent(props: {
     );
     const areButtonsDisabled = initialAllSelectableActions.length === 0 || !isAgoraWhitelistedWallet;
 
-    const { projectCount, rowCount } = useMemo(() => {
+    const { projectCount, rowCount, kycRowCount } = useMemo(() => {
         return {
             projectCount: projectsOverview.projects.flatMap(x => x.agoraEntry.projectNames).length,
-            rowCount: projectsOverview.projects.length
+            rowCount: projectsOverview.projects.length,
+            kycRowCount: projectsOverview.projects.filter(x => x.agoraEntry.KYCStatusCompleted).length
         }
     }, [projectsOverview]);
 
     return (
         <>
             <Typography variant="h6" gutterBottom>
-                Projects Overview ({projectCount} projects, {rowCount} rows)
+                Projects Overview ({projectCount} projects, {rowCount} rows, {kycRowCount} KYC'd)
             </Typography>
 
             <ProjectsTable

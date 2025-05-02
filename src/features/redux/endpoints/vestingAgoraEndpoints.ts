@@ -5,7 +5,7 @@ import { allNetworks, findNetworkOrThrow } from "../../network/networks";
 import { getVestingScheduler } from "../../../eth-sdk/getEthSdk";
 import { Signer } from "ethers";
 import { BatchTransaction } from "../../../libs/gnosis-tx-builder/types";
-import { constantFlowAgreementV1Abi, superfluidAbi, superfluidAddress, superTokenAbi, vestingSchedulerV3Abi } from "../../../generated";
+import { constantFlowAgreementV1Abi, constantFlowAgreementV1Address, superfluidAbi, superfluidAddress, superTokenAbi, vestingSchedulerV3Abi } from "../../../generated";
 import { encodeFunctionData, getAbiItem } from "viem";
 
 export interface ExecuteTranchUpdate extends BaseSuperTokenMutation {
@@ -220,7 +220,7 @@ export const mapProjectStateIntoGnosisSafeBatch = (state: ProjectsOverview, acti
                 });
 
                 const args = [
-                    vestingContractInfo.address,
+                    constantFlowAgreementV1Address[network.id as keyof typeof constantFlowAgreementV1Address],
                     callData,
                     "0x"
                 ] as const;

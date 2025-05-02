@@ -465,6 +465,9 @@ export default async function handler(
 
                 const actions = yield* E.gen(function* () {
                     const actions: ProjectActions[] = [];
+                    if (agoraTotalAmount === 0n) {
+                        return actions;
+                    }
 
                     function pushAction(action: Omit<ProjectActions, "id">) {
                         actions.push({
