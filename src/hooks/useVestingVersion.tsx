@@ -6,6 +6,7 @@ import { getAddress } from "../utils/memoizedEthersUtils";
 import { useCallback, useMemo } from "react";
 import { Network } from "../features/network/networks";
 import { useDispatch } from "react-redux";
+import { VestingVersion } from "../features/network/networkConstants";
 
 export const useVestingVersion = (props?: { network?: Network }) => {
     const { network: expectedNetwork } = useExpectedNetwork();
@@ -13,20 +14,27 @@ export const useVestingVersion = (props?: { network?: Network }) => {
 
     const { address: accountAddress } = useAccount();
 
-    const flagAddress = accountAddress ?? "0x0000000000000000000000000000000000000000" // Use zero address as key when wallet not connected.
+    const flagAddress = getAddress(accountAddress ?? "0x0000000000000000000000000000000000000000") // Use zero address as key when wallet not connected.
 
     const hasVestingV2Enabled = useHasFlag({
         type: Flag.VestingScheduler,
         chainId: network.id,
-        account: getAddress(flagAddress),
+        account: flagAddress,
         version: "v2"
     });
 
+    const hasVestingV3Enabled = useHasFlag({
+        type: Flag.VestingScheduler,
+        chainId: network.id,
+        account: flagAddress,
+        version: "v3"
+    });
+    
     const dispatch = useDispatch();
     const setVestingVersion = useCallback((input:
         {
             chainId: number,
-            version: "v1" | "v2"
+            version: VestingVersion
         }
     ) => {
         dispatch(setVestingSchedulerFlag({
@@ -37,7 +45,7 @@ export const useVestingVersion = (props?: { network?: Network }) => {
     }, [dispatch, flagAddress]);
 
     return useMemo(() => ({
-        vestingVersion: hasVestingV2Enabled ? "v2" : "v1",
+        vestingVersion: hasVestingV3Enabled ? "v3" : hasVestingV2Enabled ? "v2" : "v1",
         setVestingVersion,
-    } as const), [hasVestingV2Enabled, setVestingVersion]);
+    } as const), [hasVestingV2Enabled, hasVestingV3Enabled, setVestingVersion]);
 }

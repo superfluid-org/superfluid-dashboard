@@ -15,6 +15,7 @@ import { PendingVestingScheduleDeletion as PendingVestingScheduleDelete } from "
 import { PendingConnectToPool } from "./PendingConnectToPool";
 import { PendingVestingScheduleClaim } from "./PendingVestingScheduleClaim";
 import { BigNumber } from "ethers";
+import { PendingVestingScheduleUpdate } from "./PendingVestingScheduleUpdate";
 
 export const pendingUpdateAdapter = createEntityAdapter<PendingUpdate>({
   selectId: (x) => x.id,
@@ -338,7 +339,7 @@ export const pendingUpdateSlice = createSlice({
           endDateTimestamp,
           flowRateWei: flowRate.toString(),
           relevantSubgraph: "Vesting",
-          version: "v2"
+          version: "v3"
         };
         pendingUpdateAdapter.addOne(state, pendingUpdate);
       }
@@ -377,8 +378,77 @@ export const pendingUpdateSlice = createSlice({
             endDateTimestamp,
             flowRateWei: flowRate.toString(),
             relevantSubgraph: "Vesting",
-            version: "v2"
+            version: "v3"
           };
+          pendingUpdatesToAdd.push(pendingUpdate);
+        }
+
+        if (pendingUpdatesToAdd.length > 0) {
+          pendingUpdateAdapter.addMany(state, pendingUpdatesToAdd);
+        }
+      }
+    );
+    builder.addMatcher(
+      rpcApi.endpoints.executeTranchUpdate.matchFulfilled,
+      (state, action) => {
+        const { chainId, hash: transactionHash, signerAddress: senderAddress } = action.payload;
+
+        const pendingUpdatesToAdd = [];
+        const { actionsToExecute } = action.meta.arg.originalArgs;
+        const createVestingScheduleActions = actionsToExecute.filter(x => x.type === "create-vesting-schedule");
+        const updateVestingScheduleActions = actionsToExecute.filter(x => x.type === "update-vesting-schedule");
+
+        for (const [index, actions] of createVestingScheduleActions.entries()) {
+          const {
+            superToken,
+            cliffPeriod,
+            startDate,
+            receiver,
+            totalAmount,
+            totalDuration,
+            cliffAmount
+          } = actions.payload;
+          const endDateTimestamp = startDate + totalDuration;
+          const flowRate = BigNumber.from(totalAmount).div(totalDuration);
+          const pendingUpdate: PendingVestingSchedule = {
+            chainId,
+            transactionHash,
+            senderAddress,
+            receiverAddress: receiver,
+            id: transactionHash + "-" + index,
+            superTokenAddress: superToken,
+            pendingType: "VestingScheduleCreate",
+            timestamp: dateNowSeconds(),
+            cliffDateTimestamp: startDate + cliffPeriod,
+            cliffTransferAmountWei: cliffAmount,
+            startDateTimestamp: startDate,
+            endDateTimestamp,
+            flowRateWei: flowRate.toString(),
+            relevantSubgraph: "Vesting",
+            version: "v3"
+          };
+          pendingUpdatesToAdd.push(pendingUpdate);
+        }
+
+        for (const [index, actions] of updateVestingScheduleActions.entries()) {
+          const {
+            superToken,
+            receiver
+          } = actions.payload;
+
+          const pendingUpdate: PendingVestingScheduleUpdate = {
+            chainId,
+            transactionHash,
+            senderAddress,
+            receiverAddress: receiver,
+            id: transactionHash + "-" + index,
+            superTokenAddress: superToken,
+            pendingType: "VestingScheduleUpdate",
+            timestamp: dateNowSeconds(),
+            relevantSubgraph: "Vesting",
+            version: "v3"
+          };
+
           pendingUpdatesToAdd.push(pendingUpdate);
         }
 

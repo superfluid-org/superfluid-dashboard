@@ -19,12 +19,13 @@ import { Typography } from "@mui/material";
 import { useAnalytics } from "../../analytics/useAnalytics";
 import { usePendingVestingScheduleClaim } from "../../pendingUpdates/PendingVestingScheduleClaim";
 import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
+import { VestingVersion } from "../../network/networkConstants";
 
 export const ClaimVestingScheduleTransactionButton: FC<{
   superTokenAddress: string;
   senderAddress: string;
   receiverAddress: string;
-  version: "v1" | "v2"
+  version: VestingVersion;
   TransactionBoundaryProps?: TransactionBoundaryProps;
   TransactionButtonProps?: Partial<TransactionButtonProps>;
 }> = ({
@@ -41,7 +42,7 @@ export const ClaimVestingScheduleTransactionButton: FC<{
 
     const { expectedNetwork: network } = useConnectionBoundary();
 
-    const hasVestingV2Enabled = version === "v2";
+    const hasVestingV2OrV3Enabled = version === "v2" || version === "v3";
 
     const { visibleAddress } = useVisibleAddress();
 
@@ -51,7 +52,7 @@ export const ClaimVestingScheduleTransactionButton: FC<{
 
     const { data: activeVestingSchedule } =
       rpcApi.useGetActiveVestingScheduleQuery(
-        isSenderOrReceiverLooking && hasVestingV2Enabled
+        isSenderOrReceiverLooking && hasVestingV2OrV3Enabled
           ? {
             chainId: network.id,
             superTokenAddress,
@@ -107,6 +108,7 @@ export const ClaimVestingScheduleTransactionButton: FC<{
                   superTokenAddress: superTokenAddress,
                   senderAddress: senderAddress,
                   receiverAddress: receiverAddress,
+                  version: version as "v2" | "v3"
                 };
                 claimVestingSchedule({
                   ...primaryArgs,

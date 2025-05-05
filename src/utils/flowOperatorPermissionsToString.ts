@@ -1,8 +1,4 @@
-import {
-  ACL_CREATE_PERMISSION,
-  ACL_DELETE_PERMISSION,
-  ACL_UPDATE_PERMISSION,
-} from "../features/redux/endpoints/flowSchedulerEndpoints";
+import { ACL_CREATE_PERMISSION, ACL_UPDATE_PERMISSION, ACL_DELETE_PERMISSION } from "./constants";
 
 export const ACL_CREATE_PERMISSION_LABEL = "Create"
 export const ACL_UPDATE_PERMISSION_LABEL = "Update"

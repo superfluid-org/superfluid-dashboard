@@ -2,6 +2,7 @@ import Decimal from "decimal.js";
 import { BigNumberish, utils } from "ethers";
 import { memo, ReactNode } from "react";
 import { getDecimalPlacesToRoundTo } from "../../utils/DecimalUtils";
+import { Box, SxProps } from "@mui/material";
 
 interface AmountProps {
   wei: BigNumberish;
@@ -18,6 +19,8 @@ interface AmountProps {
   disableRounding?: boolean;
   roundingIndicator?: "..." | "~";
   children?: ReactNode;
+  mono?: true;
+  sx?: SxProps
 }
 
 export function formatAmount(
@@ -61,8 +64,9 @@ export default memo<AmountProps>(function Amount({
   );
 
   return (
-    <>
-      <span data-cy="token-amount">{formattedAmount}{children}</span>
-    </>
+      <Box component="span" sx={{
+        ...(props?.mono ? { fontFamily: 'monospace' } : {}),
+        ...(props?.sx ? props.sx : {})
+      }} data-cy="token-amount">{formattedAmount}{children}</Box>
   );
 });

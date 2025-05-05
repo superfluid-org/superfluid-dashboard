@@ -32,6 +32,7 @@ import { orderBy, uniqBy } from "lodash";
 import { useVestingVersion } from "../../hooks/useVestingVersion";
 import { EMPTY_ARRAY } from "../../utils/constants";
 import { useWhitelist } from "../../hooks/useWhitelist";
+import { VestingVersion } from "../network/networkConstants";
 
 interface ExecutionWhitelistInfoProps {
   whitelisted: boolean;
@@ -136,7 +137,7 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
           alignItems={isBelowMd ? "flex-start" : "flex-end"}
           gap={isBelowMd ? 0.5 : 0.2}
         >
-          {network.vestingContractAddress_v1 && (
+          {network.vestingContractAddress.v1 && (
             <Stack direction="row" alignItems="center" gap={0.5}>
               <Typography
                 variant={isBelowMd ? "body2" : "body1"}
@@ -151,7 +152,7 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
               >
                 <CopyIconBtn
                   TooltipProps={{ placement: "top" }}
-                  copyText={getAddress(network.vestingContractAddress_v1.address)}
+                  copyText={getAddress(network.vestingContractAddress.v1.address)}
                   description="Copy address to clipboard"
                   IconButtonProps={{ size: "small" }}
                 />
@@ -162,7 +163,7 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
                 >
                   <IconButton
                     LinkComponent={Link}
-                    href={network.getLinkForAddress(network.vestingContractAddress_v1.address)}
+                    href={network.getLinkForAddress(network.vestingContractAddress.v1.address)}
                     target="_blank"
                     size="small"
                   >
@@ -172,7 +173,7 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
               </Stack>
             </Stack>
           )}
-          {network.vestingContractAddress_v2 && (
+          {network.vestingContractAddress.v2 && (
             <Stack direction="row" alignItems="center" gap={0.5}>
               <Typography
                 variant={isBelowMd ? "body2" : "body1"}
@@ -187,7 +188,7 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
               >
                 <CopyIconBtn
                   TooltipProps={{ placement: "top" }}
-                  copyText={getAddress(network.vestingContractAddress_v2.address)}
+                  copyText={getAddress(network.vestingContractAddress.v2.address)}
                   description="Copy address to clipboard"
                   IconButtonProps={{ size: "small" }}
                 />
@@ -198,7 +199,43 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
                 >
                   <IconButton
                     LinkComponent={Link}
-                    href={network.getLinkForAddress(network.vestingContractAddress_v2.address)}
+                    href={network.getLinkForAddress(network.vestingContractAddress.v2.address)}
+                    target="_blank"
+                    size="small"
+                  >
+                    <LaunchRoundedIcon color="inherit" />
+                  </IconButton>
+                </Tooltip>
+              </Stack>
+            </Stack>
+          )}
+          {network.vestingContractAddress.v3 && (
+            <Stack direction="row" alignItems="center" gap={0.5}>
+              <Typography
+                variant={isBelowMd ? "body2" : "body1"}
+                color="secondary"
+              >
+                Vesting (V3) Smart Contract
+              </Typography>
+              <Stack
+                data-cy="vesting-v3-contract-buttons"
+                direction="row"
+                alignItems="center"
+              >
+                <CopyIconBtn
+                  TooltipProps={{ placement: "top" }}
+                  copyText={getAddress(network.vestingContractAddress.v3.address)}
+                  description="Copy address to clipboard"
+                  IconButtonProps={{ size: "small" }}
+                />
+                <Tooltip
+                  arrow
+                  title="View on blockchain explorer"
+                  placement="top"
+                >
+                  <IconButton
+                    LinkComponent={Link}
+                    href={network.getLinkForAddress(network.vestingContractAddress.v3.address)}
                     target="_blank"
                     size="small"
                   >
@@ -371,14 +408,14 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({ }) => {
             <Typography variant="h6">Permissions & Allowances</Typography>
           )}
 
-          {network.vestingContractAddress_v2 && (
+          {(network.vestingContractAddress.v2 || network.vestingContractAddress.v3) && (
             <Box>
               <ToggleButtonGroup
                 color="primary"
                 value={vestingVersion}
                 size="small"
                 exclusive
-                onChange={(_e, value: "v1" | "v2") => {
+                onChange={(_e, value: VestingVersion) => {
                   setVestingVersion({
                     chainId: network.id,
                     version: value
@@ -386,7 +423,12 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({ }) => {
                 }}
               >
                 <ToggleButton value="v1">V1</ToggleButton>
-                <ToggleButton value="v2">V2</ToggleButton>
+                {network.vestingContractAddress.v2 && (
+                  <ToggleButton value="v2">V2</ToggleButton>
+                )}
+                {network.vestingContractAddress.v3 && (
+                  <ToggleButton value="v3">V3</ToggleButton>
+                )}
               </ToggleButtonGroup>
             </Box>
           )}

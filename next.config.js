@@ -12,7 +12,7 @@ const netlifyContext = process.env.CONTEXT;
 const isOnNetlify = !!netlifyContext;
 const interfaceFeeAddress = process.env.INTERFACE_FEE_ADDRESS;
 const shouldInstrumentCode = "INSTRUMENT_CODE" in process.env;
-const appUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : process.env.URL;
+const appUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : process.env.URL ?? "http://localhost:3000";
 
 function withSentryIfNecessary(nextConfig) {
   console.log({

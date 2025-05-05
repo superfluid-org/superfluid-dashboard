@@ -31,12 +31,14 @@ declare module "@superfluid-finance/sdk-redux" {
     "Send Transfer": true;
     "Fix Access for Vesting (v1)": true;
     "Fix Access for Vesting (v2)": true;
+    "Fix Access for Vesting (v3)": true;
     // Vesting scheduler
     "Approve Vesting Scheduler": true; // Give Stream Scheduler contract delete & update permission, flow rate allowance, token allowance.
     "Create Vesting Schedule": true;
     "Create Batch of Vesting Schedules": true;
     "Delete Vesting Schedule": true;
     "Claim Vesting Schedule": true;
+    "Update Vesting Schedule": true;
     // Scheduled streams
     "Schedule Stream": true;
     "Approve Stream Scheduler": true; // Give Stream Scheduler contract create & delete permissions, flow rate allowance.
@@ -55,6 +57,9 @@ declare module "@superfluid-finance/sdk-redux" {
     "Disconnect from Pool": true;
     "Interface Fee": true;
     "Cancel Distribution Stream": true;
+
+    // TODO: Is there a better name to use?
+    "Execute Tranch Update": true;
   }
 }
 

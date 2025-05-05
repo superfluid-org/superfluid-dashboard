@@ -26,7 +26,7 @@ export const batchVestingEndpoints = {
       queryFn: async ({ params, chainId, superTokenAddress, signer, transactionExtraData }, { dispatch }) => {
         const framework = await getFramework(chainId);
         const superToken = await framework.loadSuperToken(superTokenAddress);
-        const vestingScheduler = getVestingScheduler(chainId, signer, "v2");
+        const vestingScheduler = getVestingScheduler(chainId, signer, "v3");
         const network = findNetworkOrThrow(allNetworks, chainId);
 
         const subOperations: {
@@ -39,8 +39,8 @@ export const batchVestingEndpoints = {
           cliffAndFlowDate: x.cliffDate ? x.cliffDate : x.startDate,
           ...x
         }, {
-          START_DATE_VALID_AFTER_IN_SECONDS: network.vestingContractAddress_v2!.START_DATE_VALID_AFTER_IN_SECONDS,
-          END_DATE_VALID_BEFORE_IN_SECONDS: network.vestingContractAddress_v2!.END_DATE_VALID_BEFORE_IN_SECONDS
+          START_DATE_VALID_AFTER_IN_SECONDS: network.vestingContractAddress.v2!.START_DATE_VALID_AFTER_IN_SECONDS,
+          END_DATE_VALID_BEFORE_IN_SECONDS: network.vestingContractAddress.v2!.END_DATE_VALID_BEFORE_IN_SECONDS
         }));
 
         const totalRequiredTokenAllowance = requiredAllowances.reduce((acc, x) => acc.add(x.recommendedTokenAllowance), BigNumber.from(0));
@@ -74,8 +74,8 @@ export const batchVestingEndpoints = {
 
         await Promise.all(
           params.map(async (arg) => {
-            const tx = await vestingScheduler.populateTransaction[
-              "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32,bytes)"
+            const tx = vestingScheduler.populateTransaction[
+              "createVestingScheduleFromAmountAndDuration(address,address,uint256,uint32,uint32,uint32,uint32)"
             ](
               superTokenAddress,
               arg.receiver,
@@ -83,14 +83,13 @@ export const batchVestingEndpoints = {
               arg.totalDuration,
               arg.startDate,
               arg.cliffPeriod,
-              arg.claimPeriod,
-              []
+              arg.claimPeriod
             );
 
             subOperations.push({
-              operation: await framework.host.callAppAction(
-                vestingScheduler.address,
-                tx.data!
+              operation: new Operation(
+                tx,
+                'ERC2771_FORWARD_CALL'
               ),
               title: "Create Vesting Schedule",
             });

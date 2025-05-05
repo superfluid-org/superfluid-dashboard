@@ -12,7 +12,6 @@ import {
   getFilteredStartDate,
 } from "../../utils/chartUtils";
 import {
-  calculateVestingScheduleAllocated,
   mapVestingActualDataPoints,
   mapVestingExpectedDataPoints,
 } from "../../utils/vestingUtils";
@@ -25,6 +24,8 @@ interface VestingGraphProps {
   filter?: TimeUnitFilterType;
   height?: number;
 }
+
+// TODO: I need to add vesting schedule updates here
 
 const VestingGraph: FC<VestingGraphProps> = ({
   vestingSchedule,
@@ -42,7 +43,7 @@ const VestingGraph: FC<VestingGraphProps> = ({
     } = vestingSchedule;
 
     const totalVesting = Number(
-      formatEther(calculateVestingScheduleAllocated(vestingSchedule).toString())
+      formatEther(vestingSchedule.totalAmount)
     );
 
     const currentDate = new Date();

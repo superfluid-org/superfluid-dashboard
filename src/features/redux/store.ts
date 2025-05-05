@@ -69,6 +69,7 @@ import { deprecatedNetworkChainIds } from "../network/networks";
 import _ from "lodash";
 import { isDefined } from "../../utils/ensureDefined";
 import { batchVestingEndpoints } from "./endpoints/batchVestingEndpoints";
+import { vestingAgoraEndpoints } from "./endpoints/vestingAgoraEndpoints";
 
 export const rpcApi = initializeRpcApiSlice((options) =>
   createApiWithReactHooks({
@@ -86,7 +87,8 @@ export const rpcApi = initializeRpcApiSlice((options) =>
   .injectEndpoints(vestingSchedulerQueryEndpoints)
   .injectEndpoints(autoWrapEndpoints)
   .injectEndpoints(gdaEndpoints)
-  .injectEndpoints(batchVestingEndpoints);
+  .injectEndpoints(batchVestingEndpoints)
+  .injectEndpoints(vestingAgoraEndpoints);
   
 export const subgraphApi = initializeSubgraphApiSlice((options) =>
   createApiWithReactHooks({

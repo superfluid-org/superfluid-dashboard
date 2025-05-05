@@ -1110,10 +1110,6 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
             props: { size: "small" },
             style: {
               tr: {
-                background: getModeStyle(
-                  "transparent",
-                  alpha(theme.palette.action.hover, 0.08)
-                ),
                 "&.MuiTableRow-hover:hover": {
                   background: getModeStyle(
                     "transparent",

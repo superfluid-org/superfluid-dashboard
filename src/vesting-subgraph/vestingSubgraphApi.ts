@@ -1,9 +1,8 @@
 import { miniSerializeError } from "@reduxjs/toolkit";
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
-import { getSerializeQueryArgs } from "@superfluid-finance/sdk-redux";
+import { getFramework, getSerializeQueryArgs, SubgraphEndpointBuilder } from "@superfluid-finance/sdk-redux";
 import {
   allNetworks,
-  findNetworkOrThrow,
   tryFindNetwork,
 } from "../features/network/networks";
 import {
@@ -18,8 +17,25 @@ import {
   PollQueryVariables,
 } from "./.graphclient";
 import { EMPTY_ARRAY } from "../utils/constants";
+import { createVestingEventEndpoints } from "../features/redux/endpoints/vestingSchedulerEventsEndpoints";
 
-const tryGetBuiltGraphSdkForNetwork = (chainId: number) => {
+export const tryGetSubgraphClientForNetwork = async (chainId: number) => {
+  const network = tryFindNetwork(allNetworks, chainId);
+  
+  if (network?.vestingSubgraphUrl) {
+    const framework = await getFramework(chainId);
+
+    // TODO: Hacky solution until SubgraphClient is exported from SDK-core.
+    const subgraphClientClone = Object.assign(Object.create(Object.getPrototypeOf(framework.query.subgraphClient)), framework.query.subgraphClient) as typeof framework.query.subgraphClient;
+
+    // @ts-ignore
+    subgraphClientClone.subgraphUrl = network.vestingSubgraphUrl;
+
+    return subgraphClientClone;
+  }
+};
+
+export const tryGetBuiltGraphSdkForNetwork = (chainId: number) => {
   const network = tryFindNetwork(allNetworks, chainId);
   if (network?.vestingSubgraphUrl) {
     return getBuiltGraphSDK({
@@ -37,6 +53,7 @@ export const vestingSubgraphApi = createApi({
   refetchOnReconnect: true,
   serializeQueryArgs: getSerializeQueryArgs(),
   endpoints: (build) => ({
+    ...createVestingEventEndpoints(build as SubgraphEndpointBuilder),
     getVestingSchedule: build.query<
       { vestingSchedule: VestingSchedule | null },
       { chainId: number } & GetVestingScheduleQueryVariables
@@ -69,10 +86,12 @@ export const vestingSubgraphApi = createApi({
     >({
       queryFn: async ({ chainId, ...variables }) => {
         const sdk = tryGetBuiltGraphSdkForNetwork(chainId);
-
-        const subgraphVestingSchedules = sdk
-          ? (await sdk.getVestingSchedules(variables)).vestingSchedules
-          : EMPTY_ARRAY;
+        
+        const subgraphVestingSchedules = await (async () => {
+          if (!sdk) return EMPTY_ARRAY;
+          
+          return (await sdk.getVestingSchedules(variables)).vestingSchedules;
+        })();
 
         return {
           data: {

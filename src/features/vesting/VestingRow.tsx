@@ -14,7 +14,7 @@ import { FC, useMemo } from "react";
 import AddressName from "../../components/AddressName/AddressName";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
-import { Network } from "../network/networks";
+import { doesNetworkSupportVestingV2orV3, Network } from "../network/networks";
 import { PendingProgress } from "../pendingUpdates/PendingProgress";
 import { PendingVestingSchedule } from "../pendingUpdates/PendingVestingSchedule";
 import { usePendingVestingScheduleDelete } from "../pendingUpdates/PendingVestingScheduleDelete";
@@ -30,6 +30,7 @@ import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import { ClaimVestingScheduleTransactionButton } from "./transactionButtons/ClaimVestingScheduleTransactionButton";
 import { useTokenQuery } from "../../hooks/useTokenQuery";
 import { isDefined } from "../../utils/ensureDefined";
+import { usePendingVestingScheduleUpdate } from "../pendingUpdates/PendingVestingScheduleUpdate";
 
 interface VestingRowProps {
   network: Network;
@@ -53,6 +54,7 @@ const VestingRow: FC<VestingRowProps> = ({
     pendingCreate,
     cliffAndFlowDate,
     remainderAmount,
+    totalAmount,
     version
   } = vestingSchedule;
 
@@ -85,17 +87,22 @@ const VestingRow: FC<VestingRowProps> = ({
     }
   );
 
+  const pendingUpdate = usePendingVestingScheduleUpdate(
+    {
+      chainId: network.id,
+      superTokenAddress: superTokenAddress,
+      receiverAddress: receiver,
+      senderAddress: sender,
+      version
+    },
+    {
+      skip: !vestingSchedule.status.canClaim,
+    }
+  );
+
   const { visibleAddress } = useVisibleAddress();
 
   const superTokenQuery = useTokenQuery({ chainId: network.id, id: superTokenAddress, onlySuperToken: true });
-
-  const totalAmount = useMemo(() => {
-    return BigNumber.from(endDate - cliffAndFlowDate)
-      .mul(BigNumber.from(flowRate))
-      .add(BigNumber.from(cliffAmount))
-      .add(BigNumber.from(remainderAmount))
-      .toString();
-  }, [flowRate, endDate, cliffAndFlowDate, cliffAmount, remainderAmount]);
 
   const isSender = visibleAddress?.toLowerCase() === sender.toLowerCase()
   const isReceiver = visibleAddress?.toLowerCase() === receiver.toLowerCase()
@@ -103,17 +110,19 @@ const VestingRow: FC<VestingRowProps> = ({
   const showClaim = isReceiver && !!vestingSchedule.claimValidityDate && !vestingSchedule.cliffAndFlowExecutedAt; // Note: we show only for receiver in the table.
   const showUnwrap = isReceiver && (vestingSchedule.status.isStreaming || vestingSchedule.status.isFinished);
 
-  const showVestingVersion = !isBelowMd && isSender && !!network.vestingContractAddress_v2;
+  const showVestingVersion = !isBelowMd && isSender && doesNetworkSupportVestingV2orV3(network);
 
   const VestingStatusOrPendingProgress = (
     <>
-      {pendingDelete || pendingCreate || pendingClaim ? (
+      {pendingDelete || pendingCreate || pendingClaim || pendingUpdate ? (
         <PendingProgress
-          pendingUpdate={pendingDelete || pendingCreate || pendingClaim}
+          pendingUpdate={pendingDelete || pendingCreate || pendingClaim || pendingUpdate}
           transactingText={
             pendingDelete ? "Deleting..." :
             pendingCreate ? "Creating..." :
-            "Claiming..."
+            pendingClaim ? "Claiming..." :
+            pendingUpdate ? "Updating..." :
+            "Loading..."
           }
         />
       ) : (
