@@ -145,6 +145,35 @@ export class BasePage {
       .type(text.toString());
   }
 
+  static typeDateTime(
+    selector: string,
+    text: string | number,
+    index?: number,
+    options?: Partial<
+      Cypress.Loggable &
+        Cypress.Timeoutable &
+        Cypress.Withinable &
+        Cypress.Shadow
+    >
+  ) {
+    return this.get(selector, index, options)
+      .filter(':visible')
+      .then(($input) => {
+        const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+          window.HTMLInputElement.prototype,
+          'value'
+        )?.set;
+
+        if (nativeInputValueSetter) {
+          nativeInputValueSetter.call($input[0], text.toString());
+
+          $input[0].dispatchEvent(new Event('input', { bubbles: true }));
+          $input[0].dispatchEvent(new Event('change', { bubbles: true }));
+          $input[0].dispatchEvent(new Event('blur'));
+        }
+      });
+  }
+
   static hasText(
     selector: string,
     text?: JQuery<HTMLElement> | string | string[] | number,
