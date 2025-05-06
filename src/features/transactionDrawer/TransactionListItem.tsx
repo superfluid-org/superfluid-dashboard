@@ -90,7 +90,12 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
   );
 
   return (
-    <ListItem data-cy={"transaction"} component="button" sx={{ cursor: "default" }}>
+    <ListItem data-cy={"transaction"} sx={{
+      cursor: "default",
+      "&:hover": {
+        backgroundColor: theme.palette.action.hover
+      }
+    }}>
       <ListItemAvatar>
         <TransactionListItemAvatar status={transaction.status} />
       </ListItemAvatar>
@@ -116,9 +121,11 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
                         />
                       </ListItemAvatar>
                       <ListItemText
-                        primaryTypographyProps={{
-                          variant: "body2",
-                          color: "text.secondary",
+                        slotProps={{
+                          primary: {
+                            variant: "body2",
+                            color: "text.secondary",
+                          }
                         }}
                         sx={{ my: 0.25 }}
                       >

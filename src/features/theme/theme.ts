@@ -966,9 +966,7 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
       },
       MuiListItem: {
         styleOverrides: {
-          padding: {
-            padding: "8px 24px",
-          },
+          root: { padding: '8px 24px' }
         },
       },
       // TODO: Figure out why styleOverrides.selected does not work and replace hardcoded classes
