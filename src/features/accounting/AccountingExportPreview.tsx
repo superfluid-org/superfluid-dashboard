@@ -8,7 +8,7 @@ import {
   useGridApiContext,
 } from "@mui/x-data-grid";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
-import { format, fromUnixTime, getUnixTime } from "date-fns";
+import { fromUnixTime, getUnixTime } from "date-fns";
 import Decimal from "decimal.js";
 import uniq from "lodash/fp/uniq";
 import { FC, useMemo, useState } from "react";
@@ -154,7 +154,7 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({ }) => {
         type: "date",
         minWidth: 120,
         valueGetter: (params: GridValueGetterParams) =>
-          format(fromUnixTime(params.row.endTime), "yyyy/MM/dd"),
+          fromUnixTime(params.row.endTime),
       },
       {
         field: "startDate",
@@ -163,7 +163,7 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({ }) => {
         minWidth: 120,
         hide: true,
         valueGetter: (params: GridValueGetterParams) =>
-          format(fromUnixTime(params.row.startTime), "yyyy/MM/dd"),
+          fromUnixTime(params.row.startTime)
       },
       {
         field: "amount",
