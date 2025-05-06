@@ -655,7 +655,7 @@ export class Common extends BasePage {
     const minutes = `0${newDate.getMinutes()}`.slice(-2);
     const finalFutureDate = `${month}/${day}/${year} ${hours}:${minutes}`;
 
-    this.typeDateTime(selector, finalFutureDate);
+    this.type(selector, finalFutureDate);
   }
 
   static validateScheduledStreamRow(

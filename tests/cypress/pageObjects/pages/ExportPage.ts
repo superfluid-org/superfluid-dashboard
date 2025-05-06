@@ -19,8 +19,8 @@ const HEADER_TRIPLE_DOTS = '[data-testid=TripleDotsVerticalIcon]';
 const FILTER_OPTIONS = '[role=tooltip] li';
 const COLUMN_CHECKBOXES =
   '.MuiDataGrid-panelWrapper input.PrivateSwitchBase-input';
-const DATE_PICKER_YEAR_BUTTONS = '.PrivatePickersYear-yearButton';
-const DATE_PICKER_MONTH_BUTTONS = '.PrivatePickersMonth-root';
+const DATE_PICKER_YEAR_BUTTONS = '.MuiPickersYear-yearButton';
+const DATE_PICKER_MONTH_BUTTONS = '.MuiPickersMonth-monthButton';
 const DATE_PICKER_ICONS = '[data-testid=CalendarIcon]';
 const EXPORT_CSV = '[data-cy=export-csv-button]';
 const AMOUNT_CELLS = '.MuiDataGrid-cell[data-field=amount]';

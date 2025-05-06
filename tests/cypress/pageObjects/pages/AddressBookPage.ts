@@ -66,7 +66,10 @@ export class AddressBookPage extends BasePage {
   }
 
   static validateNoAddressesMessage() {
-    this.hasText(NO_ADDRESSES_TITLE, 'No Addresses Available');
+    this.hasText(
+      NO_ADDRESSES_TITLE,
+      'No Addresses AvailableConnect your wallet to see your friends'
+    );
     this.hasText(
       NO_ADDRESSES_MESSAGE,
       'Addresses you have transacted with or imported will appear here.'
