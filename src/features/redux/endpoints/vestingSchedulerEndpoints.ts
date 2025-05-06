@@ -19,7 +19,7 @@ import { getUnixTime } from "date-fns";
 import { getMaximumNeededTokenAllowance } from "../../vesting/VestingSchedulesAllowancesTable/calculateRequiredAccessForActiveVestingSchedule";
 import { allNetworks, findNetworkOrThrow } from "../../network/networks";
 import { resolvedWagmiClients } from "../../wallet/wagmiConfig";
-import { vestingSchedulerAbi, vestingSchedulerAddress, vestingSchedulerV2Abi, vestingSchedulerV2Address } from "../../../generated";
+import { vestingSchedulerAbi, vestingSchedulerAddress, vestingSchedulerV2Abi, vestingSchedulerV2Address, vestingSchedulerV3Abi, vestingSchedulerV3Address } from "../../../generated";
 import { getClaimPeriodInSeconds, getClaimValidityDate } from "../../vesting/claimPeriod";
 import { ACL_CREATE_PERMISSION, ACL_DELETE_PERMISSION } from "../../../utils/constants";
 import { VestingVersion } from "../../network/networkConstants";
@@ -57,6 +57,7 @@ export interface ClaimVestingSchedule extends BaseSuperTokenMutation {
   chainId: number;
   senderAddress: string;
   receiverAddress: string;
+  version: "v2" | "v3";
 }
 
 export interface DeleteVestingSchedule extends BaseSuperTokenMutation {
@@ -678,10 +679,11 @@ export const vestingSchedulerMutationEndpoints = {
           receiverAddress,
           overrides,
           transactionExtraData,
+          version
         },
         { dispatch }
       ) => {
-        const vestingScheduler = getVestingScheduler(chainId, signer, "v2");
+        const vestingScheduler = getVestingScheduler(chainId, signer, version);
         const signerAddress = await signer.getAddress();
 
         const batchedOperations: {
@@ -838,9 +840,16 @@ export const vestingSchedulerQueryEndpoints = {
       }) => {
         const publicClient = resolvedWagmiClients[chainId]();
 
+        const abi = version === "v3" ? vestingSchedulerV3Abi : version === "v2" ? vestingSchedulerV2Abi : vestingSchedulerAbi;
+        const address = version === "v3" 
+          ? vestingSchedulerV3Address[chainId as keyof typeof vestingSchedulerV3Address] 
+          : version === "v2" 
+          ? vestingSchedulerV2Address[chainId as keyof typeof vestingSchedulerV2Address] 
+          : vestingSchedulerAddress[chainId as keyof typeof vestingSchedulerAddress];
+
         const rpcVestingSchedule = await publicClient.readContract({
-          abi: version === "v2" ? vestingSchedulerV2Abi : vestingSchedulerAbi,
-          address: version === "v2" ? vestingSchedulerV2Address[chainId as keyof typeof vestingSchedulerV2Address] : vestingSchedulerAddress[chainId as keyof typeof vestingSchedulerAddress],
+          abi,
+          address,
           functionName: "getVestingSchedule",
           args: [superTokenAddress as `0x${string}`, senderAddress as `0x${string}`, receiverAddress as `0x${string}`],
         });

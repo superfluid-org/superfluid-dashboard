@@ -221,7 +221,12 @@ export const networkDefinition = {
         END_DATE_VALID_BEFORE_IN_SECONDS: DEFAULT_MAINNET_END_DATE_VALID_BEFORE_IN_SECONDS
       },
       v2: undefined,
-      v3: undefined
+      v3: {
+        address: vestingContractAddresses_v3[chain.gnosis.id],
+        MIN_VESTING_DURATION_IN_SECONDS: DEFAULT_MAINNET_MIN_VESTING_DURATION_IN_SECONDS,
+        START_DATE_VALID_AFTER_IN_SECONDS: DEFAULT_MAINNET_START_DATE_VALID_AFTER_IN_SECONDS,
+        END_DATE_VALID_BEFORE_IN_SECONDS: DEFAULT_MAINNET_END_DATE_VALID_BEFORE_IN_SECONDS
+      }
     },
     vestingSubgraphUrl: vestingSubgraphUrls.gnosis,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.gnosis,
@@ -272,7 +277,12 @@ export const networkDefinition = {
         END_DATE_VALID_BEFORE_IN_SECONDS: DEFAULT_MAINNET_END_DATE_VALID_BEFORE_IN_SECONDS
       },
       v2: undefined,
-      v3: undefined
+      v3: {
+        address: vestingContractAddresses_v3[chain.polygon.id],
+        MIN_VESTING_DURATION_IN_SECONDS: DEFAULT_MAINNET_MIN_VESTING_DURATION_IN_SECONDS,
+        START_DATE_VALID_AFTER_IN_SECONDS: DEFAULT_MAINNET_START_DATE_VALID_AFTER_IN_SECONDS,
+        END_DATE_VALID_BEFORE_IN_SECONDS: DEFAULT_MAINNET_END_DATE_VALID_BEFORE_IN_SECONDS
+      }
     },
     vestingSubgraphUrl: vestingSubgraphUrls.polygon,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.polygon,
@@ -437,7 +447,12 @@ export const networkDefinition = {
         END_DATE_VALID_BEFORE_IN_SECONDS: DEFAULT_MAINNET_END_DATE_VALID_BEFORE_IN_SECONDS
       },
       v2: undefined,
-      v3: undefined,
+      v3: {
+        address: vestingContractAddresses_v3[chain.arbitrum.id],
+        MIN_VESTING_DURATION_IN_SECONDS: DEFAULT_MAINNET_MIN_VESTING_DURATION_IN_SECONDS,
+        START_DATE_VALID_AFTER_IN_SECONDS: DEFAULT_MAINNET_START_DATE_VALID_AFTER_IN_SECONDS,
+        END_DATE_VALID_BEFORE_IN_SECONDS: DEFAULT_MAINNET_END_DATE_VALID_BEFORE_IN_SECONDS
+      },
     },
     vestingSubgraphUrl: vestingSubgraphUrls.arbitrum,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.arbitrum,
@@ -492,7 +507,12 @@ export const networkDefinition = {
         END_DATE_VALID_BEFORE_IN_SECONDS: DEFAULT_MAINNET_END_DATE_VALID_BEFORE_IN_SECONDS
       },
       v2: undefined,
-      v3: undefined,
+      v3: {
+        address: vestingContractAddresses_v3[chain.avalanche.id],
+        MIN_VESTING_DURATION_IN_SECONDS: DEFAULT_MAINNET_MIN_VESTING_DURATION_IN_SECONDS,
+        START_DATE_VALID_AFTER_IN_SECONDS: DEFAULT_MAINNET_START_DATE_VALID_AFTER_IN_SECONDS,
+        END_DATE_VALID_BEFORE_IN_SECONDS: DEFAULT_MAINNET_END_DATE_VALID_BEFORE_IN_SECONDS
+      },
     },
     vestingSubgraphUrl: vestingSubgraphUrls.avalancheC,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.avalancheC,
@@ -547,7 +567,12 @@ export const networkDefinition = {
         END_DATE_VALID_BEFORE_IN_SECONDS: DEFAULT_MAINNET_END_DATE_VALID_BEFORE_IN_SECONDS
       },
       v2: undefined,
-      v3: undefined,
+      v3: {
+        address: vestingContractAddresses_v3[chain.bsc.id],
+        MIN_VESTING_DURATION_IN_SECONDS: DEFAULT_MAINNET_MIN_VESTING_DURATION_IN_SECONDS,
+        START_DATE_VALID_AFTER_IN_SECONDS: DEFAULT_MAINNET_START_DATE_VALID_AFTER_IN_SECONDS,
+        END_DATE_VALID_BEFORE_IN_SECONDS: DEFAULT_MAINNET_END_DATE_VALID_BEFORE_IN_SECONDS
+      },
     },
     vestingSubgraphUrl: vestingSubgraphUrls.bnbSmartChain,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.bnbSmartChain,
@@ -598,7 +623,12 @@ export const networkDefinition = {
         END_DATE_VALID_BEFORE_IN_SECONDS: DEFAULT_MAINNET_END_DATE_VALID_BEFORE_IN_SECONDS
       },
       v2: undefined,
-      v3: undefined,
+      v3: {
+        address: vestingContractAddresses_v3[chain.mainnet.id],
+        MIN_VESTING_DURATION_IN_SECONDS: DEFAULT_MAINNET_MIN_VESTING_DURATION_IN_SECONDS,
+        START_DATE_VALID_AFTER_IN_SECONDS: DEFAULT_MAINNET_START_DATE_VALID_AFTER_IN_SECONDS,
+        END_DATE_VALID_BEFORE_IN_SECONDS: DEFAULT_MAINNET_END_DATE_VALID_BEFORE_IN_SECONDS
+      },
     },
     vestingSubgraphUrl: vestingSubgraphUrls.ethereum,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.ethereum,
@@ -773,7 +803,12 @@ export const networkDefinition = {
         START_DATE_VALID_AFTER_IN_SECONDS: DEFAULT_MAINNET_START_DATE_VALID_AFTER_IN_SECONDS,
         END_DATE_VALID_BEFORE_IN_SECONDS: DEFAULT_MAINNET_END_DATE_VALID_BEFORE_IN_SECONDS
       },
-      v3: undefined,
+      v3: {
+        address: vestingContractAddresses_v3[chain.base.id],
+        MIN_VESTING_DURATION_IN_SECONDS: DEFAULT_MAINNET_MIN_VESTING_DURATION_IN_SECONDS,
+        START_DATE_VALID_AFTER_IN_SECONDS: DEFAULT_MAINNET_START_DATE_VALID_AFTER_IN_SECONDS,
+        END_DATE_VALID_BEFORE_IN_SECONDS: DEFAULT_MAINNET_END_DATE_VALID_BEFORE_IN_SECONDS
+      },
     },
     vestingSubgraphUrl: vestingSubgraphUrls.base,
     autoWrapSubgraphUrl: autoWrapSubgraphUrls.base,
