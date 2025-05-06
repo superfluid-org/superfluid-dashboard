@@ -53,7 +53,7 @@ const TABLE_RECEIVER_SENDER = '[data-cy=receiver-sender]';
 const PENDING_MESSAGE = '[data-cy=pending-message]';
 const NOT_SUPPORTED_NETWORK_MSG = '[data-cy=not-supported-network-msg]';
 const MAINNET_NETWORK_LINK = '[data-cy=ethereum-link]';
-const CLIFF_TOGGLE = '[data-cy=cliff-toggle]';
+const CLIFF_TOGGLE = '[data-cy=cliff-toggle] span';
 const DETAILS_SCHEDULED_DATE = '[data-cy=vesting-scheduled-date]';
 const DETAILS_CLIFF_START = '[data-cy=cliff-start-date]';
 const DETAILS_CLIFF_END = '[data-cy=cliff-end-date]';
@@ -541,7 +541,7 @@ export class VestingPage extends BasePage {
   }
 
   static clickCliffToggle() {
-    this.click(CLIFF_TOGGLE);
+    this.clickFirstVisible(CLIFF_TOGGLE);
     //Workaround for a race condition which leaves the preview button enabled after inputting cliff amounts too fast
     Common.wait(2);
   }

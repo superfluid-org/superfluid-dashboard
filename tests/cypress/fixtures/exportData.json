@@ -4970,10 +4970,16 @@
       "startedAtEvent": "0x2026840312d64277db37e453fcb40e7b0093a9015abc92f9de0542e572c36b1c",
       "virtualPeriods": [
         {
+          "startTime": 1672527600,
+          "endTime": 1672531199,
+          "amount": "13885030862909",
+          "amountFiat": "0.000013884247575750981943"
+        },
+        {
           "startTime": 1672531200,
-          "endTime": 1675209599,
-          "amount": "10333329474349709",
-          "amountFiat": "0.01033901115075521634"
+          "endTime": 1675205999,
+          "amount": "10319440585462109",
+          "amountFiat": "0.01032518822340134338"
         }
       ]
     },
@@ -4998,9 +5004,15 @@
       "stoppedAtEvent": "0x08fff49cad8f374edc7d5b888d7fda24a0b3a47464fc0b75de467897cdb6ecc9",
       "virtualPeriods": [
         {
+          "startTime": 1672527600,
+          "endTime": 1672531199,
+          "amount": "-138849420",
+          "amountFiat": "0"
+        },
+        {
           "startTime": 1672531200,
-          "endTime": 1675209599,
-          "amount": "-103332633420",
+          "endTime": 1675205999,
+          "amount": "-103193745420",
           "amountFiat": "0"
         }
       ]
@@ -5026,9 +5038,15 @@
       "stoppedAtEvent": "0x08fff49cad8f374edc7d5b888d7fda24a0b3a47464fc0b75de467897cdb6ecc9",
       "virtualPeriods": [
         {
+          "startTime": 1672527600,
+          "endTime": 1672531199,
+          "amount": "-138849420",
+          "amountFiat": "0"
+        },
+        {
           "startTime": 1672531200,
-          "endTime": 1675209599,
-          "amount": "-103332633420",
+          "endTime": 1675205999,
+          "amount": "-103193745420",
           "amountFiat": "0"
         }
       ]
@@ -5053,9 +5071,15 @@
       "startedAtEvent": "0xc4839d1078a09bb44b976eb0a481b7537195d0eef247eb75ceaaac9c715fa211",
       "virtualPeriods": [
         {
+          "startTime": 1672527600,
+          "endTime": 1672531199,
+          "amount": "13885030862909",
+          "amountFiat": "0"
+        },
+        {
           "startTime": 1672531200,
-          "endTime": 1675209599,
-          "amount": "10333329474349709",
+          "endTime": 1675205999,
+          "amount": "10319440585462109",
           "amountFiat": "0"
         }
       ]
@@ -5080,9 +5104,15 @@
       "startedAtEvent": "0xf85a5812e3ac6af52c9da09c324e9a77eaf845da567c79f0b38ef5bb858144c7",
       "virtualPeriods": [
         {
+          "startTime": 1672527600,
+          "endTime": 1672531199,
+          "amount": "27770061725818",
+          "amountFiat": "0"
+        },
+        {
           "startTime": 1672531200,
-          "endTime": 1675209599,
-          "amount": "20666658948699418",
+          "endTime": 1675205999,
+          "amount": "20638881170924218",
           "amountFiat": "0"
         }
       ]
@@ -5107,9 +5137,15 @@
       "startedAtEvent": "0x439d496a7bf74e157184e7a13d1600ba7f71c4cf91d1dc012c4a1bf7758e9682",
       "virtualPeriods": [
         {
+          "startTime": 1672527600,
+          "endTime": 1672531199,
+          "amount": "13885030862909",
+          "amountFiat": "0"
+        },
+        {
           "startTime": 1672531200,
-          "endTime": 1675209599,
-          "amount": "10333329474349709",
+          "endTime": 1675205999,
+          "amount": "10319440585462109",
           "amountFiat": "0"
         }
       ]
@@ -5135,10 +5171,16 @@
       "stoppedAtEvent": "0xc9364a527560c09392b9da6e989a739cb72202f307b2aa635bf252884300220e",
       "virtualPeriods": [
         {
+          "startTime": 1672527600,
+          "endTime": 1672531199,
+          "amount": "27770061725818",
+          "amountFiat": "0.000027685997249130822507"
+        },
+        {
           "startTime": 1672531200,
-          "endTime": 1675209599,
-          "amount": "20666658948699418",
-          "amountFiat": "0.020664821179859302256"
+          "endTime": 1675205999,
+          "amount": "20638881170924218",
+          "amountFiat": "0.020637385759681477375"
         }
       ]
     },
@@ -5162,9 +5204,15 @@
       "startedAtEvent": "0x8a2731b024f01f17478f6a5ba817fc88cd0e75d45b4e7ff8ab79246a2cb6d1c1",
       "virtualPeriods": [
         {
+          "startTime": 1672527600,
+          "endTime": 1672531199,
+          "amount": "13885030862909",
+          "amountFiat": "0"
+        },
+        {
           "startTime": 1672531200,
-          "endTime": 1675209599,
-          "amount": "10333329474349709",
+          "endTime": 1675205999,
+          "amount": "10319440585462109",
           "amountFiat": "0"
         }
       ]
@@ -5190,9 +5238,195 @@
       "stoppedAtEvent": "0xb7b8a1c30830d5077dcdc6ff00aff727dd427e7a91775ac2b9e11d2ffc07893f",
       "virtualPeriods": [
         {
+          "startTime": 1672527600,
+          "endTime": 1672531199,
+          "amount": "55748509967609",
+          "amountFiat": "0"
+        },
+        {
           "startTime": 1672531200,
-          "endTime": 1675209599,
-          "amount": "41488400485894409",
+          "endTime": 1675205999,
+          "amount": "41432636485926809",
+          "amountFiat": "0"
+        }
+      ]
+    },
+    {
+      "id": "0xeb85888b31fadf79cb264d065edcb4a14551c28d-0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40-0x3ad736904e9e65189c3000c7dd2c8ac8bb7cd4e3-0.0-0.0",
+      "flowRate": "3858024691",
+      "startedAtTimestamp": "1625213223",
+      "startedAtBlockNumber": "16396765",
+      "stoppedAtTimestamp": "1741834818",
+      "stoppedAtBlockNumber": "68982066",
+      "totalAmountStreamed": "449928993013802145",
+      "chainId": 137,
+      "token": {
+        "id": "0x3ad736904e9e65189c3000c7dd2c8ac8bb7cd4e3",
+        "symbol": "MATICx",
+        "name": "Super MATIC",
+        "underlyingAddress": "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270"
+      },
+      "sender": "0xeb85888b31fadf79cb264d065edcb4a14551c28d",
+      "receiver": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
+      "startedAtEvent": "0xf8f290499086b9100688fa1fce2460c2ba5e8d52a0b4752c3f7cc614bf689af7",
+      "stoppedAtEvent": "0xc4107415d5c2ff45fdf67557b752ab1ea1d9fa45449ad93ce8e9528838a5fd2f",
+      "virtualPeriods": [
+        {
+          "startTime": 1672527600,
+          "endTime": 1672531199,
+          "amount": "13885030862909",
+          "amountFiat": "0.000010521894264731465385"
+        },
+        {
+          "startTime": 1672531200,
+          "endTime": 1675205999,
+          "amount": "10319440585462109",
+          "amountFiat": "0.0097161750967200524483"
+        }
+      ]
+    },
+    {
+      "id": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40-0x1305f6b6df9dc47159d12eb7ac2804d4a33173c2-2.0-3.0",
+      "flowRate": "14880952380",
+      "startedAtTimestamp": "1674745990",
+      "startedAtBlockNumber": "38552904",
+      "stoppedAtTimestamp": "1675168503",
+      "stoppedAtBlockNumber": "38743674",
+      "totalAmountStreamed": "6287395832930940",
+      "chainId": 137,
+      "token": {
+        "id": "0x1305f6b6df9dc47159d12eb7ac2804d4a33173c2",
+        "symbol": "DAIx",
+        "name": "Super DAI (PoS)",
+        "underlyingAddress": "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063"
+      },
+      "sender": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "receiver": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
+      "startedAtEvent": "0x368c4aa1c439ffdf88c81ea461d23c21f4149d9fe4650385a192aff995eeb3a1",
+      "stoppedAtEvent": "0xb61a898f9cd0c1b6d4b315e8dfc218b4188a28fdac1f21e87be38c582a093a73",
+      "virtualPeriods": [
+        {
+          "startTime": 1674745990,
+          "endTime": 1675168503,
+          "amount": "-6287395832930940",
+          "amountFiat": "0"
+        }
+      ]
+    },
+    {
+      "id": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40-0x3ad736904e9e65189c3000c7dd2c8ac8bb7cd4e3-6.0-7.0",
+      "flowRate": "14880952380",
+      "startedAtTimestamp": "1674746190",
+      "startedAtBlockNumber": "38552998",
+      "stoppedAtTimestamp": "1675256409",
+      "stoppedAtBlockNumber": "38784001",
+      "totalAmountStreamed": "7592544642371220",
+      "chainId": 137,
+      "token": {
+        "id": "0x3ad736904e9e65189c3000c7dd2c8ac8bb7cd4e3",
+        "symbol": "MATICx",
+        "name": "Super MATIC",
+        "underlyingAddress": "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270"
+      },
+      "sender": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "receiver": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
+      "startedAtEvent": "0x69e3b2dde3309bdcc43127186f272768af178be1d742bbcebd44f9bc11eb016e",
+      "stoppedAtEvent": "0xa2682c2e4637d0614ecf767a1c7d01c0f4b375e53635ba45d820ed44ccfd1d72",
+      "virtualPeriods": [
+        {
+          "startTime": 1674746190,
+          "endTime": 1675205999,
+          "amount": "-6842395832895420",
+          "amountFiat": "-0.0076826367852102477"
+        }
+      ]
+    },
+    {
+      "id": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40-0x4086ebf75233e8492f1bcda41c7f2a8288c2fb92-0.0-0.0",
+      "flowRate": "1488",
+      "startedAtTimestamp": "1674745952",
+      "startedAtBlockNumber": "38552886",
+      "stoppedAtTimestamp": "1676201438",
+      "stoppedAtBlockNumber": "39206721",
+      "totalAmountStreamed": "2165763168",
+      "chainId": 137,
+      "token": {
+        "id": "0x4086ebf75233e8492f1bcda41c7f2a8288c2fb92",
+        "symbol": "WBTCx",
+        "name": "Super WBTC (PoS)",
+        "underlyingAddress": "0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6"
+      },
+      "sender": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "receiver": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
+      "startedAtEvent": "0xcd9f151132326b678127f51ee0fcedca2654edc124844d95bcbb248edad6541d",
+      "stoppedAtEvent": "0x1ac0013dabf5a876006b8b016f295423465ab97896eb6fa0fad20c7e076b9e8a",
+      "virtualPeriods": [
+        {
+          "startTime": 1674745952,
+          "endTime": 1675205999,
+          "amount": "-684549936",
+          "amountFiat": "0"
+        }
+      ]
+    },
+    {
+      "id": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40-0xa794221d92d77490ff319e95da1461bdf2bd3953-10.0-23.0",
+      "flowRate": "3858024691358",
+      "startedAtTimestamp": "1669198375",
+      "startedAtBlockNumber": "35962663",
+      "stoppedAtTimestamp": "1675256469",
+      "stoppedAtBlockNumber": "38784030",
+      "totalAmountStreamed": "23372276234567751652",
+      "chainId": 137,
+      "token": {
+        "id": "0xa794221d92d77490ff319e95da1461bdf2bd3953",
+        "symbol": "TDLx",
+        "name": "TDLx",
+        "underlyingAddress": "0xcd1f2f1a1d1ba631a06b957db77bb9d7b13bf861"
+      },
+      "sender": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "receiver": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
+      "startedAtEvent": "0x322bfb7674108b1fca57d0ee1cb151c031fa03f24bebcf56ba478ddc21b4cab7",
+      "stoppedAtEvent": "0xa4fcf2f93b80de41a7c52e4ba2d6fcb1b0821400158a6115c17dd2dada1e2346",
+      "virtualPeriods": [
+        {
+          "startTime": 1672527600,
+          "endTime": 1672531199,
+          "amount": "-13885030864197442",
+          "amountFiat": "0"
+        },
+        {
+          "startTime": 1672531200,
+          "endTime": 1675205999,
+          "amount": "-10319440586419687042",
+          "amountFiat": "0"
+        }
+      ]
+    },
+    {
+      "id": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40-0xe9e759b969b991f2bfae84308385405b9ab01541-3.0-3.0",
+      "flowRate": "14880952380",
+      "startedAtTimestamp": "1674746130",
+      "startedAtBlockNumber": "38552970",
+      "stoppedAtTimestamp": "1675256449",
+      "stoppedAtBlockNumber": "38784020",
+      "totalAmountStreamed": "7594032737609220",
+      "chainId": 137,
+      "token": {
+        "id": "0xe9e759b969b991f2bfae84308385405b9ab01541",
+        "symbol": "StIbAlluoUSD",
+        "name": "Streaming IbAlluo USD",
+        "underlyingAddress": "0xc2dbaaea2efa47ebda3e572aa0e55b742e408bf6"
+      },
+      "sender": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "receiver": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
+      "startedAtEvent": "0xe6842d84c7a5357adabb192694b362f411d6d33f0b812fed17d97973a486ec2e",
+      "stoppedAtEvent": "0x0eb7d80e5cd6b5cd839c0ba9791824e90f6d4ac2b4c57f456fe2c29ea2fa3345",
+      "virtualPeriods": [
+        {
+          "startTime": 1674746130,
+          "endTime": 1675205999,
+          "amount": "-6843288690038220",
           "amountFiat": "0"
         }
       ]
@@ -5247,9 +5481,9 @@
       "virtualPeriods": [
         {
           "startTime": 1674746190,
-          "endTime": 1675209599,
-          "amount": "-6895967261463420",
-          "amountFiat": "-0.0077414067867252673247"
+          "endTime": 1675205999,
+          "amount": "-6842395832895420",
+          "amountFiat": "-0.0076826367852102477"
         }
       ]
     },
@@ -5275,8 +5509,8 @@
       "virtualPeriods": [
         {
           "startTime": 1674745952,
-          "endTime": 1675209599,
-          "amount": "-689906736",
+          "endTime": 1675205999,
+          "amount": "-684549936",
           "amountFiat": "0"
         }
       ]
@@ -5302,9 +5536,15 @@
       "stoppedAtEvent": "0xa4fcf2f93b80de41a7c52e4ba2d6fcb1b0821400158a6115c17dd2dada1e2346",
       "virtualPeriods": [
         {
+          "startTime": 1672527600,
+          "endTime": 1672531199,
+          "amount": "-13885030864197442",
+          "amountFiat": "0"
+        },
+        {
           "startTime": 1672531200,
-          "endTime": 1675209599,
-          "amount": "-10333329475308575842",
+          "endTime": 1675205999,
+          "amount": "-10319440586419687042",
           "amountFiat": "0"
         }
       ]
@@ -5331,148 +5571,8 @@
       "virtualPeriods": [
         {
           "startTime": 1674746130,
-          "endTime": 1675209599,
-          "amount": "-6896860118606220",
-          "amountFiat": "0"
-        }
-      ]
-    },
-    {
-      "id": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40-0x1305f6b6df9dc47159d12eb7ac2804d4a33173c2-2.0-3.0",
-      "flowRate": "14880952380",
-      "startedAtTimestamp": "1674745990",
-      "startedAtBlockNumber": "38552904",
-      "stoppedAtTimestamp": "1675168503",
-      "stoppedAtBlockNumber": "38743674",
-      "totalAmountStreamed": "6287395832930940",
-      "chainId": 137,
-      "token": {
-        "id": "0x1305f6b6df9dc47159d12eb7ac2804d4a33173c2",
-        "symbol": "DAIx",
-        "name": "Super DAI (PoS)",
-        "underlyingAddress": "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063"
-      },
-      "sender": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "receiver": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
-      "startedAtEvent": "0x368c4aa1c439ffdf88c81ea461d23c21f4149d9fe4650385a192aff995eeb3a1",
-      "stoppedAtEvent": "0xb61a898f9cd0c1b6d4b315e8dfc218b4188a28fdac1f21e87be38c582a093a73",
-      "virtualPeriods": [
-        {
-          "startTime": 1674745990,
-          "endTime": 1675168503,
-          "amount": "-6287395832930940",
-          "amountFiat": "0"
-        }
-      ]
-    },
-    {
-      "id": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40-0x3ad736904e9e65189c3000c7dd2c8ac8bb7cd4e3-6.0-7.0",
-      "flowRate": "14880952380",
-      "startedAtTimestamp": "1674746190",
-      "startedAtBlockNumber": "38552998",
-      "stoppedAtTimestamp": "1675256409",
-      "stoppedAtBlockNumber": "38784001",
-      "totalAmountStreamed": "7592544642371220",
-      "chainId": 137,
-      "token": {
-        "id": "0x3ad736904e9e65189c3000c7dd2c8ac8bb7cd4e3",
-        "symbol": "MATICx",
-        "name": "Super MATIC",
-        "underlyingAddress": "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270"
-      },
-      "sender": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "receiver": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
-      "startedAtEvent": "0x69e3b2dde3309bdcc43127186f272768af178be1d742bbcebd44f9bc11eb016e",
-      "stoppedAtEvent": "0xa2682c2e4637d0614ecf767a1c7d01c0f4b375e53635ba45d820ed44ccfd1d72",
-      "virtualPeriods": [
-        {
-          "startTime": 1674746190,
-          "endTime": 1675209599,
-          "amount": "-6895967261463420",
-          "amountFiat": "-0.0077414067867252673247"
-        }
-      ]
-    },
-    {
-      "id": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40-0x4086ebf75233e8492f1bcda41c7f2a8288c2fb92-0.0-0.0",
-      "flowRate": "1488",
-      "startedAtTimestamp": "1674745952",
-      "startedAtBlockNumber": "38552886",
-      "stoppedAtTimestamp": "1676201438",
-      "stoppedAtBlockNumber": "39206721",
-      "totalAmountStreamed": "2165763168",
-      "chainId": 137,
-      "token": {
-        "id": "0x4086ebf75233e8492f1bcda41c7f2a8288c2fb92",
-        "symbol": "WBTCx",
-        "name": "Super WBTC (PoS)",
-        "underlyingAddress": "0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6"
-      },
-      "sender": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "receiver": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
-      "startedAtEvent": "0xcd9f151132326b678127f51ee0fcedca2654edc124844d95bcbb248edad6541d",
-      "stoppedAtEvent": "0x1ac0013dabf5a876006b8b016f295423465ab97896eb6fa0fad20c7e076b9e8a",
-      "virtualPeriods": [
-        {
-          "startTime": 1674745952,
-          "endTime": 1675209599,
-          "amount": "-689906736",
-          "amountFiat": "0"
-        }
-      ]
-    },
-    {
-      "id": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40-0xa794221d92d77490ff319e95da1461bdf2bd3953-10.0-23.0",
-      "flowRate": "3858024691358",
-      "startedAtTimestamp": "1669198375",
-      "startedAtBlockNumber": "35962663",
-      "stoppedAtTimestamp": "1675256469",
-      "stoppedAtBlockNumber": "38784030",
-      "totalAmountStreamed": "23372276234567751652",
-      "chainId": 137,
-      "token": {
-        "id": "0xa794221d92d77490ff319e95da1461bdf2bd3953",
-        "symbol": "TDLx",
-        "name": "TDLx",
-        "underlyingAddress": "0xcd1f2f1a1d1ba631a06b957db77bb9d7b13bf861"
-      },
-      "sender": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "receiver": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
-      "startedAtEvent": "0x322bfb7674108b1fca57d0ee1cb151c031fa03f24bebcf56ba478ddc21b4cab7",
-      "stoppedAtEvent": "0xa4fcf2f93b80de41a7c52e4ba2d6fcb1b0821400158a6115c17dd2dada1e2346",
-      "virtualPeriods": [
-        {
-          "startTime": 1672531200,
-          "endTime": 1675209599,
-          "amount": "-10333329475308575842",
-          "amountFiat": "0"
-        }
-      ]
-    },
-    {
-      "id": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40-0xe9e759b969b991f2bfae84308385405b9ab01541-3.0-3.0",
-      "flowRate": "14880952380",
-      "startedAtTimestamp": "1674746130",
-      "startedAtBlockNumber": "38552970",
-      "stoppedAtTimestamp": "1675256449",
-      "stoppedAtBlockNumber": "38784020",
-      "totalAmountStreamed": "7594032737609220",
-      "chainId": 137,
-      "token": {
-        "id": "0xe9e759b969b991f2bfae84308385405b9ab01541",
-        "symbol": "StIbAlluoUSD",
-        "name": "Streaming IbAlluo USD",
-        "underlyingAddress": "0xc2dbaaea2efa47ebda3e572aa0e55b742e408bf6"
-      },
-      "sender": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "receiver": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
-      "startedAtEvent": "0xe6842d84c7a5357adabb192694b362f411d6d33f0b812fed17d97973a486ec2e",
-      "stoppedAtEvent": "0x0eb7d80e5cd6b5cd839c0ba9791824e90f6d4ac2b4c57f456fe2c29ea2fa3345",
-      "virtualPeriods": [
-        {
-          "startTime": 1674746130,
-          "endTime": 1675209599,
-          "amount": "-6896860118606220",
+          "endTime": 1675205999,
+          "amount": "-6843288690038220",
           "amountFiat": "0"
         }
       ]
@@ -5527,8 +5627,8 @@
       "virtualPeriods": [
         {
           "startTime": 1674746068,
-          "endTime": 1675209599,
-          "amount": "-6897782737653780",
+          "endTime": 1675205999,
+          "amount": "-6844211309085780",
           "amountFiat": "0"
         }
       ]
@@ -5553,37 +5653,16 @@
       "startedAtEvent": "0x1758a89d8e1a7552a84ba6cb6859447b20536d460c78877e613f34a8a04a5603",
       "virtualPeriods": [
         {
-          "startTime": 1672531200,
-          "endTime": 1675209599,
-          "amount": "10333329474349709",
+          "startTime": 1672527600,
+          "endTime": 1672531199,
+          "amount": "13885030862909",
           "amountFiat": "0"
-        }
-      ]
-    },
-    {
-      "id": "0xeb85888b31fadf79cb264d065edcb4a14551c28d-0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40-0x3ad736904e9e65189c3000c7dd2c8ac8bb7cd4e3-0.0-0.0",
-      "flowRate": "3858024691",
-      "startedAtTimestamp": "1625213223",
-      "startedAtBlockNumber": "16396765",
-      "stoppedAtTimestamp": null,
-      "stoppedAtBlockNumber": null,
-      "totalAmountStreamed": null,
-      "chainId": 137,
-      "token": {
-        "id": "0x3ad736904e9e65189c3000c7dd2c8ac8bb7cd4e3",
-        "symbol": "MATICx",
-        "name": "Super MATIC",
-        "underlyingAddress": "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270"
-      },
-      "sender": "0xeb85888b31fadf79cb264d065edcb4a14551c28d",
-      "receiver": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
-      "startedAtEvent": "0xf8f290499086b9100688fa1fce2460c2ba5e8d52a0b4752c3f7cc614bf689af7",
-      "virtualPeriods": [
+        },
         {
           "startTime": 1672531200,
-          "endTime": 1675209599,
-          "amount": "10333329474349709",
-          "amountFiat": "0.0097314117637790631646"
+          "endTime": 1675205999,
+          "amount": "10319440585462109",
+          "amountFiat": "0"
         }
       ]
     },
@@ -5608,9 +5687,15 @@
       "stoppedAtEvent": "0x3320d5e3c0435f42c7db035e23d700932ecb4a67f961202d91c74ec341bfd29f",
       "virtualPeriods": [
         {
+          "startTime": 1672527600,
+          "endTime": 1672531199,
+          "amount": "138850305354",
+          "amountFiat": "0"
+        },
+        {
           "startTime": 1672531200,
-          "endTime": 1675209599,
-          "amount": "103333292306154",
+          "endTime": 1675205999,
+          "amount": "103194403420554",
           "amountFiat": "0"
         }
       ]
@@ -5635,9 +5720,15 @@
       "startedAtEvent": "0x66b14cbb73de063eaa064acdf69c39910867b7b366fa201221e32a6e650c8fa0",
       "virtualPeriods": [
         {
+          "startTime": 1672527600,
+          "endTime": 1672531199,
+          "amount": "13885030862909",
+          "amountFiat": "0"
+        },
+        {
           "startTime": 1672531200,
-          "endTime": 1675209599,
-          "amount": "10333329474349709",
+          "endTime": 1675205999,
+          "amount": "10319440585462109",
           "amountFiat": "0"
         }
       ]
@@ -5662,9 +5753,15 @@
       "startedAtEvent": "0xb5f94f7e8750e002f4ee0905827c474d1f7464b86d7dd992d5c824cfbf47aa8e",
       "virtualPeriods": [
         {
+          "startTime": 1672527600,
+          "endTime": 1672531199,
+          "amount": "13885030862909",
+          "amountFiat": "0"
+        },
+        {
           "startTime": 1672531200,
-          "endTime": 1675209599,
-          "amount": "10333329474349709",
+          "endTime": 1675205999,
+          "amount": "10319440585462109",
           "amountFiat": "0"
         }
       ]
@@ -5692,9 +5789,15 @@
       "stoppedAtEvent": "0x08fff49cad8f374edc7d5b888d7fda24a0b3a47464fc0b75de467897cdb6ecc9",
       "virtualPeriods": [
         {
+          "startTime": 1672527600,
+          "endTime": 1672531199,
+          "amount": "-138849420",
+          "amountFiat": "0"
+        },
+        {
           "startTime": 1672531200,
-          "endTime": 1675209599,
-          "amount": "-103332633420",
+          "endTime": 1675205999,
+          "amount": "-103193745420",
           "amountFiat": "0"
         }
       ]
@@ -5749,9 +5852,9 @@
       "virtualPeriods": [
         {
           "startTime": 1674746190,
-          "endTime": 1675209599,
-          "amount": "-6895967261463420",
-          "amountFiat": "-0.0077414067867252673247"
+          "endTime": 1675205999,
+          "amount": "-6842395832895420",
+          "amountFiat": "-0.0076826367852102477"
         }
       ]
     },
@@ -5777,8 +5880,8 @@
       "virtualPeriods": [
         {
           "startTime": 1674745952,
-          "endTime": 1675209599,
-          "amount": "-689906736",
+          "endTime": 1675205999,
+          "amount": "-684549936",
           "amountFiat": "0"
         }
       ]
@@ -5804,9 +5907,15 @@
       "stoppedAtEvent": "0xa4fcf2f93b80de41a7c52e4ba2d6fcb1b0821400158a6115c17dd2dada1e2346",
       "virtualPeriods": [
         {
+          "startTime": 1672527600,
+          "endTime": 1672531199,
+          "amount": "-13885030864197442",
+          "amountFiat": "0"
+        },
+        {
           "startTime": 1672531200,
-          "endTime": 1675209599,
-          "amount": "-10333329475308575842",
+          "endTime": 1675205999,
+          "amount": "-10319440586419687042",
           "amountFiat": "0"
         }
       ]
@@ -5833,8 +5942,596 @@
       "virtualPeriods": [
         {
           "startTime": 1674746130,
-          "endTime": 1675209599,
-          "amount": "-6896860118606220",
+          "endTime": 1675205999,
+          "amount": "-6843288690038220",
+          "amountFiat": "0"
+        }
+      ]
+    },
+    {
+      "id": "Transfer-0x23fc52fb796fd4113317a5b47b19780bab2412af78b05d2f8b72f6bbe75a00cf-3",
+      "flowRate": "0",
+      "chainId": 100,
+      "startedAtTimestamp": "1647333605",
+      "startedAtBlockNumber": "21119022",
+      "stoppedAtTimestamp": "1647333605",
+      "stoppedAtBlockNumber": "21119022",
+      "totalAmountStreamed": "200000000000000000",
+      "token": {
+        "id": "0x59988e47a3503aafaa0368b9def095c818fdca01",
+        "symbol": "xDAIx",
+        "name": "Super xDAI",
+        "underlyingAddress": "0xe91d153e0b41518a2ce8dd3d7944fa863463a97d"
+      },
+      "sender": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0x23fc52fb796fd4113317a5b47b19780bab2412af78b05d2f8b72f6bbe75a00cf",
+      "stoppedAtEvent": "0x23fc52fb796fd4113317a5b47b19780bab2412af78b05d2f8b72f6bbe75a00cf",
+      "virtualPeriods": [
+        {
+          "startTime": 1672527600,
+          "endTime": 1647333605,
+          "amount": "0",
+          "amountFiat": "0"
+        }
+      ]
+    },
+    {
+      "id": "Transfer-0x5c41d5491e3ba0165d657860db529dd2509b615f60306552da6a036f8a3f0d42-38",
+      "flowRate": "0",
+      "chainId": 100,
+      "startedAtTimestamp": "1642581700",
+      "startedAtBlockNumber": "20185466",
+      "stoppedAtTimestamp": "1642581700",
+      "stoppedAtBlockNumber": "20185466",
+      "totalAmountStreamed": "1000000000000000000",
+      "token": {
+        "id": "0x59988e47a3503aafaa0368b9def095c818fdca01",
+        "symbol": "xDAIx",
+        "name": "Super xDAI",
+        "underlyingAddress": "0xe91d153e0b41518a2ce8dd3d7944fa863463a97d"
+      },
+      "sender": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0x5c41d5491e3ba0165d657860db529dd2509b615f60306552da6a036f8a3f0d42",
+      "stoppedAtEvent": "0x5c41d5491e3ba0165d657860db529dd2509b615f60306552da6a036f8a3f0d42",
+      "virtualPeriods": [
+        {
+          "startTime": 1672527600,
+          "endTime": 1642581700,
+          "amount": "0",
+          "amountFiat": "0"
+        }
+      ]
+    },
+    {
+      "id": "Transfer-0xb037710b2e3b41503e314fc5b308e67188f6ad40d99ec622ac97c136e67e7ee9-28",
+      "flowRate": "0",
+      "chainId": 100,
+      "startedAtTimestamp": "1651057025",
+      "startedAtBlockNumber": "21851826",
+      "stoppedAtTimestamp": "1651057025",
+      "stoppedAtBlockNumber": "21851826",
+      "totalAmountStreamed": "100000000000000000",
+      "token": {
+        "id": "0x59988e47a3503aafaa0368b9def095c818fdca01",
+        "symbol": "xDAIx",
+        "name": "Super xDAI",
+        "underlyingAddress": "0xe91d153e0b41518a2ce8dd3d7944fa863463a97d"
+      },
+      "sender": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0xb037710b2e3b41503e314fc5b308e67188f6ad40d99ec622ac97c136e67e7ee9",
+      "stoppedAtEvent": "0xb037710b2e3b41503e314fc5b308e67188f6ad40d99ec622ac97c136e67e7ee9",
+      "virtualPeriods": [
+        {
+          "startTime": 1672527600,
+          "endTime": 1651057025,
+          "amount": "0",
+          "amountFiat": "0"
+        }
+      ]
+    },
+    {
+      "id": "Transfer-0xb915c0a9b09d803378023decb73ae6d7d60babbb5fb7624e2caaee27f0ee36d8-48",
+      "flowRate": "0",
+      "chainId": 100,
+      "startedAtTimestamp": "1648551875",
+      "startedAtBlockNumber": "21359221",
+      "stoppedAtTimestamp": "1648551875",
+      "stoppedAtBlockNumber": "21359221",
+      "totalAmountStreamed": "100000000000000000",
+      "token": {
+        "id": "0x59988e47a3503aafaa0368b9def095c818fdca01",
+        "symbol": "xDAIx",
+        "name": "Super xDAI",
+        "underlyingAddress": "0xe91d153e0b41518a2ce8dd3d7944fa863463a97d"
+      },
+      "sender": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0xb915c0a9b09d803378023decb73ae6d7d60babbb5fb7624e2caaee27f0ee36d8",
+      "stoppedAtEvent": "0xb915c0a9b09d803378023decb73ae6d7d60babbb5fb7624e2caaee27f0ee36d8",
+      "virtualPeriods": [
+        {
+          "startTime": 1672527600,
+          "endTime": 1648551875,
+          "amount": "0",
+          "amountFiat": "0"
+        }
+      ]
+    },
+    {
+      "id": "Transfer-0x08694226a75b54094f205f28dbc26f78d8b7448659efe4d6105ef5e06f60892f-150",
+      "flowRate": "0",
+      "chainId": 137,
+      "startedAtTimestamp": "1650621682",
+      "startedAtBlockNumber": "27438055",
+      "stoppedAtTimestamp": "1650621682",
+      "stoppedAtBlockNumber": "27438055",
+      "totalAmountStreamed": "1263785030597614644264",
+      "token": {
+        "id": "0xcaa7349cea390f89641fe306d93591f87595dc1f",
+        "symbol": "USDCx",
+        "name": "Super USDC (PoS)",
+        "underlyingAddress": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174"
+      },
+      "sender": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0x08694226a75b54094f205f28dbc26f78d8b7448659efe4d6105ef5e06f60892f",
+      "stoppedAtEvent": "0x08694226a75b54094f205f28dbc26f78d8b7448659efe4d6105ef5e06f60892f",
+      "virtualPeriods": [
+        {
+          "startTime": 1672527600,
+          "endTime": 1650621682,
+          "amount": "0",
+          "amountFiat": "0"
+        }
+      ]
+    },
+    {
+      "id": "Transfer-0x107862341c728e276f5cf3367abf34cdbdff336b01e144b20ef27624fd4dd514-266",
+      "flowRate": "0",
+      "chainId": 137,
+      "startedAtTimestamp": "1639609028",
+      "startedAtBlockNumber": "22568856",
+      "stoppedAtTimestamp": "1639609028",
+      "stoppedAtBlockNumber": "22568856",
+      "totalAmountStreamed": "33015689169522442210",
+      "token": {
+        "id": "0x263026e7e53dbfdce5ae55ade22493f828922965",
+        "symbol": "RIC",
+        "name": "Ricochet",
+        "underlyingAddress": "0x0000000000000000000000000000000000000000"
+      },
+      "sender": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0x107862341c728e276f5cf3367abf34cdbdff336b01e144b20ef27624fd4dd514",
+      "stoppedAtEvent": "0x107862341c728e276f5cf3367abf34cdbdff336b01e144b20ef27624fd4dd514",
+      "virtualPeriods": [
+        {
+          "startTime": 1672527600,
+          "endTime": 1639609028,
+          "amount": "0",
+          "amountFiat": "0"
+        }
+      ]
+    },
+    {
+      "id": "Transfer-0x28acce0219363c98b448f03d5bcc04f21ec1bcae63233aaa733d187512c7a38d-256",
+      "flowRate": "0",
+      "chainId": 137,
+      "startedAtTimestamp": "1650621510",
+      "startedAtBlockNumber": "27437971",
+      "stoppedAtTimestamp": "1650621510",
+      "stoppedAtBlockNumber": "27437971",
+      "totalAmountStreamed": "6129263549663360",
+      "token": {
+        "id": "0x4086ebf75233e8492f1bcda41c7f2a8288c2fb92",
+        "symbol": "WBTCx",
+        "name": "Super WBTC (PoS)",
+        "underlyingAddress": "0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6"
+      },
+      "sender": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0x28acce0219363c98b448f03d5bcc04f21ec1bcae63233aaa733d187512c7a38d",
+      "stoppedAtEvent": "0x28acce0219363c98b448f03d5bcc04f21ec1bcae63233aaa733d187512c7a38d",
+      "virtualPeriods": [
+        {
+          "startTime": 1672527600,
+          "endTime": 1650621510,
+          "amount": "0",
+          "amountFiat": "0"
+        }
+      ]
+    },
+    {
+      "id": "Transfer-0x40f6e476ba8b8b149cbb971743ba1646f55518884892ba9b0c5208808dd3923f-157",
+      "flowRate": "0",
+      "chainId": 137,
+      "startedAtTimestamp": "1650621940",
+      "startedAtBlockNumber": "27438180",
+      "stoppedAtTimestamp": "1650621940",
+      "stoppedAtBlockNumber": "27438180",
+      "totalAmountStreamed": "699526599692458840509",
+      "token": {
+        "id": "0x1305f6b6df9dc47159d12eb7ac2804d4a33173c2",
+        "symbol": "DAIx",
+        "name": "Super DAI (PoS)",
+        "underlyingAddress": "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063"
+      },
+      "sender": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0x40f6e476ba8b8b149cbb971743ba1646f55518884892ba9b0c5208808dd3923f",
+      "stoppedAtEvent": "0x40f6e476ba8b8b149cbb971743ba1646f55518884892ba9b0c5208808dd3923f",
+      "virtualPeriods": [
+        {
+          "startTime": 1672527600,
+          "endTime": 1650621940,
+          "amount": "0",
+          "amountFiat": "0"
+        }
+      ]
+    },
+    {
+      "id": "Transfer-0x59e874e8dc811257c3ff1032a8ce60ecde33d1a535d4258dd5a827f53d61d564-394",
+      "flowRate": "0",
+      "chainId": 137,
+      "startedAtTimestamp": "1639609430",
+      "startedAtBlockNumber": "22569050",
+      "stoppedAtTimestamp": "1639609430",
+      "stoppedAtBlockNumber": "22569050",
+      "totalAmountStreamed": "420000000000000000000",
+      "token": {
+        "id": "0xcaa7349cea390f89641fe306d93591f87595dc1f",
+        "symbol": "USDCx",
+        "name": "Super USDC (PoS)",
+        "underlyingAddress": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174"
+      },
+      "sender": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0x59e874e8dc811257c3ff1032a8ce60ecde33d1a535d4258dd5a827f53d61d564",
+      "stoppedAtEvent": "0x59e874e8dc811257c3ff1032a8ce60ecde33d1a535d4258dd5a827f53d61d564",
+      "virtualPeriods": [
+        {
+          "startTime": 1672527600,
+          "endTime": 1639609430,
+          "amount": "0",
+          "amountFiat": "0"
+        }
+      ]
+    },
+    {
+      "id": "Transfer-0x5c13a15bb7a87b2a47e99043da02b9fecebd9483a20a1959544751e984408eca-443",
+      "flowRate": "0",
+      "chainId": 137,
+      "startedAtTimestamp": "1639605424",
+      "startedAtBlockNumber": "22567124",
+      "stoppedAtTimestamp": "1639605424",
+      "stoppedAtBlockNumber": "22567124",
+      "totalAmountStreamed": "202000000000000000000",
+      "token": {
+        "id": "0xcaa7349cea390f89641fe306d93591f87595dc1f",
+        "symbol": "USDCx",
+        "name": "Super USDC (PoS)",
+        "underlyingAddress": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174"
+      },
+      "sender": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0x5c13a15bb7a87b2a47e99043da02b9fecebd9483a20a1959544751e984408eca",
+      "stoppedAtEvent": "0x5c13a15bb7a87b2a47e99043da02b9fecebd9483a20a1959544751e984408eca",
+      "virtualPeriods": [
+        {
+          "startTime": 1672527600,
+          "endTime": 1639605424,
+          "amount": "0",
+          "amountFiat": "0"
+        }
+      ]
+    },
+    {
+      "id": "Transfer-0x80f2f2eea6d69cd3013b1a9e8d2d9f96b7fa2c1caf1d625c498f6356c4cbcbdf-251",
+      "flowRate": "0",
+      "chainId": 137,
+      "startedAtTimestamp": "1649551138",
+      "startedAtBlockNumber": "26949081",
+      "stoppedAtTimestamp": "1649551138",
+      "stoppedAtBlockNumber": "26949081",
+      "totalAmountStreamed": "4000000000000000000000",
+      "token": {
+        "id": "0x263026e7e53dbfdce5ae55ade22493f828922965",
+        "symbol": "RIC",
+        "name": "Ricochet",
+        "underlyingAddress": "0x0000000000000000000000000000000000000000"
+      },
+      "sender": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0x80f2f2eea6d69cd3013b1a9e8d2d9f96b7fa2c1caf1d625c498f6356c4cbcbdf",
+      "stoppedAtEvent": "0x80f2f2eea6d69cd3013b1a9e8d2d9f96b7fa2c1caf1d625c498f6356c4cbcbdf",
+      "virtualPeriods": [
+        {
+          "startTime": 1672527600,
+          "endTime": 1649551138,
+          "amount": "0",
+          "amountFiat": "0"
+        }
+      ]
+    },
+    {
+      "id": "Transfer-0x9b81b33afbab3a2e11f6966e70a9445f0fbb0906af3b95b28129498277960d79-158",
+      "flowRate": "0",
+      "chainId": 137,
+      "startedAtTimestamp": "1650622056",
+      "startedAtBlockNumber": "27438236",
+      "stoppedAtTimestamp": "1650622056",
+      "stoppedAtBlockNumber": "27438236",
+      "totalAmountStreamed": "2085680291543207062821",
+      "token": {
+        "id": "0x3ad736904e9e65189c3000c7dd2c8ac8bb7cd4e3",
+        "symbol": "MATICx",
+        "name": "Super MATIC",
+        "underlyingAddress": "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270"
+      },
+      "sender": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0x9b81b33afbab3a2e11f6966e70a9445f0fbb0906af3b95b28129498277960d79",
+      "stoppedAtEvent": "0x9b81b33afbab3a2e11f6966e70a9445f0fbb0906af3b95b28129498277960d79",
+      "virtualPeriods": [
+        {
+          "startTime": 1672527600,
+          "endTime": 1650622056,
+          "amount": "0",
+          "amountFiat": "0"
+        }
+      ]
+    },
+    {
+      "id": "Transfer-0xa2eb7aff63bc80cca109f63e65e635f3034d95ed541e48dc96d68c223586efad-154",
+      "flowRate": "0",
+      "chainId": 137,
+      "startedAtTimestamp": "1639354901",
+      "startedAtBlockNumber": "22455861",
+      "stoppedAtTimestamp": "1639354901",
+      "stoppedAtBlockNumber": "22455861",
+      "totalAmountStreamed": "7025000000000000000",
+      "token": {
+        "id": "0x263026e7e53dbfdce5ae55ade22493f828922965",
+        "symbol": "RIC",
+        "name": "Ricochet",
+        "underlyingAddress": "0x0000000000000000000000000000000000000000"
+      },
+      "sender": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0xa2eb7aff63bc80cca109f63e65e635f3034d95ed541e48dc96d68c223586efad",
+      "stoppedAtEvent": "0xa2eb7aff63bc80cca109f63e65e635f3034d95ed541e48dc96d68c223586efad",
+      "virtualPeriods": [
+        {
+          "startTime": 1672527600,
+          "endTime": 1639354901,
+          "amount": "0",
+          "amountFiat": "0"
+        }
+      ]
+    },
+    {
+      "id": "Transfer-0xa52eb3fc95db0ef684d9e3f4f51b6686dac2cd0d064306467e201cbcb164bc33-304",
+      "flowRate": "0",
+      "chainId": 137,
+      "startedAtTimestamp": "1650621982",
+      "startedAtBlockNumber": "27438201",
+      "stoppedAtTimestamp": "1650621982",
+      "stoppedAtBlockNumber": "27438201",
+      "totalAmountStreamed": "167235077012954902",
+      "token": {
+        "id": "0x27e1e4e6bc79d93032abef01025811b7e4727e85",
+        "symbol": "ETHx",
+        "name": "Super WETH (PoS)",
+        "underlyingAddress": "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619"
+      },
+      "sender": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0xa52eb3fc95db0ef684d9e3f4f51b6686dac2cd0d064306467e201cbcb164bc33",
+      "stoppedAtEvent": "0xa52eb3fc95db0ef684d9e3f4f51b6686dac2cd0d064306467e201cbcb164bc33",
+      "virtualPeriods": [
+        {
+          "startTime": 1672527600,
+          "endTime": 1650621982,
+          "amount": "0",
+          "amountFiat": "0"
+        }
+      ]
+    },
+    {
+      "id": "Transfer-0xc73a89f4cb19c3461a8da97c8fd639dbd7bd00049605085447ce5cb930bb7253-481",
+      "flowRate": "0",
+      "chainId": 137,
+      "startedAtTimestamp": "1640131903",
+      "startedAtBlockNumber": "22807994",
+      "stoppedAtTimestamp": "1640131903",
+      "stoppedAtBlockNumber": "22807994",
+      "totalAmountStreamed": "750000000000000000000",
+      "token": {
+        "id": "0xcaa7349cea390f89641fe306d93591f87595dc1f",
+        "symbol": "USDCx",
+        "name": "Super USDC (PoS)",
+        "underlyingAddress": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174"
+      },
+      "sender": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0xc73a89f4cb19c3461a8da97c8fd639dbd7bd00049605085447ce5cb930bb7253",
+      "stoppedAtEvent": "0xc73a89f4cb19c3461a8da97c8fd639dbd7bd00049605085447ce5cb930bb7253",
+      "virtualPeriods": [
+        {
+          "startTime": 1672527600,
+          "endTime": 1640131903,
+          "amount": "0",
+          "amountFiat": "0"
+        }
+      ]
+    },
+    {
+      "id": "Transfer-0xc8d23446b02ffc3794b0e51cd66a2006564452d1a5ce60d53242fbe821252b38-434",
+      "flowRate": "0",
+      "chainId": 137,
+      "startedAtTimestamp": "1632296195",
+      "startedAtBlockNumber": "19377388",
+      "stoppedAtTimestamp": "1632296195",
+      "stoppedAtBlockNumber": "19377388",
+      "totalAmountStreamed": "1000000000000000",
+      "token": {
+        "id": "0x27e1e4e6bc79d93032abef01025811b7e4727e85",
+        "symbol": "ETHx",
+        "name": "Super WETH (PoS)",
+        "underlyingAddress": "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619"
+      },
+      "sender": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0xc8d23446b02ffc3794b0e51cd66a2006564452d1a5ce60d53242fbe821252b38",
+      "stoppedAtEvent": "0xc8d23446b02ffc3794b0e51cd66a2006564452d1a5ce60d53242fbe821252b38",
+      "virtualPeriods": [
+        {
+          "startTime": 1672527600,
+          "endTime": 1632296195,
+          "amount": "0",
+          "amountFiat": "0"
+        }
+      ]
+    },
+    {
+      "id": "Transfer-0xcdae46e4ed6d9750409e2d72d84fb619b2a35164a71789f899c6fe2f72b0b643-271",
+      "flowRate": "0",
+      "chainId": 137,
+      "startedAtTimestamp": "1642682251",
+      "startedAtBlockNumber": "23946293",
+      "stoppedAtTimestamp": "1642682251",
+      "stoppedAtBlockNumber": "23946293",
+      "totalAmountStreamed": "100000000000000000",
+      "token": {
+        "id": "0x3ad736904e9e65189c3000c7dd2c8ac8bb7cd4e3",
+        "symbol": "MATICx",
+        "name": "Super MATIC",
+        "underlyingAddress": "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270"
+      },
+      "sender": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0xcdae46e4ed6d9750409e2d72d84fb619b2a35164a71789f899c6fe2f72b0b643",
+      "stoppedAtEvent": "0xcdae46e4ed6d9750409e2d72d84fb619b2a35164a71789f899c6fe2f72b0b643",
+      "virtualPeriods": [
+        {
+          "startTime": 1672527600,
+          "endTime": 1642682251,
+          "amount": "0",
+          "amountFiat": "0"
+        }
+      ]
+    },
+    {
+      "id": "Transfer-0x368c4aa1c439ffdf88c81ea461d23c21f4149d9fe4650385a192aff995eeb3a1-79",
+      "flowRate": "0",
+      "chainId": 137,
+      "startedAtTimestamp": "1674745990",
+      "startedAtBlockNumber": "38552904",
+      "stoppedAtTimestamp": "1674745990",
+      "stoppedAtBlockNumber": "38552904",
+      "totalAmountStreamed": "1118898809516200",
+      "token": {
+        "id": "0x1305f6b6df9dc47159d12eb7ac2804d4a33173c2",
+        "symbol": "DAIx",
+        "name": "Super DAI (PoS)",
+        "underlyingAddress": "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063"
+      },
+      "sender": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "receiver": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
+      "startedAtEvent": "0x368c4aa1c439ffdf88c81ea461d23c21f4149d9fe4650385a192aff995eeb3a1",
+      "stoppedAtEvent": "0x368c4aa1c439ffdf88c81ea461d23c21f4149d9fe4650385a192aff995eeb3a1",
+      "virtualPeriods": [
+        {
+          "startTime": 1674745990,
+          "endTime": 1674745990,
+          "amount": "0",
+          "amountFiat": "0"
+        }
+      ]
+    },
+    {
+      "id": "Transfer-0x69e3b2dde3309bdcc43127186f272768af178be1d742bbcebd44f9bc11eb016e-149",
+      "flowRate": "0",
+      "chainId": 137,
+      "startedAtTimestamp": "1674746190",
+      "startedAtBlockNumber": "38552998",
+      "stoppedAtTimestamp": "1674746190",
+      "stoppedAtBlockNumber": "38552998",
+      "totalAmountStreamed": "1121874999992200",
+      "token": {
+        "id": "0x3ad736904e9e65189c3000c7dd2c8ac8bb7cd4e3",
+        "symbol": "MATICx",
+        "name": "Super MATIC",
+        "underlyingAddress": "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270"
+      },
+      "sender": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "receiver": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
+      "startedAtEvent": "0x69e3b2dde3309bdcc43127186f272768af178be1d742bbcebd44f9bc11eb016e",
+      "stoppedAtEvent": "0x69e3b2dde3309bdcc43127186f272768af178be1d742bbcebd44f9bc11eb016e",
+      "virtualPeriods": [
+        {
+          "startTime": 1674746190,
+          "endTime": 1674746190,
+          "amount": "0",
+          "amountFiat": "0"
+        }
+      ]
+    },
+    {
+      "id": "Transfer-0xcd9f151132326b678127f51ee0fcedca2654edc124844d95bcbb248edad6541d-95",
+      "flowRate": "0",
+      "chainId": 137,
+      "startedAtTimestamp": "1674745952",
+      "startedAtBlockNumber": "38552886",
+      "stoppedAtTimestamp": "1674745952",
+      "stoppedAtBlockNumber": "38552886",
+      "totalAmountStreamed": "111832576",
+      "token": {
+        "id": "0x4086ebf75233e8492f1bcda41c7f2a8288c2fb92",
+        "symbol": "WBTCx",
+        "name": "Super WBTC (PoS)",
+        "underlyingAddress": "0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6"
+      },
+      "sender": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "receiver": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
+      "startedAtEvent": "0xcd9f151132326b678127f51ee0fcedca2654edc124844d95bcbb248edad6541d",
+      "stoppedAtEvent": "0xcd9f151132326b678127f51ee0fcedca2654edc124844d95bcbb248edad6541d",
+      "virtualPeriods": [
+        {
+          "startTime": 1674745952,
+          "endTime": 1674745952,
+          "amount": "0",
+          "amountFiat": "0"
+        }
+      ]
+    },
+    {
+      "id": "Transfer-0xe6842d84c7a5357adabb192694b362f411d6d33f0b812fed17d97973a486ec2e-164",
+      "flowRate": "0",
+      "chainId": 137,
+      "startedAtTimestamp": "1674746130",
+      "startedAtBlockNumber": "38552970",
+      "stoppedAtTimestamp": "1674746130",
+      "stoppedAtBlockNumber": "38552970",
+      "totalAmountStreamed": "1120982142849400",
+      "token": {
+        "id": "0xe9e759b969b991f2bfae84308385405b9ab01541",
+        "symbol": "StIbAlluoUSD",
+        "name": "Streaming IbAlluo USD",
+        "underlyingAddress": "0xc2dbaaea2efa47ebda3e572aa0e55b742e408bf6"
+      },
+      "sender": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "receiver": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
+      "startedAtEvent": "0xe6842d84c7a5357adabb192694b362f411d6d33f0b812fed17d97973a486ec2e",
+      "stoppedAtEvent": "0xe6842d84c7a5357adabb192694b362f411d6d33f0b812fed17d97973a486ec2e",
+      "virtualPeriods": [
+        {
+          "startTime": 1674746130,
+          "endTime": 1674746130,
+          "amount": "0",
           "amountFiat": "0"
         }
       ]

@@ -36,6 +36,8 @@ Feature: Dashboard Page test cases
     And User clicks on the "opsepolia" toggle
     Then "opsepolia" balances are not visible
 
+  # TODO: Restart ongoing streams
+  @skip
   Scenario: Flow values ,cancel buttons and wrong network warning for an account with ongoing streams
     Given "Dashboard Page" is open with "ongoingStreamAccount" connected on "optimism"
     And User clicks on "optimism" "DAIx" row

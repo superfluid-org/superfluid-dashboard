@@ -238,6 +238,8 @@ Feature: Send Page test cases
     And User tries to cancel the stream and the first transaction dialogs are visible on "opsepolia"
     And Transaction rejected error is shown
 
+  # TODO: Restart ongoing streams
+  @skip
   Scenario: Stream details are automatically input for ongoing streams
     Given "Send Page" is open with "john" connected on "opsepolia"
     And User searches for "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4" as a receiver

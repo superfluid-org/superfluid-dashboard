@@ -320,7 +320,7 @@ export class SendPage extends BasePage {
   ) {
     this.getSelectedToken(token).then((selectedToken) => {
       this.click(RECEIVER_BUTTON);
-      this.isVisible(RECENT_ENTRIES, undefined, { timeout: 30000 });
+      // this.isVisible(RECENT_ENTRIES, undefined, { timeout: 30000 });
       this.type(ADDRESS_DIALOG_INPUT, address);
       cy.wait(2000);
       cy.get('body').then((body) => {

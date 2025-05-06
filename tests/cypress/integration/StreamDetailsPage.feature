@@ -1,5 +1,7 @@
 Feature: Stream details page test cases
 
+  # TODO: Restart ongoing streams
+  @skip
   Scenario: Stream details page for an ongoing stream
     Given "Ongoing stream details page" is open without connecting a wallet
     Then The token icon has got an animation around it
@@ -17,6 +19,8 @@ Feature: Stream details page test cases
     Given "Invalid stream details page" is open without connecting a wallet
     Then 404 page is shown
 
+  # TODO: Restart ongoing streams
+  @skip
   Scenario: Stream details page back button
     Given "Ongoing stream details page" is open without connecting a wallet
     And User clicks on the back button
