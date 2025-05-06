@@ -48,4 +48,4 @@ export const isAgoraSender = (chainId: number, address: Address) => {
     return false;
 }
 
-export const START_TIMESTAMP_OF_FIRST_TRANCH_ON_OPTIMISM = 1746464400; // 5th of May, 2025
+export const START_TIMESTAMP_OF_FIRST_TRANCH_ON_OPTIMISM = 1746550800; // 6th of May, 2025
