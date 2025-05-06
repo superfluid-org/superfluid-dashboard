@@ -191,10 +191,10 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
                       onChange={(date) =>
                         onChange(date ? startOfMonth(date) : null)
                       }
-                      slots={{
-                        textField: (params) => (
-                          <TextField {...params} helperText={null} />
-                        ),
+                      slotProps={{
+                        textField: {
+                          helperText: null,
+                        },
                       }}
                     />
                   )}
@@ -213,10 +213,10 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
                       onChange={(date) =>
                         onChange(date ? endOfMonth(date) : null)
                       }
-                      slots={{
-                        textField: (params) => (
-                          <TextField {...params} helperText={null} />
-                        ),
+                      slotProps={{
+                        textField: {
+                          helperText: null,
+                        },
                       }}
                     />
                   )}

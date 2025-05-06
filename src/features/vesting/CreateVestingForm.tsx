@@ -383,15 +383,12 @@ export const StartDateController = memo(function StartDateController() {
         name="data.startDate"
         render={({ field: { value, onChange, onBlur } }) => (
           <DateTimePicker
-            slots={{
-              textField: (params) => (
-                <TextField
-                  {...params}
-                  data-cy={"date-input"}
-                  fullWidth
-                  onBlur={onBlur}
-                />
-              ),
+            slotProps={{
+              textField: {
+                'data-cy': 'date-input',
+                fullWidth: true,
+                onBlur,
+              },
             }}
             value={value}
             ampm={false}

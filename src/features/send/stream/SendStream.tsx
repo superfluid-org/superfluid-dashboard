@@ -1079,16 +1079,13 @@ const StartDateController = memo(function StartDateController(
         name="data.startTimestamp"
         render={({ field: { onChange, onBlur } }) => (
           <DateTimePicker
-            slots={{
-              textField: (props) => (
-                <TextField
-                  data-cy={"start-date"}
-                  fullWidth
-                  autoComplete="off"
-                  {...props}
-                  onBlur={onBlur}
-                />
-              ),
+            slotProps={{
+              textField: {
+                'data-cy': 'start-date',
+                autoComplete: "off",
+                fullWidth: true,
+                onBlur,
+              },
             }}
             value={props.startDate}
             minDateTime={props.MIN_DATE}
@@ -1122,16 +1119,13 @@ const EndDateController = memo(function EndDateController(
         name="data.endTimestamp"
         render={({ field: { onChange, onBlur } }) => (
           <DateTimePicker
-            slots={{
-              textField: (props) => (
-                <TextField
-                  data-cy={"end-date"}
-                  fullWidth
-                  autoComplete="off"
-                  {...props}
-                  onBlur={onBlur}
-                />
-              ),
+            slotProps={{
+              textField: {
+                'data-cy': 'end-date',
+                autoComplete: "off",
+                fullWidth: true,
+                onBlur,
+              },
             }}
             value={props.endDate}
             minDateTime={props.endDateMin}
