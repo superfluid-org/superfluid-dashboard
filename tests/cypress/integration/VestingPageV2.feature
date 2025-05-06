@@ -1,5 +1,7 @@
 Feature: Vesting page require receiver to claim test cases
 
+  # All new vesting schedules will use v3
+  @skip
   Scenario: Creating a vesting schedule with a cliff and with require receiver to claim toggle enabled
     Given HDWallet transactions are rejected
     And Transactional account dan is connected to the dashboard on opsepolia
@@ -15,6 +17,8 @@ Feature: Vesting page require receiver to claim test cases
     And User creates the vesting schedule
     And Transaction rejected error is shown
 
+  # All new vesting schedules will use v3
+  @skip
   Scenario: Creation form - Top up the vesting schedule
     Given Transactional account dan is connected to the dashboard on opsepolia
     And User clicks on the "vesting" navigation button

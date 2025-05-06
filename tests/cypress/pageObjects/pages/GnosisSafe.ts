@@ -64,9 +64,6 @@ export class GnosisSafe extends BasePage {
   static continueDisclaimer() {
     //The disclaimer is quite annoying and messes up when cypress quickly clicks on it
     //Waiting for other stuff to be visible / not be visible / exist / not exist didn't help here :(
-    cy.get(GNOSIS_BUTTONS, { timeout: 30000 }).contains('I understand').click();
-    cy.get(GNOSIS_BUTTONS).contains('I understand').should('not.exist');
-    cy.wait(1000);
     cy.get(GNOSIS_BUTTONS, { timeout: 30000 }).contains('Accept all').click();
     cy.get(GNOSIS_BUTTONS).contains('Accept all').should('not.exist');
     cy.wait(1000);
@@ -89,7 +86,7 @@ export class GnosisSafe extends BasePage {
     cy.enter(SUPERFLUID_IFRAME).then((getBody) => {
       getBody().find(CONNECT_WALLET_BUTTON).first().click();
       cy.wait(10000);
-      getBody().click(750, 400);
+      getBody().click(750, 100);
       cy.wait(1000);
       getBody().click(750, 300);
     });
@@ -117,7 +114,6 @@ export class GnosisSafe extends BasePage {
     );
     Cypress.config('baseUrl', 'https://app.superfluid.org');
     cy.wait(1000);
-    cy.get(GNOSIS_BUTTONS, { timeout: 30000 }).contains('I understand').click();
     cy.get(GNOSIS_BUTTONS, { timeout: 30000 }).contains('Accept all').click();
   }
 
