@@ -14,6 +14,7 @@ import { SCHEDULE_START_END_MIN_DIFF_S } from "../stream/SendStream";
 import useCalculateBufferInfo from "../useCalculateBufferInfo";
 import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
 import { CommonFormEffects } from "../../common/CommonFormEffects";
+import { useBalance } from "wagmi";
 
 export type ValidStreamingForm = {
   data: {
@@ -64,12 +65,15 @@ const StreamingFormProvider: FC<
   PropsWithChildren<StreamingFormProviderProps>
 > = ({ children, initialFormValues }) => {
   const { visibleAddress } = useVisibleAddress();
-  const { network, stopAutoSwitchToWalletNetwork } = useExpectedNetwork();
+  const { network } = useExpectedNetwork();
   
   const [queryRealtimeBalance] = rpcApi.useLazyRealtimeBalanceQuery();
   const [queryActiveFlow] = rpcApi.useLazyGetActiveFlowQuery();
   const calculateBufferInfo = useCalculateBufferInfo();
   const [tokenBufferTrigger] = rpcApi.useLazyTokenBufferQuery();
+  const { data: balance } = useBalance({
+    address: visibleAddress
+  });
 
   const [MIN_DATE_UNIX, MAX_DATE_UNIX] = useMemo(
     () => [
