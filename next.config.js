@@ -38,6 +38,9 @@ function withSentryIfNecessary(nextConfig) {
   // ensure that your source maps include changes from all other Webpack plugins
   // NOTE from developer: withTM is also recommended to keep last.
   return withSentryConfig(nextConfig, {
+    org: "superfluid-finance",
+    project: "superfluid-dashboard",
+
     // Additional config options for the Sentry Webpack plugin. Keep in mind that
     // the following options are set automatically, and overriding them is not
     // recommended:
@@ -47,7 +50,32 @@ function withSentryIfNecessary(nextConfig) {
     silent: true, // Suppresses all logs
     // For all available options, see:
     // https://github.com/getsentry/sentry-webpack-plugin#options.
+
+    // Upload a larger set of source maps for prettier stack traces (increases build time)
+    widenClientFileUpload: true,
+
     hideSourceMaps: true, // If this not specified as `true` then Sentry will expose the production source maps. We've decided to expose the source maps though.
+
+    // Automatically tree-shake Sentry logger statements to reduce bundle size
+    disableLogger: true,
+
+    // Enables automatic instrumentation of Vercel Cron Monitors. (Does not yet work with App Router route handlers.)
+    // See the following for more information:
+    // https://docs.sentry.io/product/crons/
+    // https://vercel.com/docs/cron-jobs
+    automaticVercelMonitors: true,
+
+    sourcemaps: {
+      // Don't serve sourcemaps to the users
+      deleteSourcemapsAfterUpload: true,
+    },
+
+    // The thirdPartyErrorFilterIntegration allows you to filter out errors originating from third parties,
+    // such as browser extensions, code-injecting browsers, or widgets from third-party services that also use Sentry.
+    // https://docs.sentry.io/platforms/javascript/guides/nextjs/configuration/filtering/#using-thirdpartyerrorfilterintegration
+    unstable_sentryWebpackPluginOptions: {
+      applicationKey: "superfluid-dashboard",
+    },
   });
 }
 
