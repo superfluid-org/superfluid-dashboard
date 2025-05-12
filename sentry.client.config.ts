@@ -49,7 +49,9 @@ if (!IsCypress && SENTRY_DSN) {
     integrations:
       isBrowser ?
         [
-          Sentry.captureConsoleIntegration(),
+          Sentry.captureConsoleIntegration({
+            levels: ["error"]
+          }),
           Sentry.thirdPartyErrorFilterIntegration({
             // Specify the application keys that you specified in the Sentry bundler plugin
             filterKeys: ["superfluid-dashboard"],
