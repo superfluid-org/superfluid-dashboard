@@ -4,7 +4,7 @@ import {
 } from "@superfluid-finance/sdk-redux";
 import { FC, PropsWithChildren, useCallback, useEffect } from "react";
 import { Provider } from "react-redux";
-import { useAccount } from "wagmi";
+import { useAccount } from "@/hooks/useAccount"
 import { parseV1AddressBookEntries } from "../../utils/addressBookUtils";
 import { parseV1CustomTokens } from "../../utils/customTokenUtils";
 import { addAddressBookEntries } from "../addressBook/addressBook.slice";

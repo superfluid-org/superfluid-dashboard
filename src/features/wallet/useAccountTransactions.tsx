@@ -1,7 +1,7 @@
 import { TrackedTransaction } from "@superfluid-finance/sdk-redux";
 import { transactionTrackerSelectors } from "@superfluid-finance/sdk-redux";
 import { useMemo } from "react";
-import { useAccount } from "wagmi";
+import { useAccount } from "@/hooks/useAccount"
 import { useAppSelector } from "../redux/store";
 
 export const transactionsByTimestampSelector = (

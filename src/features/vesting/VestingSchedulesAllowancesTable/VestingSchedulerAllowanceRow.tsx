@@ -21,7 +21,7 @@ import {
 import { useTheme } from "@mui/material/styles";
 import { BigNumber } from "ethers";
 import { FC, useCallback, useState } from "react";
-import { useAccount } from "wagmi";
+import { useAccount } from "@/hooks/useAccount"
 import OpenIcon from "../../../components/OpenIcon/OpenIcon";
 import { flowOperatorPermissionsToString } from "../../../utils/flowOperatorPermissionsToString";
 import {

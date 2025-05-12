@@ -1,4 +1,4 @@
-import { useAccount } from "wagmi";
+import { useAccount } from "@/hooks/useAccount"
 import { useHasFlag } from "../features/flags/flagsHooks";
 import { useExpectedNetwork } from "../features/network/ExpectedNetworkContext";
 import { Flag, setVestingSchedulerFlag } from "../features/flags/flags.slice";

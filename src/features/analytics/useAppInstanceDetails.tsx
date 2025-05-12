@@ -1,6 +1,6 @@
 import { customAlphabet } from "nanoid";
 import { useMemo } from "react";
-import { useAccount } from "wagmi";
+import { useAccount } from "@/hooks/useAccount"
 import { useLayoutContext } from "../layout/LayoutContext";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { useAppKitAccount } from "@reown/appkit/react";

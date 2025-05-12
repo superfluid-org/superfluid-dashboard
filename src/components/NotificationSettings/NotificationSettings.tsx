@@ -9,7 +9,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { FC } from "react";
-import { useAccount } from "wagmi";
+import { useAccount } from "@/hooks/useAccount"
 import Blockies from "react-blockies";
 import { CopyIconBtn } from "../../features/common/CopyIconBtn";
 

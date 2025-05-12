@@ -15,7 +15,7 @@ import { useNotificationChannels } from "../../hooks/useNotificationChannels";
 
 import NotificationList from "./NotificationList";
 import NotificationHeader from "./NotificationHeader";
-import { useAccount } from "wagmi";
+import { useAccount } from "@/hooks/useAccount"
 import ConnectWallet from "../../features/wallet/ConnectWallet";
 import useUpdateEffect from "react-use/lib/useUpdateEffect";
 

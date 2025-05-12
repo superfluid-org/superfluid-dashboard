@@ -13,7 +13,7 @@ import {
   RootState,
   transactionTracker,
 } from "../../features/redux/store";
-import { useAccount } from "wagmi";
+import { useAccount } from "@/hooks/useAccount"
 import { supportId } from "../../features/analytics/useAppInstanceDetails";
 import { useAnalytics } from "../../features/analytics/useAnalytics";
 import { transactionTrackerSelectors } from "@superfluid-finance/sdk-redux";

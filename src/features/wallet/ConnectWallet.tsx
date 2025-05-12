@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
 import { FC, memo, SyntheticEvent, useCallback } from "react";
-import { useAccount } from "wagmi";
+import { useAccount } from "@/hooks/useAccount"
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
 import { useImpersonation } from "../impersonation/ImpersonationContext";

@@ -8,7 +8,7 @@ import { FC, PropsWithChildren, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import NetworkBadge from "../network/NetworkBadge";
 import CreateVestingForm from "./CreateVestingForm";
-import { useAccount } from "wagmi";
+import { useAccount } from "@/hooks/useAccount"
 import { useTokenQuery } from "../../hooks/useTokenQuery";
 import { skipToken } from "@reduxjs/toolkit/dist/query";
 import { SuperTokenMinimal } from "../redux/endpoints/tokenTypes";

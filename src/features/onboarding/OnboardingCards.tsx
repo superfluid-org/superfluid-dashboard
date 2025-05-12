@@ -15,7 +15,7 @@ import {
 import { Address } from "@superfluid-finance/sdk-core";
 import Image from "next/legacy/image";
 import { FC, PropsWithChildren, useState } from "react";
-import { useAccount } from "wagmi";
+import { useAccount } from "@/hooks/useAccount"
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import TokenIcon from "../token/TokenIcon";
 import { useConnectButton } from "../wallet/ConnectButtonProvider";

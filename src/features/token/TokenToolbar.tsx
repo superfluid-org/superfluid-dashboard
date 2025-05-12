@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import NextLink from "next/link";
 import { FC, useMemo } from "react";
-import { useAccount } from "wagmi";
+import { useAccount } from "@/hooks/useAccount"
 import { getAddress } from "../../utils/memoizedEthersUtils";
 import { Flag } from "../flags/flags.slice";
 import { useHasFlag } from "../flags/flagsHooks";

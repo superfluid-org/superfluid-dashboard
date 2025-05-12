@@ -1,5 +1,6 @@
 import { createContext, FC, ReactNode, useContext, useMemo } from "react";
-import { useAccount, useSwitchChain } from "wagmi";
+import { useSwitchChain } from "wagmi";
+import { useAccount } from "@/hooks/useAccount"
 import { useImpersonation } from "../impersonation/ImpersonationContext";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { Network } from "../network/networks";

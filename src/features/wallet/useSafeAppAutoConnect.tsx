@@ -1,4 +1,5 @@
-import { useAccount, useConnect } from 'wagmi';
+import { useConnect } from 'wagmi';
+import { useAccount } from "@/hooks/useAccount"
 import { useEffect, useMemo } from 'react';
 
 const SAFE_CONNECTOR_ID = "safe";

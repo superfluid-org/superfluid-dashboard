@@ -45,7 +45,7 @@ import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContex
 import addressBookRpcApi from "../../features/addressBook/addressBookRpcApi.slice";
 import { lensApi } from "../../features/lens/lensApi.slice";
 import { efpApi } from "../../features/efp/efpApi.slice";
-import { useAccount } from "wagmi";
+import { useAccount } from "@/hooks/useAccount"
 
 const LIST_ITEM_STYLE = { px: 3, minHeight: 68 };
 

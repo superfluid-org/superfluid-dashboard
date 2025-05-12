@@ -7,7 +7,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import { useAccount } from "wagmi";
+import { useAccount } from "@/hooks/useAccount"
 import AccountModal from "./AccountModal";
 import { useAppKit, useAppKitState, useAppKitTheme } from '@reown/appkit/react'
 import { useTheme } from "@mui/material";

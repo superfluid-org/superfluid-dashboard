@@ -9,7 +9,7 @@ import {
 import { Stream } from "@superfluid-finance/sdk-core";
 import { Signer } from "ethers";
 import { FC, useMemo } from "react";
-import { useAccount } from "wagmi";
+import { useAccount } from "@/hooks/useAccount"
 import { ScheduledStream } from "../../../hooks/streamSchedulingHooks";
 import useGetTransactionOverrides from "../../../hooks/useGetTransactionOverrides";
 import { useAnalytics } from "../../analytics/useAnalytics";

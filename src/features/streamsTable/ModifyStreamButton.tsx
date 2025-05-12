@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 import { Stream } from "@superfluid-finance/sdk-core";
 import { FC, useMemo } from "react";
-import { useAccount } from "wagmi";
+import { useAccount } from "@/hooks/useAccount"
 import { getSendPagePath } from "../../pages/send";
 import { getPrettyEtherFlowRate } from "../../utils/tokenUtils";
 import { Network } from "../network/networks";

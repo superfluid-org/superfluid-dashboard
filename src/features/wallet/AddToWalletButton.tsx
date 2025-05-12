@@ -3,7 +3,8 @@ import { IconButton, Tooltip } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
 import { FC, useCallback } from "react";
 import { useDispatch } from "react-redux";
-import { useAccount, useSwitchChain, useWatchAsset } from "wagmi";
+import { useSwitchChain, useWatchAsset } from "wagmi";
+import { useAccount } from "@/hooks/useAccount"
 import { addTokenAddedFlag } from "../flags/flags.slice";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { useConnectionBoundary } from "../transactionBoundary/ConnectionBoundary";

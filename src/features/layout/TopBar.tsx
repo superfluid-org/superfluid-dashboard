@@ -22,7 +22,8 @@ import TransactionBell from "../transactions/TransactionBell";
 import ConnectWallet from "../wallet/ConnectWallet";
 import { useLayoutContext } from "./LayoutContext";
 import { menuDrawerWidth } from "./NavigationDrawer";
-import { useAccount, useSwitchChain } from "wagmi";
+import { useSwitchChain } from "wagmi";
+import { useAccount } from "@/hooks/useAccount"
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { Network } from "../network/networks";
 

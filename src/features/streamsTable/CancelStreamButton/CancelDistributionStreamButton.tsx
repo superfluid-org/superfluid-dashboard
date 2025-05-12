@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { Signer } from "ethers";
 import { FC, useMemo } from "react";
-import { useAccount } from "wagmi";
+import { useAccount } from "@/hooks/useAccount"
 import useGetTransactionOverrides from "../../../hooks/useGetTransactionOverrides";
 import { useAnalytics } from "../../analytics/useAnalytics";
 import { Network } from "../../network/networks";

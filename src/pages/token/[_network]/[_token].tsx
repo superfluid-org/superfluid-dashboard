@@ -47,7 +47,7 @@ import { useVisibleAddress } from "../../../features/wallet/VisibleAddressContex
 import useNavigateBack from "../../../hooks/useNavigateBack";
 import Page404 from "../../404";
 import PoolMembersTable from "../../../features/pool/PoolMembersTable";
-import { useAccount } from "wagmi";
+import { useAccount } from "@/hooks/useAccount"
 import { useTokenQuery } from "../../../hooks/useTokenQuery";
 import { BIG_NUMBER_ZERO, calculateMaybeCriticalAtTimestamp } from "../../../utils/tokenUtils";
 

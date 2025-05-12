@@ -6,7 +6,7 @@ import ConnectionBoundary from "../../features/transactionBoundary/ConnectionBou
 import { BigLoader } from "../../features/vesting/BigLoader";
 import VestingLayout from "../../features/vesting/VestingLayout";
 import { NextPageWithLayout } from "../_app";
-import { useAccount } from "wagmi";
+import { useAccount } from "@/hooks/useAccount"
 import { useWhitelist } from "../../hooks/useWhitelist";
 import { BatchVestingFormProvider } from "../../features/vesting/batch/BatchVestingFormProvider";
 import { BatchVestingSection } from "../../features/vesting/batch/BatchVestingSection";

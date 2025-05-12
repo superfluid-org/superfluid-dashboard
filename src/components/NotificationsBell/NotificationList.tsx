@@ -1,7 +1,7 @@
 import { Divider, Typography } from "@mui/material";
 import { FC, Fragment, useCallback } from "react";
 import { useDispatch } from "react-redux";
-import { useAccount } from "wagmi";
+import { useAccount } from "@/hooks/useAccount"
 
 import { useLastSeenNotification } from "../../features/notifications/notificationHooks";
 import { markAsArchived } from "../../features/notifications/notifications.slice";

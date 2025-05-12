@@ -1,5 +1,5 @@
 import { Button, Stack, Typography } from "@mui/material";
-import { useAccount } from "wagmi";
+import { useAccount } from "@/hooks/useAccount"
 
 import { FC } from "react";
 import Link from "../common/Link";

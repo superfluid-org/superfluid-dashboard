@@ -12,7 +12,8 @@ import {
   useTheme,
 } from "@mui/material";
 import { FC, useCallback, useEffect, useState } from "react";
-import { useAccount, useBalance, useDisconnect } from "wagmi";
+import { useBalance, useDisconnect } from "wagmi";
+import { useAccount } from "@/hooks/useAccount"
 import AddressName from "../../components/AddressName/AddressName";
 import { AddressSearchDialogContent } from "../../components/AddressSearchDialog/AddressSearchDialog";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";

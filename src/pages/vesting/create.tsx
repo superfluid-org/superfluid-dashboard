@@ -8,7 +8,7 @@ import CreateVestingFormProvider from "../../features/vesting/CreateVestingFormP
 import { CreateVestingSection } from "../../features/vesting/CreateVestingSection";
 import VestingLayout from "../../features/vesting/VestingLayout";
 import { NextPageWithLayout } from "../_app";
-import { useAccount } from "wagmi";
+import { useAccount } from "@/hooks/useAccount"
 import { useWhitelist } from "../../hooks/useWhitelist";
 
 const CreateVestingSchedulePage: NextPageWithLayout = () => {

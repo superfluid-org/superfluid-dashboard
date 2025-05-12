@@ -1,6 +1,7 @@
 import Link from "@mui/material/Link";
 import { FC, useCallback } from "react";
-import { useAccount, useSwitchChain } from "wagmi";
+import { useSwitchChain } from "wagmi";
+import { useAccount } from "@/hooks/useAccount"
 import { useExpectedNetwork } from "./ExpectedNetworkContext";
 import { Network } from "./networks";
 

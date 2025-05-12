@@ -6,7 +6,7 @@ import {
   useContext,
   useMemo,
 } from "react";
-import { useAccount } from "wagmi";
+import { useAccount } from "@/hooks/useAccount"
 import { applySettings } from "../settings/appSettings.slice";
 import { useDispatch } from "react-redux";
 import {
