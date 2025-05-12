@@ -3,7 +3,6 @@ import { allNetworks } from "../network/networks";
 import { isAddress } from "../../utils/memoizedEthersUtils";
 import { publicClientToProvider } from "../../utils/wagmiEthersAdapters";
 import { resolvedWagmiClients } from "../wallet/WagmiManager";
-import { PublicClient } from "viem";
 
 const addressBookRpcApi = createApi({
   reducerPath: "addressBookRpcApi",
