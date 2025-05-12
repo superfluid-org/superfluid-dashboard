@@ -76,6 +76,12 @@ function withSentryIfNecessary(nextConfig) {
     unstable_sentryWebpackPluginOptions: {
       applicationKey: "superfluid-dashboard",
     },
+
+    // Route browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers.
+    // This can increase your server load as well as your hosting bill.
+    // Note: Check that the configured route will not match with your Next.js middleware, otherwise reporting of client-
+    // side errors will fail.
+    tunnelRoute: "/monitoring",
   });
 }
 
@@ -99,6 +105,12 @@ const moduleExports = {
       },
     ],
   },
+  rewrites: () => [
+    {
+      source: "/monitoring",
+      destination: "/api/monitoring",
+    },
+  ],
   env: {
     NEXT_PUBLIC_APP_URL: appUrl,
     NEXT_PUBLIC_SENTRY_ENVIRONMENT: sentryEnvironment,
