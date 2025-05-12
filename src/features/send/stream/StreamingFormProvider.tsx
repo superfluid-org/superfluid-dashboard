@@ -15,6 +15,7 @@ import useCalculateBufferInfo from "../useCalculateBufferInfo";
 import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
 import { CommonFormEffects } from "../../common/CommonFormEffects";
 import { useBalance } from "wagmi";
+import { BigNumber } from "ethers";
 
 export type ValidStreamingForm = {
   data: {
@@ -229,6 +230,16 @@ const StreamingFormProvider: FC<
                 });
               }
             }
+
+            if (balance && !activeFlow) {              
+              const balanceAfterInterfaceFee = BigNumber.from(balance.value.toString()).sub(network.interfaceBaseFeeInNativeCurrency);
+  
+              if (balanceAfterInterfaceFee.isNegative()) {
+                handleHigherOrderValidationError({
+                  message: `You do not have enough ${network.nativeCurrency.symbol} balance to cover the interface fee.`,
+                });
+              }
+            }
           }
         }
 
@@ -238,7 +249,7 @@ const StreamingFormProvider: FC<
 
         return true;
       }),
-    [network, visibleAddress, calculateBufferInfo]
+    [network, visibleAddress, calculateBufferInfo, balance]
   );
 
   const formMethods = useForm<PartialStreamingForm, undefined, ValidStreamingForm>({
