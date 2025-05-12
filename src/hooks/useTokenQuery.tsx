@@ -25,10 +25,15 @@ export const useTokenQuery = <T extends boolean = false>(input: {
             return undefined;
         }
 
+        if (!inputParsed.id) {
+            // Show never be the case
+            return undefined;
+        }
+
         return findTokenFromTokenList({ chainId: inputParsed.chainId, address: inputParsed.id });
     }, [inputParsed.isSkip, inputParsed.chainId, inputParsed.id]);
 
-    const skipSubgraphQuery = inputParsed.isSkip || !!tokenListToken;
+    const skipSubgraphQuery = inputParsed.isSkip || !!tokenListToken || !inputParsed.id;
     const { data: subgraphToken, isLoading: isSubgraphTokenLoading } = subgraphApi.useTokenQuery(skipSubgraphQuery ? skipToken : {
         chainId: inputParsed.chainId,
         id: inputParsed.id.toLowerCase()
