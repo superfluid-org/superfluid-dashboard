@@ -9,7 +9,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { skipToken } from "@reduxjs/toolkit/query";
 import { BigNumber } from "ethers";
 import { groupBy, uniq } from "lodash";
 import { FC, useMemo } from "react";

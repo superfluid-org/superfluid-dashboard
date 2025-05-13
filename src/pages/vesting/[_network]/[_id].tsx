@@ -7,7 +7,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { skipToken } from "@reduxjs/toolkit/dist/query/react";
+import { skipToken } from "@reduxjs/toolkit/query/react";
 import { FlowUpdatedEvent, TransferEvent } from "@superfluid-finance/sdk-core";
 import { isString, orderBy } from "lodash";
 import { useRouter } from "next/router";

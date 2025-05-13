@@ -13,11 +13,11 @@ export interface NetworkCustomToken {
   customToken: Address;
 }
 
-export type NetworkCustomTokenState = EntityState<NetworkCustomToken>;
+export type NetworkCustomTokenState = EntityState<NetworkCustomToken, string>;
 
 export const getCustomTokenId = (chainId: number, customToken: Address) => `${chainId}-${getAddress(customToken)}`;
 
-const adapter = createEntityAdapter<NetworkCustomToken>({
+const adapter = createEntityAdapter<NetworkCustomToken, string>({
   selectId: ({ chainId, customToken }) => getCustomTokenId(chainId, customToken)
 });
 
@@ -26,7 +26,7 @@ export const customTokensSlice = createSlice({
   initialState: adapter.getInitialState(),
   reducers: {
     addCustomToken: (
-      state: EntityState<NetworkCustomToken>,
+      state: EntityState<NetworkCustomToken, string>,
       { payload }: { payload: NetworkCustomToken }
     ) =>
       adapter.addOne(state, {
@@ -35,7 +35,7 @@ export const customTokensSlice = createSlice({
       }),
 
     addCustomTokens: (
-      state: EntityState<NetworkCustomToken>,
+      state: EntityState<NetworkCustomToken, string>,
       { payload }: { payload: NetworkCustomToken[] }
     ) =>
       adapter.addMany(
@@ -50,7 +50,7 @@ export const customTokensSlice = createSlice({
 
 export const { addCustomToken, addCustomTokens } = customTokensSlice.actions;
 
-const selectSelf = (state: RootState): EntityState<NetworkCustomToken> =>
+const selectSelf = (state: RootState): EntityState<NetworkCustomToken, string> =>
   state.customTokens;
 
 const adapterSelectors = adapter.getSelectors<RootState>(selectSelf);

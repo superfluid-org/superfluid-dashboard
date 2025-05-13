@@ -72,12 +72,14 @@ import { batchVestingEndpoints } from "./endpoints/batchVestingEndpoints";
 import { vestingAgoraEndpoints } from "./endpoints/vestingAgoraEndpoints";
 
 export const rpcApi = initializeRpcApiSlice((options) =>
-  createApiWithReactHooks({
-    ...options,
-    keepUnusedDataFor: 180,
-    refetchOnMountOrArgChange: 90,
-    refetchOnReconnect: true,
-  })
+  {
+    return createApiWithReactHooks({
+      ...options,
+      keepUnusedDataFor: 180,
+      refetchOnMountOrArgChange: 90,
+      refetchOnReconnect: true,
+    });
+  }
 )
   .injectEndpoints(allRpcEndpoints)
   .injectEndpoints(adHocRpcEndpoints)
@@ -93,13 +95,13 @@ export const rpcApi = initializeRpcApiSlice((options) =>
 export const subgraphApi = initializeSubgraphApiSlice((options) =>
   createApiWithReactHooks({
     ...options,
-    extractRehydrationInfo(action, { reducerPath }) {
+    extractRehydrationInfo(action, { reducerPath }): any {
       if (
         action.type === REHYDRATE &&
         action.payload &&
-        action.payload[reducerPath]
+        (action.payload as { [key: string]: any })[reducerPath]
       ) {
-        return action.payload[reducerPath];
+        return (action.payload as { [key: string]: any })[reducerPath];
       }
     },
     keepUnusedDataFor: 180,
@@ -115,7 +117,7 @@ export const transactionTracker = initializeTransactionTrackerSlice();
 const transactionTrackerPersistedReducer = persistReducer(
   { storage, key: "transactions", version: 2, migrate: async (persistedState, currentVersion) => {
     if (persistedState && currentVersion === 1) {
-      const oldState = persistedState as PersistedState & EntityState<TrackedTransaction>;
+      const oldState = persistedState as PersistedState & EntityState<TrackedTransaction, string>;
       const transactionsToRemove = Object.values(oldState.entities).filter(isDefined).filter(x => deprecatedNetworkChainIds.includes(x.chainId)) as TrackedTransaction[];
       const newEntities = { ...oldState.entities };
       for (const tx of transactionsToRemove) {
@@ -179,7 +181,7 @@ const customTokensPersistedReducer = persistReducer(
 );
 
 const networkPreferencesPersistedReducer = persistReducer(
-  { storage, key: "networkPreferences", version: 2, migrate: async (persistedState, currentVersion) => {
+  { storage, key: "networkPreferences", version: 3, migrate: async (persistedState, currentVersion) => {
     if (persistedState && currentVersion === 1) {
       const oldState = persistedState as PersistedState & NetworkPreferencesState;
       const newEntities = { ...oldState.entities };
@@ -193,6 +195,8 @@ const networkPreferencesPersistedReducer = persistReducer(
         entities: newEntities
       }
     }
+
+    // TODO: migrate?
   } },
   networkPreferencesSlice.reducer
 );
@@ -216,7 +220,7 @@ export const listenerMiddleware = createListenerMiddleware();
 
 export const sentryErrorLogger: Middleware =
   (api: MiddlewareAPI) => (next) => (action) => {
-    const { error } = action;
+    const { error } = action as { error: { name: string } };
 
     // Log when there was an error/exception but it wasn't explicitly rejected.
     if (error && isRejected(action) && !isRejectedWithValue(action)) {
@@ -283,34 +287,34 @@ export const reduxStore = configureStore({
     // Default slices
     pendingUpdates: pendingUpdateSlice.reducer,
   },
-  enhancers: (existingEnhancers) =>
-    existingEnhancers.concat(
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+    serializableCheck: {
+      ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER], // Ignore redux-persist actions: https://stackoverflow.com/a/62610422
+    },
+  })
+    .prepend(listenerMiddleware.middleware)
+    .prepend(sentryErrorLogger)
+    .concat(rpcApi.middleware)
+    .concat(vestingSubgraphApi.middleware)
+    .concat(autoWrapSubgraphApi.middleware)
+    .concat(schedulingSubgraphApi.middleware)
+    .concat(subgraphApi.middleware)
+    .concat(efpApi.middleware)
+    .concat(ensApi.middleware)
+    .concat(lensApi.middleware)
+    .concat(gasApi.middleware)
+    .concat(platformApi.middleware)
+    .concat(faucetApi.middleware)
+    .concat(tokenPriceApi.middleware)
+    .concat(accountingApi.middleware)
+    .concat(addressBookRpcApi.middleware),
+  enhancers: (getDefaultEnhancers) =>
+    getDefaultEnhancers().concat(
       autoBatchEnhancer({
         type: typeof window !== "undefined" ? "raf" : "tick",
       })
     ), // https://redux-toolkit.js.org/api/autoBatchEnhancer#autobatchenhancer-1
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: {
-        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER], // Ignore redux-persist actions: https://stackoverflow.com/a/62610422
-      },
-    })
-      .prepend(listenerMiddleware.middleware)
-      .prepend(sentryErrorLogger)
-      .concat(rpcApi.middleware)
-      .concat(vestingSubgraphApi.middleware)
-      .concat(autoWrapSubgraphApi.middleware)
-      .concat(schedulingSubgraphApi.middleware)
-      .concat(subgraphApi.middleware)
-      .concat(efpApi.middleware)
-      .concat(ensApi.middleware)
-      .concat(lensApi.middleware)
-      .concat(gasApi.middleware)
-      .concat(platformApi.middleware)
-      .concat(faucetApi.middleware)
-      .concat(tokenPriceApi.middleware)
-      .concat(accountingApi.middleware)
-      .concat(addressBookRpcApi.middleware),
 });
 
 export const reduxPersistor = persistStore(reduxStore);

@@ -1,5 +1,5 @@
-import { fakeBaseQuery } from "@reduxjs/toolkit/dist/query";
-import { createApi } from "@reduxjs/toolkit/dist/query/react";
+import { fakeBaseQuery } from "@reduxjs/toolkit/query";
+import { createApi } from "@reduxjs/toolkit/query/react";
 import { ethers } from "ethers";
 import { AvatarResolver } from "@ensdomains/ens-avatar";
 

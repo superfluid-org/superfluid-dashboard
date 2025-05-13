@@ -1,4 +1,4 @@
-import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/dist/query/react";
+import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Address } from "@superfluid-finance/sdk-core";
 import { registerNewTransaction } from "@superfluid-finance/sdk-redux";
 import axios from "axios";

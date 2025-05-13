@@ -1,4 +1,4 @@
-import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { skipToken } from "@reduxjs/toolkit/query";
 import { Address } from "@superfluid-finance/sdk-core";
 import { useMemo } from "react";
 import { Currency } from "../../utils/currencyUtils";

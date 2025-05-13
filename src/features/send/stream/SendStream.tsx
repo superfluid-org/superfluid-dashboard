@@ -21,7 +21,7 @@ import {
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { skipToken } from "@reduxjs/toolkit/query";
 import { add, fromUnixTime, getUnixTime, sub } from "date-fns";
 import Decimal from "decimal.js";
 import { BigNumber, BigNumberish } from "ethers";

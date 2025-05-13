@@ -13,7 +13,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { skipToken } from "@reduxjs/toolkit/query";
 import { Address, PoolDistributor, Stream } from "@superfluid-finance/sdk-core";
 import { getUnixTime } from "date-fns";
 import { FC, memo, useCallback, useEffect, useMemo, useState } from "react";

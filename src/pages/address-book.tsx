@@ -14,7 +14,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { skipToken } from "@reduxjs/toolkit/query";
 import { Address } from "@superfluid-finance/sdk-core";
 import { NextPage } from "next";
 import { parse, unparse } from "papaparse";

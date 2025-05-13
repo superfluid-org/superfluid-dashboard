@@ -13,7 +13,7 @@ import { BackButton } from "../BackButton";
 import CreateVestingPreview from "../CreateVestingPreview";
 import { WhitelistVestingOverlay } from "../WhitelistVestingOverlay";
 import { useTokenQuery } from "../../../hooks/useTokenQuery";
-import { skipToken } from "@reduxjs/toolkit/dist/query/react";
+import { skipToken } from "@reduxjs/toolkit/query/react";
 import { BatchVestingForm } from "./BatchVestingForm";
 import BatchVestingPreview from "./BatchVestingPreview";
 

@@ -8,7 +8,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { skipToken } from "@reduxjs/toolkit/query";
 import { differenceInDays, format, fromUnixTime } from "date-fns";
 import { formatEther } from "ethers/lib/utils";
 import {

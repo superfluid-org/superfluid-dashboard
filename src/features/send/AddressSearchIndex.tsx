@@ -13,7 +13,7 @@ import {
   AddressSearchDialogProps,
 } from "../../components/AddressSearchDialog/AddressSearchDialog";
 import { subgraphApi } from "../redux/store";
-import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { skipToken } from "@reduxjs/toolkit/query";
 import { Address } from "@superfluid-finance/sdk-core";
 
 interface AddressSearchIndexProps {

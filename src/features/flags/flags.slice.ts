@@ -52,7 +52,7 @@ type FlagType = TestTokensReceivedFlag | TokenAddedFlag | VestingSchedulerFlag;
  * For example faucet funds received, onboarding steps done etc.
  */
 
-const adapter = createEntityAdapter<FlagType>({
+const adapter = createEntityAdapter<FlagType, string>({
   selectId: ({ id }) => id,
 });
 
@@ -62,7 +62,7 @@ export const flagsSlice = createSlice({
   reducers: {
     addTestTokensReceivedFlag: {
       reducer: (
-        state: EntityState<FlagType>,
+        state: EntityState<FlagType, string>,
         action: PayloadAction<TestTokensReceivedFlag>
       ) => adapter.addOne(state, action.payload),
       prepare: (payload: Omit<TestTokensReceivedFlag, "id" | "type">) => ({
@@ -76,7 +76,7 @@ export const flagsSlice = createSlice({
     },
     addTokenAddedFlag: {
       reducer: (
-        state: EntityState<FlagType>,
+        state: EntityState<FlagType, string>,
         action: PayloadAction<TokenAddedFlag>
       ) => adapter.addOne(state, action.payload),
       prepare: (payload: Omit<TokenAddedFlag, "id" | "type">) => ({
@@ -91,7 +91,7 @@ export const flagsSlice = createSlice({
     },
     setVestingSchedulerFlag: {
       reducer: (
-        state: EntityState<FlagType>,
+        state: EntityState<FlagType, string>,
         action: PayloadAction<VestingSchedulerFlag>
       ) => adapter.upsertOne(state, action.payload),
       prepare: (payload: Omit<VestingSchedulerFlag, "id" | "type">) => ({
@@ -132,7 +132,7 @@ export const flagsSlice = createSlice({
 export const { addTestTokensReceivedFlag, addTokenAddedFlag, setVestingSchedulerFlag } =
   flagsSlice.actions;
 
-const selectSelf = (state: RootState): EntityState<FlagType> => state.flags;
+const selectSelf = (state: RootState): EntityState<FlagType, string> => state.flags;
 
 const adapterSelectors = adapter.getSelectors<RootState>(selectSelf);
 

@@ -10,7 +10,7 @@ import NetworkBadge from "../network/NetworkBadge";
 import CreateVestingForm from "./CreateVestingForm";
 import { useAccount } from "@/hooks/useAccount"
 import { useTokenQuery } from "../../hooks/useTokenQuery";
-import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { skipToken } from "@reduxjs/toolkit/query";
 import { SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
 import { WhitelistVestingOverlay } from "./WhitelistVestingOverlay";
 import CreateVestingPreview from "./CreateVestingPreview";

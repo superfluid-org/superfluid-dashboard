@@ -15,9 +15,9 @@ export interface AddressBookEntry {
   isContract?: boolean;
 }
 
-export type AddressBookState = EntityState<AddressBookEntry>;
+export type AddressBookState = EntityState<AddressBookEntry, Address>;
 
-export const adapter = createEntityAdapter<AddressBookEntry>({
+export const adapter = createEntityAdapter<AddressBookEntry, Address>({
   selectId: (x) => getAddress(x.address),
 });
 
@@ -26,7 +26,7 @@ export const addressBookSlice = createSlice({
   initialState: adapter.getInitialState(),
   reducers: {
     addAddressBookEntry: (
-      state: EntityState<AddressBookEntry>,
+      state: EntityState<AddressBookEntry, Address>,
       { payload }: { payload: AddressBookEntry }
     ) =>
       adapter.setAll(state, [
@@ -39,7 +39,7 @@ export const addressBookSlice = createSlice({
         ...adapterSelectors.selectAll(state),
       ]),
     addAddressBookEntries: (
-      state: EntityState<AddressBookEntry>,
+      state: EntityState<AddressBookEntry, Address>,
       { payload }: { payload: Array<AddressBookEntry> }
     ) =>
       adapter.addMany(
@@ -64,14 +64,14 @@ export const {
   removeAddressBookEntries,
 } = addressBookSlice.actions;
 
-const selectSelf = (state: RootState): EntityState<AddressBookEntry> =>
+const selectSelf = (state: RootState): EntityState<AddressBookEntry, Address> =>
   state.addressBook;
 
 const adapterSelectors = adapter.getSelectors();
 
 const searchAddressBookEntries = createSelector(
   [selectSelf, (_items: RootState, search: string) => search],
-  (state: EntityState<AddressBookEntry>, search: string): AddressBookEntry[] =>
+  (state: EntityState<AddressBookEntry, Address>, search: string): AddressBookEntry[] =>
     adapterSelectors
       .selectAll(state)
       .filter(
@@ -88,7 +88,7 @@ const searchAddressBookEntries = createSelector(
 const selectByAddresses = createSelector(
   [selectSelf, (_items: RootState, addresses: string[]) => addresses],
   (
-    state: EntityState<AddressBookEntry>,
+    state: EntityState<AddressBookEntry, Address>,
     addresses: string[]
   ): AddressBookEntry[] => {
     const sanitizedAddresses = addresses.map((address) =>

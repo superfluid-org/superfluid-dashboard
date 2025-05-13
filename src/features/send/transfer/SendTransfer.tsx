@@ -30,7 +30,7 @@ import { SendBalance } from "../stream/SendStream";
 import { inputPropsForEtherAmount } from "../../../utils/inputPropsForEtherAmount";
 import { Address } from "@superfluid-finance/sdk-core";
 import { RestorationType, SendTransferRestoration } from "../../transactionRestoration/transactionRestorations";
-import { skipToken } from "@reduxjs/toolkit/dist/query/react";
+import { skipToken } from "@reduxjs/toolkit/query/react";
 import { Network } from "../../network/networks";
 import { TokenMinimal } from "../../redux/endpoints/tokenTypes";
 

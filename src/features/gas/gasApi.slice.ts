@@ -1,4 +1,4 @@
-import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/dist/query/react";
+import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import axios from "axios";
 import * as chain from "wagmi/chains";
 

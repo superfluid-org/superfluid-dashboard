@@ -11,7 +11,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { skipToken } from "@reduxjs/toolkit/query";
 import { FC, useMemo } from "react";
 import NoContentPaper from "../../components/NoContent/NoContentPaper";
 import { getAddress } from "../../utils/memoizedEthersUtils";

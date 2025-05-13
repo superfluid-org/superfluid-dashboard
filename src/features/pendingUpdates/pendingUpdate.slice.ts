@@ -17,7 +17,7 @@ import { PendingVestingScheduleClaim } from "./PendingVestingScheduleClaim";
 import { BigNumber } from "ethers";
 import { PendingVestingScheduleUpdate } from "./PendingVestingScheduleUpdate";
 
-export const pendingUpdateAdapter = createEntityAdapter<PendingUpdate>({
+export const pendingUpdateAdapter = createEntityAdapter<PendingUpdate, string>({
   selectId: (x) => x.id,
   sortComparer: (a, b) => {
     if (a.timestamp > b.timestamp) {

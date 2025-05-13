@@ -18,7 +18,7 @@ import NetworkHeadingRow from "../../components/Table/NetworkHeadingRow";
 import { Network } from "../network/networks";
 import { FetchingStatus } from "../tokenSnapshotTable/TokenSnapshotTables";
 import { autoWrapSubgraphApi } from "../../auto-wrap-subgraph/autoWrapSubgraphApi";
-import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { skipToken } from "@reduxjs/toolkit/query";
 import ScheduledWrapRow from "./ScheduledWrapRow";
 import TooltipWithIcon from "../common/TooltipWithIcon";
 import { AutoWrapContractInfo } from "../vesting/VestingScheduleTables";

@@ -1,4 +1,4 @@
-import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { skipToken } from "@reduxjs/toolkit/query";
 import { FC } from "react";
 import { usePendingVestingScheduleDelete } from "../../pendingUpdates/PendingVestingScheduleDelete";
 import { rpcApi } from "../../redux/store";

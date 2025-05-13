@@ -1,4 +1,4 @@
-import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { skipToken } from "@reduxjs/toolkit/query";
 import { useNetworkCustomTokens } from "../features/customTokens/customTokens.slice";
 import { Network } from "../features/network/networks";
 import { subgraphApi } from "../features/redux/store";

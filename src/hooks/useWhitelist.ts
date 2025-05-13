@@ -1,4 +1,4 @@
-import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { skipToken } from "@reduxjs/toolkit/query";
 import { platformApi } from "../features/redux/platformApi/platformApi";
 import { Network } from "../features/network/networks";
 

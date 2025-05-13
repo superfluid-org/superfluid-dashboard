@@ -1,5 +1,5 @@
 import { Button, Input, Stack, Typography, useTheme } from "@mui/material";
-import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { skipToken } from "@reduxjs/toolkit/query";
 import { formatEther, parseEther } from "ethers/lib/utils";
 import { FC, memo, useEffect, useMemo, useRef, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";

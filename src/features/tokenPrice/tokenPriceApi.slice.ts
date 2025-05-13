@@ -1,4 +1,4 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Address } from "@superfluid-finance/sdk-core";
 
 const LIFI_API_URL = "https://li.quest/v1";

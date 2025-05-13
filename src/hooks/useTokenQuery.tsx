@@ -1,4 +1,4 @@
-import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { skipToken } from "@reduxjs/toolkit/query";
 import { allNetworks, findNetworkOrThrow } from "../features/network/networks";
 import { subgraphApi } from "../features/redux/store";
 import { getSuperTokenType, getUnderlyingTokenType } from "../features/redux/endpoints/adHocSubgraphEndpoints";

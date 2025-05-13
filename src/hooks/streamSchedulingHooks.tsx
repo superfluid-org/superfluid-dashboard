@@ -1,4 +1,4 @@
-import { skipToken, SkipToken } from "@reduxjs/toolkit/dist/query";
+import { skipToken, SkipToken } from "@reduxjs/toolkit/query";
 import { Stream } from "@superfluid-finance/sdk-core";
 import { StreamQuery } from "@superfluid-finance/sdk-redux";
 import { fromUnixTime } from "date-fns";

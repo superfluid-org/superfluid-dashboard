@@ -7,7 +7,7 @@ import {
   GridValueGetterParams,
   useGridApiContext,
 } from "@mui/x-data-grid";
-import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { skipToken } from "@reduxjs/toolkit/query";
 import { fromUnixTime, getUnixTime } from "date-fns";
 import Decimal from "decimal.js";
 import uniq from "lodash/fp/uniq";

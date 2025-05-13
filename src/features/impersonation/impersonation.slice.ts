@@ -9,7 +9,7 @@ export interface Impersonation {
   timestampMs: number;
 }
 
-const adapter = createEntityAdapter<Impersonation>({
+const adapter = createEntityAdapter<Impersonation, string>({
   selectId: (x) => getAddress(x.address),
   sortComparer: (a, b) => {
     if (a.timestampMs > b.timestampMs) {

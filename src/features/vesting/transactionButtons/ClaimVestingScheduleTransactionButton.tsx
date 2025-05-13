@@ -1,4 +1,4 @@
-import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { skipToken } from "@reduxjs/toolkit/query";
 import { FC } from "react";
 import { rpcApi } from "../../redux/store";
 import { useConnectionBoundary } from "../../transactionBoundary/ConnectionBoundary";

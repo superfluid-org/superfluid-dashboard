@@ -9,13 +9,12 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { skipToken } from "@reduxjs/toolkit/dist/query";
+import { skipToken } from "@reduxjs/toolkit/query";
 import { format } from "date-fns";
-import { FC, memo, useMemo } from "react";
+import { FC, memo } from "react";
 import { MintedActivity } from "../../utils/activityUtils";
 import TxHashLink from "../common/TxHashLink";
 import NetworkBadge from "../network/NetworkBadge";
-import { subgraphApi } from "../redux/store";
 import Amount from "../token/Amount";
 import TokenIcon from "../token/TokenIcon";
 import FiatAmount from "../tokenPrice/FiatAmount";
