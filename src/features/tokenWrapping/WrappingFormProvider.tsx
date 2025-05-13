@@ -64,7 +64,6 @@ const WrappingFormProvider: FC<
   const [queryRealtimeBalance] = rpcApi.useLazyRealtimeBalanceQuery();
   const [queryUnderlyingBalance] = rpcApi.useLazyUnderlyingBalanceQuery();
   const { visibleAddress, isEOA } = useVisibleAddress();
-  const { connector: activeConnector } = useAccount();
 
   const tokenPairsQuery = useTokenPairsQuery({
     network,

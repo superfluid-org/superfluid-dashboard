@@ -1,6 +1,8 @@
 import { parseEther } from "ethers/lib/utils";
 import { allNetworks, findNetworkOrThrow, Network } from "../network/networks";
 import { BigNumber } from "ethers";
+import { memoize } from "lodash";
+import { BIG_NUMBER_ZERO } from "../../utils/tokenUtils";
 
 export const interfaceFeeAddress = process.env.NEXT_PUBLIC_INTERFACE_FEE_ADDRESS?.trim() as `0x${string}` | undefined;
 
@@ -20,13 +22,15 @@ export const interfaceBaseFeeInNativeCurrency = {
     DEGEN: parseEther("200")
 } as const;
 
-export const getIntefaceFee = (action: IntefaceAction, chainId: number, isEOA: boolean) => {
-    if (!isEOA) {
-        return BigNumber.from(0);
-    }
+export const getIntefaceFee = memoize(
+    (action: IntefaceAction, chainId: number, isEOA: boolean) => {
+        if (!isEOA) {
+            return BIG_NUMBER_ZERO;
+        }
 
-    const network = findNetworkOrThrow(allNetworks, chainId);
-    const interfaceFeeMultiplier = interfaceBaseFeeInNativeCurrency[network.nativeCurrency.symbol as keyof typeof interfaceBaseFeeInNativeCurrency];
+        const network = findNetworkOrThrow(allNetworks, chainId);
 
-    return interfaceFees[action].mul(interfaceFeeMultiplier);
-}
+        return interfaceFees[action].mul(network.interfaceBaseFeeInNativeCurrency);
+    },
+    (action, chainId, isEOA) => `${action}_${chainId}_${isEOA}`
+);

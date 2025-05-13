@@ -38,6 +38,7 @@ import { CreateTask } from "../../../scheduling-subgraph/.graphclient";
 import { dateNowSeconds, getTimeInSeconds } from "../../../utils/dateUtils";
 import { getDecimalPlacesToRoundTo } from "../../../utils/DecimalUtils";
 import {
+  BIG_NUMBER_ZERO,
   calculateBufferAmount,
   getPrettyEtherFlowRate,
   parseEtherOrZero,
@@ -442,13 +443,12 @@ export default memo(function SendStream() {
   const [upsertFlow, upsertFlowResult] =
     rpcApi.useUpsertFlowWithSchedulingMutation();
 
-
   const isModifying = Boolean(activeFlow || scheduledStream);
   const interfaceFee = useMemo(() => {
     if (!isModifying) {
       return getIntefaceFee("createStream", network.id, !!isEOA);
     }
-    return BigNumber.from(0);
+    return BIG_NUMBER_ZERO;
   }, [isModifying, network, isEOA]);
 
   const SendTransactionBoundary = (
