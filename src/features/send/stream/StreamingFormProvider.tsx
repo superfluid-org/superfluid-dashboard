@@ -16,6 +16,7 @@ import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
 import { CommonFormEffects } from "../../common/CommonFormEffects";
 import { useBalance } from "wagmi";
 import { BigNumber } from "ethers";
+import { getIntefaceFee } from "@/features/interfaceFees";
 
 export type ValidStreamingForm = {
   data: {
@@ -65,7 +66,7 @@ export interface StreamingFormProviderProps {
 const StreamingFormProvider: FC<
   PropsWithChildren<StreamingFormProviderProps>
 > = ({ children, initialFormValues }) => {
-  const { visibleAddress } = useVisibleAddress();
+  const { visibleAddress, isEOA } = useVisibleAddress();
   const { network } = useExpectedNetwork();
   
   const [queryRealtimeBalance] = rpcApi.useLazyRealtimeBalanceQuery();
@@ -231,8 +232,9 @@ const StreamingFormProvider: FC<
               }
             }
 
-            if (balance && !activeFlow) {              
-              const balanceAfterInterfaceFee = BigNumber.from(balance.value.toString()).sub(network.interfaceBaseFeeInNativeCurrency);
+            if (balance && !activeFlow) {            
+              const interfaceFee = getIntefaceFee("createStream", network.id, !!isEOA);
+              const balanceAfterInterfaceFee = BigNumber.from(balance.value.toString()).sub(interfaceFee);
   
               if (balanceAfterInterfaceFee.isNegative()) {
                 handleHigherOrderValidationError({
@@ -249,7 +251,7 @@ const StreamingFormProvider: FC<
 
         return true;
       }),
-    [network, visibleAddress, calculateBufferInfo, balance]
+    [network, visibleAddress, calculateBufferInfo, balance, isEOA]
   );
 
   const formMethods = useForm<PartialStreamingForm, undefined, ValidStreamingForm>({
