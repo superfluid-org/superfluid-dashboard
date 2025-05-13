@@ -96,7 +96,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
     "0"
   );
 
-  const { data: tokenPairs, isFetching: tokenPairsIsFetching } = useTokenPairsQuery({ network });
+  const { currentData: tokenPairs, isFetching: tokenPairsIsFetching } = useTokenPairsQuery({ network });
 
   const { superToken, underlyingToken } = useTokenPairQuery({
     network,

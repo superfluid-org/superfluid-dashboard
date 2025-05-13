@@ -101,7 +101,7 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
       onlySuperToken: true
     });
 
-  const { data: accountTokenSnapshot } =
+  const { currentData: accountTokenSnapshot } =
     subgraphApi.useAccountTokenSnapshotQuery(
       {
         chainId: network.id,

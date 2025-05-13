@@ -330,7 +330,7 @@ const StreamPageContent: FC<{
     onlySuperToken: true
   })
 
-  const { data: isHumaFinanceOperatedStream } =
+  const { currentData: isHumaFinanceOperatedStream } =
     subgraphApi.useIsHumaFinanceOperatorStreamQuery(
       network.humaFinance
         ? {

@@ -26,9 +26,9 @@ export default memo(function AddressAvatar({
   AvatarProps = {},
   BlockiesProps = { size: 12, scale: 3 },
 }: AddressAvatarProps & RainbowKitAvatarComponentProps) {
-  const { data: ensAvatarUrl, isFetching: ensFetching } =
+  const { currentData: ensAvatarUrl, isFetching: ensFetching } =
     ensApi.useGetAvatarQuery(address);
-  const { data: lensData } = lensApi.useLookupAddressQuery(address);
+  const { currentData: lensData } = lensApi.useLookupAddressQuery(address);
 
   if (ensAvatarUrl) {
     return (

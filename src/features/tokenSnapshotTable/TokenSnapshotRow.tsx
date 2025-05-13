@@ -110,7 +110,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
 
   const tokenPrice = useTokenPrice(network.id, tokenAddress);
 
-  const { data: balanceData } = rpcApi.useRealtimeBalanceQuery({
+  const { currentData: balanceData } = rpcApi.useRealtimeBalanceQuery({
     chainId: network.id,
     accountAddress: account,
     tokenAddress: tokenAddress,

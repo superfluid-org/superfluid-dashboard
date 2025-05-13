@@ -16,7 +16,7 @@ const useActiveAutoWrap = (
 ): ActiveAutoWrapQueryResponse => {
   const isSkip = arg === "skip";
 
-  const { isLoading: isAutoWrapLoading, data: activeAutoWrap } =
+  const { isLoading: isAutoWrapLoading, currentData: activeAutoWrap } =
     rpcApi.useGetActiveWrapScheduleQuery(isSkip ? skipToken : arg);
 
   const {

@@ -33,8 +33,6 @@ const PoolMemberRow: FC<Props> = ({
     poolMember,
     network,
 }) => {
-    const theme = useTheme();
-
     const { currentData: pool } = subgraphApi.usePoolQuery({
         chainId: network.id,
         id: poolMember.pool

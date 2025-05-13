@@ -34,7 +34,7 @@ export const useTokenQuery = <T extends boolean = false>(input: {
     }, [inputParsed.isSkip, inputParsed.chainId, inputParsed.id]);
 
     const skipSubgraphQuery = inputParsed.isSkip || !!tokenListToken || !inputParsed.id;
-    const { data: subgraphToken, isLoading: isSubgraphTokenLoading } = subgraphApi.useTokenQuery(skipSubgraphQuery ? skipToken : {
+    const { currentData: subgraphToken, isLoading: isSubgraphTokenLoading } = subgraphApi.useTokenQuery(skipSubgraphQuery ? skipToken : {
         chainId: inputParsed.chainId,
         id: inputParsed.id.toLowerCase()
     });
