@@ -1,10 +1,14 @@
 import { parseEther } from "ethers/lib/utils";
+import { allNetworks, findNetworkOrThrow, Network } from "../network/networks";
+import { BigNumber } from "ethers";
 
 export const interfaceFeeAddress = process.env.NEXT_PUBLIC_INTERFACE_FEE_ADDRESS?.trim() as `0x${string}` | undefined;
 
 export const interfaceFees = {
-    createStream: 1
+    createStream: BigNumber.from(1)
 } as const;
+
+type IntefaceAction = keyof typeof interfaceFees;
 
 export const interfaceBaseFeeInNativeCurrency = {
     ETH: parseEther("0.0003"),
@@ -15,3 +19,14 @@ export const interfaceBaseFeeInNativeCurrency = {
     XDAI: parseEther("1"),
     DEGEN: parseEther("200")
 } as const;
+
+export const getIntefaceFee = (action: IntefaceAction, chainId: number, isEOA: boolean) => {
+    if (!isEOA) {
+        return BigNumber.from(0);
+    }
+
+    const network = findNetworkOrThrow(allNetworks, chainId);
+    const interfaceFeeMultiplier = interfaceBaseFeeInNativeCurrency[network.nativeCurrency.symbol as keyof typeof interfaceBaseFeeInNativeCurrency];
+
+    return interfaceFees[action].mul(interfaceFeeMultiplier);
+}

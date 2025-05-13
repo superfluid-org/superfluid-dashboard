@@ -32,19 +32,11 @@ import FlowingBalance from "../../token/FlowingBalance";
 import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
 import {
   calculateTotalAmountWei,
-  FlowRateEther,
   flowRateEtherToString,
-  FlowRateWei,
-  flowRateWeiToString,
   ScheduledFlowRate,
   ScheduledFlowRateEther,
-  UnitOfTime,
 } from "../FlowRateInput";
 import useCalculateBufferInfo from "../useCalculateBufferInfo";
-import AllInclusiveIcon from "@mui/icons-material/AllInclusive";
-import TimerOutlined from "@mui/icons-material/TimerOutlined";
-import { ScheduledStream } from "../../../hooks/streamSchedulingHooks";
-import { Web3FlowInfo } from "../../redux/endpoints/adHocRpcEndpoints";
 import {
   ActiveStreamIcon,
   ScheduledStreamIcon,
@@ -123,6 +115,7 @@ interface StreamingPreviewProps {
   flowRateEther: ScheduledFlowRateEther;
   newEndDate: Date | null;
   oldEndDate: Date | null;
+  interfaceFee: BigNumber;
 }
 
 export const StreamingPreview: FC<StreamingPreviewProps> = ({
@@ -132,6 +125,7 @@ export const StreamingPreview: FC<StreamingPreviewProps> = ({
   flowRateEther,
   newEndDate,
   oldEndDate,
+  interfaceFee,
 }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
@@ -252,8 +246,6 @@ export const StreamingPreview: FC<StreamingPreviewProps> = ({
       differenceInDays(newDateWhenBalanceCritical, new Date()) < 7,
     [newDateWhenBalanceCritical]
   );
-
-  const isStreamCreated = BigNumber.from(existingFlowRate?.flowRate ?? "0").isZero();
 
   return (
     <Alert
@@ -416,13 +408,13 @@ export const StreamingPreview: FC<StreamingPreviewProps> = ({
           </PreviewItem>
         )}
 
-        {isStreamCreated && (
+        {interfaceFee.gt(0) && (
           <PreviewItem
             dataCy="preview-interface-fee"
             label="Interface fee"
             TypographyProps={{ variant: "body2mono" }}
           >
-            <Amount wei={network.interfaceBaseFeeInNativeCurrency}> {network.nativeCurrency.symbol}</Amount>
+            <Amount wei={interfaceFee}> {network.nativeCurrency.symbol}</Amount>
           </PreviewItem>
         )}
       </Stack>

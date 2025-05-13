@@ -6,11 +6,13 @@ import { useAccount } from "wagmi";
 import { merge } from "lodash";
 import { popGlobalGasOverrides } from "../global";
 import { GlobalGasOverrides } from "../typings/global";
+import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 
 const useGetTransactionOverrides = () => {
   const [queryRecommendedGas] = gasApi.useLazyRecommendedGasQuery();
   const { connector: activeConnector } = useAccount();
-
+  const { isEOA } = useVisibleAddress();
+  
   return useCallback(
     async (network: Network): Promise<GlobalGasOverrides> => {
       const gasQueryTimeout = new Promise<null>((response) =>
@@ -35,15 +37,14 @@ const useGetTransactionOverrides = () => {
         );
       }
 
-      const isGnosisSafe = activeConnector?.id === "safe";
-      if (isGnosisSafe) {
-        overrides.gasLimit = 0; // Disable gas estimation for Gnosis Safe completely because they don't use it anyway.
+      if (!isEOA) {
+        overrides.gasLimit = 0; // Disable gas estimation for Gnosis Safe (and other smart wallets) completely because they don't use it anyway.
       }
 
       const globalOverrides = popGlobalGasOverrides();
       return merge(overrides, globalOverrides);
     },
-    [queryRecommendedGas, activeConnector]
+    [queryRecommendedGas, activeConnector, isEOA]
   );
 };
 
