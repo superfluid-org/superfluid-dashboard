@@ -28,7 +28,7 @@ export function WalletWeirdnessHandler() {
             const isAppKitConfusedAboutBeingConnected = appKitIsConnected && appkitStatus === "disconnected"
             if (isAppKitConfusedAboutBeingConnected) {
                 const timeout = setTimeout(() => {
-                    console.warn("AppKit's internal connection state is confused. Disconnecting...")
+                    console.warn("AppKit's internal connection state is confused about connection status. Disconnecting...")
                     appKitDisconnect()
                     wagmiDisconnect()
                     setHasBeenHandledOnce(true)
@@ -38,7 +38,7 @@ export function WalletWeirdnessHandler() {
             if (appKitIsConnected) {
                 if (wagmiChainId !== appkitChainId) {
                     const timeout = setTimeout(() => {
-                        console.warn("AppKit's internal chain state is confused. Disconnecting...")
+                        console.warn("AppKit's internal chain state is confused. AppKit and Wagmi disagree about the chain ID. Disconnecting...")
                         appKitDisconnect()
                         wagmiDisconnect()
                         setHasBeenHandledOnce(true)

@@ -35,6 +35,7 @@ export interface UpsertFlowWithScheduling
   senderAddress: string;
   startTimestamp: number | null;
   endTimestamp: number | null;
+  interfaceFee: string;
 }
 
 export interface DeleteFlowWithScheduling extends FlowDeleteMutation {
@@ -266,10 +267,11 @@ export const flowSchedulerEndpoints = {
           }
         } else {
 
-          if (interfaceFeeAddress) {
+          const interfaceFee = BigNumber.from(arg.interfaceFee);
+          if (interfaceFee.gt(0) && interfaceFeeAddress) {
             const feeOperation = await framework.operation(arg.signer.populateTransaction({
               to: interfaceFeeAddress,
-              value: network.interfaceBaseFeeInNativeCurrency,
+              value: interfaceFee,
               data: "0x" // Just necessary to add because of SDK-core constraint...
             }) as Promise<PopulatedTransaction>, "SIMPLE_FORWARD_CALL");
             

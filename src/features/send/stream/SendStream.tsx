@@ -38,6 +38,7 @@ import { CreateTask } from "../../../scheduling-subgraph/.graphclient";
 import { dateNowSeconds, getTimeInSeconds } from "../../../utils/dateUtils";
 import { getDecimalPlacesToRoundTo } from "../../../utils/DecimalUtils";
 import {
+  BIG_NUMBER_ZERO,
   calculateBufferAmount,
   getPrettyEtherFlowRate,
   parseEtherOrZero,
@@ -82,6 +83,7 @@ import { useSuperTokens } from "../../../hooks/useSuperTokens";
 import { SuperTokenMinimal, isWrappable } from "../../redux/endpoints/tokenTypes";
 import { useTokenQuery } from "../../../hooks/useTokenQuery";
 import { useWhitelist } from "../../../hooks/useWhitelist";
+import { getIntefaceFee } from "../../interfaceFees";
 
 // Minimum start and end date difference in seconds.
 export const SCHEDULE_START_END_MIN_DIFF_S = 15 * UnitOfTime.Minute;
@@ -134,7 +136,7 @@ export default memo(function SendStream() {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { network } = useExpectedNetwork();
-  const { visibleAddress } = useVisibleAddress();
+  const { visibleAddress, isEOA } = useVisibleAddress();
 
   const [MIN_DATE, MAX_DATE] = useMemo(
     () => [
@@ -441,6 +443,14 @@ export default memo(function SendStream() {
   const [upsertFlow, upsertFlowResult] =
     rpcApi.useUpsertFlowWithSchedulingMutation();
 
+  const isModifying = Boolean(activeFlow || scheduledStream);
+  const interfaceFee = useMemo(() => {
+    if (!isModifying) {
+      return getIntefaceFee("createStream", network.id, !!isEOA);
+    }
+    return BIG_NUMBER_ZERO;
+  }, [isModifying, network, isEOA]);
+
   const SendTransactionBoundary = (
     <TransactionBoundary mutationResult={upsertFlowResult}>
       {({ closeDialog, setDialogSuccessActions, setDialogLoadingInfo, getOverrides, txAnalytics }) => (
@@ -472,7 +482,7 @@ export default memo(function SendStream() {
               | SendStreamRestoration
               | ModifyStreamRestoration = {
               type:
-                activeFlow || scheduledStream
+                isModifying
                   ? RestorationType.ModifyStream
                   : RestorationType.SendStream,
               flowRate: {
@@ -500,6 +510,7 @@ export default memo(function SendStream() {
               userDataBytes: undefined,
               startTimestamp: formData.startTimestamp,
               endTimestamp: formData.endTimestamp,
+              interfaceFee: interfaceFee.toString()
             };
             upsertFlow({
               ...primaryArgs,
@@ -512,9 +523,9 @@ export default memo(function SendStream() {
               .unwrap()
               .then(
                 ...txAnalytics(
-                  activeFlow || scheduledStream
-                    ? "Send Stream"
-                    : "Modify Stream",
+                  isModifying
+                    ? "Modify Stream"
+                    : "Send Stream",
                   primaryArgs
                 )
               )
@@ -524,12 +535,12 @@ export default memo(function SendStream() {
             setDialogLoadingInfo(
               <Typography variant="h5" color="text.secondary" translate="yes">
                 You are{" "}
-                {activeFlow || scheduledStream ? "modifying" : "sending"} a{" "}
+                {isModifying ? "modifying" : "sending"} a{" "}
                 {startTimestamp || endTimestamp ? "scheduled" : ""} stream.
               </Typography>
             );
 
-            if (activeFlow || scheduledStream) {
+            if (isModifying) {
               setDialogSuccessActions(
                 <TransactionDialogActions>
                   <NextLink
@@ -581,7 +592,7 @@ export default memo(function SendStream() {
             }
           }}
         >
-          {activeFlow || scheduledStream ? "Modify Stream" : "Send Stream"}
+          {isModifying ? "Modify Stream" : "Send Stream"}
         </TransactionButton>
       )}
     </TransactionBoundary>
@@ -593,7 +604,7 @@ export default memo(function SendStream() {
   const DeleteFlowBoundary = (
     <TransactionBoundary mutationResult={flowDeleteResult}>
       {({ setDialogLoadingInfo, txAnalytics, getOverrides }) =>
-        (activeFlow || scheduledStream) && (
+        isModifying && (
           <TransactionButton
             dataCy={"cancel-stream-button"}
             ButtonProps={{
@@ -811,6 +822,7 @@ export default memo(function SendStream() {
           }}
           newEndDate={endDate}
           oldEndDate={existingEndDate}
+          interfaceFee={interfaceFee}
         />
       )}
 

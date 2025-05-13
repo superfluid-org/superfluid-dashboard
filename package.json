@@ -21,11 +21,14 @@
     "typecheck": "pnpm exec tsc --noEmit"
   },
   "dependencies": {
+    "@adraffy/ens-normalize": "^1.11.0",
     "@emotion/cache": "^11.14.0",
     "@emotion/react": "^11.14.0",
     "@emotion/server": "^11.11.0",
     "@emotion/styled": "^11.14.0",
     "@ensdomains/ens-avatar": "^0.3.6",
+    "@ethersproject/logger": "^5.8.0",
+    "@ethersproject/providers": "^5.8.0",
     "@hookform/error-message": "^2.0.1",
     "@hookform/resolvers": "3.9.1",
     "@lens-protocol/client": "^2.3.2",
@@ -41,6 +44,7 @@
     "@reduxjs/toolkit": "2",
     "@reown/appkit": "^1.7.4",
     "@reown/appkit-adapter-wagmi": "^1.7.4",
+    "@reown/appkit-common": "^1.7.4",
     "@segment/analytics-next": "^1.81.0",
     "@sentry/browser": "^9.17.0",
     "@sentry/nextjs": "^9.17.0",
@@ -83,6 +87,7 @@
     "react-use-intercom": "^5.4.3",
     "redux-persist": "^6.0.0",
     "serialize-error": "^8.1.0",
+    "sha3": "^2.1.4",
     "viem": "^2.29.2",
     "wagmi": "^2.15.2",
     "yup": "^1.6.1"

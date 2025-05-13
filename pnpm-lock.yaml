@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@adraffy/ens-normalize':
+        specifier: ^1.11.0
+        version: 1.11.0
       '@emotion/cache':
         specifier: ^11.14.0
         version: 11.14.0
@@ -23,6 +26,12 @@ importers:
       '@ensdomains/ens-avatar':
         specifier: ^0.3.6
         version: 0.3.6(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+      '@ethersproject/logger':
+        specifier: ^5.8.0
+        version: 5.8.0
+      '@ethersproject/providers':
+        specifier: ^5.8.0
+        version: 5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@hookform/error-message':
         specifier: ^2.0.1
         version: 2.0.1(react-dom@19.1.0(react@19.1.0))(react-hook-form@7.54.2(react@19.1.0))(react@19.1.0)
@@ -68,6 +77,9 @@ importers:
       '@reown/appkit-adapter-wagmi':
         specifier: ^1.7.4
         version: 1.7.4(pwvomubvqcllyujtjrccqqnlle)
+      '@reown/appkit-common':
+        specifier: ^1.7.4
+        version: 1.7.4(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.24.4)
       '@segment/analytics-next':
         specifier: ^1.81.0
         version: 1.81.0
@@ -194,6 +206,9 @@ importers:
       serialize-error:
         specifier: ^8.1.0
         version: 8.1.0
+      sha3:
+        specifier: ^2.1.4
+        version: 2.1.4
       viem:
         specifier: ^2.29.2
         version: 2.29.2(bufferutil@4.0.9)(typescript@5.8.3)(utf-8-validate@5.0.10)(zod@3.24.4)
@@ -2512,7 +2527,7 @@ packages:
   '@nomiclabs/hardhat-ethers@2.2.3':
     resolution: {integrity: sha512-YhzPdzb612X591FOe68q+qXVXGG2ANZRvDo0RRUtimev85rCrAlv/TLMEZw5c+kq9AbzocLTVX/h2jVIFPL9Xg==}
     peerDependencies:
-      ethers: ^5.0.0
+      ethers: 5.7.1
       hardhat: ^2.0.0
 
   '@opentelemetry/api-logs@0.200.0':

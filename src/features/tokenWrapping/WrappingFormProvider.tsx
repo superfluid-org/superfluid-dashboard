@@ -28,7 +28,6 @@ import {
 import { useTokenPairsQuery } from "./useTokenPairsQuery";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { CommonFormEffects } from "../common/CommonFormEffects";
-import { useAppKitProvider } from "@reown/appkit/react";
 
 export type WrappingForm = {
   type: RestorationType.Wrap | RestorationType.Unwrap;
@@ -64,8 +63,7 @@ const WrappingFormProvider: FC<
   const { token: tokenQueryParam } = router.query;
   const [queryRealtimeBalance] = rpcApi.useLazyRealtimeBalanceQuery();
   const [queryUnderlyingBalance] = rpcApi.useLazyUnderlyingBalanceQuery();
-  const { visibleAddress } = useVisibleAddress();
-  const { connector: activeConnector } = useAccount();
+  const { visibleAddress, isEOA } = useVisibleAddress();
 
   const tokenPairsQuery = useTokenPairsQuery({
     network,
@@ -156,9 +154,8 @@ The chain ID was: ${network.id}`);
                 underlyingBalanceBigNumber
               ).eq(wrapAmountBigNumber);
               if (isWrappingIntoZero) {
-                const isGnosisSafe = activeConnector?.id === "safe";
-                if (!isGnosisSafe) {
-                  // Not an issue on Gnosis Safe because gas is taken from another wallet.
+                if (isEOA) {
+                  // Not an issue on Gnosis Safe (and other smart wallets) because gas is taken from another wallet.
                   handleHigherOrderValidationError({
                     message:
                       "You are wrapping out of native asset used for gas. You need to leave some gas tokens for the transaction to succeed.",
@@ -233,7 +230,7 @@ The chain ID was: ${network.id}`);
 
         return true;
       }),
-    [network, visibleAddress, tokenPairsQuery.data]
+    [network, visibleAddress, tokenPairsQuery.data, isEOA]
   );
 
   const networkDefaultTokenPair = getNetworkDefaultTokenPairs(network)[0];
