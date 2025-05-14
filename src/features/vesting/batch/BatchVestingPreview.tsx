@@ -16,7 +16,7 @@ import { convertPeriodToSeconds } from "./convertPeriod";
 import { BatchReceiversTable } from "./BatchReceiversTable";
 import { transactionButtonDefaultProps } from "../../transactionBoundary/TransactionButton";
 import JSZip from "jszip";
-import { getTxBuilderInputs_v2 } from "./gnosisSafe";
+import { getTxBuilderInputs_v3 } from "./gnosisSafe";
 import { convertBatchFormToParams } from "./convertBatchFormToParams";
 import { convertVestingScheduleFromAmountAndDurationsToAbsolutes } from "./VestingScheduleParams";
 import { BatchVestingTransactionSection } from "./BatchVestingTransactionSection";
@@ -213,7 +213,7 @@ const BatchVestingPreview: FC<BatchVestingPreviewProps> = ({
                         const zipName = `vesting-schedules_${scheduleParams.length}_for_safe_tx-builder`;
                         const batchFolder = zip.folder(zipName);
 
-                        const safeTxBuilderJSONs = await getTxBuilderInputs_v2({
+                        const safeTxBuilderJSONs = await getTxBuilderInputs_v3({
                             network,
                             schedules: scheduleParams
                         });
