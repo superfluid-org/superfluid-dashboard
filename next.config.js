@@ -54,7 +54,7 @@ function withSentryIfNecessary(nextConfig) {
     // Upload a larger set of source maps for prettier stack traces (increases build time)
     // widenClientFileUpload: true,
 
-    hideSourceMaps: true, // If this not specified as `true` then Sentry will expose the production source maps. We've decided to expose the source maps though.
+    // hideSourceMaps: true, // If this not specified as `true` then Sentry will expose the production source maps. We've decided to expose the source maps though.
 
     // Automatically tree-shake Sentry logger statements to reduce bundle size
     // disableLogger: true,
@@ -65,10 +65,10 @@ function withSentryIfNecessary(nextConfig) {
     // https://vercel.com/docs/cron-jobs
     // automaticVercelMonitors: true,
 
-    sourcemaps: {
-      // Don't serve sourcemaps to the users
-      deleteSourcemapsAfterUpload: true,
-    },
+    // sourcemaps: {
+    //   // Don't serve sourcemaps to the users
+    //   deleteSourcemapsAfterUpload: true,
+    // },
 
     // TODO: This was causing build issues on Vercel. Stuff like address dialog not selecting addresses.
     // // The thirdPartyErrorFilterIntegration allows you to filter out errors originating from third parties,
@@ -82,7 +82,7 @@ function withSentryIfNecessary(nextConfig) {
     // This can increase your server load as well as your hosting bill.
     // Note: Check that the configured route will not match with your Next.js middleware, otherwise reporting of client-
     // side errors will fail.
-    tunnelRoute: "/monitoring",
+    // tunnelRoute: "/monitoring",
   });
 }
 
