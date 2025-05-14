@@ -1,4 +1,14 @@
-import { extendedSuperTokenList as extendedSuperTokenList_, fetchLatestExtendedSuperTokenList } from "@superfluid-finance/tokenlist";
+import { type SuperTokenList, extendedSuperTokenList as extendedSuperTokenList_, fetchLatestExtendedSuperTokenList } from "@superfluid-finance/tokenlist";
 
-export let extendedSuperTokenList = extendedSuperTokenList_;
-fetchLatestExtendedSuperTokenList().then(fetchedTokenList => extendedSuperTokenList = fetchedTokenList);
+export const extendedSuperTokenList = () => {
+    if (fetchedSuperTokenList) {
+        return fetchedSuperTokenList;
+    }
+    return extendedSuperTokenList_;
+}
+
+export let fetchedSuperTokenList: SuperTokenList | undefined;
+
+fetchLatestExtendedSuperTokenList().then(fetchedTokenList => {
+    fetchedSuperTokenList = fetchedTokenList;
+});

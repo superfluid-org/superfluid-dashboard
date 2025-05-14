@@ -1393,7 +1393,7 @@ async function main() {
   const network = argValues['--network'];
 
   const extendedSuperTokenList =
-    filteredTokensSuperFluid.extendedSuperTokenList.tokens;
+    filteredTokensSuperFluid.extendedSuperTokenList().tokens;
   const tokens = [];
   for (const token of extendedSuperTokenList) {
     if (token.chainId === chainId && token.symbol.includes(tokenSymbol)) {

@@ -86,19 +86,19 @@ export const findTokenFromTokenList = memoize((input: { chainId: number, address
         return network.nativeCurrency;
     }
 
-    const tokenListToken = extendedSuperTokenList.tokens.find(x => x.chainId === input.chainId && x.address === tokenAddressLowerCased);
+    const tokenListToken = extendedSuperTokenList().tokens.find(x => x.chainId === input.chainId && x.address === tokenAddressLowerCased);
     if (tokenListToken) {
         return mapTokenListTokenToTokenMinimal(tokenListToken);
     }
-}, ({ chainId, address }) => `${chainId}-${address.toLowerCase()}-${extendedSuperTokenList.version}`);
+}, ({ chainId, address }) => `${chainId}-${address?.toLowerCase()}-${extendedSuperTokenList().version}`);
 
 export const getTokensFromTokenList = memoize((chainId: number) => {
-    return extendedSuperTokenList.tokens.filter(x => x.chainId === chainId).map(mapTokenListTokenToTokenMinimal);
-}, (chainId) => `${chainId}-${extendedSuperTokenList.version}`);
+    return extendedSuperTokenList().tokens.filter(x => x.chainId === chainId).map(mapTokenListTokenToTokenMinimal);
+}, (chainId) => `${chainId}-${extendedSuperTokenList().version}`);
 
 export const getSuperTokensFromTokenList = memoize((chainId: number, onlyWrappable?: boolean) => {
     return getTokensFromTokenList(chainId).filter(x => x.isSuperToken).filter(x => onlyWrappable ? x.type === TokenType.WrapperSuperToken || x.type === TokenType.NativeAssetSuperToken : true);
-}, (chainId) => `${chainId}-${extendedSuperTokenList.version}`);
+}, (chainId) => `${chainId}-${extendedSuperTokenList().version}`);
 
 export const getTokenPairsFromTokenList = memoize((chainId: number) => {
     return getSuperTokensFromTokenList(chainId, true /* onlyWrappable */)
@@ -116,7 +116,7 @@ export const getTokenPairsFromTokenList = memoize((chainId: number) => {
                 underlyingToken: findTokenFromTokenList({ chainId, address: superToken.underlyingAddress! })!
             }) as SuperTokenPair;
         });
-}, (chainId) => `${chainId}-${extendedSuperTokenList.version}`);
+}, (chainId) => `${chainId}-${extendedSuperTokenList().version}`);
 
 export const mapTokenListTokenToTokenMinimal = (tokenListToken: TokenInfo & SuperTokenExtensions) => {
     const superTokenInfo = tokenListToken.extensions?.superTokenInfo;

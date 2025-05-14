@@ -45,7 +45,7 @@ const getSupportsGDA = (chainId: number) => {
 const findNativeAssetSuperTokenFromTokenList = (input: { chainId: number, address: string }) => {
   // Note: there's also a generic function similar to this in the project. The problem with that one is that I got into circular dependency issue.
 
-  const token = extendedSuperTokenList.tokens.find(x => x.chainId === input.chainId && x.address === input.address.toLowerCase());
+  const token = extendedSuperTokenList().tokens.find(x => x.chainId === input.chainId && x.address === input.address.toLowerCase());
   if (!token) {
     throw new Error(`No native asset super token found for chainId ${input.chainId} and address ${input.address}`);
   }

@@ -1,12 +1,12 @@
-import sfMeta from "@superfluid-finance/metadata";
-import { extendedSuperTokenList } from "@superfluid-finance/tokenlist";
-import { ethers } from "ethers";
+import sfMeta from '@superfluid-finance/metadata';
+import { extendedSuperTokenList } from '@superfluid-finance/tokenlist';
+import { ethers } from 'ethers';
 
 import {
   cfAv1ForwarderABI,
   erc20ABI,
   superTokenABI,
-} from "./abis/wagmi-generated";
+} from './abis/wagmi-generated';
 
 export class EthHelper {
   private wallet: ethers.Wallet;
@@ -15,7 +15,7 @@ export class EthHelper {
 
   constructor(networkName: string, privateKey: string) {
     const rpcUrl =
-      "https://rpc-endpoints.superfluid.dev/" +
+      'https://rpc-endpoints.superfluid.dev/' +
       this.getNetworkByShortName(networkName).name;
     this.provider = new ethers.providers.JsonRpcProvider(rpcUrl);
     this.wallet = new ethers.Wallet(privateKey, this.provider);
@@ -35,13 +35,13 @@ export class EthHelper {
   }
 
   public getTokenBySymbolAndChainId(symbol: string, chainId: number) {
-    return extendedSuperTokenList.tokens.filter(
+    return extendedSuperTokenList().tokens.filter(
       (token: any) => token.symbol === symbol && token.chainId === chainId
     )[0];
   }
 
   public getTokenByAddress(address: string) {
-    return extendedSuperTokenList.tokens.filter(
+    return extendedSuperTokenList().tokens.filter(
       (token: any) => token.address === address
     )[0];
   }
@@ -64,8 +64,8 @@ export class EthHelper {
       )
       .then(async (allowance: bigint) => {
         if (Number(allowance) > 0) {
-          console.log("Allowance over 0 , revoking...");
-          const data = token.interface.encodeFunctionData("approve", [
+          console.log('Allowance over 0 , revoking...');
+          const data = token.interface.encodeFunctionData('approve', [
             contractToRevokeAllowanceTo,
             0,
           ]);
@@ -103,10 +103,10 @@ export class EthHelper {
       async (flow: bigint[]) => {
         //returns lastUpdated uint256, flowRate int96, deposit uint256, owedDeposit uint256
         if (flow[1] > 0) {
-          console.log("Flow still ongoing, deleting...");
+          console.log('Flow still ongoing, deleting...');
           const data = CFAv1Forwarder.interface.encodeFunctionData(
-            "deleteFlow",
-            [tokenAddress, sender, receiver, "0x"]
+            'deleteFlow',
+            [tokenAddress, sender, receiver, '0x']
           );
           const tx = await this.wallet.sendTransaction({
             to: cfaV1ForwarderAddress,
@@ -144,10 +144,10 @@ export class EthHelper {
       async (flow: bigint[]) => {
         //returns lastUpdated uint256, flowRate int96, deposit uint256, owedDeposit uint256
         if (flow[1] <= 0) {
-          console.log("Flow not going , lets create a new one");
+          console.log('Flow not going , lets create a new one');
           const data = CFAv1Forwarder.interface.encodeFunctionData(
-            "createFlow",
-            [tokenAddress, sender, receiver, flowRate, "0x"]
+            'createFlow',
+            [tokenAddress, sender, receiver, flowRate, '0x']
           );
           const tx = await this.wallet.sendTransaction({
             to: cfaV1ForwarderAddress,
