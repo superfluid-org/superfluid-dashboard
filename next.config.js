@@ -52,12 +52,12 @@ function withSentryIfNecessary(nextConfig) {
     // https://github.com/getsentry/sentry-webpack-plugin#options.
 
     // Upload a larger set of source maps for prettier stack traces (increases build time)
-    widenClientFileUpload: true,
+    // widenClientFileUpload: true,
 
     hideSourceMaps: true, // If this not specified as `true` then Sentry will expose the production source maps. We've decided to expose the source maps though.
 
     // Automatically tree-shake Sentry logger statements to reduce bundle size
-    disableLogger: true,
+    // disableLogger: true,
 
     // Enables automatic instrumentation of Vercel Cron Monitors. (Does not yet work with App Router route handlers.)
     // See the following for more information:
@@ -74,9 +74,9 @@ function withSentryIfNecessary(nextConfig) {
     // // The thirdPartyErrorFilterIntegration allows you to filter out errors originating from third parties,
     // // such as browser extensions, code-injecting browsers, or widgets from third-party services that also use Sentry.
     // // https://docs.sentry.io/platforms/javascript/guides/nextjs/configuration/filtering/#using-thirdpartyerrorfilterintegration
-    unstable_sentryWebpackPluginOptions: {
-      applicationKey: "superfluid-dashboard",
-    },
+    // unstable_sentryWebpackPluginOptions: {
+    //   applicationKey: "superfluid-dashboard",
+    // },
 
     // Route browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers.
     // This can increase your server load as well as your hosting bill.
