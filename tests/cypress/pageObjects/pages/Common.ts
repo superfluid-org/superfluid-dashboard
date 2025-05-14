@@ -340,11 +340,8 @@ export class Common extends BasePage {
       //The nextjs error is annoying when developing test cases in dev mode
       cy.get('nextjs-portal').shadow().find('[aria-label=Close]').click();
     }
-    // Workaround
-    this.clickConnectWallet();
-    cy.wait(3000);
-    cy.get('body').click(0, 0);
 
+    this.doesNotExist(CONNECT_WALLET_BUTTON);
     this.doesNotExist(`${CONNECTED_WALLET_BUTTON} span circle`);
     // this.changeNetwork(selectedNetwork);
     // //Conditional testing is bad, but this way is better than re-trying the whole case
