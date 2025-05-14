@@ -182,7 +182,7 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
                 Vesting (V2) Smart Contract
               </Typography>
               <Stack
-                data-cy="vesting-v2-contract-buttons"
+                data-cy="vesting-v3-contract-buttons"
                 direction="row"
                 alignItems="center"
               >

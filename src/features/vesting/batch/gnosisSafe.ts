@@ -15,7 +15,7 @@ type GetTxBuilderInputArgs = {
     permissionTxSlots?: number;
 };
 
-export const getTxBuilderInputs_v2 = ({
+export const getTxBuilderInputs_v3 = ({
     network,
     schedules,
     chunkSize = 100,
@@ -24,8 +24,8 @@ export const getTxBuilderInputs_v2 = ({
     const txBuilderInput: SafeTxBuilderInput =
         getDefaultSafeTxBuilderInput(network);
 
-    const vestingSchedulerV2Address = network.vestingContractAddress.v2?.address;
-    if (!vestingSchedulerV2Address) {
+    const vestingSchedulerV3Address = network.vestingContractAddress.v3?.address;
+    if (!vestingSchedulerV3Address) {
         throw new Error(
             `VestingScheduler contract address not found for chain ${network.name}`
         );
@@ -33,7 +33,7 @@ export const getTxBuilderInputs_v2 = ({
 
     const transactions = schedules.reduce<Transaction[][]>((acc, schedule, i) => {
         const index = Math.floor(i / (chunkSize - permissionTxSlots));
-        const toTx = getCreateVestingScheduleTx(vestingSchedulerV2Address);
+        const toTx = getCreateVestingScheduleTx(vestingSchedulerV3Address);
 
         acc[index] = acc[index]
             ? [...acc[index], toTx(schedule)]
@@ -44,7 +44,7 @@ export const getTxBuilderInputs_v2 = ({
 
     const createSafeTxBuilderInput = pipe(
         insertTxs(txBuilderInput),
-        prependPermissionTxs(network, vestingSchedulerV2Address),
+        prependPermissionTxs(network, vestingSchedulerV3Address),
         insertChecksum
     );
 
@@ -132,8 +132,8 @@ export const prependPermissionTxs =
                                         ? params.cliffDate
                                         : Number(startDate),
                                 },
-                                START_DATE_VALID_AFTER_IN_SECONDS: network.vestingContractAddress.v2!.START_DATE_VALID_AFTER_IN_SECONDS,
-                                END_DATE_VALID_BEFORE_IN_SECONDS: network.vestingContractAddress.v2!.END_DATE_VALID_BEFORE_IN_SECONDS,
+                                START_DATE_VALID_AFTER_IN_SECONDS: network.vestingContractAddress.v3!.START_DATE_VALID_AFTER_IN_SECONDS,
+                                END_DATE_VALID_BEFORE_IN_SECONDS: network.vestingContractAddress.v3!.END_DATE_VALID_BEFORE_IN_SECONDS,
                             });
 
                         // flowrate allowance

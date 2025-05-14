@@ -10,7 +10,7 @@ const SimpleVestingHeader: FC = () => {
   const { address: accountAddress } = useAccount();
   const { network } = useExpectedNetwork();
 
-  const doesNetworkSupportBatchVesting = !!network.vestingContractAddress.v2;
+  const doesNetworkSupportBatchVesting = !!network.vestingContractAddress.v3;
   const doesNetworkSupportAgora = validChainIds.includes(network.id);
   const isAgoraWhitelistedWallet = accountAddress && isAgoraSender(network.id, accountAddress);
 

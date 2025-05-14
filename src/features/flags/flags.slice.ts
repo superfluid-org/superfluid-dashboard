@@ -15,7 +15,7 @@ import { VestingVersion } from "../network/networkConstants";
 export enum Flag {
   TestTokensReceived = "test-tokens-received",
   TokenAdded = "token-added",
-  VestingScheduler = "vesting-scheduler-v2",
+  VestingScheduler = "vesting-scheduler",
 }
 
 interface BaseFlag<T> {

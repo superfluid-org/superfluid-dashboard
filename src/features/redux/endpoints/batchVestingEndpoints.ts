@@ -39,8 +39,8 @@ export const batchVestingEndpoints = {
           cliffAndFlowDate: x.cliffDate ? x.cliffDate : x.startDate,
           ...x
         }, {
-          START_DATE_VALID_AFTER_IN_SECONDS: network.vestingContractAddress.v2!.START_DATE_VALID_AFTER_IN_SECONDS,
-          END_DATE_VALID_BEFORE_IN_SECONDS: network.vestingContractAddress.v2!.END_DATE_VALID_BEFORE_IN_SECONDS
+          START_DATE_VALID_AFTER_IN_SECONDS: network.vestingContractAddress.v3!.START_DATE_VALID_AFTER_IN_SECONDS,
+          END_DATE_VALID_BEFORE_IN_SECONDS: network.vestingContractAddress.v3!.END_DATE_VALID_BEFORE_IN_SECONDS
         }));
 
         const totalRequiredTokenAllowance = requiredAllowances.reduce((acc, x) => acc.add(x.recommendedTokenAllowance), BigNumber.from(0));
