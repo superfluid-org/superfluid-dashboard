@@ -256,7 +256,7 @@ const StreamingFormProvider: FC<
 
   const formMethods = useForm<PartialStreamingForm, undefined, ValidStreamingForm>({
     defaultValues: defaultFormValues,
-    resolver: yupResolver(formSchema as ObjectSchema<PartialStreamingForm>),
+    resolver: yupResolver(formSchema) as any,
     mode: "onChange",
   });
 

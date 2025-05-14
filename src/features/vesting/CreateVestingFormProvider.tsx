@@ -300,7 +300,7 @@ const CreateVestingFormProvider: FC<{
         claimEnabled: false
       }
     },
-    resolver: yupResolver(formSchema as ObjectSchema<PartialVestingForm>),
+    resolver: yupResolver(formSchema) as any,
     mode: "onChange",
   });
 

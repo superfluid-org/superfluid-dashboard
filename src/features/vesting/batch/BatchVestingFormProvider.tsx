@@ -293,7 +293,7 @@ export function BatchVestingFormProvider(props: {
         claimEnabled: false
       }
     },
-    resolver: yupResolver(formSchema as ObjectSchema<PartialBatchVestingForm>),
+    resolver: yupResolver(formSchema) as any,
     mode: "onChange",
   });
 

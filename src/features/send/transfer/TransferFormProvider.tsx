@@ -119,7 +119,7 @@ const TransferFormProvider: FC<
 
   const formMethods = useForm<PartialTransferForm, undefined, ValidTransferForm>({
     defaultValues: defaultFormValues,
-    resolver: yupResolver(formSchema as ObjectSchema<PartialTransferForm>),
+    resolver: yupResolver(formSchema) as any,
     mode: "onChange",
   });
 

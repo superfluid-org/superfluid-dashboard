@@ -246,7 +246,7 @@ The chain ID was: ${network.id}`);
       },
     },
     mode: "onChange",
-    resolver: yupResolver(formSchema as ObjectSchema<WrappingForm>),
+    resolver: yupResolver(formSchema) as any,
   });
 
   const { setValue, clearErrors, setError } =

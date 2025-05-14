@@ -30,7 +30,7 @@
     "@ethersproject/logger": "^5.8.0",
     "@ethersproject/providers": "^5.8.0",
     "@hookform/error-message": "^2.0.1",
-    "@hookform/resolvers": "3.9.1",
+    "@hookform/resolvers": "5.0.1",
     "@lens-protocol/client": "^2.3.2",
     "@lifi/sdk": "^3.6.14",
     "@lifi/widget": "^3.20.5",
@@ -52,7 +52,7 @@
     "@superfluid-finance/metadata": "^1.6.0",
     "@superfluid-finance/sdk-core": "^0.9.0",
     "@superfluid-finance/sdk-redux": "^0.7.0",
-    "@superfluid-finance/tokenlist": "^5.24.0",
+    "@superfluid-finance/tokenlist": "^5.25.0",
     "@tanstack/react-query": "^5.76.1",
     "@vercel/functions": "^2.0.3",
     "@xstate/store": "^3.6.0",
@@ -79,7 +79,7 @@
     "react": "^19",
     "react-blockies": "^1.4.1",
     "react-dom": "^19",
-    "react-hook-form": "~7.54.2",
+    "react-hook-form": "^7.56.3",
     "react-hotjar": "^6.3.1",
     "react-redux": "^9",
     "react-toastify": "^9.1.3",
@@ -115,10 +115,10 @@
     "replayio": "^1.6.1",
     "typescript": "^5.8.3"
   },
-  "packageManager": "pnpm@9.6.0",
+  "packageManager": "pnpm@10.11.0+sha512.6540583f41cc5f628eb3d9773ecee802f4f9ef9923cc45b69890fb47991d4b092964694ec3a4f738a420c918a333062c8b925d312f42e4f0c263eb603551f977",
   "engines": {
     "node": ">=20",
-    "pnpm": ">=9"
+    "pnpm": ">=10"
   },
   "overrides": {
     "ethers": "^5.8.0",

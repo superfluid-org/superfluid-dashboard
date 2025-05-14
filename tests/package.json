@@ -10,18 +10,18 @@
     "date-fns": "^2.30.0",
     "ethers": "^5.8.0",
     "lodash": "^4.17.21",
-    "viem": "^2.26.5",
+    "viem": "^2.29.2",
     "web3-provider-engine": "^16.0.8"
   },
   "devDependencies": {
-    "@babel/core": "^7.26.10",
-    "@babel/preset-env": "^7.26.9",
-    "@babel/preset-typescript": "^7.27.0",
+    "@babel/core": "^7.27.1",
+    "@babel/preset-env": "^7.27.2",
+    "@babel/preset-typescript": "^7.27.1",
     "@badeball/cypress-cucumber-preprocessor": "^18.0.6",
     "@cypress/browserify-preprocessor": "^3.0.2",
-    "@cypress/code-coverage": "^3.14.0",
+    "@cypress/code-coverage": "^3.14.2",
     "@cypress/webpack-preprocessor": "^5.17.1",
-    "@types/node": "^20.17.30",
+    "@types/node": "^20.17.47",
     "babel-loader": "^9.2.1",
     "crypto-browserify": "^3.12.1",
     "cypress": "^12.17.4",
@@ -40,7 +40,7 @@
     "stream-browserify": "^3.0.0",
     "ts-loader": "^9.5.2",
     "typescript": "^5.8.3",
-    "webpack": "^5.99.5"
+    "webpack": "^5.99.8"
   },
   "nyc": {
     "extension": [
@@ -63,8 +63,9 @@
       "prettier --write"
     ]
   },
+  "packageManager": "pnpm@10.11.0+sha512.6540583f41cc5f628eb3d9773ecee802f4f9ef9923cc45b69890fb47991d4b092964694ec3a4f738a420c918a333062c8b925d312f42e4f0c263eb603551f977",
   "engines": {
     "node": ">=20",
-    "pnpm": ">=9"
+    "pnpm": ">=10"
   }
 }

@@ -24,7 +24,7 @@ export interface ValidAccountingExportForm {
   };
 }
 
-const defaultFormValues = {
+const defaultFormValues: PartialAccountingExportForm = {
   data: {
     addresses: [],
     counterparties: [],
@@ -87,7 +87,7 @@ const AccountingExportFormProvider: FC<
 
   const formMethods = useForm<PartialAccountingExportForm, undefined, ValidAccountingExportForm>({
     defaultValues: defaultFormValues,
-    resolver: yupResolver(formSchema as ObjectSchema<PartialAccountingExportForm>),
+    resolver: yupResolver(formSchema) as any,
     mode: "onChange",
   });
 
