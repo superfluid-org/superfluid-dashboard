@@ -6,7 +6,7 @@ import {
   addBeforeSend,
   BeforeSendFunc,
   removeBeforeSend,
-} from "../../../sentry.client.config";
+} from "../../../instrumentation-client";
 import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
 import {
   listenerMiddleware,

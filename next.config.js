@@ -3,7 +3,7 @@
 // https://nextjs.org/docs/api-reference/next.config.js/introduction
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
-const { withSentryConfig } = require("@sentry/nextjs");
+import { withSentryConfig } from "@sentry/nextjs";
 
 const sentryEnvironment =
   process.env.SENTRY_ENVIRONMENT || process.env.CONTEXT;
@@ -63,7 +63,7 @@ function withSentryIfNecessary(nextConfig) {
     // See the following for more information:
     // https://docs.sentry.io/product/crons/
     // https://vercel.com/docs/cron-jobs
-    automaticVercelMonitors: true,
+    // automaticVercelMonitors: true,
 
     sourcemaps: {
       // Don't serve sourcemaps to the users
@@ -74,9 +74,9 @@ function withSentryIfNecessary(nextConfig) {
     // // The thirdPartyErrorFilterIntegration allows you to filter out errors originating from third parties,
     // // such as browser extensions, code-injecting browsers, or widgets from third-party services that also use Sentry.
     // // https://docs.sentry.io/platforms/javascript/guides/nextjs/configuration/filtering/#using-thirdpartyerrorfilterintegration
-    // unstable_sentryWebpackPluginOptions: {
-    //   applicationKey: "superfluid-dashboard",
-    // },
+    unstable_sentryWebpackPluginOptions: {
+      applicationKey: "superfluid-dashboard",
+    },
 
     // Route browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers.
     // This can increase your server load as well as your hosting bill.
@@ -131,4 +131,4 @@ const moduleExports = {
   }
 };
 
-module.exports = withSentryIfNecessary(moduleExports);
+export default withSentryIfNecessary(moduleExports);
