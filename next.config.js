@@ -10,7 +10,7 @@ const sentryEnvironment =
 
 const netlifyContext = process.env.CONTEXT;
 const isOnNetlify = !!netlifyContext;
-const interfaceFeeAddress = process.env.INTERFACE_FEE_ADDRESS;
+const interfaceFeeAddress = process.env.NEXT_PUBLIC_INTERFACE_FEE_ADDRESS;
 const shouldInstrumentCode = "INSTRUMENT_CODE" in process.env;
 const appUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : process.env.URL ?? "http://localhost:3000";
 const enableReactCompiler = process.env.NODE_ENV !== "development";
@@ -33,6 +33,8 @@ function withSentryIfNecessary(nextConfig) {
     );
     return nextConfig;
   }
+
+  return nextConfig; // TODO: remove this
 
   // Make sure adding Sentry options is the last code to run before exporting, to
   // ensure that your source maps include changes from all other Webpack plugins

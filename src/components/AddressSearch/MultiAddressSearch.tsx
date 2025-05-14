@@ -7,21 +7,15 @@ import {
   FormHelperText,
   IconButton,
   List,
-  ListItem,
   ListItemAvatar,
   ListItemButton,
   ListItemText,
-  ListSubheader,
-  Stack,
 } from "@mui/material";
-import { FC, memo, MouseEvent, useState } from "react";
+import { memo, MouseEvent, useState } from "react";
 import AddressName, {
   AddressNameProps,
 } from "../../components/AddressName/AddressName";
-import AddressSearchDialog, {
-  AddressListItem,
-} from "../../components/AddressSearchDialog/AddressSearchDialog";
-import AddressSearchIndex from "../../features/send/AddressSearchIndex";
+import AddressSearchDialog from "../../components/AddressSearchDialog/AddressSearchDialog";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import AddressAvatar from "../Avatar/AddressAvatar";
 import { Address } from "@superfluid-finance/sdk-core";
