@@ -34,8 +34,6 @@ function withSentryIfNecessary(nextConfig) {
     return nextConfig;
   }
 
-  return nextConfig; // TODO: remove this
-
   // Make sure adding Sentry options is the last code to run before exporting, to
   // ensure that your source maps include changes from all other Webpack plugins
   // NOTE from developer: withTM is also recommended to keep last.
@@ -72,12 +70,13 @@ function withSentryIfNecessary(nextConfig) {
       deleteSourcemapsAfterUpload: true,
     },
 
-    // The thirdPartyErrorFilterIntegration allows you to filter out errors originating from third parties,
-    // such as browser extensions, code-injecting browsers, or widgets from third-party services that also use Sentry.
-    // https://docs.sentry.io/platforms/javascript/guides/nextjs/configuration/filtering/#using-thirdpartyerrorfilterintegration
-    unstable_sentryWebpackPluginOptions: {
-      applicationKey: "superfluid-dashboard",
-    },
+    // TODO: This was causing build issues on Vercel. Stuff like address dialog not selecting addresses.
+    // // The thirdPartyErrorFilterIntegration allows you to filter out errors originating from third parties,
+    // // such as browser extensions, code-injecting browsers, or widgets from third-party services that also use Sentry.
+    // // https://docs.sentry.io/platforms/javascript/guides/nextjs/configuration/filtering/#using-thirdpartyerrorfilterintegration
+    // unstable_sentryWebpackPluginOptions: {
+    //   applicationKey: "superfluid-dashboard",
+    // },
 
     // Route browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers.
     // This can increase your server load as well as your hosting bill.

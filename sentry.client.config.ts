@@ -52,17 +52,17 @@ if (!IsCypress && SENTRY_DSN) {
           Sentry.captureConsoleIntegration({
             levels: ["error"]
           }),
-          Sentry.thirdPartyErrorFilterIntegration({
-            // Specify the application keys that you specified in the Sentry bundler plugin
-            filterKeys: ["superfluid-dashboard"],
-            // Defines how to handle errors that contain third party stack frames.
-            // Possible values are:
-            // - 'drop-error-if-contains-third-party-frames'
-            // - 'drop-error-if-exclusively-contains-third-party-frames'
-            // - 'apply-tag-if-contains-third-party-frames'
-            // - 'apply-tag-if-exclusively-contains-third-party-frames'
-            behaviour: "drop-error-if-exclusively-contains-third-party-frames",
-          }),
+          // Sentry.thirdPartyErrorFilterIntegration({
+          //   // Specify the application keys that you specified in the Sentry bundler plugin
+          //   filterKeys: ["superfluid-dashboard"],
+          //   // Defines how to handle errors that contain third party stack frames.
+          //   // Possible values are:
+          //   // - 'drop-error-if-contains-third-party-frames'
+          //   // - 'drop-error-if-exclusively-contains-third-party-frames'
+          //   // - 'apply-tag-if-contains-third-party-frames'
+          //   // - 'apply-tag-if-exclusively-contains-third-party-frames'
+          //   behaviour: "drop-error-if-exclusively-contains-third-party-frames",
+          // }),
         ] : [],
 
   });
