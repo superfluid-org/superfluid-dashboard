@@ -4,6 +4,7 @@
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
 import { withSentryConfig } from "@sentry/nextjs";
+import { NextConfig } from "next";
 
 const sentryEnvironment =
   process.env.SENTRY_ENVIRONMENT || process.env.CONTEXT;
@@ -15,7 +16,7 @@ const shouldInstrumentCode = "INSTRUMENT_CODE" in process.env;
 const appUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : process.env.URL ?? "http://localhost:3000";
 const enableReactCompiler = process.env.NODE_ENV !== "development";
 
-function withSentryIfNecessary(nextConfig) {
+function withSentryIfNecessary(nextConfig: NextConfig) {
   console.log({
     sentryEnvironment,
     netlifyContext,
@@ -46,7 +47,6 @@ function withSentryIfNecessary(nextConfig) {
     // recommended:
     //   release, url, org, project, authToken, configFile, stripPrefix,
     //   urlPrefix, include, ignore
-    env: sentryEnvironment,
     silent: true, // Suppresses all logs
     // For all available options, see:
     // https://github.com/getsentry/sentry-webpack-plugin#options.
@@ -86,8 +86,7 @@ function withSentryIfNecessary(nextConfig) {
   });
 }
 
-/** @type {import('next').NextConfig} */
-const moduleExports = {
+const nextConfig: NextConfig = {
   reactStrictMode: true,
   images: {
     loader: "custom",
@@ -106,7 +105,7 @@ const moduleExports = {
       },
     ],
   },
-  rewrites: () => [
+  rewrites: async () => [
     {
       source: "/monitoring",
       destination: "/api/monitoring",
@@ -131,4 +130,4 @@ const moduleExports = {
   }
 };
 
-export default withSentryIfNecessary(moduleExports);
+export default withSentryIfNecessary(nextConfig);
