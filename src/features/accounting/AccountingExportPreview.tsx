@@ -4,7 +4,6 @@ import IconButton from "@mui/material/IconButton";
 import {
   DataGrid,
   GridColDef,
-  GridValueGetterParams,
   useGridApiContext,
 } from "@mui/x-data-grid";
 import { skipToken } from "@reduxjs/toolkit/query";
@@ -153,8 +152,8 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({ }) => {
         headerName: "Date",
         type: "date",
         minWidth: 120,
-        valueGetter: (params: GridValueGetterParams) =>
-          fromUnixTime(params.row.endTime),
+        valueGetter: (value, row) =>
+          fromUnixTime(row.endTime),
       },
       {
         field: "startDate",
@@ -162,8 +161,8 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({ }) => {
         type: "date",
         minWidth: 120,
         hide: true,
-        valueGetter: (params: GridValueGetterParams) =>
-          fromUnixTime(params.row.startTime)
+        valueGetter: (value, row) =>
+          fromUnixTime(row.startTime)
       },
       {
         field: "amount",
@@ -171,8 +170,8 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({ }) => {
         minWidth: 100,
         flex: 1,
         sortComparator: (v1, v2) => (Number(v1) > Number(v2) ? 1 : -1),
-        valueGetter: (params: GridValueGetterParams) =>
-          new Decimal(params.row.amountFiat).toFixed(2),
+        valueGetter: (value, row) =>
+          new Decimal(row.amountFiat).toFixed(2),
         renderCell: (params) => {
           const sign = Decimal.sign(params.value);
           const absDecimal = Decimal.abs(params.value);
@@ -185,14 +184,14 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({ }) => {
         headerName: "Counterparty",
         minWidth: 120,
         flex: 1,
-        valueGetter: (params: GridValueGetterParams) => {
+        valueGetter: (value, row) => {
           const isOutgoing = lowerCaseAddresses.includes(
-            params.row.sender.toLowerCase()
+            row.sender.toLowerCase()
           );
 
           const counterparty = isOutgoing
-            ? params.row.receiver
-            : params.row.sender;
+            ? row.receiver
+            : row.sender;
 
           const nameData = mappedAddresses[counterparty];
 
@@ -205,11 +204,11 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({ }) => {
         flex: 1,
         minWidth: 200,
         hide: true,
-        valueGetter: (params: GridValueGetterParams) => {
+        valueGetter: (value, row) => {
           const isOutgoing = lowerCaseAddresses.includes(
-            params.row.sender.toLowerCase()
+            row.sender.toLowerCase()
           );
-          return isOutgoing ? params.row.receiver : params.row.sender;
+          return isOutgoing ? row.receiver : row.sender;
         },
       },
       {
@@ -217,26 +216,26 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({ }) => {
         headerName: "Token Symbol",
         minWidth: 110,
         flex: 1,
-        valueGetter: (params: GridValueGetterParams) =>
-          `${params.row.token.symbol}`,
+        valueGetter: (value, row) =>
+          `${row.token.symbol}`,
       },
       {
         field: "network",
         headerName: "Network",
         minWidth: 100,
         flex: 1,
-        valueGetter: (params) =>
-          tryFindNetwork(mainNetworks, params.row.chainId)?.name,
+        valueGetter: (value, row) =>
+          tryFindNetwork(mainNetworks, row.chainId)?.name,
       },
       {
         field: "transaction",
         headerName: "TX",
         maxWidth: 100,
         flex: 1,
-        valueGetter: (params: GridValueGetterParams) => {
-          const network = tryFindNetwork(mainNetworks, params.row.chainId);
+        valueGetter: (value, row) => {
+          const network = tryFindNetwork(mainNetworks, row.chainId);
           if (!network) return "";
-          return network.getLinkForTransaction(params.row.startedAtEvent);
+          return network.getLinkForTransaction(row.startedAtEvent);
         },
         renderCell: (params) => {
           const network = tryFindNetwork(mainNetworks, params.row.chainId);
@@ -277,7 +276,7 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({ }) => {
         flex: 1,
         minWidth: 90,
         hide: true,
-        valueGetter: (params) => params.row.startedAtEvent,
+        valueGetter: (value, row) => row.startedAtEvent,
       },
       {
         field: "tokenAddress",
@@ -285,7 +284,7 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({ }) => {
         flex: 1,
         minWidth: 100,
         hide: true,
-        valueGetter: (params) => params.row.token.id,
+        valueGetter: (value, row) => row.token.id,
       },
       {
         field: "tokenName",
@@ -293,7 +292,7 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({ }) => {
         minWidth: 120,
         flex: 1,
         hide: true,
-        valueGetter: (params) => params.row.token.name,
+        valueGetter: (value, row) => row.token.name,
       },
       {
         field: "underlyingTokenAddress",
@@ -301,7 +300,7 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({ }) => {
         minWidth: 140,
         flex: 1,
         hide: true,
-        valueGetter: (params) => params.row.token.underlyingAddress,
+        valueGetter: (value, row) => row.token.underlyingAddress,
       },
       {
         field: "tokensAmount",
@@ -309,7 +308,7 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({ }) => {
         minWidth: 120,
         flex: 1,
         hide: true,
-        valueGetter: (params) => formatAmount(params.row.amount, 18, undefined, true /* disable rounding */),
+        valueGetter: (value, row) => formatAmount(row.amount, 18, undefined, true /* disable rounding */),
       }
     ],
     [currency, mappedAddresses, lowerCaseAddresses]
@@ -345,8 +344,8 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({ }) => {
           streamPeriodsResponse.isLoading || streamPeriodsResponse.isFetching
         }
         pageSizeOptions={[10, 25, 50]}
-        components={{
-          Toolbar: CustomToolbar,
+        slots={{
+          toolbar: CustomToolbar,
         }}
       />
     </Paper>
