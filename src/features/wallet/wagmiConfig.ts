@@ -50,70 +50,128 @@ if (needsTestConnector) {
   const testConnector = createConnector(({
     emitter,
   }) => {
-    const mockBridge = (window as any).mockBridge as EthereumProvider;
-    const mockWallet = (window as any).mockWallet as {
-      chainId: number;
-      getAddress(): Address,
-    };
-    const chain = findNetworkOrThrow(allNetworks, mockWallet.chainId);
-    const walletClient = createWalletClient({
-      chain,
-      account: mockWallet.getAddress(),
-      transport: custom(mockBridge),
-    })
+    try {
+      const mockBridge = (window as any).mockBridge as EthereumProvider;
+      const mockWallet = (window as any).mockWallet as {
+        chainId: number;
+        getAddress(): Address,
+      };
 
-    // const wagmiMock = mock({
-    //   accounts: [mockWallet.getAddress()],
-    // })({
-    //   chains,
-    //   emitter
-    // });
+      if (!mockBridge || !mockWallet) {
+        console.error("Mock wallet or bridge is undefined", { mockBridge, mockWallet });
+        throw new Error("Mock wallet or bridge not properly initialized");
+      }
 
-    const connector: Connector = {
-      id: "Mock",
-      name: "Mock",
-      type: "mock",
-      emitter,
-      uid: "15967486-c8a1-4142-a0c2-53520e654529",
-      async connect() {
-        return {
-          accounts: await walletClient.getAddresses(),
-          chainId: walletClient.chain.id
-        };
-      },
-      async disconnect() {
-        // No-op for mock connector
-      },
-      async getAccount() {
-        return walletClient.getAddresses().then(addresses => addresses[0]);
-      },
-      async getAccounts() {
-        return [...(await walletClient.getAddresses())] as const;
-      },
-      async getChainId() {
-        return walletClient.chain.id;
-      },
-      async getProvider() {
-        return mockBridge;
-      },
-      async getSigner() {
-        return walletClient;
-      },
-      async isAuthorized() {
-        return true;
-      },
-      onAccountsChanged(accounts: string[]) {
-        // No-op for test connector
-      },
-      onChainChanged(chainId) {
-        const chain = findNetworkOrThrow(allNetworks, Number(chainId));
-        walletClient.switchChain(chain);
-      },
-      onDisconnect() {
-        // No-op for test connector
-      },
+      const chain = findNetworkOrThrow(allNetworks, mockWallet.chainId);
+      const walletClient = createWalletClient({
+        chain,
+        account: mockWallet.getAddress(),
+        transport: custom(mockBridge),
+      });
+
+      console.log("Mock wallet initialized successfully", {
+        chainId: mockWallet.chainId,
+        address: mockWallet.getAddress(),
+        chain: chain.name
+      });
+
+      const connector: Connector = {
+        id: "Mock",
+        name: "Mock",
+        type: "mock",
+        emitter,
+        uid: "15967486-c8a1-4142-a0c2-53520e654529",
+        async connect() {
+          try {
+            const accounts = await walletClient.getAddresses();
+            const chainId = walletClient.chain.id;
+
+            console.log("Mock wallet connected successfully", { accounts, chainId });
+
+            return {
+              accounts,
+              chainId
+            };
+          } catch (err) {
+            console.error("Error connecting mock wallet:", err);
+            throw err;
+          }
+        },
+        async disconnect() {
+          // No-op for mock connector
+          console.log("Mock wallet disconnected");
+        },
+        async getAccount() {
+          try {
+            const address = await walletClient.getAddresses().then(addresses => addresses[0]);
+            return address;
+          } catch (err) {
+            console.error("Error getting mock wallet account:", err);
+            throw err;
+          }
+        },
+        async getAccounts() {
+          try {
+            return [...(await walletClient.getAddresses())] as const;
+          } catch (err) {
+            console.error("Error getting mock wallet accounts:", err);
+            throw err;
+          }
+        },
+        async getChainId() {
+          return walletClient.chain.id;
+        },
+        async getProvider() {
+          return mockBridge;
+        },
+        async getSigner() {
+          return walletClient;
+        },
+        async isAuthorized() {
+          return true;
+        },
+        onAccountsChanged(accounts: string[]) {
+          // No-op for test connector
+          console.log("Mock wallet accounts changed:", accounts);
+        },
+        onChainChanged(chainId) {
+          console.log("Mock wallet chain changed:", chainId);
+          const chain = findNetworkOrThrow(allNetworks, Number(chainId));
+          walletClient.switchChain(chain);
+        },
+        onDisconnect() {
+          // No-op for test connector
+          console.log("Mock wallet disconnected");
+        },
+      }
+      return connector;
+    } catch (error) {
+      console.error("Failed to initialize mock connector:", error);
+
+      // Return a minimal connector that reports initialization failure
+      const connector: Connector = {
+        id: "Mock",
+        name: "Mock (Failed)",
+        type: "mock",
+        emitter,
+        uid: "15967486-c8a1-4142-a0c2-53520e654529",
+        async connect() {
+          console.error("Cannot connect - mock wallet initialization failed");
+          throw new Error("Mock wallet initialization failed");
+        },
+        async disconnect() { },
+        async getAccount() { throw new Error("Mock wallet initialization failed"); },
+        async getAccounts() { return [] as const; },
+        async getChainId() { return 0; },
+        async getProvider() { throw new Error("Mock wallet initialization failed"); },
+        async getSigner() { throw new Error("Mock wallet initialization failed"); },
+        async isAuthorized() { return false; },
+        onAccountsChanged() { },
+        onChainChanged() { },
+        onDisconnect() { },
+      }
+      return connector;
     }
-    return connector
   })
   testConnectors.push(testConnector);
 }
@@ -171,7 +229,7 @@ const _appKit = createAppKit({
   themeVariables: {
     "--w3m-z-index": 2147483646
   }
- })
+})
 
 // const _web3Modal = createWeb3Modal({
 //   metadata,

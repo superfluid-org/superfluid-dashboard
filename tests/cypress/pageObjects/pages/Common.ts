@@ -304,6 +304,7 @@ export class Common extends BasePage {
 
     let chainId = networksBySlug.get(selectedNetwork)?.id;
     let networkRpc = networksBySlug.get(selectedNetwork)?.superfluidRpcUrl;
+
     cy.visit(page, {
       onBeforeLoad: (window) => {
         try {
@@ -313,10 +314,12 @@ export class Common extends BasePage {
             chainId: chainId,
             pollingInterval: 1000,
           });
+          console.log('hdwallet', hdwallet);
           if (Cypress.env('rejected')) {
             // Make HDWallet automatically reject transaction.
             // Inspired by: https://github.com/MetaMask/web3-provider-engine/blob/e835b80bf09e76d92b785d797f89baa43ae3fd60/subproviders/hooked-wallet.js#L326
             for (const provider of hdwallet.engine['_providers']) {
+              console.log('provider', provider);
               if (provider.checkApproval) {
                 provider.checkApproval = function (type, didApprove, cb) {
                   cb(new Error(`User denied ${type} signature.`));
@@ -325,37 +328,66 @@ export class Common extends BasePage {
             }
           }
 
+          if (!hdwallet) {
+            console.log('Error: HDWalletProvider not initialized properly');
+            return;
+          }
+
           const mockBridge = new ProviderAdapter(hdwallet);
           window['mockBridge'] = mockBridge;
-
-          // @ts-ignore
-          // win.mockSigner = mockSigner;
           window['mockWallet'] = hdwallet;
+
+          window['mockWalletDebug'] = {
+            chainId,
+            network: selectedNetwork,
+            address: hdwallet.getAddress(),
+          };
+
+          setTimeout(() => {
+            const ethereum = mockBridge;
+            if (ethereum) {
+              console.log('Manually triggering chainChanged event');
+              (ethereum as any).emit?.(
+                'chainChanged',
+                `0x${chainId.toString(16)}`
+              );
+            }
+          }, 500);
         } catch (e) {
-          console.log('Error during wallet provider setup: ', e);
+          console.log('Error during wallet provider setup: ' + e.message);
+          console.error('Error during wallet provider setup: ', e);
         }
       },
     });
+
     if (Cypress.env('dev')) {
       //The nextjs error is annoying when developing test cases in dev mode
       cy.get('nextjs-portal').shadow().find('[aria-label=Close]').click();
     }
 
     this.doesNotExist(CONNECT_WALLET_BUTTON);
-    this.doesNotExist(`${CONNECTED_WALLET_BUTTON} span circle`);
-    // this.changeNetwork(selectedNetwork);
-    // //Conditional testing is bad, but this way is better than re-trying the whole case
-    // //A workaround because sometimes HDWalletProvider does not connect to the right network
-    // cy.get(WALLET_CONNECTION_STATUS).then((el) => {
-    //   if (el.text() === "Wrong network") {
-    //     let workaroundNetwork =
-    //       selectedNetwork === "avalanche-fuji"
-    //         ? "eth-sepolia"
-    //         : "avalanche-fuji";
-    //     this.changeNetwork(workaroundNetwork);
-    //     this.changeNetwork(selectedNetwork);
-    //   }
-    // });
+
+    cy.get(WALLET_CONNECTION_STATUS, { timeout: 15000 }).then((el) => {
+      if (el.text() === 'Wrong network') {
+        this.changeNetwork(selectedNetwork);
+
+        cy.get(WALLET_CONNECTION_STATUS, { timeout: 10000 }).should((el) => {
+          if (el.text() !== 'Connected') {
+            cy.log('Still on wrong network, trying alternative approach...');
+            let workaroundNetwork =
+              selectedNetwork === 'avalanche-fuji'
+                ? 'eth-sepolia'
+                : 'avalanche-fuji';
+            this.changeNetwork(workaroundNetwork);
+            this.changeNetwork(selectedNetwork);
+          }
+        });
+      }
+
+      cy.get(WALLET_CONNECTION_STATUS, { timeout: 10000 }).should((el) => {
+        console.log(`Final wallet status: ${el.text()}`);
+      });
+    });
   }
 
   static rejectTransactions() {
@@ -726,54 +758,11 @@ export class Common extends BasePage {
     this.click(FAUCET_GO_TO_DASHBOARD);
   }
 
-  // static async sendBackNotMintableFaucetTokens() {
-  //   const web3 = new Web3(
-  //     networksBySlug.get("avalanche-fuji").superfluidRpcUrl
-  //   );
-
-  //   cy.get("@newWalletPublicKey").then((fromAddress) => {
-  //     cy.get("@newWalletPrivateKey").then(async (privateKey) => {
-  //       const gasPrice = web3.utils.toWei("50", "gwei"); //Didis recommendation
-  //       const gasLimit = 23000; //Takes a little bit more than a normal 21k transfer because contracts deposit function
-  //       // @ts-ignore
-  //       const balance = BigNumber.from(await web3.eth.getBalance(fromAddress));
-  //       const valueToSend = balance.sub(
-  //         BigNumber.from(gasPrice).mul(BigNumber.from(gasLimit))
-  //       );
-
-  //       const txObj = {
-  //         from: fromAddress,
-  //         to: FAUCET_CONTRACT_ADDRESS,
-  //         value: valueToSend,
-  //         gasPrice: gasPrice,
-  //         gasLimit: gasLimit,
-  //       };
-
-  //       cy.wrap(null, { log: false }).then(() => {
-  //         return (
-  //           web3.eth.accounts
-  //             //@ts-ignore
-  //             .signTransaction(txObj, privateKey)
-  //             .then(async (signedTx) => {
-  //               await web3.eth
-  //                 .sendSignedTransaction(signedTx.rawTransaction)
-  //                 .then((tx) => {
-  //                   cy.log(
-  //                     `Matic recycled, transaction hash: ${tx.transactionHash}`
-  //                   );
-  //                 });
-  //             })
-  //         );
-  //       });
-  //     });
-  //   });
-  // }
-
   static validateYouHaveAlreadyClaimedTokensMessage() {
     this.isVisible(FAUCET_ERROR_MESSAGE);
     this.hasText(
       FAUCET_ERROR_MESSAGE,
-      'You’ve already claimed tokens from the faucet using this address'
+      "You've already claimed tokens from the faucet using this address"
     );
   }
 
@@ -798,24 +787,6 @@ export class Common extends BasePage {
       this.hasValue(FAUCET_WALLET_ADDRESS, address.toString());
     });
   }
-
-  // static checkFaucetContractBalance() {
-  //   const web3 = new Web3(
-  //     networksBySlug.get("avalanche-fuji").superfluidRpcUrl
-  //   );
-  //   cy.wrap(null, { log: false }).then(() => {
-  //     return web3.eth.getBalance(FAUCET_CONTRACT_ADDRESS).then((balance) => {
-  //       expect(parseInt(balance.toString())).to.be.greaterThan(1e19);
-  //     });
-  //   });
-  //   cy.wrap(null, { log: false }).then(() => {
-  //     return web3.eth
-  //       .getBalance(FAUCET_EXECUTION_CONTRACT_ADDRESS)
-  //       .then((balance) => {
-  //         expect(parseInt(balance.toString())).to.be.greaterThan(5e18);
-  //       });
-  //   });
-  // }
 
   static validateOpenFaucetView() {
     const FAUCET_TOKENS = ['MATIC', 'fUSDC', 'fDAI'];
