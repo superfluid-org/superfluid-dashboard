@@ -35,13 +35,13 @@ export class EthHelper {
   }
 
   public getTokenBySymbolAndChainId(symbol: string, chainId: number) {
-    return extendedSuperTokenList().tokens.filter(
+    return extendedSuperTokenList.tokens.filter(
       (token: any) => token.symbol === symbol && token.chainId === chainId
     )[0];
   }
 
   public getTokenByAddress(address: string) {
-    return extendedSuperTokenList().tokens.filter(
+    return extendedSuperTokenList.tokens.filter(
       (token: any) => token.address === address
     )[0];
   }
