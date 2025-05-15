@@ -9,8 +9,8 @@ export function useAccount() {
     const { address, isConnected, status } = useAppKitAccount()
     const { connector, chain } = useWagmiAccount()
 
-    const isReconnecting = status === "reconnecting"
     const isConnecting = status === "connecting"
+    const isReconnecting = status === "reconnecting"
     const addressLowercased = useMemo(() => address?.toLowerCase() as (Address | undefined), [address])
 
     return {
