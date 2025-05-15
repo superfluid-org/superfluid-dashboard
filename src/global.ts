@@ -14,7 +14,7 @@ export const initializeSuperfluidDashboardGlobalObject = ({
         addCustomToken: async (token: NetworkCustomToken) => {
           await appDispatch(addCustomToken(token));
         },
-      },
+      }, 
     };
   }
 };
