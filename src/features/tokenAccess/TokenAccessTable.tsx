@@ -34,42 +34,41 @@ const TokenAccessTable: FC<Props> = ({
   network,
   fetchingCallback,
 }) => {
+  const { flowOperators, isLoading, ...flowOperatorsQuery } = subgraphApi.useFlowOperatorsQuery(
+    {
+      chainId: network.id,
+      filter: {
+        and: [
+          { sender: address.toLowerCase() },
+          {
+            or: [
+              { allowance_not: "0" },
+              { flowRateAllowanceRemaining_not: "0" },
+              { permissions_not: 0 },
+            ],
+          },
+        ],
+      },
+      pagination: {
+        take: Infinity
+      },
+    },
+    {
+      refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
+      selectFromResult: (result) => ({
+        ...result,
+        flowOperators: result.currentData?.items ?? EMPTY_ARRAY,
+      }),
+    }
+  );
+
   const theme = useTheme();
 
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  const { flowOperators, ...flowOperatorsQuery } =
-    subgraphApi.useFlowOperatorsQuery(
-      {
-        chainId: network.id,
-        filter: {
-          and: [
-            { sender: address.toLowerCase() },
-            {
-              or: [
-                { allowance_not: "0" },
-                { flowRateAllowanceRemaining_not: "0" },
-                { permissions_not: 0 },
-              ],
-            },
-          ],
-        },
-        pagination: {
-          take: Infinity
-        },
-      },
-      {
-        refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
-        selectFromResult: (result) => ({
-          ...result,
-          flowOperators: result.data?.items ?? EMPTY_ARRAY,
-        }),
-      }
-    );
 
-  const isLoading = flowOperatorsQuery.isLoading;
   const hasContent = flowOperators.length > 0;
   useEffect(() => {
     fetchingCallback(network.id, {
@@ -99,7 +98,7 @@ const TokenAccessTable: FC<Props> = ({
     [page, rowsPerPage, flowOperators]
   );
 
-  if (flowOperatorsQuery.isLoading) return <TokenAccessLoadingTable />
+  if (isLoading) return <TokenAccessLoadingTable />
 
   if (flowOperators.length === 0) return null;
 

@@ -102,7 +102,7 @@ const TokenAccessTables: FC<{}> = () => {
           {visibleAddress &&
             availableNetworks.map((network) => (
               <TokenAccessTable
-                key={network.id}
+                key={`${network.id}-${visibleAddress}`}
                 address={visibleAddress}
                 network={network}
                 fetchingCallback={fetchingCallback}
