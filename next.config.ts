@@ -4,7 +4,7 @@
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
 import { withSentryConfig } from "@sentry/nextjs";
-import { NextConfig } from "next";
+import { type NextConfig } from "next";
 
 const sentryEnvironment =
   process.env.SENTRY_ENVIRONMENT || process.env.CONTEXT;
@@ -14,7 +14,8 @@ const isOnNetlify = !!netlifyContext;
 const interfaceFeeAddress = process.env.NEXT_PUBLIC_INTERFACE_FEE_ADDRESS;
 const shouldInstrumentCode = "INSTRUMENT_CODE" in process.env;
 const appUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : process.env.URL ?? "http://localhost:3000";
-const enableReactCompiler = process.env.NODE_ENV !== "development";
+const enableReactCompiler = false;
+  // process.env.NODE_ENV !== "development";
 const sentryOrg = process.env.SENTRY_ORG;
 const sentryProject = process.env.SENTRY_PROJECT;
 
@@ -38,8 +39,6 @@ function withSentryIfNecessary(nextConfig: NextConfig) {
     );
     return nextConfig;
   }
-
-  return nextConfig; // Disable Sentry
 
   // Make sure adding Sentry options is the last code to run before exporting, to
   // ensure that your source maps include changes from all other Webpack plugins
