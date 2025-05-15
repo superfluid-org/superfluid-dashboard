@@ -34,7 +34,7 @@ jobs:
         working-directory: "tests"
         run: |
           echo 🕊️ Download Free Cypress
-          CYPRESS_DOWNLOAD_MIRROR=https://cy-cdn.currents.dev pnpm add cypress@12.17.4 --force
+          CYPRESS_DOWNLOAD_MIRROR=https://cy-cdn.currents.dev pnpm add cypress@12.17.4 --force --with-all-optionals
 
           echo ✅ Verify Cypress
           npx cypress verify

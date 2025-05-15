@@ -24,7 +24,7 @@
     "@types/node": "^20.17.47",
     "babel-loader": "^9.2.1",
     "crypto-browserify": "^3.12.1",
-    "cypress": "^12.17.4",
+    "cypress": "12.17.4",
     "cypress-cloud": "^1.13.0",
     "cypress-iframe": "^1.0.1",
     "cypress-real-events": "^1.14.0",
@@ -67,5 +67,8 @@
   "engines": {
     "node": ">=20",
     "pnpm": ">=10"
+  },
+  "overrides": {
+    "cypress": "12.17.4"
   }
 }
