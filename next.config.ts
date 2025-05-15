@@ -4,7 +4,7 @@
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
 import { withSentryConfig } from "@sentry/nextjs";
-import { type NextConfig } from "next";
+import { NextConfig } from "next";
 
 const sentryEnvironment =
   process.env.SENTRY_ENVIRONMENT || process.env.CONTEXT;
