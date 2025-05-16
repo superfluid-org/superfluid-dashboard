@@ -1,10 +1,5 @@
-import {
-  Stack,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
-import { FC, useCallback, useMemo, useState } from "react";
+import { Stack, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import TokenAccessTable from "./TokenAccessTable";
 import { useAvailableNetworks } from "../network/AvailableNetworksContext";
 import { UpsertTokenAccessButton } from "./TokenAccessRow";
@@ -25,7 +20,7 @@ const EmptyCard: FC<{}> = ({}) => (
   <NoContentPaper
     dataCy={"no-access-data"}
     title="No Access Data"
-    description="You currently don’t have any Super Token permissions and allowance set."
+    description="You currently don't have any Super Token permissions and allowance set."
   />
 );
 
@@ -37,6 +32,8 @@ const TokenAccessTables: FC<{}> = () => {
 
   const { availableNetworks: availableNetworks_ } = useAvailableNetworks();
   const { network: expectedNetwork } = useExpectedNetwork();
+
+  // Always prioritize the current network in the list
   const availableNetworks = useMemo(
     () => [
       ...availableNetworks_.filter((x) => x === expectedNetwork), // Order the current network first.
@@ -47,16 +44,39 @@ const TokenAccessTables: FC<{}> = () => {
 
   const [fetchingStatuses, setFetchingStatuses] =
     useState<NetworkFetchingStatuses>({});
+  const [hasInitializedNetworks, setHasInitializedNetworks] = useState(false);
+
+  // Setup initial loading state for all networks
+  useEffect(() => {
+    if (availableNetworks.length > 0 && !hasInitializedNetworks) {
+      const initialStatuses: NetworkFetchingStatuses = {};
+      availableNetworks.forEach((network) => {
+        initialStatuses[network.id] = { isLoading: true, hasContent: false };
+      });
+      setFetchingStatuses(initialStatuses);
+      setHasInitializedNetworks(true);
+    }
+  }, [availableNetworks, hasInitializedNetworks]);
 
   const fetchingCallback = useCallback(
-    (networkId: number, fetchingStatus: FetchingStatus) =>
-      setFetchingStatuses((currentStatuses) => ({
-        ...currentStatuses,
-        [networkId]: fetchingStatus,
-      })),
+    (networkId: number, fetchingStatus: FetchingStatus) => {
+      setFetchingStatuses((currentStatuses) => {
+        const newStatus = {
+          ...currentStatuses,
+          [networkId]: fetchingStatus,
+        };
+        console.log(
+          `Fetching status update for network ${networkId}:`,
+          fetchingStatus
+        );
+        console.log("All fetching statuses:", newStatus);
+        return newStatus;
+      });
+    },
     [setFetchingStatuses]
   );
 
+  // Check if at least one network has content
   const hasContent = useMemo(
     () =>
       availableNetworks.some(
@@ -65,13 +85,18 @@ const TokenAccessTables: FC<{}> = () => {
     [availableNetworks, fetchingStatuses]
   );
 
+  // Check if any network is still loading
   const isLoading = useMemo(
     () =>
+      !hasInitializedNetworks ||
       availableNetworks.some(
         (network) => fetchingStatuses[network.id]?.isLoading !== false
       ),
-    [availableNetworks, fetchingStatuses]
+    [availableNetworks, fetchingStatuses, hasInitializedNetworks]
   );
+
+  // Only show "No Access Data" when we're sure there's no content and we're not loading
+  const showEmptyState = !hasContent && !isLoading && hasInitializedNetworks;
 
   return (
     <>
@@ -95,7 +120,7 @@ const TokenAccessTables: FC<{}> = () => {
           }}
         />
       </Stack>
-      {!hasContent && !isLoading ? (
+      {showEmptyState ? (
         <EmptyCard />
       ) : (
         <Stack gap={4}>

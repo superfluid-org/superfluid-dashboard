@@ -34,33 +34,35 @@ const TokenAccessTable: FC<Props> = ({
   network,
   fetchingCallback,
 }) => {
-  const { flowOperators, isLoading, ...flowOperatorsQuery } = subgraphApi.useFlowOperatorsQuery(
-    {
-      chainId: network.id,
-      filter: {
-        and: [
-          { sender: address.toLowerCase() },
-          {
-            or: [
-              { allowance_not: "0" },
-              { flowRateAllowanceRemaining_not: "0" },
-              { permissions_not: 0 },
-            ],
-          },
-        ],
+  const { flowOperators, isLoading, error, ...flowOperatorsQuery } =
+    subgraphApi.useFlowOperatorsQuery(
+      {
+        chainId: network.id,
+        filter: {
+          and: [
+            { sender: address.toLowerCase() },
+            {
+              or: [
+                { allowance_not: "0" },
+                { flowRateAllowanceRemaining_not: "0" },
+                { permissions_not: 0 },
+              ],
+            },
+          ],
+        },
+        pagination: {
+          take: Infinity,
+        },
       },
-      pagination: {
-        take: Infinity
-      },
-    },
-    {
-      refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
-      selectFromResult: (result) => ({
-        ...result,
-        flowOperators: result.currentData?.items ?? EMPTY_ARRAY,
-      }),
-    }
-  );
+      {
+        refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
+        selectFromResult: (result) => ({
+          ...result,
+          flowOperators: result.currentData?.items ?? EMPTY_ARRAY,
+          error: result.error,
+        }),
+      }
+    );
 
   const theme = useTheme();
 
@@ -68,39 +70,59 @@ const TokenAccessTable: FC<Props> = ({
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-
+  // Only consider having no content when we are not loading
   const hasContent = flowOperators.length > 0;
+  const hasCompletedLoading =
+    flowOperatorsQuery.fulfilledTimeStamp !== undefined;
+
+  // This is debugging to help troubleshoot the race condition
+  useEffect(() => {
+    console.log(`TokenAccessTable [${network.name}] - Status update:`, {
+      isLoading,
+      hasContent,
+      hasCompletedLoading,
+      flowOperatorsLength: flowOperators.length,
+      error: error ? "Error fetching data" : null,
+    });
+  }, [
+    isLoading,
+    hasContent,
+    hasCompletedLoading,
+    flowOperators.length,
+    network.name,
+    error,
+  ]);
+
   useEffect(() => {
     fetchingCallback(network.id, {
       isLoading,
       hasContent,
     });
-  }, [
-    network.id,
-    isLoading,
-    hasContent,
-    fetchingCallback,
-  ]);
+  }, [network.id, isLoading, hasContent, fetchingCallback]);
 
   const handleChangePage = (_e: unknown, newPage: number) => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage =
-    (event: ChangeEvent<HTMLInputElement>) => {
-      const newRowsPerPage = rowsPerPage === -1 ? flowOperators.length : parseInt(event.target.value, 10);
-      setRowsPerPage(newRowsPerPage);
-      setPage(0);
-    };
+  const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => {
+    const newRowsPerPage =
+      rowsPerPage === -1
+        ? flowOperators.length
+        : parseInt(event.target.value, 10);
+    setRowsPerPage(newRowsPerPage);
+    setPage(0);
+  };
 
   const paginatedRecords = useMemo(
     () => flowOperators.slice(page * rowsPerPage, (page + 1) * rowsPerPage),
     [page, rowsPerPage, flowOperators]
   );
 
-  if (isLoading) return <TokenAccessLoadingTable />
+  // Show loading state during initial load
+  if (isLoading) return <TokenAccessLoadingTable />;
 
-  if (flowOperators.length === 0) return null;
+  // Only return null when we're sure there's no data - not during loading
+  if (hasCompletedLoading && flowOperators.length === 0) return null;
 
   return (
     <TableContainer
@@ -140,7 +162,12 @@ const TokenAccessTable: FC<Props> = ({
                 </Stack>
               </TableCell>
               <TableCell width="186px">
-                <Stack width="186px" direction="row" gap={0.5} alignItems="center">
+                <Stack
+                  width="186px"
+                  direction="row"
+                  gap={0.5}
+                  alignItems="center"
+                >
                   Token Allowance
                   <TooltipWithIcon
                     title="Defined transfer allowance cap for Super Tokens."
@@ -154,7 +181,12 @@ const TokenAccessTable: FC<Props> = ({
                 </Stack>
               </TableCell>
               <TableCell width="190px">
-                <Stack width="190px" direction="row" gap={0.5} alignItems="center">
+                <Stack
+                  width="190px"
+                  direction="row"
+                  gap={0.5}
+                  alignItems="center"
+                >
                   Stream Permissions
                   <TooltipWithIcon
                     title="Actions that Operator can execute on your behalf."
@@ -168,7 +200,12 @@ const TokenAccessTable: FC<Props> = ({
                 </Stack>
               </TableCell>
               <TableCell width="232px">
-                <Stack width="232px" direction="row" gap={0.5} alignItems="center">
+                <Stack
+                  width="232px"
+                  direction="row"
+                  gap={0.5}
+                  alignItems="center"
+                >
                   Stream Allowance
                   <TooltipWithIcon
                     title="Defined flow rate allowance cap for Super Tokens."
@@ -215,7 +252,12 @@ const TokenAccessTable: FC<Props> = ({
           borderBottomLeftRadius: 50,
           borderBottomRightRadius: 50,
         }}
-        rowsPerPageOptions={[5, 10, 25, { value: flowOperators.length, label: 'All' }]}
+        rowsPerPageOptions={[
+          5,
+          10,
+          25,
+          { value: flowOperators.length, label: "All" },
+        ]}
         component="div"
         count={flowOperators.length}
         rowsPerPage={rowsPerPage}
