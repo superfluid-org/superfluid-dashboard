@@ -65,6 +65,7 @@ export function BatchVestingTransactionButton({ setView, isVisible: isVisible_ =
                             chainId: network.id,
                             superTokenAddress: validForm.data.superTokenAddress,
                             signer,
+                            version: validForm.data.version
                         };
 
                         executeBatchVesting(primaryArgs)

@@ -15,6 +15,7 @@ import { BigNumber } from "ethers";
 
 interface ExecuteBatchVesting extends BaseSuperTokenMutation {
   params: VestingScheduleFromAmountAndDurationsParams[];
+  version: "v3"
 }
 
 export const batchVestingEndpoints = {
@@ -23,10 +24,10 @@ export const batchVestingEndpoints = {
       subTransactionTitles: TransactionTitle[];
       signerAddress: string;
     }, ExecuteBatchVesting>({
-      queryFn: async ({ params, chainId, superTokenAddress, signer, transactionExtraData }, { dispatch }) => {
+      queryFn: async ({ params, chainId, superTokenAddress, signer, transactionExtraData, version }, { dispatch }) => {
         const framework = await getFramework(chainId);
         const superToken = await framework.loadSuperToken(superTokenAddress);
-        const vestingScheduler = getVestingScheduler(chainId, signer, "v3");
+        const vestingScheduler = getVestingScheduler(chainId, signer, version);
         const network = findNetworkOrThrow(allNetworks, chainId);
 
         const subOperations: {

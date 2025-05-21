@@ -36,7 +36,6 @@ import { PartialVestingForm } from "./CreateVestingFormProvider";
 import { CreateVestingCardView } from "./CreateVestingSection";
 import useActiveAutoWrap from "./useActiveAutoWrap";
 import { SuperTokenMinimal, TokenType } from "../redux/endpoints/tokenTypes";
-import { useVestingVersion } from "../../hooks/useVestingVersion";
 import { useSuperTokens } from "../../hooks/useSuperTokens";
 import { Network } from "../network/networks";
 import { ValidationSummary } from "./ValidationSummary";

@@ -13,7 +13,6 @@ import { calculateAdditionalDataFromValidVestingForm } from "../calculateAdditio
 import { ValidVestingForm } from "../CreateVestingFormProvider";
 import { CreateVestingCardView } from "../CreateVestingSection";
 import { parseEtherOrZero } from "../../../utils/tokenUtils";
-import { useConnectionBoundary } from "../../transactionBoundary/ConnectionBoundary";
 import Decimal from "decimal.js";
 
 interface Props {
@@ -25,8 +24,6 @@ export const CreateVestingTransactionButton: FC<Props> = ({
   setView,
   isVisible: isVisible_,
 }) => {
-  const { expectedNetwork } = useConnectionBoundary();
-
   const [createVestingScheduleFromAmountAndDuration, mutationResult] =
     rpcApi.useCreateVestingScheduleFromAmountAndDurationMutation();
 
@@ -56,7 +53,7 @@ export const CreateVestingTransactionButton: FC<Props> = ({
               handleSubmit(
                 async (validData) => {
                   const {
-                    data: { receiverAddress, superTokenAddress, claimEnabled },
+                    data: { receiverAddress, superTokenAddress, claimEnabled, version },
                   } = validData;
 
                   const {
@@ -103,7 +100,7 @@ export const CreateVestingTransactionButton: FC<Props> = ({
                     cliffPeriodInSeconds: validData.data.cliffEnabled ? Math.round(validData.data.cliffPeriod.numerator! * validData.data.cliffPeriod.denominator) : 0,
                     cliffTransferAmountWei: cliffAmount.toString(),
                     claimEnabled: !!claimEnabled,
-                    version: "v3" as const
+                    version
                   };
 
                   createVestingScheduleFromAmountAndDuration({
