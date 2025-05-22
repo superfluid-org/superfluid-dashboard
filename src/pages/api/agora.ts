@@ -487,10 +487,10 @@ export default async function handler(
                     const _sumOfPreviousTranches = row.amounts
                         .slice(0, -1)
                         .reduce((sum, amount) => sum + BigInt(amount || 0), 0n);
-                    const didKycGetJustApproved = allRelevantVestingSchedules.length === 0;
-                    const cliffAmount = 0n; // Note: Cliff will always be 0. We decided to disable this feature.
+                    // const didKycGetJustApproved = allRelevantVestingSchedules.length === 0;
+                    //const cliffAmount = 0n; // Note: Cliff will always be 0. We decided to disable this feature.
                     // The old cliff logic: didKycGetJustApproved ? sumOfPreviousTranches : 0n;
-                    const totalAmount = agoraCurrentAmount + cliffAmount;
+                    // const totalAmount = agoraCurrentAmount + cliffAmount;
                     const currentTranch = tranchPlan.tranches[tranchPlan.currentTranchCount - 1];
 
                     const hasProjectJustChangedWallet = !!previousWalletVestingSchedule;
@@ -507,7 +507,7 @@ export default async function handler(
 
                     const isAlreadyVestingToRightWallet = !!currentWalletVestingSchedule;
                     if (!isAlreadyVestingToRightWallet) {
-                        if (didKycGetJustApproved) {
+                        if (missingAmount > 0n) {
                             pushAction({
                                 type: "create-vesting-schedule",
                                 payload: {
@@ -515,30 +515,13 @@ export default async function handler(
                                     sender,
                                     receiver: agoraCurrentWallet,
                                     startDate: currentTranch.startTimestamp,
-                                    totalAmount: totalAmount.toString(),
+                                    totalAmount: missingAmount.toString(),
                                     totalDuration: currentTranch.totalDuration,
-                                    cliffAmount: cliffAmount.toString(),
-                                    cliffPeriod: cliffAmount > 0n ? 1 : 0,
+                                    cliffAmount: "0",
+                                    cliffPeriod: 0,
                                     claimPeriod: getClaimPeriod(currentTranch.startTimestamp)
                                 }
                             })
-                        } else {
-                            if (missingAmount > 0n) {
-                                pushAction({
-                                    type: "create-vesting-schedule",
-                                    payload: {
-                                        superToken: token,
-                                        sender,
-                                        receiver: agoraCurrentWallet,
-                                        startDate: currentTranch.startTimestamp,
-                                        totalAmount: missingAmount.toString(),
-                                        totalDuration: currentTranch.totalDuration,
-                                        cliffAmount: "0",
-                                        cliffPeriod: 0,
-                                        claimPeriod: getClaimPeriod(currentTranch.startTimestamp)
-                                    }
-                                })
-                            }
                         }
                     } else {
                         // isAlreadyVestingToRightWallet === true
