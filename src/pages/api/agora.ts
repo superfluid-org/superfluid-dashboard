@@ -473,15 +473,15 @@ export default async function handler(
                         return actions;
                     }
 
+                    if (!row.KYCStatusCompleted) {
+                        return actions;
+                    }
+
                     function pushAction(action: Omit<ProjectActions, "id">) {
                         actions.push({
                             ...action,
                             id: sha256(stringToHex(`${row.id}-${action.type}-${JSON.stringify(action.payload)}`))
                         } as ProjectActions)
-                    }
-
-                    if (!row.KYCStatusCompleted) {
-                        return [];
                     }
 
                     const _sumOfPreviousTranches = row.amounts
