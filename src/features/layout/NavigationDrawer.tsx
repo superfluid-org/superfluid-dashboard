@@ -33,7 +33,6 @@ import ConnectWallet from "../wallet/ConnectWallet";
 import { useLayoutContext } from "./LayoutContext";
 import MoreNavigationItem from "./MoreNavigationItem";
 import Link from "../common/Link";
-import packageJson from "../../../package.json";
 
 export const menuDrawerWidth = 260;
 
@@ -87,7 +86,7 @@ export default memo(function NavigationDrawer() {
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { navigationDrawerOpen, setNavigationDrawerOpen } = useLayoutContext();
 
-  const localMajorVersion = packageJson.version.split('.')[0];
+  const localMajorVersion = 10;
 
   const fetchRemoteDashboardVersion = useCallback(async () => {
     const response = await fetch("https://raw.githubusercontent.com/superfluid-org/superfluid-dashboard/master/package.json");
