@@ -40,7 +40,7 @@ const useAccountTransactions = (): Array<TrackedTransaction> => {
   const accountTransactions = useMemo(
     () =>
       accountAddress
-        ? allTransactions.filter((x) => x.signerAddress === accountAddress)
+        ? allTransactions.filter((x) => x.signerAddress.toLowerCase() === accountAddress.toLowerCase())
         : [],
     [allTransactions, accountAddress]
   );
