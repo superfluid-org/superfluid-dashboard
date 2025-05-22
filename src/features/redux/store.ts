@@ -310,11 +310,11 @@ export const reduxStore = configureStore({
     .concat(accountingApi.middleware)
     .concat(addressBookRpcApi.middleware),
   enhancers: (getDefaultEnhancers) =>
-    getDefaultEnhancers().concat(
-      autoBatchEnhancer({
-        type: typeof window !== "undefined" ? "raf" : "tick",
-      })
-    ), // https://redux-toolkit.js.org/api/autoBatchEnhancer#autobatchenhancer-1
+    getDefaultEnhancers({
+      autoBatch: {
+        type: typeof window !== "undefined" ? "raf" : "tick"
+      }
+    })
 });
 
 export const reduxPersistor = persistStore(reduxStore);

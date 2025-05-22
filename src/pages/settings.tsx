@@ -4,11 +4,10 @@ import {
   Stack,
 } from "@mui/material";
 import { NextPage } from "next";
-import NotificationSettings from "../components/NotificationSettings/NotificationSettings";
 import withStaticSEO from "../components/SEO/withStaticSEO";
 import { useAccount } from "@/hooks/useAccount"
 import NoWalletConnected from "../components/NoWalletConnected/NoWalletConnected";
-import TokenAccessTables from "../features/tokenAccess/TokenAccessTables";
+import { TokenAccessTables } from "../features/tokenAccess/TokenAccessTables";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 
 const SettingsPage: NextPage = () => {
@@ -29,7 +28,7 @@ const SettingsPage: NextPage = () => {
             // Notifications hidden until a source of notifications is added.
             <NotificationSettings /> 
             */}
-            {visibleAddress && <TokenAccessTables />}
+            {visibleAddress && <TokenAccessTables key={visibleAddress} />}
           </Stack>
         </>
       )}

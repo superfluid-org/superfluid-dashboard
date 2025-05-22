@@ -20,7 +20,6 @@ import { MinigameProvider } from "../features/minigame/MinigameContext";
 import { ActiveNetworksProvider } from "../features/network/ActiveNetworksContext";
 import { AvailableNetworksProvider } from "../features/network/AvailableNetworksContext";
 import { ExpectedNetworkProvider } from "../features/network/ExpectedNetworkContext";
-import ReduxProvider from "../features/redux/ReduxProvider";
 import MuiProvider from "../features/theme/MuiProvider";
 import NextThemesProvider from "../features/theme/NextThemesProvider";
 import createEmotionCache from "../features/theme/createEmotionCache";
@@ -32,6 +31,7 @@ import { initializeSuperfluidDashboardGlobalObject } from "../global";
 import { IsCypress } from "../utils/SSRUtils";
 import config from "../utils/config";
 import { useAppDispatch } from "../features/redux/store";
+import ReduxProvider from '@/features/redux/ReduxProvider';
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -74,7 +74,7 @@ export default function MyApp(props: AppPropsWithLayout) {
         <Head>
           <meta name="viewport" content="initial-scale=1, width=device-width" />
         </Head>
-        <WagmiManager>
+        <WagmiManager cookie={pageProps.cookie}>
           <ReduxProvider>
             <AvailableNetworksProvider>
               <ImpersonationProvider>
@@ -128,3 +128,9 @@ function GlobalSuperfluidDashboardObjectInitializer() {
 
   return null;
 }
+
+MyApp.getInitialProps = async (appContext: any) => {
+  const { ctx } = appContext;
+  const cookie = ctx.req ? ctx.req.headers.cookie : undefined;
+  return { pageProps: { cookie } };
+};
