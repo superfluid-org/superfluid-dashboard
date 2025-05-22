@@ -43,7 +43,12 @@ export const agoraResponseEntrySchema = yup.object({
     // Note about KYC: the typo is also in the API
     KYCStatusCompleted: yup.boolean().required('KYC status is required'),
     amounts: yup.array().of(
-        yup.string().trim().required().test(testWeiAmount({
+        yup.string().trim().required().transform(x => {
+            if (x === null) {
+                return '0';
+            }
+            return x;
+        }).test(testWeiAmount({
             notNegative: true,
             notZero: false,
         }))
