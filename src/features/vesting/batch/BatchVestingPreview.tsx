@@ -1,7 +1,7 @@
 import { Box, Button, FormGroup, FormHelperText, Stack, Typography, useTheme } from "@mui/material";
 import { FC, memo, useMemo } from "react";
 import { useFormContext } from "react-hook-form";
-import { add, format } from "date-fns";
+import { add, format, getUnixTime } from "date-fns";
 import { VestingTransactionSectionProps } from "../transactionButtons/VestingTransactionButtonSection";
 import { VestingScheduleGraph } from "../VestingScheduleGraph";
 import { parseEtherOrZero } from "../../../utils/tokenUtils";
@@ -21,6 +21,7 @@ import { convertBatchFormToParams } from "./convertBatchFormToParams";
 import { convertVestingScheduleFromAmountAndDurationsToAbsolutes } from "./VestingScheduleParams";
 import { BatchVestingTransactionSection } from "./BatchVestingTransactionSection";
 import Link from "../../common/Link";
+import { getClaimPeriodInSeconds } from "../claimPeriod";
 
 interface BatchVestingPreviewProps extends VestingTransactionSectionProps { }
 
@@ -75,7 +76,19 @@ const BatchVestingPreview: FC<BatchVestingPreviewProps> = ({
         if (!claimEnabled) return undefined;
 
         const claimingStartAt = cliffDate ? cliffDate : startDate;
-        const claimingEndAt = endDate;
+
+        const claimPeriodInSeconds = getClaimPeriodInSeconds({
+            claimEnabled: claimEnabled,
+            totalDurationInSeconds: getUnixTime(endDate) - getUnixTime(startDate),
+            chainId: network.id,
+        });
+
+        const claimingEndAt = add(
+            startDate,
+            {
+                seconds: claimPeriodInSeconds
+            },
+        );;
 
         return { claimingStartAt, claimingEndAt };
     }, [claimEnabled, startDate, cliffDate, endDate]);
