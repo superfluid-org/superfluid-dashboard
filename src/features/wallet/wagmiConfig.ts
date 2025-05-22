@@ -120,7 +120,7 @@ if (needsTestConnector) {
 // ---
 
 const wagmiAdapter = new WagmiAdapter({
-  ssr: true,
+  ssr: false,
   networks: allNetworks,
   customRpcUrls,
   projectId,

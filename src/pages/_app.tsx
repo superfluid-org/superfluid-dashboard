@@ -74,7 +74,7 @@ export default function MyApp(props: AppPropsWithLayout) {
         <Head>
           <meta name="viewport" content="initial-scale=1, width=device-width" />
         </Head>
-        <WagmiManager cookie={pageProps.cookie}>
+        <WagmiManager>
           <ReduxProvider>
             <AvailableNetworksProvider>
               <ImpersonationProvider>
@@ -128,9 +128,3 @@ function GlobalSuperfluidDashboardObjectInitializer() {
 
   return null;
 }
-
-MyApp.getInitialProps = async (appContext: any) => {
-  const { ctx } = appContext;
-  const cookie = ctx.req ? ctx.req.headers.cookie : undefined;
-  return { pageProps: { cookie } };
-};
