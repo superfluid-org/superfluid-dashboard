@@ -37,7 +37,6 @@ export const agoraSenderAddresses = {
 } as const satisfies Record<number, Record<RoundType, Address> | null>;
 
 export const isAgoraSender = (chainId: number, address: Address) => {
-    return true;
     const addressLowerCased = address.toLowerCase();
     if (chainId === optimism.id) {
         return addressLowerCased === agoraSenderAddresses[optimism.id].dev_tooling ||
