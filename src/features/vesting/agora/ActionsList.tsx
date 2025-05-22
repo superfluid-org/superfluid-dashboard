@@ -167,6 +167,7 @@ const getActionDetails = (action: Actions, tokenSymbol: string | undefined) => {
             actionType = "Update Vesting Schedule";
             receiver = action.payload.receiver;
             amount = isDifference ? `${prevAmount} → ${newAmount}` : `${newAmount} (unchanged)`;
+            toDate = new Date(action.payload.endDate * 1000);
             break;
 
         case "stop-vesting-schedule":

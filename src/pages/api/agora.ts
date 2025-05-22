@@ -523,20 +523,22 @@ export default async function handler(
                                 }
                             })
                         } else {
-                            pushAction({
-                                type: "create-vesting-schedule",
-                                payload: {
-                                    superToken: token,
-                                    sender,
-                                    receiver: agoraCurrentWallet,
-                                    startDate: currentTranch.startTimestamp,
-                                    totalAmount: missingAmount.toString(),
-                                    totalDuration: currentTranch.totalDuration,
-                                    cliffAmount: "0",
-                                    cliffPeriod: 0,
-                                    claimPeriod: getClaimPeriod(currentTranch.startTimestamp)
-                                }
-                            })
+                            if (missingAmount > 0n) {
+                                pushAction({
+                                    type: "create-vesting-schedule",
+                                    payload: {
+                                        superToken: token,
+                                        sender,
+                                        receiver: agoraCurrentWallet,
+                                        startDate: currentTranch.startTimestamp,
+                                        totalAmount: missingAmount.toString(),
+                                        totalDuration: currentTranch.totalDuration,
+                                        cliffAmount: "0",
+                                        cliffPeriod: 0,
+                                        claimPeriod: getClaimPeriod(currentTranch.startTimestamp)
+                                    }
+                                })
+                            }
                         }
                     } else {
                         // isAlreadyVestingToRightWallet === true
