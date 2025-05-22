@@ -320,17 +320,16 @@ export default async function handler(
         const currentTranchCount = dataFromAgora[0].amounts.length;
         const tranchDuration = 1 * UnitOfTime.Month;
 
-        // Calculate which tranch index is current (0-based)
-        const currentTranchIndex = currentTranchCount - 1;
-
         const tranchCount = 6;
         const tranchPlan: TranchPlan = {
             tranchCount,
             currentTranchCount,
             totalDurationInSeconds: tranchCount * tranchDuration,
             tranches: Array(tranchCount).fill(null).map((_, index) => {
+                // Reminder: index is 0-based
+
                 // Calculate offset from current tranch
-                const offset = (index - currentTranchIndex) * tranchDuration;
+                const offset = index * tranchDuration;
 
                 // Start time is now plus offset (negative for past tranches, positive for future)
                 const startTimestamp = startOfTranchOne + offset;
