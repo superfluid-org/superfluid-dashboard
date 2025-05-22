@@ -49,9 +49,9 @@ import { publicClientToProvider } from "../utils/wagmiEthersAdapters";
 import { resolvedWagmiClients } from "../features/wallet/WagmiManager";
 import { efpApi } from "../features/efp/efpApi.slice";
 import { useAccount } from "@/hooks/useAccount"
-import Link from "next/link";
 import AddressBookLoadingRow from "../features/addressBook/AddressBookLoadingRow";
 import AddressBookMobileLoadingRow from "../features/addressBook/AddressBookMobileLoadingRow";
+import Link from "@/features/common/Link";
 
 const AddressBook: NextPage = () => {
   const dispatch = useAppDispatch();
