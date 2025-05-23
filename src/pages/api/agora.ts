@@ -9,9 +9,9 @@ import { Address, createPublicClient, http, isAddress, sha256, stringToHex } fro
 import { mapSubgraphVestingSchedule, VestingSchedule } from '../../features/vesting/types'
 import { UnitOfTime } from '../../features/send/FlowRateInput'
 import { allNetworks, findNetworkOrThrow } from '../../features/network/networks'
-import { getUnixTime } from 'date-fns'
+import { add, getUnixTime } from 'date-fns'
 import { cfaV1ForwarderAbi, cfaV1ForwarderAddress, superTokenAbi } from '../../generated'
-import { ACL_CREATE_PERMISSION, ACL_DELETE_PERMISSION } from '../../utils/constants'
+import { ACL_CREATE_PERMISSION, ACL_DELETE_PERMISSION, ACL_UPDATE_PERMISSION } from '../../utils/constants'
 import { getAddress as getAddress_ } from "ethers/lib/utils"
 import { agoraApiEndpoints, RoundType, roundTypes, START_TIMESTAMP_OF_FIRST_TRANCH_ON_OPTIMISM, tokenAddresses, validChainIds } from '../../features/vesting/agora/constants'
 
@@ -130,6 +130,7 @@ type UpdateVestingScheduleAction = Action<"update-vesting-schedule", {
     totalAmount: string
     endDate: number
     previousTotalAmount: string
+    previousFlowRate: string
 }>
 
 // Probably don't want to actually "stop" anything. Rather just have them run out.
@@ -484,9 +485,9 @@ export default async function handler(
                         } as ProjectActions)
                     }
 
-                    const _sumOfPreviousTranches = row.amounts
-                        .slice(0, -1)
-                        .reduce((sum, amount) => sum + BigInt(amount || 0), 0n);
+                    // const _sumOfPreviousTranches = row.amounts
+                    //     .slice(0, -1)
+                    //     .reduce((sum, amount) => sum + BigInt(amount || 0), 0n);
                     // const didKycGetJustApproved = allRelevantVestingSchedules.length === 0;
                     //const cliffAmount = 0n; // Note: Cliff will always be 0. We decided to disable this feature.
                     // The old cliff logic: didKycGetJustApproved ? sumOfPreviousTranches : 0n;
@@ -561,6 +562,7 @@ export default async function handler(
                                         receiver: agoraCurrentWallet,
                                         totalAmount: newTotalAmount.toString(),
                                         previousTotalAmount: currentWalletVestingSchedule.totalAmount,
+                                        previousFlowRate: currentWalletVestingSchedule.flowRate,
                                         endDate: currentTranch.endTimestamp
                                     }
                                 })
@@ -617,10 +619,11 @@ export default async function handler(
                 catch: (error) => new PublicClientRpcError("Failed to read flow operator permissions", { cause: error })
             });
             const existingPermissions = Number(flowOperatorData[0]);
-            const permissionsDelta = ACL_CREATE_PERMISSION | ACL_DELETE_PERMISSION;
+            const permissionsDelta = ACL_CREATE_PERMISSION | ACL_UPDATE_PERMISSION | ACL_DELETE_PERMISSION;
             const expectedPermissions = existingPermissions | permissionsDelta;
             const needsMorePermissions = existingPermissions !== expectedPermissions;
-            const neededFlowRateAllowance = projectStates
+
+            const neededFlowRateAllowanceForCreations = projectStates
                 .flatMap(x => x.projectActions)
                 .filter(x => x.type === "create-vesting-schedule")
                 .reduce((sum, action) => {
@@ -628,6 +631,35 @@ export default async function handler(
                     const flowRate = streamedAmount / BigInt(action.payload.totalDuration);
                     return sum + flowRate;
                 }, 0n);
+            
+            const neededFlowRateAllowanceForUpdates = projectStates
+                .flatMap(x => x.projectActions)
+                .filter(x => x.type === "update-vesting-schedule")
+                .reduce((sum, action) => {
+                    const newTotalAmount = BigInt(action.payload.totalAmount);
+                    const previousTotalAmount = BigInt(action.payload.previousTotalAmount);
+                    if (newTotalAmount < previousTotalAmount) {
+                        console.warn("Previous total amount is more than new total amount. This shouldn't happen. Please investigate!");
+                        return sum;
+                    }
+
+                    const amountDelta = newTotalAmount - previousTotalAmount;
+
+                    const nowishUnix = getUnixTime(add(new Date(), { hours: 48 })); 
+                    // Calculate the flow rate allowance with 48 hours of TX execution delay in mind.
+                    // Pushing the time forwards leaves less time for "total amount" to flow in the remaining duration,
+                    // hence the needed flow rate allowance will be higher.
+                    const streamTimeDelta = action.payload.endDate - nowishUnix;
+                    if (streamTimeDelta <= 0) {
+                        console.warn("There's less than 2 days till end of schedule. Are you sure you want to increase the amount?");
+                        return sum + amountDelta;
+                    }
+
+                    const addedFlowRate = amountDelta / BigInt(streamTimeDelta);
+                    return sum + addedFlowRate;
+                }, 0n);
+
+            const neededFlowRateAllowance = neededFlowRateAllowanceForCreations + neededFlowRateAllowanceForUpdates;
 
             if (needsMorePermissions || neededFlowRateAllowance > 0n) {
                 pushAction({
