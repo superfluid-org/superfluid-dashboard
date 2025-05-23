@@ -131,6 +131,7 @@ type UpdateVestingScheduleAction = Action<"update-vesting-schedule", {
     endDate: number
     previousTotalAmount: string
     previousFlowRate: string
+    previousStartDate: number
 }>
 
 // Probably don't want to actually "stop" anything. Rather just have them run out.
@@ -563,6 +564,7 @@ export default async function handler(
                                         totalAmount: newTotalAmount.toString(),
                                         previousTotalAmount: currentWalletVestingSchedule.totalAmount,
                                         previousFlowRate: currentWalletVestingSchedule.flowRate,
+                                        previousStartDate: currentWalletVestingSchedule.startDate,
                                         endDate: currentTranch.endTimestamp
                                     }
                                 })

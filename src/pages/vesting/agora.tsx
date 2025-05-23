@@ -44,14 +44,14 @@ const AgoraPage: NextPageWithLayout = () => {
     };
 
     const { data, isLoading, error: error_ } = useQuery({
-        queryKey: ['agora', visibleAddress ?? null, network.id, tranch, roundType],
-        queryFn: () => fetch(`/api/agora?sender=${visibleAddress}&chainId=${network.id}&tranch=${tranch}&type=${roundType}`).then(async (res) => (await res.json()) as AgoraResponseData),
-        enabled: !!visibleAddress && !!network.id && !!tranch,
+        queryKey: ['agora', visibleAddress ?? null, network.id, roundType],
+        queryFn: () => fetch(`/api/agora?sender=${visibleAddress}&chainId=${network.id}&type=${roundType}`).then(async (res) => (await res.json()) as AgoraResponseData),
+        enabled: !!visibleAddress && !!network.id,
 
         // No need to refetch once it's computed.
-        refetchOnMount: false,
+        refetchOnMount: true,
         refetchOnWindowFocus: false,
-        refetchOnReconnect: false,
+        refetchOnReconnect: true,
         staleTime: 1200_000 // 20 minutes
     });
 
@@ -130,7 +130,7 @@ const AgoraPage: NextPageWithLayout = () => {
     }
 
     return (
-        <Container key={roundType} maxWidth="xl" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Container key={`${network.id}-${roundType}-${visibleAddress}`} maxWidth="xl" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
 
             <Typography variant="h4" component="h1" gutterBottom sx={{ mt: 2 }}>
                 Retro Funding

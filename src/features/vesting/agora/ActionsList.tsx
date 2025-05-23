@@ -1,5 +1,5 @@
-import { Checkbox, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography } from "@mui/material";
-import { FC, useCallback, useEffect, useMemo, useState } from "react";
+import { Checkbox, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography, Grid, Grid2 } from "@mui/material";
+import { FC, ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import { formatEther } from "viem";
 import { Actions } from "../../../pages/api/agora";
 import { SelectableActions } from "./PrimaryPageContent";
@@ -146,7 +146,7 @@ const formatAmount = (amount: string, tokenSymbol: string | undefined) => {
 const getActionDetails = (action: Actions, tokenSymbol: string | undefined) => {
     let actionType = "";
     let receiver = "";
-    let amount = "";
+    let amount: ReactNode = "";
     let fromDate: Date | undefined;
     let toDate: Date | undefined;
 
@@ -166,8 +166,15 @@ const getActionDetails = (action: Actions, tokenSymbol: string | undefined) => {
 
             actionType = "Update Vesting Schedule";
             receiver = action.payload.receiver;
-            amount = isDifference ? `${prevAmount} → ${newAmount}` : `${newAmount} (unchanged)`;
+            amount = isDifference ? (
+                <Grid2 container spacing={1} alignItems="center">
+                    <Grid2 size={5} textAlign="right">{prevAmount}</Grid2>
+                    <Grid2 size={2} textAlign="center">→</Grid2>
+                    <Grid2 size={5} textAlign="left">{newAmount}</Grid2>
+                </Grid2>
+            ) : `${newAmount} (unchanged)`;
             toDate = new Date(action.payload.endDate * 1000);
+            fromDate = new Date(action.payload.previousStartDate * 1000);
             break;
 
         case "stop-vesting-schedule":
