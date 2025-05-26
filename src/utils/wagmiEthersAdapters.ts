@@ -8,6 +8,7 @@ import { Client, Chain, Transport, Account } from "viem";
 import { useMemo } from "react";
 import FallbackProvider from "../libs/ethers-fallback-provider/FallbackProvider";
 import { useAccount } from "@/hooks/useAccount";
+import { useQuery } from "@tanstack/react-query";
 
 // Inspired by: https://wagmi.sh/react/ethers-adapters
 
@@ -52,6 +53,12 @@ export function walletClientToSigner(client: Client<Transport, Chain, Account>) 
 /** Hook to convert a Viem Client to an ethers.js Signer. */
 export function useEthersSigner({ chainId }: { chainId?: number } = {}) {
   const { data: client } = useConnectorClient<Config>({ chainId })
-  const { address } = useAccount()
-  return useMemo(() => (client ? walletClientToSigner(client) : undefined), [client, address])
+  
+  const { data: signer } = useQuery({
+    queryKey: ['ethersSigner', chainId, client?.account?.address],
+    queryFn: () => (client ? walletClientToSigner(client) : undefined),
+    enabled: !!client && !!client?.account?.address,
+  });
+
+  return signer;
 }
