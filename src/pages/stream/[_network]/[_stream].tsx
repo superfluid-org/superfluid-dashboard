@@ -65,6 +65,7 @@ import { HumaFinanceLink } from "../../../features/streamsTable/StreamRow";
 import { getVestingPagePath } from "../../../utils/URLUtils";
 import LockClockRoundedIcon from "@mui/icons-material/LockClockRounded";
 import { useTokenQuery } from "../../../hooks/useTokenQuery";
+import { withCookiesServerSideProps } from "@/getServerSidePropsUtils";
 
 const TEXT_TO_SHARE = (up?: boolean) =>
   encodeURIComponent(`I’m streaming money every second with @Superfluid_HQ! 🌊
@@ -889,6 +890,8 @@ const StreamPageContent: FC<{
     </SEO>
   );
 };
+
+export const getServerSideProps = withCookiesServerSideProps();
 
 export default withStaticSEO(
   {

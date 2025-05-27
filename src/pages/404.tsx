@@ -4,6 +4,7 @@ import { NextPage } from "next";
 import NextLink from "next/link";
 import withStaticSEO from "../components/SEO/withStaticSEO";
 import Link from "../features/common/Link";
+import { withCookiesServerSideProps } from "@/getServerSidePropsUtils";
 
 const HELP_CENTER_URL = "https://help.superfluid.finance/";
 

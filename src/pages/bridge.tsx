@@ -1,9 +1,9 @@
-
 import { Container, Stack, Typography, useTheme } from "@mui/material";
 import { NextPage } from "next";
 import withStaticSEO from "../components/SEO/withStaticSEO";
 import Link from "../features/common/Link";
 import { LiFiWidgetManager } from "../features/bridge/LiFiWidgetManager";
+import { withCookiesServerSideProps } from "@/getServerSidePropsUtils";
 
 const Bridge: NextPage = () => {
   return (
@@ -36,3 +36,5 @@ const Bridge: NextPage = () => {
 };
 
 export default withStaticSEO({ title: "Bridge | Superfluid" }, Bridge);
+
+export const getServerSideProps = withCookiesServerSideProps();

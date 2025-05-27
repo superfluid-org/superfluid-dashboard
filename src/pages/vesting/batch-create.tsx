@@ -10,6 +10,7 @@ import { useAccount } from "@/hooks/useAccount"
 import { useWhitelist } from "../../hooks/useWhitelist";
 import { BatchVestingFormProvider } from "../../features/vesting/batch/BatchVestingFormProvider";
 import { BatchVestingSection } from "../../features/vesting/batch/BatchVestingSection";
+import { withCookiesServerSideProps } from "@/getServerSidePropsUtils";
 
 const BatchCreateVestingSchedulePage: NextPageWithLayout = () => {
   const theme = useTheme();
@@ -67,6 +68,8 @@ const BatchCreateVestingSchedulePage: NextPageWithLayout = () => {
 BatchCreateVestingSchedulePage.getLayout = (page: ReactElement) => (
   <VestingLayout>{page}</VestingLayout>
 );
+
+export const getServerSideProps = withCookiesServerSideProps();
 
 export default withStaticSEO(
   { title: "Create Batch of Vesting Schedules | Superfluid" },

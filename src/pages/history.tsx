@@ -33,6 +33,7 @@ import AddressSearch from "../features/send/AddressSearch";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 import { Activity, mapActivitiesFromEvents } from "../utils/activityUtils";
 import { vestingSubgraphApi } from "../vesting-subgraph/vestingSubgraphApi";
+import { withCookiesServerSideProps } from "@/getServerSidePropsUtils";
 
 const History: NextPage = () => {
   const theme = useTheme();
@@ -364,3 +365,5 @@ export default withStaticSEO(
   { title: "Activity History | Superfluid" },
   History
 );
+
+export const getServerSideProps = withCookiesServerSideProps();

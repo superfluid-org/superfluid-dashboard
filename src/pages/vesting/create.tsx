@@ -10,6 +10,7 @@ import VestingLayout from "../../features/vesting/VestingLayout";
 import { NextPageWithLayout } from "../_app";
 import { useAccount } from "@/hooks/useAccount"
 import { useWhitelist } from "../../hooks/useWhitelist";
+import { withCookiesServerSideProps } from "@/getServerSidePropsUtils";
 
 const CreateVestingSchedulePage: NextPageWithLayout = () => {
   const theme = useTheme();
@@ -66,6 +67,8 @@ const CreateVestingSchedulePage: NextPageWithLayout = () => {
 CreateVestingSchedulePage.getLayout = (page: ReactElement) => (
   <VestingLayout>{page}</VestingLayout>
 );
+
+export const getServerSideProps = withCookiesServerSideProps();
 
 export default withStaticSEO(
   { title: "Create Vesting Schedule | Superfluid" },

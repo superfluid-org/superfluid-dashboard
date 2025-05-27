@@ -6,6 +6,7 @@ import VestingLayout from "../features/vesting/VestingLayout";
 import VestingScheduleTables from "../features/vesting/VestingScheduleTables";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 import { NextPageWithLayout } from "./_app";
+import { withCookiesServerSideProps } from "@/getServerSidePropsUtils";
 
 const VestingPage: NextPageWithLayout = () => {
   const { visibleAddress } = useVisibleAddress();
@@ -23,3 +24,5 @@ VestingPage.getLayout = function getLayout(page: ReactElement) {
 };
 
 export default withStaticSEO({ title: "Vesting | Superfluid" }, VestingPage);
+
+export const getServerSideProps = withCookiesServerSideProps();

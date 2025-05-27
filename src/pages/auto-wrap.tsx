@@ -5,6 +5,7 @@ import { Box, Container, Paper, Typography, useMediaQuery, useTheme } from "@mui
 import ConnectWallet from "../features/wallet/ConnectWallet";
 import withStaticSEO from "../components/SEO/withStaticSEO";
 import ScheduledWrapTables from "../features/auto-wrap/ScheduledWrapTables";
+import { withCookiesServerSideProps } from "@/getServerSidePropsUtils";
 
 const NoWalletConnected: FC = () => {
   const theme = useTheme();
@@ -59,3 +60,5 @@ const AutoWrap: NextPage = () => {
 };
 
 export default withStaticSEO({ title: "Auto-Wrap | Superfluid" }, AutoWrap);
+
+export const getServerSideProps = withCookiesServerSideProps();

@@ -8,6 +8,7 @@ import { subgraphApi } from "../../../../../features/redux/store";
 import config from "../../../../../utils/config";
 import Page404 from "../../../../404";
 import { getStreamPagePath } from "../../../../stream/[_network]/[_stream]";
+import { withCookiesServerSideProps } from "@/getServerSidePropsUtils";
 
 // For not breaking old V1 link structure.
 const V1StreamPage: NextPage = () => {
@@ -67,6 +68,8 @@ const V1StreamPage: NextPage = () => {
 
   return <></>; // TODO(KK): Show a spinner or message here?
 };
+
+export const getServerSideProps = withCookiesServerSideProps();
 
 export default withStaticSEO(
   {
