@@ -13,7 +13,7 @@ import TransferFormProvider, { TransferFormProviderProps } from "../features/sen
 import SendTransfer from "../features/send/transfer/SendTransfer";
 import { RestorationType } from "../features/transactionRestoration/transactionRestorations";
 import SendPageLayout from "../features/send/SendPageLayout";
-import { withCookiesServerSideProps } from "@/getServerSidePropsUtils";
+
 
 interface TransferPageQuery {
   token?: string;
@@ -105,5 +105,3 @@ const Transfer: NextPage = () => {
 };
 
 export default withStaticSEO({ title: "Transfer | Superfluid" }, Transfer);
-
-export const getServerSideProps = withCookiesServerSideProps();

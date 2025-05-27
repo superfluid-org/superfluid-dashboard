@@ -10,7 +10,7 @@ import {
   TransactionRestorations,
   RestorationType,
 } from "../features/transactionRestoration/transactionRestorations";
-import { withCookiesServerSideProps } from "@/getServerSidePropsUtils";
+
 
 const RestoreTransaction: NextPage = () => {
   const { network, setExpectedNetwork } = useExpectedNetwork();
@@ -64,5 +64,3 @@ const RestoreTransaction: NextPage = () => {
 };
 
 export default RestoreTransaction;
-
-export const getServerSideProps = withCookiesServerSideProps();

@@ -5,7 +5,7 @@ import {NextPage} from "next";
 import Minigame from "../features/minigame/MinigameContainer";
 import config from "../utils/config";
 import { useAccount } from "@/hooks/useAccount"
-import { withCookiesServerSideProps } from "@/getServerSidePropsUtils";
+
 
 const DisplayWarning: FC<PropsWithChildren<{}>> = ({}) => (
     <Container maxWidth="lg" sx={{textAlign: "center"}}>
@@ -27,8 +27,6 @@ const SuperfluidRunner: NextPage = () => {
         </>
     );
 }
-
-export const getServerSideProps = withCookiesServerSideProps();
 
 export default withStaticSEO({
     title: "Superfluid Runner | Superfluid",

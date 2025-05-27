@@ -50,7 +50,7 @@ import PoolMembersTable from "../../../features/pool/PoolMembersTable";
 import { useAccount } from "@/hooks/useAccount"
 import { useTokenQuery } from "../../../hooks/useTokenQuery";
 import { BIG_NUMBER_ZERO, calculateMaybeCriticalAtTimestamp } from "../../../utils/tokenUtils";
-import { withCookiesServerSideProps } from "@/getServerSidePropsUtils";
+
 
 export const getTokenPagePath = ({
   network,
@@ -463,7 +463,5 @@ const TokenPageContent: FC<{
     </TokenPageContainer>
   );
 };
-
-export const getServerSideProps = withCookiesServerSideProps();
 
 export default withStaticSEO({ title: "Super Token | Superfluid" }, TokenPage);

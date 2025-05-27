@@ -16,7 +16,7 @@ import AccountingExportPreview from "../features/accounting/AccountingExportPrev
 import FileDownloadRoundedIcon from "@mui/icons-material/FileDownloadRounded";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 import { endOfMonth, startOfMonth, sub } from "date-fns";
-import { withCookiesServerSideProps } from "@/getServerSidePropsUtils";
+
 
 const Accounting: NextPage = () => {
   const theme = useTheme();
@@ -102,5 +102,3 @@ const Accounting: NextPage = () => {
 };
 
 export default Accounting;
-
-export const getServerSideProps = withCookiesServerSideProps();

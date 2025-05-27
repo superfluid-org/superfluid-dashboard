@@ -12,7 +12,7 @@ import { AgoraResponseData } from "../api/agora";
 import { PrimaryPageContent } from "../../features/vesting/agora/PrimaryPageContent";
 import { RoundType, roundTypes } from "../../features/vesting/agora/constants";
 import { optimismSepolia } from "wagmi/chains";
-import { withCookiesServerSideProps } from "@/getServerSidePropsUtils";
+
 
 const AgoraPage: NextPageWithLayout = () => {
     const { visibleAddress } = useVisibleAddress();
@@ -193,7 +193,5 @@ const AgoraPage: NextPageWithLayout = () => {
         </Container>
     );
 };
-
-export const getServerSideProps = withCookiesServerSideProps();
 
 export default AgoraPage;

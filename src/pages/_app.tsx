@@ -74,7 +74,7 @@ export default function MyApp(props: AppPropsWithLayout) {
         <Head>
           <meta name="viewport" content="initial-scale=1, width=device-width" />
         </Head>
-        <WagmiManager cookies={pageProps.cookies}>
+        <WagmiManager>
           <ReduxProvider>
             <AvailableNetworksProvider>
               <ImpersonationProvider>

@@ -43,7 +43,7 @@ import Page404 from "../../404";
 import { NextPageWithLayout } from "../../_app";
 import { useTokenQuery } from "../../../hooks/useTokenQuery";
 import { VestingScheduleUpdatedEvent } from "../../../vesting-subgraph/vestingEvents";
-import { withCookiesServerSideProps } from "@/getServerSidePropsUtils";
+
 
 interface VestingLegendItemProps {
   title: string;
@@ -427,8 +427,6 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
     </Container>
   );
 };
-
-export const getServerSideProps = withCookiesServerSideProps();
 
 export default withStaticSEO(
   { title: "Vesting Schedule | Superfluid" },

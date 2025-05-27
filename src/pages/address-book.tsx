@@ -52,7 +52,7 @@ import { useAccount } from "@/hooks/useAccount"
 import AddressBookLoadingRow from "../features/addressBook/AddressBookLoadingRow";
 import AddressBookMobileLoadingRow from "../features/addressBook/AddressBookMobileLoadingRow";
 import Link from "@/features/common/Link";
-import { withCookiesServerSideProps } from "@/getServerSidePropsUtils";
+
 
 const AddressBook: NextPage = () => {
   const dispatch = useAppDispatch();
@@ -904,5 +904,3 @@ export default withStaticSEO(
   { title: "Address Book | Superfluid" },
   AddressBook
 );
-
-export const getServerSideProps = withCookiesServerSideProps();

@@ -12,7 +12,7 @@ import {
   SuperTokenDowngradeRestoration as SuperTokenUnwrapRestoration,
   SuperTokenUpgradeRestoration as SuperTokenWrapRestoration,
 } from "../features/transactionRestoration/transactionRestorations";
-import { withCookiesServerSideProps } from "@/getServerSidePropsUtils";
+
 
 const Wrap: NextPage = () => {
   const theme = useTheme();
@@ -69,5 +69,3 @@ const Wrap: NextPage = () => {
 };
 
 export default withStaticSEO({ title: "Wrap / Unwrap | Superfluid" }, Wrap);
-
-export const getServerSideProps = withCookiesServerSideProps();

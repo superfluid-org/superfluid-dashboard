@@ -19,7 +19,7 @@ import { tryParseUnits } from "../utils/tokenUtils";
 import { buildQueryString } from "../utils/URLUtils";
 import SendStream from "../features/send/stream/SendStream";
 import SendPageLayout from "../features/send/SendPageLayout";
-import { withCookiesServerSideProps } from "@/getServerSidePropsUtils";
+
 
 interface SendPageQuery {
   token?: string;
@@ -150,5 +150,3 @@ const Send: NextPage = () => {
 };
 
 export default withStaticSEO({ title: "Send Stream | Superfluid" }, Send);
-
-export const getServerSideProps = withCookiesServerSideProps();

@@ -9,7 +9,7 @@ import { useAccount } from "@/hooks/useAccount"
 import NoWalletConnected from "../components/NoWalletConnected/NoWalletConnected";
 import { TokenAccessTables } from "../features/tokenAccess/TokenAccessTables";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
-import { withCookiesServerSideProps } from "@/getServerSidePropsUtils";
+
 
 const SettingsPage: NextPage = () => {
   const { address } = useAccount();
@@ -38,5 +38,3 @@ const SettingsPage: NextPage = () => {
 };
 
 export default withStaticSEO({ title: "Settings | Superfluid" }, SettingsPage);
-
-export const getServerSideProps = withCookiesServerSideProps();
