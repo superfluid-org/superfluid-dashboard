@@ -1,5 +1,5 @@
 import { Box, Button, FormGroup, FormHelperText, Stack, Typography, useTheme } from "@mui/material";
-import { FC, memo, useMemo } from "react";
+import { FC, memo, useMemo, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { add, format, getUnixTime } from "date-fns";
 import { VestingTransactionSectionProps } from "../transactionButtons/VestingTransactionButtonSection";
@@ -92,6 +92,8 @@ const BatchVestingPreview: FC<BatchVestingPreviewProps> = ({
 
         return { claimingStartAt, claimingEndAt };
     }, [claimEnabled, startDate, cliffDate, endDate]);
+
+    const [previousUrl, setPreviousUrl] = useState<string | null>(null);
 
     return (
         <Stack gap={3}>
@@ -221,39 +223,52 @@ const BatchVestingPreview: FC<BatchVestingPreviewProps> = ({
                 <BatchVestingTransactionSection token={token} setView={setView} />
 
                 <FormGroup>
-                    <Button {...transactionButtonDefaultProps} variant="outlined" size="medium" onClick={async () => {
-                        const zip = new JSZip();
-                        const zipName = `vesting-schedules_${scheduleParams.length}_for_safe_tx-builder`;
-                        const batchFolder = zip.folder(zipName);
+                    <Button
+                        {...transactionButtonDefaultProps}
+                        variant="outlined"
+                        size="medium"
+                        {...previousUrl ? {
+                            href: previousUrl,
+                            title: "If download does not start, try right click and save link as..."
+                        } : {}}
+                        onClick={async () => {
+                            if (previousUrl) {
+                                URL.revokeObjectURL(previousUrl);
+                                setPreviousUrl(null);
+                            }
 
-                        const safeTxBuilderJSONs = await getTxBuilderInputs_v3({
-                            network,
-                            schedules: scheduleParams
-                        });
+                            const zip = new JSZip();
+                            const zipName = `vesting-schedules_${scheduleParams.length}_for_safe_tx-builder`;
+                            const batchFolder = zip.folder(zipName);
 
-                        safeTxBuilderJSONs?.forEach((safeTxBuilderJSON, i) => {
-                            const blob = new Blob([JSON.stringify(safeTxBuilderJSON)], {
-                                type: "application/json",
+                            const safeTxBuilderJSONs = await getTxBuilderInputs_v3({
+                                network,
+                                schedules: scheduleParams
                             });
 
-                            batchFolder?.file(`batch-${i}.json`, blob);
-                        });
+                            safeTxBuilderJSONs?.forEach((safeTxBuilderJSON, i) => {
+                                const blob = new Blob([JSON.stringify(safeTxBuilderJSON)], {
+                                    type: "application/json",
+                                });
 
-                        const objectURL = URL.createObjectURL(
-                            (await batchFolder?.generateAsync({ type: "blob" })) as Blob
-                        );
+                                batchFolder?.file(`batch-${i}.json`, blob);
+                            });
 
-                        const a = document.createElement('a');
-                        a.href = objectURL;
-                        a.download = zipName + ".zip";
-                        document.body.appendChild(a);
-                        a.click();
+                            const objectURL = URL.createObjectURL(
+                                (await batchFolder?.generateAsync({ type: "blob" })) as Blob
+                            );
 
-                        // Clean up by revoking the object URL and removing the link
-                        URL.revokeObjectURL(objectURL);
-                        document.body.removeChild(a);
+                            setPreviousUrl(objectURL);
 
-                    }}>
+                            const a = document.createElement('a');
+                            a.href = objectURL;
+                            a.download = zipName + ".zip";
+                            document.body.appendChild(a);
+                            a.click();
+
+                            // Clean up by removing the link
+                            document.body.removeChild(a);
+                        }}>
                         Download Safe Transaction Builder JSON
                     </Button>
                     <FormHelperText sx={{ textAlign: "right" }}>
