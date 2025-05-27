@@ -130,9 +130,6 @@ const nextConfig: NextConfig = {
       '@mui/lab',
       '@mui/x-data-grid',
       '@mui/x-date-pickers',
-      '@tanstack/react-query',
-      'wagmi',
-      'viem',
       'chart.js'
     ] // It's enabled automatically for many packages in use: https://nextjs.org/docs/app/api-reference/next-config-js/optimizePackageImports
   },
