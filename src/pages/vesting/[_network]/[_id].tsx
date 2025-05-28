@@ -11,7 +11,7 @@ import { skipToken } from "@reduxjs/toolkit/query/react";
 import { FlowUpdatedEvent, TransferEvent } from "@superfluid-finance/sdk-core";
 import { isString, orderBy } from "lodash";
 import { useRouter } from "next/router";
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import withStaticSEO from "../../../components/SEO/withStaticSEO";
 import ActivityTable from "../../../features/activityHistory/ActivityTable";
 import TimeUnitFilter, {
@@ -42,7 +42,9 @@ import { vestingSubgraphApi } from "../../../vesting-subgraph/vestingSubgraphApi
 import Page404 from "../../404";
 import { NextPageWithLayout } from "../../_app";
 import { useTokenQuery } from "../../../hooks/useTokenQuery";
-import { VestingScheduleUpdatedEvent } from "../../../vesting-subgraph/vestingEvents";
+import { VestingClaimedEvent, VestingScheduleCreatedEvent, VestingScheduleDeletedEvent, VestingScheduleUpdatedEvent } from "../../../vesting-subgraph/vestingEvents";
+import { useQuery } from "@tanstack/react-query";
+import { EMPTY_ARRAY } from "@/utils/constants";
 
 
 interface VestingLegendItemProps {
@@ -67,7 +69,10 @@ const VestingLegendItem: FC<VestingLegendItemProps> = ({ title, color }) => (
 export type VestingActivities = (
   | Activity<FlowUpdatedEvent>
   | Activity<TransferEvent>
-  // | Activity<VestingScheduleUpdatedEvent>
+  | Activity<VestingScheduleUpdatedEvent>
+  | Activity<VestingScheduleCreatedEvent>
+  | Activity<VestingScheduleDeletedEvent>
+  | Activity<VestingClaimedEvent>
 )[];
 
 const VestingScheduleDetailsPage: NextPageWithLayout = () => {
@@ -135,21 +140,21 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
   const { lastVestingStreamPeriod } = subgraphApi.useStreamPeriodsQuery(
     vestingSchedule && now > vestingSchedule.endDate
       ? {
-          chainId: network.id,
-          order: {
-            orderBy: "startedAtTimestamp",
-            orderDirection: "desc",
-          },
-          filter: {
-            token: vestingSchedule.superToken,
-            sender: vestingSchedule.sender,
-            receiver: vestingSchedule.receiver,
-            startedAtTimestamp_lte: vestingSchedule.endDate.toString(),
-          },
-          pagination: {
-            take: 1,
-          },
-        }
+        chainId: network.id,
+        order: {
+          orderBy: "startedAtTimestamp",
+          orderDirection: "desc",
+        },
+        filter: {
+          token: vestingSchedule.superToken,
+          sender: vestingSchedule.sender,
+          receiver: vestingSchedule.receiver,
+          startedAtTimestamp_lte: vestingSchedule.endDate.toString(),
+        },
+        pagination: {
+          take: 1,
+        },
+      }
       : skipToken,
     {
       selectFromResult: ({ data }) => ({
@@ -162,21 +167,21 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
   const { beforeVestingStreamPeriod } = subgraphApi.useStreamPeriodsQuery(
     vestingSchedule && now > vestingSchedule.endDate
       ? {
-          chainId: network.id,
-          order: {
-            orderBy: "startedAtTimestamp",
-            orderDirection: "desc",
-          },
-          filter: {
-            token: vestingSchedule.superToken,
-            sender: vestingSchedule.sender,
-            receiver: vestingSchedule.receiver,
-            startedAtTimestamp_lt: vestingSchedule.startDate.toString(),
-          },
-          pagination: {
-            take: 1,
-          },
-        }
+        chainId: network.id,
+        order: {
+          orderBy: "startedAtTimestamp",
+          orderDirection: "desc",
+        },
+        filter: {
+          token: vestingSchedule.superToken,
+          sender: vestingSchedule.sender,
+          receiver: vestingSchedule.receiver,
+          startedAtTimestamp_lt: vestingSchedule.startDate.toString(),
+        },
+        pagination: {
+          take: 1,
+        },
+      }
       : skipToken,
     {
       selectFromResult: ({ data }) => {
@@ -200,41 +205,124 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
     }
   );
 
-  const { activities, ...vestingEventsQuery } = subgraphApi.useEventsQuery(
-    vestingSchedule
-      ? {
-          chainId: network.id,
-          filter: {
-            name_in: ["FlowUpdated", "Transfer"],
-            addresses_contains_nocase: [
-              vestingSchedule.superToken,
-              vestingSchedule.sender,
-              vestingSchedule.receiver,
-            ],
-            timestamp_gte: beforeVestingStreamPeriod
-              ? beforeVestingStreamPeriod.startedAtTimestamp.toString()
-              : vestingSchedule.startDate.toString(),
-            timestamp_lte:
-              vestingSchedule.endExecutedAt?.toString() ??
-              (lastVestingStreamPeriod
-                ? lastVestingStreamPeriod.stoppedAtTimestamp?.toString() ??
-                  dateNowSeconds.toString()
-                : vestingSchedule.endDate.toString()),
-          },
-        }
-      : skipToken,
-    {
-      refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
-      selectFromResult: (result) => ({
-        ...result,
-        activities: orderBy(
-          mapActivitiesFromEvents(result.data?.items || [], network),
-          (activity) => activity.keyEvent.order,
-          "desc"
-        ) as VestingActivities,
-      }),
+  const [triggerEventsQuery] = subgraphApi.useLazyEventsQuery();
+  const [triggerVestingEventsQuery] = vestingSubgraphApi.useLazyVestingEventsQuery();
+
+  const fetchAndCombineActivities = useCallback(async () => {
+    if (!vestingSchedule || !network?.id) {
+      return [] as VestingActivities;
     }
-  );
+
+    const [eventsResponse, vestingEventsResponse] = await Promise.all([
+      triggerEventsQuery({
+        chainId: network.id,
+        filter: {
+          name_in: ["FlowUpdated", "Transfer"],
+          addresses_contains_nocase: [
+            vestingSchedule.superToken,
+            vestingSchedule.sender,
+            vestingSchedule.receiver,
+          ],
+          timestamp_gte: beforeVestingStreamPeriod
+            ? beforeVestingStreamPeriod.startedAtTimestamp.toString()
+            : vestingSchedule.startDate.toString(),
+          timestamp_lte:
+            vestingSchedule.deletedAt
+              ? vestingSchedule.deletedAt.toString()
+              : vestingSchedule.endExecutedAt 
+                ? vestingSchedule.endExecutedAt.toString()
+                : vestingSchedule.claimValidityDate > 0
+                  ? vestingSchedule.claimValidityDate.toString()
+                  : lastVestingStreamPeriod
+                    ? (lastVestingStreamPeriod.stoppedAtTimestamp?.toString() ?? dateNowSeconds.toString())
+                    : vestingSchedule.endDate.toString(),
+        },
+        pagination: {
+          take: Infinity
+        }
+      }).unwrap(),
+      triggerVestingEventsQuery({
+        chainId: network.id,
+        filter: {
+          addresses_contains_nocase: [
+            // vestingSchedule.superToken, TODO: super token
+            vestingSchedule.sender,
+            vestingSchedule.receiver,
+          ],
+          name_in: ["VestingScheduleCreatedEvent", "VestingScheduleUpdatedEvent", "VestingClaimedEvent"],
+          timestamp_gte: vestingSchedule.createdAt.toString(),
+          timestamp_lte: 
+            vestingSchedule.deletedAt
+              ? vestingSchedule.deletedAt.toString()
+              : vestingSchedule.endExecutedAt
+                ? vestingSchedule.endExecutedAt.toString()
+                : vestingSchedule.claimValidityDate > 0
+                  ? vestingSchedule.claimValidityDate.toString()
+                  : vestingSchedule.endDate.toString()
+        },
+        pagination: {
+          take: Infinity
+        }
+      }).unwrap(),
+    ]);
+
+    // Combine the raw items from both responses
+    const combinedRawEvents = [
+      ...(eventsResponse?.items || []),
+      ...((vestingEventsResponse?.items || []))
+        .filter(item => item.superToken.toLowerCase() === vestingSchedule.superToken.toLowerCase())
+        .filter(item => {
+          if (vestingSchedule.version === "v1") {
+            return !item.id.toLowerCase().includes("-v");
+          }
+          return item.id.toLowerCase().includes(`-${vestingSchedule.version}`);
+        }),
+    ];
+
+    // Map all combined raw events to activities in one go
+    const allMappedActivities = mapActivitiesFromEvents(
+      combinedRawEvents,
+      network
+    );
+
+    // Sort the final list of activities
+    return orderBy(
+      allMappedActivities,
+      (activity) => activity.keyEvent.order,
+      "desc"
+    ) as VestingActivities;
+  }, [
+    vestingSchedule,
+    network,
+    beforeVestingStreamPeriod,
+    lastVestingStreamPeriod,
+    triggerEventsQuery,
+    triggerVestingEventsQuery,
+  ]);
+
+  const {
+    data: vestingActivities = EMPTY_ARRAY as VestingActivities,
+    isLoading: isLoadingActivities,
+    isError: isErrorActivities,
+    error: errorActivities,
+  } = useQuery<VestingActivities, Error>({
+    queryKey: [
+      "combinedVestingPageActivities",
+      network?.id,
+      id,
+      vestingSchedule?.superToken,
+      vestingSchedule?.sender,
+      vestingSchedule?.receiver,
+      vestingSchedule?.startDate?.toString(),
+      vestingSchedule?.endDate?.toString(),
+      vestingSchedule?.endExecutedAt?.toString(),
+      beforeVestingStreamPeriod?.startedAtTimestamp?.toString(),
+      lastVestingStreamPeriod?.stoppedAtTimestamp?.toString()
+    ],
+    queryFn: fetchAndCombineActivities,
+    enabled: !!vestingSchedule && !!network?.id,
+    refetchOnWindowFocus: true
+  });
 
   const tokenQuery = useTokenQuery(vestingSchedule ? {
     chainId: network.id,
@@ -360,7 +448,7 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
 
           <VestingGraph
             vestingSchedule={vestingSchedule}
-            vestingActivities={activities}
+            vestingActivities={vestingActivities}
             filter={graphFilter}
           />
         </Card>
@@ -411,9 +499,9 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
           </Stack>
         </Card>
 
-        {activities.length > 0 && (
+        {vestingActivities.length > 0 && (
           <ActivityTable
-            activities={activities}
+            activities={vestingActivities}
             dateFormat="d MMM yyyy HH:mm"
           />
         )}

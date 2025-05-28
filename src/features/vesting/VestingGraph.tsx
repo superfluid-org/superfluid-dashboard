@@ -94,6 +94,7 @@ const VestingGraph: FC<VestingGraphProps> = ({
     );
 
     const expectedDataPoints = mapVestingExpectedDataPoints(
+      vestingActivities,
       vestingSchedule,
       frequency
     );
