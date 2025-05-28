@@ -21,7 +21,7 @@ import { allNetworks, findNetworkOrThrow } from "../../network/networks";
 import { resolvedWagmiClients } from "../../wallet/wagmiConfig";
 import { vestingSchedulerAbi, vestingSchedulerAddress, vestingSchedulerV2Abi, vestingSchedulerV2Address, vestingSchedulerV3Abi, vestingSchedulerV3Address } from "../../../generated";
 import { getClaimPeriodInSeconds, getClaimValidityDate } from "../../vesting/claimPeriod";
-import { ACL_CREATE_PERMISSION, ACL_DELETE_PERMISSION } from "../../../utils/constants";
+import { ACL_CREATE_PERMISSION, ACL_DELETE_PERMISSION, ACL_UPDATE_PERMISSION } from "../../../utils/constants";
 import { VestingVersion } from "../../network/networkConstants";
 
 export const MAX_VESTING_DURATION_IN_YEARS = 10;
@@ -158,7 +158,8 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
       });
 
       const existingPermissions = Number(flowOperatorData.permissions);
-      const permissionsDelta = ACL_CREATE_PERMISSION | ACL_DELETE_PERMISSION;
+      // Update is not required but recommended
+      const permissionsDelta = ACL_CREATE_PERMISSION | ACL_DELETE_PERMISSION | ACL_UPDATE_PERMISSION;
       const newPermissions = existingPermissions | permissionsDelta;
 
       const flowRateBigNumber = BigNumber.from(arg.flowRateWei);
@@ -334,7 +335,8 @@ export const createVestingScheduleEndpoint = (builder: RpcEndpointBuilder) => ({
         });
 
       const existingPermissions = Number(flowOperatorData.permissions);
-      const permissionsDelta = ACL_CREATE_PERMISSION | ACL_DELETE_PERMISSION;
+      // Update is not required but recommended
+      const permissionsDelta = ACL_CREATE_PERMISSION | ACL_DELETE_PERMISSION | ACL_UPDATE_PERMISSION;
       const newPermissions = existingPermissions | permissionsDelta;
 
       const flowRateBigNumber = BigNumber.from(params.flowRate);

@@ -7,6 +7,7 @@ import metadata from "@superfluid-finance/metadata";
 import { convertVestingScheduleFromAmountAndDurationsToAbsolutes, VestingScheduleFromAmountAndDurationsParams } from "./VestingScheduleParams";
 import { getMaximumNeededTokenAllowance } from "../VestingSchedulesAllowancesTable/calculateRequiredAccessForActiveVestingSchedule";
 import { constantFlowAgreementV1Abi, superfluidAbi, superTokenAbi } from "../../../generated";
+import { ACL_CREATE_PERMISSION, ACL_DELETE_PERMISSION, ACL_UPDATE_PERMISSION } from "@/utils/constants";
 
 type GetTxBuilderInputArgs = {
     schedules: VestingScheduleFromAmountAndDurationsParams[];
@@ -178,7 +179,8 @@ export const prependPermissionTxs =
                 args: [
                     superTokenAddress,
                     vestingSchedulerAddress,
-                    5,
+                    // Update is not required but recommended
+                    ACL_CREATE_PERMISSION | ACL_DELETE_PERMISSION | ACL_UPDATE_PERMISSION,
                     flowrateAllowance,
                     "0x",
                 ],

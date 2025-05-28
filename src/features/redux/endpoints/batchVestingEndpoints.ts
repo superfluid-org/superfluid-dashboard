@@ -12,6 +12,7 @@ import { Operation, SuperToken__factory } from "@superfluid-finance/sdk-core";
 import { allNetworks, findNetworkOrThrow } from "../../network/networks";
 import { calculateRequiredAccessForActiveVestingSchedule } from "../../vesting/VestingSchedulesAllowancesTable/calculateRequiredAccessForActiveVestingSchedule";
 import { BigNumber } from "ethers";
+import { ACL_UPDATE_PERMISSION } from "@/utils/constants";
 
 interface ExecuteBatchVesting extends BaseSuperTokenMutation {
   params: VestingScheduleFromAmountAndDurationsParams[];
@@ -48,10 +49,10 @@ export const batchVestingEndpoints = {
         const totalRequiredFlowRateAllowance = requiredAllowances.reduce((acc, x) => acc.add(x.requiredFlowRateAllowance), BigNumber.from(0));
 
         subOperations.push({
-          operation: await superToken.increaseFlowRateAllowanceWithPermissions({
+          operation: superToken.increaseFlowRateAllowanceWithPermissions({
             flowOperator: vestingScheduler.address,
             flowRateAllowanceDelta: totalRequiredFlowRateAllowance.toString(),
-            permissionsDelta: requiredAllowances[0].requiredFlowOperatorPermissions
+            permissionsDelta: requiredAllowances[0].requiredFlowOperatorPermissions | ACL_UPDATE_PERMISSION // Update is not required but recommended.
           }),
           title: "Approve Vesting Scheduler",
         });
