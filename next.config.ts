@@ -122,11 +122,16 @@ const nextConfig: NextConfig = {
   productionBrowserSourceMaps: false, // NOTE: If this is set to `false` then be careful -- Sentry might still override this to `true`...
   // Modularize imports to prevent compilation of unused modules.
   // More info here: https://nextjs.org/docs/advanced-features/compiler
-  // modularizeImports: // It's enabled automatically for many packages in use: https://nextjs.org/docs/app/api-reference/next-config-js/optimizePackageImports
   experimental: {
     forceSwcTransforms: !shouldInstrumentCode, // .babelrc.js existence is because of code instrumentation.
     cpus: isOnNetlify ? 6 : undefined, // Fixes the issue of memory running out on Netlify (error 127)
-    reactCompiler: enableReactCompiler
+    reactCompiler: enableReactCompiler,
+    optimizePackageImports: [
+      '@mui/lab',
+      '@mui/x-data-grid',
+      '@mui/x-date-pickers',
+      'chart.js'
+    ] // It's enabled automatically for many packages in use: https://nextjs.org/docs/app/api-reference/next-config-js/optimizePackageImports
   },
   eslint: {
     ignoreDuringBuilds: isOnNetlify,

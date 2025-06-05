@@ -1,3 +1,4 @@
+import { useEthersSigner } from "@/utils/wagmiEthersAdapters"
 import { useAppKitAccount, useAppKitNetwork, useAppKitState, useDisconnect as useAppKitDisconnect } from "@reown/appkit/react"
 import { useEffect, useState } from "react"
 import { useAccount as useWagmiAccount, useDisconnect as useWagmiDisconnect } from "wagmi"
@@ -9,7 +10,7 @@ export function WalletWeirdnessHandler() {
     const { disconnect: wagmiDisconnect } = useWagmiDisconnect()
     const { disconnect: appKitDisconnect } = useAppKitDisconnect()
 
-    const { status: appkitStatus, isConnected: appKitIsConnected } = useAppKitAccount()
+    const { address: accountAddress, status: appkitStatus, isConnected: appKitIsConnected } = useAppKitAccount()
     const appKitState = useAppKitState()
 
     const isAppKitDoingSomething = !appKitState.initialized && !appKitState.loading && !(appkitStatus === "connecting" || appkitStatus === "reconnecting")
@@ -17,6 +18,8 @@ export function WalletWeirdnessHandler() {
     const doesAppKitThinkItIsReady = !isAppKitDoingSomething
 
     const [hasBeenHandledOnce, setHasBeenHandledOnce] = useState(false)
+
+    const signer = useEthersSigner({ chainId: wagmiChainId })
 
     useEffect(() => {
         if (hasBeenHandledOnce) {
@@ -46,8 +49,17 @@ export function WalletWeirdnessHandler() {
                     return () => clearTimeout(timeout)
                 }
             }
+            if (accountAddress && !signer) {
+                const timeout = setTimeout(() => {
+                    console.warn("AppKit's internal state is unable to get the signer. Disconnecting...")
+                    appKitDisconnect()
+                    wagmiDisconnect()
+                    setHasBeenHandledOnce(true)
+                }, 3000)
+                return () => clearTimeout(timeout)
+            }
         }
-    }, [doesAppKitThinkItIsReady, appKitDisconnect, wagmiDisconnect, appKitIsConnected, appkitStatus, appkitChainId, wagmiChainId])
+    }, [doesAppKitThinkItIsReady, appKitDisconnect, wagmiDisconnect, appKitIsConnected, appkitStatus, appkitChainId, wagmiChainId, signer])
 
     return null
 }

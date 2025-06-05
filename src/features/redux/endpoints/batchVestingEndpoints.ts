@@ -12,9 +12,11 @@ import { Operation, SuperToken__factory } from "@superfluid-finance/sdk-core";
 import { allNetworks, findNetworkOrThrow } from "../../network/networks";
 import { calculateRequiredAccessForActiveVestingSchedule } from "../../vesting/VestingSchedulesAllowancesTable/calculateRequiredAccessForActiveVestingSchedule";
 import { BigNumber } from "ethers";
+import { ACL_UPDATE_PERMISSION } from "@/utils/constants";
 
 interface ExecuteBatchVesting extends BaseSuperTokenMutation {
   params: VestingScheduleFromAmountAndDurationsParams[];
+  version: "v3"
 }
 
 export const batchVestingEndpoints = {
@@ -23,10 +25,10 @@ export const batchVestingEndpoints = {
       subTransactionTitles: TransactionTitle[];
       signerAddress: string;
     }, ExecuteBatchVesting>({
-      queryFn: async ({ params, chainId, superTokenAddress, signer, transactionExtraData }, { dispatch }) => {
+      queryFn: async ({ params, chainId, superTokenAddress, signer, transactionExtraData, version }, { dispatch }) => {
         const framework = await getFramework(chainId);
         const superToken = await framework.loadSuperToken(superTokenAddress);
-        const vestingScheduler = getVestingScheduler(chainId, signer, "v3");
+        const vestingScheduler = getVestingScheduler(chainId, signer, version);
         const network = findNetworkOrThrow(allNetworks, chainId);
 
         const subOperations: {
@@ -47,10 +49,10 @@ export const batchVestingEndpoints = {
         const totalRequiredFlowRateAllowance = requiredAllowances.reduce((acc, x) => acc.add(x.requiredFlowRateAllowance), BigNumber.from(0));
 
         subOperations.push({
-          operation: await superToken.increaseFlowRateAllowanceWithPermissions({
+          operation: superToken.increaseFlowRateAllowanceWithPermissions({
             flowOperator: vestingScheduler.address,
             flowRateAllowanceDelta: totalRequiredFlowRateAllowance.toString(),
-            permissionsDelta: requiredAllowances[0].requiredFlowOperatorPermissions
+            permissionsDelta: requiredAllowances[0].requiredFlowOperatorPermissions | ACL_UPDATE_PERMISSION // Update is not required but recommended.
           }),
           title: "Approve Vesting Scheduler",
         });

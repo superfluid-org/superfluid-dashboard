@@ -11,6 +11,7 @@ import { TokenBalance, mapTokenBalancesToDataPoints } from "./chartUtils";
 import { getDatesBetween } from "./dateUtils";
 import { Activity } from "./activityUtils";
 import { FlowUpdatedEvent } from "@superfluid-finance/sdk-core";
+import { VestingScheduleCreatedEvent, VestingScheduleUpdatedEvent } from "@/vesting-subgraph/vestingEvents";
 
 export function mapVestingActivitiesToTokenBalances(
   vestingActivities: VestingActivities,
@@ -93,7 +94,7 @@ export function mapVestingActualDataPoints(
   // If endExecutedAt is after the estimated end date then we will extend the graph until endExecutedAt.
   const absoluteMaxDate =
     vestingSchedule.endExecutedAt &&
-    vestingSchedule.endExecutedAt > vestingSchedule.endDate
+      vestingSchedule.endExecutedAt > vestingSchedule.endDate
       ? fromUnixTime(vestingSchedule.endExecutedAt)
       : fromUnixTime(vestingSchedule.endDate);
 
@@ -123,6 +124,7 @@ export function mapVestingActualDataPoints(
 }
 
 export function mapVestingExpectedDataPoints(
+  vestingActivities: VestingActivities,
   vestingSchedule: VestingSchedule,
   frequency: UnitOfTime
 ) {
@@ -131,8 +133,8 @@ export function mapVestingExpectedDataPoints(
     endDate,
     cliffDate,
     cliffAndFlowDate,
-    flowRate,
-    cliffAmount
+    cliffAmount,
+    flowRate: flowRateFallback
   } = vestingSchedule;
   const dates = getDatesBetween(
     fromUnixTime(startDate),
@@ -140,18 +142,37 @@ export function mapVestingExpectedDataPoints(
     frequency
   );
 
+  const creationEvent = vestingActivities.find(activity => activity.keyEvent.name === "VestingScheduleCreated") as Activity<VestingScheduleCreatedEvent> | undefined;
+
+  const updateEventsOrderedAsc = vestingActivities.filter((activity) => activity.keyEvent.name === "VestingScheduleUpdated") as Activity<VestingScheduleUpdatedEvent>[];
+
+  let lastFlowRate = creationEvent?.keyEvent?.flowRate ?? flowRateFallback;
+  let lastFlowRateTimestamp = cliffAndFlowDate;
+  let lastAmountStreamed = BigNumber.from(0);
+
   // If there is no cliff then we are not going to add a separate data point for that.
   let cliffAdded = cliffAmount === "0";
 
   return dates.reduce((mappedData: DataPoint[], date: Date) => {
     const dateUnix = getUnixTime(date);
 
-    const secondsStreamed = dateUnix - cliffAndFlowDate;
+    const updateEventsMatchingDate = updateEventsOrderedAsc.filter(event => event.keyEvent.timestamp <= dateUnix);
+    const updateEventWithHighestTimestamp = maxBy((event) => event.keyEvent.timestamp, updateEventsMatchingDate);
+    
+    if (updateEventWithHighestTimestamp) {
+      const newLastFlowRateTimestamp = updateEventWithHighestTimestamp.keyEvent.timestamp;
+      lastAmountStreamed = BigNumber.from(newLastFlowRateTimestamp - lastFlowRateTimestamp).mul(lastFlowRate).add(lastAmountStreamed)
+      
+      lastFlowRate = updateEventWithHighestTimestamp.keyEvent.flowRate;
+      lastFlowRateTimestamp = newLastFlowRateTimestamp;
+    }
+    
+    let secondsStreamed = dateUnix - lastFlowRateTimestamp;
 
     if (secondsStreamed > 0) {
-      const amountStreamed = BigNumber.from(secondsStreamed).mul(flowRate);
+      const amountStremed = lastAmountStreamed.add(BigNumber.from(secondsStreamed).mul(lastFlowRate));
 
-      const etherAmount = formatEther(amountStreamed.add(cliffAmount));
+      const etherAmount = formatEther(amountStremed.add(cliffAmount));
 
       const newDataPoint = {
         x: date.getTime(),

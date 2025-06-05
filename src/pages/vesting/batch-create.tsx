@@ -11,6 +11,7 @@ import { useWhitelist } from "../../hooks/useWhitelist";
 import { BatchVestingFormProvider } from "../../features/vesting/batch/BatchVestingFormProvider";
 import { BatchVestingSection } from "../../features/vesting/batch/BatchVestingSection";
 
+
 const BatchCreateVestingSchedulePage: NextPageWithLayout = () => {
   const theme = useTheme();
 

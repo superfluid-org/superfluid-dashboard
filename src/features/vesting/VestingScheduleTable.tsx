@@ -192,8 +192,15 @@ const VestingScheduleTable: FC<VestingScheduleTableProps> = ({
         return vestingSchedules.filter(
           (vestingSchedule) => vestingSchedule.status.isDeleted
         );
-      default:
+      default: {
+        if (incoming) {
+          // For receivers, remove the deleted schedules
+          return vestingSchedules.filter(
+            (vestingSchedule) => !vestingSchedule.status.isDeleted
+          );
+        }
         return vestingSchedules;
+      }
     }
   }, [statusFilter, vestingSchedules]);
 

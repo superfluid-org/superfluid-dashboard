@@ -12,8 +12,9 @@ import { VestingFormLabels } from "./CreateVestingForm";
 import { ValidVestingForm } from "./CreateVestingFormProvider";
 import { VestingScheduleGraph } from "./VestingScheduleGraph";
 import { VestingTransactionButtonSection, VestingTransactionSectionProps } from "./transactionButtons/VestingTransactionButtonSection";
-import { add, format } from "date-fns";
+import { add, format, getUnixTime } from "date-fns";
 import { convertPeriodToSeconds } from "./batch/convertPeriod";
+import { getClaimPeriodInSeconds } from "./claimPeriod";
 
 interface CreateVestingPreviewProps extends VestingTransactionSectionProps { }
 
@@ -64,7 +65,19 @@ const CreateVestingPreview: FC<CreateVestingPreviewProps> = ({
     if (!claimEnabled) return undefined;
 
     const claimingStartAt = cliffDate ? cliffDate : startDate;
-    const claimingEndAt = endDate;
+
+    const claimPeriodInSeconds = getClaimPeriodInSeconds({
+      claimEnabled: claimEnabled,
+      totalDurationInSeconds: getUnixTime(endDate) - getUnixTime(startDate),
+      chainId: network.id,
+    });
+
+    const claimingEndAt = add(
+      startDate,
+      {
+        seconds: claimPeriodInSeconds
+      },
+    );;
 
     return { claimingStartAt, claimingEndAt };
   }, [claimEnabled, startDate, cliffDate, endDate]);

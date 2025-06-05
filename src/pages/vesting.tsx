@@ -7,6 +7,7 @@ import VestingScheduleTables from "../features/vesting/VestingScheduleTables";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 import { NextPageWithLayout } from "./_app";
 
+
 const VestingPage: NextPageWithLayout = () => {
   const { visibleAddress } = useVisibleAddress();
 

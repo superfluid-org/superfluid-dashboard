@@ -6,6 +6,7 @@ import Minigame from "../features/minigame/MinigameContainer";
 import config from "../utils/config";
 import { useAccount } from "@/hooks/useAccount"
 
+
 const DisplayWarning: FC<PropsWithChildren<{}>> = ({}) => (
     <Container maxWidth="lg" sx={{textAlign: "center"}}>
         <Alert severity="warning">
@@ -26,6 +27,7 @@ const SuperfluidRunner: NextPage = () => {
         </>
     );
 }
+
 export default withStaticSEO({
     title: "Superfluid Runner | Superfluid",
     ogImage: `${config.appUrl}/images/superfluid-runner-thumbnail.png`,

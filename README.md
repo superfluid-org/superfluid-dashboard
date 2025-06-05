@@ -46,3 +46,12 @@ This repository implements the Superfluid Dashboard v2 as a Next.js web app buil
 ### `window.superfluid_dashboard.advanced.addCustomToken`
 
 `addCustomToken` is a function that allows you to add a custom token to the Superfluid Dashboard. Example usage: `window.superfluid_dashboard.advanced.addCustomToken({ chainId: 1, customToken: "0xd27dd3deec7eb1f1f48d9eb66f4a548c8cc04889" })`
+
+### `eth-sdk` error about ES modules on `pnpm generate`
+
+```
+Must use import to load ES Module: /Users/kaspar/Repos/superfluid-dashboard/src/eth-sdk/config.ts
+require() of ES modules is not supported.
+```
+
+The solution is to temporarily remove `"type": "module"` from the ``

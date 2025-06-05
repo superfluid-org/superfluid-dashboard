@@ -1,4 +1,4 @@
-import { Connector, createConnector, CreateConnectorFn, custom, fallback, http, Transport } from "wagmi";
+import { Connector, createConnector, CreateConnectorFn, createStorage, custom } from "wagmi";
 import { defaultAppDescription } from '../../components/SEO/StaticSEO';
 import { allNetworks, findNetworkOrThrow } from '../network/networks';
 import appConfig from "../../utils/config";
@@ -182,6 +182,7 @@ const wagmiAdapter = new WagmiAdapter({
   networks: allNetworks,
   customRpcUrls,
   projectId,
+  storage: typeof window !== "undefined" ? createStorage({ storage: window.localStorage }) : undefined,
   connectors: [
     safe({
       allowedDomains: [

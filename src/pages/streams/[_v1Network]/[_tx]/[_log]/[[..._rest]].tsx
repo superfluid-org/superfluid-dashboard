@@ -9,6 +9,7 @@ import config from "../../../../../utils/config";
 import Page404 from "../../../../404";
 import { getStreamPagePath } from "../../../../stream/[_network]/[_stream]";
 
+
 // For not breaking old V1 link structure.
 const V1StreamPage: NextPage = () => {
   const router = useRouter();

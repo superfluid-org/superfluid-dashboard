@@ -8,8 +8,10 @@ import LockClockRoundedIcon from "@mui/icons-material/LockClockRounded";
 import LooksRoundedIcon from "@mui/icons-material/LooksRounded";
 import SettingsIcon from "@mui/icons-material/Settings";
 import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
+import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
 import {
   Box,
+  IconButton,
   List,
   ListItemButton,
   ListItemIcon,
@@ -18,17 +20,20 @@ import {
   SvgIcon,
   SwipeableDrawer,
   Toolbar,
+  Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
 import Image from "next/legacy/image";
 import { useRouter } from "next/router";
 import { FC, memo, useCallback } from "react";
+import { useQuery } from "@tanstack/react-query";
 import ThemeChanger from "../theme/ThemeChanger";
 import ConnectWallet from "../wallet/ConnectWallet";
 import { useLayoutContext } from "./LayoutContext";
 import MoreNavigationItem from "./MoreNavigationItem";
 import Link from "../common/Link";
+import packageJson from "../../../package.json";
 
 export const menuDrawerWidth = 260;
 
@@ -82,6 +87,39 @@ export default memo(function NavigationDrawer() {
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { navigationDrawerOpen, setNavigationDrawerOpen } = useLayoutContext();
 
+  const localMajorVersion = packageJson.version.split('.')[0];
+
+  const fetchRemoteDashboardVersion = useCallback(async () => {
+    const response = await fetch("https://raw.githubusercontent.com/superfluid-org/superfluid-dashboard/master/package.json");
+    if (!response.ok) {
+      throw new Error(`Failed to fetch remote package.json: ${response.statusText} (status: ${response.status})`);
+    }
+    const remotePackageData = await response.json();
+    const remoteFullVersion = remotePackageData.version;
+
+    if (typeof remoteFullVersion === 'string') {
+      return remoteFullVersion.split('.')[0];
+    }
+    throw new Error(`Remote version format is incorrect: ${remoteFullVersion}`);
+  }, []);
+
+  const { data: remoteMajorVersionFromQuery } = useQuery<string, Error>(
+    {
+      queryKey: ['remoteDashboardVersion'],
+      queryFn: fetchRemoteDashboardVersion,
+      refetchInterval: 15 * 60 * 1000, // 15 minutes
+      staleTime: 15 * 60 * 1000,       // 15 minutes
+      refetchOnWindowFocus: true
+    }
+  );
+
+  const remoteMajorVersion = remoteMajorVersionFromQuery;
+  const isOutOfSync = !!(
+    remoteMajorVersion &&
+    localMajorVersion &&
+    parseInt(remoteMajorVersion, 10) > parseInt(localMajorVersion, 10)
+  );
+
   const closeNavigationDrawer = useCallback(() => {
     if (isBelowLg) setNavigationDrawerOpen(false);
   }, [isBelowLg, setNavigationDrawerOpen]);
@@ -93,6 +131,10 @@ export default memo(function NavigationDrawer() {
   const router = useRouter();
   const isActiveRoute = (...routes: Array<string>) =>
     routes.includes(router.route);
+
+  const handleRefresh = () => {
+    window.location.reload();
+  };
 
   return (
     <SwipeableDrawer
@@ -253,6 +295,46 @@ export default memo(function NavigationDrawer() {
         >
           <ThemeChanger />
           <MoreNavigationItem />
+          {isOutOfSync && remoteMajorVersion ? (
+            <IconButton
+              onClick={handleRefresh}
+              title={`Newer version v${remoteMajorVersion} available. Click to refresh.`}
+              sx={{
+                mt: 0.5,
+                py: theme.spacing(0.5),
+                px: theme.spacing(2),
+                borderRadius: theme.shape.borderRadius,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: theme.spacing(0.5),
+                color: 'inherit',
+                width: 'fit-content',
+                alignSelf: 'center',
+              }}
+            >
+              <Typography variant="body2" component="span">
+                v{localMajorVersion}
+              </Typography>
+              <WarningAmberRoundedIcon
+                fontSize="small"
+                sx={{ color: theme.palette.warning.main }}
+              />
+            </IconButton>
+          ) : (
+            <Typography
+              variant="body2"
+              sx={{
+                textAlign: "center",
+                mt: 0.5,
+                py: theme.spacing(0.5),
+                px: theme.spacing(2),
+              }}
+              title={`The current Dashboard version is v${localMajorVersion}.`}
+            >
+              v{localMajorVersion}
+            </Typography>
+          )}
         </Stack>
       </Stack>
     </SwipeableDrawer>

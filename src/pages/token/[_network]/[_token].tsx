@@ -51,6 +51,7 @@ import { useAccount } from "@/hooks/useAccount"
 import { useTokenQuery } from "../../../hooks/useTokenQuery";
 import { BIG_NUMBER_ZERO, calculateMaybeCriticalAtTimestamp } from "../../../utils/tokenUtils";
 
+
 export const getTokenPagePath = ({
   network,
   token,

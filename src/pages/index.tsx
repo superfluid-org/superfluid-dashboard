@@ -15,12 +15,12 @@ import { FC, useCallback, useEffect, useState } from "react";
 import AddressSearchDialog from "../components/AddressSearchDialog/AddressSearchDialog";
 import withStaticSEO from "../components/SEO/withStaticSEO";
 import FaucetDialog from "../features/faucet/FaucetDialog";
-import AddressSearchIndex from "../features/impersonation/AddressSearchIndex";
 import { useImpersonation } from "../features/impersonation/ImpersonationContext";
 import OnboardingCards from "../features/onboarding/OnboardingCards";
 import TokenSnapshotTables from "../features/tokenSnapshotTable/TokenSnapshotTables";
 import ConnectWallet from "../features/wallet/ConnectWallet";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
+
 
 const ConnectView: FC = () => {
   const theme = useTheme();

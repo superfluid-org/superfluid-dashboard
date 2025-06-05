@@ -4,7 +4,7 @@ import { CreateVestingCardView } from "../CreateVestingSection";
 import { ValidBatchVestingForm } from "./BatchVestingFormProvider";
 import { BatchVestingTransactionButton } from "../transactionButtons/BatchVestingTransactionButton";
 import { useCallback, useMemo, useState } from "react";
-import { Alert, AlertTitle, StepLabel, Stepper } from "@mui/material";
+import { Alert, StepLabel, Stepper } from "@mui/material";
 import { Stack } from "@mui/material";
 import { Step } from "@mui/material";
 import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";

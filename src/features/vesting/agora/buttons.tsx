@@ -1,6 +1,6 @@
 import { Button, Typography } from "@mui/material";
 import JSZip from "jszip";
-import { FC } from "react";
+import { FC, useState } from "react";
 import { mapProjectStateIntoGnosisSafeBatch } from "../../redux/endpoints/vestingAgoraEndpoints";
 import { rpcApi } from "../../redux/store";
 import { TransactionButton, transactionButtonDefaultProps } from "../../transactionBoundary/TransactionButton";
@@ -20,8 +20,23 @@ export const DownloadGnosisSafeTransactionButton: FC<Props> = ({
     projectsOverview,
     actionsToExecute
 }) => {
+    const [previousUrl, setPreviousUrl] = useState<string | null>(null);
+
     return (
-        <Button {...transactionButtonDefaultProps} disabled={isDisabled} variant="outlined" onClick={async () => {
+        <Button 
+        {...transactionButtonDefaultProps} 
+        disabled={isDisabled} 
+        variant="outlined" 
+        {...previousUrl ? {
+            href: previousUrl,
+            title: "If download does not start, try right click and save link as..."
+        } : {}}
+        onClick={async () => {
+            if (previousUrl) {
+                URL.revokeObjectURL(previousUrl);
+                setPreviousUrl(null);
+            }
+
             const zip = new JSZip();
             const zipName = `execute-tranch-${projectsOverview.tranchPlan.currentTranchCount}_for_safe_tx-builder`;
             const batchFolder = zip.folder(zipName);
@@ -42,14 +57,14 @@ export const DownloadGnosisSafeTransactionButton: FC<Props> = ({
                 (await batchFolder?.generateAsync({ type: "blob" })) as Blob
             );
 
+            setPreviousUrl(objectURL);
+
             const a = document.createElement('a');
             a.href = objectURL;
             a.download = zipName + ".zip";
             document.body.appendChild(a);
             a.click();
 
-            // Clean up by revoking the object URL and removing the link
-            URL.revokeObjectURL(objectURL);
             document.body.removeChild(a);
         }}>
             Download Safe Transaction Builder JSON

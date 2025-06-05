@@ -24,8 +24,8 @@ import { UnitOfTime } from "../send/FlowRateInput";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { CreateVestingFormEffects } from "./CreateVestingFormEffects";
 import { add } from "date-fns";
-import { useVestingVersion } from "../../hooks/useVestingVersion";
 import { convertPeriodToSeconds } from "./batch/convertPeriod";
+import { VestingVersion } from "../network/networkConstants";
 
 export type ValidVestingForm = {
   data: {
@@ -45,6 +45,7 @@ export type ValidVestingForm = {
     };
     setupAutoWrap?: boolean;
     claimEnabled?: boolean;
+    version: "v3";
   };
 };
 
@@ -66,6 +67,7 @@ export type PartialVestingForm = {
     };
     setupAutoWrap: boolean;
     claimEnabled: boolean;
+    version: "v3";
   };
 };
 
@@ -118,6 +120,7 @@ const CreateVestingFormProvider: FC<{
           }).required(),
           setupAutoWrap: boolean().optional(),
           claimEnabled: boolean().optional(),
+          version: string().oneOf(["v3"]).required()
         }),
       }),
     []
@@ -128,13 +131,8 @@ const CreateVestingFormProvider: FC<{
     rpcApi.useLazyGetActiveVestingScheduleQuery();
   const { visibleAddress: senderAddress } = useVisibleAddress();
 
-  const { vestingVersion: version } = useVestingVersion();
-
-  const { data: vestingSchedulerConstants } =
-    rpcApi.useGetVestingSchedulerConstantsQuery({
-      chainId: network.id,
-      version
-    });
+  const [getVestingSchedulerConstants] =
+    rpcApi.useLazyGetVestingSchedulerConstantsQuery();
 
   const formSchema = useMemo(
     () =>
@@ -167,6 +165,7 @@ const CreateVestingFormProvider: FC<{
             cliffPeriod,
             cliffAmountEther,
             cliffEnabled,
+            version
           },
         } = (await primarySchema.validate(values, {
           context: {
@@ -187,6 +186,11 @@ const CreateVestingFormProvider: FC<{
             seconds: convertPeriodToSeconds(vestingPeriod),
           },
         );
+
+        const { data: vestingSchedulerConstants } = await getVestingSchedulerConstants({
+          chainId: network.id,
+          version: version as VestingVersion
+        });
 
         if (!vestingSchedulerConstants) {
           throw new Error(
@@ -274,8 +278,7 @@ const CreateVestingFormProvider: FC<{
       network,
       getActiveVestingSchedule,
       senderAddress,
-      vestingSchedulerConstants,
-      version
+      getVestingSchedulerConstants
     ]
   );
 
@@ -297,7 +300,8 @@ const CreateVestingFormProvider: FC<{
           denominator: UnitOfTime.Year,
         },
         setupAutoWrap: false,
-        claimEnabled: false
+        claimEnabled: false,
+        version: "v3"
       }
     },
     resolver: yupResolver(formSchema) as any,

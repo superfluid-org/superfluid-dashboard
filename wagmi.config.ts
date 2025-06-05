@@ -102,8 +102,11 @@ export default defineConfig({
     {
       name: "VestingSchedulerV3",
       abi: vestingSchedulerV3Abi as Abi,
-      address: Object.entries(vestingContractAddresses_v3).reduce((acc, [chainId, address]) => {
-        acc[Number(chainId)] = address;
+      address: superfluidMetadata.networks.reduce((acc, current) => {
+        const address = current.contractsV1.vestingSchedulerV3 as Address;
+        if (address) {
+          acc[current.chainId] = address;
+        }
         return acc;
       }, {} as Record<number, Address>),
     },

@@ -6,6 +6,7 @@ import ConnectWallet from "../features/wallet/ConnectWallet";
 import withStaticSEO from "../components/SEO/withStaticSEO";
 import ScheduledWrapTables from "../features/auto-wrap/ScheduledWrapTables";
 
+
 const NoWalletConnected: FC = () => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));

@@ -20,6 +20,7 @@ import { buildQueryString } from "../utils/URLUtils";
 import SendStream from "../features/send/stream/SendStream";
 import SendPageLayout from "../features/send/SendPageLayout";
 
+
 interface SendPageQuery {
   token?: string;
   receiver?: string;

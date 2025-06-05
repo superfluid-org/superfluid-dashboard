@@ -320,7 +320,8 @@ export const pendingUpdateSlice = createSlice({
           startDateTimestamp,
           totalDurationInSeconds,
           cliffPeriodInSeconds,
-          totalAmountWei
+          totalAmountWei,
+          version
         } = action.meta.arg.originalArgs;
         const endDateTimestamp = startDateTimestamp + totalDurationInSeconds;
         const flowRate = BigNumber.from(totalAmountWei).div(totalDurationInSeconds);
@@ -339,7 +340,7 @@ export const pendingUpdateSlice = createSlice({
           endDateTimestamp,
           flowRateWei: flowRate.toString(),
           relevantSubgraph: "Vesting",
-          version: "v3"
+          version
         };
         pendingUpdateAdapter.addOne(state, pendingUpdate);
       }
@@ -350,7 +351,7 @@ export const pendingUpdateSlice = createSlice({
         const { chainId, hash: transactionHash, signerAddress: senderAddress } = action.payload;
 
         const pendingUpdatesToAdd = [];
-        const { params: vestingSchedules } = action.meta.arg.originalArgs;
+        const { params: vestingSchedules, version } = action.meta.arg.originalArgs;
         for (const [index, vestingSchedule] of vestingSchedules.entries()) {
           const {
             superToken,
@@ -378,7 +379,7 @@ export const pendingUpdateSlice = createSlice({
             endDateTimestamp,
             flowRateWei: flowRate.toString(),
             relevantSubgraph: "Vesting",
-            version: "v3"
+            version
           };
           pendingUpdatesToAdd.push(pendingUpdate);
         }
@@ -482,7 +483,7 @@ export const pendingUpdateSlice = createSlice({
       rpcApi.endpoints.claimVestingSchedule.matchFulfilled,
       (state, action) => {
         const { chainId, hash: transactionHash } = action.payload;
-        const { senderAddress, superTokenAddress, receiverAddress } =
+        const { senderAddress, superTokenAddress, receiverAddress, version } =
           action.meta.arg.originalArgs;
         const pendingUpdate: PendingVestingScheduleClaim = {
           chainId,
@@ -494,7 +495,7 @@ export const pendingUpdateSlice = createSlice({
           pendingType: "VestingScheduleClaim",
           timestamp: dateNowSeconds(),
           relevantSubgraph: "Vesting",
-          version: "v2"
+          version
         };
         pendingUpdateAdapter.addOne(state, pendingUpdate);
       }

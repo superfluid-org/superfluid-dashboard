@@ -14,6 +14,7 @@ import SendTransfer from "../features/send/transfer/SendTransfer";
 import { RestorationType } from "../features/transactionRestoration/transactionRestorations";
 import SendPageLayout from "../features/send/SendPageLayout";
 
+
 interface TransferPageQuery {
   token?: string;
   receiver?: string;

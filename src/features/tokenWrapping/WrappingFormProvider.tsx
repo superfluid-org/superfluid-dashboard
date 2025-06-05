@@ -5,7 +5,6 @@ import { isString } from "lodash";
 import { useRouter } from "next/router";
 import { FC, PropsWithChildren, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { useAccount } from "wagmi";
 import { object, ObjectSchema, string } from "yup";
 import { createHandleHigherOrderValidationErrorFunc } from "../../utils/createHandleHigherOrderValidationErrorFunc";
 import { dateNowSeconds } from "../../utils/dateUtils";

@@ -11,6 +11,7 @@ import { NextPageWithLayout } from "../_app";
 import { useAccount } from "@/hooks/useAccount"
 import { useWhitelist } from "../../hooks/useWhitelist";
 
+
 const CreateVestingSchedulePage: NextPageWithLayout = () => {
   const theme = useTheme();
   const { network } = useExpectedNetwork();

@@ -18,6 +18,7 @@ import { convertPeriodToSeconds } from "./convertPeriod";
 import { convertVestingScheduleFromAmountAndDurationsToAbsolutes } from "./VestingScheduleParams";
 import { convertBatchFormToParams } from "./convertBatchFormToParams";
 import { BigNumber } from "ethers";
+import { VestingVersion } from "@/features/network/networkConstants";
 
 export type ValidBatchVestingForm = {
   data: {
@@ -37,6 +38,7 @@ export type ValidBatchVestingForm = {
       totalAmountEther: string;
     }[];
     claimEnabled?: boolean;
+    version: "v3";
   };
 }
 
@@ -58,6 +60,7 @@ export type PartialBatchVestingForm = {
       totalAmountEther: string;
     }[];
     claimEnabled?: boolean;
+    version: "v3";
   };
 }
 
@@ -103,6 +106,7 @@ export function BatchVestingFormProvider(props: {
         ).required(),
         setupAutoWrap: boolean().optional(),
         claimEnabled: boolean().optional(),
+        version: string().oneOf(["v3"]).required()
       })
     }),
     []
@@ -111,11 +115,8 @@ export function BatchVestingFormProvider(props: {
   const { network } = useExpectedNetwork();
   const { visibleAddress: senderAddress } = useVisibleAddress();
 
-  const { data: vestingSchedulerConstants } =
-    rpcApi.useGetVestingSchedulerConstantsQuery({
-      chainId: network.id,
-      version: "v2"
-    });
+  const [getVestingSchedulerConstants] =
+    rpcApi.useLazyGetVestingSchedulerConstantsQuery();
 
   const [getActiveVestingSchedule] =
     rpcApi.useLazyGetActiveVestingScheduleQuery();
@@ -153,7 +154,8 @@ export function BatchVestingFormProvider(props: {
             cliffPeriod,
             cliffEnabled,
             vestingPeriod,
-            schedules
+            schedules,
+            version
           },
         } = validForm;
 
@@ -171,11 +173,17 @@ export function BatchVestingFormProvider(props: {
           },
         );
 
+        const { data: vestingSchedulerConstants } = await getVestingSchedulerConstants({
+          chainId: network.id,
+          version: version
+        });
+
         if (!vestingSchedulerConstants) {
           throw new Error(
             "Haven't fetched VestingScheduler contract constants. This hopefully never happens. If it does, probably should refresh the application."
           );
         }
+
         const {
           MIN_VESTING_DURATION_IN_DAYS,
           MIN_VESTING_DURATION_IN_MINUTES,
@@ -235,7 +243,7 @@ export function BatchVestingFormProvider(props: {
 
           if (schedules.some(({ receiverAddress }) => receiverAddress.toLowerCase() === senderAddress?.toLowerCase())) {
             handleHigherOrderValidationError({
-              message: `You can’t vest to yourself. Choose a different wallet.`,
+              message: `You can't vest to yourself. Choose a different wallet.`,
             });
           }
 
@@ -253,7 +261,7 @@ export function BatchVestingFormProvider(props: {
                 superTokenAddress,
                 senderAddress,
                 receiverAddress,
-                version: "v2"
+                version
               });
 
               if (vestingSchedule) {
@@ -271,7 +279,7 @@ export function BatchVestingFormProvider(props: {
       network,
       getActiveVestingSchedule,
       senderAddress,
-      vestingSchedulerConstants,
+      getVestingSchedulerConstants
     ]
   );
 
@@ -290,7 +298,8 @@ export function BatchVestingFormProvider(props: {
           denominator: UnitOfTime.Year,
         },
         schedules: [],
-        claimEnabled: false
+        claimEnabled: false,
+        version: "v3"
       }
     },
     resolver: yupResolver(formSchema) as any,

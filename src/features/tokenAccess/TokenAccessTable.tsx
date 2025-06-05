@@ -29,11 +29,11 @@ interface Props {
   fetchingCallback: (networkId: number, fetchingStatus: FetchingStatus) => void;
 }
 
-const TokenAccessTable: FC<Props> = ({
+export function TokenAccessTable({
   address,
   network,
   fetchingCallback,
-}) => {
+} : Props) {
   const { flowOperators, isLoading, ...flowOperatorsQuery } = subgraphApi.useFlowOperatorsQuery(
     {
       chainId: network.id,
@@ -67,7 +67,6 @@ const TokenAccessTable: FC<Props> = ({
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-
 
   const hasContent = flowOperators.length > 0;
   useEffect(() => {
@@ -232,5 +231,3 @@ const TokenAccessTable: FC<Props> = ({
     </TableContainer>
   );
 };
-
-export default TokenAccessTable;

@@ -5,7 +5,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { FC, useCallback, useMemo, useState } from "react";
-import TokenAccessTable from "./TokenAccessTable";
+import { TokenAccessTable } from "./TokenAccessTable";
 import { useAvailableNetworks } from "../network/AvailableNetworksContext";
 import { UpsertTokenAccessButton } from "./TokenAccessRow";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
@@ -21,7 +21,7 @@ interface NetworkFetchingStatuses {
   [networkId: number]: FetchingStatus;
 }
 
-const EmptyCard: FC<{}> = ({}) => (
+const EmptyCard: FC<{}> = ({ }) => (
   <NoContentPaper
     dataCy={"no-access-data"}
     title="No Access Data"
@@ -29,7 +29,7 @@ const EmptyCard: FC<{}> = ({}) => (
   />
 );
 
-const TokenAccessTables: FC<{}> = () => {
+export function TokenAccessTables() {
   const { visibleAddress } = useVisibleAddress();
 
   const theme = useTheme();
@@ -73,6 +73,8 @@ const TokenAccessTables: FC<{}> = () => {
     [availableNetworks, fetchingStatuses]
   );
 
+  const showEmptyCard = !hasContent && !isLoading;
+
   return (
     <>
       <Stack
@@ -95,23 +97,17 @@ const TokenAccessTables: FC<{}> = () => {
           }}
         />
       </Stack>
-      {!hasContent && !isLoading ? (
-        <EmptyCard />
-      ) : (
-        <Stack gap={4}>
-          {visibleAddress &&
-            availableNetworks.map((network) => (
-              <TokenAccessTable
-                key={`${network.id}-${visibleAddress}`}
-                address={visibleAddress}
-                network={network}
-                fetchingCallback={fetchingCallback}
-              />
-            ))}
-        </Stack>
-      )}
+      {showEmptyCard && <EmptyCard />}
+      {
+        visibleAddress && availableNetworks.map((network) => (
+          <TokenAccessTable
+            key={`${network.id}-${visibleAddress}`}
+            address={visibleAddress!}
+            network={network}
+            fetchingCallback={fetchingCallback}
+          />
+        ))
+      }
     </>
   );
 };
-
-export default TokenAccessTables;

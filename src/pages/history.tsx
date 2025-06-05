@@ -34,6 +34,7 @@ import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 import { Activity, mapActivitiesFromEvents } from "../utils/activityUtils";
 import { vestingSubgraphApi } from "../vesting-subgraph/vestingSubgraphApi";
 
+
 const History: NextPage = () => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
