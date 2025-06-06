@@ -74,7 +74,7 @@ export const ActionsList: FC<{
                 </TableHead>
                 <TableBody>
                     {actions.map((action, index) => {
-                        const { actionType, receiver, amount, fromDate, toDate } = getActionDetails(action, tokenSymbol);
+                        const { actionType, receiver, amount, fromDate, toDate, isAllocationReduction } = getActionDetails(action, tokenSymbol);
 
                         return (
                             <TableRow
@@ -100,7 +100,9 @@ export const ActionsList: FC<{
                                         </span>
                                     </AddressCopyTooltip>
                                 </TableCell>
-                                <TableCell>{amount}</TableCell>
+                                <TableCell sx={{
+                                    color: isAllocationReduction ? "red" : "inherit"
+                                }}>{amount}</TableCell>
                                 <TableCell>
                                     {fromDate ? (
                                         <Tooltip title={
@@ -149,6 +151,7 @@ const getActionDetails = (action: Actions, tokenSymbol: string | undefined) => {
     let amount: ReactNode = "";
     let fromDate: Date | undefined;
     let toDate: Date | undefined;
+    let isAllocationReduction = false;
 
     switch (action.type) {
         case "create-vesting-schedule":
@@ -175,6 +178,7 @@ const getActionDetails = (action: Actions, tokenSymbol: string | undefined) => {
             ) : `${newAmount} (unchanged)`;
             toDate = new Date(action.payload.endDate * 1000);
             fromDate = new Date(action.payload.previousStartDate * 1000);
+            isAllocationReduction = BigInt(action.payload.previousTotalAmount) > BigInt(action.payload.totalAmount);
             break;
 
         case "stop-vesting-schedule":
@@ -198,5 +202,5 @@ const getActionDetails = (action: Actions, tokenSymbol: string | undefined) => {
             actionType = `Unknown Action: ${(action as any).type}`;
     }
 
-    return { actionType, receiver, amount, fromDate, toDate };
+    return { actionType, receiver, amount, fromDate, toDate, isAllocationReduction };
 };

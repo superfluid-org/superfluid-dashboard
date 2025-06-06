@@ -540,7 +540,7 @@ export default async function handler(
                             })
                         }
 
-                        const isFundingJustChangedForProject = agoraTotalAmount > subgraphTotalAmount;
+                        const isFundingJustChangedForProject = agoraTotalAmount !== subgraphTotalAmount;
 
                         if (isFundingJustChangedForProject) {
                             if (agoraCurrentAmount === 0n) {

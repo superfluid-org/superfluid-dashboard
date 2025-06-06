@@ -173,7 +173,8 @@ function Row(props: {
             <TableRow
                 sx={{
                     '& > *': { borderBottom: 'unset' },
-                    opacity: state.agoraEntry.KYCStatusCompleted ? 1 : 0.6
+                    opacity: state.agoraEntry.KYCStatusCompleted ? 1 : 0.6,
+                    bgcolor: projectSelectableActions.some(x => x.selected) ? "action.selected" : "inherit"
                 }}
             >
                 <TableCell align="center" padding="none" sx={{ px: 0.5, py: 0.5 }}>
