@@ -111,8 +111,9 @@ function Status(props: { state: ProjectState }) {
     const getStatusInfo = () => {
         if (!props.state.agoraEntry.KYCStatusCompleted) {
             return { color: "text.disabled", message: "KYC not done" };
-        }
-        else if (props.state.projectActions.length > 0) {
+        } else if (props.state.subgraphTotalAmount > props.state.agoraTotalAmount) {
+            return { color: "error.main", message: "On-chain is vesting more than Agora" };
+        } else if (props.state.projectActions.length > 0) {
             return { color: "warning.main", message: "Actions pending" };
         } else if (props.state.agoraTotalAmount !== props.state.subgraphTotalAmount) {
             return { color: "error.main", message: "Mismatch of amounts" };
