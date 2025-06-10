@@ -1,7 +1,7 @@
 
 import { useAppKitAccount } from "@reown/appkit/react"
 import { useMemo } from "react"
-import { Address } from "viem"
+import { Address, isAddress, zeroAddress } from "viem"
 import { useAccount as useWagmiAccount } from "wagmi"
 
 // Re-done wagmi's "useAccount" with Reown AppKit instead
@@ -11,11 +11,22 @@ export function useAccount() {
 
     const isConnecting = status === "connecting"
     const isReconnecting = status === "reconnecting"
-    const addressLowercased = useMemo(() => address?.toLowerCase() as (Address | undefined), [address])
+    const addressLowercased = useMemo(() => {
+        if (address === zeroAddress) {
+            return undefined
+        }
+
+        const addressLowercased = address?.toLowerCase() as (Address | undefined)
+        if (addressLowercased && isAddress(addressLowercased)) {
+            return addressLowercased
+        }
+
+        return undefined
+    }, [address])
 
     return {
         address: addressLowercased,
-        isConnected,
+        isConnected: isConnected && !!addressLowercased,
         isConnecting,
         isReconnecting,
         chain,
