@@ -41,13 +41,7 @@ export const LayoutContextProvider: FC<PropsWithChildren> = ({ children }) => {
   }, [router]);
 
   const [transactionDrawerOpen, setTransactionDrawerOpen] = useState(false);
-  const [navigationDrawerOpen, setNavigationDrawerOpen] = useState(
-    !isSmallScreen
-  );
-
-  useEffect(() => {
-    setNavigationDrawerOpen(!isSmallScreen);
-  }, [isSmallScreen]);
+  const [navigationDrawerOpen, setNavigationDrawerOpen] = useState(false);
 
   return (
     <LayoutContext.Provider

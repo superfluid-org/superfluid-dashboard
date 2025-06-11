@@ -124,10 +124,6 @@ export default memo(function NavigationDrawer() {
     if (isBelowLg) setNavigationDrawerOpen(false);
   }, [isBelowLg, setNavigationDrawerOpen]);
 
-  const openNavigationDrawer = useCallback(() => {
-    if (isBelowLg) setNavigationDrawerOpen(true);
-  }, [isBelowLg, setNavigationDrawerOpen]);
-
   const router = useRouter();
   const isActiveRoute = (...routes: Array<string>) =>
     routes.includes(router.route);
@@ -140,7 +136,7 @@ export default memo(function NavigationDrawer() {
     <SwipeableDrawer
       data-cy={"navigation-drawer"}
       variant={isBelowLg ? "temporary" : "permanent"} // permanent
-      open={navigationDrawerOpen}
+      open={isBelowLg ? navigationDrawerOpen : true}
       anchor="left"
       disableDiscovery={true}
       disableSwipeToOpen={true}
@@ -159,7 +155,7 @@ export default memo(function NavigationDrawer() {
       }}
       sx={{ width: menuDrawerWidth }}
       onClose={closeNavigationDrawer}
-      onOpen={openNavigationDrawer}
+      onOpen={() => {}}
       translate="yes"
     >
       <Toolbar
