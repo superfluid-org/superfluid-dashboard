@@ -73,6 +73,7 @@ export type VestingActivities = (
   | Activity<VestingScheduleCreatedEvent>
   | Activity<VestingScheduleDeletedEvent>
   | Activity<VestingClaimedEvent>
+  | Activity<VestingScheduleDeletedEvent>
 )[];
 
 const VestingScheduleDetailsPage: NextPageWithLayout = () => {
@@ -249,7 +250,7 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
             vestingSchedule.sender,
             vestingSchedule.receiver,
           ],
-          name_in: ["VestingScheduleCreatedEvent", "VestingScheduleUpdatedEvent", "VestingClaimedEvent"],
+          name_in: ["VestingScheduleCreatedEvent", "VestingScheduleUpdatedEvent", "VestingClaimedEvent", "VestingScheduleDeletedEvent"],
           timestamp_gte: vestingSchedule.createdAt.toString(),
           timestamp_lte: 
             vestingSchedule.deletedAt
