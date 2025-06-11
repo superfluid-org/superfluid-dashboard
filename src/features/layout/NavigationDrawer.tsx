@@ -144,6 +144,7 @@ export default memo(function NavigationDrawer() {
       anchor="left"
       disableDiscovery={true}
       disableSwipeToOpen={true}
+      hidden={isBelowLg && !navigationDrawerOpen}
       PaperProps={{
         sx: {
           width: menuDrawerWidth,
@@ -154,8 +155,8 @@ export default memo(function NavigationDrawer() {
         },
         style: {
           pointerEvents:
-            isBelowMd && !navigationDrawerOpen ? "none" : "initial",
-        },
+            isBelowLg && !navigationDrawerOpen ? "none" : "initial",
+        }
       }}
       sx={{ width: menuDrawerWidth }}
       onClose={closeNavigationDrawer}
