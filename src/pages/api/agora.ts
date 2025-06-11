@@ -5,12 +5,12 @@ import { Effect as E, Logger, LogLevel, pipe } from 'effect'
 import { uniq } from 'lodash'
 import { tryGetBuiltGraphSdkForNetwork } from '../../vesting-subgraph/vestingSubgraphApi'
 import { optimism } from 'viem/chains'
-import { Address, createPublicClient, http, isAddress, sha256, stringToHex } from 'viem'
+import { Address, createPublicClient, encodePacked, http, isAddress, keccak256, sha256, stringToHex } from 'viem'
 import { mapSubgraphVestingSchedule, VestingSchedule } from '../../features/vesting/types'
 import { UnitOfTime } from '../../features/send/FlowRateInput'
 import { allNetworks, findNetworkOrThrow } from '../../features/network/networks'
 import { add, getUnixTime } from 'date-fns'
-import { cfaV1ForwarderAbi, cfaV1ForwarderAddress, superTokenAbi } from '../../generated'
+import { cfaV1ForwarderAbi, cfaV1ForwarderAddress, superTokenAbi, vestingSchedulerV3Abi } from '../../generated'
 import { ACL_CREATE_PERMISSION, ACL_DELETE_PERMISSION, ACL_UPDATE_PERMISSION } from '../../utils/constants'
 import { getAddress as getAddress_ } from "ethers/lib/utils"
 import { agoraApiEndpoints, RoundType, roundTypes, START_TIMESTAMP_OF_FIRST_TRANCH_ON_OPTIMISM, tokenAddresses, validChainIds } from '../../features/vesting/agora/constants'
@@ -103,13 +103,21 @@ export type ProjectState = {
 // ---
 
 // # Actions
-type ActionType = "create-vesting-schedule" | "update-vesting-schedule" | "stop-vesting-schedule" | "increase-token-allowance" | "increase-flow-operator-permissions"
+type ActionType = "create-vesting-schedule" | "update-vesting-schedule" | "end-vesting-schedule-now" | "stop-vesting-schedule" | "increase-token-allowance" | "increase-flow-operator-permissions"
 
 type Action<TType extends ActionType, TPayload extends Record<string, unknown>> = {
     id: string
     type: TType
     payload: TPayload
 }
+
+type EndVestingScheduleNowAction = Action<"end-vesting-schedule-now", {
+    superToken: Address
+    sender: Address
+    receiver: Address
+    previousTotalAmount: string
+    settledAmount: string
+}>
 
 type CreateVestingScheduleAction = Action<"create-vesting-schedule", {
     superToken: Address
@@ -157,7 +165,7 @@ type SetFlowOperatorPermissionsAction = Action<"increase-flow-operator-permissio
 }>
 
 export type AllowanceActions = TokenAllowanceAction | SetFlowOperatorPermissionsAction
-export type ProjectActions = CreateVestingScheduleAction | UpdateVestingScheduleAction | StopVestingScheduleAction
+export type ProjectActions = CreateVestingScheduleAction | UpdateVestingScheduleAction | StopVestingScheduleAction | EndVestingScheduleNowAction
 export type Actions = AllowanceActions | ProjectActions
 // ---
 
@@ -444,6 +452,11 @@ export default async function handler(
         const nowDate = new Date();
         const nowTimestamp = getUnixTime(nowDate);
 
+        const publicClient = createPublicClient({
+            chain: network,
+            transport: http(network.rpcUrls.superfluid.http[0])
+        });
+
         // # Map into project states
         const projectStates = yield* E.forEach(dataFromAgora, (row) => {
             return E.gen(function* () {
@@ -569,19 +582,61 @@ export default async function handler(
                             } else {
                                 const newTotalAmount = BigInt(currentWalletVestingSchedule.totalAmount) + missingAmount;
 
-                                pushAction({
-                                    type: "update-vesting-schedule",
-                                    payload: {
-                                        superToken: token,
-                                        sender,
-                                        receiver: agoraCurrentWallet,
-                                        totalAmount: newTotalAmount.toString(),
-                                        previousTotalAmount: currentWalletVestingSchedule.totalAmount,
-                                        previousFlowRate: currentWalletVestingSchedule.flowRate,
-                                        previousStartDate: currentWalletVestingSchedule.startDate,
-                                        endDate: currentTranch.endTimestamp
-                                    }
-                                })
+                                let settledAmount = 0n;
+                                if (newTotalAmount < BigInt(currentWalletVestingSchedule.totalAmount)) {
+                                    const vestingScheduleId = keccak256(
+                                        encodePacked(
+                                            ['address', 'address', 'address'], 
+                                            [token, sender, agoraCurrentWallet]
+                                        )
+                                    );
+    
+                                    // todo: Consider adding a retry here.
+                                    const [lastSettledAmount, lastSettledDate] = yield* E.tryPromise({
+                                        try: () => publicClient.readContract({
+                                            address: vestingContractInfo.address,
+                                            abi: vestingSchedulerV3Abi,
+                                            functionName: "accountings",
+                                            args: [vestingScheduleId]
+                                        }),
+                                        catch: (error) => {
+                                            console.log("Failed to read vesting schedule accounting", { cause: error })
+                                            return new PublicClientRpcError("Failed to read vesting schedule accounting", { cause: error })
+                                        }
+                                    })
+    
+                                    const elapsedTimeSinceLastSettled = BigInt(nowTimestamp) - lastSettledDate;
+                                    const amountFlowed = elapsedTimeSinceLastSettled * BigInt(currentWalletVestingSchedule.flowRate);
+                                    settledAmount = lastSettledAmount + amountFlowed; // No need to add cliffAmount here.
+                                }
+
+                                if (settledAmount >= newTotalAmount) {
+                                    pushAction({
+                                        type: "end-vesting-schedule-now",
+                                        payload: {
+                                            superToken: token,
+                                            sender,
+                                            receiver: agoraCurrentWallet,
+                                            previousTotalAmount: currentWalletVestingSchedule.totalAmount,
+                                            settledAmount: settledAmount.toString()
+                                        }
+                                    })
+                                } else {
+                                    pushAction({
+                                        type: "update-vesting-schedule",
+                                        payload: {
+                                            superToken: token,
+                                            sender,
+                                            receiver: agoraCurrentWallet,
+                                            totalAmount: newTotalAmount.toString(),
+                                            previousTotalAmount: currentWalletVestingSchedule.totalAmount,
+                                            previousFlowRate: currentWalletVestingSchedule.flowRate,
+                                            previousStartDate: currentWalletVestingSchedule.startDate,
+                                            endDate: currentTranch.endTimestamp
+                                        }
+                                    })
+                                }
+
                             }
                         }
                     }
@@ -609,11 +664,6 @@ export default async function handler(
         });
 
         yield* E.logTrace(`Processed ${projectStates.length} project states`);
-
-        const publicClient = createPublicClient({
-            chain: network,
-            transport: http(network.rpcUrls.superfluid.http[0])
-        });
 
         const allowanceActions = yield* E.gen(function* () {
             const actions: AllowanceActions[] = [];

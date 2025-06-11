@@ -159,7 +159,22 @@ async function mapProjectStateIntoOperations(state: ProjectsOverview, actionsToE
                     title: "Update Vesting Schedule" // end date
                 });
 
-
+                break;
+            }
+            case "end-vesting-schedule-now": {
+                const populatedTransaction = vestingScheduler
+                    .populateTransaction.endVestingScheduleNow(
+                        action.payload.superToken,
+                        action.payload.receiver
+                    );
+                const operation = new Operation(
+                    populatedTransaction,
+                    'ERC2771_FORWARD_CALL'
+                );
+                operations.push({
+                    operation: operation,
+                    title: "Update Vesting Schedule"
+                });
                 break;
             }
             case "stop-vesting-schedule": {
@@ -274,6 +289,24 @@ export const mapProjectStateIntoGnosisSafeBatch = (state: ProjectsOverview, acti
                 const functionAbi = getAbiItem({
                     abi: vestingSchedulerV3Abi,
                     name: 'updateVestingScheduleFlowRateFromAmountAndEndDate',
+                    args
+                })
+                const argNames = functionAbi.inputs.map(input => input.name);
+                transactions.push({
+                    to: vestingContractInfo.address,
+                    contractMethod: functionAbi,
+                    contractInputsValues: mapArgsIntoContractInputsValues(argNames, args)
+                })
+                break;
+            }
+            case "end-vesting-schedule-now": {
+                const args = [
+                    action.payload.superToken,
+                    action.payload.receiver
+                ] as const;
+                const functionAbi = getAbiItem({
+                    abi: vestingSchedulerV3Abi,
+                    name: 'endVestingScheduleNow',
                     args
                 })
                 const argNames = functionAbi.inputs.map(input => input.name);

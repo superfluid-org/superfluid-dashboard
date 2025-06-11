@@ -397,7 +397,7 @@ export const pendingUpdateSlice = createSlice({
         const pendingUpdatesToAdd = [];
         const { actionsToExecute } = action.meta.arg.originalArgs;
         const createVestingScheduleActions = actionsToExecute.filter(x => x.type === "create-vesting-schedule");
-        const updateVestingScheduleActions = actionsToExecute.filter(x => x.type === "update-vesting-schedule");
+        const updateVestingScheduleActions = actionsToExecute.filter(x => x.type === "update-vesting-schedule" || x.type === "end-vesting-schedule-now");
 
         for (const [index, actions] of createVestingScheduleActions.entries()) {
           const {
