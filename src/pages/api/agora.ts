@@ -441,6 +441,9 @@ export default async function handler(
             )
         );
 
+        const nowDate = new Date();
+        const nowTimestamp = getUnixTime(nowDate);
+
         // # Map into project states
         const projectStates = yield* E.forEach(dataFromAgora, (row) => {
             return E.gen(function* () {
@@ -510,18 +513,29 @@ export default async function handler(
                     const isAlreadyVestingToRightWallet = !!currentWalletVestingSchedule;
                     if (!isAlreadyVestingToRightWallet) {
                         if (missingAmount > 0n) {
+                            const nowIn2DaysTimestamp = getUnixTime(add(nowDate, { hours: 48 }));
+
+                            const startTimestamp = currentTranch.startTimestamp < nowTimestamp  // If it's later than tranch start date.
+                                ? nowIn2DaysTimestamp
+                                : Math.min(nowIn2DaysTimestamp, currentTranch.startTimestamp); // Start in 2 days or original tranch start, whichever is closer.
+
+                            const totalDuration = currentTranch.endTimestamp - startTimestamp;
+                            if (totalDuration <= 0) {
+                                throw new Error("Total duration is less than or equal to 0. This shouldn't happen. Please investigate!");
+                            }
+
                             pushAction({
                                 type: "create-vesting-schedule",
                                 payload: {
                                     superToken: token,
                                     sender,
                                     receiver: agoraCurrentWallet,
-                                    startDate: currentTranch.startTimestamp,
+                                    startDate: startTimestamp,
                                     totalAmount: missingAmount.toString(),
-                                    totalDuration: currentTranch.totalDuration,
+                                    totalDuration: totalDuration,
                                     cliffAmount: "0",
                                     cliffPeriod: 0,
-                                    claimPeriod: getClaimPeriod(currentTranch.startTimestamp)
+                                    claimPeriod: getClaimPeriod(startTimestamp)
                                 }
                             })
                         }
@@ -647,7 +661,7 @@ export default async function handler(
 
                     const amountDelta = newTotalAmount - previousTotalAmount;
 
-                    const nowishUnix = getUnixTime(add(new Date(), { hours: 48 })); 
+                    const nowishUnix = getUnixTime(add(nowDate, { hours: 48 }));
                     // Calculate the flow rate allowance with 48 hours of TX execution delay in mind.
                     // Pushing the time forwards leaves less time for "total amount" to flow in the remaining duration,
                     // hence the needed flow rate allowance will be higher.

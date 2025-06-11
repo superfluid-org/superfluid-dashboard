@@ -74,8 +74,8 @@ const AgoraPage: NextPageWithLayout = () => {
         );
     }
 
-    // Show message if wallet is not connected
-    if (!isConnected) {
+    // Show message if wallet is not connected or not viewing an address
+    if (!visibleAddress) {
         return (
             <Container maxWidth="lg">
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '50vh', textAlign: 'center' }}>
