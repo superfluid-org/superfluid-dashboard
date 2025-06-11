@@ -221,13 +221,20 @@ export function vestingScheduleToTokenBalance(
     cliffAndFlowDate,
     didEarlyEndCompensationFail,
     earlyEndCompensation,
-    failedAt,
     deletedAt,
     remainderAmount,
-    claimedAt
+    claimedAt,
+    claimValidityDate
   } = vestingSchedule;
 
-  if (failedAt) return null;
+  // If the vesting schedule was deleted and not claimed (when claimable), return 0 balance
+  if (deletedAt && claimValidityDate && !claimedAt) {
+    return {
+      balance: "0",
+      totalNetFlowRate: "0",
+      timestamp: deletedAt,
+    };
+  }
 
   const wasClaimedAfterEndDate = (claimedAt ?? 0) > endDate;
   const effectiveEndAt = (wasClaimedAfterEndDate ? endDate : undefined) || endExecutedAt || deletedAt;
