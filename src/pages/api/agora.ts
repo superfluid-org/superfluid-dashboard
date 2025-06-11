@@ -466,7 +466,7 @@ export default async function handler(
                 const agoraCurrentAmount_ = row.amounts[row.amounts.length - 1] ?? 0;
                 const agoraCurrentAmount = BigInt(agoraCurrentAmount_);
                 const agoraTotalAmount = row.amounts.reduce((sum, amount) => sum + BigInt(amount || 0), 0n);
-                const subgraphTotalAmount = allRelevantVestingSchedules.reduce((sum, vestingSchedule) => sum + BigInt(vestingSchedule.totalAmount ?? 0), 0n);
+                const subgraphTotalAmount = allRelevantVestingSchedules.reduce((sum, vestingSchedule) => sum + BigInt(vestingSchedule.totalAmountWithOverpayment ?? 0), 0n);
                 const missingAmount = agoraTotalAmount - subgraphTotalAmount;
 
                 const actions = yield* E.gen(function* () {
@@ -540,7 +540,7 @@ export default async function handler(
                             })
                         }
 
-                        const isFundingJustChangedForProject = agoraTotalAmount !== subgraphTotalAmount;
+                        const isFundingJustChangedForProject = agoraTotalAmount > subgraphTotalAmount;
 
                         if (isFundingJustChangedForProject) {
                             if (agoraCurrentAmount === 0n) {
