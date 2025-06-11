@@ -3,6 +3,7 @@ import {
 } from "../../vesting-subgraph/.graphclient";
 import { dateNowSeconds } from "../../utils/dateUtils";
 import { VestingVersion } from "../network/networkConstants";
+import { BigNumber } from "ethers";
 
 interface VestingStatus {
   title: string;
@@ -153,6 +154,7 @@ export interface VestingSchedule {
   version: VestingVersion;
   transactionHash: string;
   totalAmount: string;
+  totalAmountWithOverpayment: string;
 }
 
 export type SubgraphVestingSchedule = NonNullable<
@@ -200,13 +202,51 @@ export const mapSubgraphVestingSchedule = (
     transactionHash: vestingSchedule.id.split("-")[0],
     totalAmount: vestingSchedule.totalAmount
   };
+  
+  const totalAmountWithOverpayment = calculateTotalAmountWithOverpayment(mappedVestingSchedule);
+  
   return {
     ...mappedVestingSchedule,
+    totalAmountWithOverpayment,
     status: getVestingStatus(mappedVestingSchedule),
   };
 };
 
-const getVestingStatus = (vestingSchedule: Omit<VestingSchedule, "status">) => {
+const calculateTotalAmountWithOverpayment = (
+  vestingSchedule: Omit<VestingSchedule, "status" | "totalAmountWithOverpayment">
+): string => {
+  const {
+    totalAmount,
+    remainderAmount,
+    flowRate,
+    cliffAndFlowExecutedAt,
+    endExecutedAt,
+    endDate
+  } = vestingSchedule;
+
+  // Default to totalAmount
+  if (!cliffAndFlowExecutedAt || !endExecutedAt || !endDate) {
+    return totalAmount;
+  }
+
+  // Check if the vesting schedule was overpaid
+  if (cliffAndFlowExecutedAt < endDate && endExecutedAt > endDate) {
+    // Calculate: totalAmount - remainderAmount + (endExecutedAt - endDate) * flowRate
+    const overpaymentSeconds = endExecutedAt - endDate;
+    const overpaymentAmount = BigNumber.from(overpaymentSeconds).mul(flowRate);
+    const totalAmountBN = BigNumber.from(totalAmount);
+    const remainderAmountBN = BigNumber.from(remainderAmount);
+    
+    return totalAmountBN
+      .sub(remainderAmountBN)
+      .add(overpaymentAmount)
+      .toString();
+  }
+
+  return totalAmount;
+};
+
+const getVestingStatus = (vestingSchedule: Omit<VestingSchedule, "status" | "totalAmountWithOverpayment">) => {
   const {
     deletedAt,
     failedAt,

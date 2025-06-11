@@ -67,6 +67,14 @@ export const mapPendingToVestingSchedule = (
     ? cliffDateTimestamp
     : startDateTimestamp;
 
+  const totalAmount = calculateVestingScheduleAllocated(
+    cliffAndFlowDate,
+    endDateTimestamp,
+    flowRateWei,
+    cliffTransferAmountWei,
+    "0"
+  ).toString();
+
   return {
     pendingCreate: pendingVestingSchedule,
     id: `${superTokenAddress}-${address}-${receiverAddress}-${version}-${pendingVestingSchedule.transactionHash}`,
@@ -90,12 +98,7 @@ export const mapPendingToVestingSchedule = (
     remainderAmount: "0",
     version,
     transactionHash: pendingVestingSchedule.transactionHash,
-    totalAmount: calculateVestingScheduleAllocated(
-      cliffAndFlowDate,
-      endDateTimestamp,
-      flowRateWei,
-      cliffTransferAmountWei,
-      "0"
-    ).toString(),
+    totalAmount,
+    totalAmountWithOverpayment: totalAmount, // For pending schedules, there's no overpayment yet
   };
 };
