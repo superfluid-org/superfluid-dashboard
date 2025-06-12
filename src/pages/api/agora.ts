@@ -618,16 +618,54 @@ export default async function handler(
                                 }
 
                                 if (settledAmount >= newTotalAmount) {
-                                    pushAction({
-                                        type: "end-vesting-schedule-now",
-                                        payload: {
-                                            superToken: token,
-                                            sender,
-                                            receiver: agoraCurrentWallet,
-                                            previousTotalAmount: currentWalletVestingSchedule.totalAmount,
-                                            settledAmount: settledAmount.toString()
+
+                                    if (currentWalletVestingSchedule.claimedAt) {
+                                        pushAction({
+                                            type: "end-vesting-schedule-now",
+                                            payload: {
+                                                superToken: token,
+                                                sender,
+                                                receiver: agoraCurrentWallet,
+                                                previousTotalAmount: currentWalletVestingSchedule.totalAmount,
+                                                settledAmount: settledAmount.toString()
+                                            }
+                                        })
+                                    } else {
+                                        pushAction({
+                                            type: "delete-vesting-schedule",
+                                            payload: {
+                                                superToken: token,
+                                                sender,
+                                                receiver: agoraCurrentWallet,
+                                            }
+                                        })
+
+                                        const subgraphTotalWithoutCurrentSchedule = subgraphTotalAmount - BigInt(currentWalletVestingSchedule.totalAmount);
+                                        const newMissingAmount = agoraTotalAmount - subgraphTotalWithoutCurrentSchedule;
+
+                                        if (newMissingAmount > 0n) {
+
+                                            // Add as cliff the amount that should have been vested already. Very rough approximation.
+                                            const currentTranchCount = BigInt(tranchPlan.currentTranchCount);
+                                            const cliffAmount = newMissingAmount / currentTranchCount * (currentTranchCount - 1n);
+
+                                            pushAction({
+                                                type: "create-vesting-schedule",
+                                                payload: {
+                                                    superToken: token,
+                                                    sender,
+                                                    receiver: agoraCurrentWallet,
+                                                    startDate: startTimestampForNewSchedules,
+                                                    totalAmount: newMissingAmount.toString(),
+                                                    totalDuration: getTotalDuration(startTimestampForNewSchedules),
+                                                    cliffAmount: cliffAmount.toString(),
+                                                    cliffPeriod: 1,
+                                                    claimPeriod: getClaimPeriod(startTimestampForNewSchedules)
+                                                }
+                                            })
                                         }
-                                    })
+                                    }
+
                                 } else {
 
                                     if (
@@ -643,6 +681,7 @@ export default async function handler(
                                                 receiver: agoraCurrentWallet,
                                             }
                                         })
+
                                         pushAction({
                                             type: "create-vesting-schedule",
                                             payload: {
@@ -657,6 +696,7 @@ export default async function handler(
                                                 claimPeriod: getClaimPeriod(startTimestampForNewSchedules)
                                             }
                                         })
+
                                     } else {
                                         pushAction({
                                             type: "update-vesting-schedule",
