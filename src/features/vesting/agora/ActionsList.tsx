@@ -181,7 +181,7 @@ const getActionDetails = (action: Actions, tokenSymbol: string | undefined) => {
             isAllocationReduction = BigInt(action.payload.previousTotalAmount) > BigInt(action.payload.totalAmount);
             break;
 
-        case "stop-vesting-schedule":
+        case "let-vesting-schedule-end":
             actionType = "Stop Vesting Schedule";
             receiver = action.payload.receiver;
             break;

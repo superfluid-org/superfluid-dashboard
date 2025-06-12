@@ -177,7 +177,7 @@ async function mapProjectStateIntoOperations(state: ProjectsOverview, actionsToE
                 });
                 break;
             }
-            case "stop-vesting-schedule": {
+            case "let-vesting-schedule-end": {
                 break;
             }
         }
@@ -317,7 +317,7 @@ export const mapProjectStateIntoGnosisSafeBatch = (state: ProjectsOverview, acti
                 })
                 break;
             }
-            case "stop-vesting-schedule": {
+            case "let-vesting-schedule-end": {
                 break;
             }
         }

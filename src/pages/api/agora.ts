@@ -103,7 +103,7 @@ export type ProjectState = {
 // ---
 
 // # Actions
-type ActionType = "create-vesting-schedule" | "update-vesting-schedule" | "end-vesting-schedule-now" | "stop-vesting-schedule" | "increase-token-allowance" | "increase-flow-operator-permissions"
+type ActionType = "create-vesting-schedule" | "update-vesting-schedule" | "end-vesting-schedule-now" | "let-vesting-schedule-end" | "increase-token-allowance" | "increase-flow-operator-permissions"
 
 type Action<TType extends ActionType, TPayload extends Record<string, unknown>> = {
     id: string
@@ -142,8 +142,7 @@ type UpdateVestingScheduleAction = Action<"update-vesting-schedule", {
     previousStartDate: number
 }>
 
-// Probably don't want to actually "stop" anything. Rather just have them run out.
-type StopVestingScheduleAction = Action<"stop-vesting-schedule", {
+type LetVestingScheduleEndAction = Action<"let-vesting-schedule-end", {
     superToken: Address
     sender: Address
     receiver: Address
@@ -165,7 +164,7 @@ type SetFlowOperatorPermissionsAction = Action<"increase-flow-operator-permissio
 }>
 
 export type AllowanceActions = TokenAllowanceAction | SetFlowOperatorPermissionsAction
-export type ProjectActions = CreateVestingScheduleAction | UpdateVestingScheduleAction | StopVestingScheduleAction | EndVestingScheduleNowAction
+export type ProjectActions = CreateVestingScheduleAction | UpdateVestingScheduleAction | LetVestingScheduleEndAction | EndVestingScheduleNowAction
 export type Actions = AllowanceActions | ProjectActions
 // ---
 
@@ -514,7 +513,7 @@ export default async function handler(
                     const hasProjectJustChangedWallet = !!previousWalletVestingSchedule;
                     if (hasProjectJustChangedWallet) {
                         pushAction({
-                            type: "stop-vesting-schedule",
+                            type: "let-vesting-schedule-end",
                             payload: {
                                 superToken: token,
                                 sender,
@@ -558,7 +557,7 @@ export default async function handler(
                         const isFundingJustStoppedForProject = agoraCurrentAmount === 0n;
                         if (isFundingJustStoppedForProject) {
                             pushAction({
-                                type: "stop-vesting-schedule",
+                                type: "let-vesting-schedule-end",
                                 payload: {
                                     superToken: token,
                                     sender,
@@ -572,7 +571,7 @@ export default async function handler(
                         if (isFundingJustChangedForProject) {
                             if (agoraCurrentAmount === 0n) {
                                 pushAction({
-                                    type: "stop-vesting-schedule",
+                                    type: "let-vesting-schedule-end",
                                     payload: {
                                         superToken: token,
                                         sender,
@@ -642,7 +641,7 @@ export default async function handler(
                     }
 
                     return actions
-                        .filter(x => x.type !== "stop-vesting-schedule") // Filter out stop vesting schedules for now as we don't need to do anything.
+                        .filter(x => x.type !== "let-vesting-schedule-end") // Filter out stop vesting schedules for now as we don't need to do anything.
                 });
 
                 const projectState: ProjectState = {
