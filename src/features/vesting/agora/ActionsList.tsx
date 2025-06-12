@@ -74,7 +74,7 @@ export const ActionsList: FC<{
                 </TableHead>
                 <TableBody>
                     {actions.map((action, index) => {
-                        const { actionType, receiver, amount, fromDate, toDate, isAllocationReduction } = getActionDetails(action, tokenSymbol);
+                        const { actionType, receiver, amount, fromDate, toDate, isAllocationReduction, cliffAmount } = getActionDetails(action, tokenSymbol);
 
                         return (
                             <TableRow
@@ -102,7 +102,10 @@ export const ActionsList: FC<{
                                 </TableCell>
                                 <TableCell sx={{
                                     color: isAllocationReduction ? "red" : "inherit"
-                                }}>{amount}</TableCell>
+                                }}>
+                                    {amount}
+                                    {cliffAmount ? <><br /><span>Cliff: {cliffAmount}</span></> : null}
+                                </TableCell>
                                 <TableCell>
                                     {fromDate ? (
                                         <Tooltip title={
@@ -152,6 +155,7 @@ const getActionDetails = (action: Actions, tokenSymbol: string | undefined) => {
     let fromDate: Date | undefined;
     let toDate: Date | undefined;
     let isAllocationReduction = false;
+    let cliffAmount: ReactNode | null = null;
 
     switch (action.type) {
         case "create-vesting-schedule":
@@ -160,6 +164,9 @@ const getActionDetails = (action: Actions, tokenSymbol: string | undefined) => {
             amount = formatAmount(action.payload.totalAmount, tokenSymbol);
             fromDate = new Date(action.payload.startDate * 1000);
             toDate = new Date((action.payload.startDate + action.payload.totalDuration) * 1000);
+            if (action.payload.cliffAmount) {
+                cliffAmount = formatAmount(action.payload.cliffAmount, tokenSymbol);
+            }
             break;
 
         case "update-vesting-schedule":
@@ -213,5 +220,5 @@ const getActionDetails = (action: Actions, tokenSymbol: string | undefined) => {
             actionType = `Unknown Action: ${(action as any).type}`;
     }
 
-    return { actionType, receiver, amount, fromDate, toDate, isAllocationReduction };
+    return { actionType, receiver, amount, fromDate, toDate, isAllocationReduction, cliffAmount };
 };
