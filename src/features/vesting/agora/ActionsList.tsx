@@ -192,6 +192,11 @@ const getActionDetails = (action: Actions, tokenSymbol: string | undefined) => {
             amount = `~${formatAmount(action.payload.settledAmount, tokenSymbol)}`;
             break;
 
+        case "delete-vesting-schedule":
+            actionType = "Delete Unclaimed Ended Vesting Schedule";
+            receiver = action.payload.receiver;
+            break;
+
         case "increase-token-allowance":
             actionType = "Increase Token Allowance";
             receiver = action.payload.receiver;

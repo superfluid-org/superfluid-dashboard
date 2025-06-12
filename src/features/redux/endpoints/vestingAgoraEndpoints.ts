@@ -177,6 +177,22 @@ async function mapProjectStateIntoOperations(state: ProjectsOverview, actionsToE
                 });
                 break;
             }
+            case "delete-vesting-schedule": {
+                const populatedTransaction = vestingScheduler
+                    .populateTransaction.deleteVestingSchedule(
+                        action.payload.superToken,
+                        action.payload.receiver
+                    );
+                const operation = new Operation(
+                    populatedTransaction,
+                    'ERC2771_FORWARD_CALL'
+                );
+                operations.push({
+                    operation: operation,
+                    title: "Delete Vesting Schedule"
+                });
+                break;
+            }
             case "let-vesting-schedule-end": {
                 break;
             }
@@ -307,6 +323,24 @@ export const mapProjectStateIntoGnosisSafeBatch = (state: ProjectsOverview, acti
                 const functionAbi = getAbiItem({
                     abi: vestingSchedulerV3Abi,
                     name: 'endVestingScheduleNow',
+                    args
+                })
+                const argNames = functionAbi.inputs.map(input => input.name);
+                transactions.push({
+                    to: vestingContractInfo.address,
+                    contractMethod: functionAbi,
+                    contractInputsValues: mapArgsIntoContractInputsValues(argNames, args)
+                })
+                break;
+            }
+            case "delete-vesting-schedule": {
+                const args = [
+                    action.payload.superToken,
+                    action.payload.receiver
+                ] as const;
+                const functionAbi = getAbiItem({
+                    abi: vestingSchedulerV3Abi,
+                    name: 'deleteVestingSchedule',
                     args
                 })
                 const argNames = functionAbi.inputs.map(input => input.name);
