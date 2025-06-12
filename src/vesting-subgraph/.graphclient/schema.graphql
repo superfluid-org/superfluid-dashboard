@@ -939,6 +939,8 @@ enum Task_orderBy {
   vestingSchedule__claimedAt
   vestingSchedule__remainderAmount
   vestingSchedule__totalAmount
+  vestingSchedule__settledAmount
+  vestingSchedule__settledAt
 }
 
 """
@@ -1071,6 +1073,8 @@ enum TokenSenderReceiverCursor_orderBy {
   currentVestingSchedule__claimedAt
   currentVestingSchedule__remainderAmount
   currentVestingSchedule__totalAmount
+  currentVestingSchedule__settledAmount
+  currentVestingSchedule__settledAt
   currentCliffAndFlowTask
   currentCliffAndFlowTask__id
   currentCliffAndFlowTask__type
@@ -1854,6 +1858,8 @@ type VestingSchedule {
   claimedAt: BigInt
   remainderAmount: BigInt!
   totalAmount: BigInt!
+  settledAmount: BigInt!
+  settledAt: BigInt!
 }
 
 type VestingScheduleCreatedEvent implements Event {
@@ -2897,6 +2903,22 @@ input VestingSchedule_filter {
   totalAmount_lte: BigInt
   totalAmount_in: [BigInt!]
   totalAmount_not_in: [BigInt!]
+  settledAmount: BigInt
+  settledAmount_not: BigInt
+  settledAmount_gt: BigInt
+  settledAmount_lt: BigInt
+  settledAmount_gte: BigInt
+  settledAmount_lte: BigInt
+  settledAmount_in: [BigInt!]
+  settledAmount_not_in: [BigInt!]
+  settledAt: BigInt
+  settledAt_not: BigInt
+  settledAt_gt: BigInt
+  settledAt_lt: BigInt
+  settledAt_gte: BigInt
+  settledAt_lte: BigInt
+  settledAt_in: [BigInt!]
+  settledAt_not_in: [BigInt!]
   """Filter for the block changed event."""
   _change_block: BlockChangedFilter
   and: [VestingSchedule_filter]
@@ -2930,6 +2952,8 @@ enum VestingSchedule_orderBy {
   claimedAt
   remainderAmount
   totalAmount
+  settledAmount
+  settledAt
 }
 
 type _Block_ {

@@ -14,7 +14,6 @@ import { PrimaryPageContent } from "../../features/vesting/agora/PrimaryPageCont
 import { RoundType, roundTypes } from "../../features/vesting/agora/constants";
 import { optimismSepolia } from "wagmi/chains";
 
-
 const AgoraPage: NextPageWithLayout = () => {
     const router = useRouter();
     const { visibleAddress } = useVisibleAddress();
@@ -57,7 +56,7 @@ const AgoraPage: NextPageWithLayout = () => {
                 query: { ...router.query, roundType }
             }, undefined, { shallow: true });
         }
-    }, [roundType, router]);
+    }, [router.isReady, roundType]);
 
     const handleRoundTypeChange = (
         _event: React.MouseEvent<HTMLElement>,

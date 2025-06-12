@@ -100,5 +100,7 @@ export const mapPendingToVestingSchedule = (
     transactionHash: pendingVestingSchedule.transactionHash,
     totalAmount,
     totalAmountWithOverpayment: totalAmount, // For pending schedules, there's no overpayment yet
+    settledAmount: "0",
+    settledAt: 0,
   };
 };

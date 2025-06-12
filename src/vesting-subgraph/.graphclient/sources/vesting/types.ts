@@ -798,7 +798,9 @@ export type Task_orderBy =
   | 'vestingSchedule__claimValidityDate'
   | 'vestingSchedule__claimedAt'
   | 'vestingSchedule__remainderAmount'
-  | 'vestingSchedule__totalAmount';
+  | 'vestingSchedule__totalAmount'
+  | 'vestingSchedule__settledAmount'
+  | 'vestingSchedule__settledAt';
 
 export type TokenSenderReceiverCursor = {
   id: Scalars['String'];
@@ -924,6 +926,8 @@ export type TokenSenderReceiverCursor_orderBy =
   | 'currentVestingSchedule__claimedAt'
   | 'currentVestingSchedule__remainderAmount'
   | 'currentVestingSchedule__totalAmount'
+  | 'currentVestingSchedule__settledAmount'
+  | 'currentVestingSchedule__settledAt'
   | 'currentCliffAndFlowTask'
   | 'currentCliffAndFlowTask__id'
   | 'currentCliffAndFlowTask__type'
@@ -1702,6 +1706,8 @@ export type VestingSchedule = {
   claimedAt?: Maybe<Scalars['BigInt']>;
   remainderAmount: Scalars['BigInt'];
   totalAmount: Scalars['BigInt'];
+  settledAmount: Scalars['BigInt'];
+  settledAt: Scalars['BigInt'];
 };
 
 
@@ -2759,6 +2765,22 @@ export type VestingSchedule_filter = {
   totalAmount_lte?: InputMaybe<Scalars['BigInt']>;
   totalAmount_in?: InputMaybe<Array<Scalars['BigInt']>>;
   totalAmount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  settledAmount?: InputMaybe<Scalars['BigInt']>;
+  settledAmount_not?: InputMaybe<Scalars['BigInt']>;
+  settledAmount_gt?: InputMaybe<Scalars['BigInt']>;
+  settledAmount_lt?: InputMaybe<Scalars['BigInt']>;
+  settledAmount_gte?: InputMaybe<Scalars['BigInt']>;
+  settledAmount_lte?: InputMaybe<Scalars['BigInt']>;
+  settledAmount_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  settledAmount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  settledAt?: InputMaybe<Scalars['BigInt']>;
+  settledAt_not?: InputMaybe<Scalars['BigInt']>;
+  settledAt_gt?: InputMaybe<Scalars['BigInt']>;
+  settledAt_lt?: InputMaybe<Scalars['BigInt']>;
+  settledAt_gte?: InputMaybe<Scalars['BigInt']>;
+  settledAt_lte?: InputMaybe<Scalars['BigInt']>;
+  settledAt_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  settledAt_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<VestingSchedule_filter>>>;
@@ -2791,7 +2813,9 @@ export type VestingSchedule_orderBy =
   | 'claimValidityDate'
   | 'claimedAt'
   | 'remainderAmount'
-  | 'totalAmount';
+  | 'totalAmount'
+  | 'settledAmount'
+  | 'settledAt';
 
 export type _Block_ = {
   /** The hash of the block */

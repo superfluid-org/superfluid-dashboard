@@ -144,8 +144,8 @@ type EndVestingScheduleNowAction = Action<"end-vesting-schedule-now", {
     superToken: Address
     sender: Address
     receiver: Address
-    previousTotalAmount: string
     settledAmount: string
+    surplusAmount: string
 }>
 
 type DeleteVestingScheduleAction = Action<"delete-vesting-schedule", {
@@ -620,14 +620,15 @@ export default async function handler(
                                 if (settledAmount >= newTotalAmount) {
 
                                     if (currentWalletVestingSchedule.claimedAt) {
+                                        const surplusAmount = settledAmount - newTotalAmount;
                                         pushAction({
                                             type: "end-vesting-schedule-now",
                                             payload: {
                                                 superToken: token,
                                                 sender,
                                                 receiver: agoraCurrentWallet,
-                                                previousTotalAmount: currentWalletVestingSchedule.totalAmount,
-                                                settledAmount: settledAmount.toString()
+                                                settledAmount: settledAmount.toString(),
+                                                surplusAmount: surplusAmount.toString()
                                             }
                                         })
                                     } else {
