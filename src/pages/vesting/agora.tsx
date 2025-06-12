@@ -188,6 +188,7 @@ const AgoraPage: NextPageWithLayout = () => {
                 key={projectsOverview.key}
                 projectsOverview={projectsOverview}
                 token={token}
+                roundType={roundType}
             />
 
         </Container>
