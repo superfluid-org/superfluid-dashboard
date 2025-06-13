@@ -3,6 +3,7 @@ import { memo } from "react";
 import Blockies from "react-blockies";
 import { ensApi } from "../../features/ens/ensApi.slice";
 import { lensApi } from "../../features/lens/lensApi.slice";
+import { isTOREXAddress } from "../../features/torex/torexAddresses";
 
 interface BlockiesProps {
   size?: number;
@@ -29,6 +30,18 @@ export default memo(function AddressAvatar({
   const { currentData: ensAvatarUrl, isFetching: ensFetching } =
     ensApi.useGetAvatarQuery(address);
   const { currentData: lensData } = lensApi.useLookupAddressQuery(address);
+
+  // Check if this is a ToreX address first - ToreX avatars take priority
+  if (isTOREXAddress(address)) {
+    return (
+      <Avatar
+        alt="SuperBoring Torex"
+        variant="rounded"
+        src="/icons/superboring32x32.png"
+        {...AvatarProps}
+      />
+    );
+  }
 
   if (ensAvatarUrl) {
     return (

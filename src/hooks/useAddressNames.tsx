@@ -5,6 +5,7 @@ import { useAppSelector } from "../features/redux/store";
 import { getAddress } from "../utils/memoizedEthersUtils";
 import { AddressNameResult } from "./useAddressName";
 import { lensApi } from "../features/lens/lensApi.slice";
+import { getTOREXInfo } from "../features/torex/torexAddresses";
 
 interface AddressNames {
   [any: string]: AddressNameResult;
@@ -60,6 +61,7 @@ const useAddressNames = (addresses: string[]): AddressNames => {
   }, [addresses, ensLookupQueryTrigger, lensLookupQueryTrigger]);
 
   return addresses.reduce((mappedAddresses, address) => {
+    const addressChecksummed = getAddress(address);
     const addressBookName =
       addressBookNames.find(
         (addressBookName) =>
@@ -67,14 +69,18 @@ const useAddressNames = (addresses: string[]): AddressNames => {
       )?.name || "";
     const ensName = ensNames[address.toLowerCase()];
     const lensName = lensNames[address.toLowerCase()];
+    
+    const torexInfo = getTOREXInfo(addressChecksummed);
+    const torexName = torexInfo?.name;
 
     return {
       ...mappedAddresses,
       [address]: {
-        addressChecksummed: getAddress(address),
-        name: addressBookName || ensName || lensName || "",
+        addressChecksummed,
+        name: addressBookName || torexName || ensName || lensName || "",
         ensName,
         lensName,
+        torexName,
       },
     };
   }, {} as AddressNames);
