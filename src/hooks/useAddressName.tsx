@@ -4,12 +4,14 @@ import { ensApi } from "../features/ens/ensApi.slice";
 import { lensApi } from "../features/lens/lensApi.slice";
 import { useAppSelector } from "../features/redux/store";
 import { getAddress } from "../utils/memoizedEthersUtils";
+import { getTOREXInfo } from "../features/torex/torexAddresses";
 
 export interface AddressNameResult {
   addressChecksummed: string;
   name: string | "";
   ensName?: string;
   lensName?: string;
+  torexName?: string;
 }
 
 const useAddressName = (address: string): AddressNameResult => {
@@ -30,11 +32,15 @@ const useAddressName = (address: string): AddressNameResult => {
     ? lensLookupQuery.data?.name
     : undefined;
 
+  const torexInfo = getTOREXInfo(addressChecksummed);
+  const torexName = torexInfo?.name;
+
   return {
     addressChecksummed,
-    name: addressBookName || ensName || lensName || "",
+    name: addressBookName || torexName || ensName || lensName || "",
     ensName,
     lensName,
+    torexName,
   };
 };
 
