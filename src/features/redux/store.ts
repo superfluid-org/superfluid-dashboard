@@ -43,6 +43,7 @@ import { customTokensSlice, getCustomTokenId, NetworkCustomTokenState } from "..
 import { efpApi } from "../efp/efpApi.slice";
 import { ensApi } from "../ens/ensApi.slice";
 import { lensApi } from "../lens/lensApi.slice";
+import { whoisApi } from "../whois/whoisApi.slice";
 import faucetApi from "../faucet/faucetApi.slice";
 import { flagsSlice } from "../flags/flags.slice";
 import gasApi from "../gas/gasApi.slice";
@@ -265,6 +266,7 @@ export const reduxStore = configureStore({
     [efpApi.reducerPath]: efpApi.reducer,
     [ensApi.reducerPath]: ensApi.reducer,
     [lensApi.reducerPath]: lensApi.reducer,
+    [whoisApi.reducerPath]: whoisApi.reducer,
     [gasApi.reducerPath]: gasApi.reducer,
     [platformApi.reducerPath]: platformApi.reducer,
     [faucetApi.reducerPath]: faucetApi.reducer,
@@ -303,6 +305,7 @@ export const reduxStore = configureStore({
     .concat(efpApi.middleware)
     .concat(ensApi.middleware)
     .concat(lensApi.middleware)
+    .concat(whoisApi.middleware)
     .concat(gasApi.middleware)
     .concat(platformApi.middleware)
     .concat(faucetApi.middleware)
