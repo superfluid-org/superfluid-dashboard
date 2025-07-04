@@ -5,12 +5,12 @@ import { Effect as E, Logger, LogLevel, pipe } from 'effect'
 import { uniq } from 'lodash'
 import { tryGetBuiltGraphSdkForNetwork } from '../../vesting-subgraph/vestingSubgraphApi'
 import { optimism } from 'viem/chains'
-import { Address, createPublicClient, http, isAddress, sha256, stringToHex } from 'viem'
+import { Address, createPublicClient, encodePacked, http, isAddress, keccak256, sha256, stringToHex } from 'viem'
 import { mapSubgraphVestingSchedule, VestingSchedule } from '../../features/vesting/types'
 import { UnitOfTime } from '../../features/send/FlowRateInput'
 import { allNetworks, findNetworkOrThrow } from '../../features/network/networks'
 import { add, getUnixTime } from 'date-fns'
-import { cfaV1ForwarderAbi, cfaV1ForwarderAddress, superTokenAbi } from '../../generated'
+import { cfaV1ForwarderAbi, cfaV1ForwarderAddress, superTokenAbi, vestingSchedulerV3Abi } from '../../generated'
 import { ACL_CREATE_PERMISSION, ACL_DELETE_PERMISSION, ACL_UPDATE_PERMISSION } from '../../utils/constants'
 import { getAddress as getAddress_ } from "ethers/lib/utils"
 import { agoraApiEndpoints, RoundType, roundTypes, START_TIMESTAMP_OF_FIRST_TRANCH_ON_OPTIMISM, tokenAddresses, validChainIds } from '../../features/vesting/agora/constants'
@@ -103,7 +103,7 @@ export type ProjectState = {
 // ---
 
 // # Actions
-type ActionType = "create-vesting-schedule" | "update-vesting-schedule" | "stop-vesting-schedule" | "increase-token-allowance" | "increase-flow-operator-permissions"
+type ActionType = "create-vesting-schedule" | "update-vesting-schedule"  | "let-vesting-schedule-end" | "end-vesting-schedule-now" | "delete-vesting-schedule" | "increase-token-allowance" | "increase-flow-operator-permissions"
 
 type Action<TType extends ActionType, TPayload extends Record<string, unknown>> = {
     id: string
@@ -134,8 +134,21 @@ type UpdateVestingScheduleAction = Action<"update-vesting-schedule", {
     previousStartDate: number
 }>
 
-// Probably don't want to actually "stop" anything. Rather just have them run out.
-type StopVestingScheduleAction = Action<"stop-vesting-schedule", {
+type LetVestingScheduleEndAction = Action<"let-vesting-schedule-end", {
+    superToken: Address
+    sender: Address
+    receiver: Address
+}>
+
+type EndVestingScheduleNowAction = Action<"end-vesting-schedule-now", {
+    superToken: Address
+    sender: Address
+    receiver: Address
+    settledAmount: string
+    surplusAmount: string
+}>
+
+type DeleteVestingScheduleAction = Action<"delete-vesting-schedule", {
     superToken: Address
     sender: Address
     receiver: Address
@@ -157,7 +170,7 @@ type SetFlowOperatorPermissionsAction = Action<"increase-flow-operator-permissio
 }>
 
 export type AllowanceActions = TokenAllowanceAction | SetFlowOperatorPermissionsAction
-export type ProjectActions = CreateVestingScheduleAction | UpdateVestingScheduleAction | StopVestingScheduleAction
+export type ProjectActions = CreateVestingScheduleAction | UpdateVestingScheduleAction | LetVestingScheduleEndAction | EndVestingScheduleNowAction | DeleteVestingScheduleAction
 export type Actions = AllowanceActions | ProjectActions
 // ---
 
@@ -443,6 +456,25 @@ export default async function handler(
 
         const nowDate = new Date();
         const nowTimestamp = getUnixTime(nowDate);
+        const nowIn2DaysTimestamp = getUnixTime(add(nowDate, { hours: 48 }));
+        const currentTranch = tranchPlan.tranches[tranchPlan.currentTranchCount - 1];
+        const startTimestampForNewSchedules = currentTranch.startTimestamp < nowTimestamp  // If it's later than tranch start date.
+            ? nowIn2DaysTimestamp
+            : Math.min(nowIn2DaysTimestamp, currentTranch.startTimestamp); // Start in 2 days or original tranch start, whichever is closer.
+
+        function getTotalDuration(startTimestamp: number) {
+            // We want to resolve this lazily because it might error in cases where no schedules are actually created.
+            const totalDuration = currentTranch.endTimestamp - startTimestamp;
+            if (totalDuration <= 0) {
+                throw new Error("Total duration is less than or equal to 0. This shouldn't happen. Please investigate!");
+            }
+            return totalDuration;
+        }
+        
+        const publicClient = createPublicClient({
+            chain: network,
+            transport: http(network.rpcUrls.superfluid.http[0])
+        });
 
         // # Map into project states
         const projectStates = yield* E.forEach(dataFromAgora, (row) => {
@@ -496,12 +528,11 @@ export default async function handler(
                     //const cliffAmount = 0n; // Note: Cliff will always be 0. We decided to disable this feature.
                     // The old cliff logic: didKycGetJustApproved ? sumOfPreviousTranches : 0n;
                     // const totalAmount = agoraCurrentAmount + cliffAmount;
-                    const currentTranch = tranchPlan.tranches[tranchPlan.currentTranchCount - 1];
 
                     const hasProjectJustChangedWallet = !!previousWalletVestingSchedule;
                     if (hasProjectJustChangedWallet) {
                         pushAction({
-                            type: "stop-vesting-schedule",
+                            type: "let-vesting-schedule-end",
                             payload: {
                                 superToken: token,
                                 sender,
@@ -513,29 +544,18 @@ export default async function handler(
                     const isAlreadyVestingToRightWallet = !!currentWalletVestingSchedule;
                     if (!isAlreadyVestingToRightWallet) {
                         if (missingAmount > 0n) {
-                            const nowIn2DaysTimestamp = getUnixTime(add(nowDate, { hours: 48 }));
-
-                            const startTimestamp = currentTranch.startTimestamp < nowTimestamp  // If it's later than tranch start date.
-                                ? nowIn2DaysTimestamp
-                                : Math.min(nowIn2DaysTimestamp, currentTranch.startTimestamp); // Start in 2 days or original tranch start, whichever is closer.
-
-                            const totalDuration = currentTranch.endTimestamp - startTimestamp;
-                            if (totalDuration <= 0) {
-                                throw new Error("Total duration is less than or equal to 0. This shouldn't happen. Please investigate!");
-                            }
-
                             pushAction({
                                 type: "create-vesting-schedule",
                                 payload: {
                                     superToken: token,
                                     sender,
                                     receiver: agoraCurrentWallet,
-                                    startDate: startTimestamp,
+                                    startDate: startTimestampForNewSchedules,
                                     totalAmount: missingAmount.toString(),
-                                    totalDuration: totalDuration,
+                                    totalDuration: getTotalDuration(startTimestampForNewSchedules),
                                     cliffAmount: "0",
                                     cliffPeriod: 0,
-                                    claimPeriod: getClaimPeriod(startTimestamp)
+                                    claimPeriod: getClaimPeriod(startTimestampForNewSchedules)
                                 }
                             })
                         }
@@ -545,7 +565,7 @@ export default async function handler(
                         const isFundingJustStoppedForProject = agoraCurrentAmount === 0n;
                         if (isFundingJustStoppedForProject) {
                             pushAction({
-                                type: "stop-vesting-schedule",
+                                type: "let-vesting-schedule-end",
                                 payload: {
                                     superToken: token,
                                     sender,
@@ -559,7 +579,7 @@ export default async function handler(
                         if (isFundingJustChangedForProject) {
                             if (agoraCurrentAmount === 0n) {
                                 pushAction({
-                                    type: "stop-vesting-schedule",
+                                    type: "let-vesting-schedule-end",
                                     payload: {
                                         superToken: token,
                                         sender,
@@ -569,25 +589,139 @@ export default async function handler(
                             } else {
                                 const newTotalAmount = BigInt(currentWalletVestingSchedule.totalAmount) + missingAmount;
 
-                                pushAction({
-                                    type: "update-vesting-schedule",
-                                    payload: {
-                                        superToken: token,
-                                        sender,
-                                        receiver: agoraCurrentWallet,
-                                        totalAmount: newTotalAmount.toString(),
-                                        previousTotalAmount: currentWalletVestingSchedule.totalAmount,
-                                        previousFlowRate: currentWalletVestingSchedule.flowRate,
-                                        previousStartDate: currentWalletVestingSchedule.startDate,
-                                        endDate: currentTranch.endTimestamp
+                                let settledAmount = 0n;
+                                if (newTotalAmount < BigInt(currentWalletVestingSchedule.totalAmount)) {
+                                    const vestingScheduleId = keccak256(
+                                        encodePacked(
+                                            ['address', 'address', 'address'], 
+                                            [token, sender, agoraCurrentWallet]
+                                        )
+                                    );
+    
+                                    // todo: Consider adding a retry here.
+                                    const [lastSettledAmount, lastSettledDate] = yield* E.tryPromise({
+                                        try: () => publicClient.readContract({
+                                            address: vestingContractInfo.address,
+                                            abi: vestingSchedulerV3Abi,
+                                            functionName: "accountings",
+                                            args: [vestingScheduleId]
+                                        }),
+                                        catch: (error) => {
+                                            console.log("Failed to read vesting schedule accounting", { cause: error })
+                                            return new PublicClientRpcError("Failed to read vesting schedule accounting", { cause: error })
+                                        }
+                                    })
+    
+                                    const elapsedTimeSinceLastSettled = BigInt(nowTimestamp) - lastSettledDate;
+                                    const amountFlowed = elapsedTimeSinceLastSettled * BigInt(currentWalletVestingSchedule.flowRate);
+                                    settledAmount = lastSettledAmount + amountFlowed; // No need to add cliffAmount here.
+                                }
+
+                                if (settledAmount >= newTotalAmount) {
+
+                                    if (currentWalletVestingSchedule.claimedAt) {
+                                        const surplusAmount = settledAmount - newTotalAmount;
+                                        pushAction({
+                                            type: "end-vesting-schedule-now",
+                                            payload: {
+                                                superToken: token,
+                                                sender,
+                                                receiver: agoraCurrentWallet,
+                                                settledAmount: settledAmount.toString(),
+                                                surplusAmount: surplusAmount.toString()
+                                            }
+                                        })
+                                    } else {
+                                        pushAction({
+                                            type: "delete-vesting-schedule",
+                                            payload: {
+                                                superToken: token,
+                                                sender,
+                                                receiver: agoraCurrentWallet,
+                                            }
+                                        })
+
+                                        const subgraphTotalWithoutCurrentSchedule = subgraphTotalAmount - BigInt(currentWalletVestingSchedule.totalAmount);
+                                        const newMissingAmount = agoraTotalAmount - subgraphTotalWithoutCurrentSchedule;
+
+                                        if (newMissingAmount > 0n) {
+
+                                            // Add as cliff the amount that should have been vested already. Very rough approximation.
+                                            const currentTranchCount = BigInt(tranchPlan.currentTranchCount);
+                                            const cliffAmount = newMissingAmount / currentTranchCount * (currentTranchCount - 1n);
+
+                                            pushAction({
+                                                type: "create-vesting-schedule",
+                                                payload: {
+                                                    superToken: token,
+                                                    sender,
+                                                    receiver: agoraCurrentWallet,
+                                                    startDate: startTimestampForNewSchedules,
+                                                    totalAmount: newMissingAmount.toString(),
+                                                    totalDuration: getTotalDuration(startTimestampForNewSchedules),
+                                                    cliffAmount: cliffAmount.toString(),
+                                                    cliffPeriod: 1,
+                                                    claimPeriod: getClaimPeriod(startTimestampForNewSchedules)
+                                                }
+                                            })
+                                        }
                                     }
-                                })
+
+                                } else {
+
+                                    if (
+                                        currentWalletVestingSchedule.claimValidityDate && // Is claimable
+                                        !currentWalletVestingSchedule.claimedAt && // Is not claimed
+                                        currentWalletVestingSchedule.endDate < nowTimestamp // Is ended, which means it can't be updated
+                                    ) {
+                                        pushAction({
+                                            type: "delete-vesting-schedule",
+                                            payload: {
+                                                superToken: token,
+                                                sender,
+                                                receiver: agoraCurrentWallet,
+                                            }
+                                        })
+
+                                        pushAction({
+                                            type: "create-vesting-schedule",
+                                            payload: {
+                                                superToken: token,
+                                                sender,
+                                                receiver: agoraCurrentWallet,
+                                                startDate: startTimestampForNewSchedules,
+                                                totalAmount: newTotalAmount.toString(),
+                                                totalDuration: getTotalDuration(startTimestampForNewSchedules),
+                                                cliffAmount: currentWalletVestingSchedule.totalAmount, // Add the deleted unclaimed schedule's amount as cliff
+                                                cliffPeriod: 1, // Non-zero cliff period enables a cliff amount
+                                                claimPeriod: getClaimPeriod(startTimestampForNewSchedules)
+                                            }
+                                        })
+
+                                    } else {
+                                        pushAction({
+                                            type: "update-vesting-schedule",
+                                            payload: {
+                                                superToken: token,
+                                                sender,
+                                                receiver: agoraCurrentWallet,
+                                                totalAmount: newTotalAmount.toString(),
+                                                previousTotalAmount: currentWalletVestingSchedule.totalAmount,
+                                                previousFlowRate: currentWalletVestingSchedule.flowRate,
+                                                previousStartDate: currentWalletVestingSchedule.startDate,
+                                                endDate: currentTranch.endTimestamp
+                                            }
+                                        })
+                                    }
+                                    
+                                }
+
                             }
                         }
                     }
 
                     return actions
-                        .filter(x => x.type !== "stop-vesting-schedule") // Filter out stop vesting schedules for now as we don't need to do anything.
+                        .filter(x => x.type !== "let-vesting-schedule-end") // Filter out stop vesting schedules for now as we don't need to do anything.
                 });
 
                 const projectState: ProjectState = {
@@ -609,11 +743,6 @@ export default async function handler(
         });
 
         yield* E.logTrace(`Processed ${projectStates.length} project states`);
-
-        const publicClient = createPublicClient({
-            chain: network,
-            transport: http(network.rpcUrls.superfluid.http[0])
-        });
 
         const allowanceActions = yield* E.gen(function* () {
             const actions: AllowanceActions[] = [];

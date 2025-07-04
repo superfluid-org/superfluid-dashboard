@@ -155,6 +155,8 @@ export interface VestingSchedule {
   transactionHash: string;
   totalAmount: string;
   totalAmountWithOverpayment: string;
+  settledAmount: string;
+  settledAt: number;
 }
 
 export type SubgraphVestingSchedule = NonNullable<
@@ -200,11 +202,13 @@ export const mapSubgraphVestingSchedule = (
       : "0",
     version: vestingSchedule.contractVersion,
     transactionHash: vestingSchedule.id.split("-")[0],
-    totalAmount: vestingSchedule.totalAmount
+    totalAmount: vestingSchedule.totalAmount,
+    settledAmount: vestingSchedule.settledAmount,
+    settledAt: Number(vestingSchedule.settledAt)
   };
-  
+
   const totalAmountWithOverpayment = calculateTotalAmountWithOverpayment(mappedVestingSchedule);
-  
+
   return {
     ...mappedVestingSchedule,
     totalAmountWithOverpayment,
@@ -236,7 +240,7 @@ const calculateTotalAmountWithOverpayment = (
     const overpaymentAmount = BigNumber.from(overpaymentSeconds).mul(flowRate);
     const totalAmountBN = BigNumber.from(totalAmount);
     const remainderAmountBN = BigNumber.from(remainderAmount);
-    
+
     return totalAmountBN
       .sub(remainderAmountBN)
       .add(overpaymentAmount)

@@ -158,15 +158,15 @@ export function mapVestingExpectedDataPoints(
 
     const updateEventsMatchingDate = updateEventsOrderedAsc.filter(event => event.keyEvent.timestamp <= dateUnix);
     const updateEventWithHighestTimestamp = maxBy((event) => event.keyEvent.timestamp, updateEventsMatchingDate);
-    
+
     if (updateEventWithHighestTimestamp) {
       const newLastFlowRateTimestamp = updateEventWithHighestTimestamp.keyEvent.timestamp;
       lastAmountStreamed = BigNumber.from(newLastFlowRateTimestamp - lastFlowRateTimestamp).mul(lastFlowRate).add(lastAmountStreamed)
-      
+
       lastFlowRate = updateEventWithHighestTimestamp.keyEvent.flowRate;
       lastFlowRateTimestamp = newLastFlowRateTimestamp;
     }
-    
+
     let secondsStreamed = dateUnix - lastFlowRateTimestamp;
 
     if (secondsStreamed > 0) {
@@ -214,18 +214,30 @@ export function vestingScheduleToTokenBalance(
 ): TokenBalance | null {
   const {
     flowRate,
-    cliffAmount,
     endDate,
     endExecutedAt,
-    cliffAndFlowExecutedAt,
     cliffAndFlowDate,
     didEarlyEndCompensationFail,
     earlyEndCompensation,
     deletedAt,
     remainderAmount,
     claimedAt,
-    claimValidityDate
+    claimValidityDate,
+    settledAmount,
+    settledAt: settledAt_,
+    failedAt
   } = vestingSchedule;
+
+  const nowTimestamp = getUnixTime(new Date());
+
+  // If not reached the cliff and flow date then return 0 balance.
+  if (nowTimestamp < cliffAndFlowDate) {
+    return {
+      balance: "0",
+      totalNetFlowRate: "0",
+      timestamp: nowTimestamp,
+    };
+  }
 
   // If the vesting schedule was deleted and not claimed (when claimable), return 0 balance
   if (deletedAt && claimValidityDate && !claimedAt) {
@@ -236,34 +248,62 @@ export function vestingScheduleToTokenBalance(
     };
   }
 
+  // If the vesting schedule was claimed after the end date, return the total amount.
   const wasClaimedAfterEndDate = (claimedAt ?? 0) > endDate;
-  const effectiveEndAt = (wasClaimedAfterEndDate ? endDate : undefined) || endExecutedAt || deletedAt;
-  if (effectiveEndAt && effectiveEndAt > cliffAndFlowDate) {
-    const secondsStreamed = effectiveEndAt - cliffAndFlowDate;
-    const balance = BigNumber.from(secondsStreamed)
-      .mul(flowRate)
-      .add(cliffAmount)
-      .add(remainderAmount)
-      .add(didEarlyEndCompensationFail ? "0" : earlyEndCompensation ?? "0")
-      .toString();
-
+  if (wasClaimedAfterEndDate) {
     return {
-      balance,
+      balance: vestingSchedule.totalAmount,
       totalNetFlowRate: "0",
-      timestamp: effectiveEndAt,
-    };
-  } else if (cliffAndFlowExecutedAt) {
-    return {
-      balance: cliffAmount,
-      totalNetFlowRate: flowRate,
-      timestamp: cliffAndFlowDate,
+      timestamp: endDate,
     };
   }
 
+  // Claimable and after the end date.
+  if (claimValidityDate && nowTimestamp > claimValidityDate) {
+    return {
+      balance: vestingSchedule.totalAmount,
+      totalNetFlowRate: "0",
+      timestamp: nowTimestamp,
+    };
+  }
+
+  if (endExecutedAt) {
+    let balance = BigNumber.from(vestingSchedule.totalAmount)
+
+    if (didEarlyEndCompensationFail) {
+      balance = balance.sub(BigNumber.from(earlyEndCompensation ?? "0"));
+    }
+
+    if (endExecutedAt > endDate) {
+      // Add the overflow
+      balance = balance.add(BigNumber.from(endExecutedAt - endDate).mul(flowRate));
+    }
+
+    return {
+      balance: balance.toString(),
+      totalNetFlowRate: "0",
+      timestamp: endExecutedAt,
+    };
+  }
+
+  // If settledAmount and settledAt are available (not zero), use them as the base
+  // The settled values capture updates to the schedule.
+  const settledAmountBN = BigNumber.from(settledAmount);
+  const settledAt = settledAt_ || cliffAndFlowDate;
+
+  const anchorTimestamp = failedAt || deletedAt || nowTimestamp;
+  const secondsStreamedSinceSettlement = Math.max(0, anchorTimestamp - settledAt);
+
+  // Start with settledAmount and add the amount streamed since settlement
+  let balance = settledAmountBN
+    .add(BigNumber.from(secondsStreamedSinceSettlement).mul(flowRate));
+
+  const balanceString = balance.toString();
+
   return {
-    balance: "0",
-    totalNetFlowRate: "0",
-    timestamp: getUnixTime(new Date()),
+    balance: balanceString,
+    totalNetFlowRate: vestingSchedule.status.isFinished ? "0" : flowRate,
+    timestamp: anchorTimestamp,
   };
 }
 

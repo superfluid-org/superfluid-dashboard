@@ -1,4 +1,4 @@
-import { Checkbox, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography, Grid, Grid2 } from "@mui/material";
+import { Checkbox, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography, Grid, Grid2, Box } from "@mui/material";
 import { FC, ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import { formatEther } from "viem";
 import { Actions } from "../../../pages/api/agora";
@@ -74,7 +74,7 @@ export const ActionsList: FC<{
                 </TableHead>
                 <TableBody>
                     {actions.map((action, index) => {
-                        const { actionType, receiver, amount, fromDate, toDate, isAllocationReduction } = getActionDetails(action, tokenSymbol);
+                        const { actionType, receiver, amount, fromDate, toDate, isAllocationReduction, cliffAmount, surplusAmount } = getActionDetails(action, tokenSymbol);
 
                         return (
                             <TableRow
@@ -102,7 +102,11 @@ export const ActionsList: FC<{
                                 </TableCell>
                                 <TableCell sx={{
                                     color: isAllocationReduction ? "red" : "inherit"
-                                }}>{amount}</TableCell>
+                                }}>
+                                    {amount}
+                                    {cliffAmount ? <><br />{cliffAmount}</> : null}
+                                    {surplusAmount ? <><br />{surplusAmount}</> : null}
+                                </TableCell>
                                 <TableCell>
                                     {fromDate ? (
                                         <Tooltip title={
@@ -146,12 +150,14 @@ const formatAmount = (amount: string, tokenSymbol: string | undefined) => {
 
 // Get action details based on action type
 const getActionDetails = (action: Actions, tokenSymbol: string | undefined) => {
-    let actionType = "";
+    let actionType: ReactNode = "";
     let receiver = "";
     let amount: ReactNode = "";
     let fromDate: Date | undefined;
     let toDate: Date | undefined;
     let isAllocationReduction = false;
+    let cliffAmount: ReactNode | null = null;
+    let surplusAmount: ReactNode | null = null;
 
     switch (action.type) {
         case "create-vesting-schedule":
@@ -160,6 +166,10 @@ const getActionDetails = (action: Actions, tokenSymbol: string | undefined) => {
             amount = formatAmount(action.payload.totalAmount, tokenSymbol);
             fromDate = new Date(action.payload.startDate * 1000);
             toDate = new Date((action.payload.startDate + action.payload.totalDuration) * 1000);
+            if (action.payload.cliffPeriod > 0) {
+                amount = `Total: ${amount}`;
+                cliffAmount = <Box component="span" sx={{ color: "warning.main" }}>Cliff: {formatAmount(action.payload.cliffAmount, tokenSymbol)}</Box>;
+            }
             break;
 
         case "update-vesting-schedule":
@@ -181,8 +191,20 @@ const getActionDetails = (action: Actions, tokenSymbol: string | undefined) => {
             isAllocationReduction = BigInt(action.payload.previousTotalAmount) > BigInt(action.payload.totalAmount);
             break;
 
-        case "stop-vesting-schedule":
+        case "let-vesting-schedule-end":
             actionType = "Stop Vesting Schedule";
+            receiver = action.payload.receiver;
+            break;
+        
+        case "end-vesting-schedule-now":
+            actionType = <Box component="span" sx={{ color: "warning.main" }}>End Vesting Schedule Now</Box>;
+            receiver = action.payload.receiver;
+            amount = <Box component="span" sx={{ color: "warning.main" }}>Total: ~{formatAmount(action.payload.settledAmount, tokenSymbol)}</Box>;
+            surplusAmount = <Box component="span" sx={{ color: "error.main" }}>Surplus: ~{formatAmount(action.payload.surplusAmount, tokenSymbol)}</Box>;
+            break;
+
+        case "delete-vesting-schedule":
+            actionType = <Box component="span" sx={{ color: "warning.main" }}>Delete Unclaimed Ended Vesting Schedule</Box>;
             receiver = action.payload.receiver;
             break;
 
@@ -202,5 +224,5 @@ const getActionDetails = (action: Actions, tokenSymbol: string | undefined) => {
             actionType = `Unknown Action: ${(action as any).type}`;
     }
 
-    return { actionType, receiver, amount, fromDate, toDate, isAllocationReduction };
+    return { actionType, receiver, amount, fromDate, toDate, isAllocationReduction, cliffAmount, surplusAmount };
 };

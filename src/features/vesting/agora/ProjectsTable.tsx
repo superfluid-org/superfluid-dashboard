@@ -2,7 +2,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { Box, Collapse, IconButton, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography } from "@mui/material";
 import { FC, useMemo, useState } from "react";
-import { formatEther } from "viem";
+import { formatEther, parseEther } from "viem";
 import Amount from '../../token/Amount';
 import { useTokenQuery } from '../../../hooks/useTokenQuery';
 import { ProjectsOverview, ProjectState } from '../../../pages/api/agora';
@@ -111,7 +111,8 @@ function Status(props: { state: ProjectState }) {
     const getStatusInfo = () => {
         if (!props.state.agoraEntry.KYCStatusCompleted) {
             return { color: "text.disabled", message: "KYC not done" };
-        } else if (props.state.subgraphTotalAmount > props.state.agoraTotalAmount) {
+        // Add 1 ether worth for a little room for error.
+        } else if (BigInt(props.state.subgraphTotalAmount) > BigInt(props.state.agoraTotalAmount) + parseEther("1")) {
             return { color: "error.main", message: "On-chain is vesting more than Agora" };
         } else if (props.state.projectActions.length > 0) {
             return { color: "warning.main", message: "Actions pending" };

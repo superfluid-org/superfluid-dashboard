@@ -44,4 +44,6 @@ fragment VestingSchedulePart on VestingSchedule {
   remainderAmount
   contractVersion
   totalAmount
+  settledAmount
+  settledAt
 }

@@ -14,7 +14,7 @@ import { TokenMinimal } from "../../redux/endpoints/tokenTypes";
 import { useMemo } from "react";
 import { useStore, useSelector } from '@xstate/store/react';
 import { produce } from "immer";
-import { isAgoraSender } from "./constants";
+import { isAgoraSender, RoundType } from "./constants";
 import { Address } from "viem";
 
 export type SelectableActions = Actions & {
@@ -24,8 +24,9 @@ export type SelectableActions = Actions & {
 export function PrimaryPageContent(props: {
     projectsOverview: ProjectsOverview;
     token: TokenMinimal | null | undefined;
+    roundType: RoundType;
 }) {
-    const { projectsOverview, token } = props;
+    const { projectsOverview, token, roundType } = props;
 
     const projects = useMemo(() => {
         return [...projectsOverview.projects].sort((a, b) => {
@@ -81,7 +82,7 @@ export function PrimaryPageContent(props: {
     const actionsToExecute = useMemo(() => allSelectableActions.filter(x => x.selected), [allSelectableActions]);
 
     const isAgoraWhitelistedWallet = useMemo(() =>
-        isAgoraSender(projectsOverview.chainId, projectsOverview.senderAddress as Address),
+        isAgoraSender(projectsOverview.chainId, projectsOverview.senderAddress as Address, roundType),
         [projectsOverview]
     );
     const areButtonsDisabled = initialAllSelectableActions.length === 0 || !isAgoraWhitelistedWallet;

@@ -397,7 +397,8 @@ export const pendingUpdateSlice = createSlice({
         const pendingUpdatesToAdd = [];
         const { actionsToExecute } = action.meta.arg.originalArgs;
         const createVestingScheduleActions = actionsToExecute.filter(x => x.type === "create-vesting-schedule");
-        const updateVestingScheduleActions = actionsToExecute.filter(x => x.type === "update-vesting-schedule");
+        const deleteVestingScheduleActions = actionsToExecute.filter(x => x.type === "delete-vesting-schedule");
+        const updateVestingScheduleActions = actionsToExecute.filter(x => x.type === "update-vesting-schedule" || x.type === "end-vesting-schedule-now");
 
         for (const [index, actions] of createVestingScheduleActions.entries()) {
           const {
@@ -445,6 +446,28 @@ export const pendingUpdateSlice = createSlice({
             id: transactionHash + "-" + index,
             superTokenAddress: superToken,
             pendingType: "VestingScheduleUpdate",
+            timestamp: dateNowSeconds(),
+            relevantSubgraph: "Vesting",
+            version: "v3"
+          };
+
+          pendingUpdatesToAdd.push(pendingUpdate);
+        }
+
+        for (const [index, actions] of deleteVestingScheduleActions.entries()) {
+          const {
+            superToken,
+            receiver
+          } = actions.payload;
+
+          const pendingUpdate: PendingVestingScheduleDelete = {
+            chainId,
+            transactionHash,
+            senderAddress,
+            receiverAddress: receiver,
+            id: transactionHash + "-" + index,
+            superTokenAddress: superToken,
+            pendingType: "VestingScheduleDelete",
             timestamp: dateNowSeconds(),
             relevantSubgraph: "Vesting",
             version: "v3"

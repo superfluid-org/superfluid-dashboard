@@ -25,8 +25,6 @@ interface VestingGraphProps {
   height?: number;
 }
 
-// TODO: I need to add vesting schedule updates here
-
 const VestingGraph: FC<VestingGraphProps> = ({
   vestingSchedule,
   vestingActivities,

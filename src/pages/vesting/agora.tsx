@@ -1,6 +1,7 @@
 import { Box, Button, Container, FormControl, InputLabel, MenuItem, Paper, Select, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useAccount } from "@/hooks/useAccount"
 import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
@@ -13,8 +14,8 @@ import { PrimaryPageContent } from "../../features/vesting/agora/PrimaryPageCont
 import { RoundType, roundTypes } from "../../features/vesting/agora/constants";
 import { optimismSepolia } from "wagmi/chains";
 
-
 const AgoraPage: NextPageWithLayout = () => {
+    const router = useRouter();
     const { visibleAddress } = useVisibleAddress();
     const { network } = useExpectedNetwork();
     const { isConnected, isConnecting, isReconnecting } = useAccount();
@@ -35,8 +36,30 @@ const AgoraPage: NextPageWithLayout = () => {
     }, [tranch]);
 
     const [roundType, setRoundType] = useState<RoundType>("onchain_builders");
+
+    // Set roundType from URL when router is ready
+    useEffect(() => {
+        if (router.isReady) {
+            const queryRoundType = router.query.roundType as string;
+            if (queryRoundType && Object.values(roundTypes).includes(queryRoundType as RoundType)) {
+                setRoundType(queryRoundType as RoundType);
+            }
+        }
+    }, [router.isReady, router.query.roundType]);
+
+    // Update URL when roundType changes (but not on initial load)
+    useEffect(() => {
+        // Only update if router is ready and roundType is different from URL
+        if (router.isReady && router.query.roundType !== roundType) {
+            router.push({
+                pathname: router.pathname,
+                query: { ...router.query, roundType }
+            }, undefined, { shallow: true });
+        }
+    }, [router.isReady, roundType]);
+
     const handleRoundTypeChange = (
-        event: React.MouseEvent<HTMLElement>,
+        _event: React.MouseEvent<HTMLElement>,
         newRoundType: RoundType | null
     ) => {
         if (newRoundType !== null) {
@@ -188,6 +211,7 @@ const AgoraPage: NextPageWithLayout = () => {
                 key={projectsOverview.key}
                 projectsOverview={projectsOverview}
                 token={token}
+                roundType={roundType}
             />
 
         </Container>

@@ -235,7 +235,7 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
                 : vestingSchedule.claimValidityDate > 0
                   ? vestingSchedule.claimValidityDate.toString()
                   : lastVestingStreamPeriod
-                    ? (lastVestingStreamPeriod.stoppedAtTimestamp?.toString() ?? dateNowSeconds.toString())
+                    ? (lastVestingStreamPeriod.stoppedAtTimestamp ? lastVestingStreamPeriod.stoppedAtTimestamp.toString() : dateNowSeconds().toString())
                     : vestingSchedule.endDate.toString(),
         },
         pagination: {
@@ -246,7 +246,7 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
         chainId: network.id,
         filter: {
           addresses_contains_nocase: [
-            // vestingSchedule.superToken, TODO: super token
+            vestingSchedule.superToken,
             vestingSchedule.sender,
             vestingSchedule.receiver,
           ],
@@ -271,7 +271,6 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
     const combinedRawEvents = [
       ...(eventsResponse?.items || []),
       ...((vestingEventsResponse?.items || []))
-        .filter(item => item.superToken.toLowerCase() === vestingSchedule.superToken.toLowerCase())
         .filter(item => {
           if (vestingSchedule.version === "v1") {
             return !item.id.toLowerCase().includes("-v");

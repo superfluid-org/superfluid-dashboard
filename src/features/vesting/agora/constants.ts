@@ -36,11 +36,24 @@ export const agoraSenderAddresses = {
     [optimismSepolia.id]: null
 } as const satisfies Record<number, Record<RoundType, Address> | null>;
 
-export const isAgoraSender = (chainId: number, address: Address) => {
+export const isAgoraSender = (chainId: number, address: Address, roundType?: RoundType) => {
     const addressLowerCased = address.toLowerCase();
     if (chainId === optimism.id) {
-        return addressLowerCased === agoraSenderAddresses[optimism.id].dev_tooling ||
-            addressLowerCased === agoraSenderAddresses[optimism.id].onchain_builders;
+        const agoraSenders: Address[] = [];
+        switch (roundType) {
+            case "onchain_builders":
+                agoraSenders.push(agoraSenderAddresses[optimism.id].onchain_builders);
+                break;
+            case "dev_tooling":
+                agoraSenders.push(agoraSenderAddresses[optimism.id].dev_tooling);
+                break;
+            default:
+                agoraSenders.push(agoraSenderAddresses[optimism.id].dev_tooling);
+                agoraSenders.push(agoraSenderAddresses[optimism.id].onchain_builders);
+                break;
+        }
+
+        return agoraSenders.some(sender => sender === addressLowerCased);
     }
     if (chainId === optimismSepolia.id) {
         return true;

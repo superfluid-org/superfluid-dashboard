@@ -820,7 +820,9 @@ export type Task_OrderBy =
   | 'vestingSchedule__claimValidityDate'
   | 'vestingSchedule__claimedAt'
   | 'vestingSchedule__remainderAmount'
-  | 'vestingSchedule__totalAmount';
+  | 'vestingSchedule__totalAmount'
+  | 'vestingSchedule__settledAmount'
+  | 'vestingSchedule__settledAt';
 
 export type TokenSenderReceiverCursor = {
   id: Scalars['String'];
@@ -946,6 +948,8 @@ export type TokenSenderReceiverCursor_OrderBy =
   | 'currentVestingSchedule__claimedAt'
   | 'currentVestingSchedule__remainderAmount'
   | 'currentVestingSchedule__totalAmount'
+  | 'currentVestingSchedule__settledAmount'
+  | 'currentVestingSchedule__settledAt'
   | 'currentCliffAndFlowTask'
   | 'currentCliffAndFlowTask__id'
   | 'currentCliffAndFlowTask__type'
@@ -1724,6 +1728,8 @@ export type VestingSchedule = {
   claimedAt?: Maybe<Scalars['BigInt']>;
   remainderAmount: Scalars['BigInt'];
   totalAmount: Scalars['BigInt'];
+  settledAmount: Scalars['BigInt'];
+  settledAt: Scalars['BigInt'];
 };
 
 
@@ -2781,6 +2787,22 @@ export type VestingSchedule_Filter = {
   totalAmount_lte?: InputMaybe<Scalars['BigInt']>;
   totalAmount_in?: InputMaybe<Array<Scalars['BigInt']>>;
   totalAmount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  settledAmount?: InputMaybe<Scalars['BigInt']>;
+  settledAmount_not?: InputMaybe<Scalars['BigInt']>;
+  settledAmount_gt?: InputMaybe<Scalars['BigInt']>;
+  settledAmount_lt?: InputMaybe<Scalars['BigInt']>;
+  settledAmount_gte?: InputMaybe<Scalars['BigInt']>;
+  settledAmount_lte?: InputMaybe<Scalars['BigInt']>;
+  settledAmount_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  settledAmount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  settledAt?: InputMaybe<Scalars['BigInt']>;
+  settledAt_not?: InputMaybe<Scalars['BigInt']>;
+  settledAt_gt?: InputMaybe<Scalars['BigInt']>;
+  settledAt_lt?: InputMaybe<Scalars['BigInt']>;
+  settledAt_gte?: InputMaybe<Scalars['BigInt']>;
+  settledAt_lte?: InputMaybe<Scalars['BigInt']>;
+  settledAt_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  settledAt_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<VestingSchedule_Filter>>>;
@@ -2813,7 +2835,9 @@ export type VestingSchedule_OrderBy =
   | 'claimValidityDate'
   | 'claimedAt'
   | 'remainderAmount'
-  | 'totalAmount';
+  | 'totalAmount'
+  | 'settledAmount'
+  | 'settledAt';
 
 export type _Block_ = {
   /** The hash of the block */
@@ -3265,6 +3289,8 @@ export type VestingScheduleResolvers<ContextType = MeshContext, ParentType exten
   claimedAt?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   remainderAmount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   totalAmount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  settledAmount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  settledAt?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -3601,7 +3627,7 @@ export type GetVestingScheduleQueryVariables = Exact<{
 }>;
 
 
-export type GetVestingScheduleQuery = { vestingSchedule?: Maybe<Pick<VestingSchedule, 'id' | 'superToken' | 'sender' | 'receiver' | 'flowRate' | 'createdAt' | 'deletedAt' | 'startDate' | 'claimedAt' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowExpirationAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'endDateValidAt' | 'endExecutedAt' | 'failedAt' | 'didEarlyEndCompensationFail' | 'earlyEndCompensation' | 'claimValidityDate' | 'remainderAmount' | 'contractVersion' | 'totalAmount'>> };
+export type GetVestingScheduleQuery = { vestingSchedule?: Maybe<Pick<VestingSchedule, 'id' | 'superToken' | 'sender' | 'receiver' | 'flowRate' | 'createdAt' | 'deletedAt' | 'startDate' | 'claimedAt' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowExpirationAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'endDateValidAt' | 'endExecutedAt' | 'failedAt' | 'didEarlyEndCompensationFail' | 'earlyEndCompensation' | 'claimValidityDate' | 'remainderAmount' | 'contractVersion' | 'totalAmount' | 'settledAmount' | 'settledAt'>> };
 
 export type GetVestingSchedulesQueryVariables = Exact<{
   where?: InputMaybe<VestingSchedule_Filter>;
@@ -3610,9 +3636,9 @@ export type GetVestingSchedulesQueryVariables = Exact<{
 }>;
 
 
-export type GetVestingSchedulesQuery = { vestingSchedules: Array<Pick<VestingSchedule, 'id' | 'superToken' | 'sender' | 'receiver' | 'flowRate' | 'createdAt' | 'deletedAt' | 'startDate' | 'claimedAt' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowExpirationAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'endDateValidAt' | 'endExecutedAt' | 'failedAt' | 'didEarlyEndCompensationFail' | 'earlyEndCompensation' | 'claimValidityDate' | 'remainderAmount' | 'contractVersion' | 'totalAmount'>> };
+export type GetVestingSchedulesQuery = { vestingSchedules: Array<Pick<VestingSchedule, 'id' | 'superToken' | 'sender' | 'receiver' | 'flowRate' | 'createdAt' | 'deletedAt' | 'startDate' | 'claimedAt' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowExpirationAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'endDateValidAt' | 'endExecutedAt' | 'failedAt' | 'didEarlyEndCompensationFail' | 'earlyEndCompensation' | 'claimValidityDate' | 'remainderAmount' | 'contractVersion' | 'totalAmount' | 'settledAmount' | 'settledAt'>> };
 
-export type VestingSchedulePartFragment = Pick<VestingSchedule, 'id' | 'superToken' | 'sender' | 'receiver' | 'flowRate' | 'createdAt' | 'deletedAt' | 'startDate' | 'claimedAt' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowExpirationAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'endDateValidAt' | 'endExecutedAt' | 'failedAt' | 'didEarlyEndCompensationFail' | 'earlyEndCompensation' | 'claimValidityDate' | 'remainderAmount' | 'contractVersion' | 'totalAmount'>;
+export type VestingSchedulePartFragment = Pick<VestingSchedule, 'id' | 'superToken' | 'sender' | 'receiver' | 'flowRate' | 'createdAt' | 'deletedAt' | 'startDate' | 'claimedAt' | 'cliffDate' | 'cliffAndFlowExecutedAt' | 'cliffAndFlowExpirationAt' | 'cliffAndFlowDate' | 'cliffAmount' | 'endDate' | 'endDateValidAt' | 'endExecutedAt' | 'failedAt' | 'didEarlyEndCompensationFail' | 'earlyEndCompensation' | 'claimValidityDate' | 'remainderAmount' | 'contractVersion' | 'totalAmount' | 'settledAmount' | 'settledAt'>;
 
 export const VestingCliffAndFlowExecutedEventFragmentDoc = gql`
     fragment vestingCliffAndFlowExecutedEvent on VestingCliffAndFlowExecutedEvent {
@@ -3714,6 +3740,8 @@ export const VestingSchedulePartFragmentDoc = gql`
   remainderAmount
   contractVersion
   totalAmount
+  settledAmount
+  settledAt
 }
     ` as unknown as DocumentNode<VestingSchedulePartFragment, unknown>;
 export const VestingScheduleEventsDocument = gql`
