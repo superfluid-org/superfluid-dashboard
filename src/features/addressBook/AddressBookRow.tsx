@@ -85,7 +85,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
   const [isHoveringStar, setIsHoveringStar] = useState(false);
-  const { ensName, lensName } = useAddressName(address);
+  const { ensName, lensName, farcasterName, alfaFrensName } = useAddressName(address);
 
   const trimmedName = useMemo(() => editableName.trim(), [editableName]);
 
@@ -240,6 +240,26 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
               sx={{ fontSize: 12 }}
             >
               {lensName}
+            </Typography>
+          )}
+
+          {farcasterName && (
+            <Typography
+              data-cy={"farcaster-name"}
+              variant="tooltip"
+              sx={{ fontSize: 12 }}
+            >
+              {farcasterName}
+            </Typography>
+          )}
+
+          {alfaFrensName && (
+            <Typography
+              data-cy={"alfafrens-name"}
+              variant="tooltip"
+              sx={{ fontSize: 12 }}
+            >
+              {alfaFrensName}
             </Typography>
           )}
         </Stack>

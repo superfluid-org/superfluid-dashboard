@@ -1,7 +1,6 @@
 import { addressBookSelectors } from "../features/addressBook/addressBook.slice";
 import sanitizeAddressBookName from "../features/addressBook/sanitizeAddressBookName";
-import { ensApi } from "../features/ens/ensApi.slice";
-import { lensApi } from "../features/lens/lensApi.slice";
+import { whoisApi, SuperfluidProfile } from "../features/whois/whoisApi.slice";
 import { useAppSelector } from "../features/redux/store";
 import { getAddress } from "../utils/memoizedEthersUtils";
 import { getTOREXInfo } from "../features/torex/torexAddresses";
@@ -12,11 +11,14 @@ export interface AddressNameResult {
   ensName?: string;
   lensName?: string;
   torexName?: string;
+  whoisProfile?: SuperfluidProfile | null;
+  farcasterName?: string;
+  alfaFrensName?: string;
+  primaryAvatarUrl?: string | null;
 }
 
 const useAddressName = (address: string): AddressNameResult => {
-  const ensLookupQuery = ensApi.useLookupAddressQuery(address);
-  const lensLookupQuery = lensApi.useLookupAddressQuery(address);
+  const whoisQuery = whoisApi.useGetProfileQuery(address);
   const addressChecksummed = getAddress(address);
 
   const addressBookName = sanitizeAddressBookName(
@@ -27,20 +29,34 @@ const useAddressName = (address: string): AddressNameResult => {
     )
   );
 
-  const ensName = ensLookupQuery.data?.name;
-  const lensName = !ensLookupQuery.isFetching
-    ? lensLookupQuery.data?.name
-    : undefined;
-
   const torexInfo = getTOREXInfo(addressChecksummed);
   const torexName = torexInfo?.name;
 
+  const whoisProfile = whoisQuery.data;
+  const ensName = whoisProfile?.ENS?.handle;
+  const lensName = whoisProfile?.Lens?.handle?.replace("lens/", "");
+  const farcasterName = whoisProfile?.Farcaster?.handle;
+  const alfaFrensName = whoisProfile?.AlfaFrens?.handle;
+
+  const primaryAvatarUrl = 
+    whoisProfile?.ENS?.avatarUrl ?? 
+    whoisProfile?.Lens?.avatarUrl ?? 
+    whoisProfile?.Farcaster?.avatarUrl ?? 
+    whoisProfile?.AlfaFrens?.avatarUrl ?? 
+    null;
+
+  const primaryName = addressBookName || torexName || ensName || lensName || farcasterName || alfaFrensName || "";
+
   return {
     addressChecksummed,
-    name: addressBookName || torexName || ensName || lensName || "",
+    name: primaryName,
     ensName,
     lensName,
     torexName,
+    whoisProfile,
+    farcasterName,
+    alfaFrensName,
+    primaryAvatarUrl,
   };
 };
 
