@@ -39,6 +39,7 @@ const useAddressNames = (addresses: string[]): AddressNames => {
   }, [addresses, whoisQueryTrigger]);
 
   return addresses.reduce((mappedAddresses, address) => {
+    const addressChecksummed = getAddress(address);
     const addressBookName =
       addressBookNames.find(
         (addressBookName) =>
