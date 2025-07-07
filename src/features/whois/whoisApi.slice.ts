@@ -8,10 +8,13 @@ export type SocialIdentity = {
 } | null;
 
 export type SuperfluidProfile = {
+  TOREX: SocialIdentity;
   AlfaFrens: SocialIdentity;
   ENS: SocialIdentity;
   Farcaster: SocialIdentity;
   Lens: SocialIdentity;
+  recommendedName: string | null;
+  recommendedAvatar: string | null;
 };
 
 export const whoisApi = createApi({

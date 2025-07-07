@@ -4,7 +4,6 @@ import { useAppSelector } from "../features/redux/store";
 import { getAddress } from "../utils/memoizedEthersUtils";
 import { AddressNameResult } from "./useAddressName";
 import { whoisApi, SuperfluidProfile } from "../features/whois/whoisApi.slice";
-import { getTOREXInfo } from "../features/torex/torexAddresses";
 
 interface AddressNames {
   [any: string]: AddressNameResult;
@@ -46,23 +45,16 @@ const useAddressNames = (addresses: string[]): AddressNames => {
           addressBookName.address.toLowerCase() === address.toLowerCase()
       )?.name || "";
     
-    const torexInfo = getTOREXInfo(addressChecksummed);
-    const torexName = torexInfo?.name;
-
     const whoisProfile = whoisProfiles[address.toLowerCase()];
     const ensName = whoisProfile?.ENS?.handle;
     const lensName = whoisProfile?.Lens?.handle?.replace("lens/", "");
     const farcasterName = whoisProfile?.Farcaster?.handle;
     const alfaFrensName = whoisProfile?.AlfaFrens?.handle;
+    const torexName = whoisProfile?.TOREX?.handle;
 
-    const primaryAvatarUrl = 
-      whoisProfile?.ENS?.avatarUrl ?? 
-      whoisProfile?.Lens?.avatarUrl ?? 
-      whoisProfile?.Farcaster?.avatarUrl ?? 
-      whoisProfile?.AlfaFrens?.avatarUrl ?? 
-      null;
+    const primaryAvatarUrl = whoisProfile?.recommendedAvatar ?? null;
 
-    const primaryName = addressBookName || torexName || ensName || lensName || farcasterName || alfaFrensName || "";
+    const primaryName = addressBookName || whoisProfile?.recommendedName || "";
 
     return {
       ...mappedAddresses,
