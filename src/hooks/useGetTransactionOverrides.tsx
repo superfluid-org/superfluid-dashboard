@@ -12,7 +12,7 @@ const useGetTransactionOverrides = () => {
   const [queryRecommendedGas] = gasApi.useLazyRecommendedGasQuery();
   const { connector: activeConnector } = useAccount();
   const { isEOA } = useVisibleAddress();
-  
+  console.log("isEOA", isEOA);
   return useCallback(
     async (network: Network): Promise<GlobalGasOverrides> => {
       const gasQueryTimeout = new Promise<null>((response) =>
