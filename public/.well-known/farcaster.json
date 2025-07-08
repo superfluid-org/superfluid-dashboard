@@ -1,17 +1,20 @@
 {
-  "accountAssociation": {
-    "header": "",
-    "payload": "",
-    "signature": ""
-  },
   "frame": {
-    "version": "1",
     "name": "Superfluid Dashboard",
-    "iconUrl": "https://app.superfluid.org/icons/icon-96x96.png",
-    "homeUrl": "https://app.superfluid.org",
-    "imageUrl": "https://app.superfluid.org/icons/icon-96x96.png",
-    "buttonTitle": "Open Dashboard",
-    "splashImageUrl": "https://app.superfluid.org/icons/icon-96x96.png",
-    "splashBackgroundColor": "#FFFFFF"
+    "version": "1",
+    "iconUrl": "https://superfluid-dashboard-git-framed-dashboard-superfluid-foundation.vercel.app/icon.png",
+    "homeUrl": "https://superfluid-dashboard-git-framed-dashboard-superfluid-foundation.vercel.app",
+    "imageUrl": "https://superfluid-dashboard-git-framed-dashboard-superfluid-foundation.vercel.app/image.png",
+    "splashImageUrl": "https://superfluid-dashboard-git-framed-dashboard-superfluid-foundation.vercel.app/icon-96x96.png",
+    "splashBackgroundColor": "#FFFFFF",
+    "webhookUrl": "https://superfluid-dashboard-git-framed-dashboard-superfluid-foundation.vercel.app/api/webhook",
+    "subtitle": "Go to place for anything super",
+    "description": "Manage your super tokens , start streams and more straight from farcaster",
+    "primaryCategory": "finance"
+  },
+  "accountAssociation": {
+    "header": "eyJmaWQiOjM0MTY0NiwidHlwZSI6ImF1dGgiLCJrZXkiOiIweDBGYzcwQkRiQzM2ZkQzNTNiN2U3Y2JGMTViMzg5MTFiNTgzYTJlYUUifQ",
+    "payload": "eyJkb21haW4iOiJzdXBlcmZsdWlkLWRhc2hib2FyZC1naXQtZnJhbWVkLWRhc2hib2FyZC1zdXBlcmZsdWlkLWZvdW5kYXRpb24udmVyY2VsLmFwcCJ9",
+    "signature": "Aoh7l83esn4GJ+v9oohAemjDB5J+RFu8D6JLOnwbrVsHHtM5dHhRaDccmHlAaP3HBIUD62u0vICtqYPAYWdKkRs="
   }
-} 
+}
