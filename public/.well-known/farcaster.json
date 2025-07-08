@@ -1,0 +1,17 @@
+{
+  "accountAssociation": {
+    "header": "",
+    "payload": "",
+    "signature": ""
+  },
+  "frame": {
+    "version": "1",
+    "name": "Superfluid Dashboard",
+    "iconUrl": "https://app.superfluid.org/icons/icon-96x96.png",
+    "homeUrl": "https://app.superfluid.org",
+    "imageUrl": "https://app.superfluid.org/icons/icon-96x96.png",
+    "buttonTitle": "Open Dashboard",
+    "splashImageUrl": "https://app.superfluid.org/icons/icon-96x96.png",
+    "splashBackgroundColor": "#FFFFFF"
+  }
+} 

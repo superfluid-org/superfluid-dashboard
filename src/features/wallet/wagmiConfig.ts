@@ -9,6 +9,7 @@ import { Address, createWalletClient } from "viem";
 import { createAppKit } from '@reown/appkit/react'
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
 import { CustomRpcUrlMap } from '@reown/appkit-common'
+import farcasterConnector from '@farcaster/miniapp-wagmi-connector'
 
 const metadata = {
   name: 'Superfluid Dashboard',
@@ -184,6 +185,7 @@ const wagmiAdapter = new WagmiAdapter({
   projectId,
   storage: typeof window !== "undefined" ? createStorage({ storage: window.localStorage }) : undefined,
   connectors: [
+    farcasterConnector(),
     safe({
       allowedDomains: [
         /gnosis-safe.io$/,

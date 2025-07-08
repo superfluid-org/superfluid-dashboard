@@ -32,6 +32,7 @@ import { IsCypress } from "../utils/SSRUtils";
 import config from "../utils/config";
 import { useAppDispatch } from "../features/redux/store";
 import ReduxProvider from '@/features/redux/ReduxProvider';
+import { FarcasterProvider } from "../features/farcaster/FarcasterProvider";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -89,14 +90,16 @@ export default function MyApp(props: AppPropsWithLayout) {
                                 <AnalyticsProvider>
                                   <ToastProvider />
                                   <IntercomProvider>
-                                    <Layout>
-                                      <MinigameProvider>
-                                        {mounted ? getLayout(
-                                          <Component {...pageProps} />
-                                        ) : null}
-                                      </MinigameProvider>
-                                    </Layout>
-                                    <MonitorContext />
+                                    <FarcasterProvider>
+                                      <Layout>
+                                        <MinigameProvider>
+                                          {mounted ? getLayout(
+                                            <Component {...pageProps} />
+                                          ) : null}
+                                        </MinigameProvider>
+                                      </Layout>
+                                      <MonitorContext />
+                                    </FarcasterProvider>
                                   </IntercomProvider>
                                 </AnalyticsProvider>
                               </LayoutContextProvider>

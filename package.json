@@ -30,6 +30,8 @@
     "@ensdomains/ens-avatar": "^0.3.6",
     "@ethersproject/logger": "^5.8.0",
     "@ethersproject/providers": "^5.8.0",
+    "@farcaster/miniapp-sdk": "^0.1.4",
+    "@farcaster/miniapp-wagmi-connector": "^1.0.0",
     "@hookform/error-message": "^2.0.1",
     "@hookform/resolvers": "5.0.1",
     "@lens-protocol/client": "^2.3.2",
