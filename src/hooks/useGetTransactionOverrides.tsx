@@ -53,8 +53,15 @@ const useGetTransactionOverrides = () => {
       }
 
       if (!isEOA) {
-        overrides.gasLimit = 0; // Disable gas estimation for Gnosis Safe (and other smart wallets) completely because they don't use it anyway.
-        console.log('🔧 Gas estimation disabled for Account Abstraction wallet');
+        if (activeConnector?.id === 'farcaster') {
+          // Set 1M gas limit for Farcaster frames testing
+          overrides.gasLimit = 1000000;
+          console.log('🎯 Farcaster gas limit set to 1M for testing');
+        } else {
+          // Disable gas estimation for Gnosis Safe (and other smart wallets) completely because they don't use it anyway.
+          overrides.gasLimit = 0;
+          console.log('🔧 Gas estimation disabled for non-Farcaster smart wallet');
+        }
       } else {
         console.log('🔧 Gas estimation enabled for EOA wallet');
       }
