@@ -4,7 +4,6 @@ import { sdk } from '@farcaster/miniapp-sdk';
 interface FarcasterContextType {
   isInFarcaster: boolean;
   isReady: boolean;
-  walletProvider: any | null; // EIP-1193 provider when available
 }
 
 const FarcasterContext = createContext<FarcasterContextType | undefined>(undefined);
@@ -24,7 +23,6 @@ interface FarcasterProviderProps {
 export const FarcasterProvider: React.FC<FarcasterProviderProps> = ({ children }) => {
   const [isReady, setIsReady] = useState(false);
   const [isInFarcaster, setIsInFarcaster] = useState(false);
-  const [walletProvider, setWalletProvider] = useState<any | null>(null);
 
   useEffect(() => {
     const initializeFarcaster = async () => {
@@ -34,14 +32,7 @@ export const FarcasterProvider: React.FC<FarcasterProviderProps> = ({ children }
         if (inMiniApp) {
           setIsInFarcaster(true);
           
-          try {
-            const provider = await sdk.wallet.getEthereumProvider();
-            setWalletProvider(provider);
-            console.log('Farcaster wallet provider available:', !!provider);
-          } catch (walletError) {
-            console.warn('Farcaster wallet provider not available:', walletError);
-          }
-          
+          // Call ready() to hide the splash screen and show the app content
           await sdk.actions.ready();
           
           console.log('Farcaster Mini App initialized successfully');
@@ -78,7 +69,6 @@ export const FarcasterProvider: React.FC<FarcasterProviderProps> = ({ children }
   const contextValue: FarcasterContextType = {
     isInFarcaster,
     isReady,
-    walletProvider,
   };
 
   return (
