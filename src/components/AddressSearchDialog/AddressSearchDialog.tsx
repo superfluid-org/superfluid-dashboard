@@ -39,11 +39,10 @@ import {
   Network,
 } from "../../features/network/networks";
 import NetworkSelect from "../NetworkSelect/NetworkSelect";
-import { ensApi } from "../../features/ens/ensApi.slice";
 import AddressSearchIndex from "../../features/send/AddressSearchIndex";
 import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
 import addressBookRpcApi from "../../features/addressBook/addressBookRpcApi.slice";
-import { lensApi } from "../../features/lens/lensApi.slice";
+import { whoisApi } from "../../features/whois/whoisApi.slice";
 import { efpApi } from "../../features/efp/efpApi.slice";
 import { useAccount } from "@/hooks/useAccount"
 
@@ -70,43 +69,28 @@ export const AddressListItem: FC<AddressListItemProps> = ({
   showRemove = false,
   displayAvatar = true,
 }) => {
+  const addressName = useAddressName(address);
   const theme = useTheme();
-  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
-  const { name: resolvedName, addressChecksummed: checksumHex } =
-    useAddressName(address);
 
   return (
-    <ListItemButton
-      onClick={onClick}
-      sx={LIST_ITEM_STYLE}
-      translate="no"
-      selected={selected}
-      disabled={disabled}
-    >
-      {displayAvatar && (
-        <ListItemAvatar>
-          <AddressAvatar address={checksumHex} />
-        </ListItemAvatar>
-      )}
-
-      <ListItemText
-        {...(dataCy ? { "data-cy": dataCy } : {})}
-        primary={
-          name ||
-          resolvedName ||
-          (isBelowMd ? shortenHex(checksumHex, 8) : checksumHex)
-        }
-        secondary={
-          (name || resolvedName) &&
-          (isBelowMd ? shortenHex(checksumHex, 8) : checksumHex)
-        }
-      />
-      {showRemove && (
-        <IconButton size="small" onClick={onClick}>
-          <CloseRoundedIcon sx={{ color: theme.palette.text.secondary }} />
-        </IconButton>
-      )}
-    </ListItemButton>
+    <ListItem sx={LIST_ITEM_STYLE}>
+      <ListItemButton
+        data-cy={dataCy}
+        selected={selected}
+        disabled={disabled}
+        onClick={onClick}
+      >
+        {displayAvatar && (
+          <ListItemAvatar>
+            <AddressAvatar address={address} />
+          </ListItemAvatar>
+        )}
+        <ListItemText
+          primary={name || addressName.name || shortenHex(address, 6)}
+          secondary={shortenHex(address, 6)}
+        />
+      </ListItemButton>
+    </ListItem>
   );
 };
 
@@ -176,13 +160,17 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
     ]
   );
 
-  const ensQuery = ensApi.useResolveNameQuery(searchTermDebounced);
-  const ensData = ensQuery.data; // Put into separate variable because TS couldn't infer in the render function that `!!ensQuery.data` means that the data is not undefined nor null.
+  // Use whois reverse resolve for all non-address searches
+  const shouldUseWhoisReverse = !!searchTermDebounced && 
+    !isAddress(searchTermDebounced);
+  
+  const whoisQuery = whoisApi.useReverseResolveQuery(
+    shouldUseWhoisReverse ? searchTermDebounced : "", 
+    { skip: !shouldUseWhoisReverse }
+  );
+  const whoisData = whoisQuery.data;
 
-  const lensQuery = lensApi.useResolveNameQuery(searchTermDebounced);
-  const lensData = lensQuery.data; // Put into separate variable because TS couldn't infer in the render function that `!!lensQuery.data` means that the data is not undefined nor null.
-
-  const showEnsAndLens =
+  const showWhoisResults =
     !!searchTermDebounced &&
     !isAddress(searchTermDebounced) &&
     mode === "addressSearch";
@@ -294,7 +282,7 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
               fullWidth
               autoFocus
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Address, ENS or Lens"
+              placeholder="Public Address, ENS domain or farcaster handle"
               value={searchTermVisible}
             />
           </Stack>
@@ -348,77 +336,55 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
           )
         ) : (
           <List sx={{ pt: 0, pb: 0 }}>
-            {showEnsAndLens ? (
+            {showWhoisResults ? (
               <>
-                <ListSubheader sx={{ px: 3 }}>ENS</ListSubheader>
-                {(ensQuery.isFetching || !searchSynced) && (
-                  <ListItem sx={LIST_ITEM_STYLE}>
-                    <ListItemText translate="yes" primary="Loading..." />
-                  </ListItem>
+                {/* Loading state for all whois results */}
+                {(whoisQuery.isFetching || !searchSynced) && (
+                  <>
+                    <ListSubheader sx={{ px: 3 }}>Searching...</ListSubheader>
+                    <ListItem sx={LIST_ITEM_STYLE}>
+                      <ListItemText translate="yes" primary="Loading..." />
+                    </ListItem>
+                  </>
                 )}
-                {ensQuery.isError && (
-                  <ListItem sx={LIST_ITEM_STYLE}>
-                    <ListItemText data-cy="ens-error" translate="yes" primary="Error" />
-                  </ListItem>
-                )}
-                {!ensQuery.isLoading &&
-                  !ensQuery.isFetching &&
-                  searchSynced && (
-                    <>
-                      {!!ensData ? (
-                        <AddressListItem
-                          dataCy={"ens-entry"}
-                          selected={addresses.includes(ensData.address)}
-                          disabled={disabledAddresses.includes(ensData.address)}
-                          address={ensData.address}
-                          onClick={() =>
-                            onSelectAddress({ address: ensData.address })
-                          }
-                          name={ensData.name}
-                        />
-                      ) : (
-                        <ListItem sx={LIST_ITEM_STYLE}>
-                          <ListItemText translate="yes" primary="No results" />
-                        </ListItem>
-                      )}
-                    </>
-                  )}
 
-                <ListSubheader sx={{ px: 3 }}>Lens</ListSubheader>
-                {(lensQuery.isFetching || !searchSynced) && (
-                  <ListItem sx={LIST_ITEM_STYLE}>
-                    <ListItemText translate="yes" primary="Loading..." />
-                  </ListItem>
+                {/* Error state */}
+                {whoisQuery.isError && searchSynced && (
+                  <>
+                    <ListSubheader sx={{ px: 3 }}>Error</ListSubheader>
+                    <ListItem sx={LIST_ITEM_STYLE}>
+                      <ListItemText data-cy="whois-error" translate="yes" primary="Search error occurred" />
+                    </ListItem>
+                  </>
                 )}
-                {lensQuery.isError && (
-                  <ListItem sx={LIST_ITEM_STYLE}>
-                    <ListItemText data-cy="lens-error" translate="yes" primary="Error" />
-                  </ListItem>
-                )}
-                {!lensQuery.isLoading &&
-                  !lensQuery.isFetching &&
-                  searchSynced && (
-                    <>
-                      {!!lensData ? (
+
+                {/* Success state - show recommended result */}
+                {!whoisQuery.isLoading && !whoisQuery.isFetching && searchSynced && (
+                  <>
+                    {whoisData ? (
+                      <>
+                        <ListSubheader sx={{ px: 3 }}>Search Results</ListSubheader>
                         <AddressListItem
-                          dataCy={"lens-entry"}
-                          selected={addresses.includes(lensData.address)}
-                          disabled={disabledAddresses.includes(
-                            lensData.address
-                          )}
-                          address={lensData.address}
+                          dataCy={"whois-entry"}
+                          selected={addresses.includes(whoisData.address)}
+                          disabled={disabledAddresses.includes(whoisData.address)}
+                          address={whoisData.address}
                           onClick={() =>
-                            onSelectAddress({ address: lensData.address })
+                            onSelectAddress({ address: whoisData.address })
                           }
-                          name={lensData.name}
+                          name={whoisData.name}
                         />
-                      ) : (
+                      </>
+                    ) : (
+                      <>
+                        <ListSubheader sx={{ px: 3 }}>Search Results</ListSubheader>
                         <ListItem sx={LIST_ITEM_STYLE}>
-                          <ListItemText translate="yes" primary="No results" />
+                          <ListItemText translate="yes" primary="No results found" />
                         </ListItem>
-                      )}
-                    </>
-                  )}
+                      </>
+                    )}
+                  </>
+                )}
               </>
             ) : null}
             {mode === "addressSearch" && checksummedSearchedAddress && (
@@ -480,19 +446,18 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
           <Box sx={{ p: 2, display: "flex", justifyContent: "center" }}>
             <Button
               data-cy={"save-button"}
-              loading={isContractDetectionLoading || ensQuery.isFetching}
+              loading={isContractDetectionLoading || whoisQuery.isFetching}
               disabled={
                 isContractDetectionLoading ||
                 !Boolean(searchTermVisible) ||
-                !(ensData || lensData || checksummedSearchedAddress)
+                !(whoisData || checksummedSearchedAddress)
               }
               fullWidth
               variant="contained"
               onClick={() => {
                 onSelectAddress({
                   address:
-                    ensData?.address ??
-                    lensData?.address ??
+                    whoisData?.address ??
                     checksummedSearchedAddress!,
                   associatedNetworks: contractData?.isContract
                     ? contractData.associatedNetworks

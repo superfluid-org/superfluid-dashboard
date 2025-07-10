@@ -89,9 +89,7 @@ const DISCONNECT_BUTTON = '[data-cy=disconnect-button]';
 const ADDRESS_MODAL_COPY_BUTTON = '[data-cy=address-modal-copy-button]';
 const COPY_ICON = '[data-testid=ContentCopyRoundedIcon]';
 const CHECKMARK_ICON = '[data-testid=CheckOutlinedIcon]';
-const LENS_ENTRIES = '[data-cy=lens-entry]';
-const LENS_NAMES = `${LENS_ENTRIES} h6`;
-const LENS_ENTRY_ADDRESSES = `${LENS_ENTRIES} p`;
+
 const ADDRESS_SEARCH_AVATAR_IMAGES =
   '[role=dialog] [class*=MuiListItemAvatar] img';
 const DARK_MODE_BUTTON = '[data-cy=dark-mode-button]';
@@ -175,17 +173,14 @@ export class Common extends BasePage {
   static validateWalletConnectionModalIsShown() {
     this.isVisible(WEB3_MODAL);
   }
-  static blockLensAndENSApiRequests() {
+  static blockENSApiRequests() {
     cy.intercept('POST', 'https://rpc-endpoints.superfluid.dev/eth-mainnet', {
-      forceNetworkError: true,
-    });
-    cy.intercept('POST', 'https://api-v2.lens.dev/', {
       forceNetworkError: true,
     });
   }
 
-  static validateErrorShownInRecepientList(lensOrEns: string) {
-    this.isVisible(`[data-cy=${lensOrEns.toLowerCase()}-error]`);
+  static validateErrorShownInRecepientList(serviceType: string) {
+    this.isVisible(`[data-cy=${serviceType.toLowerCase()}-error]`);
   }
 
   static clickDarkModeButton() {
@@ -213,11 +208,6 @@ export class Common extends BasePage {
     this.doesNotExist(LIGHT_MODE_BUTTON);
   }
 
-  static validateLensEntryIsVisible(account: string) {
-    cy.get(LENS_NAMES, { timeout: 30000 })
-      .contains(account)
-      .should('be.visible');
-  }
   static validateLensImageIsLoaded(account: string) {
     cy.fixture('ensAndLensAvatarUrls').then((urls) => {
       cy.get(ADDRESS_SEARCH_AVATAR_IMAGES, { timeout: 60000 })
@@ -226,7 +216,7 @@ export class Common extends BasePage {
     });
   }
   static clickOnFirstLensEntry() {
-    this.click(LENS_ENTRIES, 0);
+    this.click('[data-cy=ens-entry]', 0);
   }
   static clickOnAddressModalCopyButton() {
     this.isVisible(COPY_ICON);

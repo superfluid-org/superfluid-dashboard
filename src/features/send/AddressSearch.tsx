@@ -13,7 +13,7 @@ import { AddressSearchDialogProps } from "../../components/AddressSearchDialog/A
 export default memo(function AddressSearch({
   address,
   onChange,
-  placeholder = "Public Address, ENS or Lens",
+  placeholder = "Public Address, ENS domain or Farcaster handle",
   addressLength = "long",
   ButtonProps = {},
   onBlur = () => { },

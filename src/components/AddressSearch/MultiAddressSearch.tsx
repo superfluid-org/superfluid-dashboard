@@ -35,7 +35,7 @@ interface MultiAddressSearchProps {
 export default memo(function MultiAddressSearch({
   addresses,
   onChange,
-  placeholder = "Public Address, ENS or Lens",
+  placeholder = "Public Address, ENS domain or Farcaster handle",
   dialogTitle = "Select Address(es)",
   helperText = "",
   addressLength = "long",

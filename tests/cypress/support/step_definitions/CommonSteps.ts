@@ -117,13 +117,11 @@ Given(/^The dashboard theme is set to light mode$/, () => {
   Common.validateDashboardIsInLightMode();
 });
 
-Given(/^A lens entry for "([^"]*)" is visible$/, (account: string) => {
-  Common.validateLensEntryIsVisible(account);
-});
 Given(/^The avatar image for "([^"]*)" is shown loaded$/, (account: string) => {
   Common.validateLensImageIsLoaded(account);
 });
-Given(/^User chooses the first lens entry from the list$/, () => {
+
+Given(/^User selects the first ENS recipient result$/, () => {
   Common.clickOnFirstLensEntry();
 });
 
@@ -162,13 +160,13 @@ Given(/^User closes the dropdown$/, () => {
 Then(/^User clicks on the view mode button$/, () => {
   Common.clickOnViewModeButton();
 });
-Then(/^Lens and ENS api requests are blocked$/, () => {
-  Common.blockLensAndENSApiRequests();
+Then(/^ENS api requests are blocked$/, () => {
+  Common.blockENSApiRequests();
 });
 Then(
   /^An error is shown in the "([^"]*)" receiver list$/,
-  (lensOrEns: string) => {
-    Common.validateErrorShownInRecepientList(lensOrEns);
+  (serviceType: string) => {
+    Common.validateErrorShownInRecepientList(serviceType);
   }
 );
 Then(/^User types "([^"]*)" into the address input$/, (input: string) => {

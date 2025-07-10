@@ -218,7 +218,7 @@ const History: NextPage = () => {
           <Stack direction="row" justifyContent="space-between" gap={2}>
             <AddressSearch
               address={searchedAddress}
-              placeholder="Filter by address, ENS or Lens"
+              placeholder="Filter by address, ENS or Farcaster handle"
               onChange={setAddressSearch}
               addressLength="medium"
               ButtonProps={{

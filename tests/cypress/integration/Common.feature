@@ -214,16 +214,6 @@ Feature: Common element test cases
     And User clicks on the copy address button in the account modal
     Then The address is copied and the buttons text in the address modal changes to "Copied!" with a checkmark icon
 
-  @skip
-  Scenario: Searching for an lens address
-    Given "Vesting page" is open without connecting a wallet
-    And User clicks on the view mode button
-    And User types "@elvijs" into the address input
-    Then A lens entry for "@elvijs" is visible
-    And The avatar image for "@elvijs" is shown loaded
-    And User chooses the first lens entry from the list
-    Then View mode chip shows "@elvijs"
-
   Scenario: Searching for an ens address and validating the image
     Given "Vesting page" is open without connecting a wallet
     And User clicks on the view mode button
@@ -240,18 +230,16 @@ Feature: Common element test cases
     And User clicks on the light mode button
     Then The dashboard theme is set to light mode
 
-  Scenario: Lens Api error when fetching a receiver
+  Scenario: ENS API error when fetching a receiver with domain
     Given "Vesting page" is open without connecting a wallet
-
-    Given Lens and ENS api requests are blocked
+    Given ENS api requests are blocked
     And User clicks on the view mode button
     And User types "elvijs.eth" into the address input
     Then An error is shown in the "ENS" receiver list
 
-  Scenario: ENS Api error when fetching a receiver
+  Scenario: ENS API error when fetching a receiver with different domain
     Given "Vesting page" is open without connecting a wallet
-
-    Given Lens and ENS api requests are blocked
+    Given ENS api requests are blocked
     And User clicks on the view mode button
     And User types "vijay.eth" into the address input
     Then An error is shown in the "ENS" receiver list
