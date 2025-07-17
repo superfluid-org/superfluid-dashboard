@@ -248,8 +248,8 @@ export function vestingScheduleToTokenBalance(
     };
   }
 
-  // Claimable and after the claim validity date.
-  if (!claimedAt &&claimValidityDate && nowTimestamp > claimValidityDate) {
+  // Not claimed and after the claim validity date (i.e. claim expired).
+  if (!claimedAt && claimValidityDate && nowTimestamp > claimValidityDate) {
     return {
       balance: "0",
       totalNetFlowRate: "0",
