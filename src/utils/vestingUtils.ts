@@ -248,6 +248,15 @@ export function vestingScheduleToTokenBalance(
     };
   }
 
+  // Claimable and after the claim validity date.
+  if (!claimedAt &&claimValidityDate && nowTimestamp > claimValidityDate) {
+    return {
+      balance: "0",
+      totalNetFlowRate: "0",
+      timestamp: nowTimestamp,
+    };
+  }
+
   // If the vesting schedule was claimed after the end date, return the total amount.
   const wasClaimedAfterEndDate = (claimedAt ?? 0) > endDate;
   if (wasClaimedAfterEndDate) {
@@ -259,7 +268,7 @@ export function vestingScheduleToTokenBalance(
   }
 
   // Claimable and after the end date.
-  if (claimValidityDate && nowTimestamp > claimValidityDate) {
+  if (!claimedAt && claimValidityDate && nowTimestamp > endDate) {
     return {
       balance: vestingSchedule.totalAmount,
       totalNetFlowRate: "0",
