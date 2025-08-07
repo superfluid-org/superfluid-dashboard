@@ -531,7 +531,7 @@ const StreamPageContent: FC<{
                       network={network}
                     />
                   )}
-                  {isActive && (
+                  {isActive && !scheduledStream.mostLikelyAssociatedVestingScheduleId && (
                     <CancelStreamButton
                       data-cy={"cancel-button"}
                       stream={scheduledStream}

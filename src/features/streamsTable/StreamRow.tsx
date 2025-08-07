@@ -330,7 +330,7 @@ const StreamRow: FC<StreamRowProps> = ({
                       network={network}
                       IconButtonProps={{ size: "small" }}
                     />
-                  ) : (
+                  ) : !stream.mostLikelyAssociatedVestingScheduleId ? (
                     <CancelStreamButton
                       stream={
                         stream as (Stream | ScheduledStream) & StreamScheduling
@@ -338,7 +338,7 @@ const StreamRow: FC<StreamRowProps> = ({
                       network={network}
                       IconButtonProps={{ size: "small" }}
                     />
-                  )
+                  ) : null
                 }
               </>
             )}
