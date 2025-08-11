@@ -14,13 +14,13 @@ type IntefaceAction = keyof typeof interfaceFees;
 
 // The fees should be approximately $1.
 export const interfaceBaseFeeInNativeCurrency = {
-    ETH: parseEther("0.00035"),
-    BNB: parseEther("0.0015"),
-    CELO: parseEther("2"),
-    AVAX: parseEther("0.0375"),
+    ETH: parseEther("0.00025"),
+    BNB: parseEther("0.00125"),
+    CELO: parseEther("3"),
+    AVAX: parseEther("0.0425"),
     POL: parseEther("4"),
     XDAI: parseEther("1"),
-    DEGEN: parseEther("200")
+    DEGEN: parseEther("250")
 } as const;
 
 export const getIntefaceFee = memoize(
