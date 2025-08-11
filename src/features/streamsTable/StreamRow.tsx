@@ -1,5 +1,6 @@
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
 import {
   Box,
   CircularProgress,
@@ -330,7 +331,23 @@ const StreamRow: FC<StreamRowProps> = ({
                       network={network}
                       IconButtonProps={{ size: "small" }}
                     />
-                  ) : !stream.mostLikelyAssociatedVestingScheduleId ? (
+                  ) : stream.mostLikelyAssociatedVestingScheduleId ? (
+                    <Tooltip
+                      title="This stream is part of a vesting schedule. Go to the Vesting page to cancel it."
+                      arrow
+                      placement="top"
+                    >
+                      <span>
+                        <IconButton
+                          size="small"
+                          disabled
+                          data-cy="disabled-cancel-button"
+                        >
+                          <CancelRoundedIcon />
+                        </IconButton>
+                      </span>
+                    </Tooltip>
+                  ) : (
                     <CancelStreamButton
                       stream={
                         stream as (Stream | ScheduledStream) & StreamScheduling
@@ -338,7 +355,7 @@ const StreamRow: FC<StreamRowProps> = ({
                       network={network}
                       IconButtonProps={{ size: "small" }}
                     />
-                  ) : null
+                  )
                 }
               </>
             )}

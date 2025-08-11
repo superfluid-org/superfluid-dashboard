@@ -531,12 +531,29 @@ const StreamPageContent: FC<{
                       network={network}
                     />
                   )}
-                  {isActive && !scheduledStream.mostLikelyAssociatedVestingScheduleId && (
-                    <CancelStreamButton
-                      data-cy={"cancel-button"}
-                      stream={scheduledStream}
-                      network={network}
-                    />
+                  {isActive && (
+                    scheduledStream.mostLikelyAssociatedVestingScheduleId ? (
+                      <Tooltip
+                        title="This stream is part of a vesting schedule. Go to the Vesting page to cancel it."
+                        arrow
+                        placement="top"
+                      >
+                        <span>
+                          <IconButton
+                            disabled
+                            data-cy="disabled-cancel-button"
+                          >
+                            <CancelRoundedIcon />
+                          </IconButton>
+                        </span>
+                      </Tooltip>
+                    ) : (
+                      <CancelStreamButton
+                        data-cy={"cancel-button"}
+                        stream={scheduledStream}
+                        network={network}
+                      />
+                    )
                   )}
                 </>
               )}
