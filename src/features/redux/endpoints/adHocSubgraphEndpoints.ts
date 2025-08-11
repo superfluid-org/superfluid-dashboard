@@ -64,6 +64,7 @@ export const adHocSubgraphEndpoints = {
         const query = gql`
           query tokenBalanceHistoryQuery(
             $accountAddress: String
+            $addresses_contains: [Bytes!]
             $tokenAddress: String
             $timestamp_gte: BigInt
             $timestamp_lte: BigInt
@@ -83,10 +84,24 @@ export const adHocSubgraphEndpoints = {
               totalNetFlowRate
               timestamp
             }
+            flowUpdatedEvents(
+              where: {addresses_contains: $addresses_contains, token: $tokenAddress, timestamp_gte: $timestamp_gte, timestamp_lte: $timestamp_lte}
+              orderBy: timestamp
+              orderDirection: desc
+              first: 1000
+            ) {
+              totalSenderFlowRate
+              timestamp
+              logIndex
+              totalReceiverFlowRate
+              sender
+              receiver
+            }
           }
         `;
         const variables = {
           accountAddress: accountAddress.toLowerCase(),
+          addresses_contains: [accountAddress.toLowerCase()],
           tokenAddress: tokenAddress.toLowerCase(),
           timestamp_gte: timestamp_gte.toString(),
           timestamp_lte: timestamp_lte.toString(),
@@ -98,10 +113,69 @@ export const adHocSubgraphEndpoints = {
             timestamp: string;
             totalNetFlowRate: string;
           }[];
+          flowUpdatedEvents: {
+            totalSenderFlowRate: string;
+            timestamp: string;
+            logIndex: string;
+            totalReceiverFlowRate: string;
+            sender: string;
+            receiver: string;
+          }[];
         }>(query, variables);
+        
+        // # Mapping of FlowUpdatedEvent flowRate to AccountTokenSnapshotLog
+        // --- Why? The mapping is currently sometimes off of AccountTokenSnapshotLogs on subgraph because of a bug.
+
+        // Create a map of flow events by timestamp, keeping only the one with highest logIndex
+        const flowEventsByTimestamp = new Map<string, {
+          totalSenderFlowRate: string;
+          totalReceiverFlowRate: string;
+          sender: string;
+          receiver: string;
+          logIndex: string;
+        }>();
+
+        for (const event of response.flowUpdatedEvents) {
+          const existing = flowEventsByTimestamp.get(event.timestamp);
+          if (!existing || BigInt(event.logIndex) > BigInt(existing.logIndex)) {
+            flowEventsByTimestamp.set(event.timestamp, {
+              totalSenderFlowRate: event.totalSenderFlowRate,
+              totalReceiverFlowRate: event.totalReceiverFlowRate,
+              sender: event.sender,
+              receiver: event.receiver,
+              logIndex: event.logIndex,
+            });
+          }
+        }
+
+        // Process AccountTokenSnapshotLogs and update totalNetFlowRate from matching FlowUpdatedEvents
+        const processedSnapshots = response.accountTokenSnapshotLogs.map((snapshot) => {
+          const matchingFlowEvent = flowEventsByTimestamp.get(snapshot.timestamp);
+          
+          if (matchingFlowEvent) {
+            // Determine if account is sender or receiver and use appropriate flow rate
+            const isSender = matchingFlowEvent.sender.toLowerCase() === accountAddress.toLowerCase();
+            const isReceiver = matchingFlowEvent.receiver.toLowerCase() === accountAddress.toLowerCase();
+            
+            if (isSender) {
+              return {
+                ...snapshot,
+                totalNetFlowRate: matchingFlowEvent.totalSenderFlowRate,
+              };
+            } else if (isReceiver) {
+              return {
+                ...snapshot,
+                totalNetFlowRate: matchingFlowEvent.totalReceiverFlowRate,
+              };
+            }
+          }
+          
+          // No match found or account is neither sender nor receiver, keep as is
+          return snapshot;
+        });
 
         return {
-          data: response.accountTokenSnapshotLogs.map((tokenSnapshot) => ({
+          data: processedSnapshots.map((tokenSnapshot) => ({
             ...tokenSnapshot,
             timestamp: Number(tokenSnapshot.timestamp),
           })),
