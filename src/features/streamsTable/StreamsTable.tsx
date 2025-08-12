@@ -211,35 +211,29 @@ const StreamsTable: FC<StreamsTableProps> = ({
     tokenAddress
   );
 
-  // Fetch vesting schedules where user is receiver for the current token
-  const { currentData: receivedVestingSchedulesData } = vestingSubgraphApi.useGetVestingSchedulesQuery(
-    visibleAddress && network.vestingSubgraphUrl
-      ? {
-          chainId: network.id,
-          where: {
-            superToken: tokenAddress.toLowerCase(),
-            receiver: visibleAddress.toLowerCase()
-          },
-          orderBy: "createdAt",
-          orderDirection: "desc"
-        }
-      : skipToken
-  );
-
-  // Fetch vesting schedules where user is sender for the current token
-  const { currentData: sentVestingSchedulesData } = vestingSubgraphApi.useGetVestingSchedulesQuery(
-    visibleAddress && network.vestingSubgraphUrl
-      ? {
-          chainId: network.id,
-          where: {
-            superToken: tokenAddress.toLowerCase(),
-            sender: visibleAddress.toLowerCase()
-          },
-          orderBy: "createdAt",
-          orderDirection: "desc"
-        }
-      : skipToken
-  );
+  //Vesting schedules where user is either sender or receiver for the current token
+  const { currentData: vestingSchedulesData } =
+    vestingSubgraphApi.useGetVestingSchedulesQuery(
+      visibleAddress && network.vestingSubgraphUrl
+        ? {
+            chainId: network.id,
+            where: {
+              or: [
+                {
+                  superToken: tokenAddress.toLowerCase(),
+                  receiver: visibleAddress.toLowerCase(),
+                },
+                {
+                  superToken: tokenAddress.toLowerCase(),
+                  sender: visibleAddress.toLowerCase(),
+                },
+              ],
+            },
+            orderBy: "createdAt",
+            orderDirection: "desc",
+          }
+        : skipToken
+    );
 
   const allTasks = useMemo(
     () => [
@@ -312,10 +306,9 @@ const StreamsTable: FC<StreamsTableProps> = ({
   ]);
 
   const streams = useMemo<StreamType[]>(() => {
-    const allVestingSchedules = [
-      ...(receivedVestingSchedulesData?.vestingSchedules ?? []),
-      ...(sentVestingSchedulesData?.vestingSchedules ?? [])
-    ].filter(x => !x.deletedAt);
+    const allVestingSchedules = (vestingSchedulesData?.vestingSchedules ?? []).filter(
+      (x) => !x.deletedAt
+    );
     
     return [...incomingStreams, ...outgoingStreams]
       .map((stream) => {
@@ -344,12 +337,12 @@ const StreamsTable: FC<StreamsTableProps> = ({
         const associatedVestingSchedules = allVestingSchedules.filter(vs => 
           vs.superToken.toLowerCase() === stream.token.toLowerCase() &&
           vs.receiver.toLowerCase() === stream.receiver.toLowerCase() &&
-          vs.cliffAndFlowDate <= stream.createdAtTimestamp &&
-          vs.endDate > stream.createdAtTimestamp
+          Number(vs.cliffAndFlowDate) <= stream.createdAtTimestamp &&
+          Number(vs.endDate) > stream.createdAtTimestamp
         );
         
         const mostLikelyAssociatedVestingSchedule = associatedVestingSchedules.find(vs => 
-          vs.cliffAndFlowExecutedAt === stream.createdAtTimestamp
+          Number(vs.cliffAndFlowExecutedAt) === stream.createdAtTimestamp
         ) ?? associatedVestingSchedules[0];
 
         return mapStreamScheduling(
@@ -368,7 +361,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
         if (!stream1Active && stream2Active) return 1;
         return 0;
       });
-  }, [incomingStreams, outgoingStreams, allTasks, receivedVestingSchedulesData, sentVestingSchedulesData]);
+  }, [incomingStreams, outgoingStreams, allTasks, vestingSchedulesData]);
 
   useEffect(() => {
     // don't refetch when there's a bunch of streams
