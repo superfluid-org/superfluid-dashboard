@@ -534,7 +534,7 @@ const StreamPageContent: FC<{
                   {isActive && (
                     scheduledStream.mostLikelyAssociatedVestingScheduleId ? (
                       <Tooltip
-                        title="This stream is part of a vesting schedule. Go to the Vesting page to cancel it."
+                        title="This stream is part of a vesting schedule, so you can't cancel it."
                         arrow
                         placement="top"
                       >
