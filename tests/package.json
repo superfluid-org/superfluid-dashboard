@@ -10,7 +10,7 @@
     "date-fns": "^2.30.0",
     "ethers": "^5.8.0",
     "lodash": "^4.17.21",
-    "viem": "^2.29.2",
+    "viem": "^2.36.0",
     "web3-provider-engine": "^16.0.8"
   },
   "devDependencies": {
@@ -39,7 +39,7 @@
     "prettier-plugin-gherkin": "^1.1.1",
     "stream-browserify": "^3.0.0",
     "ts-loader": "^9.5.2",
-    "typescript": "^5.8.3",
+    "typescript": "^5.9.2",
     "webpack": "^5.99.8"
   },
   "nyc": {
