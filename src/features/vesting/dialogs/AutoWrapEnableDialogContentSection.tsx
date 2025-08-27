@@ -1,5 +1,5 @@
 import { FC, memo, useMemo } from "react";
-import { Network } from "../../network/networks";
+import { Network, networkDefinition } from "../../network/networks";
 import { Button, Stack, Step, StepLabel, Stepper } from "@mui/material";
 import AutoWrapStrategyTransactionButton from "../transactionButtons/AutoWrapStrategyTransactionButton";
 import AutoWrapAllowanceTransactionButton from "../transactionButtons/AutoWrapAllowanceTransactionButton";
@@ -21,7 +21,8 @@ const AutoWrapEnableDialogContentSection: FC<{
     id: token_.address
   });
   const token = tokenQuery.data as SuperTokenMinimal | null | undefined; // TODO: get rid of the cast
-  const isAutoWrappable = token?.type === TokenType.WrapperSuperToken;
+  const isBaseMainnet = network.id === networkDefinition.base.id;
+  const isAutoWrappable = token?.type === TokenType.WrapperSuperToken && !isBaseMainnet;
 
   const {
     isAutoWrapLoading,
@@ -72,6 +73,7 @@ const AutoWrapEnableDialogContentSection: FC<{
           sx: {
             display: activeStep == 0 ? "" : "none",
           },
+          disabled: isBaseMainnet
         }}
       >
         {
@@ -95,6 +97,7 @@ const AutoWrapEnableDialogContentSection: FC<{
           sx: {
             display: activeStep == 1 ? "" : "none",
           },
+          disabled: isBaseMainnet
         }}
       >
         {
