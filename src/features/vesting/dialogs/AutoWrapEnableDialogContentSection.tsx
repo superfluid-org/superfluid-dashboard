@@ -21,8 +21,7 @@ const AutoWrapEnableDialogContentSection: FC<{
     id: token_.address
   });
   const token = tokenQuery.data as SuperTokenMinimal | null | undefined; // TODO: get rid of the cast
-  const isBaseMainnet = network.id === networkDefinition.base.id;
-  const isAutoWrappable = token?.type === TokenType.WrapperSuperToken && !isBaseMainnet;
+  const isAutoWrappable = token?.type === TokenType.WrapperSuperToken;
 
   const {
     isAutoWrapLoading,
@@ -72,8 +71,7 @@ const AutoWrapEnableDialogContentSection: FC<{
           size: "xl",
           sx: {
             display: activeStep == 0 ? "" : "none",
-          },
-          disabled: isBaseMainnet
+          }
         }}
       >
         {
@@ -96,8 +94,7 @@ const AutoWrapEnableDialogContentSection: FC<{
           size: "xl",
           sx: {
             display: activeStep == 1 ? "" : "none",
-          },
-          disabled: isBaseMainnet
+          }
         }}
       >
         {
