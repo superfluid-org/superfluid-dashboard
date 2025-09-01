@@ -1,6 +1,6 @@
 
 import { useAppKitAccount } from "@reown/appkit/react"
-import { useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { Address, isAddress, zeroAddress } from "viem"
 import { useAccount as useWagmiAccount } from "wagmi"
 
@@ -11,7 +11,17 @@ export function useAccount() {
 
     const isConnecting = status === "connecting"
     const isReconnecting = status === "reconnecting"
+
+    const [mounted, setMounted] = useState(false)
+    useEffect(() => {
+        setMounted(true)
+    }, [])
+
     const addressLowercased = useMemo(() => {
+        if (!mounted) {
+            return undefined
+        }
+
         if (address === zeroAddress) {
             return undefined
         }
@@ -22,7 +32,7 @@ export function useAccount() {
         }
 
         return undefined
-    }, [address])
+    }, [address, mounted])
 
     return {
         address: addressLowercased,
