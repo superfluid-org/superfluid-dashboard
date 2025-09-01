@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@adraffy/ens-normalize": "^1.11.0",
+    "@bigmi/react": "^0.5.2",
     "@emotion/cache": "^11.14.0",
     "@emotion/react": "^11.14.0",
     "@emotion/server": "^11.11.0",
@@ -33,8 +34,8 @@
     "@hookform/error-message": "^2.0.1",
     "@hookform/resolvers": "5.0.1",
     "@lens-protocol/client": "^2.3.2",
-    "@lifi/sdk": "^3.6.14",
-    "@lifi/widget": "^3.20.5",
+    "@lifi/sdk": "^3.11.4",
+    "@lifi/widget": "^3.29.1",
     "@mui/icons-material": "^6.5.0",
     "@mui/lab": "6.0.1-beta.34",
     "@mui/material": "^6.5.0",
