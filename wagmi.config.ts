@@ -1,19 +1,19 @@
 import { defineConfig } from "@wagmi/cli";
 import { etherscan, react } from "@wagmi/cli/plugins";
 import { autoWrapManagerAddresses, vestingContractAddresses_v3 } from "./src/features/network/networkConstants";
-import nativeAssetSuperTokenJSON from "@superfluid-finance/ethereum-contracts/build/truffle/SETHProxy.json" assert { type: "json" };
-import pureSuperTokenJSON from "@superfluid-finance/ethereum-contracts/build/truffle/PureSuperToken.json" assert { type: "json" };
-import superTokenJSON from "@superfluid-finance/ethereum-contracts/build/truffle/SuperToken.json" assert { type: "json" };
-import ConstantFlowAgreementV1JSON from "@superfluid-finance/ethereum-contracts/build/truffle/ConstantFlowAgreementV1.json" assert { type: "json" };
-import GeneralDistributionAgreementV1JSON from "@superfluid-finance/ethereum-contracts/build/truffle/GeneralDistributionAgreementV1.json" assert { type: "json" };
-import SuperfluidPoolJSON from "@superfluid-finance/ethereum-contracts/build/truffle/SuperfluidPool.json" assert { type: "json" };
-import SuperfluidJSON from "@superfluid-finance/ethereum-contracts/build/truffle/Superfluid.json" assert { type: "json" };
-import cfaV1ForwarderJSON from "@superfluid-finance/ethereum-contracts/build/truffle/CFAv1Forwarder.json" assert { type: "json" };
+import nativeAssetSuperTokenJSON from "@superfluid-finance/ethereum-contracts/build/truffle/SETHProxy.json" with { type: "json" };
+import pureSuperTokenJSON from "@superfluid-finance/ethereum-contracts/build/truffle/PureSuperToken.json" with { type: "json" };
+import superTokenJSON from "@superfluid-finance/ethereum-contracts/build/truffle/SuperToken.json" with { type: "json" };
+import ConstantFlowAgreementV1JSON from "@superfluid-finance/ethereum-contracts/build/truffle/ConstantFlowAgreementV1.json" with { type: "json" };
+import GeneralDistributionAgreementV1JSON from "@superfluid-finance/ethereum-contracts/build/truffle/GeneralDistributionAgreementV1.json" with { type: "json" };
+import SuperfluidPoolJSON from "@superfluid-finance/ethereum-contracts/build/truffle/SuperfluidPool.json" with { type: "json" };
+import SuperfluidJSON from "@superfluid-finance/ethereum-contracts/build/truffle/Superfluid.json" with { type: "json" };
+import cfaV1ForwarderJSON from "@superfluid-finance/ethereum-contracts/build/truffle/CFAv1Forwarder.json" with { type: "json" };
 import { Abi, Address, erc20Abi } from "viem";
 import superfluidMetadata from "@superfluid-finance/metadata";
-import vestingSchedulerV1Abi from "./src/eth-sdk/abis/optimismSepolia/vestingScheduler.json" assert { type: "json" };
-import vestingSchedulerV2Abi from "./src/eth-sdk/abis/optimismSepolia/vestingScheduler_v2.json" assert { type: "json" };
-import vestingSchedulerV3Abi from "./src/eth-sdk/abis/optimismSepolia/vestingScheduler_v3.json" assert { type: "json" };
+import vestingSchedulerV1Abi from "./src/eth-sdk/abis/optimismSepolia/vestingScheduler.json" with { type: "json" };
+import vestingSchedulerV2Abi from "./src/eth-sdk/abis/optimismSepolia/vestingScheduler_v2.json" with { type: "json" };
+import vestingSchedulerV3Abi from "./src/eth-sdk/abis/optimismSepolia/vestingScheduler_v3.json" with { type: "json" };
 
 /** @type {import('@wagmi/cli').Config} */
 export default defineConfig({

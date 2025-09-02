@@ -2,7 +2,7 @@
 
 import { Box, useTheme } from "@mui/material";
 import { ClientOnly } from "./ClientOnly";
-import { LiFiWidget, WidgetConfig, WidgetSkeleton, WidgetTheme, jumperTheme } from "@lifi/widget";
+import { WidgetConfig, WidgetSkeleton, WidgetTheme, jumperTheme } from "@lifi/widget";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { ELEVATION1_BG } from "../theme/theme";
 import { useAvailableNetworks } from "../network/AvailableNetworksContext";
@@ -10,6 +10,12 @@ import { useEffect, useMemo } from "react";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { useConnectButton } from "../wallet/ConnectButtonProvider";
 import useFeaturedTokens from "./useFeaturedTokens";
+import dynamic from 'next/dynamic';
+
+const LiFiWidget = dynamic(() => import('@lifi/widget').then(mod => mod.LiFiWidget), {
+  ssr: false,
+  loading: () => <div>Loading LiFi Widget...</div>
+});
 
 export function LiFiWidgetManager() {
     const theme = useTheme();
@@ -61,7 +67,7 @@ export function LiFiWidgetManager() {
             },
             tokens: {
                 featured: featuredTokens
-            }
+            },
         } as Partial<WidgetConfig>;
 
         return config;

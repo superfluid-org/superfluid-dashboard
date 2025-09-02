@@ -1,5 +1,5 @@
 import { FC, memo, useMemo } from "react";
-import { Network } from "../../network/networks";
+import { Network, networkDefinition } from "../../network/networks";
 import { Button, Stack, Step, StepLabel, Stepper } from "@mui/material";
 import AutoWrapStrategyTransactionButton from "../transactionButtons/AutoWrapStrategyTransactionButton";
 import AutoWrapAllowanceTransactionButton from "../transactionButtons/AutoWrapAllowanceTransactionButton";
@@ -71,7 +71,7 @@ const AutoWrapEnableDialogContentSection: FC<{
           size: "xl",
           sx: {
             display: activeStep == 0 ? "" : "none",
-          },
+          }
         }}
       >
         {
@@ -94,7 +94,7 @@ const AutoWrapEnableDialogContentSection: FC<{
           size: "xl",
           sx: {
             display: activeStep == 1 ? "" : "none",
-          },
+          }
         }}
       >
         {

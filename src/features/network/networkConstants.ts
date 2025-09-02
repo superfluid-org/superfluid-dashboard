@@ -27,7 +27,7 @@ export const autoWrapManagerAddresses = {
   [chainIds.mainnet]: "0x30aE282CF477E2eF28B14d0125aCEAd57Fe1d7a1",
   [chainIds.gnosis]: "0x8082e58681350876aFe8f52d3Bf8672034A03Db0",
   [chainIds.optimismSepolia]: "0xe567b32C10B0dB72d9490eB1B9A409C5ADed192C",
-  [chainIds.base]: "0x5D0acD0864Ad07ba4E1E0474AE69Da87482e14A9",
+  [chainIds.base]: "0x041D4bF21367e9B92016B28Fb5A2f697c1befd01",
 } as const;
 
 export const autoWrapStrategyAddresses = {
@@ -40,7 +40,7 @@ export const autoWrapStrategyAddresses = {
   [chainIds.mainnet]: "0x1D65c6d3AD39d454Ea8F682c49aE7744706eA96d",
   [chainIds.gnosis]: "0x51FBAbD31A615E14b1bC12E9d887f60997264a4E",
   [chainIds.optimismSepolia]: "0xf232f1fd34CE12e24F4391865c2D6E374D2C34d9",
-  [chainIds.base]: "0xB29005319B0caB24cF6D4d24e8420E54BB29Cb0d",
+  [chainIds.base]: "0xD790CDE7A1B3194d8Ce3CF21544F03a770336E23",
 } as const;
 
 export const flowSchedulerContractAddresses = {
