@@ -10,24 +10,24 @@
     "date-fns": "^2.30.0",
     "ethers": "^5.8.0",
     "lodash": "^4.17.21",
-    "viem": "^2.36.0",
+    "viem": "^2.37.4",
     "web3-provider-engine": "^16.0.8"
   },
   "devDependencies": {
-    "@babel/core": "^7.27.1",
-    "@babel/preset-env": "^7.27.2",
+    "@babel/core": "^7.28.4",
+    "@babel/preset-env": "^7.28.3",
     "@babel/preset-typescript": "^7.27.1",
     "@badeball/cypress-cucumber-preprocessor": "^18.0.6",
     "@cypress/browserify-preprocessor": "^3.0.2",
-    "@cypress/code-coverage": "^3.14.2",
+    "@cypress/code-coverage": "^3.14.6",
     "@cypress/webpack-preprocessor": "^5.17.1",
-    "@types/node": "^20.17.47",
+    "@types/node": "^20.19.13",
     "babel-loader": "^9.2.1",
     "crypto-browserify": "^3.12.1",
     "cypress": "12.17.4",
-    "cypress-cloud": "^1.13.0",
+    "cypress-cloud": "^1.13.1",
     "cypress-iframe": "^1.0.1",
-    "cypress-real-events": "^1.14.0",
+    "cypress-real-events": "^1.15.0",
     "husky": "^8.0.3",
     "lint-staged": "^13.3.0",
     "minimist": "^1.2.8",
@@ -38,9 +38,9 @@
     "prettier": "^2.8.8",
     "prettier-plugin-gherkin": "^1.1.1",
     "stream-browserify": "^3.0.0",
-    "ts-loader": "^9.5.2",
+    "ts-loader": "^9.5.4",
     "typescript": "^5.9.2",
-    "webpack": "^5.99.8"
+    "webpack": "^5.101.3"
   },
   "nyc": {
     "extension": [
