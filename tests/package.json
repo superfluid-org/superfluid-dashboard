@@ -10,7 +10,7 @@
     "date-fns": "^2.30.0",
     "ethers": "^5.8.0",
     "lodash": "^4.17.21",
-    "viem": "^2.36.0",
+    "viem": "^2.37.4",
     "web3-provider-engine": "^16.0.8"
   },
   "devDependencies": {
