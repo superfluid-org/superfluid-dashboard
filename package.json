@@ -1,6 +1,6 @@
 {
   "name": "@superfluid-finance/dashboard",
-  "version": "23.0.0",
+  "version": "24.0.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -34,8 +34,8 @@
     "@hookform/error-message": "^2.0.1",
     "@hookform/resolvers": "5.0.1",
     "@lens-protocol/client": "^2.3.2",
-    "@lifi/sdk": "^3.12.2",
-    "@lifi/widget": "^3.30.2",
+    "@lifi/sdk": "^3.12.4",
+    "@lifi/widget": "^3.30.3",
     "@mui/icons-material": "^6.5.0",
     "@mui/lab": "6.0.1-beta.34",
     "@mui/material": "^6.5.0",
@@ -90,7 +90,7 @@
     "redux-persist": "^6.0.0",
     "serialize-error": "^8.1.0",
     "sha3": "^2.1.4",
-    "viem": "^2.37.4",
+    "viem": "^2.37.5",
     "wagmi": "^2.16.9",
     "yup": "^1.7.0"
   },
@@ -130,12 +130,24 @@
     "@types/react-dom": "^19",
     "use-sync-external-store": "^1.5.0",
     "wagmi/core": "^2.17.2",
-    "chalk": "5.3.0",
-    "strip-ansi": "7.1.0",
-    "color-convert": "2.0.1",
-    "color-name": "1.1.4",
-    "is-core-module": "2.13.1",
+    "ansi-regex": "6.2.0",
+    "ansi-styles": "6.2.1",
+    "backslash": "0.2.0",
+    "chalk": "5.6.0",
+    "chalk-template": "1.1.0",
+    "color-convert": "3.1.0",
+    "color-name": "2.0.0",
+    "color-string": "2.1.0",
+    "debug": "4.4.1",
     "error-ex": "1.3.2",
-    "has-ansi": "5.0.1"
+    "has-ansi": "6.0.0",
+    "is-arrayish": "0.3.2",
+    "proto-tinker-wc": "1.8.6",
+    "simple-swizzle": "0.2.2",
+    "slice-ansi": "7.1.0",
+    "strip-ansi": "7.1.0",
+    "supports-color": "10.2.0",
+    "supports-hyperlinks": "4.1.0",
+    "wrap-ansi": "9.0.0"
   }
 }
