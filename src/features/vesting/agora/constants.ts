@@ -24,16 +24,16 @@ export const agoraApiEndpoints = {
             dev_tooling: "https://atlas.optimism.io/api/v1/rewards/8/dev-tooling"
         }
     },
-    [optimismSepolia.id]: {
-        rf7: {
-            onchain_builders: `${APP_URL}/api/mock`,
-            dev_tooling: "https://op-atlas-git-stepan-rewards-api-mock-voteagora.vercel.app/api/v1/rewards/7/dev-tooling",
-        },
-        rf8: {
-            onchain_builders: `${APP_URL}/api/mock`,
-            dev_tooling: "https://op-atlas-git-stepan-rewards-api-mock-voteagora.vercel.app/api/v1/rewards/8/dev-tooling",
-        }
-    },
+    // [optimismSepolia.id]: {
+    //     rf7: {
+    //         onchain_builders: `${APP_URL}/api/mock`,
+    //         dev_tooling: "https://op-atlas-git-stepan-rewards-api-mock-voteagora.vercel.app/api/v1/rewards/7/dev-tooling",
+    //     },
+    //     rf8: {
+    //         onchain_builders: `${APP_URL}/api/mock`,
+    //         dev_tooling: "https://op-atlas-git-stepan-rewards-api-mock-voteagora.vercel.app/api/v1/rewards/8/dev-tooling",
+    //     }
+    // },
 } as const satisfies Record<number, Record<RoundIdentifier, Record<RoundType, string>>>;
 
 export const validChainIds = Object.keys(agoraApiEndpoints).map(Number);
