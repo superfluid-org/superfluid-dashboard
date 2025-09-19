@@ -81,7 +81,11 @@ if (needsTestConnector) {
         type: "mock",
         emitter,
         uid: "15967486-c8a1-4142-a0c2-53520e654529",
-        async connect() {
+        async connect<withCapabilities extends boolean = false>(parameters?: {
+          chainId?: number | undefined;
+          isReconnecting?: boolean | undefined;
+          withCapabilities?: withCapabilities | boolean | undefined;
+        } | undefined) {
           try {
             const accounts = await walletClient.getAddresses();
             const chainId = walletClient.chain.id;
@@ -89,7 +93,12 @@ if (needsTestConnector) {
             console.log("Mock wallet connected successfully", { accounts, chainId });
 
             return {
-              accounts,
+              accounts: (parameters?.withCapabilities === true
+                ? accounts.map(address => ({
+                    address,
+                    capabilities: {} // Mock connector doesn't have real capabilities
+                  }))
+                : accounts) as any,
               chainId
             };
           } catch (err) {
@@ -155,7 +164,11 @@ if (needsTestConnector) {
         type: "mock",
         emitter,
         uid: "15967486-c8a1-4142-a0c2-53520e654529",
-        async connect() {
+        async connect<withCapabilities extends boolean = false>(parameters?: {
+          chainId?: number | undefined;
+          isReconnecting?: boolean | undefined;
+          withCapabilities?: withCapabilities | boolean | undefined;
+        } | undefined) {
           console.error("Cannot connect - mock wallet initialization failed");
           throw new Error("Mock wallet initialization failed");
         },

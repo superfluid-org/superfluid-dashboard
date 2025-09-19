@@ -2,24 +2,29 @@ import { Box, Button, Container, FormControl, InputLabel, MenuItem, Paper, Selec
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useAccount } from "@/hooks/useAccount"
 import { useExpectedNetwork } from "../../features/network/ExpectedNetworkContext";
 import { BigLoader } from "../../features/vesting/BigLoader";
 import { useVisibleAddress } from "../../features/wallet/VisibleAddressContext";
+import { useImpersonation } from "../../features/impersonation/ImpersonationContext";
 import { useTokenQuery } from "../../hooks/useTokenQuery";
 import { NextPageWithLayout } from "../_app";
 import { AgoraResponseData } from "../api/agora";
 import { PrimaryPageContent } from "../../features/vesting/agora/PrimaryPageContent";
-import { RoundType, roundTypes } from "../../features/vesting/agora/constants";
-import { optimismSepolia } from "wagmi/chains";
+import { RoundIdentifier, RoundType, roundTypes, agoraSenderAddresses } from "../../features/vesting/agora/constants";
+import { optimism, optimismSepolia } from "wagmi/chains";
 
 const AgoraPage: NextPageWithLayout = () => {
     const router = useRouter();
     const { visibleAddress } = useVisibleAddress();
     const { network } = useExpectedNetwork();
     const { isConnected, isConnecting, isReconnecting } = useAccount();
+    const { impersonate } = useImpersonation();
     const isWalletConnecting = !isConnected && (isConnecting || isReconnecting);
+
+    // Track if this is the initial mount to prevent URL overwriting
+    const isInitialMount = useRef(true);
 
     const [tranch, setTranch] = useState(() => {
         // Try to get the value from localStorage
@@ -36,27 +41,95 @@ const AgoraPage: NextPageWithLayout = () => {
     }, [tranch]);
 
     const [roundType, setRoundType] = useState<RoundType>("onchain_builders");
+    const [round, setRound] = useState<RoundIdentifier>('rf8');
 
-    // Set roundType from URL when router is ready
+
+    // Set round and roundType from URL when router is ready, or from visible address if it's an Agora sender
     useEffect(() => {
         if (router.isReady) {
+            let urlHasRound = false;
+            let urlHasRoundType = false;
+
+            // Set roundType from URL (priority)
             const queryRoundType = router.query.roundType as string;
             if (queryRoundType && Object.values(roundTypes).includes(queryRoundType as RoundType)) {
                 setRoundType(queryRoundType as RoundType);
+                urlHasRoundType = true;
+            }
+
+            // Set round from URL (priority)
+            const queryRound = router.query.round as string;
+            if (queryRound && (queryRound === 'rf7' || queryRound === 'rf8')) {
+                setRound(queryRound as RoundIdentifier);
+                urlHasRound = true;
+            }
+
+            // If no URL params, check if visible address is an Agora sender and auto-select
+            if (!urlHasRound || !urlHasRoundType) {
+                if (visibleAddress && network.id === optimism.id) {
+                    const senderAddresses = agoraSenderAddresses[optimism.id];
+
+                    // Check each round and type to find a match
+                    for (const [roundKey, roundSenders] of Object.entries(senderAddresses)) {
+                        for (const [typeKey, address] of Object.entries(roundSenders)) {
+                            if (address.toLowerCase() === visibleAddress.toLowerCase()) {
+                                // Found a match!
+                                if (!urlHasRound) {
+                                    setRound(roundKey as RoundIdentifier);
+                                }
+                                if (!urlHasRoundType) {
+                                    setRoundType(typeKey as RoundType);
+                                }
+                                return; // Exit once we find a match
+                            }
+                        }
+                    }
+                }
             }
         }
-    }, [router.isReady, router.query.roundType]);
+    }, [router.isReady, router.query.roundType, router.query.round, visibleAddress, network.id]);
 
-    // Update URL when roundType changes (but not on initial load)
+    // Update URL when round or roundType changes (but not on initial load)
     useEffect(() => {
-        // Only update if router is ready and roundType is different from URL
-        if (router.isReady && router.query.roundType !== roundType) {
-            router.push({
-                pathname: router.pathname,
-                query: { ...router.query, roundType }
-            }, undefined, { shallow: true });
+        if (router.isReady) {
+            // Skip on initial mount to prevent overwriting URL params
+            if (isInitialMount.current) {
+                isInitialMount.current = false;
+                return;
+            }
+
+            const updates: { round?: boolean; roundType?: boolean } = {};
+
+            if (router.query.round !== round) {
+                updates.round = true;
+            }
+            if (router.query.roundType !== roundType) {
+                updates.roundType = true;
+            }
+
+            // Only push if there are actual changes
+            if (updates.round || updates.roundType) {
+                router.push({
+                    pathname: router.pathname,
+                    query: { ...router.query, round, roundType }
+                }, undefined, { shallow: true });
+            }
         }
-    }, [router.isReady, roundType]);
+    }, [router.isReady, round, roundType]);
+
+    // Helper function to update impersonation when round/type selection changes
+    const updateImpersonationForSelection = useCallback((selectedRound: RoundIdentifier, selectedRoundType: RoundType) => {
+        if (network.id === optimism.id) {
+            const senderAddresses = agoraSenderAddresses[optimism.id];
+            if (senderAddresses && senderAddresses[selectedRound]) {
+                const addressForRoundType = senderAddresses[selectedRound][selectedRoundType];
+                // Only impersonate if the current address is different from the target address
+                if (addressForRoundType && visibleAddress?.toLowerCase() !== addressForRoundType.toLowerCase()) {
+                    impersonate(addressForRoundType);
+                }
+            }
+        }
+    }, [visibleAddress, network.id, impersonate]);
 
     const handleRoundTypeChange = (
         _event: React.MouseEvent<HTMLElement>,
@@ -64,12 +137,23 @@ const AgoraPage: NextPageWithLayout = () => {
     ) => {
         if (newRoundType !== null) {
             setRoundType(newRoundType);
+            updateImpersonationForSelection(round, newRoundType);
+        }
+    };
+
+    const handleRoundChange = (
+        _event: React.MouseEvent<HTMLElement>,
+        newRound: RoundIdentifier | null
+    ) => {
+        if (newRound !== null) {
+            setRound(newRound);
+            updateImpersonationForSelection(newRound, roundType);
         }
     };
 
     const { data, isLoading, error: error_ } = useQuery({
-        queryKey: ['agora', visibleAddress ?? null, network.id, roundType],
-        queryFn: () => fetch(`/api/agora?sender=${visibleAddress}&chainId=${network.id}&type=${roundType}`).then(async (res) => (await res.json()) as AgoraResponseData),
+        queryKey: ['agora', visibleAddress ?? null, network.id, roundType, round],
+        queryFn: () => fetch(`/api/agora?sender=${visibleAddress}&chainId=${network.id}&type=${roundType}&round=${round}`).then(async (res) => (await res.json()) as AgoraResponseData),
         enabled: !!visibleAddress && !!network.id,
 
         // No need to refetch once it's computed.
@@ -187,6 +271,24 @@ const AgoraPage: NextPageWithLayout = () => {
                 )
             }
 
+            <Box sx={{ mb: 1 }}>
+                <Typography variant="h6" gutterBottom>
+                    Round
+                </Typography>
+                <ToggleButtonGroup
+                    value={round}
+                    exclusive
+                    onChange={handleRoundChange}
+                >
+                    <ToggleButton value="rf7">
+                        RF7
+                    </ToggleButton>
+                    <ToggleButton value="rf8">
+                        RF8
+                    </ToggleButton>
+                </ToggleButtonGroup>
+            </Box>
+
             <Box sx={{ mb: 3 }}>
                 <Typography variant="h6" gutterBottom>
                     Round Type
@@ -212,6 +314,7 @@ const AgoraPage: NextPageWithLayout = () => {
                 projectsOverview={projectsOverview}
                 token={token}
                 roundType={roundType}
+                round={round}
             />
 
         </Container>

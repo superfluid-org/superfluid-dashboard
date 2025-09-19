@@ -5,14 +5,19 @@ import { FC } from "react";
 import Link from "../common/Link";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { isAgoraSender, validChainIds } from "./agora/constants";
+import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 
 const SimpleVestingHeader: FC = () => {
   const { address: accountAddress } = useAccount();
+  const { visibleAddress } = useVisibleAddress();
   const { network } = useExpectedNetwork();
 
   const doesNetworkSupportBatchVesting = !!network.vestingContractAddress.v3;
   const doesNetworkSupportAgora = validChainIds.includes(network.id);
-  const isAgoraWhitelistedWallet = accountAddress && isAgoraSender(network.id, accountAddress);
+  const isAgoraWhitelistedWallet = visibleAddress && (
+    isAgoraSender(network.id, visibleAddress, "rf7") ||
+    isAgoraSender(network.id, visibleAddress, "rf8")
+  );
 
   return (
     <Stack

@@ -12,6 +12,7 @@ import {
   useState,
 } from "react";
 import { getAddress, isAddress } from "../../utils/memoizedEthersUtils";
+import { useAccount } from "../../hooks/useAccount";
 import { useAppDispatch } from "../redux/store";
 import { impersonated } from "./impersonation.slice";
 
@@ -27,6 +28,7 @@ const ImpersonationContext = createContext<ImpersonationContextValue>(null!);
 export const ImpersonationProvider: FC<PropsWithChildren> = ({ children }) => {
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const { address: accountAddress } = useAccount();
 
   const [impersonatedAddress, setImpersonatedAddress] = useState<
     string | undefined
@@ -111,6 +113,19 @@ export const ImpersonationProvider: FC<PropsWithChildren> = ({ children }) => {
       setImpersonatedAddressQueryParam(impersonatedAddress);
     }
   }, [router.route]);
+
+  // Automatically remove impersonation when connected account matches impersonated address
+  useEffect(() => {
+    if (impersonatedAddress && accountAddress) {
+      // Compare addresses in lowercase to handle different formats (checksum vs lowercase)
+      const normalizedImpersonated = impersonatedAddress.toLowerCase();
+      const normalizedAccount = accountAddress.toLowerCase();
+
+      if (normalizedImpersonated === normalizedAccount) {
+        stopImpersonation();
+      }
+    }
+  }, [impersonatedAddress, accountAddress, stopImpersonation]);
 
   return (
     <ImpersonationContext.Provider value={contextValue}>

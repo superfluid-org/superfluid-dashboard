@@ -13,7 +13,7 @@ import { add, getUnixTime } from 'date-fns'
 import { cfaV1ForwarderAbi, cfaV1ForwarderAddress, superTokenAbi, vestingSchedulerV3Abi } from '../../generated'
 import { ACL_CREATE_PERMISSION, ACL_DELETE_PERMISSION, ACL_UPDATE_PERMISSION } from '../../utils/constants'
 import { getAddress as getAddress_ } from "ethers/lib/utils"
-import { agoraApiEndpoints, RoundType, roundTypes, START_TIMESTAMP_OF_FIRST_TRANCH_ON_OPTIMISM, tokenAddresses, validChainIds } from '../../features/vesting/agora/constants'
+import { agoraApiEndpoints, agoraSenderAddresses, RoundIdentifier, RoundType, roundTypes, ROUND_START_TIMESTAMPS, tokenAddresses, validChainIds } from '../../features/vesting/agora/constants'
 
 // # Agora
 
@@ -53,7 +53,7 @@ export const agoraResponseEntrySchema = yup.object({
             notZero: false,
         }))
     )
-        .required('Amounts are required').min(1, 'At least one amount is required').max(6, 'Not more than 6 amounts are allowed')
+        .required('Amounts are required').min(1, 'At least one amount is required')
 }) as unknown as yup.Schema<AgoraResponseEntry>;
 
 export const agoraResponseSchema = yup.array().of(agoraResponseEntrySchema).required('Response array is required') as unknown as yup.Schema<AgoraResponse>;
@@ -61,7 +61,7 @@ export const agoraResponseSchema = yup.array().of(agoraResponseEntrySchema).requ
 
 // # Core types
 type TranchPlan = {
-    tranchCount: 6
+    tranchCount: number
     currentTranchCount: number
     totalDurationInSeconds: number
     tranches: {
@@ -232,6 +232,15 @@ export default async function handler(
     }
     const type = type_ as RoundType;
 
+    const round_ = req.query.round
+    if (!round_ || typeof round_ !== 'string' || !['rf7', 'rf8'].includes(round_)) {
+        return res.status(400).json({
+            success: false,
+            message: 'Round is required as query parameter (rf7 or rf8)'
+        })
+    }
+    const round = round_ as RoundIdentifier;
+
     const sender_ = req.query.sender
     if (!sender_ || typeof sender_ !== 'string' || !isAddress(sender_)) {
         return res.status(400).json({
@@ -264,7 +273,23 @@ export default async function handler(
         })
     }
 
-    const agoraApiEndpoint = agoraApiEndpoints[chainId as keyof typeof agoraApiEndpoints][type];
+    const networkEndpoints = agoraApiEndpoints[chainId as keyof typeof agoraApiEndpoints];
+    if (!networkEndpoints) {
+        return res.status(400).json({
+            success: false,
+            message: 'Network not supported for Agora API.'
+        })
+    }
+
+    const roundEndpoints = networkEndpoints[round];
+    if (!roundEndpoints) {
+        return res.status(400).json({
+            success: false,
+            message: `Round ${round} not supported.`
+        })
+    }
+
+    const agoraApiEndpoint = roundEndpoints[type];
     if (!agoraApiEndpoint) {
         return res.status(400).json({
             success: false,
@@ -329,18 +354,18 @@ export default async function handler(
             E.tap((x) => E.logTrace(`Validated ${x.length} rows from Agora`))
         );
 
+        const currentTranchCount = dataFromAgora[0].amounts.length;
+
         const startOfTranchOne = function() {
             if (isProd) {
-                return START_TIMESTAMP_OF_FIRST_TRANCH_ON_OPTIMISM;
+                return ROUND_START_TIMESTAMPS[round];
             } else {
                 return getUnixTime(new Date()) + 4 * UnitOfTime.Minute;
             }
         }()
-
-        const currentTranchCount = dataFromAgora[0].amounts.length;
         const tranchDuration = 1 * UnitOfTime.Month;
 
-        const tranchCount = 6;
+        const tranchCount = round === 'rf7' ? 6 : 4;
         const tranchPlan: TranchPlan = {
             tranchCount,
             currentTranchCount,
@@ -351,6 +376,7 @@ export default async function handler(
                 // Calculate offset from current tranch
                 const offset = index * tranchDuration;
 
+                
                 // Start time is now plus offset (negative for past tranches, positive for future)
                 const startTimestamp = startOfTranchOne + offset;
 
@@ -419,7 +445,7 @@ export default async function handler(
                 .flatMap(x => x.wallets)
         );
 
-        yield* E.logTrace(`Fetching vesting schedules for ${allReceiverAddresses_bothActiveAndInactive.length} wallets`);
+        yield* E.logTrace(`Fetching vesting schedules for ${allReceiverAddresses_bothActiveAndInactive.length} wallets from sender ${sender}`);
         const vestingSchedulesFromSubgraph = yield* pipe(
             E.tryPromise({
                 try: async () => {
@@ -456,11 +482,15 @@ export default async function handler(
 
         const nowDate = new Date();
         const nowTimestamp = getUnixTime(nowDate);
-        const nowIn2DaysTimestamp = getUnixTime(add(nowDate, { hours: 48 }));
+        const nowIn2DaysTimestamp = getUnixTime(add(nowDate, { hours: 2 * 24 }));
+        const nowIn5DaysTimestamp = getUnixTime(add(nowDate, { hours: 5 * 24 }));
         const currentTranch = tranchPlan.tranches[tranchPlan.currentTranchCount - 1];
+
         const startTimestampForNewSchedules = currentTranch.startTimestamp < nowTimestamp  // If it's later than tranch start date.
             ? nowIn2DaysTimestamp
-            : Math.min(nowIn2DaysTimestamp, currentTranch.startTimestamp); // Start in 2 days or original tranch start, whichever is closer.
+            : currentTranch.startTimestamp > nowIn5DaysTimestamp // If the actual start date is in 5 days or later then start it in 2 days instead
+            ? nowIn2DaysTimestamp
+            : currentTranch.startTimestamp
 
         function getTotalDuration(startTimestamp: number) {
             // We want to resolve this lazily because it might error in cases where no schedules are actually created.
@@ -494,9 +524,12 @@ export default async function handler(
                 const allRelevantVestingSchedules = vestingSchedulesFromSubgraph.filter(x => walletsLowerCased.includes(x.receiver.toLowerCase()));
 
                 const currentWalletVestingSchedule = allRelevantVestingSchedules.find(
-                    x => !x.status.isFinished && x.receiver.toLowerCase() === agoraCurrentWallet.toLowerCase()
+                    x => !x.status.isFinished &&
+                         x.receiver.toLowerCase() === agoraCurrentWallet.toLowerCase()
                 ) ?? null;
-                const previousWalletVestingSchedule = (agoraPreviousWallet && allRelevantVestingSchedules.find(x => x.receiver.toLowerCase() === agoraPreviousWallet.toLowerCase())) ?? null;
+                const previousWalletVestingSchedule = (agoraPreviousWallet && allRelevantVestingSchedules.find(x =>
+                    x.receiver.toLowerCase() === agoraPreviousWallet.toLowerCase()
+                )) ?? null;
 
                 const agoraCurrentAmount_ = row.amounts[row.amounts.length - 1] ?? 0;
                 const agoraCurrentAmount = BigInt(agoraCurrentAmount_);
