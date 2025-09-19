@@ -365,7 +365,7 @@ export default async function handler(
         }()
         const tranchDuration = 1 * UnitOfTime.Month;
 
-        const tranchCount = round === 'rf7' ? Math.max(currentTranchCount, 6) : currentTranchCount;
+        const tranchCount = round === 'rf7' ? 6 : 4;
         const tranchPlan: TranchPlan = {
             tranchCount,
             currentTranchCount,
@@ -376,6 +376,7 @@ export default async function handler(
                 // Calculate offset from current tranch
                 const offset = index * tranchDuration;
 
+                
                 // Start time is now plus offset (negative for past tranches, positive for future)
                 const startTimestamp = startOfTranchOne + offset;
 
@@ -481,11 +482,15 @@ export default async function handler(
 
         const nowDate = new Date();
         const nowTimestamp = getUnixTime(nowDate);
-        const nowIn2DaysTimestamp = getUnixTime(add(nowDate, { hours: 48 }));
+        const nowIn2DaysTimestamp = getUnixTime(add(nowDate, { hours: 2 * 24 }));
+        const nowIn5DaysTimestamp = getUnixTime(add(nowDate, { hours: 5 * 24 }));
         const currentTranch = tranchPlan.tranches[tranchPlan.currentTranchCount - 1];
+
         const startTimestampForNewSchedules = currentTranch.startTimestamp < nowTimestamp  // If it's later than tranch start date.
             ? nowIn2DaysTimestamp
-            : Math.min(nowIn2DaysTimestamp, currentTranch.startTimestamp); // Start in 2 days or original tranch start, whichever is closer.
+            : currentTranch.startTimestamp > nowIn5DaysTimestamp // If the actual start date is in 5 days or later then start it in 2 days instead
+            ? nowIn2DaysTimestamp
+            : currentTranch.startTimestamp
 
         function getTotalDuration(startTimestamp: number) {
             // We want to resolve this lazily because it might error in cases where no schedules are actually created.

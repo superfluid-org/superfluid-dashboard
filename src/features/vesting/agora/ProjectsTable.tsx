@@ -20,7 +20,7 @@ export function ProjectsTable(props: {
     const { projectsOverview, rows, allSelectableActions, selectAction, deselectAction } = props;
 
     const currentTranchNo = projectsOverview.tranchPlan.currentTranchCount;
-    const displayTranchNo = Math.max(3, currentTranchNo);
+    const displayTranchNo = Math.max(3, projectsOverview.tranchPlan.tranchCount);
 
     return (
         <TableContainer component={Paper}>
