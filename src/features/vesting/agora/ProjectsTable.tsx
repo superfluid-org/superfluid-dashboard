@@ -20,6 +20,7 @@ export function ProjectsTable(props: {
     const { projectsOverview, rows, allSelectableActions, selectAction, deselectAction } = props;
 
     const currentTranchNo = projectsOverview.tranchPlan.currentTranchCount;
+    const displayTranchNo = Math.max(3, currentTranchNo);
 
     return (
         <TableContainer component={Paper}>
@@ -28,7 +29,7 @@ export function ProjectsTable(props: {
                     <TableRow>
                         <TableCell align="center" colSpan={3}>
                         </TableCell>
-                        <TableCell align="center" colSpan={6}>
+                        <TableCell align="center" colSpan={displayTranchNo}>
                             Tranches
                         </TableCell>
                     </TableRow>
@@ -37,12 +38,17 @@ export function ProjectsTable(props: {
                         </TableCell>
                         <TableCell padding="checkbox">Status</TableCell>
                         <TableCell>Project Name(s)</TableCell>
-                        <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 1 ? 'action.hover' : "" }} >Tranch 1</TableCell>
-                        <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 2 ? 'action.hover' : "" }} >Tranch 2</TableCell>
-                        <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 3 ? 'action.hover' : "" }} >Tranch 3</TableCell>
-                        <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 4 ? 'action.hover' : "" }} >Tranch 4</TableCell>
-                        <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 5 ? 'action.hover' : "" }} >Tranch 5</TableCell>
-                        <TableCell sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === 6 ? 'action.hover' : "" }} >Tranch 6</TableCell>
+                        {Array.from({ length: displayTranchNo }, (_, index) => {
+                            const tranchNo = index + 1;
+                            return (
+                                <TableCell
+                                    key={tranchNo}
+                                    sx={{ ...tranchColumnSxProps, bgcolor: currentTranchNo === tranchNo ? 'action.hover' : "" }}
+                                >
+                                    Tranch {tranchNo}
+                                </TableCell>
+                            );
+                        })}
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -50,6 +56,7 @@ export function ProjectsTable(props: {
                         <Row
                             key={row.agoraEntry.id}
                             currentTranchNo={currentTranchNo}
+                            displayTranchNo={displayTranchNo}
                             chainId={projectsOverview.chainId}
                             superTokenAddress={projectsOverview.superTokenAddress}
                             state={row}
@@ -143,6 +150,7 @@ function Status(props: { state: ProjectState }) {
 
 function Row(props: {
     currentTranchNo: number,
+    displayTranchNo: number,
     chainId: number,
     superTokenAddress: string,
     state: ProjectState,
@@ -150,7 +158,7 @@ function Row(props: {
     selectAction: (action: { id: string }) => void,
     deselectAction: (action: { id: string }) => void
 }) {
-    const { state, currentTranchNo, allSelectableActions, selectAction, deselectAction } = props;
+    const { state, currentTranchNo, displayTranchNo, allSelectableActions, selectAction, deselectAction } = props;
     const [open, setOpen] = useState(false);
 
     const allocations = useMemo(() => {
@@ -214,19 +222,22 @@ function Row(props: {
                         </Typography>
                     ))}
                 </TableCell>
-                {[1, 2, 3, 4, 5, 6].map(tranchNo => (
-                    <TranchCell
-                        key={tranchNo}
-                        currentTranchNo={currentTranchNo}
-                        tranchNo={tranchNo}
-                        allocation={allocations[tranchNo - 1]}
-                        tokenSymbol={token?.symbol}
-                    />
-                ))}
+                {Array.from({ length: displayTranchNo }, (_, index) => {
+                    const tranchNo = index + 1;
+                    return (
+                        <TranchCell
+                            key={tranchNo}
+                            currentTranchNo={currentTranchNo}
+                            tranchNo={tranchNo}
+                            allocation={allocations[tranchNo - 1]}
+                            tokenSymbol={token?.symbol}
+                        />
+                    );
+                })}
             </TableRow>
 
             <TableRow>
-                <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={9}>
+                <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={3 + displayTranchNo}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         <Box sx={{ p: 2 }}>
                             <Box sx={{ ml: 1, mt: 1 }}>
