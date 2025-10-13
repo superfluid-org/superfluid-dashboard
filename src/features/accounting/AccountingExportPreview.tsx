@@ -170,12 +170,40 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({ }) => {
         minWidth: 100,
         flex: 1,
         sortComparator: (v1, v2) => (Number(v1) > Number(v2) ? 1 : -1),
-        valueGetter: (value, row) =>
-          new Decimal(row.amountFiat).toFixed(2),
+        valueGetter: (value, row) => {
+          const amountFiat = row.amountFiat ?? new Decimal(row.streamedAmountFiat || 0).plus(row.transferredAmountFiat || 0).toString();
+          return new Decimal(amountFiat).toFixed(2);
+        },
         renderCell: (params) => {
           const sign = Decimal.sign(params.value);
           const absDecimal = Decimal.abs(params.value);
 
+          return `${sign < 0 ? "-" : ""}${currency.format(absDecimal)}`;
+        },
+      },
+      {
+        field: "streamedAmountFiat",
+        headerName: "Streamed",
+        minWidth: 110,
+        flex: 1,
+        sortComparator: (v1, v2) => (Number(v1) > Number(v2) ? 1 : -1),
+        valueGetter: (value, row) => new Decimal(row.streamedAmountFiat || 0).toFixed(2),
+        renderCell: (params) => {
+          const sign = Decimal.sign(params.value);
+          const absDecimal = Decimal.abs(params.value);
+          return `${sign < 0 ? "-" : ""}${currency.format(absDecimal)}`;
+        },
+      },
+      {
+        field: "transferredAmountFiat",
+        headerName: "Transferred",
+        minWidth: 120,
+        flex: 1,
+        sortComparator: (v1, v2) => (Number(v1) > Number(v2) ? 1 : -1),
+        valueGetter: (value, row) => new Decimal(row.transferredAmountFiat || 0).toFixed(2),
+        renderCell: (params) => {
+          const sign = Decimal.sign(params.value);
+          const absDecimal = Decimal.abs(params.value);
           return `${sign < 0 ? "-" : ""}${currency.format(absDecimal)}`;
         },
       },
@@ -309,6 +337,22 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({ }) => {
         flex: 1,
         hide: true,
         valueGetter: (value, row) => formatAmount(row.amount, 18, undefined, true /* disable rounding */),
+      },
+      {
+        field: "tokensStreamedAmount",
+        headerName: "Token streamed",
+        minWidth: 140,
+        flex: 1,
+        hide: true,
+        valueGetter: (value, row) => formatAmount(row.streamedAmount, 18, undefined, true /* disable rounding */),
+      },
+      {
+        field: "tokensTransferredAmount",
+        headerName: "Token transferred",
+        minWidth: 160,
+        flex: 1,
+        hide: true,
+        valueGetter: (value, row) => formatAmount(row.transferredAmount, 18, undefined, true /* disable rounding */),
       }
     ],
     [currency, mappedAddresses, lowerCaseAddresses]
