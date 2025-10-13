@@ -18,7 +18,11 @@ export interface VirtualStreamPeriod {
   startTime: number;
   endTime: number;
   amount: string;
-  amountFiat: string;
+  amountFiat?: string;
+  streamedAmount: string;
+  streamedAmountFiat?: string;
+  transferredAmount: string;
+  transferredAmountFiat?: string;
 }
 
 export interface AccountingStreamPeriod {
@@ -40,6 +44,7 @@ export interface AccountingStreamPeriod {
   stoppedAtBlockNumber?: number;
   stoppedAtEvent?: string;
   totalAmountStreamed: string;
+  totalAmountTransferred: string;
   virtualPeriods: VirtualStreamPeriod[];
 }
 
