@@ -496,8 +496,6 @@ export default async function handler(
             let endTimestamp = currentTranch.endTimestamp;
             if (startTimestamp > endTimestamp) {
                 endTimestamp = startTimestamp + UnitOfTime.Month;
-            } else {
-                endTimestamp = currentTranch.endTimestamp;
             }
 
             // We want to resolve this lazily because it might error in cases where no schedules are actually created.
