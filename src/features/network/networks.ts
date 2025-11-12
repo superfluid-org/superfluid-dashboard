@@ -27,7 +27,6 @@ import {
 import { BigNumber, BigNumberish } from "ethers";
 import { UnitOfTime } from "../send/FlowRateInput";
 import { extendedSuperTokenList } from "../../tokenlist";
-import { interfaceBaseFeeInNativeCurrency } from "../interfaceFees";
 
 const getMetadata = memoize((chainId: number) => {
   const metadata = sfMeta.getNetworkByChainId(chainId);
@@ -107,7 +106,6 @@ export type Network = Chain & {
     superToken: SuperTokenMinimal;
     logoURI: string;
   };
-  interfaceBaseFeeInNativeCurrency: BigNumberish;
   supportsGDA: boolean;
   flowSchedulerContractAddress?: `0x${string}`;
   flowSchedulerSubgraphUrl?: `https://${string}` | undefined;
@@ -210,7 +208,6 @@ export const networkDefinition = {
       logoURI: "https://tokenlist.superfluid.org/icons/xdai.svg",
       isSuperToken: false,
     },
-    interfaceBaseFeeInNativeCurrency: interfaceBaseFeeInNativeCurrency.XDAI,
     flowSchedulerContractAddress: flowSchedulerContractAddresses.gnosis,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.gnosis,
     vestingContractAddress: {
@@ -266,7 +263,6 @@ export const networkDefinition = {
       logoURI: "https://tokenlist.superfluid.org/icons/pol.svg",
       isSuperToken: false,
     },
-    interfaceBaseFeeInNativeCurrency: interfaceBaseFeeInNativeCurrency.POL,
     flowSchedulerContractAddress: flowSchedulerContractAddresses.polygon,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.polygon,
     vestingContractAddress: {
@@ -328,7 +324,6 @@ export const networkDefinition = {
       logoURI: "https://tokenlist.superfluid.org/icons/avax.svg",
       isSuperToken: false,
     },
-    interfaceBaseFeeInNativeCurrency: interfaceBaseFeeInNativeCurrency.AVAX,
     flowSchedulerContractAddress: undefined,
     flowSchedulerSubgraphUrl: undefined,
     vestingContractAddress: {
@@ -375,7 +370,6 @@ export const networkDefinition = {
       logoURI: "https://tokenlist.superfluid.org/icons/eth.svg",
       isSuperToken: false,
     },
-    interfaceBaseFeeInNativeCurrency: interfaceBaseFeeInNativeCurrency.ETH,
     flowSchedulerContractAddress: flowSchedulerContractAddresses.optimism,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.optimism,
     vestingContractAddress: {
@@ -436,7 +430,6 @@ export const networkDefinition = {
       logoURI: "https://tokenlist.superfluid.org/icons/eth.svg",
       isSuperToken: false,
     },
-    interfaceBaseFeeInNativeCurrency: interfaceBaseFeeInNativeCurrency.ETH,
     flowSchedulerContractAddress: flowSchedulerContractAddresses.arbitrum,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.arbitrum,
     vestingContractAddress: {
@@ -496,7 +489,6 @@ export const networkDefinition = {
       logoURI: "https://tokenlist.superfluid.org/icons/avax.svg",
       isSuperToken: false,
     },
-    interfaceBaseFeeInNativeCurrency: interfaceBaseFeeInNativeCurrency.AVAX,
     flowSchedulerContractAddress: flowSchedulerContractAddresses.avalancheC,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.avalancheC,
     vestingContractAddress: {
@@ -556,7 +548,6 @@ export const networkDefinition = {
       logoURI: "https://tokenlist.superfluid.org/icons/bnb.svg",
       isSuperToken: false,
     },
-    interfaceBaseFeeInNativeCurrency: interfaceBaseFeeInNativeCurrency.BNB,
     flowSchedulerContractAddress: flowSchedulerContractAddresses.bnbSmartChain,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.bnbSmartChain,
     vestingContractAddress: {
@@ -612,7 +603,6 @@ export const networkDefinition = {
       logoURI: "https://tokenlist.superfluid.org/icons/eth.svg",
       isSuperToken: false,
     },
-    interfaceBaseFeeInNativeCurrency: interfaceBaseFeeInNativeCurrency.ETH,
     flowSchedulerContractAddress: flowSchedulerContractAddresses.ethereum,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.ethereum,
     vestingContractAddress: {
@@ -671,7 +661,6 @@ export const networkDefinition = {
       logoURI: "https://tokenlist.superfluid.org/icons/celo.svg",
       isSuperToken: false,
     },
-    interfaceBaseFeeInNativeCurrency: interfaceBaseFeeInNativeCurrency.CELO,
     vestingContractAddress: {
       v1: undefined,
       v2: undefined,
@@ -714,7 +703,6 @@ export const networkDefinition = {
       logoURI: "https://tokenlist.superfluid.org/icons/degen.png",
       isSuperToken: false,
     },
-    interfaceBaseFeeInNativeCurrency: interfaceBaseFeeInNativeCurrency.DEGEN,
     vestingContractAddress: {
       v1: undefined,
       v2: undefined,
@@ -751,7 +739,6 @@ export const networkDefinition = {
       logoURI: "https://tokenlist.superfluid.org/icons/eth.svg",
       isSuperToken: false,
     },
-    interfaceBaseFeeInNativeCurrency: interfaceBaseFeeInNativeCurrency.ETH,
     vestingContractAddress: {
       v1: undefined,
       v2: undefined,
@@ -789,7 +776,6 @@ export const networkDefinition = {
       logoURI: "https://tokenlist.superfluid.org/icons/eth.svg",
       isSuperToken: false,
     },
-    interfaceBaseFeeInNativeCurrency: interfaceBaseFeeInNativeCurrency.ETH,
     vestingContractAddress: {
       v1: {
         address: vestingContractAddresses_v1.base,
@@ -850,7 +836,6 @@ export const networkDefinition = {
       logoURI: "https://tokenlist.superfluid.org/icons/eth.svg",
       isSuperToken: false,
     },
-    interfaceBaseFeeInNativeCurrency: interfaceBaseFeeInNativeCurrency.ETH,
     vestingContractAddress: {
       v1: undefined,
       v2: undefined,
@@ -891,7 +876,6 @@ export const networkDefinition = {
       logoURI: "https://tokenlist.superfluid.org/icons/eth.svg",
       isSuperToken: false,
     },
-    interfaceBaseFeeInNativeCurrency: interfaceBaseFeeInNativeCurrency.ETH,
     vestingContractAddress: {
       v1: undefined,
       v2: undefined,
@@ -928,7 +912,6 @@ export const networkDefinition = {
       logoURI: "https://tokenlist.superfluid.org/icons/eth.svg",
       isSuperToken: false,
     },
-    interfaceBaseFeeInNativeCurrency: interfaceBaseFeeInNativeCurrency.ETH,
     vestingContractAddress: {
       v1: undefined,
       v2: undefined,
@@ -966,7 +949,6 @@ export const networkDefinition = {
       logoURI: "https://tokenlist.superfluid.org/icons/eth.svg",
       isSuperToken: false,
     },
-    interfaceBaseFeeInNativeCurrency: interfaceBaseFeeInNativeCurrency.ETH,
     vestingContractAddress: {
       v1: {
         address: vestingContractAddresses_v1.optimismSepolia,

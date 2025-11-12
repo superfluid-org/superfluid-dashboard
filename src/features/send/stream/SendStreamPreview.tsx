@@ -41,7 +41,6 @@ import {
   ActiveStreamIcon,
   ScheduledStreamIcon,
 } from "../../streamsTable/StreamIcons";
-import { BigNumber } from "ethers";
 
 interface PreviewItemProps {
   label: string | ReactNode;
@@ -115,7 +114,6 @@ interface StreamingPreviewProps {
   flowRateEther: ScheduledFlowRateEther;
   newEndDate: Date | null;
   oldEndDate: Date | null;
-  interfaceFee: BigNumber;
 }
 
 export const StreamingPreview: FC<StreamingPreviewProps> = ({
@@ -125,7 +123,6 @@ export const StreamingPreview: FC<StreamingPreviewProps> = ({
   flowRateEther,
   newEndDate,
   oldEndDate,
-  interfaceFee,
 }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
@@ -408,15 +405,6 @@ export const StreamingPreview: FC<StreamingPreviewProps> = ({
           </PreviewItem>
         )}
 
-        {interfaceFee.gt(0) && (
-          <PreviewItem
-            dataCy="preview-interface-fee"
-            label="Interface fee"
-            TypographyProps={{ variant: "body2mono" }}
-          >
-            <Amount wei={interfaceFee}> {network.nativeCurrency.symbol}</Amount>
-          </PreviewItem>
-        )}
       </Stack>
     </Alert>
   );

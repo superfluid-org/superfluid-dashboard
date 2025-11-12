@@ -38,7 +38,6 @@ import { CreateTask } from "../../../scheduling-subgraph/.graphclient";
 import { dateNowSeconds, getTimeInSeconds } from "../../../utils/dateUtils";
 import { getDecimalPlacesToRoundTo } from "../../../utils/DecimalUtils";
 import {
-  BIG_NUMBER_ZERO,
   calculateBufferAmount,
   getPrettyEtherFlowRate,
   parseEtherOrZero,
@@ -83,7 +82,6 @@ import { useSuperTokens } from "../../../hooks/useSuperTokens";
 import { SuperTokenMinimal, isWrappable } from "../../redux/endpoints/tokenTypes";
 import { useTokenQuery } from "../../../hooks/useTokenQuery";
 import { useWhitelist } from "../../../hooks/useWhitelist";
-import { getIntefaceFee } from "../../interfaceFees";
 
 // Minimum start and end date difference in seconds.
 export const SCHEDULE_START_END_MIN_DIFF_S = 15 * UnitOfTime.Minute;
@@ -444,12 +442,6 @@ export default memo(function SendStream() {
     rpcApi.useUpsertFlowWithSchedulingMutation();
 
   const isModifying = Boolean(activeFlow || scheduledStream);
-  const interfaceFee = useMemo(() => {
-    if (!isModifying) {
-      return getIntefaceFee("createStream", network.id, !!isEOA);
-    }
-    return BIG_NUMBER_ZERO;
-  }, [isModifying, network, isEOA]);
 
   const SendTransactionBoundary = (
     <TransactionBoundary mutationResult={upsertFlowResult}>
@@ -510,7 +502,6 @@ export default memo(function SendStream() {
               userDataBytes: undefined,
               startTimestamp: formData.startTimestamp,
               endTimestamp: formData.endTimestamp,
-              interfaceFee: interfaceFee.toString()
             };
             upsertFlow({
               ...primaryArgs,
@@ -822,7 +813,6 @@ export default memo(function SendStream() {
           }}
           newEndDate={endDate}
           oldEndDate={existingEndDate}
-          interfaceFee={interfaceFee}
         />
       )}
 

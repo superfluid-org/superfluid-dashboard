@@ -15,8 +15,6 @@ import useCalculateBufferInfo from "../useCalculateBufferInfo";
 import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
 import { CommonFormEffects } from "../../common/CommonFormEffects";
 import { useBalance } from "wagmi";
-import { BigNumber } from "ethers";
-import { getIntefaceFee } from "@/features/interfaceFees";
 
 export type ValidStreamingForm = {
   data: {
@@ -232,16 +230,6 @@ const StreamingFormProvider: FC<
               }
             }
 
-            if (balance && !activeFlow) {            
-              const interfaceFee = getIntefaceFee("createStream", network.id, !!isEOA);
-              const balanceAfterInterfaceFee = BigNumber.from(balance.value.toString()).sub(interfaceFee);
-  
-              if (balanceAfterInterfaceFee.isNegative()) {
-                handleHigherOrderValidationError({
-                  message: `You do not have enough ${network.nativeCurrency.symbol} balance to cover the interface fee.`,
-                });
-              }
-            }
           }
         }
 

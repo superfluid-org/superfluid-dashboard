@@ -64,15 +64,14 @@ const CancelDistributionStreamButton: FC<CancelDistributionStreamButtonProps> = 
       .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
   };
 
-  const isSenderOrReceiverLooking = useMemo(
-    () =>
-      accountAddress &&
-      (sender.toLowerCase() === accountAddress.toLowerCase() ||
-        receiver.toLowerCase() === accountAddress.toLowerCase()),
-    [accountAddress, sender, receiver]
-  );
+  const isSender = useMemo(() => {
+    if (!accountAddress) {
+      return false;
+    }
+    return sender.toLowerCase() === accountAddress.toLowerCase();
+  }, [accountAddress, sender]);
 
-  if (!isSenderOrReceiverLooking) return null;
+  if (!isSender) return null;
 
   return (
     <ConnectionBoundary expectedNetwork={network}>
