@@ -67,15 +67,14 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
       .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
   };
 
-  const isSenderOrReceiverLooking = useMemo(
-    () =>
-      accountAddress &&
-      (sender.toLowerCase() === accountAddress.toLowerCase() ||
-        receiver.toLowerCase() === accountAddress.toLowerCase()),
-    [accountAddress, sender, receiver]
-  );
+  const isSender = useMemo(() => {
+    if (!accountAddress) {
+      return false;
+    }
+    return sender.toLowerCase() === accountAddress.toLowerCase();
+  }, [accountAddress, sender]);
 
-  if (!isSenderOrReceiverLooking) return null;
+  if (!isSender) return null;
 
   return (
     <ConnectionBoundary expectedNetwork={network}>
@@ -115,34 +114,15 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
 
                         const signerAddress = await signer.getAddress();
 
-                        const streamDirection = signerAddress.toLowerCase() === receiver.toLowerCase()
-                          ? "incoming"
-                          : "outgoing";
-
-                        switch (streamDirection) {
-                          case "incoming":
-                            setDialogLoadingInfo(
-                              <Typography
-                                variant="h5"
-                                color="text.secondary"
-                                translate="yes"
-                              >
-                                You are canceling an <em>incoming</em> stream. Are you sure? You are not able to restart the stream on behalf of the sender.
-                              </Typography>
-                            );
-                            break;
-                          case "outgoing":
-                            setDialogLoadingInfo(
-                              <Typography
-                                variant="h5"
-                                color="text.secondary"
-                                translate="yes"
-                              >
-                                You are canceling an outgoing stream.
-                              </Typography>
-                            );
-                            break;
-                        }
+                        setDialogLoadingInfo(
+                          <Typography
+                            variant="h5"
+                            color="text.secondary"
+                            translate="yes"
+                          >
+                            You are canceling an outgoing stream.
+                          </Typography>
+                        );
 
                         deleteStream(signer);
                       }}
