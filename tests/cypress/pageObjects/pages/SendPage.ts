@@ -207,7 +207,7 @@ export class SendPage extends BasePage {
   static receiverDialogDoesNotExist() {
     this.doesNotExist(ADDRESS_DIALOG_INPUT);
     this.doesNotExist(RECENT_ENTRIES);
-    this.doesNotExist(ENS_ENTRIES);
+    this.doesNotExist(WHOIS_ENTRIES);
   }
 
   static selectFirstRecentReceiver() {
