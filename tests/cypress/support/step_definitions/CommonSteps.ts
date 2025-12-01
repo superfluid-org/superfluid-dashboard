@@ -118,11 +118,11 @@ Given(/^The dashboard theme is set to light mode$/, () => {
 });
 
 Given(/^The avatar image for "([^"]*)" is shown loaded$/, (account: string) => {
-  Common.validateLensImageIsLoaded(account);
+  Common.validateWhoisAvatarIsLoaded(account);
 });
 
-Given(/^User selects the first ENS recipient result$/, () => {
-  Common.clickOnFirstLensEntry();
+Given(/^User selects the whois recipient result$/, () => {
+  Common.clickOnFirstWhoisEntry();
 });
 
 Given(/^User opens the connected account modal$/, () => {
@@ -160,15 +160,12 @@ Given(/^User closes the dropdown$/, () => {
 Then(/^User clicks on the view mode button$/, () => {
   Common.clickOnViewModeButton();
 });
-Then(/^ENS api requests are blocked$/, () => {
-  Common.blockENSApiRequests();
+Then(/^Whois reverse-resolve requests are blocked$/, () => {
+  Common.blockWhoisRequests();
 });
-Then(
-  /^An error is shown in the "([^"]*)" receiver list$/,
-  (serviceType: string) => {
-    Common.validateErrorShownInRecepientList(serviceType);
-  }
-);
+Then(/^No results are shown in the search results list$/, () => {
+  Common.validateWhoisNoResultsShown();
+});
 Then(/^User types "([^"]*)" into the address input$/, (input: string) => {
   Common.typeIntoAddressInput(input);
 });
@@ -219,9 +216,9 @@ Then(/^View mode dialog does not exist$/, () => {
   Common.validateNoViewModeDialogExists();
 });
 Then(
-  /^"([^"]*)" ENS entry in the address search results is shown$/,
+  /^Whois search result for "([^"]*)" is shown with full address$/,
   (ensName: string) => {
-    SendPage.validateEnsEntry(ensName);
+    SendPage.validateWhoisEntry(ensName);
   }
 );
 Then(/^Connected account dialog does not exist$/, () => {

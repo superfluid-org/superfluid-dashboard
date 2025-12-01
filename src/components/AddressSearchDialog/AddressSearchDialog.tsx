@@ -87,7 +87,7 @@ export const AddressListItem: FC<AddressListItemProps> = ({
         )}
         <ListItemText
           primary={name || addressName.name || shortenHex(address, 6)}
-          secondary={shortenHex(address, 6)}
+          secondary={address}
         />
       </ListItemButton>
     </ListItem>
@@ -379,7 +379,11 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
                       <>
                         <ListSubheader sx={{ px: 3 }}>Search Results</ListSubheader>
                         <ListItem sx={LIST_ITEM_STYLE}>
-                          <ListItemText translate="yes" primary="No results found" />
+                          <ListItemText
+                            data-cy="whois-no-results"
+                            translate="yes"
+                            primary="No results found"
+                          />
                         </ListItem>
                       </>
                     )}

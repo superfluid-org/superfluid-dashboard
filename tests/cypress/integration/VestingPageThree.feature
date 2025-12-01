@@ -25,7 +25,7 @@ Feature: Vesting page third batch of test cases
     And User clicks on the "vesting" navigation button
     And User clicks on the create vesting schedule button
     And User searches for "vijay.eth" as a receiver
-    And User selects the first ENS recipient result
+    And User selects the first whois recipient result
     And User selects "TDLx" as the super token to use for the stream
     And User inputs a date "1" "year" into the future into the vesting start date field
     And User inputs "3" as the total vested amount
@@ -72,7 +72,7 @@ Feature: Vesting page third batch of test cases
     And User clicks on the "vesting" navigation button
     And User clicks on the create vesting schedule button
     And User searches for "vijay.eth" as a receiver
-    And User selects the first ENS recipient result
+    And User selects the first whois recipient result
     And User selects "fTUSDx" as the super token to use for the stream
     And User inputs a date "1" "year" into the future into the vesting start date field
     And User inputs "3" as the total vested amount
@@ -89,7 +89,7 @@ Feature: Vesting page third batch of test cases
     And User clicks on the "vesting" navigation button
     And User clicks on the create vesting schedule button
     And User searches for "vijay.eth" as a receiver
-    And User selects the first ENS recipient result
+    And User selects the first whois recipient result
     And User selects "fUSDCx" as the super token to use for the stream
     And User inputs a date "1" "year" into the future into the vesting start date field
     And User inputs "3" as the total vested amount

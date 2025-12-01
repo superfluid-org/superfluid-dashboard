@@ -214,13 +214,13 @@ Feature: Common element test cases
     And User clicks on the copy address button in the account modal
     Then The address is copied and the buttons text in the address modal changes to "Copied!" with a checkmark icon
 
-  Scenario: Searching for an ens address and validating the image
+  Scenario: Searching for an ens address and validating the whois search result
     Given "Vesting page" is open without connecting a wallet
     And User clicks on the view mode button
     And User types "vijay.eth" into the address input
-    And "vijay.eth" ENS entry in the address search results is shown
+    And Whois search result for "vijay.eth" is shown with full address
     And The avatar image for "vijay.eth" is shown loaded
-    And User selects the first ENS recipient result
+    And User selects the whois recipient result
     Then View mode chip shows "vijay.eth"
 
   Scenario: Turning dark mode on
@@ -230,19 +230,19 @@ Feature: Common element test cases
     And User clicks on the light mode button
     Then The dashboard theme is set to light mode
 
-  Scenario: ENS API error when fetching a receiver with domain
+  Scenario: Whois API error when fetching a receiver with domain
     Given "Vesting page" is open without connecting a wallet
-    Given ENS api requests are blocked
+    Given Whois reverse-resolve requests are blocked
     And User clicks on the view mode button
     And User types "elvijs.eth" into the address input
-    Then An error is shown in the "ENS" receiver list
+    Then No results are shown in the search results list
 
-  Scenario: ENS API error when fetching a receiver with different domain
+  Scenario: Whois API error when fetching a receiver with different domain
     Given "Vesting page" is open without connecting a wallet
-    Given ENS api requests are blocked
+    Given Whois reverse-resolve requests are blocked
     And User clicks on the view mode button
     And User types "vijay.eth" into the address input
-    Then An error is shown in the "ENS" receiver list
+    Then No results are shown in the search results list
 
   Scenario: Hovering on onboarding cards and connect wallet modal showing up if user is not connected
     Given "Dashboard page" is open without connecting a wallet

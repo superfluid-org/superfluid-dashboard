@@ -20,9 +20,9 @@ const AMOUNT_PER_SECOND = '[data-cy=preview-per-second]';
 const ADDRESS_DIALOG_INPUT = '[data-cy=address-dialog-input]';
 const CLOSE_DIALOG_BUTTON = '[data-testid=CloseRoundedIcon]';
 const OTHER_CLOSE_DIALOG_BUTTON = '[data-testid=CloseIcon]';
-const ENS_ENTRIES = '[data-cy=ens-entry]';
-const ENS_ENTRY_NAMES = '[data-cy=ens-entry] h6';
-const ENS_ENTRY_ADDRESS = '[data-cy=ens-entry] p';
+const WHOIS_ENTRIES = '[data-cy=whois-entry]';
+const WHOIS_ENTRY_NAMES = '[data-cy=whois-entry] h6';
+const WHOIS_ENTRY_ADDRESS = '[data-cy=whois-entry] p';
 const RECENT_ENTRIES = '[data-cy=recents-entry]';
 const RECENT_ENTRIES_ADDRESS = '[data-cy=recents-entry] h6';
 const RECEIVER_CLEAR_BUTTON = '[data-testid=CloseIcon]';
@@ -171,22 +171,24 @@ export class SendPage extends BasePage {
     this.click(RISK_CHECKBOX);
   }
 
-  static recipientEnsResultsContain(result: string) {
+  static recipientWhoisResultsContain(result: string) {
     cy.get('@ensNameOrAddress').then((ensNameOrAddress) => {
-      this.hasText(ENS_ENTRY_NAMES, ensNameOrAddress);
-      this.hasText(ENS_ENTRY_ADDRESS, result);
+      this.hasText(WHOIS_ENTRY_NAMES, ensNameOrAddress);
+      this.hasText(WHOIS_ENTRY_ADDRESS, result);
     });
   }
 
-  static validateEnsEntry(ensName: string) {
-    this.hasText(ENS_ENTRY_NAMES, ensName);
+  static validateWhoisEntry(ensName: string) {
     cy.fixture('commonData').then((data) => {
-      this.hasText(ENS_ENTRY_ADDRESS, data[ensName]);
+      const expectedAddress = data[ensName] || data.ENSAddress;
+
+      this.hasText(WHOIS_ENTRY_NAMES, ensName);
+      this.hasText(WHOIS_ENTRY_ADDRESS, expectedAddress);
     });
   }
 
-  static selectFirstENSResult() {
-    this.clickFirstVisible(ENS_ENTRIES, undefined, { timeout: 30000 });
+  static selectFirstWhoisResult() {
+    this.clickFirstVisible(WHOIS_ENTRIES, undefined, { timeout: 30000 });
   }
 
   static chosenReceiverAddress(chosenAddress: string) {

@@ -28,14 +28,14 @@ Then(/^Send button is enabled and asks user to Connect their wallet$/, () => {
 });
 
 Then(
-  /^"([^"]*)" is visible in the ENS recipient results$/,
+  /^"([^"]*)" is visible in the whois recipient results$/,
   (result: string) => {
-    SendPage.recipientEnsResultsContain(result);
+    SendPage.recipientWhoisResultsContain(result);
   }
 );
 
-Then(/^User selects the first ENS recipient result$/, () => {
-  SendPage.selectFirstENSResult();
+Then(/^User selects the first whois recipient result$/, () => {
+  SendPage.selectFirstWhoisResult();
 });
 
 Then(/^Chosen wallet address shows up as ([^"]*)$/, (chosenAddress: string) => {

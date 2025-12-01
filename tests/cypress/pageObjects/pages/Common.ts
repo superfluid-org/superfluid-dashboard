@@ -151,7 +151,7 @@ export class Common extends BasePage {
       this.hasAttributeWithValue(
         MINIGAME_COMPONENT,
         'src',
-        `https://astrobunny.superfluid.finance/?level=1&address=${addresses['john']}`
+        `https://astrobunny.superfluid.finance/?level=1&address=${addresses['john'].toLowerCase()}`
       );
     });
   }
@@ -173,14 +173,20 @@ export class Common extends BasePage {
   static validateWalletConnectionModalIsShown() {
     this.isVisible(WEB3_MODAL);
   }
-  static blockENSApiRequests() {
-    cy.intercept('POST', 'https://rpc-endpoints.superfluid.dev/eth-mainnet', {
-      forceNetworkError: true,
-    });
+  static blockWhoisRequests() {
+    cy.intercept(
+      'GET',
+      'https://whois.superfluid.finance/api/reverse-resolve/*',
+      {
+        statusCode: 500,
+        body: {},
+      }
+    ).as('whoisReverseResolve');
   }
 
-  static validateErrorShownInRecepientList(serviceType: string) {
-    this.isVisible(`[data-cy=${serviceType.toLowerCase()}-error]`);
+  static validateWhoisNoResultsShown() {
+    cy.contains('Search Results');
+    cy.contains('No results found');
   }
 
   static clickDarkModeButton() {
@@ -208,15 +214,13 @@ export class Common extends BasePage {
     this.doesNotExist(LIGHT_MODE_BUTTON);
   }
 
-  static validateLensImageIsLoaded(account: string) {
-    cy.fixture('ensAndLensAvatarUrls').then((urls) => {
-      cy.get(ADDRESS_SEARCH_AVATAR_IMAGES, { timeout: 60000 })
-        .should('have.attr', 'src', urls[account])
-        .and('be.visible');
-    });
+  static validateWhoisAvatarIsLoaded(account: string) {
+    cy.get(ADDRESS_SEARCH_AVATAR_IMAGES, { timeout: 60000 }).should(
+      'be.visible'
+    );
   }
-  static clickOnFirstLensEntry() {
-    this.click('[data-cy=ens-entry]', 0);
+  static clickOnFirstWhoisEntry() {
+    this.click('[data-cy=whois-entry]', 0);
   }
   static clickOnAddressModalCopyButton() {
     this.isVisible(COPY_ICON);
