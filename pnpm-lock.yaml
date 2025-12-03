@@ -4428,6 +4428,7 @@ packages:
 
   '@walletconnect/ethereum-provider@2.21.1':
     resolution: {integrity: sha512-SSlIG6QEVxClgl1s0LMk4xr2wg4eT3Zn/Hb81IocyqNSGfXpjtawWxKxiC5/9Z95f1INyBD6MctJbL/R1oBwIw==}
+    deprecated: 'Reliability and performance improvements. See: https://github.com/WalletConnect/walletconnect-monorepo/releases'
 
   '@walletconnect/ethereum-provider@2.21.8':
     resolution: {integrity: sha512-yjDlPpGMkuSXoIdmX7q7K7mDjPBqBqRW3hjXExhrRpbScdP92ZEFHoJf3E4ALDxdaV894ivXrOmMyGsoY5Eexg==}

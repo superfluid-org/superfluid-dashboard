@@ -11,7 +11,7 @@ import {
   TransactionTitle,
 } from "@superfluid-finance/sdk-redux";
 import { getUnixTime } from "date-fns";
-import { BigNumber, PopulatedTransaction } from "ethers";
+import { BigNumber } from "ethers";
 import { getFlowScheduler } from "../../../eth-sdk/getEthSdk";
 import { isCloseToUnlimitedFlowRateAllowance } from "../../../utils/isCloseToUnlimitedAllowance";
 import {
@@ -20,7 +20,6 @@ import {
 } from "../../network/networks";
 import { UnitOfTime } from "../../send/FlowRateInput";
 import { rpcApi } from "../store";
-import { interfaceFeeAddress } from "../../interfaceFees";
 import { ACL_CREATE_PERMISSION, ACL_DELETE_PERMISSION } from "../../../utils/constants";
 
 interface GetFlowSchedule extends BaseQuery<number | null> {
@@ -35,7 +34,6 @@ export interface UpsertFlowWithScheduling
   senderAddress: string;
   startTimestamp: number | null;
   endTimestamp: number | null;
-  interfaceFee: string;
 }
 
 export interface DeleteFlowWithScheduling extends FlowDeleteMutation {
@@ -266,23 +264,6 @@ export const flowSchedulerEndpoints = {
             });
           }
         } else {
-
-          const interfaceFee = BigNumber.from(arg.interfaceFee);
-          if (interfaceFee.gt(0) && interfaceFeeAddress) {
-            const feeOperation = await framework.operation(arg.signer.populateTransaction({
-              to: interfaceFeeAddress,
-              value: interfaceFee,
-              data: "0x" // Just necessary to add because of SDK-core constraint...
-            }) as Promise<PopulatedTransaction>, "SIMPLE_FORWARD_CALL");
-            
-            // Add fee as the first operation.
-            subOperations.unshift({
-              operation: feeOperation,
-              title: "Interface Fee"
-            });
-          } else {
-            console.warn("Interface fee not applied.");
-          }
 
           if (!shouldScheduleStart) {
             // We are creating a flow only if it is not scheduled into future

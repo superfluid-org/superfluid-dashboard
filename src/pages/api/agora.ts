@@ -103,7 +103,7 @@ export type ProjectState = {
 // ---
 
 // # Actions
-type ActionType = "create-vesting-schedule" | "update-vesting-schedule"  | "let-vesting-schedule-end" | "end-vesting-schedule-now" | "delete-vesting-schedule" | "increase-token-allowance" | "increase-flow-operator-permissions"
+type ActionType = "create-vesting-schedule" | "update-vesting-schedule" | "let-vesting-schedule-end" | "end-vesting-schedule-now" | "delete-vesting-schedule" | "increase-token-allowance" | "increase-flow-operator-permissions"
 
 type Action<TType extends ActionType, TPayload extends Record<string, unknown>> = {
     id: string
@@ -356,7 +356,7 @@ export default async function handler(
 
         const currentTranchCount = dataFromAgora[0].amounts.length;
 
-        const startOfTranchOne = function() {
+        const startOfTranchOne = function () {
             if (isProd) {
                 return ROUND_START_TIMESTAMPS[round];
             } else {
@@ -376,7 +376,7 @@ export default async function handler(
                 // Calculate offset from current tranch
                 const offset = index * tranchDuration;
 
-                
+
                 // Start time is now plus offset (negative for past tranches, positive for future)
                 const startTimestamp = startOfTranchOne + offset;
 
@@ -489,18 +489,23 @@ export default async function handler(
         const startTimestampForNewSchedules = currentTranch.startTimestamp < nowTimestamp  // If it's later than tranch start date.
             ? nowIn2DaysTimestamp
             : currentTranch.startTimestamp > nowIn5DaysTimestamp // If the actual start date is in 5 days or later then start it in 2 days instead
-            ? nowIn2DaysTimestamp
-            : currentTranch.startTimestamp
+                ? nowIn2DaysTimestamp
+                : currentTranch.startTimestamp
 
         function getTotalDuration(startTimestamp: number) {
+            let endTimestamp = currentTranch.endTimestamp;
+            if (startTimestamp > endTimestamp) {
+                endTimestamp = startTimestamp + UnitOfTime.Month;
+            }
+
             // We want to resolve this lazily because it might error in cases where no schedules are actually created.
-            const totalDuration = currentTranch.endTimestamp - startTimestamp;
+            const totalDuration = endTimestamp - startTimestamp;
             if (totalDuration <= 0) {
                 throw new Error("Total duration is less than or equal to 0. This shouldn't happen. Please investigate!");
             }
             return totalDuration;
         }
-        
+
         const publicClient = createPublicClient({
             chain: network,
             transport: http(network.rpcUrls.superfluid.http[0])
@@ -525,7 +530,7 @@ export default async function handler(
 
                 const currentWalletVestingSchedule = allRelevantVestingSchedules.find(
                     x => !x.status.isFinished &&
-                         x.receiver.toLowerCase() === agoraCurrentWallet.toLowerCase()
+                        x.receiver.toLowerCase() === agoraCurrentWallet.toLowerCase()
                 ) ?? null;
                 const previousWalletVestingSchedule = (agoraPreviousWallet && allRelevantVestingSchedules.find(x =>
                     x.receiver.toLowerCase() === agoraPreviousWallet.toLowerCase()
@@ -539,6 +544,7 @@ export default async function handler(
 
                 const actions = yield* E.gen(function* () {
                     const actions: ProjectActions[] = [];
+
                     if (agoraTotalAmount === 0n) {
                         return actions;
                     }
@@ -626,11 +632,11 @@ export default async function handler(
                                 if (newTotalAmount < BigInt(currentWalletVestingSchedule.totalAmount)) {
                                     const vestingScheduleId = keccak256(
                                         encodePacked(
-                                            ['address', 'address', 'address'], 
+                                            ['address', 'address', 'address'],
                                             [token, sender, agoraCurrentWallet]
                                         )
                                     );
-    
+
                                     // todo: Consider adding a retry here.
                                     const [lastSettledAmount, lastSettledDate] = yield* E.tryPromise({
                                         try: () => publicClient.readContract({
@@ -644,7 +650,7 @@ export default async function handler(
                                             return new PublicClientRpcError("Failed to read vesting schedule accounting", { cause: error })
                                         }
                                     })
-    
+
                                     const elapsedTimeSinceLastSettled = BigInt(nowTimestamp) - lastSettledDate;
                                     const amountFlowed = elapsedTimeSinceLastSettled * BigInt(currentWalletVestingSchedule.flowRate);
                                     settledAmount = lastSettledAmount + amountFlowed; // No need to add cliffAmount here.
@@ -746,7 +752,7 @@ export default async function handler(
                                             }
                                         })
                                     }
-                                    
+
                                 }
 
                             }
@@ -809,7 +815,7 @@ export default async function handler(
                     const flowRate = streamedAmount / BigInt(action.payload.totalDuration);
                     return sum + flowRate;
                 }, 0n);
-            
+
             const neededFlowRateAllowanceForUpdates = projectStates
                 .flatMap(x => x.projectActions)
                 .filter(x => x.type === "update-vesting-schedule")
@@ -912,9 +918,9 @@ export default async function handler(
                 onFailure: (error): AgoraResponseData => { // error type is still inferred
                     // Determine the user-facing error message based on the error type
                     const userMessage = error instanceof AgoraError ? "Agora API error occurred." :
-                                        error instanceof SubgraphError ? "Subgraph data retrieval error occurred." :
-                                        error instanceof PublicClientRpcError ? "RPC interaction error occurred." :
-                                        "An unexpected error occurred.";
+                        error instanceof SubgraphError ? "Subgraph data retrieval error occurred." :
+                            error instanceof PublicClientRpcError ? "RPC interaction error occurred." :
+                                "An unexpected error occurred.";
 
                     return {
                         success: false,
