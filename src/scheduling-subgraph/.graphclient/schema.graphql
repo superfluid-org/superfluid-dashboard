@@ -1,6 +1,5 @@
 schema {
   query: Query
-  subscription: Subscription
 }
 
 "Marks the GraphQL type as indexable entity.  Each type that should be an entity is required to be annotated with this directive."
@@ -39,10 +38,7 @@ type CreateFlowExecutedEvent implements Event {
   logIndex: BigInt!
   order: BigInt!
   name: String!
-  """
-  Holds the addresses for sender and receiver.
-  
-  """
+  """Holds the addresses for sender and receiver."""
   addresses: [Bytes!]!
   timestamp: BigInt!
   transactionHash: Bytes!
@@ -411,10 +407,7 @@ type DeleteFlowExecutedEvent implements Event {
   logIndex: BigInt!
   order: BigInt!
   name: String!
-  """
-  Holds the addresses for sender and receiver.
-  
-  """
+  """Holds the addresses for sender and receiver."""
   addresses: [Bytes!]!
   timestamp: BigInt!
   transactionHash: Bytes!
@@ -711,7 +704,6 @@ enum DeleteTask_orderBy {
 Event: An interface which is shared by all
 event entities and contains basic transaction
 data.
-
 """
 interface Event {
   id: ID!
@@ -719,10 +711,7 @@ interface Event {
   logIndex: BigInt!
   order: BigInt!
   name: String!
-  """
-  Holds the addresses for accounts that were impacted by the event.
-  
-  """
+  """Holds the addresses for accounts that were impacted by the event."""
   addresses: [Bytes!]!
   timestamp: BigInt!
   transactionHash: Bytes!
@@ -838,10 +827,7 @@ type FlowScheduleCreatedEvent implements Event {
   logIndex: BigInt!
   order: BigInt!
   name: String!
-  """
-  Holds the addresses for sender and receiver.
-  
-  """
+  """Holds the addresses for sender and receiver."""
   addresses: [Bytes!]!
   timestamp: BigInt!
   transactionHash: Bytes!
@@ -1055,10 +1041,7 @@ type FlowScheduleDeletedEvent implements Event {
   logIndex: BigInt!
   order: BigInt!
   name: String!
-  """
-  Holds the addresses for sender and receiver.
-  
-  """
+  """Holds the addresses for sender and receiver."""
   addresses: [Bytes!]!
   timestamp: BigInt!
   transactionHash: Bytes!
@@ -1204,10 +1187,7 @@ enum FlowScheduleDeletedEvent_orderBy {
   receiver
 }
 
-"""
-8 bytes signed integer
-
-"""
+"""8 bytes signed integer"""
 scalar Int8
 
 """Defines the order direction, either ascending or descending"""
@@ -1217,245 +1197,6 @@ enum OrderDirection {
 }
 
 type Query {
-  flowScheduleCreatedEvent(
-    id: ID!
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): FlowScheduleCreatedEvent
-  flowScheduleCreatedEvents(
-    skip: Int = 0
-    first: Int = 100
-    orderBy: FlowScheduleCreatedEvent_orderBy
-    orderDirection: OrderDirection
-    where: FlowScheduleCreatedEvent_filter
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): [FlowScheduleCreatedEvent!]!
-  flowScheduleDeletedEvent(
-    id: ID!
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): FlowScheduleDeletedEvent
-  flowScheduleDeletedEvents(
-    skip: Int = 0
-    first: Int = 100
-    orderBy: FlowScheduleDeletedEvent_orderBy
-    orderDirection: OrderDirection
-    where: FlowScheduleDeletedEvent_filter
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): [FlowScheduleDeletedEvent!]!
-  createFlowExecutedEvent(
-    id: ID!
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): CreateFlowExecutedEvent
-  createFlowExecutedEvents(
-    skip: Int = 0
-    first: Int = 100
-    orderBy: CreateFlowExecutedEvent_orderBy
-    orderDirection: OrderDirection
-    where: CreateFlowExecutedEvent_filter
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): [CreateFlowExecutedEvent!]!
-  deleteFlowExecutedEvent(
-    id: ID!
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): DeleteFlowExecutedEvent
-  deleteFlowExecutedEvents(
-    skip: Int = 0
-    first: Int = 100
-    orderBy: DeleteFlowExecutedEvent_orderBy
-    orderDirection: OrderDirection
-    where: DeleteFlowExecutedEvent_filter
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): [DeleteFlowExecutedEvent!]!
-  tokenSenderReceiverCursor(
-    id: ID!
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): TokenSenderReceiverCursor
-  tokenSenderReceiverCursors(
-    skip: Int = 0
-    first: Int = 100
-    orderBy: TokenSenderReceiverCursor_orderBy
-    orderDirection: OrderDirection
-    where: TokenSenderReceiverCursor_filter
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): [TokenSenderReceiverCursor!]!
-  createTask(
-    id: ID!
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): CreateTask
-  createTasks(
-    skip: Int = 0
-    first: Int = 100
-    orderBy: CreateTask_orderBy
-    orderDirection: OrderDirection
-    where: CreateTask_filter
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): [CreateTask!]!
-  deleteTask(
-    id: ID!
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): DeleteTask
-  deleteTasks(
-    skip: Int = 0
-    first: Int = 100
-    orderBy: DeleteTask_orderBy
-    orderDirection: OrderDirection
-    where: DeleteTask_filter
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): [DeleteTask!]!
-  event(
-    id: ID!
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): Event
-  events(
-    skip: Int = 0
-    first: Int = 100
-    orderBy: Event_orderBy
-    orderDirection: OrderDirection
-    where: Event_filter
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): [Event!]!
-  task(
-    id: ID!
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): Task
-  tasks(
-    skip: Int = 0
-    first: Int = 100
-    orderBy: Task_orderBy
-    orderDirection: OrderDirection
-    where: Task_filter
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): [Task!]!
-  """Access to subgraph metadata"""
-  _meta(block: Block_height): _Meta_
-}
-
-type Subscription {
   flowScheduleCreatedEvent(
     id: ID!
     """
@@ -1814,10 +1555,7 @@ enum Task_orderBy {
   receiver
 }
 
-"""
-A string representation of microseconds UNIX timestamp (16 digits)
-
-"""
+"""A string representation of microseconds UNIX timestamp (16 digits)"""
 scalar Timestamp
 
 type TokenSenderReceiverCursor {
@@ -1943,7 +1681,6 @@ type _Meta_ {
   will be null if the _meta field has a block constraint that asks for
   a block number. It will be filled if the _meta field has no block constraint
   and therefore asks for the latest  block
-  
   """
   block: _Block_!
   """The deployment ID"""

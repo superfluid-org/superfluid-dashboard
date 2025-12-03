@@ -68,7 +68,6 @@ export type ContractVersion =
  * Event: An interface which is shared by all
  * event entities and contains basic transaction
  * data.
- *
  */
 export type Event = {
   id: Scalars['ID'];
@@ -76,10 +75,7 @@ export type Event = {
   logIndex: Scalars['BigInt'];
   order: Scalars['BigInt'];
   name: Scalars['String'];
-  /**
-   * Holds the addresses for accounts that were impacted by the event.
-   *
-   */
+  /** Holds the addresses for accounts that were impacted by the event. */
   addresses: Array<Scalars['Bytes']>;
   timestamp: Scalars['BigInt'];
   transactionHash: Scalars['Bytes'];
@@ -443,256 +439,6 @@ export type Query_MetaArgs = {
   block?: InputMaybe<Block_Height>;
 };
 
-export type Subscription = {
-  vestingCliffAndFlowExecutedEvent?: Maybe<VestingCliffAndFlowExecutedEvent>;
-  vestingCliffAndFlowExecutedEvents: Array<VestingCliffAndFlowExecutedEvent>;
-  vestingEndExecutedEvent?: Maybe<VestingEndExecutedEvent>;
-  vestingEndExecutedEvents: Array<VestingEndExecutedEvent>;
-  vestingEndFailedEvent?: Maybe<VestingEndFailedEvent>;
-  vestingEndFailedEvents: Array<VestingEndFailedEvent>;
-  vestingScheduleCreatedEvent?: Maybe<VestingScheduleCreatedEvent>;
-  vestingScheduleCreatedEvents: Array<VestingScheduleCreatedEvent>;
-  vestingScheduleDeletedEvent?: Maybe<VestingScheduleDeletedEvent>;
-  vestingScheduleDeletedEvents: Array<VestingScheduleDeletedEvent>;
-  vestingScheduleUpdatedEvent?: Maybe<VestingScheduleUpdatedEvent>;
-  vestingScheduleUpdatedEvents: Array<VestingScheduleUpdatedEvent>;
-  vestingClaimedEvent?: Maybe<VestingClaimedEvent>;
-  vestingClaimedEvents: Array<VestingClaimedEvent>;
-  vestingScheduleEndDateUpdatedEvent?: Maybe<VestingScheduleEndDateUpdatedEvent>;
-  vestingScheduleEndDateUpdatedEvents: Array<VestingScheduleEndDateUpdatedEvent>;
-  vestingSchedule?: Maybe<VestingSchedule>;
-  vestingSchedules: Array<VestingSchedule>;
-  tokenSenderReceiverCursor?: Maybe<TokenSenderReceiverCursor>;
-  tokenSenderReceiverCursors: Array<TokenSenderReceiverCursor>;
-  task?: Maybe<Task>;
-  tasks: Array<Task>;
-  event?: Maybe<Event>;
-  events: Array<Event>;
-  /** Access to subgraph metadata */
-  _meta?: Maybe<_Meta_>;
-};
-
-
-export type SubscriptionVestingCliffAndFlowExecutedEventArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionVestingCliffAndFlowExecutedEventsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<VestingCliffAndFlowExecutedEvent_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<VestingCliffAndFlowExecutedEvent_Filter>;
-  block?: InputMaybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionVestingEndExecutedEventArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionVestingEndExecutedEventsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<VestingEndExecutedEvent_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<VestingEndExecutedEvent_Filter>;
-  block?: InputMaybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionVestingEndFailedEventArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionVestingEndFailedEventsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<VestingEndFailedEvent_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<VestingEndFailedEvent_Filter>;
-  block?: InputMaybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionVestingScheduleCreatedEventArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionVestingScheduleCreatedEventsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<VestingScheduleCreatedEvent_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<VestingScheduleCreatedEvent_Filter>;
-  block?: InputMaybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionVestingScheduleDeletedEventArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionVestingScheduleDeletedEventsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<VestingScheduleDeletedEvent_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<VestingScheduleDeletedEvent_Filter>;
-  block?: InputMaybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionVestingScheduleUpdatedEventArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionVestingScheduleUpdatedEventsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<VestingScheduleUpdatedEvent_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<VestingScheduleUpdatedEvent_Filter>;
-  block?: InputMaybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionVestingClaimedEventArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionVestingClaimedEventsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<VestingClaimedEvent_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<VestingClaimedEvent_Filter>;
-  block?: InputMaybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionVestingScheduleEndDateUpdatedEventArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionVestingScheduleEndDateUpdatedEventsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<VestingScheduleEndDateUpdatedEvent_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<VestingScheduleEndDateUpdatedEvent_Filter>;
-  block?: InputMaybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionVestingScheduleArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionVestingSchedulesArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<VestingSchedule_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<VestingSchedule_Filter>;
-  block?: InputMaybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionTokenSenderReceiverCursorArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionTokenSenderReceiverCursorsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<TokenSenderReceiverCursor_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<TokenSenderReceiverCursor_Filter>;
-  block?: InputMaybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionTaskArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionTasksArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<Task_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<Task_Filter>;
-  block?: InputMaybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionEventArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionEventsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<Event_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<Event_Filter>;
-  block?: InputMaybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type Subscription_MetaArgs = {
-  block?: InputMaybe<Block_Height>;
-};
-
 export type Task = {
   id: Scalars['ID'];
   type: TaskType;
@@ -973,10 +719,7 @@ export type VestingClaimedEvent = Event & {
   logIndex: Scalars['BigInt'];
   order: Scalars['BigInt'];
   name: Scalars['String'];
-  /**
-   * Holds the addresses for sender and receiver.
-   *
-   */
+  /** Holds the addresses for sender and receiver. */
   addresses: Array<Scalars['Bytes']>;
   timestamp: Scalars['BigInt'];
   transactionHash: Scalars['Bytes'];
@@ -1139,15 +882,12 @@ export type VestingCliffAndFlowExecutedEvent = Event & {
   logIndex: Scalars['BigInt'];
   order: Scalars['BigInt'];
   name: Scalars['String'];
-  /**
-   * Holds the addresses for sender and receiver.
-   *
-   */
+  /** Holds the addresses for sender and receiver. */
   addresses: Array<Scalars['Bytes']>;
   timestamp: Scalars['BigInt'];
   transactionHash: Scalars['Bytes'];
   gasPrice: Scalars['BigInt'];
-  gasUsed: Scalars['BigInt'];
+  gasUsed?: Maybe<Scalars['BigInt']>;
   superToken: Scalars['Bytes'];
   sender: Scalars['Bytes'];
   receiver: Scalars['Bytes'];
@@ -1343,15 +1083,12 @@ export type VestingEndExecutedEvent = Event & {
   logIndex: Scalars['BigInt'];
   order: Scalars['BigInt'];
   name: Scalars['String'];
-  /**
-   * Holds the addresses for sender and receiver.
-   *
-   */
+  /** Holds the addresses for sender and receiver. */
   addresses: Array<Scalars['Bytes']>;
   timestamp: Scalars['BigInt'];
   transactionHash: Scalars['Bytes'];
   gasPrice: Scalars['BigInt'];
-  gasUsed: Scalars['BigInt'];
+  gasUsed?: Maybe<Scalars['BigInt']>;
   superToken: Scalars['Bytes'];
   sender: Scalars['Bytes'];
   receiver: Scalars['Bytes'];
@@ -1533,15 +1270,12 @@ export type VestingEndFailedEvent = Event & {
   logIndex: Scalars['BigInt'];
   order: Scalars['BigInt'];
   name: Scalars['String'];
-  /**
-   * Holds the addresses for sender and receiver.
-   *
-   */
+  /** Holds the addresses for sender and receiver. */
   addresses: Array<Scalars['Bytes']>;
   timestamp: Scalars['BigInt'];
   transactionHash: Scalars['Bytes'];
   gasPrice: Scalars['BigInt'];
-  gasUsed: Scalars['BigInt'];
+  gasUsed?: Maybe<Scalars['BigInt']>;
   superToken: Scalars['Bytes'];
   sender: Scalars['Bytes'];
   receiver: Scalars['Bytes'];
@@ -1756,10 +1490,7 @@ export type VestingScheduleCreatedEvent = Event & {
   logIndex: Scalars['BigInt'];
   order: Scalars['BigInt'];
   name: Scalars['String'];
-  /**
-   * Holds the addresses for sender and receiver.
-   *
-   */
+  /** Holds the addresses for sender and receiver. */
   addresses: Array<Scalars['Bytes']>;
   timestamp: Scalars['BigInt'];
   transactionHash: Scalars['Bytes'];
@@ -1980,10 +1711,7 @@ export type VestingScheduleDeletedEvent = Event & {
   logIndex: Scalars['BigInt'];
   order: Scalars['BigInt'];
   name: Scalars['String'];
-  /**
-   * Holds the addresses for sender and receiver.
-   *
-   */
+  /** Holds the addresses for sender and receiver. */
   addresses: Array<Scalars['Bytes']>;
   timestamp: Scalars['BigInt'];
   transactionHash: Scalars['Bytes'];
@@ -2134,10 +1862,7 @@ export type VestingScheduleEndDateUpdatedEvent = Event & {
   logIndex: Scalars['BigInt'];
   order: Scalars['BigInt'];
   name: Scalars['String'];
-  /**
-   * Holds the addresses for sender and receiver.
-   *
-   */
+  /** Holds the addresses for sender and receiver. */
   addresses: Array<Scalars['Bytes']>;
   timestamp: Scalars['BigInt'];
   transactionHash: Scalars['Bytes'];
@@ -2338,10 +2063,7 @@ export type VestingScheduleUpdatedEvent = Event & {
   logIndex: Scalars['BigInt'];
   order: Scalars['BigInt'];
   name: Scalars['String'];
-  /**
-   * Holds the addresses for sender and receiver.
-   *
-   */
+  /** Holds the addresses for sender and receiver. */
   addresses: Array<Scalars['Bytes']>;
   timestamp: Scalars['BigInt'];
   transactionHash: Scalars['Bytes'];
@@ -2857,7 +2579,6 @@ export type _Meta_ = {
    * will be null if the _meta field has a block constraint that asks for
    * a block number. It will be filled if the _meta field has no block constraint
    * and therefore asks for the latest  block
-   *
    */
   block: _Block_;
   /** The deployment ID */
@@ -2976,7 +2697,6 @@ export type ResolversTypes = ResolversObject<{
   OrderDirection: OrderDirection;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']>;
-  Subscription: ResolverTypeWrapper<{}>;
   Task: ResolverTypeWrapper<Task>;
   TaskType: TaskType;
   Task_filter: Task_Filter;
@@ -3033,7 +2753,6 @@ export type ResolversParentTypes = ResolversObject<{
   Int8: Scalars['Int8'];
   Query: {};
   String: Scalars['String'];
-  Subscription: {};
   Task: Task;
   Task_filter: Task_Filter;
   Timestamp: Scalars['Timestamp'];
@@ -3134,34 +2853,6 @@ export type QueryResolvers<ContextType = MeshContext, ParentType extends Resolve
   _meta?: Resolver<Maybe<ResolversTypes['_Meta_']>, ParentType, ContextType, Partial<Query_MetaArgs>>;
 }>;
 
-export type SubscriptionResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = ResolversObject<{
-  vestingCliffAndFlowExecutedEvent?: SubscriptionResolver<Maybe<ResolversTypes['VestingCliffAndFlowExecutedEvent']>, "vestingCliffAndFlowExecutedEvent", ParentType, ContextType, RequireFields<SubscriptionVestingCliffAndFlowExecutedEventArgs, 'id' | 'subgraphError'>>;
-  vestingCliffAndFlowExecutedEvents?: SubscriptionResolver<Array<ResolversTypes['VestingCliffAndFlowExecutedEvent']>, "vestingCliffAndFlowExecutedEvents", ParentType, ContextType, RequireFields<SubscriptionVestingCliffAndFlowExecutedEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  vestingEndExecutedEvent?: SubscriptionResolver<Maybe<ResolversTypes['VestingEndExecutedEvent']>, "vestingEndExecutedEvent", ParentType, ContextType, RequireFields<SubscriptionVestingEndExecutedEventArgs, 'id' | 'subgraphError'>>;
-  vestingEndExecutedEvents?: SubscriptionResolver<Array<ResolversTypes['VestingEndExecutedEvent']>, "vestingEndExecutedEvents", ParentType, ContextType, RequireFields<SubscriptionVestingEndExecutedEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  vestingEndFailedEvent?: SubscriptionResolver<Maybe<ResolversTypes['VestingEndFailedEvent']>, "vestingEndFailedEvent", ParentType, ContextType, RequireFields<SubscriptionVestingEndFailedEventArgs, 'id' | 'subgraphError'>>;
-  vestingEndFailedEvents?: SubscriptionResolver<Array<ResolversTypes['VestingEndFailedEvent']>, "vestingEndFailedEvents", ParentType, ContextType, RequireFields<SubscriptionVestingEndFailedEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  vestingScheduleCreatedEvent?: SubscriptionResolver<Maybe<ResolversTypes['VestingScheduleCreatedEvent']>, "vestingScheduleCreatedEvent", ParentType, ContextType, RequireFields<SubscriptionVestingScheduleCreatedEventArgs, 'id' | 'subgraphError'>>;
-  vestingScheduleCreatedEvents?: SubscriptionResolver<Array<ResolversTypes['VestingScheduleCreatedEvent']>, "vestingScheduleCreatedEvents", ParentType, ContextType, RequireFields<SubscriptionVestingScheduleCreatedEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  vestingScheduleDeletedEvent?: SubscriptionResolver<Maybe<ResolversTypes['VestingScheduleDeletedEvent']>, "vestingScheduleDeletedEvent", ParentType, ContextType, RequireFields<SubscriptionVestingScheduleDeletedEventArgs, 'id' | 'subgraphError'>>;
-  vestingScheduleDeletedEvents?: SubscriptionResolver<Array<ResolversTypes['VestingScheduleDeletedEvent']>, "vestingScheduleDeletedEvents", ParentType, ContextType, RequireFields<SubscriptionVestingScheduleDeletedEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  vestingScheduleUpdatedEvent?: SubscriptionResolver<Maybe<ResolversTypes['VestingScheduleUpdatedEvent']>, "vestingScheduleUpdatedEvent", ParentType, ContextType, RequireFields<SubscriptionVestingScheduleUpdatedEventArgs, 'id' | 'subgraphError'>>;
-  vestingScheduleUpdatedEvents?: SubscriptionResolver<Array<ResolversTypes['VestingScheduleUpdatedEvent']>, "vestingScheduleUpdatedEvents", ParentType, ContextType, RequireFields<SubscriptionVestingScheduleUpdatedEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  vestingClaimedEvent?: SubscriptionResolver<Maybe<ResolversTypes['VestingClaimedEvent']>, "vestingClaimedEvent", ParentType, ContextType, RequireFields<SubscriptionVestingClaimedEventArgs, 'id' | 'subgraphError'>>;
-  vestingClaimedEvents?: SubscriptionResolver<Array<ResolversTypes['VestingClaimedEvent']>, "vestingClaimedEvents", ParentType, ContextType, RequireFields<SubscriptionVestingClaimedEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  vestingScheduleEndDateUpdatedEvent?: SubscriptionResolver<Maybe<ResolversTypes['VestingScheduleEndDateUpdatedEvent']>, "vestingScheduleEndDateUpdatedEvent", ParentType, ContextType, RequireFields<SubscriptionVestingScheduleEndDateUpdatedEventArgs, 'id' | 'subgraphError'>>;
-  vestingScheduleEndDateUpdatedEvents?: SubscriptionResolver<Array<ResolversTypes['VestingScheduleEndDateUpdatedEvent']>, "vestingScheduleEndDateUpdatedEvents", ParentType, ContextType, RequireFields<SubscriptionVestingScheduleEndDateUpdatedEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  vestingSchedule?: SubscriptionResolver<Maybe<ResolversTypes['VestingSchedule']>, "vestingSchedule", ParentType, ContextType, RequireFields<SubscriptionVestingScheduleArgs, 'id' | 'subgraphError'>>;
-  vestingSchedules?: SubscriptionResolver<Array<ResolversTypes['VestingSchedule']>, "vestingSchedules", ParentType, ContextType, RequireFields<SubscriptionVestingSchedulesArgs, 'skip' | 'first' | 'subgraphError'>>;
-  tokenSenderReceiverCursor?: SubscriptionResolver<Maybe<ResolversTypes['TokenSenderReceiverCursor']>, "tokenSenderReceiverCursor", ParentType, ContextType, RequireFields<SubscriptionTokenSenderReceiverCursorArgs, 'id' | 'subgraphError'>>;
-  tokenSenderReceiverCursors?: SubscriptionResolver<Array<ResolversTypes['TokenSenderReceiverCursor']>, "tokenSenderReceiverCursors", ParentType, ContextType, RequireFields<SubscriptionTokenSenderReceiverCursorsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  task?: SubscriptionResolver<Maybe<ResolversTypes['Task']>, "task", ParentType, ContextType, RequireFields<SubscriptionTaskArgs, 'id' | 'subgraphError'>>;
-  tasks?: SubscriptionResolver<Array<ResolversTypes['Task']>, "tasks", ParentType, ContextType, RequireFields<SubscriptionTasksArgs, 'skip' | 'first' | 'subgraphError'>>;
-  event?: SubscriptionResolver<Maybe<ResolversTypes['Event']>, "event", ParentType, ContextType, RequireFields<SubscriptionEventArgs, 'id' | 'subgraphError'>>;
-  events?: SubscriptionResolver<Array<ResolversTypes['Event']>, "events", ParentType, ContextType, RequireFields<SubscriptionEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  _meta?: SubscriptionResolver<Maybe<ResolversTypes['_Meta_']>, "_meta", ParentType, ContextType, Partial<Subscription_MetaArgs>>;
-}>;
-
 export type TaskResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Task'] = ResolversParentTypes['Task']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['TaskType'], ParentType, ContextType>;
@@ -3213,7 +2904,7 @@ export type VestingCliffAndFlowExecutedEventResolvers<ContextType = MeshContext,
   timestamp?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   transactionHash?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   gasPrice?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  gasUsed?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  gasUsed?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   superToken?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   sender?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   receiver?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
@@ -3234,7 +2925,7 @@ export type VestingEndExecutedEventResolvers<ContextType = MeshContext, ParentTy
   timestamp?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   transactionHash?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   gasPrice?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  gasUsed?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  gasUsed?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   superToken?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   sender?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   receiver?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
@@ -3254,7 +2945,7 @@ export type VestingEndFailedEventResolvers<ContextType = MeshContext, ParentType
   timestamp?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   transactionHash?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   gasPrice?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  gasUsed?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  gasUsed?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   superToken?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   sender?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   receiver?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
@@ -3401,7 +3092,6 @@ export type Resolvers<ContextType = MeshContext> = ResolversObject<{
   Event?: EventResolvers<ContextType>;
   Int8?: GraphQLScalarType;
   Query?: QueryResolvers<ContextType>;
-  Subscription?: SubscriptionResolvers<ContextType>;
   Task?: TaskResolvers<ContextType>;
   Timestamp?: GraphQLScalarType;
   TokenSenderReceiverCursor?: TokenSenderReceiverCursorResolvers<ContextType>;

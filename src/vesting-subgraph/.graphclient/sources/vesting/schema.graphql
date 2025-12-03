@@ -1,6 +1,5 @@
 schema {
   query: Query
-  subscription: Subscription
 }
 
 "Marks the GraphQL type as indexable entity.  Each type that should be an entity is required to be annotated with this directive."
@@ -43,7 +42,6 @@ enum ContractVersion {
 Event: An interface which is shared by all
 event entities and contains basic transaction
 data.
-
 """
 interface Event {
   id: ID!
@@ -51,10 +49,7 @@ interface Event {
   logIndex: BigInt!
   order: BigInt!
   name: String!
-  """
-  Holds the addresses for accounts that were impacted by the event.
-  
-  """
+  """Holds the addresses for accounts that were impacted by the event."""
   addresses: [Bytes!]!
   timestamp: BigInt!
   transactionHash: Bytes!
@@ -164,10 +159,7 @@ enum Event_orderBy {
   gasPrice
 }
 
-"""
-8 bytes signed integer
-
-"""
+"""8 bytes signed integer"""
 scalar Int8
 
 """Defines the order direction, either ascending or descending"""
@@ -177,323 +169,6 @@ enum OrderDirection {
 }
 
 type Query {
-  vestingCliffAndFlowExecutedEvent(
-    id: ID!
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): VestingCliffAndFlowExecutedEvent
-  vestingCliffAndFlowExecutedEvents(
-    skip: Int = 0
-    first: Int = 100
-    orderBy: VestingCliffAndFlowExecutedEvent_orderBy
-    orderDirection: OrderDirection
-    where: VestingCliffAndFlowExecutedEvent_filter
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): [VestingCliffAndFlowExecutedEvent!]!
-  vestingEndExecutedEvent(
-    id: ID!
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): VestingEndExecutedEvent
-  vestingEndExecutedEvents(
-    skip: Int = 0
-    first: Int = 100
-    orderBy: VestingEndExecutedEvent_orderBy
-    orderDirection: OrderDirection
-    where: VestingEndExecutedEvent_filter
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): [VestingEndExecutedEvent!]!
-  vestingEndFailedEvent(
-    id: ID!
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): VestingEndFailedEvent
-  vestingEndFailedEvents(
-    skip: Int = 0
-    first: Int = 100
-    orderBy: VestingEndFailedEvent_orderBy
-    orderDirection: OrderDirection
-    where: VestingEndFailedEvent_filter
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): [VestingEndFailedEvent!]!
-  vestingScheduleCreatedEvent(
-    id: ID!
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): VestingScheduleCreatedEvent
-  vestingScheduleCreatedEvents(
-    skip: Int = 0
-    first: Int = 100
-    orderBy: VestingScheduleCreatedEvent_orderBy
-    orderDirection: OrderDirection
-    where: VestingScheduleCreatedEvent_filter
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): [VestingScheduleCreatedEvent!]!
-  vestingScheduleDeletedEvent(
-    id: ID!
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): VestingScheduleDeletedEvent
-  vestingScheduleDeletedEvents(
-    skip: Int = 0
-    first: Int = 100
-    orderBy: VestingScheduleDeletedEvent_orderBy
-    orderDirection: OrderDirection
-    where: VestingScheduleDeletedEvent_filter
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): [VestingScheduleDeletedEvent!]!
-  vestingScheduleUpdatedEvent(
-    id: ID!
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): VestingScheduleUpdatedEvent
-  vestingScheduleUpdatedEvents(
-    skip: Int = 0
-    first: Int = 100
-    orderBy: VestingScheduleUpdatedEvent_orderBy
-    orderDirection: OrderDirection
-    where: VestingScheduleUpdatedEvent_filter
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): [VestingScheduleUpdatedEvent!]!
-  vestingClaimedEvent(
-    id: ID!
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): VestingClaimedEvent
-  vestingClaimedEvents(
-    skip: Int = 0
-    first: Int = 100
-    orderBy: VestingClaimedEvent_orderBy
-    orderDirection: OrderDirection
-    where: VestingClaimedEvent_filter
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): [VestingClaimedEvent!]!
-  vestingScheduleEndDateUpdatedEvent(
-    id: ID!
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): VestingScheduleEndDateUpdatedEvent
-  vestingScheduleEndDateUpdatedEvents(
-    skip: Int = 0
-    first: Int = 100
-    orderBy: VestingScheduleEndDateUpdatedEvent_orderBy
-    orderDirection: OrderDirection
-    where: VestingScheduleEndDateUpdatedEvent_filter
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): [VestingScheduleEndDateUpdatedEvent!]!
-  vestingSchedule(
-    id: ID!
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): VestingSchedule
-  vestingSchedules(
-    skip: Int = 0
-    first: Int = 100
-    orderBy: VestingSchedule_orderBy
-    orderDirection: OrderDirection
-    where: VestingSchedule_filter
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): [VestingSchedule!]!
-  tokenSenderReceiverCursor(
-    id: ID!
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): TokenSenderReceiverCursor
-  tokenSenderReceiverCursors(
-    skip: Int = 0
-    first: Int = 100
-    orderBy: TokenSenderReceiverCursor_orderBy
-    orderDirection: OrderDirection
-    where: TokenSenderReceiverCursor_filter
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): [TokenSenderReceiverCursor!]!
-  task(
-    id: ID!
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): Task
-  tasks(
-    skip: Int = 0
-    first: Int = 100
-    orderBy: Task_orderBy
-    orderDirection: OrderDirection
-    where: Task_filter
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): [Task!]!
-  event(
-    id: ID!
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): Event
-  events(
-    skip: Int = 0
-    first: Int = 100
-    orderBy: Event_orderBy
-    orderDirection: OrderDirection
-    where: Event_filter
-    """
-    The block at which the query should be executed. Can either be a `{ hash: Bytes }` value containing a block hash, a `{ number: Int }` containing the block number, or a `{ number_gte: Int }` containing the minimum block number. In the case of `number_gte`, the query will be executed on the latest block only if the subgraph has progressed to or past the minimum block number. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-    """
-    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
-    """
-    subgraphError: _SubgraphErrorPolicy_! = deny
-  ): [Event!]!
-  """Access to subgraph metadata"""
-  _meta(block: Block_height): _Meta_
-}
-
-type Subscription {
   vestingCliffAndFlowExecutedEvent(
     id: ID!
     """
@@ -943,10 +618,7 @@ enum Task_orderBy {
   vestingSchedule__settledAt
 }
 
-"""
-A string representation of microseconds UNIX timestamp (16 digits)
-
-"""
+"""A string representation of microseconds UNIX timestamp (16 digits)"""
 scalar Timestamp
 
 type TokenSenderReceiverCursor {
@@ -1099,10 +771,7 @@ type VestingClaimedEvent implements Event {
   logIndex: BigInt!
   order: BigInt!
   name: String!
-  """
-  Holds the addresses for sender and receiver.
-  
-  """
+  """Holds the addresses for sender and receiver."""
   addresses: [Bytes!]!
   timestamp: BigInt!
   transactionHash: Bytes!
@@ -1266,15 +935,12 @@ type VestingCliffAndFlowExecutedEvent implements Event {
   logIndex: BigInt!
   order: BigInt!
   name: String!
-  """
-  Holds the addresses for sender and receiver.
-  
-  """
+  """Holds the addresses for sender and receiver."""
   addresses: [Bytes!]!
   timestamp: BigInt!
   transactionHash: Bytes!
   gasPrice: BigInt!
-  gasUsed: BigInt!
+  gasUsed: BigInt
   superToken: Bytes!
   sender: Bytes!
   receiver: Bytes!
@@ -1471,15 +1137,12 @@ type VestingEndExecutedEvent implements Event {
   logIndex: BigInt!
   order: BigInt!
   name: String!
-  """
-  Holds the addresses for sender and receiver.
-  
-  """
+  """Holds the addresses for sender and receiver."""
   addresses: [Bytes!]!
   timestamp: BigInt!
   transactionHash: Bytes!
   gasPrice: BigInt!
-  gasUsed: BigInt!
+  gasUsed: BigInt
   superToken: Bytes!
   sender: Bytes!
   receiver: Bytes!
@@ -1662,15 +1325,12 @@ type VestingEndFailedEvent implements Event {
   logIndex: BigInt!
   order: BigInt!
   name: String!
-  """
-  Holds the addresses for sender and receiver.
-  
-  """
+  """Holds the addresses for sender and receiver."""
   addresses: [Bytes!]!
   timestamp: BigInt!
   transactionHash: Bytes!
   gasPrice: BigInt!
-  gasUsed: BigInt!
+  gasUsed: BigInt
   superToken: Bytes!
   sender: Bytes!
   receiver: Bytes!
@@ -1868,10 +1528,7 @@ type VestingScheduleCreatedEvent implements Event {
   logIndex: BigInt!
   order: BigInt!
   name: String!
-  """
-  Holds the addresses for sender and receiver.
-  
-  """
+  """Holds the addresses for sender and receiver."""
   addresses: [Bytes!]!
   timestamp: BigInt!
   transactionHash: Bytes!
@@ -2093,10 +1750,7 @@ type VestingScheduleDeletedEvent implements Event {
   logIndex: BigInt!
   order: BigInt!
   name: String!
-  """
-  Holds the addresses for sender and receiver.
-  
-  """
+  """Holds the addresses for sender and receiver."""
   addresses: [Bytes!]!
   timestamp: BigInt!
   transactionHash: Bytes!
@@ -2248,10 +1902,7 @@ type VestingScheduleEndDateUpdatedEvent implements Event {
   logIndex: BigInt!
   order: BigInt!
   name: String!
-  """
-  Holds the addresses for sender and receiver.
-  
-  """
+  """Holds the addresses for sender and receiver."""
   addresses: [Bytes!]!
   timestamp: BigInt!
   transactionHash: Bytes!
@@ -2453,10 +2104,7 @@ type VestingScheduleUpdatedEvent implements Event {
   logIndex: BigInt!
   order: BigInt!
   name: String!
-  """
-  Holds the addresses for sender and receiver.
-  
-  """
+  """Holds the addresses for sender and receiver."""
   addresses: [Bytes!]!
   timestamp: BigInt!
   transactionHash: Bytes!
@@ -2974,7 +2622,6 @@ type _Meta_ {
   will be null if the _meta field has a block constraint that asks for
   a block number. It will be filled if the _meta field has no block constraint
   and therefore asks for the latest  block
-  
   """
   block: _Block_!
   """The deployment ID"""
