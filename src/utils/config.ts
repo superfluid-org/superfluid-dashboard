@@ -54,7 +54,3 @@ const config = {
 } as const;
 
 export default Object.freeze(config);
-
-console.log({
-  config
-})
