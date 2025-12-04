@@ -776,196 +776,6 @@ export type RemovedApprovedStrategyEvent_OrderBy =
   | 'gasPrice'
   | 'strategy';
 
-export type Subscription = {
-  addedApprovedStrategyEvent?: Maybe<AddedApprovedStrategyEvent>;
-  addedApprovedStrategyEvents: Array<AddedApprovedStrategyEvent>;
-  removedApprovedStrategyEvent?: Maybe<RemovedApprovedStrategyEvent>;
-  removedApprovedStrategyEvents: Array<RemovedApprovedStrategyEvent>;
-  limitsChangedEvent?: Maybe<LimitsChangedEvent>;
-  limitsChangedEvents: Array<LimitsChangedEvent>;
-  wrapExecutedEvent?: Maybe<WrapExecutedEvent>;
-  wrapExecutedEvents: Array<WrapExecutedEvent>;
-  wrapScheduleCreatedEvent?: Maybe<WrapScheduleCreatedEvent>;
-  wrapScheduleCreatedEvents: Array<WrapScheduleCreatedEvent>;
-  wrapScheduleDeletedEvent?: Maybe<WrapScheduleDeletedEvent>;
-  wrapScheduleDeletedEvents: Array<WrapScheduleDeletedEvent>;
-  wrapSchedule?: Maybe<WrapSchedule>;
-  wrapSchedules: Array<WrapSchedule>;
-  userTokenLiquidityToken?: Maybe<UserTokenLiquidityToken>;
-  userTokenLiquidityTokens: Array<UserTokenLiquidityToken>;
-  event?: Maybe<Event>;
-  events: Array<Event>;
-  /** Access to subgraph metadata */
-  _meta?: Maybe<_Meta_>;
-};
-
-
-export type SubscriptionAddedApprovedStrategyEventArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionAddedApprovedStrategyEventsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<AddedApprovedStrategyEvent_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<AddedApprovedStrategyEvent_Filter>;
-  block?: InputMaybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionRemovedApprovedStrategyEventArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionRemovedApprovedStrategyEventsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<RemovedApprovedStrategyEvent_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<RemovedApprovedStrategyEvent_Filter>;
-  block?: InputMaybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionLimitsChangedEventArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionLimitsChangedEventsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<LimitsChangedEvent_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<LimitsChangedEvent_Filter>;
-  block?: InputMaybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionWrapExecutedEventArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionWrapExecutedEventsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<WrapExecutedEvent_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<WrapExecutedEvent_Filter>;
-  block?: InputMaybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionWrapScheduleCreatedEventArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionWrapScheduleCreatedEventsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<WrapScheduleCreatedEvent_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<WrapScheduleCreatedEvent_Filter>;
-  block?: InputMaybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionWrapScheduleDeletedEventArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionWrapScheduleDeletedEventsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<WrapScheduleDeletedEvent_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<WrapScheduleDeletedEvent_Filter>;
-  block?: InputMaybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionWrapScheduleArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionWrapSchedulesArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<WrapSchedule_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<WrapSchedule_Filter>;
-  block?: InputMaybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionUserTokenLiquidityTokenArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionUserTokenLiquidityTokensArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<UserTokenLiquidityToken_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<UserTokenLiquidityToken_Filter>;
-  block?: InputMaybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionEventArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionEventsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<Event_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<Event_Filter>;
-  block?: InputMaybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type Subscription_MetaArgs = {
-  block?: InputMaybe<Block_Height>;
-};
-
 export type UserTokenLiquidityToken = {
   id: Scalars['String'];
   currentWrapSchedule?: Maybe<WrapSchedule>;
@@ -1952,7 +1762,6 @@ export type ResolversTypes = ResolversObject<{
   RemovedApprovedStrategyEvent_filter: RemovedApprovedStrategyEvent_Filter;
   RemovedApprovedStrategyEvent_orderBy: RemovedApprovedStrategyEvent_OrderBy;
   String: ResolverTypeWrapper<Scalars['String']>;
-  Subscription: ResolverTypeWrapper<{}>;
   Timestamp: ResolverTypeWrapper<Scalars['Timestamp']>;
   UserTokenLiquidityToken: ResolverTypeWrapper<UserTokenLiquidityToken>;
   UserTokenLiquidityToken_filter: UserTokenLiquidityToken_Filter;
@@ -1996,7 +1805,6 @@ export type ResolversParentTypes = ResolversObject<{
   RemovedApprovedStrategyEvent: RemovedApprovedStrategyEvent;
   RemovedApprovedStrategyEvent_filter: RemovedApprovedStrategyEvent_Filter;
   String: Scalars['String'];
-  Subscription: {};
   Timestamp: Scalars['Timestamp'];
   UserTokenLiquidityToken: UserTokenLiquidityToken;
   UserTokenLiquidityToken_filter: UserTokenLiquidityToken_Filter;
@@ -2122,28 +1930,6 @@ export type RemovedApprovedStrategyEventResolvers<ContextType = MeshContext, Par
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type SubscriptionResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = ResolversObject<{
-  addedApprovedStrategyEvent?: SubscriptionResolver<Maybe<ResolversTypes['AddedApprovedStrategyEvent']>, "addedApprovedStrategyEvent", ParentType, ContextType, RequireFields<SubscriptionAddedApprovedStrategyEventArgs, 'id' | 'subgraphError'>>;
-  addedApprovedStrategyEvents?: SubscriptionResolver<Array<ResolversTypes['AddedApprovedStrategyEvent']>, "addedApprovedStrategyEvents", ParentType, ContextType, RequireFields<SubscriptionAddedApprovedStrategyEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  removedApprovedStrategyEvent?: SubscriptionResolver<Maybe<ResolversTypes['RemovedApprovedStrategyEvent']>, "removedApprovedStrategyEvent", ParentType, ContextType, RequireFields<SubscriptionRemovedApprovedStrategyEventArgs, 'id' | 'subgraphError'>>;
-  removedApprovedStrategyEvents?: SubscriptionResolver<Array<ResolversTypes['RemovedApprovedStrategyEvent']>, "removedApprovedStrategyEvents", ParentType, ContextType, RequireFields<SubscriptionRemovedApprovedStrategyEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  limitsChangedEvent?: SubscriptionResolver<Maybe<ResolversTypes['LimitsChangedEvent']>, "limitsChangedEvent", ParentType, ContextType, RequireFields<SubscriptionLimitsChangedEventArgs, 'id' | 'subgraphError'>>;
-  limitsChangedEvents?: SubscriptionResolver<Array<ResolversTypes['LimitsChangedEvent']>, "limitsChangedEvents", ParentType, ContextType, RequireFields<SubscriptionLimitsChangedEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  wrapExecutedEvent?: SubscriptionResolver<Maybe<ResolversTypes['WrapExecutedEvent']>, "wrapExecutedEvent", ParentType, ContextType, RequireFields<SubscriptionWrapExecutedEventArgs, 'id' | 'subgraphError'>>;
-  wrapExecutedEvents?: SubscriptionResolver<Array<ResolversTypes['WrapExecutedEvent']>, "wrapExecutedEvents", ParentType, ContextType, RequireFields<SubscriptionWrapExecutedEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  wrapScheduleCreatedEvent?: SubscriptionResolver<Maybe<ResolversTypes['WrapScheduleCreatedEvent']>, "wrapScheduleCreatedEvent", ParentType, ContextType, RequireFields<SubscriptionWrapScheduleCreatedEventArgs, 'id' | 'subgraphError'>>;
-  wrapScheduleCreatedEvents?: SubscriptionResolver<Array<ResolversTypes['WrapScheduleCreatedEvent']>, "wrapScheduleCreatedEvents", ParentType, ContextType, RequireFields<SubscriptionWrapScheduleCreatedEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  wrapScheduleDeletedEvent?: SubscriptionResolver<Maybe<ResolversTypes['WrapScheduleDeletedEvent']>, "wrapScheduleDeletedEvent", ParentType, ContextType, RequireFields<SubscriptionWrapScheduleDeletedEventArgs, 'id' | 'subgraphError'>>;
-  wrapScheduleDeletedEvents?: SubscriptionResolver<Array<ResolversTypes['WrapScheduleDeletedEvent']>, "wrapScheduleDeletedEvents", ParentType, ContextType, RequireFields<SubscriptionWrapScheduleDeletedEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  wrapSchedule?: SubscriptionResolver<Maybe<ResolversTypes['WrapSchedule']>, "wrapSchedule", ParentType, ContextType, RequireFields<SubscriptionWrapScheduleArgs, 'id' | 'subgraphError'>>;
-  wrapSchedules?: SubscriptionResolver<Array<ResolversTypes['WrapSchedule']>, "wrapSchedules", ParentType, ContextType, RequireFields<SubscriptionWrapSchedulesArgs, 'skip' | 'first' | 'subgraphError'>>;
-  userTokenLiquidityToken?: SubscriptionResolver<Maybe<ResolversTypes['UserTokenLiquidityToken']>, "userTokenLiquidityToken", ParentType, ContextType, RequireFields<SubscriptionUserTokenLiquidityTokenArgs, 'id' | 'subgraphError'>>;
-  userTokenLiquidityTokens?: SubscriptionResolver<Array<ResolversTypes['UserTokenLiquidityToken']>, "userTokenLiquidityTokens", ParentType, ContextType, RequireFields<SubscriptionUserTokenLiquidityTokensArgs, 'skip' | 'first' | 'subgraphError'>>;
-  event?: SubscriptionResolver<Maybe<ResolversTypes['Event']>, "event", ParentType, ContextType, RequireFields<SubscriptionEventArgs, 'id' | 'subgraphError'>>;
-  events?: SubscriptionResolver<Array<ResolversTypes['Event']>, "events", ParentType, ContextType, RequireFields<SubscriptionEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  _meta?: SubscriptionResolver<Maybe<ResolversTypes['_Meta_']>, "_meta", ParentType, ContextType, Partial<Subscription_MetaArgs>>;
-}>;
-
 export interface TimestampScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Timestamp'], any> {
   name: 'Timestamp';
 }
@@ -2257,7 +2043,6 @@ export type Resolvers<ContextType = MeshContext> = ResolversObject<{
   LimitsChangedEvent?: LimitsChangedEventResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   RemovedApprovedStrategyEvent?: RemovedApprovedStrategyEventResolvers<ContextType>;
-  Subscription?: SubscriptionResolvers<ContextType>;
   Timestamp?: GraphQLScalarType;
   UserTokenLiquidityToken?: UserTokenLiquidityTokenResolvers<ContextType>;
   WrapExecutedEvent?: WrapExecutedEventResolvers<ContextType>;

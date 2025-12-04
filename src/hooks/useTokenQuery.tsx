@@ -79,6 +79,10 @@ export const useTokenQuery = <T extends boolean = false>(input: {
 }
 
 export const findTokenFromTokenList = memoize((input: { chainId: number, address: string }): TokenMinimal | undefined => {
+    if (!input.address || !input.chainId) {
+        return undefined;
+    }
+
     const tokenAddressLowerCased = input.address.toLowerCase();
 
     if (input.address === NATIVE_ASSET_ADDRESS) {

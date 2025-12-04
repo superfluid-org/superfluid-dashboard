@@ -43,10 +43,7 @@ export type CreateFlowExecutedEvent = Event & {
   logIndex: Scalars['BigInt'];
   order: Scalars['BigInt'];
   name: Scalars['String'];
-  /**
-   * Holds the addresses for sender and receiver.
-   *
-   */
+  /** Holds the addresses for sender and receiver. */
   addresses: Array<Scalars['Bytes']>;
   timestamp: Scalars['BigInt'];
   transactionHash: Scalars['Bytes'];
@@ -413,10 +410,7 @@ export type DeleteFlowExecutedEvent = Event & {
   logIndex: Scalars['BigInt'];
   order: Scalars['BigInt'];
   name: Scalars['String'];
-  /**
-   * Holds the addresses for sender and receiver.
-   *
-   */
+  /** Holds the addresses for sender and receiver. */
   addresses: Array<Scalars['Bytes']>;
   timestamp: Scalars['BigInt'];
   transactionHash: Scalars['Bytes'];
@@ -711,7 +705,6 @@ export type DeleteTask_orderBy =
  * Event: An interface which is shared by all
  * event entities and contains basic transaction
  * data.
- *
  */
 export type Event = {
   id: Scalars['ID'];
@@ -719,10 +712,7 @@ export type Event = {
   logIndex: Scalars['BigInt'];
   order: Scalars['BigInt'];
   name: Scalars['String'];
-  /**
-   * Holds the addresses for accounts that were impacted by the event.
-   *
-   */
+  /** Holds the addresses for accounts that were impacted by the event. */
   addresses: Array<Scalars['Bytes']>;
   timestamp: Scalars['BigInt'];
   transactionHash: Scalars['Bytes'];
@@ -837,10 +827,7 @@ export type FlowScheduleCreatedEvent = Event & {
   logIndex: Scalars['BigInt'];
   order: Scalars['BigInt'];
   name: Scalars['String'];
-  /**
-   * Holds the addresses for sender and receiver.
-   *
-   */
+  /** Holds the addresses for sender and receiver. */
   addresses: Array<Scalars['Bytes']>;
   timestamp: Scalars['BigInt'];
   transactionHash: Scalars['Bytes'];
@@ -1053,10 +1040,7 @@ export type FlowScheduleDeletedEvent = Event & {
   logIndex: Scalars['BigInt'];
   order: Scalars['BigInt'];
   name: Scalars['String'];
-  /**
-   * Holds the addresses for sender and receiver.
-   *
-   */
+  /** Holds the addresses for sender and receiver. */
   addresses: Array<Scalars['Bytes']>;
   timestamp: Scalars['BigInt'];
   transactionHash: Scalars['Bytes'];
@@ -1396,196 +1380,6 @@ export type Query_metaArgs = {
   block?: InputMaybe<Block_height>;
 };
 
-export type Subscription = {
-  flowScheduleCreatedEvent?: Maybe<FlowScheduleCreatedEvent>;
-  flowScheduleCreatedEvents: Array<FlowScheduleCreatedEvent>;
-  flowScheduleDeletedEvent?: Maybe<FlowScheduleDeletedEvent>;
-  flowScheduleDeletedEvents: Array<FlowScheduleDeletedEvent>;
-  createFlowExecutedEvent?: Maybe<CreateFlowExecutedEvent>;
-  createFlowExecutedEvents: Array<CreateFlowExecutedEvent>;
-  deleteFlowExecutedEvent?: Maybe<DeleteFlowExecutedEvent>;
-  deleteFlowExecutedEvents: Array<DeleteFlowExecutedEvent>;
-  tokenSenderReceiverCursor?: Maybe<TokenSenderReceiverCursor>;
-  tokenSenderReceiverCursors: Array<TokenSenderReceiverCursor>;
-  createTask?: Maybe<CreateTask>;
-  createTasks: Array<CreateTask>;
-  deleteTask?: Maybe<DeleteTask>;
-  deleteTasks: Array<DeleteTask>;
-  event?: Maybe<Event>;
-  events: Array<Event>;
-  task?: Maybe<Task>;
-  tasks: Array<Task>;
-  /** Access to subgraph metadata */
-  _meta?: Maybe<_Meta_>;
-};
-
-
-export type SubscriptionflowScheduleCreatedEventArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionflowScheduleCreatedEventsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<FlowScheduleCreatedEvent_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<FlowScheduleCreatedEvent_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionflowScheduleDeletedEventArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptionflowScheduleDeletedEventsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<FlowScheduleDeletedEvent_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<FlowScheduleDeletedEvent_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptioncreateFlowExecutedEventArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptioncreateFlowExecutedEventsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<CreateFlowExecutedEvent_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<CreateFlowExecutedEvent_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptiondeleteFlowExecutedEventArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptiondeleteFlowExecutedEventsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<DeleteFlowExecutedEvent_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<DeleteFlowExecutedEvent_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptiontokenSenderReceiverCursorArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptiontokenSenderReceiverCursorsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<TokenSenderReceiverCursor_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<TokenSenderReceiverCursor_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptioncreateTaskArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptioncreateTasksArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<CreateTask_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<CreateTask_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptiondeleteTaskArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptiondeleteTasksArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<DeleteTask_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<DeleteTask_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptioneventArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptioneventsArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<Event_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<Event_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptiontaskArgs = {
-  id: Scalars['ID'];
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type SubscriptiontasksArgs = {
-  skip?: InputMaybe<Scalars['Int']>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<Task_orderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<Task_filter>;
-  block?: InputMaybe<Block_height>;
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-
-export type Subscription_metaArgs = {
-  block?: InputMaybe<Block_height>;
-};
-
 export type Task = {
   id: Scalars['ID'];
   type: TaskType;
@@ -1826,7 +1620,6 @@ export type _Meta_ = {
    * will be null if the _meta field has a block constraint that asks for
    * a block number. It will be filled if the _meta field has no block constraint
    * and therefore asks for the latest  block
-   *
    */
   block: _Block_;
   /** The deployment ID */
@@ -1887,44 +1680,7 @@ export type _SubgraphErrorPolicy_ =
   };
 
   export type SubscriptionSdk = {
-      /** null **/
-  flowScheduleCreatedEvent: InContextSdkMethod<Subscription['flowScheduleCreatedEvent'], SubscriptionflowScheduleCreatedEventArgs, MeshContext>,
-  /** null **/
-  flowScheduleCreatedEvents: InContextSdkMethod<Subscription['flowScheduleCreatedEvents'], SubscriptionflowScheduleCreatedEventsArgs, MeshContext>,
-  /** null **/
-  flowScheduleDeletedEvent: InContextSdkMethod<Subscription['flowScheduleDeletedEvent'], SubscriptionflowScheduleDeletedEventArgs, MeshContext>,
-  /** null **/
-  flowScheduleDeletedEvents: InContextSdkMethod<Subscription['flowScheduleDeletedEvents'], SubscriptionflowScheduleDeletedEventsArgs, MeshContext>,
-  /** null **/
-  createFlowExecutedEvent: InContextSdkMethod<Subscription['createFlowExecutedEvent'], SubscriptioncreateFlowExecutedEventArgs, MeshContext>,
-  /** null **/
-  createFlowExecutedEvents: InContextSdkMethod<Subscription['createFlowExecutedEvents'], SubscriptioncreateFlowExecutedEventsArgs, MeshContext>,
-  /** null **/
-  deleteFlowExecutedEvent: InContextSdkMethod<Subscription['deleteFlowExecutedEvent'], SubscriptiondeleteFlowExecutedEventArgs, MeshContext>,
-  /** null **/
-  deleteFlowExecutedEvents: InContextSdkMethod<Subscription['deleteFlowExecutedEvents'], SubscriptiondeleteFlowExecutedEventsArgs, MeshContext>,
-  /** null **/
-  tokenSenderReceiverCursor: InContextSdkMethod<Subscription['tokenSenderReceiverCursor'], SubscriptiontokenSenderReceiverCursorArgs, MeshContext>,
-  /** null **/
-  tokenSenderReceiverCursors: InContextSdkMethod<Subscription['tokenSenderReceiverCursors'], SubscriptiontokenSenderReceiverCursorsArgs, MeshContext>,
-  /** null **/
-  createTask: InContextSdkMethod<Subscription['createTask'], SubscriptioncreateTaskArgs, MeshContext>,
-  /** null **/
-  createTasks: InContextSdkMethod<Subscription['createTasks'], SubscriptioncreateTasksArgs, MeshContext>,
-  /** null **/
-  deleteTask: InContextSdkMethod<Subscription['deleteTask'], SubscriptiondeleteTaskArgs, MeshContext>,
-  /** null **/
-  deleteTasks: InContextSdkMethod<Subscription['deleteTasks'], SubscriptiondeleteTasksArgs, MeshContext>,
-  /** null **/
-  event: InContextSdkMethod<Subscription['event'], SubscriptioneventArgs, MeshContext>,
-  /** null **/
-  events: InContextSdkMethod<Subscription['events'], SubscriptioneventsArgs, MeshContext>,
-  /** null **/
-  task: InContextSdkMethod<Subscription['task'], SubscriptiontaskArgs, MeshContext>,
-  /** null **/
-  tasks: InContextSdkMethod<Subscription['tasks'], SubscriptiontasksArgs, MeshContext>,
-  /** Access to subgraph metadata **/
-  _meta: InContextSdkMethod<Subscription['_meta'], Subscription_metaArgs, MeshContext>
+    
   };
 
   export type Context = {
