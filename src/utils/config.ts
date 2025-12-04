@@ -6,9 +6,20 @@ const segmentWriteKeyForProduction =
   process.env.NEXT_PUBLIC_SEGMENT_WRITE_KEY_FOR_PRODUCTION ||
   "U00hhAgEO5bL8vb5OdhFYsIYTDwI04ei"; // This will be exposed client-side anyways.
 
+// Netlify environment detection
 const netlifyContext = process.env.NEXT_PUBLIC_NETLIFY_CONTEXT;
-export const isProduction = netlifyContext === "production";
-const isDeployPreview = netlifyContext === "deploy-preview";
+const isNetlifyProduction = netlifyContext === "production";
+const isNetlifyDeployPreview = netlifyContext === "deploy-preview";
+
+// Vercel environment detection
+// NEXT_PUBLIC_VERCEL_ENV: "production", "preview", or "development"
+const vercelEnv = process.env.NEXT_PUBLIC_VERCEL_ENV;
+const isVercelProduction = vercelEnv === "production";
+const isVercelDeployPreview = vercelEnv === "preview";
+
+// Combined detection for both platforms
+export const isProduction = isNetlifyProduction || isVercelProduction;
+const isDeployPreview = isNetlifyDeployPreview || isVercelDeployPreview;
 
 const config = {
   appUrl: (process.env.NEXT_PUBLIC_APP_URL || "").trim(),
@@ -43,3 +54,7 @@ const config = {
 } as const;
 
 export default Object.freeze(config);
+
+console.log({
+  config
+})
