@@ -97,7 +97,7 @@ export const vestingSubgraphUrls = {
   arbitrum:
     "https://subgraph-endpoints.superfluid.dev/arbitrum-one/vesting-scheduler",
   optimism:
-    "https://api.goldsky.com/api/public/project_clsnd6xsoma5j012qepvucfpp/subgraphs/vesting-v1-optimism-mainnet/prod/gn",
+    "https://subgraph-endpoints.superfluid.dev/optimism-mainnet/vesting-scheduler",
   avalancheC:
     "https://subgraph-endpoints.superfluid.dev/avalanche-c/vesting-scheduler",
   bnbSmartChain:
