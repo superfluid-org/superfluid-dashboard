@@ -219,7 +219,7 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
         chainId: network.id,
         filter: {
           name_in: ["FlowUpdated", "Transfer"],
-          addresses_contains_nocase: [
+          addresses_contains: [
             vestingSchedule.superToken,
             vestingSchedule.sender,
             vestingSchedule.receiver,
@@ -230,7 +230,7 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
           timestamp_lte:
             vestingSchedule.deletedAt
               ? vestingSchedule.deletedAt.toString()
-              : vestingSchedule.endExecutedAt 
+              : vestingSchedule.endExecutedAt
                 ? vestingSchedule.endExecutedAt.toString()
                 : vestingSchedule.claimValidityDate > 0
                   ? vestingSchedule.claimValidityDate.toString()
@@ -245,14 +245,14 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
       triggerVestingEventsQuery({
         chainId: network.id,
         filter: {
-          addresses_contains_nocase: [
+          addresses_contains: [
             vestingSchedule.superToken,
             vestingSchedule.sender,
             vestingSchedule.receiver,
           ],
           name_in: ["VestingScheduleCreatedEvent", "VestingScheduleUpdatedEvent", "VestingClaimedEvent", "VestingScheduleDeletedEvent"],
           timestamp_gte: vestingSchedule.createdAt.toString(),
-          timestamp_lte: 
+          timestamp_lte:
             vestingSchedule.deletedAt
               ? vestingSchedule.deletedAt.toString()
               : vestingSchedule.endExecutedAt
