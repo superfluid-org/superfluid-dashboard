@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { blockedCountries, blockedRegions } from "./geofencing"
 import { geolocation } from '@vercel/functions'
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
     const geo = geolocation(req)
 
     const country = geo?.country

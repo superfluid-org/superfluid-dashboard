@@ -14,8 +14,6 @@ const isOnNetlify = !!netlifyContext;
 const interfaceFeeAddress = process.env.NEXT_PUBLIC_INTERFACE_FEE_ADDRESS;
 const shouldInstrumentCode = "INSTRUMENT_CODE" in process.env;
 const appUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : process.env.URL ?? "http://localhost:3000";
-const enableReactCompiler = false;
-  // process.env.NODE_ENV !== "development";
 const sentryOrg = process.env.SENTRY_ORG;
 const sentryProject = process.env.SENTRY_PROJECT;
 
@@ -125,16 +123,12 @@ const nextConfig: NextConfig = {
   experimental: {
     forceSwcTransforms: !shouldInstrumentCode, // .babelrc.js existence is because of code instrumentation.
     cpus: isOnNetlify ? 6 : undefined, // Fixes the issue of memory running out on Netlify (error 127)
-    reactCompiler: enableReactCompiler,
     optimizePackageImports: [
       '@mui/lab',
       '@mui/x-data-grid',
       '@mui/x-date-pickers',
       'chart.js'
     ] // It's enabled automatically for many packages in use: https://nextjs.org/docs/app/api-reference/next-config-js/optimizePackageImports
-  },
-  eslint: {
-    ignoreDuringBuilds: isOnNetlify,
   }
 };
 
