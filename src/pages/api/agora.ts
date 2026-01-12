@@ -365,7 +365,7 @@ export default async function handler(
         }()
         const tranchDuration = 1 * UnitOfTime.Month;
 
-        const tranchCount = round === 'rf7' ? 6 : 4;
+        const tranchCount = Math.max(currentTranchCount, round === 'rf7' ? 6 : 5);
         const tranchPlan: TranchPlan = {
             tranchCount,
             currentTranchCount,
