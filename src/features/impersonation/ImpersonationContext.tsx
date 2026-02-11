@@ -15,6 +15,7 @@ import { getAddress, isAddress } from "../../utils/memoizedEthersUtils";
 import { useAccount } from "../../hooks/useAccount";
 import { useAppDispatch } from "../redux/store";
 import { impersonated } from "./impersonation.slice";
+import { useReverseResolveQuery } from "../whois/whoisApi.slice";
 
 interface ImpersonationContextValue {
   isImpersonated: boolean;
@@ -33,6 +34,14 @@ export const ImpersonationProvider: FC<PropsWithChildren> = ({ children }) => {
   const [impersonatedAddress, setImpersonatedAddress] = useState<
     string | undefined
   >();
+
+  // Resolve ENS/handle names from view param via whois API
+  const viewParam = isString(router.query.view) ? router.query.view : undefined;
+  const isViewParamName = !!viewParam && !isAddress(viewParam);
+  const { data: resolvedName } = useReverseResolveQuery(
+    isViewParamName ? viewParam : "",
+    { skip: !isViewParamName || !router.isReady }
+  );
 
   const removeImpersonatedAddressQueryParam = useCallback(() => {
     const { view: viewAddressQueryParam, ...queryWithoutParam } = router.query;
@@ -105,6 +114,13 @@ export const ImpersonationProvider: FC<PropsWithChildren> = ({ children }) => {
       }
     }
   }, [router.isReady]);
+
+  // Resolve ENS/handle name from view param and impersonate
+  useEffect(() => {
+    if (!impersonatedAddress && resolvedName?.address) {
+      impersonate(resolvedName.address);
+    }
+  }, [resolvedName, impersonatedAddress, impersonate]);
 
   // Actively keep impersonated address in query string
   useEffect(() => {
