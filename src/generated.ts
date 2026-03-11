@@ -3224,6 +3224,38 @@ export const superTokenAbi = [
     name: 'Transfer',
   },
   {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'yieldBackend',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'YieldBackendDisabled',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'yieldBackend',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'depositAmount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'YieldBackendEnabled',
+  },
+  {
     type: 'function',
     inputs: [],
     name: 'POOL_ADMIN_NFT',
@@ -3239,6 +3271,13 @@ export const superTokenAbi = [
     outputs: [
       { name: '', internalType: 'contract IPoolMemberNFT', type: 'address' },
     ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'VERSION',
+    outputs: [{ name: '', internalType: 'string', type: 'string' }],
     stateMutability: 'view',
   },
   {
@@ -3492,6 +3531,40 @@ export const superTokenAbi = [
     name: 'getAdmin',
     outputs: [{ name: '', internalType: 'address', type: 'address' }],
     stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'newYieldBackend',
+        internalType: 'contract IYieldBackend',
+        type: 'address',
+      },
+    ],
+    name: 'enableYieldBackend',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'disableYieldBackend',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'getYieldBackend',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'withdrawSurplusFromYieldBackend',
+    outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
     type: 'function',
@@ -12643,6 +12716,14 @@ export const useSuperTokenPoolMemberNft = /*#__PURE__*/ createUseReadContract({
 })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link superTokenAbi}__ and `functionName` set to `"VERSION"`
+ */
+export const useSuperTokenVersion = /*#__PURE__*/ createUseReadContract({
+  abi: superTokenAbi,
+  functionName: 'VERSION',
+})
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link superTokenAbi}__ and `functionName` set to `"getAccountActiveAgreements"`
  */
 export const useSuperTokenGetAccountActiveAgreements =
@@ -12754,6 +12835,13 @@ export const useSuperTokenGetAdmin = /*#__PURE__*/ createUseReadContract({
   abi: superTokenAbi,
   functionName: 'getAdmin',
 })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link superTokenAbi}__ and `functionName` set to `"getYieldBackend"`
+ */
+export const useSuperTokenGetYieldBackend = /*#__PURE__*/ createUseReadContract(
+  { abi: superTokenAbi, functionName: 'getYieldBackend' },
+)
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link superTokenAbi}__ and `functionName` set to `"name"`
@@ -12978,6 +13066,33 @@ export const useSuperTokenChangeAdmin = /*#__PURE__*/ createUseWriteContract({
   abi: superTokenAbi,
   functionName: 'changeAdmin',
 })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link superTokenAbi}__ and `functionName` set to `"enableYieldBackend"`
+ */
+export const useSuperTokenEnableYieldBackend =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: superTokenAbi,
+    functionName: 'enableYieldBackend',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link superTokenAbi}__ and `functionName` set to `"disableYieldBackend"`
+ */
+export const useSuperTokenDisableYieldBackend =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: superTokenAbi,
+    functionName: 'disableYieldBackend',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link superTokenAbi}__ and `functionName` set to `"withdrawSurplusFromYieldBackend"`
+ */
+export const useSuperTokenWithdrawSurplusFromYieldBackend =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: superTokenAbi,
+    functionName: 'withdrawSurplusFromYieldBackend',
+  })
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link superTokenAbi}__ and `functionName` set to `"permit"`
@@ -13332,6 +13447,33 @@ export const usePrepareSuperTokenChangeAdmin =
   /*#__PURE__*/ createUseSimulateContract({
     abi: superTokenAbi,
     functionName: 'changeAdmin',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link superTokenAbi}__ and `functionName` set to `"enableYieldBackend"`
+ */
+export const usePrepareSuperTokenEnableYieldBackend =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: superTokenAbi,
+    functionName: 'enableYieldBackend',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link superTokenAbi}__ and `functionName` set to `"disableYieldBackend"`
+ */
+export const usePrepareSuperTokenDisableYieldBackend =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: superTokenAbi,
+    functionName: 'disableYieldBackend',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link superTokenAbi}__ and `functionName` set to `"withdrawSurplusFromYieldBackend"`
+ */
+export const usePrepareSuperTokenWithdrawSurplusFromYieldBackend =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: superTokenAbi,
+    functionName: 'withdrawSurplusFromYieldBackend',
   })
 
 /**
@@ -13801,6 +13943,24 @@ export const useSuperTokenTransferEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: superTokenAbi,
     eventName: 'Transfer',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link superTokenAbi}__ and `eventName` set to `"YieldBackendDisabled"`
+ */
+export const useSuperTokenYieldBackendDisabledEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: superTokenAbi,
+    eventName: 'YieldBackendDisabled',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link superTokenAbi}__ and `eventName` set to `"YieldBackendEnabled"`
+ */
+export const useSuperTokenYieldBackendEnabledEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: superTokenAbi,
+    eventName: 'YieldBackendEnabled',
   })
 
 /**
