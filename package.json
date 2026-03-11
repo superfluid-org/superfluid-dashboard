@@ -1,6 +1,6 @@
 {
   "name": "@superfluid-finance/dashboard",
-  "version": "34.0.0",
+  "version": "35.0.0",
   "private": true,
   "type": "module",
   "scripts": {
