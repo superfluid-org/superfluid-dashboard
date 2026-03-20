@@ -1,23 +1,28 @@
 export const blockedCountries = [
-    'CU', // Cuba
-    'KP', // North Korea
-    'IR', // Iran
-    'SY', // Syria
-    'RU', // Russia
-    'CD', // Congo, Dem. Rep. of
-    'LB', // Lebanon
-    'YE', // Yemen
+    'AF', // Afghanistan
     'BY', // Belarus
-    'ET', // Ethiopia
-    'LY', // Libya
-    'ZW', // Zimbabwe
-    'MM', // Burma (Myanmar)
-    'HK', // Hong Kong
-    'SD', // Sudan
+    'BI', // Burundi
     'CF', // Central African Republic
+    'CU', // Cuba
+    'CD', // Democratic Republic of the Congo
+    'ET', // Ethiopia
+    'IR', // Iran
     'IQ', // Iraq
-    'VE' // Venezuela
+    'LB', // Lebanon
+    'LY', // Libya
+    'ML', // Mali
+    'MM', // Myanmar (Burma)
+    'NI', // Nicaragua
+    'KP', // North Korea
+    'RU', // Russia
+    'SO', // Somalia
+    'SS', // South Sudan
+    'SD', // Sudan
+    'SY', // Syria
+    'UA', // Ukraine
+    'VE', // Venezuela
+    'YE', // Yemen
+    'ZW', // Zimbabwe
   ]
   
-  // List of blocked regions in Ukraine
-  export const blockedRegions = ['Crimea', 'Donetsk', 'Luhansk']  
+  export const blockedRegions = []  
