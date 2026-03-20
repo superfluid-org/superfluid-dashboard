@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Address } from "@superfluid-finance/sdk-core";
 
+const CMS_PRICES_URL = "https://cms.superfluid.pro/prices";
 const LIFI_API_URL = "https://li.quest/v1";
 
 // Free exchange rate API. More info here:
@@ -11,24 +12,17 @@ interface ExchangeRateResponse {
   };
 }
 
-// LiFi-s supported chain. This object has more data but we don't need it here yet.
-// More info: https://docs.li.fi/more-integration-options/li.fi-api/requesting-supported-chains
-interface SupportedChain {
-  id: number;
+interface CmsPriceResponse {
+  priceUsd: string;
 }
 
-interface SupportedChainsResponse {
-  chains: SupportedChain[];
-}
-
-// More info: https://docs.li.fi/more-integration-options/li.fi-api/getting-token-information
-interface TokenPriceResponse {
+interface LifiTokenPriceResponse {
   token: Address;
   priceUSD: string;
 }
 
 const tokenPriceApi = createApi({
-  keepUnusedDataFor: 60 * 60 * 12, // 12 hours
+  keepUnusedDataFor: 60 * 30, // 30 minutes
   reducerPath: "tokenPrice",
   baseQuery: fetchBaseQuery(),
   endpoints: (builder) => ({
@@ -36,16 +30,18 @@ const tokenPriceApi = createApi({
       query: () => "https://open.er-api.com/v6/latest/USD",
       transformResponse: (response: ExchangeRateResponse) => response.rates,
     }),
-    getSupportedChainIds: builder.query<number[], void>({
-      query: () => ({
-        url: `${LIFI_API_URL}/chains`,
+    getTokenPrice: builder.query<
+      { token: Address; price: number },
+      { chainId: number; token: Address }
+    >({
+      query: ({ chainId, token }) => ({
+        url: `${CMS_PRICES_URL}/${chainId}/${token}/current`,
       }),
-      transformResponse: (response: SupportedChainsResponse) =>
-        (response.chains || []).map(
-          (supportedChain: SupportedChain) => supportedChain.id
-        ),
+      transformResponse: (response: CmsPriceResponse, _meta, arg) => {
+        return { token: arg.token, price: Number(response.priceUsd) };
+      },
     }),
-    getTokenData: builder.query<
+    getTokenPriceFallback: builder.query<
       { token: Address; price: number },
       { chainId: number; token: Address }
     >({
@@ -53,8 +49,8 @@ const tokenPriceApi = createApi({
         url: `${LIFI_API_URL}/token`,
         params: { chain: chainId, token },
       }),
-      transformResponse: (response: TokenPriceResponse) => {
-        return { ...response, price: Number(response.priceUSD) };
+      transformResponse: (response: LifiTokenPriceResponse) => {
+        return { token: response.token, price: Number(response.priceUSD) };
       },
     }),
   }),
