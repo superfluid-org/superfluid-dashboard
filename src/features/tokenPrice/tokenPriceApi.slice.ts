@@ -1,7 +1,7 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Address } from "@superfluid-finance/sdk-core";
+import { fetchTokenPriceBatched } from "./tokenPriceBatcher";
 
-const CMS_PRICES_URL = "https://cms.superfluid.pro/prices";
 const LIFI_API_URL = "https://li.quest/v1";
 
 // Free exchange rate API. More info here:
@@ -12,45 +12,57 @@ interface ExchangeRateResponse {
   };
 }
 
-interface CmsPriceResponse {
-  priceUsd: string;
-}
-
 interface LifiTokenPriceResponse {
   token: Address;
   priceUSD: string;
 }
 
 const tokenPriceApi = createApi({
-  keepUnusedDataFor: 60 * 30, // 30 minutes
+  keepUnusedDataFor: 60 * 60, // 1 hour
   reducerPath: "tokenPrice",
-  baseQuery: fetchBaseQuery(),
+  baseQuery: fakeBaseQuery(),
   endpoints: (builder) => ({
     getUSDExchangeRate: builder.query<ExchangeRateResponse["rates"], void>({
-      query: () => "https://open.er-api.com/v6/latest/USD",
-      transformResponse: (response: ExchangeRateResponse) => response.rates,
+      queryFn: async () => {
+        const response = await fetch(
+          "https://open.er-api.com/v6/latest/USD"
+        );
+        if (!response.ok) {
+          return { error: { status: response.status, data: response.statusText } };
+        }
+        const data: ExchangeRateResponse = await response.json();
+        return { data: data.rates };
+      },
     }),
     getTokenPrice: builder.query<
       { token: Address; price: number },
       { chainId: number; token: Address }
     >({
-      query: ({ chainId, token }) => ({
-        url: `${CMS_PRICES_URL}/${chainId}/${token}/current`,
-      }),
-      transformResponse: (response: CmsPriceResponse, _meta, arg) => {
-        return { token: arg.token, price: Number(response.priceUsd) };
+      queryFn: async ({ chainId, token }) => {
+        try {
+          const result = await fetchTokenPriceBatched(chainId, token);
+          return { data: { token, price: Number(result.priceUsd) } };
+        } catch (error) {
+          return {
+            error: { status: "CUSTOM_ERROR", error: String(error) },
+          };
+        }
       },
     }),
     getTokenPriceFallback: builder.query<
       { token: Address; price: number },
       { chainId: number; token: Address }
     >({
-      query: ({ chainId, token }) => ({
-        url: `${LIFI_API_URL}/token`,
-        params: { chain: chainId, token },
-      }),
-      transformResponse: (response: LifiTokenPriceResponse) => {
-        return { token: response.token, price: Number(response.priceUSD) };
+      queryFn: async ({ chainId, token }) => {
+        const url = new URL(`${LIFI_API_URL}/token`);
+        url.searchParams.set("chain", String(chainId));
+        url.searchParams.set("token", token);
+        const response = await fetch(url.toString());
+        if (!response.ok) {
+          return { error: { status: response.status, data: response.statusText } };
+        }
+        const data: LifiTokenPriceResponse = await response.json();
+        return { data: { token: data.token, price: Number(data.priceUSD) } };
       },
     }),
   }),
