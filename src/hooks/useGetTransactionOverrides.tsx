@@ -37,7 +37,7 @@ const useGetTransactionOverrides = () => {
         );
       }
 
-      if (!isEOA) {
+      if (isEOA === false) {
         overrides.gasLimit = 0; // Disable gas estimation for Gnosis Safe (and other smart wallets) completely because they don't use it anyway.
       }
 
