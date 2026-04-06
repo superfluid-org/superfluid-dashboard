@@ -2,6 +2,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import { Address } from "@superfluid-finance/sdk-core";
 import { useMemo } from "react";
 import { Currency } from "../../utils/currencyUtils";
+import { allNetworks } from "../network/networks";
 import { useAppCurrency } from "../settings/appSettingsHooks";
 import tokenPriceApi from "./tokenPriceApi.slice";
 
@@ -18,8 +19,10 @@ const useTokenPrice = (chainId: number, token?: Address) => {
     [chainId, token]
   );
 
+  const isTestnet = allNetworks.some((n) => n.id === chainId && n.testnet);
+
   const queryArg =
-    !shouldBeDisabledTokenOnOP && token ? { token, chainId } : undefined;
+    !shouldBeDisabledTokenOnOP && !isTestnet && token ? { token, chainId } : undefined;
 
   const cmsPriceResponse = tokenPriceApi.useGetTokenPriceQuery(
     queryArg ?? skipToken
