@@ -20,7 +20,7 @@ const LiFiWidget = dynamic(() => import('@lifi/widget').then(mod => mod.LiFiWidg
 export function LiFiWidgetManager() {
     const theme = useTheme();
     const { isEOA } = useVisibleAddress();
-    const { availableNetworks } = useAvailableNetworks();
+    const { availableMainNetworks } = useAvailableNetworks();
 
     const { openConnectModal } = useConnectButton();
 
@@ -56,7 +56,7 @@ export function LiFiWidgetManager() {
             appearance: theme.palette.mode,
             theme: widgetTheme,
             chains: {
-                allow: availableNetworks.map(x => x.id)
+                allow: availableMainNetworks.map(x => x.id)
             },
             requiredUI: isEOA ? [] : ["toAddress"],
             hiddenUI: ["appearance"],
@@ -71,7 +71,7 @@ export function LiFiWidgetManager() {
         } as Partial<WidgetConfig>;
 
         return config;
-    }, [isEOA, availableNetworks, theme, openConnectModal, featuredTokens]);
+    }, [isEOA, availableMainNetworks, theme, openConnectModal, featuredTokens]);
 
     // # Side
     const { stopAutoSwitchToWalletNetwork } = useExpectedNetwork();
