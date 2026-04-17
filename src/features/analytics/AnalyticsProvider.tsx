@@ -17,7 +17,7 @@ export const AnalyticsContext = createContext<AnalyticsContextValue>(undefined!)
 
 const useAnalyticsBrowser = () =>
   useMemo(() => {
-    const writeKey = config.segmentWriteKey;
+    const writeKey: string | undefined = undefined; // Tracking disabled: force no-op Segment instance.
     if (!IsCypress && writeKey) {
       return AnalyticsBrowser.load(
         { writeKey },
