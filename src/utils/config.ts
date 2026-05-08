@@ -40,6 +40,20 @@ const config = {
   allowlistApiUrl:
     process.env.NEXT_PUBLIC_ALLOWLIST_API ??
     "https://allowlist.superfluid.dev",
+  /**
+   * ClearMacro provider HTTP origin (no trailing path). Leave empty to disable
+   * provider calls unless a URL is supplied at build time.
+   */
+  clearMacro: {
+    providerBaseUrl: (
+      process.env.NEXT_PUBLIC_CLEARMACRO_PROVIDER_URL || ""
+    ).trim(),
+    /**
+     * Set NEXT_PUBLIC_CLEARMACRO_ENABLED=false to turn off provider requests
+     * while keeping a configured base URL (e.g. staging toggles).
+     */
+    enabled: process.env.NEXT_PUBLIC_CLEARMACRO_ENABLED !== "false",
+  },
 } as const;
 
 export default Object.freeze(config);

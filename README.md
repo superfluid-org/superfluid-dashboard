@@ -37,6 +37,10 @@ This repository implements the Superfluid Dashboard v2 as a Next.js web app buil
 
 ### 📖 [Docs](https://docs.superfluid.finance)
 
+## Smart contracts (ClearMacro)
+
+Solidity sources for the dashboard ClearMacro live under [`contracts/`](contracts/README.md). Clone dependencies with `git submodule update --init --recursive`, then build and test from the repo root via `pnpm contracts:build` and `pnpm contracts:test`.
+
 ## Notes
 
 ### `window.superfluid_dashboard.advanced.nextGasOverrides`

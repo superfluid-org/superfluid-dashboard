@@ -6,6 +6,8 @@
     "dev": "next dev --port 3000",
     "replayio": "replayio record http://localhost:3000",
     "build": "next build",
+    "contracts:build": "forge build --root contracts",
+    "contracts:test": "forge test --root contracts -vv",
     "start": "pnpm dlx serve@latest out",
     "lint": "next lint",
     "coverage:build": "rm -rf tests/coverage tests/.nyc_output && INSTRUMENT_CODE=1 pnpm build && pnpm start",
@@ -18,7 +20,10 @@
     "generate:scheduling-graphql": "graphclient build --dir ./src/scheduling-subgraph",
     "generate:wagmi": "wagmi generate",
     "depcheck": "pnpm dlx depcheck",
-    "tsc": "pnpm exec tsc --noEmit"
+    "tsc": "pnpm exec tsc --noEmit",
+    "tsc:app": "pnpm exec tsc --noEmit -p tsconfig.app.json",
+    "e2e:clearmacro:mocked": "bash ./scripts/e2e-clearmacro.sh --mode mocked",
+    "e2e:clearmacro:live": "bash ./scripts/e2e-clearmacro.sh --mode live"
   },
   "dependencies": {
     "@emotion/cache": "^11.13.1",

@@ -5,6 +5,23 @@ on:
     types: [opened, reopened, ready_for_review, synchronize]
 
 jobs:
+  forge-contracts:
+    if: ${{ !github.event.pull_request.draft }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          submodules: recursive
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+
+      - name: Contract tests
+        run: forge test --root contracts -vv
+
   test_setup:
     if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-latest

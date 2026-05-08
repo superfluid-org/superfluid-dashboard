@@ -68,6 +68,7 @@ import { deprecatedNetworkChainIds } from "../network/networks";
 import _ from "lodash";
 import { isDefined } from "../../utils/ensureDefined";
 import { batchVestingEndpoints } from "./endpoints/batchVestingEndpoints";
+import { clearMacroApi } from "../clearMacro/clearMacroApi.slice";
 
 export const rpcApi = initializeRpcApiSlice((options) =>
   createApiWithReactHooks({
@@ -266,6 +267,7 @@ export const reduxStore = configureStore({
     [autoWrapSubgraphApi.reducerPath]: autoWrapSubgraphApi.reducer,
     [schedulingSubgraphApi.reducerPath]: schedulingSubgraphApi.reducer,
     [addressBookRpcApi.reducerPath]: addressBookRpcApi.reducer,
+    [clearMacroApi.reducerPath]: clearMacroApi.reducer,
 
     // Persisted slices
     appSettings: appSettingsPersistedReducer,
@@ -305,7 +307,8 @@ export const reduxStore = configureStore({
       .concat(faucetApi.middleware)
       .concat(tokenPriceApi.middleware)
       .concat(accountingApi.middleware)
-      .concat(addressBookRpcApi.middleware),
+      .concat(addressBookRpcApi.middleware)
+      .concat(clearMacroApi.middleware),
 });
 
 export const reduxPersistor = persistStore(reduxStore);

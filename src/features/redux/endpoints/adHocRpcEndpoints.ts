@@ -22,6 +22,9 @@ import { NATIVE_ASSET_ADDRESS } from "./tokenTypes";
 import { uniq } from "lodash";
 import { WriteContractParameters } from "viem";
 import { wagmiConfig } from "../../wallet/WagmiManager";
+import { clearMacroApi } from "../../clearMacro/clearMacroApi.slice";
+import { tryRelayExecuteSuperTokenTransfer } from "../../clearMacro/relaySuperTokenTransfer";
+import type { RootState } from "../store";
 
 declare module "@superfluid-finance/sdk-redux" {
   interface TransactionTitleOverrides {
@@ -253,6 +256,11 @@ export const adHocRpcEndpoints = {
         };
       },
     }),
+    /**
+     * Wrap-flow allowance for the **underlying** ERC-20 to the Super Token contract.
+     * DashboardClearMacro `ACTION_APPROVE` instead approves a **spender on the super
+     * token** — not wired here; relay would need a different UI/params surface.
+     */
     approve: builder.mutation<
       TransactionInfo,
       {
@@ -302,12 +310,60 @@ export const adHocRpcEndpoints = {
         senderAddress: string;
         receiverAddress: string;
         amountWei: string;
+        /**
+         * When true, skip ClearMacro relay and use the wallet ERC-20 `transfer` path.
+         * Default false preserves existing behavior (relay when available).
+         */
+        skipClearMacro?: boolean;
         transactionExtraData?: Record<string, unknown>;
         signer: Signer;
         overrides: Overrides;
       }
     >({
       queryFn: async (arg, queryApi) => {
+        /**
+         * ClearMacro relay for super-token transfer (DashboardClearMacro transferFrom
+         * batch op). Fetches capabilities lazily; falls back to direct ERC20.transfer
+         * when integration is off, chain unsupported, hash mismatch, or relay prep fails.
+         * Post-signature relay failures do not auto-fallback (duplicate-transfer risk);
+         * the send UI offers an explicit `skipClearMacro` retry.
+         */
+        let relayed: Awaited<
+          ReturnType<typeof tryRelayExecuteSuperTokenTransfer>
+        > | null = null;
+        if (!arg.skipClearMacro) {
+          let capabilities = clearMacroApi.endpoints.getClearMacroCapabilities.select()(
+            queryApi.getState() as RootState
+          ).data;
+          if (capabilities === undefined) {
+            try {
+              capabilities = await queryApi
+                .dispatch(
+                  clearMacroApi.endpoints.getClearMacroCapabilities.initiate()
+                )
+                .unwrap();
+            } catch {
+              capabilities = null;
+            }
+          }
+
+          relayed = await tryRelayExecuteSuperTokenTransfer({
+            chainId: arg.chainId,
+            superTokenAddress: arg.tokenAddress,
+            senderAddress: arg.senderAddress,
+            receiverAddress: arg.receiverAddress,
+            amountWei: arg.amountWei,
+            signer: arg.signer,
+            dispatch: queryApi.dispatch,
+            transactionTitle: "Send Transfer",
+            transactionExtraData: arg.transactionExtraData,
+            capabilities,
+          });
+        }
+        if (relayed) {
+          return relayed;
+        }
+
         const token = ERC20__factory.connect(arg.tokenAddress, arg.signer);
 
         // todo: validate signer and sender

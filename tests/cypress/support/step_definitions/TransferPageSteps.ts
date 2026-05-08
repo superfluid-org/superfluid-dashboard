@@ -1,4 +1,4 @@
-import { Given, Then } from '@badeball/cypress-cucumber-preprocessor';
+import { Given, Then, When } from '@badeball/cypress-cucumber-preprocessor';
 import { TransferPage } from '../../pageObjects/pages/TransferPage';
 import { Common } from '../../pageObjects/pages/Common';
 
@@ -65,4 +65,47 @@ Then(
 
 Then(/^Validate "([^"]*)" error$/, (error: string) => {
   TransferPage.validateFormError(error);
+});
+
+/**
+ * Matches dashboard fetchClearMacroCapabilities(): GET {providerBaseUrl}/v1/capabilities.
+ * Register before visiting the app so the first capabilities fetch is stubbed.
+ */
+Given(
+  /^ClearMacro capabilities are mocked as provider-unavailable \(empty relay chains\)$/,
+  () => {
+    TransferPage.mockClearMacroCapabilitiesEmptyChains();
+  }
+);
+
+Then(
+  /^ClearMacro transfer integration UI is available \(skip relay checkbox visible\)$/,
+  () => {
+    TransferPage.assertSkipClearMacroTransferCheckboxVisible();
+  }
+);
+
+Then(/^ClearMacro skip relay checkbox is unchecked$/, () => {
+  TransferPage.assertSkipClearMacroTransferCheckboxUnchecked();
+});
+
+Then(/^ClearMacro skip relay checkbox is checked$/, () => {
+  TransferPage.assertSkipClearMacroTransferCheckboxChecked();
+});
+
+When(/^User toggles ClearMacro skip relay checkbox$/, () => {
+  TransferPage.toggleSkipClearMacroTransferCheckbox();
+});
+
+Then(/^ClearMacro relay wallet retry hint is not visible$/, () => {
+  TransferPage.assertClearMacroRelayRetryHintNotVisible();
+});
+
+/**
+ * Use only after a relay flow that fails post-signing (HTTP/polling). Default mocked scenarios
+ * do not reach this state without additionally stubbing relay-executions.
+ * We intentionally do not assert wallet EIP-712 (eth_signTypedData_v4); HDWallet automation does not expose it cleanly.
+ */
+Then(/^ClearMacro relay wallet retry hint is visible$/, () => {
+  TransferPage.assertClearMacroRelayRetryHintVisible();
 });

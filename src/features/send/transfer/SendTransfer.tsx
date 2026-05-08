@@ -2,7 +2,9 @@ import { ErrorMessage } from "@hookform/error-message";
 import {
   Alert,
   Box,
+  Checkbox,
   Divider,
+  FormControlLabel,
   FormLabel,
   Stack,
   TextField,
@@ -33,6 +35,8 @@ import { RestorationType, SendTransferRestoration } from "../../transactionResto
 import { skipToken } from "@reduxjs/toolkit/dist/query/react";
 import { Network } from "../../network/networks";
 import { TokenMinimal } from "../../redux/endpoints/tokenTypes";
+import { isClearMacroIntegrationEnabled } from "../../clearMacro/clearMacroIntegration";
+import { shouldOfferWalletRetryAfterClearMacroError } from "../../clearMacro/relaySuperTokenTransfer";
 
 export default memo(function SendTransfer() {
   const theme = useTheme();
@@ -67,6 +71,9 @@ export default memo(function SendTransfer() {
     rpcApi.useTransferMutation();
 
   const [isSendDisabled, setIsSendDisabled] = useState(true);
+  /** User-controlled bypass when relay is available (avoids auto-fallback after a signed relay attempt). */
+  const [skipClearMacro, setSkipClearMacro] = useState(false);
+
   useEffect(() => {
     setIsSendDisabled(
       isValidating ||
@@ -114,6 +121,7 @@ export default memo(function SendTransfer() {
 
           transfer({
             ...primaryArgs,
+            skipClearMacro,
             signer,
             overrides: await getOverrides(),
             transactionExtraData: {
@@ -122,7 +130,10 @@ export default memo(function SendTransfer() {
           })
             .unwrap()
             .then(...txAnalytics("Send Transfer", primaryArgs))
-            .then(() => resetForm())
+            .then(() => {
+              setSkipClearMacro(false);
+              resetForm();
+            })
             .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
         }}
       >
@@ -192,6 +203,34 @@ export default memo(function SendTransfer() {
           }}
         >
           <Stack gap={1}>
+            {transferResult.isError &&
+              shouldOfferWalletRetryAfterClearMacroError(
+                transferResult.error
+              ) && (
+                <Alert severity="warning" data-cy="clearmacro-relay-wallet-retry-hint">
+                  Relay could not complete this transfer after you signed. To avoid
+                  sending twice, we did not submit a wallet transaction automatically.
+                  Enable &quot;Send with my wallet&quot; below and try again if you want
+                  a standard on-chain transfer.
+                </Alert>
+              )}
+            {isClearMacroIntegrationEnabled() && (
+              <FormControlLabel
+                sx={{ alignItems: "flex-start", mx: 0 }}
+                control={
+                  <Checkbox
+                    checked={skipClearMacro}
+                    onChange={(_, checked) => setSkipClearMacro(checked)}
+                    data-cy="skip-clearmacro-transfer"
+                  />
+                }
+                label={
+                  <Typography variant="body2" color="text.secondary">
+                    Send with my wallet (skip gasless relay)
+                  </Typography>
+                }
+              />
+            )}
             {SendTransactionBoundary}
           </Stack>
         </ConnectionBoundaryButton>

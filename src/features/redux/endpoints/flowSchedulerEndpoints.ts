@@ -19,7 +19,9 @@ import {
   findNetworkOrThrow
 } from "../../network/networks";
 import { UnitOfTime } from "../../send/FlowRateInput";
-import { rpcApi } from "../store";
+import { clearMacroApi } from "../../clearMacro/clearMacroApi.slice";
+import { tryRelayExecuteDashboardCfa } from "../../clearMacro/relayCfaFlow";
+import { rpcApi, type RootState } from "../store";
 import { interfaceFeeAddress } from "../../interfaceFees";
 
 export const ACL_CREATE_PERMISSION = 1;
@@ -99,7 +101,7 @@ export const flowSchedulerEndpoints = {
       TransactionInfo & { subTransactionTitles: TransactionTitle[] },
       UpsertFlowWithScheduling
     >({
-      async queryFn({ chainId, ...arg }, { dispatch }) {
+      async queryFn({ chainId, ...arg }, { dispatch, getState }) {
         const userData = arg.userDataBytes ?? "0x";
         const framework = await getFramework(chainId);
         const shouldScheduleStart = !!arg.startTimestamp;
@@ -296,6 +298,47 @@ export const flowSchedulerEndpoints = {
 
         const signerAddress = await arg.signer.getAddress();
 
+        const loneOp =
+          subOperations.length === 1 ? subOperations[0] : undefined;
+        if (
+          loneOp &&
+          !shouldSchedule &&
+          (loneOp.title === "Create Stream" ||
+            loneOp.title === "Update Stream") &&
+          !(loneOp.title === "Create Stream" && !!interfaceFeeAddress)
+        ) {
+          let capabilities =
+            clearMacroApi.endpoints.getClearMacroCapabilities.select()(
+              getState() as RootState
+            ).data;
+          if (capabilities === undefined) {
+            try {
+              capabilities = await dispatch(
+                clearMacroApi.endpoints.getClearMacroCapabilities.initiate()
+              ).unwrap();
+            } catch {
+              capabilities = null;
+            }
+          }
+          const relayed = await tryRelayExecuteDashboardCfa({
+            kind: loneOp.title === "Create Stream" ? "create" : "update",
+            chainId,
+            superTokenAddress: arg.superTokenAddress,
+            senderAddress: arg.senderAddress,
+            receiverAddress: arg.receiverAddress,
+            flowRateWei: arg.flowRateWei,
+            signer: arg.signer,
+            dispatch,
+            capabilities,
+            subTransactionTitles: subOperations.map((x) => x.title),
+            transactionTitle: loneOp.title,
+            transactionExtraData: arg.transactionExtraData,
+          });
+          if (relayed) {
+            return relayed;
+          }
+        }
+
         const executableOperationOrBatchCall =
           subOperations.length === 1
             ? subOperations[0].operation
@@ -340,7 +383,7 @@ export const flowSchedulerEndpoints = {
       TransactionInfo & { subTransactionTitles: TransactionTitle[] },
       DeleteFlowWithScheduling
     >({
-      async queryFn({ chainId, ...arg }, { dispatch }) {
+      async queryFn({ chainId, ...arg }, { dispatch, getState }) {
         const userData = arg.userDataBytes ?? "0x";
         const framework = await getFramework(chainId);
 
@@ -423,6 +466,42 @@ export const flowSchedulerEndpoints = {
           }
         }
 
+        const signerAddress = await arg.signer.getAddress();
+
+        const loneDeleteOp =
+          subOperations.length === 1 ? subOperations[0] : undefined;
+        if (loneDeleteOp && loneDeleteOp.title === "Close Stream") {
+          let capabilities =
+            clearMacroApi.endpoints.getClearMacroCapabilities.select()(
+              getState() as RootState
+            ).data;
+          if (capabilities === undefined) {
+            try {
+              capabilities = await dispatch(
+                clearMacroApi.endpoints.getClearMacroCapabilities.initiate()
+              ).unwrap();
+            } catch {
+              capabilities = null;
+            }
+          }
+          const relayed = await tryRelayExecuteDashboardCfa({
+            kind: "delete",
+            chainId,
+            superTokenAddress: arg.superTokenAddress,
+            senderAddress: arg.senderAddress,
+            receiverAddress: arg.receiverAddress,
+            signer: arg.signer,
+            dispatch,
+            capabilities,
+            subTransactionTitles: subOperations.map((x) => x.title),
+            transactionTitle: "Close Stream",
+            transactionExtraData: arg.transactionExtraData,
+          });
+          if (relayed) {
+            return relayed;
+          }
+        }
+
         const executableOperationOrBatchCall =
           subOperations.length === 1
             ? subOperations[0].operation
@@ -433,8 +512,6 @@ export const flowSchedulerEndpoints = {
         );
 
         const subTransactionTitles = subOperations.map((x) => x.title);
-
-        const signerAddress = await arg.signer.getAddress();
 
         await registerNewTransaction({
           dispatch,

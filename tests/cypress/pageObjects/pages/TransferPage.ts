@@ -26,7 +26,51 @@ const APPROVAL_MESSAGE = '[data-cy=approval-message]';
 const TX_MESSAGE_NETWORK = '[data-cy=tx-network]';
 const FORM_ERROR = '.MuiAlert-message';
 
+/** ClearMacro send UI (SendTransfer.tsx); only mounted when integration is build-enabled. */
+const SKIP_CLEARMACRO_TRANSFER = '[data-cy=skip-clearmacro-transfer]';
+/** Shown after a relay EIP-712 signature then HTTP/polling ClearMacro failure (not user rejection). */
+const CLEARMACRO_RELAY_WALLET_RETRY_HINT =
+  '[data-cy=clearmacro-relay-wallet-retry-hint]';
+
 export class TransferPage extends BasePage {
+  /**
+   * Stub provider capabilities so relay prep sees no supported chains and falls back to the
+   * wallet ERC-20 transfer path (still exercises GET /v1/capabilities).
+   */
+  static mockClearMacroCapabilitiesEmptyChains() {
+    cy.intercept('GET', '**/v1/capabilities', {
+      statusCode: 200,
+      body: {
+        providerName: 'cypress-stub',
+        chains: [],
+      },
+    }).as('clearMacroCapabilitiesStub');
+  }
+
+  static assertSkipClearMacroTransferCheckboxVisible() {
+    this.isVisible(SKIP_CLEARMACRO_TRANSFER);
+  }
+
+  static assertSkipClearMacroTransferCheckboxUnchecked() {
+    cy.get(SKIP_CLEARMACRO_TRANSFER).find('input').should('not.be.checked');
+  }
+
+  static assertSkipClearMacroTransferCheckboxChecked() {
+    cy.get(SKIP_CLEARMACRO_TRANSFER).find('input').should('be.checked');
+  }
+
+  static toggleSkipClearMacroTransferCheckbox() {
+    cy.get(SKIP_CLEARMACRO_TRANSFER).click();
+  }
+
+  static assertClearMacroRelayRetryHintVisible() {
+    this.isVisible(CLEARMACRO_RELAY_WALLET_RETRY_HINT);
+  }
+
+  static assertClearMacroRelayRetryHintNotVisible() {
+    cy.get(CLEARMACRO_RELAY_WALLET_RETRY_HINT).should('not.exist');
+  }
+
   static inputTransferTestData(isConnected: string) {
     const connected = isConnected === 'with';
     this.click(RECEIVER_BUTTON);
