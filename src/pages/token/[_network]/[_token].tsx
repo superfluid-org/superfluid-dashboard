@@ -140,8 +140,11 @@ const TokenPageContent: FC<{
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const [activeTab, setActiveTab] = useState(TokenDetailsTabs.Streams);
-  const [graphFilter, setGraphFilter] = useState(TimeUnitFilterType.All);
-  const [showForecast, setShowForecast] = useState(true);
+  const [graphFilter, setGraphFilter] = useState(TimeUnitFilterType.Week);
+  // null = follow data (default off when flow rate is zero); boolean = user override.
+  const [showForecastOverride, setShowForecastOverride] = useState<
+    boolean | null
+  >(null);
   const navigateBack = useNavigateBack();
 
   const tokenPrice = useTokenPrice(network.id, tokenAddress);
@@ -165,8 +168,13 @@ const TokenPageContent: FC<{
     refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
   });
 
+  const hasOngoingFlow = realTimeBalanceQuery.data
+    ? !BigNumber.from(realTimeBalanceQuery.data.flowRate).isZero()
+    : false;
+  const showForecast = showForecastOverride ?? hasOngoingFlow;
+
   const onShowForecastChange = (_e: unknown, checked: boolean) =>
-    setShowForecast(checked);
+    setShowForecastOverride(checked);
 
   const onTabChange = (_e: unknown, newTab: TokenDetailsTabs) =>
     setActiveTab(newTab);
