@@ -40,6 +40,12 @@ const config = {
   accountingApi:
     process.env.NEXT_PUBLIC_ACCOUNTING_API ||
     "https://accounting.superfluid.dev/v1",
+  // Defaults to a same-origin rewrite (see next.config.ts) so browser calls
+  // stay same-origin. The rewrite forwards to BALANCE_API_REWRITE_TARGET
+  // (default https://balances.superfluid.dev) at the Next.js layer.
+  balanceApi:
+    process.env.NEXT_PUBLIC_BALANCE_API ||
+    "/balance-api",
   segmentWriteKey: isProduction
     ? segmentWriteKeyForProduction
     : isDeployPreview

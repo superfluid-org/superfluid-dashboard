@@ -111,6 +111,10 @@ const nextConfig: NextConfig = {
       source: "/monitoring",
       destination: "/api/monitoring",
     },
+    {
+      source: "/balance-api/:path*",
+      destination: `${process.env.BALANCE_API_REWRITE_TARGET || "https://balances.superfluid.dev"}/:path*`,
+    },
   ],
   env: {
     NEXT_PUBLIC_APP_URL: appUrl,

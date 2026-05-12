@@ -38,6 +38,7 @@ import { deserializeError } from "serialize-error";
 import { schedulingSubgraphApi } from "../../scheduling-subgraph/schedulingSubgraphApi";
 import { vestingSubgraphApi } from "../../vesting-subgraph/vestingSubgraphApi";
 import accountingApi from "../accounting/accountingApi.slice";
+import balanceApi from "../balance/balanceApi.slice";
 import { addressBookSlice, AddressBookState } from "../addressBook/addressBook.slice";
 import { customTokensSlice, getCustomTokenId, NetworkCustomTokenState } from "../customTokens/customTokens.slice";
 import { efpApi } from "../efp/efpApi.slice";
@@ -269,6 +270,7 @@ export const reduxStore = configureStore({
     [faucetApi.reducerPath]: faucetApi.reducer,
     [tokenPriceApi.reducerPath]: tokenPriceApi.reducer,
     [accountingApi.reducerPath]: accountingApi.reducer,
+    [balanceApi.reducerPath]: balanceApi.reducer,
     [vestingSubgraphApi.reducerPath]: vestingSubgraphApi.reducer,
     [autoWrapSubgraphApi.reducerPath]: autoWrapSubgraphApi.reducer,
     [schedulingSubgraphApi.reducerPath]: schedulingSubgraphApi.reducer,
@@ -306,6 +308,7 @@ export const reduxStore = configureStore({
     .concat(faucetApi.middleware)
     .concat(tokenPriceApi.middleware)
     .concat(accountingApi.middleware)
+    .concat(balanceApi.middleware)
     .concat(addressBookRpcApi.middleware),
   enhancers: (getDefaultEnhancers) =>
     getDefaultEnhancers({
