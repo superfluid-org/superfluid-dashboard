@@ -6,8 +6,8 @@ import { useAccount as useWagmiAccount } from "wagmi"
 
 // Re-done wagmi's "useAccount" with Reown AppKit instead
 export function useAccount() {
-    const { address, isConnected, status } = useAppKitAccount()
-    const { connector, chain } = useWagmiAccount()
+    const { address: appKitAddress, isConnected, status } = useAppKitAccount()
+    const { connector, chain, address: wagmiAddress } = useWagmiAccount()
 
     const isConnecting = status === "connecting"
     const isReconnecting = status === "reconnecting"
@@ -22,6 +22,12 @@ export function useAccount() {
             return undefined
         }
 
+        // AppKit can lag behind wagmi during reconnection (e.g. page refresh with
+        // existing session). Fall back to wagmi's address so that the transaction
+        // drawer - which filters by signerAddress stored via the wagmi connector -
+        // stays in sync and never shows an empty list while AppKit catches up.
+        const address = appKitAddress ?? wagmiAddress
+
         if (address === zeroAddress) {
             return undefined
         }
@@ -32,7 +38,7 @@ export function useAccount() {
         }
 
         return undefined
-    }, [address, mounted])
+    }, [appKitAddress, wagmiAddress, mounted])
 
     return {
         address: addressLowercased,
