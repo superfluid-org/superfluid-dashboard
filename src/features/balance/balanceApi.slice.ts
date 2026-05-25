@@ -2,18 +2,19 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Address } from "@superfluid-finance/sdk-core";
 import config from "../../utils/config";
 import { allNetworks, findNetworkOrThrow, Network } from "../network/networks";
+import type { paths } from "./balanceApi.generated";
 
-export interface BalanceHistoryPoint {
-  timestamp: string;
-  connectedBalance: string;
-  disconnectedBalance: string;
-  deposit: string;
-  totalBalance: string;
-}
+type BalanceSnapshotsJson =
+  paths["/v1/accounts/{account}/tokens/{token}/balance-snapshots"]["get"]["responses"]["200"]["content"]["application/json"];
 
-export interface BalanceHistoryResponse {
-  points: BalanceHistoryPoint[];
-}
+export type BalanceHistoryPoint = BalanceSnapshotsJson["points"][number];
+export type BalanceHistoryResponse = BalanceSnapshotsJson;
+
+type MovementsJson =
+  paths["/v1/accounts/{account}/tokens/{token}/movements"]["get"]["responses"]["200"]["content"]["application/json"];
+
+export type Movement = MovementsJson["movements"][number];
+type MovementsResponse = MovementsJson;
 
 interface BalanceHistoryArgs {
   chainId: number;
@@ -28,13 +29,6 @@ interface FirstMovementArgs {
   chainId: number;
   account: Address;
   token: Address;
-}
-
-interface MovementsResponse {
-  movements: Array<{ timestamp: string }>;
-  total: number;
-  totalIsCapped: boolean;
-  hasMore: boolean;
 }
 
 const getSuperfluidCanonicalSlug = (network: Network): string => {
