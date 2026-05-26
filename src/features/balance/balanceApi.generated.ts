@@ -93,6 +93,13 @@ export interface paths {
                             deposit: string;
                             maybeCriticalAt: string | null;
                             timestamp: string;
+                            /** @description Token metadata resolved from the Superfluid extended token list. `symbol` and `name` are null only for tokens not present in the token list and not reachable via subgraph fallback. */
+                            token: {
+                                address: string;
+                                symbol: string | null;
+                                name: string | null;
+                                decimals: number;
+                            };
                         };
                     };
                 };
@@ -168,6 +175,7 @@ export interface paths {
                                 subAccount: string;
                                 deltaAmount: string | null;
                                 deltaFlowRate: string | null;
+                                /** @description Counterparty address for this entry, or null for operations with no external counterparty (wraps, unwraps, mints, burns, deposit changes). Lowercase hex address when present. Note: balance-report byCounterparty maps use the sentinel key `__none__` for the same concept. */
                                 counterparty: string | null;
                             }[];
                             total: number;
@@ -381,7 +389,7 @@ export interface paths {
         };
         /**
          * Get periodic balance report
-         * @description Compute a periodic balance report using the entry-fold engine. Each period shows opening/closing balance, net change, and breakdown by category and counterparty. Optional post-fold filters: `category` (comma list) prunes the byCategory breakdown map and by_category CSV rows; `counterparty` (comma list) prunes byCounterparty and by_counterparty CSV rows. IMPORTANT: the global balance fields (openingBalance, closingBalance, netChange, deposit, netFlowRate, gdaConnectedChange, gdaDisconnectedChange, idaConnectedChange, idaDisconnectedChange) are always account-wide totals and are never filtered — only the breakdown maps are affected.
+         * @description Compute a periodic balance report using the entry-fold engine. Each period shows opening/closing balance, net change, and breakdown by category and counterparty. Optional post-fold filters: `category` (comma list) prunes the byCategory breakdown map and by_category CSV rows; `counterparty` (comma list) prunes byCounterparty and by_counterparty CSV rows. IMPORTANT: the global balance fields (openingBalance, closingBalance, netChange, deposit, netFlowRate, gdaConnectedChange, gdaDisconnectedChange, idaConnectedChange, idaDisconnectedChange) are always account-wide totals and are never filtered — only the breakdown maps are affected. Breakdown-to-netChange invariant: sum(byCategory values) + gdaConnectedChange + gdaDisconnectedChange + idaConnectedChange + idaDisconnectedChange == netChange. This holds exactly because byCategory tracks all CFA discrete and streaming amounts (sum == (closingBalance - openingBalance) for the account-fold portion), and the GDA/IDA change fields cover the remaining balance sources.
          */
         get: {
             parameters: {
@@ -394,6 +402,7 @@ export interface paths {
                     view?: "totals" | "by_counterparty" | "by_category";
                     category?: string;
                     counterparty?: string;
+                    counterpartyDetail?: "true" | "false";
                 };
                 header?: never;
                 path: {
@@ -411,6 +420,13 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
+                            /** @description Token metadata resolved from the Superfluid extended token list. `symbol` and `name` are null only for tokens not present in the token list and not reachable via subgraph fallback. */
+                            token: {
+                                address: string;
+                                symbol: string | null;
+                                name: string | null;
+                                decimals: number;
+                            };
                             periods: {
                                 label: string;
                                 startTimestamp: string;
@@ -423,8 +439,18 @@ export interface paths {
                                 byCategory: {
                                     [key: string]: string;
                                 };
+                                /** @description Net balance change per counterparty address for this period. The special key `__none__` represents operations with no external counterparty: wraps, unwraps, mints, and burns. All other keys are lowercase Ethereum addresses. */
                                 byCounterparty: {
                                     [key: string]: string;
+                                };
+                                /** @description Per-counterparty detail (only present when `?counterpartyDetail=true`). openingBalance and closingBalance are cumulative account-fold balances for this counterparty at period boundaries. `netChange` equals the `byCounterparty` entry for the same key. `flowRate` is the CFA flow rate to/from this counterparty at period close. */
+                                byCounterpartyDetail?: {
+                                    [key: string]: {
+                                        openingBalance: string;
+                                        closingBalance: string;
+                                        netChange: string;
+                                        flowRate: string;
+                                    };
                                 };
                                 gdaConnectedChange: string;
                                 gdaDisconnectedChange: string;
@@ -465,7 +491,7 @@ export interface paths {
         };
         /**
          * Get balance movements
-         * @description Pre-computed balance movements: discrete transfers, stream periods, and deposit changes. Stream periods group flow rate changes into single rows with date ranges and crystallized totals. Optionally bounded by `startTimestamp` / `endTimestamp` (unix seconds, both optional, both inclusive). Two filtering modes: balance_movements rows use lifespan-overlap semantics (a row is included when its `[timestamp, endTimestamp]` intersects the requested window; ongoing stream periods with `isOngoing = true` are treated as open-ended; point-in-time rows with `endTimestamp IS NULL` are matched on their single `timestamp`); account_entries rows use point-in-range semantics (included when their single `timestamp` falls within the window). Additional filters: `movementType` (comma list: discrete, stream_period, deposit, instant_distribution), `category` (comma list), `direction` (in|out based on amount sign), `isOngoing` (true|false), `counterparty` (comma list of addresses). All filters propagate to both query sources, `total`, `hasMore`, and CSV output. Invalid parameter values or `endTimestamp < startTimestamp` return 400.
+         * @description Pre-computed balance movements: discrete transfers, stream periods, and deposit changes. Stream periods group flow rate changes into single rows with date ranges and crystallized totals. Optionally bounded by `startTimestamp` / `endTimestamp` (unix seconds, both optional, both inclusive). Two filtering modes: balance_movements rows use lifespan-overlap semantics (a row is included when its `[timestamp, endTimestamp]` intersects the requested window; ongoing stream periods with `isOngoing = true` are treated as open-ended; point-in-time rows with `endTimestamp IS NULL` are matched on their single `timestamp`); account_entries rows use point-in-range semantics (included when their single `timestamp` falls within the window). Additional filters: `movementType` (comma list: discrete, stream_period, deposit, instant_distribution), `category` (comma list), `direction` (in|out based on amount sign), `isOngoing` (true|false), `counterparty` (comma list of addresses). All filters propagate to both query sources, `total`, `hasMore`, and CSV output. Pagination: use `offset` for simple offset-based paging, or `cursor` / `nextCursor` for cursor-based paging (recommended for large result sets). `cursor` and `offset` are mutually exclusive. Invalid parameter values, `endTimestamp < startTimestamp`, or a malformed `cursor` return 400.
          */
         get: {
             parameters: {
@@ -474,6 +500,7 @@ export interface paths {
                     counterparty?: string;
                     limit?: string;
                     offset?: string;
+                    cursor?: string;
                     sort?: "asc" | "desc";
                     format?: "json" | "csv";
                     startTimestamp?: string;
@@ -499,9 +526,17 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
+                            /** @description Token metadata resolved from the Superfluid extended token list. `symbol` and `name` are null only for tokens not present in the token list and not reachable via subgraph fallback. */
+                            token: {
+                                address: string;
+                                symbol: string | null;
+                                name: string | null;
+                                decimals: number;
+                            };
                             movements: {
                                 movementType: string;
                                 category: string;
+                                /** @description Counterparty address for this movement, or null for operations with no external counterparty (wraps, unwraps, mints, burns, deposit changes). Lowercase hex address when present. */
                                 counterparty: string | null;
                                 semanticEventType: string | null;
                                 amount: string;
@@ -518,6 +553,8 @@ export interface paths {
                             totalIsCapped: boolean;
                             /** @description True when more rows exist past the returned page (derived from a fetch-one-extra probe, independent of the capped COUNT). */
                             hasMore: boolean;
+                            /** @description Opaque cursor for the next page. Pass as `cursor` in the next request. Null when `hasMore` is false (no more pages) or when using offset-based pagination. To bootstrap cursor pagination, send `?cursor=` (empty string) on the first request. */
+                            nextCursor: string | null;
                         };
                         "text/csv": string;
                     };
