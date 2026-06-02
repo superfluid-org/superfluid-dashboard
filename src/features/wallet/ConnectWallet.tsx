@@ -7,6 +7,7 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
+  Stack,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
@@ -17,7 +18,10 @@ import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
 import { useImpersonation } from "../impersonation/ImpersonationContext";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
-import { useConnectButton } from "./ConnectButtonProvider";
+import {
+  isSuperfluidWalletEnabled,
+  useConnectButton,
+} from "./ConnectButtonProvider";
 import { useVisibleAddress } from "./VisibleAddressContext";
 
 interface AccountInfoProps {
@@ -114,7 +118,12 @@ const ConnectWallet: FC<ConnectWalletProps> = ({
 
   const { network } = useExpectedNetwork();
   
-  const { openConnectModal, openAccountModal } = useConnectButton();
+  const {
+    openConnectModal,
+    openAccountModal,
+    connectSuperfluidWallet,
+    isSuperfluidWalletConnecting,
+  } = useConnectButton();
 
   const { visibleAddress } = useVisibleAddress();
   const { chain: activeChain, isReconnecting } = useAccount();
@@ -146,6 +155,45 @@ const ConnectWallet: FC<ConnectWalletProps> = ({
         onClick={openAccountModal}
         stopImpersonation={handleStopImpersonation}
       />
+    );
+  }
+
+  if (isSuperfluidWalletEnabled) {
+    return (
+      <Stack direction="row" spacing={1.5} alignItems="center">
+        <LoadingButton
+          data-cy={"connect-superfluid-wallet-button"}
+          loading={isSuperfluidWalletConnecting}
+          variant="contained"
+          {...ButtonProps}
+          onClick={() => {
+            connectSuperfluidWallet();
+            stopImpersonation();
+          }}
+        >
+          <AccountBalanceWalletOutlinedIcon
+            sx={{
+              mr: 1,
+              ...(ButtonProps.size === "small"
+                ? { width: "22px", height: "22px" }
+                : {}),
+            }}
+          />
+          Connect Superfluid Wallet
+        </LoadingButton>
+        <LoadingButton
+          data-cy={"connect-wallet-button"}
+          loading={isReconnecting}
+          variant="outlined"
+          {...ButtonProps}
+          onClick={() => {
+            openConnectModal();
+            stopImpersonation();
+          }}
+        >
+          Connect Wallet
+        </LoadingButton>
+      </Stack>
     );
   }
 

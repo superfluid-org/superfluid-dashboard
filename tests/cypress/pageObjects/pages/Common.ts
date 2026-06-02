@@ -12,6 +12,7 @@ export const ACCESS_CODE_BUTTON = '[data-cy=more-access-code-btn]';
 export const ACCESS_CODE_INPUT = '[data-cy=access-code-input]';
 export const ACCESS_CODE_SUBMIT = '[data-cy=submit-access-code]';
 export const CONNECT_WALLET_BUTTON = '[data-cy=connect-wallet-button]';
+export const CONNECT_SUPERFLUID_WALLET_BUTTON = '[data-cy=connect-superfluid-wallet-button]';
 export const TOKEN_ANIMATION = '[data-cy=animation]';
 export const TOKEN_BALANCE = '[data-cy=token-balance]';
 export const CHANGE_NETWORK_BUTTON = '[data-cy=change-network-button]';

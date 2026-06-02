@@ -208,3 +208,6 @@ cypress.env.json
 
 # Netlify
 .netlify
+
+tmp/
+contracts/

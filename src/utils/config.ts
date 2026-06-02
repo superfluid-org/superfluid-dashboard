@@ -57,6 +57,12 @@ const config = {
   allowlistApiUrl:
     process.env.NEXT_PUBLIC_ALLOWLIST_API ??
     "https://allowlist.superfluid.dev",
+  superfluidWallet: {
+    enabled: process.env.NEXT_PUBLIC_SUPERFLUID_WALLET_ENABLED === "true",
+    url: (
+      process.env.NEXT_PUBLIC_SUPERFLUID_WALLET_URL || "http://localhost:3001"
+    ).trim(),
+  },
 } as const;
 
 export default Object.freeze(config);
