@@ -1,17 +1,17 @@
 import { ethers } from "ethers";
 
-/** DashboardClearMacro.ACTION_CREATE_FLOW */
+/** `DashboardClearMacro.ActionId.CreateFlow` (wire id 1) */
 export const DASHBOARD_CLEAR_MACRO_ACTION_CREATE_FLOW = 1;
-/** DashboardClearMacro.ACTION_UPDATE_FLOW */
+/** `DashboardClearMacro.ActionId.UpdateFlow` (wire id 2) */
 export const DASHBOARD_CLEAR_MACRO_ACTION_UPDATE_FLOW = 2;
-/** DashboardClearMacro.ACTION_DELETE_FLOW */
+/** `DashboardClearMacro.ActionId.DeleteFlow` (wire id 3) */
 export const DASHBOARD_CLEAR_MACRO_ACTION_DELETE_FLOW = 3;
 
-/** DashboardClearMacro.ACTION_TRANSFER */
+/** `DashboardClearMacro.ActionId.Transfer` (wire id 7) */
 export const DASHBOARD_CLEAR_MACRO_ACTION_TRANSFER = 7;
 
 /**
- * Must match DashboardClearMacro LANG_EN / provider registry `macroPolicy.allowedMacros[].domain`.
+ * Must match DashboardClearMacro `_LANG_EN` / provider registry `macroPolicy.allowedMacros[].domain`.
  * Keep aligned with clearmacro-provider config for the deployed DashboardClearMacro.
  */
 export const DASHBOARD_CLEAR_MACRO_REGISTRY_DOMAIN = "app.superfluid";

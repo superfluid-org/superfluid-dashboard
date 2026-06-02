@@ -232,7 +232,7 @@ export async function tryRelayExecuteSuperTokenTransfer({
       { name: "validBefore", type: "uint256" },
       { name: "nonce", type: "uint256" },
     ],
-    DashboardTransfer: [
+    Transfer: [
       { name: "action", type: "Action" },
       { name: "security", type: "Security" },
     ],

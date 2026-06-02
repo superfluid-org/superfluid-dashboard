@@ -5,36 +5,34 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 using Strings for uint256;
 
-function _formatUnits(uint256 amount, uint8 exponent, uint8 maxDecimals)
-    pure returns (string memory)
-{
-        // Step 1: Apply rounding first to the entire value
-        if (exponent > maxDecimals) {
-            uint256 factor = 10 ** (exponent - maxDecimals); // Scale factor to limit decimals
-            amount = (amount + (factor / 2)) / factor; // Apply rounding
-        }
-
-        // Step 2: Calculate the integer part and fractional part after rounding
-        uint256 intPart = amount / 10 ** maxDecimals;
-        uint256 fracPart = amount % 10 ** maxDecimals;
-
-        string memory intString = intPart.toString();
-
-        // If fracPart is 0 after rounding, return just the integer part
-        if (fracPart == 0) {
-            return intString;
-        }
-
-        string memory fracString = fracPart.toString();
-
-        // Add leading zeroes to the fractional part if needed
-        while (bytes(fracString).length < maxDecimals) {
-            fracString = string.concat("0", fracString);
-        }
-
-        // Step 4: Return the final formatted string with integer and fractional parts
-        return string.concat(intString, ".", fracString);
+function _formatUnits(uint256 amount, uint8 exponent, uint8 maxDecimals) pure returns (string memory) {
+    // Step 1: Apply rounding first to the entire value
+    if (exponent > maxDecimals) {
+        uint256 factor = 10 ** (exponent - maxDecimals); // Scale factor to limit decimals
+        amount = (amount + (factor / 2)) / factor; // Apply rounding
     }
+
+    // Step 2: Calculate the integer part and fractional part after rounding
+    uint256 intPart = amount / 10 ** maxDecimals;
+    uint256 fracPart = amount % 10 ** maxDecimals;
+
+    string memory intString = intPart.toString();
+
+    // If fracPart is 0 after rounding, return just the integer part
+    if (fracPart == 0) {
+        return intString;
+    }
+
+    string memory fracString = fracPart.toString();
+
+    // Add leading zeroes to the fractional part if needed
+    while (bytes(fracString).length < maxDecimals) {
+        fracString = string.concat("0", fracString);
+    }
+
+    // Step 4: Return the final formatted string with integer and fractional parts
+    return string.concat(intString, ".", fracString);
+}
 
 library FlowRateFormatter {
     enum Period {

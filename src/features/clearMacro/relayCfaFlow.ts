@@ -305,7 +305,7 @@ export async function tryRelayExecuteDashboardCfa(
         { name: "flowRate", type: "int96" },
       ],
       Security: [...securityTypesFields],
-      DashboardCreateFlow: [
+      CreateFlow: [
         { name: "action", type: "Action" },
         { name: "security", type: "Security" },
       ],
@@ -328,7 +328,7 @@ export async function tryRelayExecuteDashboardCfa(
         { name: "flowRate", type: "int96" },
       ],
       Security: [...securityTypesFields],
-      DashboardUpdateFlow: [
+      UpdateFlow: [
         { name: "action", type: "Action" },
         { name: "security", type: "Security" },
       ],
@@ -351,7 +351,7 @@ export async function tryRelayExecuteDashboardCfa(
         { name: "receiver", type: "address" },
       ],
       Security: [...securityTypesFields],
-      DashboardDeleteFlow: [
+      DeleteFlow: [
         { name: "action", type: "Action" },
         { name: "security", type: "Security" },
       ],

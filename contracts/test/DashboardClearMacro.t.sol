@@ -1,35 +1,48 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.26;
 
-import { VmSafe } from "forge-std/Vm.sol";
-import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
-import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
+import {VmSafe} from "forge-std/Vm.sol";
+import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
+import {IAccessControl} from "@openzeppelin/contracts/access/IAccessControl.sol";
 
-import { FoundrySuperfluidTester } from "@superfluid-finance/ethereum-contracts/test/foundry/FoundrySuperfluidTester.t.sol";
-import { IERC20, ISuperToken, ISuperfluidToken } from "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperfluid.sol";
-import { SuperTokenV1Library } from "@superfluid-finance/ethereum-contracts/contracts/apps/SuperTokenV1Library.sol";
-import { ClearMacroForwarderV1, NonceManager } from "@superfluid-finance/ethereum-contracts/contracts/utils/ClearMacroForwarderV1.sol";
-import { ClearMacroBase } from "@superfluid-finance/ethereum-contracts/contracts/utils/ClearMacroBase.sol";
-import { IClearMacroForwarderV1 } from "@superfluid-finance/ethereum-contracts/contracts/interfaces/utils/IClearMacroForwarderV1.sol";
+import {
+    FoundrySuperfluidTester
+} from "@superfluid-finance/ethereum-contracts/test/foundry/FoundrySuperfluidTester.t.sol";
+import {
+    IERC20,
+    ISuperToken,
+    ISuperfluidToken
+} from "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperfluid.sol";
+import {SuperTokenV1Library} from "@superfluid-finance/ethereum-contracts/contracts/apps/SuperTokenV1Library.sol";
+import {
+    ClearMacroForwarderV1,
+    NonceManager
+} from "@superfluid-finance/ethereum-contracts/contracts/utils/ClearMacroForwarderV1.sol";
+import {ClearMacroBase} from "@superfluid-finance/ethereum-contracts/contracts/utils/ClearMacroBase.sol";
+import {
+    IClearMacroForwarderV1
+} from "@superfluid-finance/ethereum-contracts/contracts/interfaces/utils/IClearMacroForwarderV1.sol";
 
-import { DashboardClearMacro } from "../src/DashboardClearMacro.sol";
+import {DashboardClearMacro} from "../src/DashboardClearMacro.sol";
 
 using SuperTokenV1Library for ISuperToken;
 
 contract DashboardClearMacroTest is FoundrySuperfluidTester {
     bytes32 internal constant LANG_EN = bytes32("en");
+    string internal constant SECURITY_DOMAIN = "app.superfluid";
     string internal constant PROVIDER = "dashboard-provider";
+    uint8 internal constant UNKNOWN_ACTION_ID = 99;
     int96 internal constant DEFAULT_FLOW_RATE = 1_157_407_407_407; // 0.1/day
     uint256 internal constant DEFAULT_AMOUNT = 1e17;
 
-    DashboardClearMacro internal dashboardMacro;
+    DashboardClearMacro internal dashboardClearMacro;
     ClearMacroForwarderV1 internal forwarder;
 
-    constructor() FoundrySuperfluidTester(5) { }
+    constructor() FoundrySuperfluidTester(5) {}
 
     function setUp() public override {
         super.setUp();
-        dashboardMacro = new DashboardClearMacro(sf.host);
+        dashboardClearMacro = new DashboardClearMacro(sf.host);
         forwarder = new ClearMacroForwarderV1(sf.host);
         _grantProviderRole(PROVIDER, address(this));
 
@@ -47,7 +60,7 @@ contract DashboardClearMacroTest is FoundrySuperfluidTester {
             vm.prank(candidateAdmins[i]);
             try acl.grantRole(role, account) {
                 return;
-            } catch { }
+            } catch {}
         }
         revert("unable to grant provider role");
     }
@@ -56,10 +69,11 @@ contract DashboardClearMacroTest is FoundrySuperfluidTester {
         VmSafe.Wallet memory signer = _newSigner("create");
         _fundSuper(signer, 100e18);
 
-        bytes memory action = dashboardMacro.encodeCreateFlow(
-            LANG_EN, DashboardClearMacro.CreateFlowParams({ superToken: superToken, receiver: bob, flowRate: DEFAULT_FLOW_RATE })
+        bytes memory actionParams = dashboardClearMacro.encodeCreateFlow(
+            LANG_EN,
+            DashboardClearMacro.CreateFlowParams({superToken: superToken, receiver: bob, flowRate: DEFAULT_FLOW_RATE})
         );
-        _runAsProvider(signer, action, 0, PROVIDER, 0, 0);
+        _runAsProvider(signer, actionParams, 0, PROVIDER, 0, 0);
 
         assertEq(superToken.getFlowRate(signer.addr, bob), DEFAULT_FLOW_RATE);
     }
@@ -67,16 +81,17 @@ contract DashboardClearMacroTest is FoundrySuperfluidTester {
     function testUpdateFlow() external {
         VmSafe.Wallet memory signer = _newSigner("update");
         _fundSuper(signer, 100e18);
-        bytes memory createAction = dashboardMacro.encodeCreateFlow(
-            LANG_EN, DashboardClearMacro.CreateFlowParams({ superToken: superToken, receiver: bob, flowRate: DEFAULT_FLOW_RATE })
+        bytes memory createActionParams = dashboardClearMacro.encodeCreateFlow(
+            LANG_EN,
+            DashboardClearMacro.CreateFlowParams({superToken: superToken, receiver: bob, flowRate: DEFAULT_FLOW_RATE})
         );
-        _runAsProvider(signer, createAction, 0, PROVIDER, 0, 0);
+        _runAsProvider(signer, createActionParams, 0, PROVIDER, 0, 0);
 
         int96 newRate = DEFAULT_FLOW_RATE * 2;
-        bytes memory action = dashboardMacro.encodeUpdateFlow(
-            LANG_EN, DashboardClearMacro.UpdateFlowParams({ superToken: superToken, receiver: bob, flowRate: newRate })
+        bytes memory actionParams = dashboardClearMacro.encodeUpdateFlow(
+            LANG_EN, DashboardClearMacro.UpdateFlowParams({superToken: superToken, receiver: bob, flowRate: newRate})
         );
-        _runAsProvider(signer, action, 0, PROVIDER, 0, 0);
+        _runAsProvider(signer, actionParams, 0, PROVIDER, 0, 0);
 
         assertEq(superToken.getFlowRate(signer.addr, bob), newRate);
     }
@@ -84,16 +99,16 @@ contract DashboardClearMacroTest is FoundrySuperfluidTester {
     function testDeleteFlow() external {
         VmSafe.Wallet memory signer = _newSigner("delete");
         _fundSuper(signer, 100e18);
-        bytes memory createAction = dashboardMacro.encodeCreateFlow(
-            LANG_EN, DashboardClearMacro.CreateFlowParams({ superToken: superToken, receiver: bob, flowRate: DEFAULT_FLOW_RATE })
-        );
-        _runAsProvider(signer, createAction, 0, PROVIDER, 0, 0);
-
-        bytes memory action = dashboardMacro.encodeDeleteFlow(
+        bytes memory createActionParams = dashboardClearMacro.encodeCreateFlow(
             LANG_EN,
-            DashboardClearMacro.DeleteFlowParams({ superToken: superToken, sender: signer.addr, receiver: bob })
+            DashboardClearMacro.CreateFlowParams({superToken: superToken, receiver: bob, flowRate: DEFAULT_FLOW_RATE})
         );
-        _runAsProvider(signer, action, 0, PROVIDER, 0, 0);
+        _runAsProvider(signer, createActionParams, 0, PROVIDER, 0, 0);
+
+        bytes memory actionParams = dashboardClearMacro.encodeDeleteFlow(
+            LANG_EN, DashboardClearMacro.DeleteFlowParams({superToken: superToken, sender: signer.addr, receiver: bob})
+        );
+        _runAsProvider(signer, actionParams, 0, PROVIDER, 0, 0);
 
         assertEq(superToken.getFlowRate(signer.addr, bob), 0);
     }
@@ -102,10 +117,10 @@ contract DashboardClearMacroTest is FoundrySuperfluidTester {
         VmSafe.Wallet memory signer = _newSigner("upgrade");
         _fundUnderlyingAndApprove(signer, 1e18);
 
-        bytes memory action = dashboardMacro.encodeUpgrade(
-            LANG_EN, DashboardClearMacro.UpgradeParams({ superToken: superToken, amount: DEFAULT_AMOUNT })
+        bytes memory actionParams = dashboardClearMacro.encodeUpgrade(
+            LANG_EN, DashboardClearMacro.UpgradeParams({superToken: superToken, amount: DEFAULT_AMOUNT})
         );
-        _runAsProvider(signer, action, 0, PROVIDER, 0, 0);
+        _runAsProvider(signer, actionParams, 0, PROVIDER, 0, 0);
 
         assertEq(superToken.balanceOf(signer.addr), DEFAULT_AMOUNT);
     }
@@ -114,10 +129,10 @@ contract DashboardClearMacroTest is FoundrySuperfluidTester {
         VmSafe.Wallet memory signer = _newSigner("downgrade");
         _fundSuper(signer, 1e18);
 
-        bytes memory action = dashboardMacro.encodeDowngrade(
-            LANG_EN, DashboardClearMacro.DowngradeParams({ superToken: superToken, amount: DEFAULT_AMOUNT })
+        bytes memory actionParams = dashboardClearMacro.encodeDowngrade(
+            LANG_EN, DashboardClearMacro.DowngradeParams({superToken: superToken, amount: DEFAULT_AMOUNT})
         );
-        _runAsProvider(signer, action, 0, PROVIDER, 0, 0);
+        _runAsProvider(signer, actionParams, 0, PROVIDER, 0, 0);
 
         assertEq(superToken.balanceOf(signer.addr), 1e18 - DEFAULT_AMOUNT);
     }
@@ -126,10 +141,10 @@ contract DashboardClearMacroTest is FoundrySuperfluidTester {
         VmSafe.Wallet memory signer = _newSigner("approve");
         _fundSuper(signer, 1e18);
 
-        bytes memory action = dashboardMacro.encodeApprove(
-            LANG_EN, DashboardClearMacro.ApproveParams({ superToken: superToken, spender: bob, amount: DEFAULT_AMOUNT })
+        bytes memory actionParams = dashboardClearMacro.encodeApprove(
+            LANG_EN, DashboardClearMacro.ApproveParams({superToken: superToken, spender: bob, amount: DEFAULT_AMOUNT})
         );
-        _runAsProvider(signer, action, 0, PROVIDER, 0, 0);
+        _runAsProvider(signer, actionParams, 0, PROVIDER, 0, 0);
 
         assertEq(superToken.allowance(signer.addr, bob), DEFAULT_AMOUNT);
     }
@@ -139,10 +154,10 @@ contract DashboardClearMacroTest is FoundrySuperfluidTester {
         _fundSuper(signer, 1e18);
         uint256 bobBefore = superToken.balanceOf(bob);
 
-        bytes memory action = dashboardMacro.encodeTransfer(
-            LANG_EN, DashboardClearMacro.TransferParams({ superToken: superToken, receiver: bob, amount: DEFAULT_AMOUNT })
+        bytes memory actionParams = dashboardClearMacro.encodeTransfer(
+            LANG_EN, DashboardClearMacro.TransferParams({superToken: superToken, receiver: bob, amount: DEFAULT_AMOUNT})
         );
-        _runAsProvider(signer, action, 0, PROVIDER, 0, 0);
+        _runAsProvider(signer, actionParams, 0, PROVIDER, 0, 0);
 
         assertEq(superToken.balanceOf(signer.addr), 1e18 - DEFAULT_AMOUNT);
         assertEq(superToken.balanceOf(bob), bobBefore + DEFAULT_AMOUNT);
@@ -151,48 +166,50 @@ contract DashboardClearMacroTest is FoundrySuperfluidTester {
     function testEnglishDescriptionsForAllActions() external view {
         string memory receiverHex = Strings.toHexString(uint256(uint160(bob)), 20);
         string memory spenderHex = Strings.toHexString(uint256(uint160(alice)), 20);
-        string memory createDesc = dashboardMacro.describeCreateFlow(
-            LANG_EN, DashboardClearMacro.CreateFlowParams({ superToken: superToken, receiver: bob, flowRate: DEFAULT_FLOW_RATE })
+        string memory createDesc = dashboardClearMacro.describeCreateFlow(
+            LANG_EN,
+            DashboardClearMacro.CreateFlowParams({superToken: superToken, receiver: bob, flowRate: DEFAULT_FLOW_RATE})
         );
         assertTrue(_contains(createDesc, "Create a new flow of"));
         assertTrue(_contains(createDesc, superToken.symbol()));
         assertTrue(_contains(createDesc, receiverHex));
 
-        string memory updateDesc = dashboardMacro.describeUpdateFlow(
-            LANG_EN, DashboardClearMacro.UpdateFlowParams({ superToken: superToken, receiver: bob, flowRate: DEFAULT_FLOW_RATE })
+        string memory updateDesc = dashboardClearMacro.describeUpdateFlow(
+            LANG_EN,
+            DashboardClearMacro.UpdateFlowParams({superToken: superToken, receiver: bob, flowRate: DEFAULT_FLOW_RATE})
         );
         assertTrue(_contains(updateDesc, "Update flow to"));
         assertTrue(_contains(updateDesc, superToken.symbol()));
         assertTrue(_contains(updateDesc, receiverHex));
 
-        string memory deleteDesc = dashboardMacro.describeDeleteFlow(
-            LANG_EN, DashboardClearMacro.DeleteFlowParams({ superToken: superToken, sender: alice, receiver: bob })
+        string memory deleteDesc = dashboardClearMacro.describeDeleteFlow(
+            LANG_EN, DashboardClearMacro.DeleteFlowParams({superToken: superToken, sender: alice, receiver: bob})
         );
         assertTrue(_contains(deleteDesc, "Delete flow of"));
         assertTrue(_contains(deleteDesc, superToken.symbol()));
         assertTrue(_contains(deleteDesc, spenderHex));
         assertTrue(_contains(deleteDesc, receiverHex));
 
-        string memory upgradeDesc = dashboardMacro.describeUpgrade(
-            LANG_EN, DashboardClearMacro.UpgradeParams({ superToken: superToken, amount: DEFAULT_AMOUNT })
+        string memory upgradeDesc = dashboardClearMacro.describeUpgrade(
+            LANG_EN, DashboardClearMacro.UpgradeParams({superToken: superToken, amount: DEFAULT_AMOUNT})
         );
         assertTrue(_contains(upgradeDesc, "Upgrade"));
         assertTrue(_contains(upgradeDesc, superToken.symbol()));
 
-        string memory downgradeDesc = dashboardMacro.describeDowngrade(
-            LANG_EN, DashboardClearMacro.DowngradeParams({ superToken: superToken, amount: DEFAULT_AMOUNT })
+        string memory downgradeDesc = dashboardClearMacro.describeDowngrade(
+            LANG_EN, DashboardClearMacro.DowngradeParams({superToken: superToken, amount: DEFAULT_AMOUNT})
         );
         assertTrue(_contains(downgradeDesc, "Downgrade"));
         assertTrue(_contains(downgradeDesc, superToken.symbol()));
 
-        string memory approveDesc = dashboardMacro.describeApprove(
-            LANG_EN, DashboardClearMacro.ApproveParams({ superToken: superToken, spender: alice, amount: DEFAULT_AMOUNT })
+        string memory approveDesc = dashboardClearMacro.describeApprove(
+            LANG_EN, DashboardClearMacro.ApproveParams({superToken: superToken, spender: alice, amount: DEFAULT_AMOUNT})
         );
         assertTrue(_contains(approveDesc, "Approve"));
         assertTrue(_contains(approveDesc, spenderHex));
 
-        string memory transferDesc = dashboardMacro.describeTransfer(
-            LANG_EN, DashboardClearMacro.TransferParams({ superToken: superToken, receiver: bob, amount: DEFAULT_AMOUNT })
+        string memory transferDesc = dashboardClearMacro.describeTransfer(
+            LANG_EN, DashboardClearMacro.TransferParams({superToken: superToken, receiver: bob, amount: DEFAULT_AMOUNT})
         );
         assertTrue(_contains(transferDesc, "Transfer"));
         assertTrue(_contains(transferDesc, receiverHex));
@@ -203,52 +220,55 @@ contract DashboardClearMacroTest is FoundrySuperfluidTester {
         VmSafe.Wallet memory wrongSigner = _newSigner("sig-bad");
         _fundSuper(signer, 1e18);
 
-        bytes memory action = dashboardMacro.encodeTransfer(
-            LANG_EN, DashboardClearMacro.TransferParams({ superToken: superToken, receiver: bob, amount: DEFAULT_AMOUNT })
+        bytes memory actionParams = dashboardClearMacro.encodeTransfer(
+            LANG_EN, DashboardClearMacro.TransferParams({superToken: superToken, receiver: bob, amount: DEFAULT_AMOUNT})
         );
-        bytes memory payload = _buildPayload(action, PROVIDER, 0, 0, 0, address(dashboardMacro));
-        bytes memory badSig = _signPayload(wrongSigner, payload);
+        bytes memory encodedPayload = _getEncodedPayload(actionParams, PROVIDER, 0, 0, 0, address(dashboardClearMacro));
+        bytes memory badSig = _signEncodedPayload(wrongSigner, encodedPayload);
 
         vm.expectRevert(ClearMacroForwarderV1.InvalidSignature.selector);
-        forwarder.runMacro(dashboardMacro, payload, signer.addr, badSig);
+        forwarder.runMacro(dashboardClearMacro, encodedPayload, signer.addr, badSig);
     }
 
     function testRevertsOnMacroMismatch() external {
         VmSafe.Wallet memory signer = _newSigner("mismatch");
         _fundSuper(signer, 1e18);
-        DashboardClearMacro otherMacro = new DashboardClearMacro(sf.host);
+        DashboardClearMacro otherDashboardClearMacro = new DashboardClearMacro(sf.host);
 
-        bytes memory action = dashboardMacro.encodeTransfer(
-            LANG_EN, DashboardClearMacro.TransferParams({ superToken: superToken, receiver: bob, amount: DEFAULT_AMOUNT })
+        bytes memory actionParams = dashboardClearMacro.encodeTransfer(
+            LANG_EN, DashboardClearMacro.TransferParams({superToken: superToken, receiver: bob, amount: DEFAULT_AMOUNT})
         );
-        bytes memory payload = _buildPayload(action, PROVIDER, 0, 0, 0, address(dashboardMacro));
-        bytes memory sig = _signPayload(signer, payload);
+        bytes memory encodedPayload = _getEncodedPayload(actionParams, PROVIDER, 0, 0, 0, address(dashboardClearMacro));
+        bytes memory sig = _signEncodedPayload(signer, encodedPayload);
 
         vm.expectRevert(
-            abi.encodeWithSelector(ClearMacroForwarderV1.MacroContractMismatch.selector, address(dashboardMacro), address(otherMacro))
+            abi.encodeWithSelector(
+                ClearMacroForwarderV1.MacroContractMismatch.selector,
+                address(dashboardClearMacro),
+                address(otherDashboardClearMacro)
+            )
         );
-        forwarder.runMacro(otherMacro, payload, signer.addr, sig);
+        forwarder.runMacro(otherDashboardClearMacro, encodedPayload, signer.addr, sig);
     }
 
     function testRevertsWhenProviderMissingRole() external {
         VmSafe.Wallet memory signer = _newSigner("missing-role");
         _fundSuper(signer, 1e18);
 
-        bytes memory action = dashboardMacro.encodeTransfer(
-            LANG_EN, DashboardClearMacro.TransferParams({ superToken: superToken, receiver: bob, amount: DEFAULT_AMOUNT })
+        bytes memory actionParams = dashboardClearMacro.encodeTransfer(
+            LANG_EN, DashboardClearMacro.TransferParams({superToken: superToken, receiver: bob, amount: DEFAULT_AMOUNT})
         );
-        bytes memory payload = _buildPayload(action, "other-provider", 0, 0, 0, address(dashboardMacro));
-        bytes memory sig = _signPayload(signer, payload);
+        bytes memory encodedPayload =
+            _getEncodedPayload(actionParams, "other-provider", 0, 0, 0, address(dashboardClearMacro));
+        bytes memory sig = _signEncodedPayload(signer, encodedPayload);
 
         vm.prank(address(0xBEEF));
         vm.expectRevert(
             abi.encodeWithSelector(
-                ClearMacroForwarderV1.ProviderNotAuthorized.selector,
-                "other-provider",
-                address(0xBEEF)
+                ClearMacroForwarderV1.ProviderNotAuthorized.selector, "other-provider", address(0xBEEF)
             )
         );
-        forwarder.runMacro(dashboardMacro, payload, signer.addr, sig);
+        forwarder.runMacro(dashboardClearMacro, encodedPayload, signer.addr, sig);
     }
 
     function testSelfRelaySucceeds() external {
@@ -256,14 +276,14 @@ contract DashboardClearMacroTest is FoundrySuperfluidTester {
         _fundSuper(signer, 1e18);
         uint256 bobBefore = superToken.balanceOf(bob);
 
-        bytes memory action = dashboardMacro.encodeTransfer(
-            LANG_EN, DashboardClearMacro.TransferParams({ superToken: superToken, receiver: bob, amount: DEFAULT_AMOUNT })
+        bytes memory actionParams = dashboardClearMacro.encodeTransfer(
+            LANG_EN, DashboardClearMacro.TransferParams({superToken: superToken, receiver: bob, amount: DEFAULT_AMOUNT})
         );
-        bytes memory payload = _buildPayload(action, "self", 0, 0, 0, address(dashboardMacro));
-        bytes memory sig = _signPayload(signer, payload);
+        bytes memory encodedPayload = _getEncodedPayload(actionParams, "self", 0, 0, 0, address(dashboardClearMacro));
+        bytes memory sig = _signEncodedPayload(signer, encodedPayload);
 
         vm.prank(signer.addr);
-        forwarder.runMacro(dashboardMacro, payload, signer.addr, sig);
+        forwarder.runMacro(dashboardClearMacro, encodedPayload, signer.addr, sig);
         assertEq(superToken.balanceOf(bob), bobBefore + DEFAULT_AMOUNT);
     }
 
@@ -271,111 +291,120 @@ contract DashboardClearMacroTest is FoundrySuperfluidTester {
         VmSafe.Wallet memory signer = _newSigner("self-relay-revert");
         _fundSuper(signer, 1e18);
 
-        bytes memory action = dashboardMacro.encodeTransfer(
-            LANG_EN, DashboardClearMacro.TransferParams({ superToken: superToken, receiver: bob, amount: DEFAULT_AMOUNT })
+        bytes memory actionParams = dashboardClearMacro.encodeTransfer(
+            LANG_EN, DashboardClearMacro.TransferParams({superToken: superToken, receiver: bob, amount: DEFAULT_AMOUNT})
         );
-        bytes memory payload = _buildPayload(action, "self", 0, 0, 0, address(dashboardMacro));
-        bytes memory sig = _signPayload(signer, payload);
+        bytes memory encodedPayload = _getEncodedPayload(actionParams, "self", 0, 0, 0, address(dashboardClearMacro));
+        bytes memory sig = _signEncodedPayload(signer, encodedPayload);
 
         vm.expectRevert(
             abi.encodeWithSelector(ClearMacroForwarderV1.ProviderNotAuthorized.selector, "self", address(this))
         );
-        forwarder.runMacro(dashboardMacro, payload, signer.addr, sig);
+        forwarder.runMacro(dashboardClearMacro, encodedPayload, signer.addr, sig);
     }
 
     function testRevertsOnUnsupportedLanguage() external {
         address signer = _newSigner("lang").addr;
-        bytes memory action = dashboardMacro.encodeTransfer(
-            bytes32("fr"), DashboardClearMacro.TransferParams({ superToken: superToken, receiver: bob, amount: DEFAULT_AMOUNT })
+        bytes memory actionParams = dashboardClearMacro.encodeTransfer(
+            bytes32("fr"),
+            DashboardClearMacro.TransferParams({superToken: superToken, receiver: bob, amount: DEFAULT_AMOUNT})
         );
-        bytes memory payload = _buildPayload(action, PROVIDER, 0, 0, forwarder.getNonce(signer, 0), address(dashboardMacro));
+        bytes memory encodedPayload = _getEncodedPayload(
+            actionParams, PROVIDER, 0, 0, forwarder.getNonce(signer, 0), address(dashboardClearMacro)
+        );
 
         vm.expectRevert(ClearMacroBase.UnsupportedLanguage.selector);
-        forwarder.getDigest(dashboardMacro, payload);
+        forwarder.getDigest(dashboardClearMacro, encodedPayload);
     }
 
     function testRevertsOnUnknownActionId() external {
         address signer = _newSigner("unknown-action").addr;
-        bytes memory action = abi.encode(uint8(99), LANG_EN, abi.encode(superToken, bob, DEFAULT_AMOUNT));
-        bytes memory payload = _buildPayload(action, PROVIDER, 0, 0, forwarder.getNonce(signer, 0), address(dashboardMacro));
+        bytes memory actionParams = abi.encode(UNKNOWN_ACTION_ID, LANG_EN, abi.encode(superToken, bob, DEFAULT_AMOUNT));
+        bytes memory encodedPayload = _getEncodedPayload(
+            actionParams, PROVIDER, 0, 0, forwarder.getNonce(signer, 0), address(dashboardClearMacro)
+        );
 
-        vm.expectRevert(abi.encodeWithSelector(ClearMacroBase.UnknownActionId.selector, uint8(99)));
-        forwarder.getDigest(dashboardMacro, payload);
+        vm.expectRevert(abi.encodeWithSelector(ClearMacroBase.UnknownActionId.selector, UNKNOWN_ACTION_ID));
+        forwarder.getDigest(dashboardClearMacro, encodedPayload);
     }
 
     function testNonceReplayReverts() external {
         VmSafe.Wallet memory signer = _newSigner("replay");
         _fundSuper(signer, 1e18);
-        bytes memory action = dashboardMacro.encodeTransfer(
-            LANG_EN, DashboardClearMacro.TransferParams({ superToken: superToken, receiver: bob, amount: DEFAULT_AMOUNT })
+        bytes memory actionParams = dashboardClearMacro.encodeTransfer(
+            LANG_EN, DashboardClearMacro.TransferParams({superToken: superToken, receiver: bob, amount: DEFAULT_AMOUNT})
         );
 
         uint256 nonce = forwarder.getNonce(signer.addr, 0);
-        bytes memory payload = _buildPayload(action, PROVIDER, 0, 0, nonce, address(dashboardMacro));
-        bytes memory sig = _signPayload(signer, payload);
+        bytes memory encodedPayload =
+            _getEncodedPayload(actionParams, PROVIDER, 0, 0, nonce, address(dashboardClearMacro));
+        bytes memory sig = _signEncodedPayload(signer, encodedPayload);
 
-        forwarder.runMacro(dashboardMacro, payload, signer.addr, sig);
+        forwarder.runMacro(dashboardClearMacro, encodedPayload, signer.addr, sig);
 
         vm.expectRevert(abi.encodeWithSelector(NonceManager.InvalidNonce.selector, signer.addr, nonce));
-        forwarder.runMacro(dashboardMacro, payload, signer.addr, sig);
+        forwarder.runMacro(dashboardClearMacro, encodedPayload, signer.addr, sig);
     }
 
     function testNonceMustBeSequentialPerKey() external {
         VmSafe.Wallet memory signer = _newSigner("seq");
         _fundSuper(signer, 2e18);
-        bytes memory action = dashboardMacro.encodeTransfer(
-            LANG_EN, DashboardClearMacro.TransferParams({ superToken: superToken, receiver: bob, amount: DEFAULT_AMOUNT })
+        bytes memory actionParams = dashboardClearMacro.encodeTransfer(
+            LANG_EN, DashboardClearMacro.TransferParams({superToken: superToken, receiver: bob, amount: DEFAULT_AMOUNT})
         );
         uint192 key = 7;
 
         uint256 nonceSeq1 = (uint256(key) << 64) | 1;
-        bytes memory payloadSeq1 = _buildPayload(action, PROVIDER, 0, 0, nonceSeq1, address(dashboardMacro));
-        bytes memory sigSeq1 = _signPayload(signer, payloadSeq1);
+        bytes memory encodedPayloadSeq1 =
+            _getEncodedPayload(actionParams, PROVIDER, 0, 0, nonceSeq1, address(dashboardClearMacro));
+        bytes memory sigSeq1 = _signEncodedPayload(signer, encodedPayloadSeq1);
 
         vm.expectRevert(abi.encodeWithSelector(NonceManager.InvalidNonce.selector, signer.addr, nonceSeq1));
-        forwarder.runMacro(dashboardMacro, payloadSeq1, signer.addr, sigSeq1);
+        forwarder.runMacro(dashboardClearMacro, encodedPayloadSeq1, signer.addr, sigSeq1);
 
         uint256 nonceSeq0 = uint256(key) << 64;
-        bytes memory payloadSeq0 = _buildPayload(action, PROVIDER, 0, 0, nonceSeq0, address(dashboardMacro));
-        bytes memory sigSeq0 = _signPayload(signer, payloadSeq0);
-        forwarder.runMacro(dashboardMacro, payloadSeq0, signer.addr, sigSeq0);
-        forwarder.runMacro(dashboardMacro, payloadSeq1, signer.addr, sigSeq1);
+        bytes memory encodedPayloadSeq0 =
+            _getEncodedPayload(actionParams, PROVIDER, 0, 0, nonceSeq0, address(dashboardClearMacro));
+        bytes memory sigSeq0 = _signEncodedPayload(signer, encodedPayloadSeq0);
+        forwarder.runMacro(dashboardClearMacro, encodedPayloadSeq0, signer.addr, sigSeq0);
+        forwarder.runMacro(dashboardClearMacro, encodedPayloadSeq1, signer.addr, sigSeq1);
     }
 
     function testValidityWindowBoundaries() external {
         VmSafe.Wallet memory signer = _newSigner("window");
         _fundSuper(signer, 2e18);
-        bytes memory action = dashboardMacro.encodeTransfer(
-            LANG_EN, DashboardClearMacro.TransferParams({ superToken: superToken, receiver: bob, amount: DEFAULT_AMOUNT })
+        bytes memory actionParams = dashboardClearMacro.encodeTransfer(
+            LANG_EN, DashboardClearMacro.TransferParams({superToken: superToken, receiver: bob, amount: DEFAULT_AMOUNT})
         );
 
         uint256 validAfter = block.timestamp + 100;
         uint256 validBefore = block.timestamp + 300;
 
         uint256 nonce = forwarder.getNonce(signer.addr, 0);
-        bytes memory payload = _buildPayload(action, PROVIDER, validAfter, validBefore, nonce, address(dashboardMacro));
-        bytes memory sig = _signPayload(signer, payload);
+        bytes memory encodedPayload =
+            _getEncodedPayload(actionParams, PROVIDER, validAfter, validBefore, nonce, address(dashboardClearMacro));
+        bytes memory sig = _signEncodedPayload(signer, encodedPayload);
 
         vm.expectRevert(
             abi.encodeWithSelector(
-                ClearMacroForwarderV1.OutsideValidityWindow.selector, block.timestamp, validBefore, validAfter
+                ClearMacroForwarderV1.OutsideValidityWindow.selector, block.timestamp, validAfter, validBefore
             )
         );
-        forwarder.runMacro(dashboardMacro, payload, signer.addr, sig);
+        forwarder.runMacro(dashboardClearMacro, encodedPayload, signer.addr, sig);
 
         vm.warp(validAfter);
-        forwarder.runMacro(dashboardMacro, payload, signer.addr, sig);
+        forwarder.runMacro(dashboardClearMacro, encodedPayload, signer.addr, sig);
 
         nonce = forwarder.getNonce(signer.addr, 0);
-        payload = _buildPayload(action, PROVIDER, 0, validBefore, nonce, address(dashboardMacro));
-        sig = _signPayload(signer, payload);
+        encodedPayload = _getEncodedPayload(actionParams, PROVIDER, 0, validBefore, nonce, address(dashboardClearMacro));
+        sig = _signEncodedPayload(signer, encodedPayload);
         vm.warp(validBefore + 1);
         vm.expectRevert(
             abi.encodeWithSelector(
-                ClearMacroForwarderV1.OutsideValidityWindow.selector, validBefore + 1, validBefore, uint256(0)
+                ClearMacroForwarderV1.OutsideValidityWindow.selector, validBefore + 1, uint256(0), validBefore
             )
         );
-        forwarder.runMacro(dashboardMacro, payload, signer.addr, sig);
+        forwarder.runMacro(dashboardClearMacro, encodedPayload, signer.addr, sig);
     }
 
     function _newSigner(string memory label) internal returns (VmSafe.Wallet memory signer) {
@@ -396,41 +425,45 @@ contract DashboardClearMacroTest is FoundrySuperfluidTester {
         underlying.approve(address(superToken), amount);
     }
 
-    function _buildPayload(
-        bytes memory action,
+    function _getEncodedPayload(
+        bytes memory actionParams,
         string memory provider,
         uint256 validAfter,
         uint256 validBefore,
         uint256 nonce,
-        address macroAddress
-    ) internal view returns (bytes memory) {
+        address macroContract
+    ) internal view returns (bytes memory encodedPayload) {
         IClearMacroForwarderV1.Security memory security = IClearMacroForwarderV1.Security({
-            domain: "app.superfluid",
-            macroContract: macroAddress,
+            domain: SECURITY_DOMAIN,
+            macroContract: macroContract,
             provider: provider,
             validAfter: validAfter,
             validBefore: validBefore,
             nonce: nonce
         });
-        return forwarder.encodeParams(action, security);
+        encodedPayload = forwarder.encodeParams(actionParams, security);
     }
 
     function _runAsProvider(
         VmSafe.Wallet memory signer,
-        bytes memory action,
+        bytes memory actionParams,
         uint192 key,
         string memory provider,
         uint256 validAfter,
         uint256 validBefore
     ) internal {
         uint256 nonce = forwarder.getNonce(signer.addr, key);
-        bytes memory payload = _buildPayload(action, provider, validAfter, validBefore, nonce, address(dashboardMacro));
-        bytes memory sig = _signPayload(signer, payload);
-        forwarder.runMacro(dashboardMacro, payload, signer.addr, sig);
+        bytes memory encodedPayload =
+            _getEncodedPayload(actionParams, provider, validAfter, validBefore, nonce, address(dashboardClearMacro));
+        bytes memory sig = _signEncodedPayload(signer, encodedPayload);
+        forwarder.runMacro(dashboardClearMacro, encodedPayload, signer.addr, sig);
     }
 
-    function _signPayload(VmSafe.Wallet memory signer, bytes memory payload) internal returns (bytes memory) {
-        bytes32 digest = forwarder.getDigest(dashboardMacro, payload);
+    function _signEncodedPayload(VmSafe.Wallet memory signer, bytes memory encodedPayload)
+        internal
+        returns (bytes memory signature)
+    {
+        bytes32 digest = forwarder.getDigest(dashboardClearMacro, encodedPayload);
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(signer, digest);
         return abi.encodePacked(r, s, v);
     }
