@@ -10,6 +10,8 @@ import { getHttpRpcClient } from 'viem/utils';
 import EventEmitter from 'events';
 import appConfig from '../../../utils/config';
 import { allNetworks, findNetworkOrThrow } from '../../network/networks';
+import { resolvePopupParams } from './resolvePopupParams';
+import './superfluidWalletMock.types';
 
 interface ProviderStore {
   accounts: string[];
@@ -66,27 +68,6 @@ function getStoredChainIdHex(): `0x${string}` | undefined {
   const { chainId } = getStore();
   if (chainId === undefined) return undefined;
   return `0x${chainId.toString(16)}`;
-}
-
-function enrichPopupParams(method: string, params: unknown): unknown {
-  if (method !== 'eth_signTransaction') return params;
-
-  const txParams = params as [Record<string, unknown>?] | undefined;
-  const transaction = txParams?.[0];
-  if (!transaction) return params;
-
-  if (transaction.chainId !== undefined && transaction.chainId !== null) {
-    return params;
-  }
-
-  const chainIdHex = getStoredChainIdHex();
-  if (!chainIdHex) {
-    throw new Error(
-      'No chain ID available. Select a network in the dashboard and retry.'
-    );
-  }
-
-  return [{ ...transaction, chainId: chainIdHex }];
 }
 
 const POPUP_METHODS = new Set([
@@ -253,6 +234,25 @@ export function createEIP1193Provider(): EIP1193Provider {
     }
 
     if (POPUP_METHODS.has(method)) {
+      const mockHandler = window.__SUPERFLUID_WALLET_MOCK_HANDLER__;
+      if (mockHandler) {
+        const popupParams = await resolvePopupParams(
+          method,
+          params,
+          getStoredChainIdHex(),
+          getRpcUrlForChain
+        );
+        const result = await Promise.resolve(mockHandler(method, popupParams));
+        if (method === 'eth_requestAccounts') {
+          const { accounts, organizationId } = (
+            result as [{ accounts: string[]; organizationId: string }]
+          )[0];
+          updateStore({ accounts, organizationId });
+          return accounts;
+        }
+        return result;
+      }
+
       if (popup && !popup.closed) {
         popup.close();
         popup = null;
@@ -269,7 +269,12 @@ export function createEIP1193Provider(): EIP1193Provider {
       const chainIdHex = getStoredChainIdHex();
       const chainParam = chainIdHex ? `&chainId=${encodeURIComponent(chainIdHex)}` : '';
       const walletUrl = appConfig.superfluidWallet.url;
-      const popupParams = enrichPopupParams(method, params);
+      const popupParams = await resolvePopupParams(
+        method,
+        params,
+        getStoredChainIdHex(),
+        getRpcUrlForChain
+      );
 
       popup = window.open(
         `${walletUrl}?request=${encodeURIComponent(JSON.stringify({ method, params: popupParams }))}${orgParam}${chainParam}`,

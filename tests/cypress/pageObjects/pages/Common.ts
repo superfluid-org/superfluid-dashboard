@@ -3,6 +3,7 @@ import { networksBySlug } from '../../superData/networks';
 import HDWalletProvider from '@truffle/hdwallet-provider';
 import { ProviderAdapter } from '@truffle/encoder';
 import { http, createPublicClient } from 'viem';
+import { installSuperfluidWalletMock } from '../../support/superfluidWalletMock';
 
 export const TOP_BAR_NETWORK_BUTTON = '[data-cy=top-bar-network-button]';
 export const CONNECTED_WALLET = '[data-cy=wallet-connection-status] h6';
@@ -270,28 +271,60 @@ export class Common extends BasePage {
     }
   }
 
+  static resolveTxAccountPrivateKey(persona: string): string {
+    if (persona === 'superfluidE2E') {
+      return Cypress.env('SUPERFLUID_WALLET_E2E_PRIVATE_KEY');
+    }
+    const personas = ['alice', 'bob', 'dan', 'john'];
+    if (personas.includes(persona)) {
+      const chosenPersona = personas.findIndex((el) => el === persona) + 1;
+      return Cypress.env(`TX_ACCOUNT_PRIVATE_KEY${chosenPersona}`);
+    }
+    if (persona === 'NewRandomWallet') {
+      return this.generateNewWallet();
+    }
+    return persona === 'staticBalanceAccount'
+      ? Cypress.env('STATIC_BALANCE_ACCOUNT_PRIVATE_KEY')
+      : Cypress.env('ONGOING_STREAM_ACCOUNT_PRIVATE_KEY');
+  }
+
+  static openDashboardWithSuperfluidWalletTxAccount(
+    page: string,
+    persona: string,
+    network: string
+  ) {
+    const usedAccountPrivateKey = this.resolveTxAccountPrivateKey(persona);
+    const selectedNetwork = this.getSelectedNetwork(network);
+    const chainId = networksBySlug.get(selectedNetwork)?.id;
+
+    cy.visit(page, {
+      onBeforeLoad: (window) => {
+        installSuperfluidWalletMock(window, {
+          privateKey: usedAccountPrivateKey as `0x${string}`,
+          chainId: chainId!,
+        });
+      },
+    });
+
+    if (Cypress.env('dev')) {
+      cy.get('nextjs-portal').shadow().find('[aria-label=Close]').click();
+    }
+
+    this.changeNetwork(selectedNetwork);
+  }
+
+  static clickConnectSuperfluidWallet() {
+    this.clickFirstVisible(CONNECT_SUPERFLUID_WALLET_BUTTON);
+    this.doesNotExist(`${CONNECTED_WALLET_BUTTON} span circle`);
+  }
+
   static openDashboardWithConnectedTxAccount(
     page: string,
     persona: string,
     network: string
   ) {
-    let usedAccountPrivateKey;
-    let personas = ['alice', 'bob', 'dan', 'john'];
+    let usedAccountPrivateKey = this.resolveTxAccountPrivateKey(persona);
     let selectedNetwork = this.getSelectedNetwork(network);
-
-    if (personas.includes(persona)) {
-      let chosenPersona = personas.findIndex((el) => el === persona) + 1;
-      usedAccountPrivateKey = Cypress.env(
-        `TX_ACCOUNT_PRIVATE_KEY${chosenPersona}`
-      );
-    } else if (persona === 'NewRandomWallet') {
-      usedAccountPrivateKey = this.generateNewWallet();
-    } else {
-      usedAccountPrivateKey =
-        persona === 'staticBalanceAccount'
-          ? Cypress.env('STATIC_BALANCE_ACCOUNT_PRIVATE_KEY')
-          : Cypress.env('ONGOING_STREAM_ACCOUNT_PRIVATE_KEY');
-    }
 
     let chainId = networksBySlug.get(selectedNetwork)?.id;
     let networkRpc = networksBySlug.get(selectedNetwork)?.superfluidRpcUrl;

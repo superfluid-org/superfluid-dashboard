@@ -88,9 +88,65 @@ function formatGweiSafe(wei: bigint): string {
   return gwei.toString();
 }
 
+export type NormalizeTransactionOptions = {
+  fallbackChainId?: number;
+  /** Test hook: override on-chain fee estimation. */
+  estimateFees?: (
+    chainId: number
+  ) => Promise<{ maxFeePerGas: bigint; maxPriorityFeePerGas: bigint }>;
+};
+
+async function createSuperfluidPublicClient(chainId: number) {
+  const rpcUrl = resolveRpcUrl(chainId);
+  if (!rpcUrl) {
+    throw new Error(`No RPC URL configured for chainId ${chainId}`);
+  }
+
+  const { createPublicClient, http } = await import('viem');
+  const { defineChain } = await import('viem/utils');
+
+  const chain = defineChain({
+    id: chainId,
+    name: `chain-${chainId}`,
+    nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+    rpcUrls: { default: { http: [rpcUrl] } },
+  });
+
+  return createPublicClient({ chain, transport: http(rpcUrl) });
+}
+
+async function resolveEip1559Fees(
+  chainId: number,
+  transaction: RpcTransactionInput,
+  estimateFees?: NormalizeTransactionOptions['estimateFees']
+): Promise<{ maxFeePerGas: bigint; maxPriorityFeePerGas: bigint }> {
+  const maxFeePerGas = toHexBigInt(transaction.maxFeePerGas, 'maxFeePerGas');
+  const maxPriorityFeePerGas = toHexBigInt(
+    transaction.maxPriorityFeePerGas,
+    'maxPriorityFeePerGas'
+  );
+
+  if (maxFeePerGas !== undefined && maxPriorityFeePerGas !== undefined) {
+    return { maxFeePerGas, maxPriorityFeePerGas };
+  }
+
+  const fees = estimateFees
+    ? await estimateFees(chainId)
+    : await (async () => {
+        const client = await createSuperfluidPublicClient(chainId);
+        const { estimateFeesPerGas } = await import('viem/actions');
+        return estimateFeesPerGas(client, { type: 'eip1559' });
+      })();
+
+  return {
+    maxFeePerGas: maxFeePerGas ?? fees.maxFeePerGas,
+    maxPriorityFeePerGas: maxPriorityFeePerGas ?? fees.maxPriorityFeePerGas,
+  };
+}
+
 export async function normalizeEip1559Transaction(
   transaction: RpcTransactionInput,
-  options?: { fallbackChainId?: number }
+  options?: NormalizeTransactionOptions
 ): Promise<NormalizedEip1559Transaction> {
   if (!transaction.to) {
     throw new Error('Transaction is missing to');
@@ -106,23 +162,8 @@ export async function normalizeEip1559Transaction(
 
   let gas = resolveGasLimit(transaction);
   if (gas === undefined) {
-    const rpcUrl = resolveRpcUrl(chainId);
-    if (!rpcUrl) {
-      throw new Error(`No RPC URL configured for chainId ${chainId}`);
-    }
-
-    const { createPublicClient, http } = await import('viem');
+    const client = await createSuperfluidPublicClient(chainId);
     const { estimateGas } = await import('viem/actions');
-    const { defineChain } = await import('viem/utils');
-
-    const chain = defineChain({
-      id: chainId,
-      name: `chain-${chainId}`,
-      nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
-      rpcUrls: { default: { http: [rpcUrl] } },
-    });
-
-    const client = createPublicClient({ chain, transport: http(rpcUrl) });
     gas = await estimateGas(client, {
       account: transaction.from,
       to: transaction.to,
@@ -135,10 +176,10 @@ export async function normalizeEip1559Transaction(
     throw new Error('Transaction is missing gas');
   }
 
-  const maxFeePerGas = requireHexBigInt(transaction.maxFeePerGas, 'maxFeePerGas');
-  const maxPriorityFeePerGas = requireHexBigInt(
-    transaction.maxPriorityFeePerGas,
-    'maxPriorityFeePerGas'
+  const { maxFeePerGas, maxPriorityFeePerGas } = await resolveEip1559Fees(
+    chainId,
+    transaction,
+    options?.estimateFees
   );
 
   return {

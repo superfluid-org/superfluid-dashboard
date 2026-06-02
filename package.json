@@ -19,7 +19,8 @@
     "generate:scheduling-graphql": "graphclient build --dir ./src/scheduling-subgraph",
     "generate:wagmi": "wagmi generate",
     "depcheck": "pnpm dlx depcheck",
-    "typecheck": "pnpm exec tsc --noEmit"
+    "typecheck": "pnpm exec tsc --noEmit",
+    "test:unit": "./superfluid-wallet/node_modules/.bin/vitest run --config tests/vitest.config.ts"
   },
   "dependencies": {
     "@adraffy/ens-normalize": "^1.11.1",

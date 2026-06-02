@@ -16,6 +16,15 @@ import {
   normalizeEip1559Transaction,
   type RpcTransactionInput,
 } from '@/lib/normalize-rpc-transaction';
+import {
+  resolveTurnkeyOrganizationId,
+  resolveTurnkeySignWith,
+} from '@/lib/resolve-turnkey-sign-with';
+import {
+  requireActiveTurnkeySession,
+  useTurnkeySigningReady,
+} from '@/lib/use-turnkey-signing-ready';
+import { Loader2 } from 'lucide-react';
 
 interface SignTransactionProps {
   transaction: RpcTransactionInput;
@@ -32,7 +41,8 @@ export function SignTransaction({
   organizationId,
   fallbackChainId,
 }: SignTransactionProps) {
-  const { httpClient } = useTurnkey();
+  const { httpClient, session, wallets, getSession } = useTurnkey();
+  const signingReady = useTurnkeySigningReady();
 
   const valueInEth =
     Number(hexToBigInt(transaction.value ?? '0x0')) / 1e18;
@@ -50,13 +60,28 @@ export function SignTransaction({
     }
 
     try {
+      await requireActiveTurnkeySession(getSession);
+
+      const signingOrgId = resolveTurnkeyOrganizationId(
+        session?.organizationId,
+        organizationId
+      );
+      if (!signingOrgId) {
+        throw new Error('No Turnkey organization available for signing');
+      }
+
       const normalized = await normalizeEip1559Transaction(transaction, {
         fallbackChainId,
       });
+      const signWith = resolveTurnkeySignWith(normalized.from, wallets);
+      if (!signWith) {
+        throw new Error('No Turnkey wallet account matches this transaction');
+      }
+
       const serializedTx = serializeTransaction({
         type: 'eip1559',
         to: normalized.to,
-        from: normalized.from,
+        from: signWith,
         chainId: normalized.chainId,
         gas: normalized.gas,
         maxFeePerGas: normalized.maxFeePerGas,
@@ -67,10 +92,10 @@ export function SignTransaction({
       });
 
       const { signedTransaction } = await httpClient.signTransaction({
-        signWith: normalized.from,
+        signWith,
         unsignedTransaction: serializedTx.slice(2),
         type: 'TRANSACTION_TYPE_ETHEREUM',
-        organizationId,
+        organizationId: signingOrgId,
       });
 
       messenger.send('eth_signTransaction', { result: `0x${signedTransaction}` });
@@ -147,10 +172,21 @@ export function SignTransaction({
           <Button onClick={handleDeny} variant="secondary" className="flex-1">
             Deny
           </Button>
-          <Button onClick={handleConfirm} className="flex-1">
-            Confirm
+          <Button
+            onClick={handleConfirm}
+            className="flex-1"
+            disabled={!signingReady.isReady || signingReady.isLoading}
+          >
+            {signingReady.isLoading && (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            )}
+            {signingReady.isLoading ? 'Restoring session…' : 'Confirm'}
           </Button>
         </div>
+
+        {signingReady.error && (
+          <p className="text-sm text-red-500">{signingReady.error}</p>
+        )}
       </CardContent>
     </Card>
   );

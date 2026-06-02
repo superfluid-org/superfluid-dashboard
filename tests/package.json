@@ -55,6 +55,9 @@
   },
   "scripts": {
     "build": "tsc --noEmit --project ./tsconfig.json",
+    "setup:superfluid-wallet-e2e": "node scripts/setup-superfluid-wallet-e2e.mjs",
+    "e2e:superfluid-wallet": "bash scripts/run-superfluid-wallet-e2e.sh",
+    "test:unit": "../superfluid-wallet/node_modules/.bin/vitest run --config vitest.config.ts",
     "lint:check-no-focused-tests": "grep -FR @only cypress/integration || { echo 'No test is focused.';exit 0; } && { echo '✘ You have focused tests.'; exit 1; }",
     "prepare": "cd .. && husky install tests/.husky"
   },

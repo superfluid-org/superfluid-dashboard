@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   estimateMaxNetworkFeeGwei,
   normalizeEip1559Transaction,
+  resolveChainId,
   resolveGasLimit,
 } from './normalize-rpc-transaction';
 
@@ -31,6 +32,23 @@ const missingGasTransaction = {
   gas: undefined,
   gasLimit: undefined,
 };
+
+/** Wagmi wrap often omits fee fields; wallet must estimate them. */
+const missingFeeTransaction = {
+  ...wrapLikeTransaction,
+  maxFeePerGas: undefined,
+  maxPriorityFeePerGas: undefined,
+};
+
+describe('resolveChainId', () => {
+  it('reads hex chainId', () => {
+    expect(resolveChainId(wrapLikeTransaction)).toBe(11155420);
+  });
+
+  it('returns undefined when chainId is absent', () => {
+    expect(resolveChainId({ ...wrapLikeTransaction, chainId: undefined })).toBeUndefined();
+  });
+});
 
 describe('resolveGasLimit', () => {
   it('reads gasLimit when gas is absent (wagmi wrap flow)', () => {
@@ -81,5 +99,25 @@ describe('normalizeEip1559Transaction', () => {
       { fallbackChainId: 11155420 }
     );
     expect(normalized.chainId).toBe(11155420);
+  });
+
+  it('normalizes wrap-like payload without chainId when fallback is provided', async () => {
+    const normalized = await normalizeEip1559Transaction(
+      { ...wrapLikeTransaction, chainId: undefined },
+      { fallbackChainId: 11155420 }
+    );
+    expect(normalized.gas).toBe(200000n);
+    expect(normalized.maxFeePerGas).toBeGreaterThan(0n);
+  });
+
+  it('estimates maxFeePerGas when omitted (dashboard wrap flow)', async () => {
+    const normalized = await normalizeEip1559Transaction(missingFeeTransaction, {
+      estimateFees: async () => ({
+        maxFeePerGas: 1_500_000_000n,
+        maxPriorityFeePerGas: 1_000_000n,
+      }),
+    });
+    expect(normalized.maxFeePerGas).toBe(1_500_000_000n);
+    expect(normalized.maxPriorityFeePerGas).toBe(1_000_000n);
   });
 });
