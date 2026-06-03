@@ -255,6 +255,20 @@ Manual smoke: both dev servers, real Turnkey OTP, Optimism Sepolia wrap, confirm
 
 ---
 
+## Smells
+
+These are acceptable for the PoC but should be cleaned up before maturing the integration:
+
+1. **Root `pnpm typecheck` is too broad.** The root `tsconfig.json` includes every `**/*.ts(x)` except `node_modules` and `tests`, so it typechecks `contracts/`, `tmp/`, and the separate `superfluid-wallet/` package. This currently produces unrelated errors. Narrow the dashboard TS include or exclude `contracts`, `tmp`, and `superfluid-wallet`.
+
+2. **Dashboard unit tests depend on wallet dependencies.** Root `pnpm test:unit` invokes `./superfluid-wallet/node_modules/.bin/vitest`, coupling dashboard unit tests to installing the wallet package first. Prefer a root/dashboard test runner dependency instead.
+
+3. **RPC routing is duplicated.** The dashboard bridge uses `network.rpcUrls.superfluid.http[0]`, while `superfluid-wallet/lib/normalize-rpc-transaction.ts` maintains its own hardcoded RPC map. This is fine for the PoC but can drift. Either ensure the dashboard always prepares transactions before popup signing, or share/generate a single canonical RPC mapping.
+
+4. **Local cache artifacts may appear untracked.** `.cache/` and `.pnpm-store/` can show up in the repo root during local development. Add ignore entries if they keep recurring.
+
+---
+
 ## Quick local commands
 
 ```bash
