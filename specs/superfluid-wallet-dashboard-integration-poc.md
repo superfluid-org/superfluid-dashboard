@@ -162,9 +162,11 @@ Turnkey notes:
 - `refreshSession` can extend a valid session.
 - The wallet app owns Turnkey session creation/refresh because the session lives on the wallet origin.
 - The dashboard should not manage Turnkey session lifetime directly.
-- For this PoC, configure the wallet app's default Turnkey read-write session duration to 30 days: `2592000` seconds.
+- For this PoC, use a **30-day** read-write session TTL: **`2592000`** seconds.
 
-Set the 30-day duration in `superfluid-wallet/`, not in the dashboard connector. If `@turnkey/react-wallet-kit` does not expose a simple session-duration option, document that blocker and keep the SDK default temporarily.
+**Where to set TTL (implemented):** Auth Proxy ignores `auth.sessionExpirationSeconds` in `TurnkeyProvider`. Set session expiration in the Turnkey dashboard — org-wide Wallet Kit setting at [Wallet Kit → Authentication](https://app.turnkey.com/dashboard/v2/wallet-kit?tab=authentication) (not in `superfluid-wallet/` code). For the Superfluid org used for this PoC, the value was changed from the default **`900`** to **`2592000`** (30 days). See `superfluid-wallet/README.md`.
+
+**Expired session UX (implemented beyond original one-liner):** If signing opens the popup without a valid Turnkey session, show inline **Sign in to continue** in the sign popup (`SignSessionGate` + `AuthButton variant="unlock"`), then resume the same pending tx — do not tell the user to disconnect/reconnect on the dashboard.
 
 ## Network Switching
 
