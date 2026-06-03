@@ -81,7 +81,7 @@ export async function prepareSignTransactionParams(
   const client = createPublicClient({ transport: http(options.rpcUrl) });
   const prepare = options.prepareRequest ?? prepareTransactionRequest;
 
-  const prepared = await prepare(client, {
+  const prepareRequest = {
     account: transaction.from,
     to: transaction.to,
     data: transaction.data,
@@ -97,8 +97,15 @@ export async function prepareSignTransactionParams(
         ? Number(toOptionalBigInt(transaction.nonce, 'nonce'))
         : undefined,
     chainId,
-    type: 'eip1559',
-  });
+    type: 'eip1559' as const,
+  };
+
+  const prepared = await prepare(
+    client,
+    // Public client has no typed chain; request shape is validated at runtime by unit tests.
+    // @ts-expect-error viem PrepareTransactionRequestParameters mismatch for dynamic RPC clients
+    prepareRequest
+  );
 
   if (
     prepared.gas === undefined ||

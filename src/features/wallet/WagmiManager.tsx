@@ -2,6 +2,7 @@ import { FC, PropsWithChildren, useEffect, useState } from "react";
 import { WagmiProvider } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { wagmiConfig, resolvedWagmiClients } from "./wagmiConfig";
+import { subscribeEnsureHydratedConnectors } from "./ensureHydratedConnectors";
 import dynamic from 'next/dynamic';
 
 const WalletWeirdnessHandler = dynamic(
@@ -19,6 +20,8 @@ const WagmiManager: FC<PropsWithChildren> = ({ children }) => {
   useEffect(() => {
     setReconnectOnMount(true);
   }, []);
+
+  useEffect(() => subscribeEnsureHydratedConnectors(wagmiConfig), []);
 
   return (
     <WagmiProvider config={wagmiConfig} reconnectOnMount={reconnectOnMount}>

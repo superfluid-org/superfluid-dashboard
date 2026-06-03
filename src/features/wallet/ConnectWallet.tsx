@@ -161,7 +161,7 @@ const ConnectWallet: FC<ConnectWalletProps> = ({
   if (isSuperfluidWalletEnabled) {
     return (
       <Stack direction="row" spacing={1.5} alignItems="center">
-        <LoadingButton
+        <Button
           data-cy={"connect-superfluid-wallet-button"}
           loading={isSuperfluidWalletConnecting}
           variant="contained"
@@ -180,8 +180,8 @@ const ConnectWallet: FC<ConnectWalletProps> = ({
             }}
           />
           Connect Superfluid Wallet
-        </LoadingButton>
-        <LoadingButton
+        </Button>
+        <Button
           data-cy={"connect-wallet-button"}
           loading={isReconnecting}
           variant="outlined"
@@ -192,7 +192,7 @@ const ConnectWallet: FC<ConnectWalletProps> = ({
           }}
         >
           Connect Wallet
-        </LoadingButton>
+        </Button>
       </Stack>
     );
   }

@@ -63,6 +63,9 @@ const config = {
       process.env.NEXT_PUBLIC_SUPERFLUID_WALLET_URL || "http://localhost:3001"
     ).trim(),
   },
+  /** Reown AppKit: Coinbase connector in Web3Modal. Set to `false` to disable. */
+  appKitEnableCoinbase:
+    process.env.NEXT_PUBLIC_APPKIT_ENABLE_COINBASE !== "false",
 } as const;
 
 export default Object.freeze(config);

@@ -230,6 +230,7 @@ const _appKit = createAppKit({
   customRpcUrls,
   metadata: metadata,
   projectId,
+  enableCoinbase: appConfig.appKitEnableCoinbase,
   features: {
     analytics: false,
     email: false,

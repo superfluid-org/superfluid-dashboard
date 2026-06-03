@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev --port 3000",
+    "dev": "next dev --port 3000 --webpack",
     "replayio": "replayio record http://localhost:3000",
     "build": "next build --webpack",
     "start": "next start",
@@ -20,6 +20,7 @@
     "generate:wagmi": "wagmi generate",
     "depcheck": "pnpm dlx depcheck",
     "typecheck": "pnpm exec tsc --noEmit",
+    "test": "pnpm test:unit",
     "test:unit": "./superfluid-wallet/node_modules/.bin/vitest run --config tests/vitest.config.ts"
   },
   "dependencies": {

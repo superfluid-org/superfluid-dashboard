@@ -17,7 +17,9 @@ export const AnalyticsContext = createContext<AnalyticsContextValue>(undefined!)
 
 const useAnalyticsBrowser = () =>
   useMemo(() => {
-    const writeKey: string | undefined = undefined; // Tracking disabled: force no-op Segment instance.
+    // Tracking disabled (#864). Do not use writeKey "NOOP" — that still fetches
+    // cdn.segment.com and throws "Failed to fetch" when settings 404/time out.
+    const writeKey: string | undefined = undefined;
     if (!IsCypress && writeKey) {
       return AnalyticsBrowser.load(
         { writeKey },
@@ -25,10 +27,10 @@ const useAnalyticsBrowser = () =>
           initialPageview: true,
         }
       );
-    } else {
-      console.warn("Segment not initialized. No-op instance provided instead.");
-      return AnalyticsBrowser.load({ writeKey: "NOOP" });
     }
+
+    console.warn("Segment not initialized. No-op instance provided instead.");
+    return AnalyticsBrowser.load({ writeKey: "" }, { disable: true });
   }, []);
 
 export const AnalyticsProvider = ({ children }: AnalyticsProviderProps) => {

@@ -1,3 +1,5 @@
+import { ChainNotConfiguredError } from '@wagmi/core';
+import { SwitchChainError } from 'viem';
 import { type Connector, createConnector } from 'wagmi';
 import {
   createEIP1193Provider,
@@ -78,6 +80,15 @@ export function superfluidWalletConnector() {
     async getChainId() {
       const p = (await this.getProvider()) as EIP1193Provider;
       return Number(await p.request({ method: 'eth_chainId' }));
+    },
+
+    async switchChain({ chainId }) {
+      const chain = config.chains.find((x) => x.id === chainId);
+      if (!chain) {
+        throw new SwitchChainError(new ChainNotConfiguredError());
+      }
+      setProviderChainId(chainId);
+      return chain;
     },
 
     async isAuthorized() {
