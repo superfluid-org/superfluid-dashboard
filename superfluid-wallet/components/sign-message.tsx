@@ -10,11 +10,8 @@ import {
   resolveTurnkeyOrganizationId,
   resolveTurnkeySignWith,
 } from '@/lib/resolve-turnkey-sign-with';
-import {
-  requireActiveTurnkeySession,
-  useTurnkeySigningReady,
-} from '@/lib/use-turnkey-signing-ready';
-import { Loader2 } from 'lucide-react';
+import { SignSessionGate } from '@/components/sign-session-gate';
+import { useTurnkeySigningReady } from '@/lib/use-turnkey-signing-ready';
 
 interface SignMessageProps {
   method: SupportedMethod;
@@ -33,7 +30,7 @@ export function SignMessage({
   signWith,
   organizationId,
 }: SignMessageProps) {
-  const { httpClient, session, wallets, getSession } = useTurnkey();
+  const { httpClient, session, wallets } = useTurnkey();
   const signingReady = useTurnkeySigningReady();
 
   const readableMessage = new TextDecoder().decode(
@@ -51,9 +48,11 @@ export function SignMessage({
       return;
     }
 
-    try {
-      await requireActiveTurnkeySession(getSession);
+    if (signingReady.status !== 'ready') {
+      return;
+    }
 
+    try {
       const signingOrgId = resolveTurnkeyOrganizationId(
         session?.organizationId,
         organizationId
@@ -94,6 +93,7 @@ export function SignMessage({
   };
 
   return (
+    <SignSessionGate onCancel={handleDeny}>
     <Card className="w-full border-none shadow-xl">
       <CardHeader className="flex flex-row items-center justify-between space-y-0">
         <div>
@@ -117,22 +117,12 @@ export function SignMessage({
           <Button onClick={handleDeny} variant="secondary" className="flex-1">
             Deny
           </Button>
-          <Button
-            onClick={handleConfirm}
-            className="flex-1"
-            disabled={!signingReady.isReady || signingReady.isLoading}
-          >
-            {signingReady.isLoading && (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            )}
-            {signingReady.isLoading ? 'Restoring session…' : 'Confirm'}
+          <Button onClick={handleConfirm} className="flex-1">
+            Confirm
           </Button>
         </div>
-
-        {signingReady.error && (
-          <p className="text-sm text-red-500">{signingReady.error}</p>
-        )}
       </CardContent>
     </Card>
+    </SignSessionGate>
   );
 }

@@ -7,16 +7,24 @@ import { messenger } from '@/lib/window-messenger';
 import { Loader2 } from 'lucide-react';
 import { type Address, UserRejectedRequestError } from 'viem';
 
-export function AuthButton() {
+type AuthButtonVariant = 'connect' | 'unlock';
+
+interface AuthButtonProps {
+  /** connect: eth_requestAccounts flow. unlock: re-auth inside a sign popup only. */
+  variant?: AuthButtonVariant;
+}
+
+export function AuthButton({ variant = 'connect' }: AuthButtonProps) {
   const { handleLogin, session, wallets } = useTurnkey();
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  // Only send accounts when the user explicitly signed in during this popup
+  // Only complete login when the user explicitly signed in during this popup
   // instance. Without this guard, a persisted Turnkey session would fire the
   // effect on mount and reconnect without any user interaction.
   const loginInitiated = useRef(false);
 
   useEffect(() => {
+    if (variant !== 'connect') return;
     if (!loginInitiated.current || !session || wallets.length === 0) return;
 
     const addresses = wallets
@@ -26,7 +34,7 @@ export function AuthButton() {
     messenger.send('eth_requestAccounts', {
       result: [{ accounts: addresses, organizationId: session.organizationId }],
     });
-  }, [session, wallets]);
+  }, [session, wallets, variant]);
 
   const handleSignIn = async () => {
     setIsLoading(true);
@@ -40,11 +48,13 @@ export function AuthButton() {
         error instanceof Error ? error.message : 'Login failed. Check console and Turnkey config.';
       setErrorMessage(message);
       console.error('Superfluid Wallet login failed:', error);
-      messenger.send('eth_requestAccounts', {
-        error: new UserRejectedRequestError(
-          error instanceof Error ? error : new Error('Login cancelled')
-        ),
-      });
+      if (variant === 'connect') {
+        messenger.send('eth_requestAccounts', {
+          error: new UserRejectedRequestError(
+            error instanceof Error ? error : new Error('Login cancelled')
+          ),
+        });
+      }
     } finally {
       setIsLoading(false);
     }
@@ -54,7 +64,11 @@ export function AuthButton() {
     <div className="space-y-2">
       <Button onClick={handleSignIn} disabled={isLoading}>
         {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-        {isLoading ? 'Authenticating' : 'Sign In'}
+        {isLoading
+          ? 'Authenticating'
+          : variant === 'unlock'
+            ? 'Sign in to continue'
+            : 'Sign In'}
       </Button>
       {errorMessage && (
         <p className="text-sm text-red-500 max-w-xs">{errorMessage}</p>

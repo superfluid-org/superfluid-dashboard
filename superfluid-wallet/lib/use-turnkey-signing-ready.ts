@@ -3,55 +3,52 @@
 import { useTurnkey, ClientState } from '@turnkey/react-wallet-kit';
 import { useEffect, useState } from 'react';
 
+export type TurnkeySigningStatus = 'loading' | 'ready' | 'needs_auth' | 'error';
+
 export type TurnkeySigningReadyState = {
-  isReady: boolean;
-  isLoading: boolean;
+  status: TurnkeySigningStatus;
   error: string | null;
 };
 
 /**
- * Turnkey stamps requests with the active session from storage. That restore is
- * async when the popup opens, so httpClient may exist before a session is available.
+ * Resolves whether the popup can stamp a signing request.
+ * - loading: Turnkey client or session restore in progress
+ * - needs_auth: no valid session — show inline sign-in (do not send user to dashboard)
+ * - ready: session + wallets available
  */
 export function useTurnkeySigningReady(): TurnkeySigningReadyState {
-  const { clientState, getSession, refreshWallets, wallets } = useTurnkey();
+  const { clientState, getSession, refreshWallets, wallets, session } =
+    useTurnkey();
   const [state, setState] = useState<TurnkeySigningReadyState>({
-    isReady: false,
-    isLoading: true,
+    status: 'loading',
     error: null,
   });
 
   useEffect(() => {
     let cancelled = false;
 
-    async function ensureReady() {
+    async function resolveStatus() {
       if (clientState === ClientState.Loading) {
-        setState({ isReady: false, isLoading: true, error: null });
+        setState({ status: 'loading', error: null });
         return;
       }
 
       if (clientState === ClientState.Error) {
         setState({
-          isReady: false,
-          isLoading: false,
+          status: 'error',
           error: 'Wallet failed to initialize. Refresh and try again.',
         });
         return;
       }
 
-      setState({ isReady: false, isLoading: true, error: null });
+      setState({ status: 'loading', error: null });
 
       try {
-        const activeSession = await getSession();
+        const activeSession = session ?? (await getSession());
         if (cancelled) return;
 
         if (!activeSession) {
-          setState({
-            isReady: false,
-            isLoading: false,
-            error:
-              'Wallet session expired or is still loading. Close this popup and reconnect from the dashboard.',
-          });
+          setState({ status: 'needs_auth', error: null });
           return;
         }
 
@@ -60,12 +57,11 @@ export function useTurnkeySigningReady(): TurnkeySigningReadyState {
         }
         if (cancelled) return;
 
-        setState({ isReady: true, isLoading: false, error: null });
+        setState({ status: 'ready', error: null });
       } catch (error) {
         if (cancelled) return;
         setState({
-          isReady: false,
-          isLoading: false,
+          status: 'error',
           error:
             error instanceof Error
               ? error.message
@@ -74,23 +70,12 @@ export function useTurnkeySigningReady(): TurnkeySigningReadyState {
       }
     }
 
-    void ensureReady();
+    void resolveStatus();
 
     return () => {
       cancelled = true;
     };
-  }, [clientState, getSession, refreshWallets, wallets.length]);
+  }, [clientState, getSession, refreshWallets, wallets.length, session]);
 
   return state;
-}
-
-export async function requireActiveTurnkeySession(
-  getSession: () => Promise<unknown>
-): Promise<void> {
-  const activeSession = await getSession();
-  if (!activeSession) {
-    throw new Error(
-      'No active wallet session. Close this popup and reconnect from the dashboard.'
-    );
-  }
 }

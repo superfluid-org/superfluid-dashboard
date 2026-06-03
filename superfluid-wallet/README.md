@@ -35,6 +35,30 @@ Unit tests cover RPC transaction shapes from the dashboard (e.g. wrap sending `g
 | `NEXT_PUBLIC_ORGANIZATION_ID` | — | Turnkey organization ID |
 | `NEXT_PUBLIC_AUTH_PROXY_CONFIG_ID` | — | Turnkey auth proxy config ID |
 
-## Session duration
+## Session duration (30 days)
 
-When using Turnkey Auth Proxy, configure session duration in the Turnkey dashboard (auth proxy config). The SDK ignores `sessionExpirationSeconds` on the provider when auth proxy is enabled.
+With **Auth Proxy**, session lifetime is **not** set in code. `TurnkeyProvider` `auth.sessionExpirationSeconds` is ignored (the SDK logs a warning if you set it).
+
+Configure it in the Turnkey dashboard:
+
+1. Open [app.turnkey.com](https://app.turnkey.com) → your organization.
+2. Go to **Embedded Wallets** → **Configuration** (or **AUTH**).
+3. Find **Session expiration** (default `900` = 15 minutes).
+4. Set to **`2592000`** (= 30 days) and save.
+
+Verify the active config (uses the same ID as `NEXT_PUBLIC_AUTH_PROXY_CONFIG_ID`):
+
+```bash
+curl -sS -X POST https://authproxy.turnkey.com/v1/wallet_kit_config \
+  -H "Content-Type: application/json" \
+  -H "X-Auth-Proxy-Config-Id: YOUR_AUTH_PROXY_CONFIG_ID" \
+  -d '{}' | jq .sessionExpirationSeconds
+# Expected: "2592000"
+```
+
+After changing the dashboard value:
+
+- **Existing sessions keep their old expiry** — disconnect and sign in again (or clear site data for `localhost:3001`).
+- New logins get the 30-day TTL stored in the session’s `expiry` field on the wallet origin (`localhost:3001`).
+
+`autoRefreshSession: true` in `app/providers.tsx` only extends a session while a wallet popup is open (Turnkey schedules refresh ~1 minute before expiry). It cannot refresh when no `:3001` tab exists; a longer dashboard TTL is what makes “dashboard idle, then wrap later” work without re-OTP.
