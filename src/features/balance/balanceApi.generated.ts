@@ -389,7 +389,7 @@ export interface paths {
         };
         /**
          * Get periodic balance report
-         * @description Compute a periodic balance report using the entry-fold engine. Each period shows opening/closing balance, net change, and breakdown by category and counterparty. Optional post-fold filters: `category` (comma list) prunes the byCategory breakdown map and by_category CSV rows; `counterparty` (comma list) prunes byCounterparty and by_counterparty CSV rows. IMPORTANT: the global balance fields (openingBalance, closingBalance, netChange, deposit, netFlowRate, gdaConnectedChange, gdaDisconnectedChange, idaConnectedChange, idaDisconnectedChange) are always account-wide totals and are never filtered — only the breakdown maps are affected. Breakdown-to-netChange invariant: sum(byCategory values) + gdaConnectedChange + gdaDisconnectedChange + idaConnectedChange + idaDisconnectedChange == netChange. This holds exactly because byCategory tracks all CFA discrete and streaming amounts (sum == (closingBalance - openingBalance) for the account-fold portion), and the GDA/IDA change fields cover the remaining balance sources.
+         * @description Compute a periodic balance report using the entry-fold engine. Each period shows opening/closing balance, net change, and breakdown by category and counterparty. By default (`extrapolate=false`) the report is non-speculative: the in-progress period closes at the server's current time and entirely-future periods are omitted; set `extrapolate=true` for a forecast that projects future periods from the current net flow rate. The top-level `generatedAt` is the as-of calculation time; each period carries `calendarEndTimestamp` and `isComplete`. Optional post-fold filters: `category` (comma list) prunes the byCategory breakdown map and by_category CSV rows; `counterparty` (comma list) prunes byCounterparty and by_counterparty CSV rows. IMPORTANT: the global balance fields (openingBalance, closingBalance, netChange, deposit, netFlowRate, gdaConnectedChange, gdaDisconnectedChange, idaConnectedChange, idaDisconnectedChange, openingConnectedBalance, closingConnectedBalance, openingDisconnectedBalance, closingDisconnectedBalance, openingDeposit, closingDeposit, connectedNetChange, disconnectedNetChange) are always account-wide totals and are never filtered — only the breakdown maps are affected. Breakdown-to-netChange invariant: sum(byCategory values) == netChange AND sum(byCounterparty values) == netChange. byCategory includes CFA streaming/discrete, GDA pool member distributions (category 'gda_member'), and IDA subscriber distributions (category 'ida_subscriber'). The gdaConnectedChange, gdaDisconnectedChange, idaConnectedChange, and idaDisconnectedChange fields are informational audit fields showing the connected/disconnected breakdown.
          */
         get: {
             parameters: {
@@ -403,6 +403,7 @@ export interface paths {
                     category?: string;
                     counterparty?: string;
                     counterpartyDetail?: "true" | "false";
+                    extrapolate?: "true" | "false";
                 };
                 header?: never;
                 path: {
@@ -427,23 +428,40 @@ export interface paths {
                                 name: string | null;
                                 decimals: number;
                             };
+                            /** @description The server's request-time clock (unix seconds, UTC) used as the as-of calculation time for clamping the in-progress period. This is the computation cutoff, NOT a response-serialization timestamp. */
+                            generatedAt: string;
+                            /** @description The effective extrapolation mode applied to this report (after defaulting). false = non-speculative (coverage capped at generatedAt); true = forecast (future periods projected from the current net flow rate). Echoed so clients never infer it. */
+                            extrapolate: boolean;
+                            /** @description The report's effective horizon (unix seconds): the last period's effective endTimestamp. When extrapolate=false this is min(last calendar end, generatedAt). null when no calendar period is covered (e.g. an entirely-future range with extrapolate=false returns no periods). */
+                            coverageEndTimestamp: string | null;
                             periods: {
                                 label: string;
                                 startTimestamp: string;
+                                /** @description Effective close of the period (unix seconds). Equals calendarEndTimestamp for complete periods; for the in-progress period under extrapolate=false it equals generatedAt (< calendarEndTimestamp). */
                                 endTimestamp: string;
+                                /** @description The period's nominal calendar end (unix seconds) before any clamping — the start of the next day/week/month. Lets clients detect a partial period without re-deriving calendar math. */
+                                calendarEndTimestamp: string;
+                                /** @description Whether the period's calendar window has fully elapsed (calendarEndTimestamp <= generatedAt). Reflects real calendar completeness independent of extrapolate, so an in-progress period reports false even when extrapolate=true (its closing balance is then a projection). */
+                                isComplete: boolean;
+                                /** @description Total balance at period start (wei): connected + disconnected. Invariant: openingBalance == openingConnectedBalance + openingDisconnectedBalance. */
                                 openingBalance: string;
+                                /** @description Total balance at period end (wei): connected + disconnected. Invariant: closingBalance == closingConnectedBalance + closingDisconnectedBalance. */
                                 closingBalance: string;
+                                /** @description CFA stream deposit (buffer) held at period end (wei). Backward-compatible alias for `closingDeposit`. */
                                 deposit: string;
+                                /** @description Net CFA flow rate at period end (wei/second, signed). */
                                 netFlowRate: string;
+                                /** @description Total balance change over the period (wei): closingBalance minus openingBalance. Invariant: netChange == connectedNetChange + disconnectedNetChange. */
                                 netChange: string;
+                                /** @description Net balance change per event category for this period (wei, signed). Includes CFA streaming (cfa), discrete events (transfer, wrap, unwrap, mint, burn, liquidation), GDA pool member distributions (gda_member), and IDA subscriber distributions (ida_subscriber). Invariant: sum(byCategory values) == netChange. */
                                 byCategory: {
                                     [key: string]: string;
                                 };
-                                /** @description Net balance change per counterparty address for this period. The special key `__none__` represents operations with no external counterparty: wraps, unwraps, mints, and burns. All other keys are lowercase Ethereum addresses. */
+                                /** @description Net balance change per counterparty address for this period (wei, signed). Includes CFA flow counterparties, GDA pool addresses, and IDA publisher addresses. The special key `__none__` represents operations with no external counterparty: wraps, unwraps, mints, and burns. All other keys are lowercase Ethereum addresses. Invariant: sum(byCounterparty values) == netChange. */
                                 byCounterparty: {
                                     [key: string]: string;
                                 };
-                                /** @description Per-counterparty detail (only present when `?counterpartyDetail=true`). openingBalance and closingBalance are cumulative account-fold balances for this counterparty at period boundaries. `netChange` equals the `byCounterparty` entry for the same key. `flowRate` is the CFA flow rate to/from this counterparty at period close. */
+                                /** @description Per-counterparty detail (only present when `?counterpartyDetail=true`). openingBalance and closingBalance are cumulative balances for this counterparty at period boundaries, including CFA streaming, GDA pool distributions, and IDA subscriber distributions. `netChange` equals the `byCounterparty` entry for the same key. `flowRate` is the combined CFA + GDA flow rate to/from this counterparty at period close (IDA has no streaming component). */
                                 byCounterpartyDetail?: {
                                     [key: string]: {
                                         openingBalance: string;
@@ -452,10 +470,30 @@ export interface paths {
                                         flowRate: string;
                                     };
                                 };
+                                /** @description Informational: net change from connected GDA pool distributions over the period (wei). This value is already included in byCategory under 'gda_member'. */
                                 gdaConnectedChange: string;
+                                /** @description Informational: net change from disconnected GDA pool distributions over the period (wei). This value is already included in byCategory under 'gda_member'. */
                                 gdaDisconnectedChange: string;
+                                /** @description Informational: net change from approved IDA subscriber distributions over the period (wei). This value is already included in byCategory under 'ida_subscriber'. */
                                 idaConnectedChange: string;
+                                /** @description Informational: net change from unapproved IDA subscriber distributions over the period (wei). This value is already included in byCategory under 'ida_subscriber'. */
                                 idaDisconnectedChange: string;
+                                /** @description Protocol-connected balance at period start (wei). Includes deposit. Equals C_open + P_open + connected GDA member balance + approved IDA subscriber balance. */
+                                openingConnectedBalance: string;
+                                /** @description Protocol-connected balance at period end (wei). Includes deposit. Equals C_close + P_close + connected GDA member balance + approved IDA subscriber balance. */
+                                closingConnectedBalance: string;
+                                /** @description Claimable (disconnected) balance at period start (wei). Sum of disconnected GDA pool member balance + unapproved IDA subscriber balance. Zero for accounts with no GDA/IDA activity. */
+                                openingDisconnectedBalance: string;
+                                /** @description Claimable (disconnected) balance at period end (wei). Sum of disconnected GDA pool member balance + unapproved IDA subscriber balance. Zero for accounts with no GDA/IDA activity. */
+                                closingDisconnectedBalance: string;
+                                /** @description CFA stream deposit (buffer) held at period start (wei). */
+                                openingDeposit: string;
+                                /** @description CFA stream deposit (buffer) held at period end (wei). Same value as the `deposit` field (backward-compatible alias). */
+                                closingDeposit: string;
+                                /** @description Net change in connected balance over the period (wei). Equals closingConnectedBalance minus openingConnectedBalance. Invariant: connectedNetChange + disconnectedNetChange == netChange. */
+                                connectedNetChange: string;
+                                /** @description Net change in disconnected balance over the period (wei). Equals closingDisconnectedBalance minus openingDisconnectedBalance. Invariant: connectedNetChange + disconnectedNetChange == netChange. */
+                                disconnectedNetChange: string;
                             }[];
                         };
                         "text/csv": string;
@@ -491,7 +529,7 @@ export interface paths {
         };
         /**
          * Get balance movements
-         * @description Pre-computed balance movements: discrete transfers, stream periods, and deposit changes. Stream periods group flow rate changes into single rows with date ranges and crystallized totals. Optionally bounded by `startTimestamp` / `endTimestamp` (unix seconds, both optional, both inclusive). Two filtering modes: balance_movements rows use lifespan-overlap semantics (a row is included when its `[timestamp, endTimestamp]` intersects the requested window; ongoing stream periods with `isOngoing = true` are treated as open-ended; point-in-time rows with `endTimestamp IS NULL` are matched on their single `timestamp`); account_entries rows use point-in-range semantics (included when their single `timestamp` falls within the window). Additional filters: `movementType` (comma list: discrete, stream_period, deposit, instant_distribution), `category` (comma list), `direction` (in|out based on amount sign), `isOngoing` (true|false), `counterparty` (comma list of addresses). All filters propagate to both query sources, `total`, `hasMore`, and CSV output. Pagination: use `offset` for simple offset-based paging, or `cursor` / `nextCursor` for cursor-based paging (recommended for large result sets). `cursor` and `offset` are mutually exclusive. Invalid parameter values, `endTimestamp < startTimestamp`, or a malformed `cursor` return 400.
+         * @description Pre-computed balance movements: discrete transfers, stream periods, and deposit changes. Stream periods group flow rate changes into single rows with date ranges and crystallized totals. Optionally bounded by `startTimestamp` / `endTimestamp` (unix seconds, both optional, both inclusive). Two filtering modes: balance_movements rows use lifespan-overlap semantics (a row is included when its `[timestamp, endTimestamp]` intersects the requested window; ongoing stream periods with `isOngoing = true` are treated as open-ended; point-in-time rows with `endTimestamp IS NULL` are matched on their single `timestamp`); account_entries rows use point-in-range semantics (included when their single `timestamp` falls within the window). Additional filters: `movementType` (comma list: discrete, stream_period, deposit, instant_distribution), `category` (comma list), `direction` (in|out based on amount sign), `isOngoing` (true|false), `isDisconnected` (true|false), `counterparty` (comma list of addresses). All filters propagate to both query sources, `total`, `hasMore`, and CSV output. Pagination: use `offset` for simple offset-based paging, or `cursor` / `nextCursor` for cursor-based paging (recommended for large result sets). `cursor` and `offset` are mutually exclusive. Invalid parameter values, `endTimestamp < startTimestamp`, or a malformed `cursor` return 400.
          */
         get: {
             parameters: {
@@ -509,6 +547,7 @@ export interface paths {
                     category?: string;
                     direction?: "in" | "out";
                     isOngoing?: "true" | "false";
+                    isDisconnected?: "true" | "false";
                 };
                 header?: never;
                 path: {
