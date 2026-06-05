@@ -1,12 +1,27 @@
-import { Button, Skeleton, Stack, Typography, useTheme } from "@mui/material";
+import {
+  alpha,
+  Button,
+  Skeleton,
+  Stack,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
-import { ChartOptions } from "chart.js/auto";
+import {
+  Chart,
+  ChartOptions,
+  ChartType,
+  Plugin,
+  ScriptableLineSegmentContext,
+  TooltipItem,
+} from "chart.js/auto";
 import { fromUnixTime, getUnixTime, sub } from "date-fns";
 import { BigNumber, ethers } from "ethers";
 import { FC, useMemo } from "react";
 import LineChart, { DataPoint } from "../../../components/Chart/LineChart";
 import {
   buildDefaultDatasetConf,
+  createCTXGradient,
   getFilteredStartDate,
 } from "../../../utils/chartUtils";
 import balanceApi from "../../balance/balanceApi.slice";
@@ -22,6 +37,100 @@ import { rpcApi } from "../../redux/store";
 const ALL_FALLBACK_FLOOR_UNIX = 1_609_459_200;
 const FORECAST_POINTS = 12;
 const FORECAST_MAX_DURATION_SECONDS = 30 * 24 * 60 * 60; // 30 days
+
+// The claimable (disconnected) series is gradient-filled only where it makes up
+// at least this share of the total balance — so it doesn't cover the green
+// connected gradient in periods with a meaningful connected balance.
+const CLAIMABLE_DOMINANT_PERCENT = 80;
+
+// Claimable line/fill color — a muted yellow-green: same family as the green
+// primary line but less prominent. (Tweak here to taste.)
+const CLAIMABLE_COLOR = "#A8B84D";
+
+// Format a wei string to ether, clamping negatives to zero (balances are never
+// shown negative on the chart).
+const formatWeiClamped = (value: string): string => {
+  const wei = BigNumber.from(value);
+  return ethers.utils.formatEther(wei.gt(0) ? wei : BigNumber.from(0));
+};
+
+// Multi-line tooltip label for the balance chart. Historical points carry a
+// connected/disconnected/deposit/total breakdown; live and forecast points only
+// carry `ether`. Rows that are undefined (unavailable) or zero are omitted to
+// keep the tooltip compact.
+const balanceTooltipLabel = (
+  context: TooltipItem<"line">
+): string | string[] => {
+  const dp = context.raw as DataPoint | undefined;
+  if (!dp) return "";
+  const rows: string[] = [];
+  const pushRow = (label: string, value: string | undefined) => {
+    if (value !== undefined && Number(value) !== 0) {
+      rows.push(`${label}: ${value}`);
+    }
+  };
+  pushRow("Connected", dp.connected);
+  pushRow("Disconnected", dp.disconnected);
+  pushRow("Locked deposit", dp.deposit);
+  pushRow("Total", dp.total);
+  return rows.length > 0 ? rows : dp.ether;
+};
+
+interface LiquidationMarkerOptions {
+  at?: number | null; // epoch milliseconds
+  color?: string;
+  label?: string;
+}
+
+// Register the plugin's options on Chart.js so `options.plugins.liquidationMarker`
+// is type-checked.
+declare module "chart.js" {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  interface PluginOptionsByType<TType extends ChartType> {
+    liquidationMarker?: LiquidationMarkerOptions;
+  }
+}
+
+// Draws a vertical dashed line at the projected liquidation (balance-hits-zero)
+// timestamp. Marker state is read from `options.plugins.liquidationMarker`, so
+// it updates via the options effect without recreating the chart.
+const liquidationMarkerPlugin: Plugin<"line", LiquidationMarkerOptions> = {
+  id: "liquidationMarker",
+  afterDatasetsDraw: (chart, _args, opts) => {
+    const at = opts?.at;
+    if (at == null) return;
+    const xScale = chart.scales.x;
+    if (!xScale) return;
+    const px = xScale.getPixelForValue(at);
+    const { top, bottom, left, right } = chart.chartArea;
+    if (px < left || px > right) return;
+
+    const { ctx } = chart;
+    const color = opts.color ?? "rgba(244, 67, 54, 0.7)";
+    ctx.save();
+    ctx.beginPath();
+    ctx.setLineDash([4, 4]);
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = color;
+    ctx.moveTo(px, top);
+    ctx.lineTo(px, bottom);
+    ctx.stroke();
+    if (opts.label) {
+      const alignRight = px > (left + right) / 2;
+      ctx.setLineDash([]);
+      ctx.fillStyle = color;
+      ctx.font = "10px sans-serif";
+      ctx.textAlign = alignRight ? "right" : "left";
+      ctx.fillText(opts.label, px + (alignRight ? -4 : 4), top + 10);
+    }
+    ctx.restore();
+  },
+};
+
+// Stable instance-plugin array (passed to Chart at construction).
+const LINE_CHART_PLUGINS: Plugin<"line">[] = [
+  liquidationMarkerPlugin as Plugin<"line">,
+];
 
 const projectBalanceAt = (
   realTimeBalance: RealtimeBalance,
@@ -61,6 +170,7 @@ const mapForecastDatesWithData = (
         x: zeroCrossingUnix * 1000,
         y: 0,
         ether: "0.0",
+        isLiquidation: true,
       });
       break;
     }
@@ -202,16 +312,60 @@ const TokenBalanceGraph: FC<TokenBalanceGraphProps> = ({
     const points = balanceHistoryQuery.data?.points ?? [];
 
     const balanceDataset: DataPoint[] = points.map((p) => {
-      const wei = BigNumber.from(p.connectedBalance);
-      const ether = ethers.utils.formatEther(
-        wei.gt(BigNumber.from(0)) ? wei : BigNumber.from(0)
-      );
+      const connected = formatWeiClamped(p.connectedBalance);
       return {
         x: Number(p.timestamp) * 1000,
-        y: Number(ether),
-        ether,
+        y: Number(connected),
+        ether: connected,
+        connected,
+        disconnected: formatWeiClamped(p.disconnectedBalance),
+        deposit: formatWeiClamped(p.deposit),
+        total: formatWeiClamped(p.totalBalance),
       };
     });
+
+    // Quiet supporting series, shown only when they carry non-zero values so
+    // the sparkline stays clean. Fixed dataset slots (empty arrays when hidden)
+    // — LineChart updates dataset data by index, so the slot count must be
+    // stable across renders.
+    const hasDeposit = points.some((p) => BigNumber.from(p.deposit).gt(0));
+    const hasClaimable = points.some((p) =>
+      BigNumber.from(p.disconnectedBalance).gt(0)
+    );
+
+    const depositDataset: DataPoint[] = hasDeposit
+      ? points.map((p) => {
+          const deposit = formatWeiClamped(p.deposit);
+          return {
+            x: Number(p.timestamp) * 1000,
+            y: Number(deposit),
+            ether: deposit,
+            deposit,
+          };
+        })
+      : [];
+
+    const claimableDataset: DataPoint[] = hasClaimable
+      ? points.map((p) => {
+          const disconnected = formatWeiClamped(p.disconnectedBalance);
+          const connectedWei = BigNumber.from(p.connectedBalance);
+          const disconnectedWei = BigNumber.from(p.disconnectedBalance);
+          const totalWei = connectedWei.add(disconnectedWei);
+          // disconnected / total >= CLAIMABLE_DOMINANT_PERCENT% (integer-safe).
+          const claimableDominant =
+            totalWei.gt(0) &&
+            disconnectedWei
+              .mul(100)
+              .gte(totalWei.mul(CLAIMABLE_DOMINANT_PERCENT));
+          return {
+            x: Number(p.timestamp) * 1000,
+            y: Number(disconnected),
+            ether: disconnected,
+            disconnected,
+            claimableDominant,
+          };
+        })
+      : [];
 
     // Replace the API's tail point with the RPC live value. The API
     // emits 50 evenly-spaced points up to ~now, but its last point can
@@ -219,15 +373,36 @@ const TokenBalanceGraph: FC<TokenBalanceGraphProps> = ({
     // RPC for the right edge guarantees the chart shows the actual
     // current balance and connects cleanly to the forecast (also RPC).
     if (realTimeBalanceQuery.data && balanceDataset.length > 0) {
-      const livePoint = projectBalanceAt(realTimeBalanceQuery.data, dateNow);
-      if (livePoint.x > balanceDataset[balanceDataset.length - 1].x) {
+      const apiTail = balanceDataset[balanceDataset.length - 1];
+      const liveBase = projectBalanceAt(realTimeBalanceQuery.data, dateNow);
+      // Connected comes from the live RPC value (accurate "now"); carry the most
+      // recent known claimable/deposit from the API tail so the "now" tooltip
+      // still shows them (they only lag the indexer slightly). Recompute total
+      // from the live connected + last-known claimable to stay consistent.
+      const connected = liveBase.ether;
+      const disconnected = apiTail.disconnected;
+      const total = disconnected
+        ? ethers.utils.formatEther(
+            ethers.utils
+              .parseEther(connected)
+              .add(ethers.utils.parseEther(disconnected))
+          )
+        : connected;
+      const livePoint: DataPoint = {
+        ...liveBase,
+        connected,
+        disconnected,
+        deposit: apiTail.deposit,
+        total,
+      };
+      if (livePoint.x > apiTail.x) {
         balanceDataset.pop();
       }
       balanceDataset.push(livePoint);
     }
 
     if (!showForecast || !realTimeBalanceQuery.data) {
-      return [balanceDataset, []];
+      return [balanceDataset, [], depositDataset, claimableDataset];
     }
 
     const forecastDates = getDatesBetween(
@@ -240,7 +415,7 @@ const TokenBalanceGraph: FC<TokenBalanceGraphProps> = ({
       forecastDates
     );
 
-    return [balanceDataset, forecastDataset];
+    return [balanceDataset, forecastDataset, depositDataset, claimableDataset];
   }, [
     balanceHistoryQuery.data,
     realTimeBalanceQuery.data,
@@ -258,8 +433,54 @@ const TokenBalanceGraph: FC<TokenBalanceGraphProps> = ({
     const balanceDataset = datasets[0];
     const forecastDataset = datasets[1];
 
-    if (balanceDataset.length === 0) {
+    const lastForecast =
+      forecastDataset.length > 0
+        ? forecastDataset[forecastDataset.length - 1]
+        : undefined;
+    const lastHistoricalX =
+      balanceDataset.length > 0
+        ? balanceDataset[balanceDataset.length - 1].x
+        : undefined;
+
+    // Use the explicitly-tagged zero-crossing point (set only on a genuine
+    // negative-flow liquidation), and only when it lands in the future — past
+    // crossings or balances merely clamped to 0 must not draw a marker.
+    const liquidationPoint = forecastDataset.find((p) => p.isLiquidation);
+    const liquidationAt =
+      liquidationPoint &&
+      (lastHistoricalX === undefined || liquidationPoint.x >= lastHistoricalX)
+        ? liquidationPoint.x
+        : null;
+
+    // axis:"x" makes hover pick the nearest point horizontally; ties at a shared
+    // timestamp resolve to the first dataset (the connected line), so the quiet
+    // deposit/claimable lines never steal the breakdown tooltip.
+    const interaction = {
+      mode: "nearest" as const,
+      axis: "x" as const,
+      intersect: false,
+    };
+
+    const plugins = {
+      tooltip: {
+        // Only the connected (0) and forecast (1) datasets contribute tooltip
+        // rows; the supporting deposit/claimable series (2/3) are already folded
+        // into the connected point's breakdown, and `nearest` returns every
+        // dataset tied at the same x — which otherwise adds a stray bare "0.0".
+        filter: (item: TooltipItem<"line">) => item.datasetIndex <= 1,
+        callbacks: { label: balanceTooltipLabel },
+      },
+      liquidationMarker: {
+        at: liquidationAt,
+        color: theme.palette.error.main,
+        label: liquidationAt != null ? "Liquidation" : undefined,
+      },
+    };
+
+    if (balanceDataset.length === 0 || lastHistoricalX === undefined) {
       return {
+        interaction,
+        plugins,
         scales: {
           x: { offset: true },
           y: { offset: true },
@@ -268,19 +489,18 @@ const TokenBalanceGraph: FC<TokenBalanceGraphProps> = ({
     }
 
     const firstX = balanceDataset[0].x;
-    const lastHistoricalX = balanceDataset[balanceDataset.length - 1].x;
-    const lastForecastX =
-      forecastDataset.length > 0
-        ? forecastDataset[forecastDataset.length - 1].x
-        : lastHistoricalX;
+    // Never let a forecast endpoint shrink the domain below the live tail.
+    const maxX = Math.max(lastHistoricalX, lastForecast?.x ?? lastHistoricalX);
 
     return {
+      interaction,
+      plugins,
       scales: {
-        x: { min: firstX, max: lastForecastX, offset: true },
+        x: { min: firstX, max: maxX, offset: true },
         y: { offset: true },
       },
     };
-  }, [datasets]);
+  }, [datasets, theme.palette.error.main]);
 
   const datasetsConfigCallbacks = useMemo(
     () => [
@@ -290,8 +510,56 @@ const TokenBalanceGraph: FC<TokenBalanceGraphProps> = ({
         ...buildDefaultDatasetConf(ctx, theme.palette.secondary.main, height),
         borderDash: [6, 6],
       }),
+      // Locked deposit — faint blue shade, no line. Flat alpha (not a height
+      // gradient, which vanishes for the small deposit band near the bottom).
+      // Draws under the green connected fill, so it reads as a subtle blue tint
+      // of the bottom band.
+      (_ctx: CanvasRenderingContext2D) => ({
+        label: "Locked deposit",
+        backgroundColor: alpha(theme.palette.info.main, 0.12),
+        fill: true,
+        borderWidth: 0,
+        pointRadius: 0,
+        tension: 0.1,
+      }),
+      // Claimable (disconnected GDA/IDA) — quiet yellow-green line everywhere,
+      // with a matching gradient fill only on segments where claimable dominates
+      // the total (so it doesn't cover the green gradient where connected is
+      // meaningful).
+      (ctx: CanvasRenderingContext2D) => {
+        const grad = createCTXGradient(ctx, CLAIMABLE_COLOR, height);
+        return {
+          label: "Disconnected",
+          borderColor: CLAIMABLE_COLOR,
+          backgroundColor: grad,
+          fill: true,
+          borderWidth: 2,
+          pointRadius: 0,
+          pointBorderColor: "transparent",
+          pointBackgroundColor: "transparent",
+          tension: 0.1,
+          segment: {
+            // `chart` exists on the segment context at runtime but isn't on the
+            // public type, so cast to read it; the index fields are typed.
+            backgroundColor: (s: ScriptableLineSegmentContext) => {
+              const chart = (s as unknown as { chart: Chart<"line"> }).chart;
+              const data = chart.data.datasets[s.datasetIndex]
+                .data as unknown as DataPoint[];
+              return data[s.p0DataIndex]?.claimableDominant &&
+                data[s.p1DataIndex]?.claimableDominant
+                ? grad
+                : "transparent";
+            },
+          },
+        };
+      },
     ],
-    [height, theme.palette.primary.main, theme.palette.secondary.main]
+    [
+      height,
+      theme.palette.primary.main,
+      theme.palette.secondary.main,
+      theme.palette.info.main,
+    ]
   );
 
   if (balanceHistoryQuery.isLoading || firstMovementQuery.isLoading) {
@@ -314,6 +582,7 @@ const TokenBalanceGraph: FC<TokenBalanceGraphProps> = ({
       datasets={datasets}
       options={options}
       datasetsConfigCallbacks={datasetsConfigCallbacks}
+      plugins={LINE_CHART_PLUGINS}
     />
   );
 };
