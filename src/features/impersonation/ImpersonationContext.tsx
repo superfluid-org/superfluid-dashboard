@@ -20,6 +20,10 @@ import { useReverseResolveQuery } from "../whois/whoisApi.slice";
 interface ImpersonationContextValue {
   isImpersonated: boolean;
   impersonatedAddress: string | undefined;
+  // True while a `?view=` param is still being resolved into an impersonated
+  // address (sync for an address, async whois lookup for a name). Consumers
+  // that redirect on a missing visible address should wait on this.
+  isInitializingFromUrl: boolean;
   stopImpersonation: () => void;
   impersonate: (address: string) => void;
 }
@@ -35,13 +39,30 @@ export const ImpersonationProvider: FC<PropsWithChildren> = ({ children }) => {
     string | undefined
   >();
 
-  // Resolve ENS/handle names from view param via whois API
-  const viewParam = isString(router.query.view) ? router.query.view : undefined;
+  // Resolve ENS/handle names from view param via whois API. Gate on
+  // router.isReady so `?view=` is only considered once the query string is
+  // actually populated (it's empty on the first client render).
+  const viewParam =
+    router.isReady && isString(router.query.view)
+      ? router.query.view
+      : undefined;
   const isViewParamName = !!viewParam && !isAddress(viewParam);
-  const { data: resolvedName } = useReverseResolveQuery(
-    isViewParamName ? viewParam : "",
-    { skip: !isViewParamName || !router.isReady }
-  );
+  const { data: resolvedName, isLoading: isResolvingName } =
+    useReverseResolveQuery(isViewParamName ? viewParam : "", {
+      skip: !isViewParamName,
+    });
+  const resolvedAddress = resolvedName?.address;
+
+  // The page can't yet know the visible address while the URL param is still
+  // resolving — distinguish "resolving" from "resolved to nothing". For a name,
+  // stay "initializing" until the resolved address has actually been applied
+  // (whois resolving, OR resolved-but-not-yet-impersonated), so the page never
+  // redirects in the gap between resolution and impersonation.
+  const isInitializingFromUrl =
+    !!viewParam &&
+    !impersonatedAddress &&
+    (isAddress(viewParam) ||
+      (isViewParamName && (isResolvingName || !!resolvedAddress)));
 
   const removeImpersonatedAddressQueryParam = useCallback(() => {
     const { view: viewAddressQueryParam, ...queryWithoutParam } = router.query;
@@ -99,28 +120,34 @@ export const ImpersonationProvider: FC<PropsWithChildren> = ({ children }) => {
     () => ({
       impersonatedAddress,
       isImpersonated: !!impersonatedAddress,
+      isInitializingFromUrl,
       stopImpersonation,
       impersonate,
     }),
-    [impersonatedAddress, stopImpersonation, impersonate]
+    [impersonatedAddress, isInitializingFromUrl, stopImpersonation, impersonate]
   );
 
-  // Get impersonated address from query string
+  // Get impersonated address from the (address) view param. Depends only on
+  // viewParam so it resolves on client-side navigation and when the param
+  // changes to a different address — and crucially does NOT re-run when
+  // impersonatedAddress is cleared (which would re-impersonate during
+  // stopImpersonation before the URL param is removed). Setting the same value
+  // is a no-op render in React.
   useEffect(() => {
-    const { view: viewAddressQueryParam } = router.query;
-    if (!impersonatedAddress && isString(viewAddressQueryParam)) {
-      if (isAddress(viewAddressQueryParam)) {
-        setImpersonatedAddress(getAddress(viewAddressQueryParam));
-      }
+    if (viewParam && isAddress(viewParam)) {
+      setImpersonatedAddress(getAddress(viewParam));
     }
-  }, [router.isReady]);
+  }, [viewParam]);
 
-  // Resolve ENS/handle name from view param and impersonate
+  // Resolve ENS/handle name from view param and impersonate. Depends on the
+  // (name) param and the resolved address rather than on impersonatedAddress,
+  // so navigating to a new `?view=<name>` switches even when already
+  // impersonating — and so it doesn't re-fire on stopImpersonation.
   useEffect(() => {
-    if (!impersonatedAddress && resolvedName?.address) {
-      impersonate(resolvedName.address);
+    if (viewParam && !isAddress(viewParam) && resolvedAddress) {
+      impersonate(resolvedAddress);
     }
-  }, [resolvedName, impersonatedAddress, impersonate]);
+  }, [viewParam, resolvedAddress, impersonate]);
 
   // Actively keep impersonated address in query string
   useEffect(() => {
