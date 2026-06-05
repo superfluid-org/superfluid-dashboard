@@ -38,6 +38,12 @@ const ALL_FALLBACK_FLOOR_UNIX = 1_609_459_200;
 const FORECAST_POINTS = 12;
 const FORECAST_MAX_DURATION_SECONDS = 30 * 24 * 60 * 60; // 30 days
 
+// Number of balance-snapshot points requested, scaled with the visible window
+// (~1 per day) so longer periods get finer resolution. The Balances API caps
+// `points` at 200 (requests above return 200), so that's the ceiling.
+const MIN_POINTS = 50;
+const MAX_POINTS = 200;
+
 // The claimable (disconnected) series is gradient-filled only where it makes up
 // at least this share of the total balance — so it doesn't cover the green
 // connected gradient in periods with a meaningful connected balance.
@@ -221,7 +227,7 @@ const TokenBalanceGraph: FC<TokenBalanceGraphProps> = ({
     { skip: !isAll }
   );
 
-  const { startTimestamp, dateNow, forecastEndDate } = useMemo(() => {
+  const { startTimestamp, dateNow, forecastEndDate, points } = useMemo(() => {
     const currentDate = new Date();
     const currentUnix = getUnixTime(currentDate);
 
@@ -252,10 +258,21 @@ const TokenBalanceGraph: FC<TokenBalanceGraphProps> = ({
       FORECAST_MAX_DURATION_SECONDS
     );
     const forecastEndUnix = currentUnix + forecastDurationUnix;
+
+    // Scale resolution with the window (~1 point/day), floored/capped. Span
+    // covers the tricky "All" case automatically: short history -> few points,
+    // long history -> capped. Guard against a non-positive span.
+    const spanDays = Math.max(0, (currentUnix - startUnix) / 86400);
+    const points = Math.min(
+      MAX_POINTS,
+      Math.max(MIN_POINTS, Math.round(spanDays))
+    );
+
     return {
       startTimestamp: startUnix,
       dateNow: currentDate,
       forecastEndDate: fromUnixTime(forecastEndUnix),
+      points,
     };
   }, [
     filter,
@@ -271,7 +288,7 @@ const TokenBalanceGraph: FC<TokenBalanceGraphProps> = ({
       account,
       token,
       startTimestamp,
-      points: 50,
+      points,
     },
     // Wait for the "All" probe to resolve before firing — avoids a
     // throwaway request against a stale default window.
@@ -368,7 +385,7 @@ const TokenBalanceGraph: FC<TokenBalanceGraphProps> = ({
       : [];
 
     // Replace the API's tail point with the RPC live value. The API
-    // emits 50 evenly-spaced points up to ~now, but its last point can
+    // emits evenly-spaced points up to ~now, but its last point can
     // be indexer-lagged (today's value is still yesterday's). Using
     // RPC for the right edge guarantees the chart shows the actual
     // current balance and connects cleanly to the forecast (also RPC).
