@@ -43,6 +43,7 @@ import TokenToolbar from "../../../features/token/TokenToolbar";
 import FlowingFiatBalance from "../../../features/tokenPrice/FlowingFiatBalance";
 import useTokenPrice from "../../../features/tokenPrice/useTokenPrice";
 import TransferEventsTable from "../../../features/transfers/TransferEventsTable";
+import { useImpersonation } from "../../../features/impersonation/ImpersonationContext";
 import { useVisibleAddress } from "../../../features/wallet/VisibleAddressContext";
 import useNavigateBack from "../../../hooks/useNavigateBack";
 import Page404 from "../../404";
@@ -78,7 +79,8 @@ const TokenPage: NextPage = () => {
   const [network, setNetwork] = useState<Network | undefined>();
   const [tokenAddress, setTokenAddress] = useState<string | undefined>();
   const { visibleAddress } = useVisibleAddress();
-  const { isReconnecting } = useAccount();
+  const { isConnecting, isReconnecting } = useAccount();
+  const { isInitializingFromUrl } = useImpersonation();
 
   const [routeHandled, setRouteHandled] = useState(false);
 
@@ -93,10 +95,22 @@ const TokenPage: NextPage = () => {
   }, [setRouteHandled, router.isReady, router.query._token, router.query._network]);
 
   useEffect(() => {
-    if (!isReconnecting && !visibleAddress) {
+    if (!router.isReady) return; // wait for the query string (`?view=`)
+    // Don't redirect while a wallet is (re)connecting or while a `?view=`
+    // param is still resolving into an impersonated address — otherwise direct
+    // `/token/...?view=<address>` links bounce to home before impersonation
+    // hydrates.
+    if (isConnecting || isReconnecting || isInitializingFromUrl) return;
+    if (!visibleAddress) {
       router.push("/");
     }
-  }, [isReconnecting, visibleAddress]);
+  }, [
+    router.isReady,
+    isConnecting,
+    isReconnecting,
+    isInitializingFromUrl,
+    visibleAddress,
+  ]);
 
   const isPageReady = routeHandled && visibleAddress;
   if (!isPageReady) return <TokenPageContainer />;
