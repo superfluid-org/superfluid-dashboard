@@ -10,6 +10,7 @@ Turnkey-backed signing UI for the Superfluid Dashboard. Runs as a **separate npm
 cp .env.local.example .env.local
 # Set NEXT_PUBLIC_ORGANIZATION_ID and NEXT_PUBLIC_AUTH_PROXY_CONFIG_ID
 pnpm install
+pnpm playwright:install   # once: downloads Chromium for E2E tests (~100MB)
 pnpm dev
 ```
 
@@ -38,11 +39,31 @@ In [Turnkey Dashboard → Wallet Kit → Authentication](https://app.turnkey.com
 - **Sign In appears inert:** restart dev server after pull; `tailwind.config.ts` must scan `./node_modules/@turnkey/react-wallet-kit/dist/**` (not the dashboard’s `node_modules`).
 - **Session expired at sign:** use **Sign in to continue** in the popup; dashboard disconnect is not required.
 
+## HFA delegated-access setup
+
+Pair a Superfluid Wallet with the HFA provider (separate `hfa` repo):
+
+1. HFA: `npm run dev` (provider API)
+2. Wallet: `pnpm dev` or `pnpm dev:clean` if the setup page is blank after code changes
+3. HFA: `npm run turnkey:hfa-setup` → open the printed URL → email OTP → **Enable HFA**
+
+Setup page: `/hfa/setup?session=…&hfa=…` (HFA provider base URL in `hfa=` query param).
+
+```bash
+pnpm smoke:hfa-setup   # SETUP_URL='<full setup link>' — headless hydration check
+```
+
+Spec: [`specs/hfa-setup-implementation.md`](specs/hfa-setup-implementation.md).
+
 ## Tests
 
 ```bash
-pnpm test          # vitest: normalize-rpc-transaction, resolve-turnkey-sign-with
+pnpm test          # vitest (lib unit tests)
 pnpm check-types
+pnpm test:e2e      # Playwright (requires pnpm playwright:install once)
+pnpm test:all      # all of the above
 ```
+
+E2E uses Playwright’s bundled Chromium. After `pnpm install`, run `pnpm playwright:install` once (same as `pnpm exec playwright install chromium` in [Playwright docs](https://playwright.dev/docs/intro#installing-playwright)).
 
 Dashboard Cypress wrap tests use a **mock** EIP-1193 handler and do not open this app.
