@@ -21,7 +21,6 @@ import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
 import AddressSearch from "../AddressSearch";
 import { PartialTransferForm, ValidTransferForm } from "./TransferFormProvider";
 import { useTransfer } from "./useTransfer";
-import { ethersOverridesToViem } from "../../../utils/ethersOverridesToViem";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
 import { parseEtherOrZero } from "../../../utils/tokenUtils";
@@ -76,7 +75,7 @@ export default memo(function SendTransfer() {
 
   const SendTransactionBoundary = (
     <TransactionBoundary mutationResult={transferResult}>
-      {({ setDialogLoadingInfo, getOverrides, txAnalytics }) =>
+      {({ setDialogLoadingInfo, txAnalytics }) =>
       (<TransactionButton
         disabled={isSendDisabled}
         dataCy={"transfer-button"}
@@ -114,7 +113,6 @@ export default memo(function SendTransfer() {
 
           transfer({
             ...primaryArgs,
-            overrides: ethersOverridesToViem(await getOverrides()),
             transactionExtraData: {
               restoration: transactionRestoration,
             }

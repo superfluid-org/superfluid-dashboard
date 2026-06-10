@@ -53,7 +53,6 @@ import {
   useDeleteFlowWithScheduling,
   useUpsertFlowWithScheduling,
 } from "../useFlowSchedulingWrites";
-import { ethersOverridesToViem } from "../../../utils/ethersOverridesToViem";
 import Amount from "../../token/Amount";
 import TokenIcon from "../../token/TokenIcon";
 import { BalanceSuperToken } from "../../tokenWrapping/BalanceSuperToken";
@@ -449,7 +448,7 @@ export default memo(function SendStream() {
 
   const SendTransactionBoundary = (
     <TransactionBoundary mutationResult={upsertFlowResult}>
-      {({ closeDialog, setDialogSuccessActions, setDialogLoadingInfo, getOverrides, txAnalytics }) => (
+      {({ closeDialog, setDialogSuccessActions, setDialogLoadingInfo, txAnalytics }) => (
         <TransactionButton
           dataCy={"send-transaction-button"}
           disabled={isSendDisabled}
@@ -512,7 +511,6 @@ export default memo(function SendStream() {
               transactionExtraData: {
                 restoration: transactionRestoration,
               },
-              overrides: ethersOverridesToViem(await getOverrides()),
             })
               .then(
                 ...txAnalytics(
@@ -595,7 +593,7 @@ export default memo(function SendStream() {
 
   const DeleteFlowBoundary = (
     <TransactionBoundary mutationResult={flowDeleteResult}>
-      {({ setDialogLoadingInfo, txAnalytics, getOverrides }) =>
+      {({ setDialogLoadingInfo, txAnalytics }) =>
         isModifying && (
           <TransactionButton
             dataCy={"cancel-stream-button"}
@@ -623,10 +621,7 @@ export default memo(function SendStream() {
                 receiverAddress,
                 userDataBytes: undefined,
               };
-              flowDeleteTrigger({
-                ...primaryArgs,
-                overrides: ethersOverridesToViem(await getOverrides()),
-              })
+              flowDeleteTrigger(primaryArgs)
                 .then(...txAnalytics("Cancel Stream", primaryArgs))
                 .then(() => resetForm())
                 .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.

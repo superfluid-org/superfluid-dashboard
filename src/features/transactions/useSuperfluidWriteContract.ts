@@ -5,9 +5,14 @@ import { simulateContract, writeContract } from "@wagmi/core";
 import { TransactionInfo, TransactionTitle } from "@superfluid-finance/sdk-redux";
 import { useAppDispatch } from "../redux/store";
 import { useAccount } from "@/hooks/useAccount";
+import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import MutationResult from "../../MutationResult";
 import { PendingUpdate } from "../pendingUpdates/PendingUpdate";
-import { ViemFeeOverrides } from "../../utils/ethersOverridesToViem";
+import { allNetworks, findNetworkOrThrow } from "../network/networks";
+import {
+  ethersOverridesToViem,
+  ViemFeeOverrides,
+} from "../../utils/ethersOverridesToViem";
 import { trackTransaction } from "./trackTransaction";
 
 export interface SuperfluidWriteArgs {
@@ -23,7 +28,11 @@ export interface SuperfluidWriteArgs {
   /** Per-operation titles shown in the drawer for batched calls (kept in `extraData`). */
   subTransactionTitles?: TransactionTitle[];
   extraData?: Record<string, unknown>;
-  /** viem fee fields (see `ethersOverridesToViem`); `gas: 0n` means smart wallet — omit gas + skip simulation. */
+  /**
+   * Optional per-call overrides merged OVER the automatically resolved ones (gas API fee
+   * recommendation + smart-wallet detection + advanced global overrides). Only needed for
+   * special cases, e.g. a fixed gas limit for quirky tokens.
+   */
   overrides?: ViemFeeOverrides;
   /** Build the optimistic pending updates once the hash is known (ids/hash filled by caller). */
   getPendingUpdates?: (hash: string) => PendingUpdate[];
@@ -59,6 +68,7 @@ export function useSuperfluidWriteContract() {
   const config = useConfig();
   const dispatch = useAppDispatch();
   const { address } = useAccount();
+  const getTransactionOverrides = useGetTransactionOverrides();
 
   const mutation = useMutation<
     TransactionInfo,
@@ -73,10 +83,18 @@ export function useSuperfluidWriteContract() {
           ? await argsOrBuilder()
           : argsOrBuilder;
 
+      const network = findNetworkOrThrow(allNetworks, params.chainId);
+      const resolvedOverrides = ethersOverridesToViem(
+        await getTransactionOverrides(network)
+      );
+
       // `gas: 0n` signals a smart wallet (e.g. Gnosis Safe): it estimates gas itself, and
       // simulating against the EOA-style call context would be misleading (4337/delegatecall
       // execution differs), so omit gas and skip simulation entirely.
-      const { gas, ...feeOverrides } = params.overrides ?? {};
+      const { gas, ...feeOverrides } = {
+        ...resolvedOverrides,
+        ...params.overrides,
+      };
       const isSmartWallet = gas === 0n;
 
       const request = {

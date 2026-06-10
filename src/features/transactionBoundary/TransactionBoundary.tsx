@@ -3,7 +3,7 @@ import {
   TransactionInfo,
   transactionTrackerSelectors,
 } from "@superfluid-finance/sdk-redux";
-import { Overrides, Signer } from "ethers";
+import { Signer } from "ethers";
 import {
   createContext,
   FC,
@@ -13,7 +13,6 @@ import {
   useMemo,
   useState,
 } from "react";
-import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import MutationResult from "../../MutationResult";
 import { Network } from "../network/networks";
 import { useAppSelector } from "../redux/store";
@@ -30,7 +29,6 @@ interface TransactionBoundaryContextValue {
   setDialogLoadingInfo: (children: ReactNode) => void;
   setDialogSuccessActions: (children: ReactNode) => void;
   mutationResult: MutationResult<TransactionInfo>;
-  getOverrides: () => Promise<Overrides>;
   transaction: TrackedTransaction | undefined;
   network: Network;
   txAnalytics: TxAnalyticsFn;
@@ -56,7 +54,6 @@ export const TransactionBoundary: FC<TransactionBoundaryProps> = ({
 }) => {
   const signer = useEthersSigner();
   const { expectedNetwork } = useConnectionBoundary();
-  const getTransactionOverrides = useGetTransactionOverrides();
   const { txAnalytics } = useAnalytics();
 
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -78,7 +75,6 @@ export const TransactionBoundary: FC<TransactionBoundaryProps> = ({
       setDialogLoadingInfo,
       setDialogSuccessActions,
       mutationResult,
-      getOverrides: () => getTransactionOverrides(expectedNetwork),
       transaction: trackedTransaction,
       network: expectedNetwork,
       txAnalytics,
@@ -89,7 +85,6 @@ export const TransactionBoundary: FC<TransactionBoundaryProps> = ({
       setDialogLoadingInfo,
       setDialogSuccessActions,
       mutationResult,
-      getTransactionOverrides,
       trackedTransaction,
       expectedNetwork,
       txAnalytics

@@ -3,7 +3,6 @@ import NextLink from "next/link";
 import { FC, useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { useCreateVestingScheduleFromAmountAndDuration } from "../useVestingWrites";
-import { ethersOverridesToViem } from "../../../utils/ethersOverridesToViem";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
 import {
@@ -41,7 +40,6 @@ export const CreateVestingTransactionButton: FC<Props> = ({
     <TransactionBoundary mutationResult={mutationResult}>
       {({
         network,
-        getOverrides,
         setDialogLoadingInfo,
         setDialogSuccessActions,
         txAnalytics
@@ -104,10 +102,9 @@ export const CreateVestingTransactionButton: FC<Props> = ({
                     version
                   };
 
-                  createVestingScheduleFromAmountAndDuration({
-                    ...primaryArgsFromAmountAndDuration,
-                    overrides: ethersOverridesToViem(await getOverrides()),
-                  })
+                  createVestingScheduleFromAmountAndDuration(
+                    primaryArgsFromAmountAndDuration
+                  )
                     .then(
                       ...txAnalytics("Create Vesting Schedule", primaryArgs)
                     )

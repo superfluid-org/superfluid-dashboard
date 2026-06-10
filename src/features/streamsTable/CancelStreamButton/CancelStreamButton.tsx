@@ -10,8 +10,6 @@ import { Stream } from "@superfluid-finance/sdk-core";
 import { FC, useMemo } from "react";
 import { useAccount } from "@/hooks/useAccount"
 import { ScheduledStream } from "../../../hooks/streamSchedulingHooks";
-import useGetTransactionOverrides from "../../../hooks/useGetTransactionOverrides";
-import { ethersOverridesToViem } from "../../../utils/ethersOverridesToViem";
 import { useAnalytics } from "../../analytics/useAnalytics";
 import { Network } from "../../network/networks";
 import { usePendingStreamCancellation } from "../../pendingUpdates/PendingStreamCancellation";
@@ -40,7 +38,6 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
   const [flowDeleteTrigger, flowDeleteMutation] =
     useDeleteFlowWithScheduling();
 
-  const getTransactionOverrides = useGetTransactionOverrides();
   const pendingCancellation = usePendingStreamCancellation({
     tokenAddress: token,
     senderAddress: sender,
@@ -57,10 +54,7 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
       receiverAddress: receiver,
       userDataBytes: undefined,
     };
-    flowDeleteTrigger({
-      ...primaryArgs,
-      overrides: ethersOverridesToViem(await getTransactionOverrides(network)),
-    })
+    flowDeleteTrigger(primaryArgs)
       .then(...txAnalytics("Cancel Stream", primaryArgs))
       .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
   };

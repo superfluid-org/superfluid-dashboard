@@ -27,7 +27,6 @@ import { SwitchWrapModeBtn } from "./SwitchWrapModeBtn";
 import { TokenDialogButton } from "./TokenDialogButton";
 import { useTokenPairQuery } from "./useTokenPairQuery";
 import { useTokenUnwrap } from "./useTokenWrapWrites";
-import { ethersOverridesToViem } from "../../utils/ethersOverridesToViem";
 import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/tokenTypes";
 import { WrapInputCard } from "./WrapInputCard";
 import { ValidWrappingForm, WrappingForm } from "./WrappingFormProvider";
@@ -206,7 +205,7 @@ export const TabUnwrap = memo(function TabUnwrap(props: TabUnwrapProps) {
 
       <ConnectionBoundary>
         <TransactionBoundary mutationResult={unwrapResult}>
-          {({ setDialogLoadingInfo, getOverrides, txAnalytics }) => (
+          {({ setDialogLoadingInfo, txAnalytics }) => (
             <TransactionButton
               dataCy={"downgrade-button"}
               disabled={isDowngradeDisabled}
@@ -226,8 +225,6 @@ export const TabUnwrap = memo(function TabUnwrap(props: TabUnwrapProps) {
                   tokenPair: formData.tokenPair,
                   amountWei: parseEther(formData.amountDecimal).toString(),
                 };
-
-                const overrides = await getOverrides();
 
                 setDialogLoadingInfo(
                   <UnwrapPreview
@@ -252,7 +249,6 @@ export const TabUnwrap = memo(function TabUnwrap(props: TabUnwrapProps) {
                   transactionExtraData: {
                     restoration,
                   },
-                  overrides: ethersOverridesToViem(overrides)
                 })
                   .then(...txAnalytics("Unwrap", primaryArgs))
                   .then(() => resetForm())

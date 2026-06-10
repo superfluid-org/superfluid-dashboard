@@ -18,7 +18,6 @@ import { BigNumber } from "ethers";
 import { FC, useMemo } from "react";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
-import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { subscriptionWeiAmountReceived } from "../../utils/tokenUtils";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import { Network } from "../network/networks";
@@ -28,7 +27,6 @@ import {
   useIndexSubscriptionApprove,
   useIndexSubscriptionRevoke,
 } from "./useIndexSubscriptionWrites";
-import { ethersOverridesToViem } from "../../utils/ethersOverridesToViem";
 import Amount from "../token/Amount";
 import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
@@ -131,8 +129,6 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
       units,
     ]
   );
-
-  const getTransactionOverrides = useGetTransactionOverrides();
 
   const [approveSubscription, approveSubscriptionResult] =
     useIndexSubscriptionApprove();
@@ -297,12 +293,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
                                   superTokenAddress: subscription.token,
                                   userDataBytes: undefined,
                                 };
-                                approveSubscription({
-                                  ...primaryArgs,
-                                  overrides: ethersOverridesToViem(
-                                    await getTransactionOverrides(network)
-                                  )
-                                })
+                                approveSubscription(primaryArgs)
                                   .then(
                                     ...txAnalytics(
                                       "Approve IDA Subscription",
@@ -382,12 +373,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
                                   superTokenAddress: subscription.token,
                                   userDataBytes: undefined,
                                 };
-                                revokeSubscription({
-                                  ...primaryArgs,
-                                  overrides: ethersOverridesToViem(
-                                    await getTransactionOverrides(network)
-                                  )
-                                })
+                                revokeSubscription(primaryArgs)
                                   .then(
                                     ...txAnalytics(
                                       "Revoke IDA Subscription",

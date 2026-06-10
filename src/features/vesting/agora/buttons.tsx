@@ -86,7 +86,6 @@ export const ExecuteTranchUpdateTransactionButton: FC<Props> = ({
         <TransactionBoundary mutationResult={executeTranchUpdateResult}>
             {({
                 network,
-                getOverrides,
                 setDialogLoadingInfo,
                 setDialogSuccessActions,
                 txAnalytics,

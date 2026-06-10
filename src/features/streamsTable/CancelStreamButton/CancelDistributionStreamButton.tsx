@@ -8,8 +8,6 @@ import {
 } from "@mui/material";
 import { FC, useMemo } from "react";
 import { useAccount } from "@/hooks/useAccount"
-import useGetTransactionOverrides from "../../../hooks/useGetTransactionOverrides";
-import { ethersOverridesToViem } from "../../../utils/ethersOverridesToViem";
 import { useAnalytics } from "../../analytics/useAnalytics";
 import { Network } from "../../network/networks";
 import { usePendingStreamCancellation } from "../../pendingUpdates/PendingStreamCancellation";
@@ -38,7 +36,6 @@ const CancelDistributionStreamButton: FC<CancelDistributionStreamButtonProps> = 
   const [cancelDistributionStream_, distributionStreamCancellationMutation] =
     useCancelDistributionStream();
 
-  const getTransactionOverrides = useGetTransactionOverrides();
   const pendingCancellation = usePendingStreamCancellation({
     tokenAddress: token,
     senderAddress: sender,
@@ -54,10 +51,7 @@ const CancelDistributionStreamButton: FC<CancelDistributionStreamButtonProps> = 
       senderAddress: sender,
       poolAddress: stream.pool
     };
-    cancelDistributionStream_({
-      ...primaryArgs,
-      overrides: ethersOverridesToViem(await getTransactionOverrides(network)),
-    })
+    cancelDistributionStream_(primaryArgs)
       .then(...txAnalytics("Cancel Distribution Stream", primaryArgs))
       .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
   };

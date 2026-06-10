@@ -5,11 +5,9 @@ import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary"
 import { Network } from "../network/networks";
 import { PoolMember } from "@superfluid-finance/sdk-core";
 import { useAnalytics } from "../analytics/useAnalytics";
-import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { useConnectionBoundary } from "../transactionBoundary/ConnectionBoundary";
 import { usePendingDisconnectFromPool } from "../pendingUpdates/PendingDisconnectFromPool";
 import { useDisconnectFromPool } from "./usePoolConnectionWrites";
-import { ethersOverridesToViem } from "../../utils/ethersOverridesToViem";
 
 type Props = {
     network: Network;
@@ -18,8 +16,6 @@ type Props = {
 
 export const DisconnectFromPoolButton: FC<Props> = ({ network, poolMember }) => {
     const { txAnalytics } = useAnalytics();
-
-    const getTransactionOverrides = useGetTransactionOverrides();
 
     const [disconnectFromPool, disconnectFromPoolResult] =
         useDisconnectFromPool();
@@ -90,9 +86,6 @@ export const DisconnectFromPoolButton: FC<Props> = ({ network, poolMember }) => 
                                             disconnectFromPool({
                                                 ...primaryArgs,
                                                 simulate: true,
-                                                overrides: ethersOverridesToViem(
-                                                    await getTransactionOverrides(network)
-                                                ),
                                             })
                                                 .then(
                                                     ...txAnalytics(

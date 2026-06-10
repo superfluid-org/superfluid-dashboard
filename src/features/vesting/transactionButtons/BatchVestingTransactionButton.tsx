@@ -37,7 +37,6 @@ export function BatchVestingTransactionButton({ setView, isVisible: isVisible_ =
     return (<TransactionBoundary mutationResult={mutationResult}>
         {({
             network,
-            getOverrides, // Should I use this?
             setDialogLoadingInfo,
             setDialogSuccessActions,
             txAnalytics,

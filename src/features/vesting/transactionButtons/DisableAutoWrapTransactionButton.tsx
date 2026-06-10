@@ -6,12 +6,9 @@ import { useSimulateContract, useWalletClient } from "wagmi";
 import { useSuperfluidWriteContract } from "../../transactions/useSuperfluidWriteContract";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
-import useGetTransactionOverrides from "../../../hooks/useGetTransactionOverrides";
-import { convertOverridesForWagmi } from "../../../utils/convertOverridesForWagmi";
 import { erc20Abi } from "../../../generated";
 import { Network } from "../../network/networks";
 import { ConnectionBoundaryButtonProps } from "../../transactionBoundary/ConnectionBoundaryButton";
-import { useQuery } from "@tanstack/react-query";
 import { SuperTokenMinimal } from "../../redux/endpoints/tokenTypes";
 import { useTokenQuery } from "../../../hooks/useTokenQuery";
 
@@ -26,12 +23,6 @@ const DisableAutoWrapTransactionButton: FC<{
   ConnectionBoundaryButtonProps?: Partial<ConnectionBoundaryButtonProps>
 }> = ({ token, isVisible, ButtonProps = {}, ConnectionBoundaryButtonProps, network, ...props }) => {
   const { data: walletClient } = useWalletClient();
-  const getGasOverrides = useGetTransactionOverrides();
-  
-  const { data: overrides } = useQuery({
-    queryKey: ["gasOverrides", TX_TITLE, network.id],
-    queryFn: async () => convertOverridesForWagmi(await getGasOverrides(network))
-  });
 
   const primaryArgs = {
     spender: network.autoWrap!.strategyContractAddress,
@@ -96,7 +87,6 @@ const DisableAutoWrapTransactionButton: FC<{
                 functionName: "approve",
                 args: [primaryArgs.spender, primaryArgs.amount],
                 title: "Disable Auto-Wrap",
-                overrides,
               })
                 .then(
                   ...txAnalytics("Disable Auto-Wrap", primaryArgs)

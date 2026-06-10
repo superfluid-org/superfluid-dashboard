@@ -3,7 +3,6 @@ import { FC } from "react";
 import { usePendingVestingScheduleDelete } from "../../pendingUpdates/PendingVestingScheduleDelete";
 import { rpcApi } from "../../redux/store";
 import { useDeleteVestingSchedule } from "../useVestingWrites";
-import { ethersOverridesToViem } from "../../../utils/ethersOverridesToViem";
 import { useConnectionBoundary } from "../../transactionBoundary/ConnectionBoundary";
 import {
   TransactionBoundary,
@@ -90,7 +89,7 @@ export const DeleteVestingTransactionButton: FC<{
       {...TransactionBoundaryProps}
       mutationResult={deleteVestingScheduleResult}
     >
-      {({ getOverrides, setDialogLoadingInfo, setDialogSuccessActions }) =>
+      {({ setDialogLoadingInfo, setDialogSuccessActions }) =>
         isButtonVisible && (
           <TransactionButton
             {...RestTxButtonProps}
@@ -123,10 +122,7 @@ export const DeleteVestingTransactionButton: FC<{
                 deleteFlow: shouldDeleteActiveFlow,
                 version
               };
-              deleteVestingSchedule({
-                ...primaryArgs,
-                overrides: ethersOverridesToViem(await getOverrides())
-              })
+              deleteVestingSchedule(primaryArgs)
                 .then(...txAnalytics("Delete Vesting Schedule", primaryArgs))
                 .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
 

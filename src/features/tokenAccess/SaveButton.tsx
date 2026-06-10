@@ -4,7 +4,6 @@ import { Network } from "../network/networks";
 import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../transactionBoundary/TransactionButton";
 import { useUpdateAccess } from "./useTokenAccessWrites";
-import { ethersOverridesToViem } from "../../utils/ethersOverridesToViem";
 import { TokenAccessProps } from "./dialog/UpsertTokenAccessForm";
 import { SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
 
@@ -36,7 +35,7 @@ const SaveButton: FC<SaveButtonProps> = ({
 
   return (
     <TransactionBoundary mutationResult={updateAccessResult}>
-      {({ setDialogLoadingInfo, getOverrides, txAnalytics }) => (
+      {({ setDialogLoadingInfo, txAnalytics }) => (
         <TransactionButton
           dataCy={"approvals-save-button"}
           disabled={isDisabled}
@@ -78,10 +77,7 @@ const SaveButton: FC<SaveButtonProps> = ({
               }
             };
 
-            updateAccess({
-              ...primaryArgs,
-              overrides: ethersOverridesToViem(await getOverrides()),
-            })
+            updateAccess(primaryArgs)
               .then(
                 ...txAnalytics("Updated Permissions & Allowances", primaryArgs)
               ).then(onSuccessCallback)
