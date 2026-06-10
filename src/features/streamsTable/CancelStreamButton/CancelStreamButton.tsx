@@ -7,15 +7,15 @@ import {
   Typography,
 } from "@mui/material";
 import { Stream } from "@superfluid-finance/sdk-core";
-import { Signer } from "ethers";
 import { FC, useMemo } from "react";
 import { useAccount } from "@/hooks/useAccount"
 import { ScheduledStream } from "../../../hooks/streamSchedulingHooks";
 import useGetTransactionOverrides from "../../../hooks/useGetTransactionOverrides";
+import { ethersOverridesToViem } from "../../../utils/ethersOverridesToViem";
 import { useAnalytics } from "../../analytics/useAnalytics";
 import { Network } from "../../network/networks";
 import { usePendingStreamCancellation } from "../../pendingUpdates/PendingStreamCancellation";
-import { rpcApi } from "../../redux/store";
+import { useDeleteFlowWithScheduling } from "../../send/useFlowSchedulingWrites";
 import ConnectionBoundary from "../../transactionBoundary/ConnectionBoundary";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import { StreamScheduling } from "../StreamScheduling";
@@ -38,7 +38,7 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
 
   const { token, sender, receiver } = stream;
   const [flowDeleteTrigger, flowDeleteMutation] =
-    rpcApi.useDeleteFlowWithSchedulingMutation();
+    useDeleteFlowWithScheduling();
 
   const getTransactionOverrides = useGetTransactionOverrides();
   const pendingCancellation = usePendingStreamCancellation({
@@ -49,7 +49,7 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
 
   const { txAnalytics } = useAnalytics();
 
-  const deleteStream = async (signer: Signer) => {
+  const deleteStream = async () => {
     const primaryArgs = {
       chainId: network.id,
       superTokenAddress: stream.token,
@@ -59,10 +59,8 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
     };
     flowDeleteTrigger({
       ...primaryArgs,
-      signer,
-      overrides: await getTransactionOverrides(network),
+      overrides: ethersOverridesToViem(await getTransactionOverrides(network)),
     })
-      .unwrap()
       .then(...txAnalytics("Cancel Stream", primaryArgs))
       .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
   };
@@ -107,13 +105,6 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
                       data-cy={"cancel-button"}
                       color="error"
                       onClick={async () => {
-                        if (!signer)
-                          throw new Error(
-                            "Signer should always be present here."
-                          );
-
-                        const signerAddress = await signer.getAddress();
-
                         setDialogLoadingInfo(
                           <Typography
                             variant="h5"
@@ -124,7 +115,7 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
                           </Typography>
                         );
 
-                        deleteStream(signer);
+                        deleteStream();
                       }}
                       disabled={!(isConnected && signer && isCorrectNetwork)}
                       {...IconButtonProps}

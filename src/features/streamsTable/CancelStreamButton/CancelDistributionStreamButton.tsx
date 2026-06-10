@@ -6,14 +6,14 @@ import {
   TooltipProps,
   Typography,
 } from "@mui/material";
-import { Signer } from "ethers";
 import { FC, useMemo } from "react";
 import { useAccount } from "@/hooks/useAccount"
 import useGetTransactionOverrides from "../../../hooks/useGetTransactionOverrides";
+import { ethersOverridesToViem } from "../../../utils/ethersOverridesToViem";
 import { useAnalytics } from "../../analytics/useAnalytics";
 import { Network } from "../../network/networks";
 import { usePendingStreamCancellation } from "../../pendingUpdates/PendingStreamCancellation";
-import { rpcApi } from "../../redux/store";
+import { useCancelDistributionStream } from "../../pool/useDistributionWrites";
 import ConnectionBoundary from "../../transactionBoundary/ConnectionBoundary";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import CancelStreamProgress from "./CancelStreamProgress";
@@ -36,7 +36,7 @@ const CancelDistributionStreamButton: FC<CancelDistributionStreamButtonProps> = 
 
   const { token, sender, receiver } = stream;
   const [cancelDistributionStream_, distributionStreamCancellationMutation] =
-    rpcApi.useCancelDistributionStreamMutation();
+    useCancelDistributionStream();
 
   const getTransactionOverrides = useGetTransactionOverrides();
   const pendingCancellation = usePendingStreamCancellation({
@@ -47,7 +47,7 @@ const CancelDistributionStreamButton: FC<CancelDistributionStreamButtonProps> = 
 
   const { txAnalytics } = useAnalytics();
 
-  const cancelDistributionStream = async (signer: Signer) => {
+  const cancelDistributionStream = async () => {
     const primaryArgs = {
       chainId: network.id,
       superTokenAddress: stream.token,
@@ -56,10 +56,8 @@ const CancelDistributionStreamButton: FC<CancelDistributionStreamButtonProps> = 
     };
     cancelDistributionStream_({
       ...primaryArgs,
-      signer,
-      overrides: await getTransactionOverrides(network),
+      overrides: ethersOverridesToViem(await getTransactionOverrides(network)),
     })
-      .unwrap()
       .then(...txAnalytics("Cancel Distribution Stream", primaryArgs))
       .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
   };
@@ -104,11 +102,6 @@ const CancelDistributionStreamButton: FC<CancelDistributionStreamButtonProps> = 
                       data-cy={"cancel-button"}
                       color="error"
                       onClick={async () => {
-                        if (!signer)
-                          throw new Error(
-                            "Signer should always be present here."
-                          );
-
                         setDialogLoadingInfo(
                           <Typography
                             variant="h5"
@@ -119,7 +112,7 @@ const CancelDistributionStreamButton: FC<CancelDistributionStreamButtonProps> = 
                           </Typography>
                         );
 
-                        cancelDistributionStream(signer);
+                        cancelDistributionStream();
                       }}
                       disabled={!(isConnected && signer && isCorrectNetwork)}
                       {...IconButtonProps}

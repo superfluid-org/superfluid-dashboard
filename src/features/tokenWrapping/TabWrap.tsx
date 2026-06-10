@@ -37,6 +37,8 @@ import { BalanceUnderlyingToken } from "./BalanceUnderlyingToken";
 import { SwitchWrapModeBtn } from "./SwitchWrapModeBtn";
 import { TokenDialogButton } from "./TokenDialogButton";
 import { useTokenPairQuery } from "./useTokenPairQuery";
+import { useTokenApprove, useTokenWrap } from "./useTokenWrapWrites";
+import { ethersOverridesToViem } from "../../utils/ethersOverridesToViem";
 import { WrapInputCard } from "./WrapInputCard";
 import { ValidWrappingForm, WrappingForm } from "./WrappingFormProvider";
 import { useTokenQuery } from "../../hooks/useTokenQuery";
@@ -142,8 +144,8 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
       : BigNumber.from(amountWei).sub(currentAllowance)
     : ethers.BigNumber.from(0);
 
-  const [approveTrigger, approveResult] = rpcApi.useApproveMutation();
-  const [wrapTrigger, wrapResult] = rpcApi.useSuperTokenUpgradeMutation();
+  const [approveTrigger, approveResult] = useTokenApprove();
+  const [wrapTrigger, wrapResult] = useTokenWrap();
 
   const isApproveAllowanceVisible = !!(
     underlyingToken &&
@@ -464,13 +466,14 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                     };
                     approveTrigger({
                       ...primaryArgs,
+                      underlyingTokenAddress: tokenPair.underlyingTokenAddress,
                       transactionExtraData: {
                         restoration,
                       },
-                      signer,
-                      overrides: await getTransactionOverrides(network),
+                      overrides: ethersOverridesToViem(
+                        await getTransactionOverrides(network)
+                      ),
                     })
-                      .unwrap()
                       .then(...txAnalytics("Approve Allowance", primaryArgs))
                       .then(() => setTransactionDrawerOpen(true))
                       .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
@@ -546,13 +549,13 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                   };
                   wrapTrigger({
                     ...primaryArgs,
+                    isNativeAssetUnderlyingToken:
+                      isUnderlyingBlockchainNativeAsset,
                     transactionExtraData: {
                       restoration,
                     },
-                    signer,
-                    overrides
+                    overrides: ethersOverridesToViem(overrides)
                   })
-                    .unwrap()
                     .then(...txAnalytics("Wrap", primaryArgs))
                     .then(() => resetForm())
                     .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.

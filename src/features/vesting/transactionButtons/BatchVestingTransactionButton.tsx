@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ValidBatchVestingForm } from "../batch/BatchVestingFormProvider";
 import { useFormContext } from "react-hook-form";
-import { rpcApi } from "../../redux/store";
+import { useExecuteBatchVesting } from "../useVestingWrites";
 import { CreateVestingCardView } from "../CreateVestingSection";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
 import { Typography } from "@mui/material";
@@ -30,7 +30,7 @@ export function BatchVestingTransactionButton({ setView, isVisible: isVisible_ =
     }, [isValid, isValidating]);
 
     const [executeBatchVesting, mutationResult] =
-        rpcApi.useExecuteBatchVestingMutation();
+        useExecuteBatchVesting();
 
     const isVisible = !mutationResult.isSuccess && isVisible_;
 
@@ -47,7 +47,7 @@ export function BatchVestingTransactionButton({ setView, isVisible: isVisible_ =
                 <TransactionButton
                     dataCy={"batch-vesting-tx-button"}
                     disabled={isDisabled}
-                    onClick={async (signer) => {
+                    onClick={async () => {
                         setDialogLoadingInfo(
                             <Typography
                                 variant="h5"
@@ -64,12 +64,10 @@ export function BatchVestingTransactionButton({ setView, isVisible: isVisible_ =
                             params: convertBatchFormToParams(validForm, network.id),
                             chainId: network.id,
                             superTokenAddress: validForm.data.superTokenAddress,
-                            signer,
                             version: validForm.data.version
                         };
 
                         executeBatchVesting(primaryArgs)
-                            .unwrap()
                             .then(
                                 ...txAnalytics("Create Batch of Vesting Schedules", primaryArgs)
                             )

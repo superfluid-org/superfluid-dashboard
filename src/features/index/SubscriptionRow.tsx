@@ -24,7 +24,11 @@ import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import { Network } from "../network/networks";
 import { usePendingIndexSubscriptionApprove } from "../pendingUpdates/PendingIndexSubscriptionApprove";
 import { usePendingIndexSubscriptionRevoke } from "../pendingUpdates/PendingIndexSubscriptionRevoke";
-import { rpcApi } from "../redux/store";
+import {
+  useIndexSubscriptionApprove,
+  useIndexSubscriptionRevoke,
+} from "./useIndexSubscriptionWrites";
+import { ethersOverridesToViem } from "../../utils/ethersOverridesToViem";
 import Amount from "../token/Amount";
 import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
@@ -131,9 +135,9 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
   const getTransactionOverrides = useGetTransactionOverrides();
 
   const [approveSubscription, approveSubscriptionResult] =
-    rpcApi.useIndexSubscriptionApproveMutation();
+    useIndexSubscriptionApprove();
   const [revokeSubscription, revokeSubscriptionResult] =
-    rpcApi.useIndexSubscriptionRevokeMutation();
+    useIndexSubscriptionRevoke();
 
   const pendingApproval = usePendingIndexSubscriptionApprove({
     chainId: network.id,
@@ -295,12 +299,10 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
                                 };
                                 approveSubscription({
                                   ...primaryArgs,
-                                  signer,
-                                  overrides: await getTransactionOverrides(
-                                    network
+                                  overrides: ethersOverridesToViem(
+                                    await getTransactionOverrides(network)
                                   )
                                 })
-                                  .unwrap()
                                   .then(
                                     ...txAnalytics(
                                       "Approve IDA Subscription",
@@ -382,12 +384,10 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
                                 };
                                 revokeSubscription({
                                   ...primaryArgs,
-                                  signer,
-                                  overrides: await getTransactionOverrides(
-                                    network
+                                  overrides: ethersOverridesToViem(
+                                    await getTransactionOverrides(network)
                                   )
                                 })
-                                  .unwrap()
                                   .then(
                                     ...txAnalytics(
                                       "Revoke IDA Subscription",

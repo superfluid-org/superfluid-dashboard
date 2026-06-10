@@ -14,13 +14,14 @@ import { memo, useCallback, useEffect, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import TooltipWithIcon from "../../common/TooltipWithIcon";
 import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
-import { rpcApi } from "../../redux/store";
 import { TokenDialogButton } from "../../tokenWrapping/TokenDialogButton";
 import ConnectionBoundary from "../../transactionBoundary/ConnectionBoundary";
 import ConnectionBoundaryButton from "../../transactionBoundary/ConnectionBoundaryButton";
 import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
 import AddressSearch from "../AddressSearch";
 import { PartialTransferForm, ValidTransferForm } from "./TransferFormProvider";
+import { useTransfer } from "./useTransfer";
+import { ethersOverridesToViem } from "../../../utils/ethersOverridesToViem";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
 import { parseEtherOrZero } from "../../../utils/tokenUtils";
@@ -63,8 +64,7 @@ export default memo(function SendTransfer() {
 
   const { data: superToken } = useTokenQuery(tokenAddress ? { chainId: network.id, id: tokenAddress, onlySuperToken: true } : skipToken);
 
-  const [transfer, transferResult] =
-    rpcApi.useTransferMutation();
+  const [transfer, transferResult] = useTransfer();
 
   const [isSendDisabled, setIsSendDisabled] = useState(true);
   useEffect(() => {
@@ -114,13 +114,11 @@ export default memo(function SendTransfer() {
 
           transfer({
             ...primaryArgs,
-            signer,
-            overrides: await getOverrides(),
+            overrides: ethersOverridesToViem(await getOverrides()),
             transactionExtraData: {
               restoration: transactionRestoration,
             }
           })
-            .unwrap()
             .then(...txAnalytics("Send Transfer", primaryArgs))
             .then(() => resetForm())
             .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.

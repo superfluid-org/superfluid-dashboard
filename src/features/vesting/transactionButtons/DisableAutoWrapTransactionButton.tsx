@@ -3,7 +3,7 @@ import { TransactionTitle } from "@superfluid-finance/sdk-redux";
 import { constants } from "ethers";
 import { FC, memo } from "react";
 import { useSimulateContract, useWalletClient } from "wagmi";
-import { rpcApi, subgraphApi } from "../../redux/store";
+import { useSuperfluidWriteContract } from "../../transactions/useSuperfluidWriteContract";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
 import useGetTransactionOverrides from "../../../hooks/useGetTransactionOverrides";
@@ -51,7 +51,7 @@ const DisableAutoWrapTransactionButton: FC<{
       : undefined
   );
 
-  const [write, mutationResult] = rpcApi.useWriteContractMutation();
+  const { write, result: mutationResult } = useSuperfluidWriteContract();
 
   const underlyingTokenQuery = useTokenQuery({
     chainId: network.id,
@@ -78,7 +78,7 @@ const DisableAutoWrapTransactionButton: FC<{
               size: "medium",
               ...ButtonProps,
             }}
-            onClick={async (signer) => {
+            onClick={async () => {
               if (isButtonDisabled)
                 throw new Error("This should never happen!");
 
@@ -90,14 +90,14 @@ const DisableAutoWrapTransactionButton: FC<{
               );
 
               write({
-                signer,
-                request: {
-                  ...config.request,
-                  chainId: network.id,
-                },
-                transactionTitle: "Disable Auto-Wrap",
+                chainId: network.id,
+                abi: erc20Abi,
+                address: token.underlyingAddress as `0x${string}`,
+                functionName: "approve",
+                args: [primaryArgs.spender, primaryArgs.amount],
+                title: "Disable Auto-Wrap",
+                overrides,
               })
-                .unwrap()
                 .then(
                   ...txAnalytics("Disable Auto-Wrap", primaryArgs)
                 )

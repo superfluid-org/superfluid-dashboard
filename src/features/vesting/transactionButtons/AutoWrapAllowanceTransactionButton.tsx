@@ -2,7 +2,7 @@ import { Typography } from "@mui/material";
 import { constants } from "ethers";
 import { FC, memo } from "react";
 import { useSimulateContract, useWalletClient } from "wagmi";
-import { rpcApi } from "../../redux/store";
+import { useSuperfluidWriteContract } from "../../transactions/useSuperfluidWriteContract";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
 import { erc20Abi } from "../../../generated";
@@ -36,7 +36,7 @@ const AutoWrapAllowanceTransactionButton: FC<{
       : undefined
   );
 
-  const [write, mutationResult] = rpcApi.useWriteContractMutation();
+  const { write, result: mutationResult } = useSuperfluidWriteContract();
 
   const underlyingTokenQuery = useTokenQuery({
     chainId: network.id,
@@ -54,7 +54,7 @@ const AutoWrapAllowanceTransactionButton: FC<{
           <TransactionButton
             dataCy="auto-wrap-allowance-button"
             disabled={isButtonDisabled}
-            onClick={async (signer) => {
+            onClick={async () => {
               if (isButtonDisabled)
                 throw new Error("This should never happen!");
               setDialogLoadingInfo(
@@ -65,14 +65,13 @@ const AutoWrapAllowanceTransactionButton: FC<{
               );
 
               write({
-                signer,
-                request: {
-                  ...config.request,
-                  chainId: network.id,
-                },
-                transactionTitle: "Approve Allowance",
+                chainId: network.id,
+                abi: erc20Abi,
+                address: token.underlyingAddress as `0x${string}`,
+                functionName: "approve",
+                args: [primaryArgs.spender, primaryArgs.amount],
+                title: "Approve Allowance",
               })
-                .unwrap()
                 .then(
                   ...txAnalytics("Approve Auto-Wrap Allowance", primaryArgs)
                 )

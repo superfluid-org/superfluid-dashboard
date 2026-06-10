@@ -2,6 +2,8 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import { FC } from "react";
 import { usePendingVestingScheduleDelete } from "../../pendingUpdates/PendingVestingScheduleDelete";
 import { rpcApi } from "../../redux/store";
+import { useDeleteVestingSchedule } from "../useVestingWrites";
+import { ethersOverridesToViem } from "../../../utils/ethersOverridesToViem";
 import { useConnectionBoundary } from "../../transactionBoundary/ConnectionBoundary";
 import {
   TransactionBoundary,
@@ -39,7 +41,7 @@ export const DeleteVestingTransactionButton: FC<{
 }) => {
   const { txAnalytics } = useAnalytics();
   const [deleteVestingSchedule, deleteVestingScheduleResult] =
-    rpcApi.useDeleteVestingScheduleMutation();
+    useDeleteVestingSchedule();
 
   const { expectedNetwork: network } = useConnectionBoundary();
 
@@ -123,10 +125,8 @@ export const DeleteVestingTransactionButton: FC<{
               };
               deleteVestingSchedule({
                 ...primaryArgs,
-                signer,
-                overrides: await getOverrides()
+                overrides: ethersOverridesToViem(await getOverrides())
               })
-                .unwrap()
                 .then(...txAnalytics("Delete Vesting Schedule", primaryArgs))
                 .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
 

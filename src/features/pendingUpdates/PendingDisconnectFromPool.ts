@@ -4,12 +4,12 @@ import { useAppSelector } from "../redux/store";
 import { pendingUpdateSelectors } from "./pendingUpdate.slice";
 
 export interface PendingDisconnectFromPool extends PendingUpdate {
-  pendingType: "ConnectToPool";
+  pendingType: "DisconnectFromPool";
   poolAddress: string;
   superTokenAddress: string;
 }
 
-export const isPendingIndexSubscriptionApprove = (
+export const isPendingDisconnectFromPool = (
   x: PendingUpdate
 ): x is PendingDisconnectFromPool => x.pendingType === "DisconnectFromPool";
 
@@ -30,7 +30,7 @@ export const usePendingDisconnectFromPool = ({
   return useMemo(
     () =>
       allPendingUpdates
-        .filter(isPendingIndexSubscriptionApprove)
+        .filter(isPendingDisconnectFromPool)
         .filter(
           (x) =>
             x.chainId === chainId &&

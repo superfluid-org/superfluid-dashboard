@@ -3,7 +3,8 @@ import { FC } from "react";
 import { Network } from "../network/networks";
 import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../transactionBoundary/TransactionButton";
-import { rpcApi } from "../redux/store";
+import { useUpdateAccess } from "./useTokenAccessWrites";
+import { ethersOverridesToViem } from "../../utils/ethersOverridesToViem";
 import { TokenAccessProps } from "./dialog/UpsertTokenAccessForm";
 import { SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
 
@@ -28,7 +29,7 @@ const SaveButton: FC<SaveButtonProps> = ({
   title = "Save changes",
   onSuccessCallback,
 }) => {
-  const [updateAccess, updateAccessResult] = rpcApi.useUpdateAccessMutation();
+  const [updateAccess, updateAccessResult] = useUpdateAccess();
 
   const isDisabled =
     disabled_ || !network || !superToken;
@@ -48,7 +49,7 @@ const SaveButton: FC<SaveButtonProps> = ({
             fullWidth: true,
             variant: "contained",
           }}
-          onClick={async (signer) => {
+          onClick={async () => {
             if (isDisabled) {
               throw new Error(
                 "This should never happen as the button should be disabled."
@@ -79,10 +80,8 @@ const SaveButton: FC<SaveButtonProps> = ({
 
             updateAccess({
               ...primaryArgs,
-              signer,
-              overrides: await getOverrides(),
+              overrides: ethersOverridesToViem(await getOverrides()),
             })
-              .unwrap()
               .then(
                 ...txAnalytics("Updated Permissions & Allowances", primaryArgs)
               ).then(onSuccessCallback)

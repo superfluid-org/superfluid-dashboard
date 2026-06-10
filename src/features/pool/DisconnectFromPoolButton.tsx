@@ -6,9 +6,10 @@ import { Network } from "../network/networks";
 import { PoolMember } from "@superfluid-finance/sdk-core";
 import { useAnalytics } from "../analytics/useAnalytics";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
-import { rpcApi } from "../redux/store";
 import { useConnectionBoundary } from "../transactionBoundary/ConnectionBoundary";
 import { usePendingDisconnectFromPool } from "../pendingUpdates/PendingDisconnectFromPool";
+import { useDisconnectFromPool } from "./usePoolConnectionWrites";
+import { ethersOverridesToViem } from "../../utils/ethersOverridesToViem";
 
 type Props = {
     network: Network;
@@ -21,7 +22,7 @@ export const DisconnectFromPoolButton: FC<Props> = ({ network, poolMember }) => 
     const getTransactionOverrides = useGetTransactionOverrides();
 
     const [disconnectFromPool, disconnectFromPoolResult] =
-        rpcApi.useDisconnectFromPoolMutation();
+        useDisconnectFromPool();
 
     const pendingUpdate = usePendingDisconnectFromPool({
         chainId: network.id,
@@ -33,7 +34,7 @@ export const DisconnectFromPoolButton: FC<Props> = ({ network, poolMember }) => 
 
     return (
         <TransactionBoundary mutationResult={disconnectFromPoolResult}>
-            {({ mutationResult, signer, setDialogLoadingInfo }) =>
+            {({ mutationResult, setDialogLoadingInfo }) =>
                 poolMember.isConnected && (
                     <>
                         {mutationResult.isLoading || pendingUpdate ? (
@@ -66,14 +67,9 @@ export const DisconnectFromPoolButton: FC<Props> = ({ network, poolMember }) => 
                                         data-cy={"disconnect-from-pool-button"}
                                         color="error"
                                         disabled={
-                                            !signer || !isConnected || !isCorrectNetwork
+                                            !isConnected || !isCorrectNetwork
                                         }
                                         onClick={async () => {
-                                            if (!signer)
-                                                throw new Error(
-                                                    "Signer should always be available here."
-                                                );
-
                                             setDialogLoadingInfo(
                                                 <Typography
                                                     data-cy={"disconnect-from-pool-message"}
@@ -85,7 +81,6 @@ export const DisconnectFromPoolButton: FC<Props> = ({ network, poolMember }) => 
                                                 </Typography>
                                             );
 
-                                            // TODO(KK): Make the operation take subscriber as input. Don't just rely on the wallet's signer -- better to have explicit data flowing
                                             const primaryArgs = {
                                                 chainId: network.id,
                                                 superTokenAddress: poolMember.token,
@@ -94,12 +89,11 @@ export const DisconnectFromPoolButton: FC<Props> = ({ network, poolMember }) => 
 
                                             disconnectFromPool({
                                                 ...primaryArgs,
-                                                signer,
-                                                overrides: await getTransactionOverrides(
-                                                    network
-                                                )
+                                                simulate: true,
+                                                overrides: ethersOverridesToViem(
+                                                    await getTransactionOverrides(network)
+                                                ),
                                             })
-                                                .unwrap()
                                                 .then(
                                                     ...txAnalytics(
                                                         "Disconnect from GDA Pool",

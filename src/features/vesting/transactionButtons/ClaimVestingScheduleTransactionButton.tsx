@@ -1,6 +1,8 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import { FC } from "react";
 import { rpcApi } from "../../redux/store";
+import { useClaimVestingSchedule } from "../useVestingWrites";
+import { ethersOverridesToViem } from "../../../utils/ethersOverridesToViem";
 import { useConnectionBoundary } from "../../transactionBoundary/ConnectionBoundary";
 import {
   TransactionBoundary,
@@ -38,7 +40,7 @@ export const ClaimVestingScheduleTransactionButton: FC<{
 }) => {
     const { txAnalytics } = useAnalytics();
     const [claimVestingSchedule, claimVestingScheduleResult] =
-      rpcApi.useClaimVestingScheduleMutation();
+      useClaimVestingSchedule();
 
     const { expectedNetwork: network } = useConnectionBoundary();
 
@@ -112,10 +114,8 @@ export const ClaimVestingScheduleTransactionButton: FC<{
                 };
                 claimVestingSchedule({
                   ...primaryArgs,
-                  signer,
-                  overrides: await getOverrides()
+                  overrides: ethersOverridesToViem(await getOverrides())
                 })
-                  .unwrap()
                   .then(...txAnalytics("Claim Vesting Schedule", primaryArgs))
                   .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
 

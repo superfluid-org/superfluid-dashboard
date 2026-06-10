@@ -4,7 +4,7 @@ import { BigNumber } from "ethers";
 import { FC, memo } from "react";
 import { useSimulateContract, useWalletClient  } from "wagmi";
 import { autoWrapManagerAbi, autoWrapManagerAddress } from "../../../generated";
-import { rpcApi } from "../../redux/store";
+import { useSuperfluidWriteContract } from "../../transactions/useSuperfluidWriteContract";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
 import { Network } from "../../network/networks";
@@ -49,7 +49,7 @@ const AutoWrapStrategyTransactionButton: FC<{
       : undefined
   );
 
-  const [write, mutationResult] = rpcApi.useWriteContractMutation();
+  const { write, result: mutationResult } = useSuperfluidWriteContract();
   const isButtonEnabled = prepare && config && config.request;
   const isButtonDisabled = !isButtonEnabled;
 
@@ -60,7 +60,7 @@ const AutoWrapStrategyTransactionButton: FC<{
           <TransactionButton
             dataCy="enable-auto-wrap-button"
             disabled={isButtonDisabled}
-            onClick={async (signer) => {
+            onClick={async () => {
               if (isButtonDisabled)
                 throw new Error("This should never happen!");
               setDialogLoadingInfo(
@@ -71,14 +71,20 @@ const AutoWrapStrategyTransactionButton: FC<{
               );
 
               write({
-                signer,
-                request: {
-                  ...config.request,
-                  chainId: network.id,
-                },
-                transactionTitle: TX_TITLE,
+                chainId: network.id,
+                abi: autoWrapManagerAbi,
+                address: network.autoWrap!.managerContractAddress,
+                functionName: "createWrapSchedule",
+                args: [
+                  primaryArgs.superToken,
+                  primaryArgs.strategy,
+                  primaryArgs.liquidityToken,
+                  primaryArgs.expiry,
+                  primaryArgs.lowerLimit,
+                  primaryArgs.upperLimit,
+                ],
+                title: TX_TITLE,
               })
-                .unwrap()
                 .then(
                   ...txAnalytics("Enable Auto-Wrap", primaryArgs)
                 )

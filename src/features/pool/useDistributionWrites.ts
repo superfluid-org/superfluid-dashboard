@@ -1,0 +1,62 @@
+import { useCallback } from "react";
+import { gdaForwarderAbi, gdaForwarderAddress } from "@sfpro/sdk/abi";
+import { Address } from "viem";
+import { ViemFeeOverrides } from "../../utils/ethersOverridesToViem";
+import { buildCancelDistributionStreamPendingUpdate } from "../pendingUpdates/buildPendingUpdates";
+import { getContractAddress } from "../transactions/operations";
+import { useSuperfluidWriteContract } from "../transactions/useSuperfluidWriteContract";
+
+interface CancelDistributionStreamArgs {
+  chainId: number;
+  superTokenAddress: string;
+  senderAddress: string;
+  poolAddress: string;
+  transactionExtraData?: Record<string, unknown>;
+  overrides?: ViemFeeOverrides;
+  simulate?: boolean;
+}
+
+/**
+ * Cancel an outgoing GDA distribution stream by requesting flow rate 0 via the GDAv1
+ * forwarder. Drop-in replacement for `rpcApi.useCancelDistributionStreamMutation()` —
+ * returns `[trigger, result]`.
+ */
+export function useCancelDistributionStream() {
+  const { write, result } = useSuperfluidWriteContract();
+
+  const cancelDistributionStream = useCallback(
+    (arg: CancelDistributionStreamArgs) =>
+      write({
+        chainId: arg.chainId,
+        abi: gdaForwarderAbi,
+        address: getContractAddress(
+          gdaForwarderAddress,
+          arg.chainId,
+          "GDAv1 Forwarder"
+        ),
+        functionName: "distributeFlow",
+        args: [
+          arg.superTokenAddress as Address,
+          arg.senderAddress as Address,
+          arg.poolAddress as Address,
+          0n,
+          "0x",
+        ],
+        title: "Cancel Distribution Stream",
+        subTransactionTitles: ["Cancel Distribution Stream"],
+        extraData: arg.transactionExtraData,
+        overrides: arg.overrides,
+        simulate: arg.simulate,
+        getPendingUpdates: (hash) =>
+          buildCancelDistributionStreamPendingUpdate(hash, {
+            chainId: arg.chainId,
+            superTokenAddress: arg.superTokenAddress,
+            senderAddress: arg.senderAddress,
+            poolAddress: arg.poolAddress,
+          }),
+      }),
+    [write]
+  );
+
+  return [cancelDistributionStream, result] as const;
+}

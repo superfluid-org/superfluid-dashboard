@@ -2,7 +2,8 @@ import { Typography } from "@mui/material";
 import NextLink from "next/link";
 import { FC, useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
-import { rpcApi } from "../../redux/store";
+import { useCreateVestingScheduleFromAmountAndDuration } from "../useVestingWrites";
+import { ethersOverridesToViem } from "../../../utils/ethersOverridesToViem";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
 import {
@@ -25,7 +26,7 @@ export const CreateVestingTransactionButton: FC<Props> = ({
   isVisible: isVisible_,
 }) => {
   const [createVestingScheduleFromAmountAndDuration, mutationResult] =
-    rpcApi.useCreateVestingScheduleFromAmountAndDurationMutation();
+    useCreateVestingScheduleFromAmountAndDuration();
 
   const { formState: { isValid, isValidating }, handleSubmit } = useFormContext<ValidVestingForm>();
 
@@ -105,10 +106,8 @@ export const CreateVestingTransactionButton: FC<Props> = ({
 
                   createVestingScheduleFromAmountAndDuration({
                     ...primaryArgsFromAmountAndDuration,
-                    signer,
-                    overrides: await getOverrides(),
+                    overrides: ethersOverridesToViem(await getOverrides()),
                   })
-                    .unwrap()
                     .then(
                       ...txAnalytics("Create Vesting Schedule", primaryArgs)
                     )

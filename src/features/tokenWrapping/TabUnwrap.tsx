@@ -26,6 +26,9 @@ import { BalanceUnderlyingToken } from "./BalanceUnderlyingToken";
 import { SwitchWrapModeBtn } from "./SwitchWrapModeBtn";
 import { TokenDialogButton } from "./TokenDialogButton";
 import { useTokenPairQuery } from "./useTokenPairQuery";
+import { useTokenUnwrap } from "./useTokenWrapWrites";
+import { ethersOverridesToViem } from "../../utils/ethersOverridesToViem";
+import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/tokenTypes";
 import { WrapInputCard } from "./WrapInputCard";
 import { ValidWrappingForm, WrappingForm } from "./WrappingFormProvider";
 import { BigNumber } from "ethers";
@@ -67,7 +70,7 @@ export const TabUnwrap = memo(function TabUnwrap(props: TabUnwrapProps) {
     tokenPair,
   });
 
-  const [unwrapTrigger, unwrapResult] = rpcApi.useSuperTokenDowngradeMutation();
+  const [unwrapTrigger, unwrapResult] = useTokenUnwrap();
 
   const [isDowngradeDisabled, setIsDowngradeDisabled] = useState(true);
   useEffect(() => {
@@ -243,13 +246,14 @@ export const TabUnwrap = memo(function TabUnwrap(props: TabUnwrapProps) {
                 };
                 unwrapTrigger({
                   ...primaryArgs,
+                  isNativeAssetUnderlyingToken:
+                    formData.tokenPair.underlyingTokenAddress ===
+                    NATIVE_ASSET_ADDRESS,
                   transactionExtraData: {
                     restoration,
                   },
-                  signer,
-                  overrides
+                  overrides: ethersOverridesToViem(overrides)
                 })
-                  .unwrap()
                   .then(...txAnalytics("Unwrap", primaryArgs))
                   .then(() => resetForm())
                   .catch((error) => void error); // Error is already logged and handled in the middleware & UI.

@@ -49,6 +49,11 @@ import { Network, networkDefinition } from "../../network/networks";
 import NetworkSwitchLink from "../../network/NetworkSwitchLink";
 import { platformApi } from "../../redux/platformApi/platformApi";
 import { rpcApi } from "../../redux/store";
+import {
+  useDeleteFlowWithScheduling,
+  useUpsertFlowWithScheduling,
+} from "../useFlowSchedulingWrites";
+import { ethersOverridesToViem } from "../../../utils/ethersOverridesToViem";
 import Amount from "../../token/Amount";
 import TokenIcon from "../../token/TokenIcon";
 import { BalanceSuperToken } from "../../tokenWrapping/BalanceSuperToken";
@@ -438,8 +443,7 @@ export default memo(function SendStream() {
     );
   }, [formState.isValid, formState.isValidating, hasAnythingChanged, isFlowScheduleFetching, isActiveFlowFetching]);
 
-  const [upsertFlow, upsertFlowResult] =
-    rpcApi.useUpsertFlowWithSchedulingMutation();
+  const [upsertFlow, upsertFlowResult] = useUpsertFlowWithScheduling();
 
   const isModifying = Boolean(activeFlow || scheduledStream);
 
@@ -500,18 +504,16 @@ export default memo(function SendStream() {
               superTokenAddress: formData.tokenAddress,
               flowRateWei,
               userDataBytes: undefined,
-              startTimestamp: formData.startTimestamp,
-              endTimestamp: formData.endTimestamp,
+              startTimestamp: formData.startTimestamp ?? null,
+              endTimestamp: formData.endTimestamp ?? null,
             };
             upsertFlow({
               ...primaryArgs,
               transactionExtraData: {
                 restoration: transactionRestoration,
               },
-              signer,
-              overrides: await getOverrides(),
+              overrides: ethersOverridesToViem(await getOverrides()),
             })
-              .unwrap()
               .then(
                 ...txAnalytics(
                   isModifying
@@ -589,8 +591,7 @@ export default memo(function SendStream() {
     </TransactionBoundary>
   );
 
-  const [flowDeleteTrigger, flowDeleteResult] =
-    rpcApi.useDeleteFlowWithSchedulingMutation();
+  const [flowDeleteTrigger, flowDeleteResult] = useDeleteFlowWithScheduling();
 
   const DeleteFlowBoundary = (
     <TransactionBoundary mutationResult={flowDeleteResult}>
@@ -624,10 +625,8 @@ export default memo(function SendStream() {
               };
               flowDeleteTrigger({
                 ...primaryArgs,
-                signer,
-                overrides: await getOverrides(),
+                overrides: ethersOverridesToViem(await getOverrides()),
               })
-                .unwrap()
                 .then(...txAnalytics("Cancel Stream", primaryArgs))
                 .then(() => resetForm())
                 .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
