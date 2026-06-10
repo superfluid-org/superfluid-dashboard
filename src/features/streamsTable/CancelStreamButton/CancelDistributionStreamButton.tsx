@@ -69,7 +69,7 @@ const CancelDistributionStreamButton: FC<CancelDistributionStreamButtonProps> = 
     <ConnectionBoundary expectedNetwork={network}>
       {({ isConnected, isCorrectNetwork }) => (
         <TransactionBoundary mutationResult={distributionStreamCancellationMutation}>
-          {({ mutationResult, signer, setDialogLoadingInfo }) =>
+          {({ mutationResult, accountAddress, setDialogLoadingInfo }) =>
             mutationResult.isLoading || !!pendingCancellation ? (
               <CancelStreamProgress
                 isSchedule={false}
@@ -108,7 +108,9 @@ const CancelDistributionStreamButton: FC<CancelDistributionStreamButtonProps> = 
 
                         cancelDistributionStream();
                       }}
-                      disabled={!(isConnected && signer && isCorrectNetwork)}
+                      disabled={
+                        !(isConnected && accountAddress && isCorrectNetwork)
+                      }
                       {...IconButtonProps}
                     >
                       <CancelRoundedIcon />

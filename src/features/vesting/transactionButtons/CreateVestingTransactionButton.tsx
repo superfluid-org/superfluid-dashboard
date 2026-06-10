@@ -40,6 +40,7 @@ export const CreateVestingTransactionButton: FC<Props> = ({
     <TransactionBoundary mutationResult={mutationResult}>
       {({
         network,
+        accountAddress,
         setDialogLoadingInfo,
         setDialogSuccessActions,
         txAnalytics
@@ -48,9 +49,13 @@ export const CreateVestingTransactionButton: FC<Props> = ({
           <TransactionButton
             dataCy={"create-schedule-tx-button"}
             disabled={isDisabled}
-            onClick={async (signer) =>
+            onClick={async () =>
               handleSubmit(
                 async (validData) => {
+                  if (!accountAddress) {
+                    throw Error("Account not connected.");
+                  }
+
                   const {
                     data: { receiverAddress, superTokenAddress, claimEnabled, version },
                   } = validData;
@@ -78,7 +83,7 @@ export const CreateVestingTransactionButton: FC<Props> = ({
                   const primaryArgs = {
                     chainId: network.id,
                     superTokenAddress,
-                    senderAddress: await signer.getAddress(),
+                    senderAddress: accountAddress,
                     receiverAddress,
                     startDateTimestamp,
                     cliffDateTimestamp,
@@ -91,7 +96,7 @@ export const CreateVestingTransactionButton: FC<Props> = ({
                   const primaryArgsFromAmountAndDuration = {
                     chainId: network.id,
                     superTokenAddress,
-                    senderAddress: await signer.getAddress(),
+                    senderAddress: accountAddress,
                     receiverAddress,
                     startDateTimestamp,
                     totalAmountWei: parseEtherOrZero(validData.data.totalAmountEther).toString(),

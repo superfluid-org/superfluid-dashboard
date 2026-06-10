@@ -75,11 +75,11 @@ export default memo(function SendTransfer() {
 
   const SendTransactionBoundary = (
     <TransactionBoundary mutationResult={transferResult}>
-      {({ setDialogLoadingInfo, txAnalytics }) =>
+      {({ setDialogLoadingInfo, txAnalytics, accountAddress }) =>
       (<TransactionButton
         disabled={isSendDisabled}
         dataCy={"transfer-button"}
-        onClick={async (signer) => {
+        onClick={async () => {
           if (isSendDisabled) {
             throw Error(
               `This should never happen.`);
@@ -93,7 +93,10 @@ export default memo(function SendTransfer() {
 
           const { data: formData } = getValues() as ValidTransferForm;
 
-          const senderAddress = await signer.getAddress() as Address
+          if (!accountAddress) {
+            throw Error("Account not connected.");
+          }
+          const senderAddress = accountAddress as Address;
 
           const transactionRestoration: SendTransferRestoration = {
             type: RestorationType.SendTransfer,

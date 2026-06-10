@@ -209,7 +209,7 @@ export const TabUnwrap = memo(function TabUnwrap(props: TabUnwrapProps) {
             <TransactionButton
               dataCy={"downgrade-button"}
               disabled={isDowngradeDisabled}
-              onClick={async (signer) => {
+              onClick={async () => {
                 if (isDowngradeDisabled) {
                   throw Error(
                     `This should never happen.`

@@ -448,14 +448,14 @@ export default memo(function SendStream() {
 
   const SendTransactionBoundary = (
     <TransactionBoundary mutationResult={upsertFlowResult}>
-      {({ closeDialog, setDialogSuccessActions, setDialogLoadingInfo, txAnalytics }) => (
+      {({ closeDialog, setDialogSuccessActions, setDialogLoadingInfo, txAnalytics, accountAddress }) => (
         <TransactionButton
           dataCy={"send-transaction-button"}
           disabled={isSendDisabled}
           ButtonProps={{
             variant: "contained",
           }}
-          onClick={async (signer) => {
+          onClick={async () => {
             if (isSendDisabled) {
               throw Error(
                 `This should never happen. Form state: ${JSON.stringify(
@@ -496,9 +496,13 @@ export default memo(function SendStream() {
                 : {}),
             };
 
+            if (!accountAddress) {
+              throw Error("Account not connected.");
+            }
+
             const primaryArgs = {
               chainId: network.id,
-              senderAddress: await signer.getAddress(),
+              senderAddress: accountAddress,
               receiverAddress: formData.receiverAddress,
               superTokenAddress: formData.tokenAddress,
               flowRateWei,
@@ -601,7 +605,7 @@ export default memo(function SendStream() {
               variant: "outlined",
               color: "error",
             }}
-            onClick={async (signer) => {
+            onClick={async () => {
               const superTokenAddress = tokenAddress;
               const senderAddress = visibleAddress;
               if (!receiverAddress || !superTokenAddress || !senderAddress) {

@@ -435,7 +435,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
               isApproveAllowanceVisible && (
                 <TransactionButton
                   dataCy={"approve-allowance-button"}
-                  onClick={async (signer) => {
+                  onClick={async () => {
                     const approveAllowanceAmountWei =
                       currentAllowance.add(missingAllowance);
 
@@ -489,7 +489,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
               <TransactionButton
                 dataCy={"upgrade-button"}
                 disabled={isWrapButtonDisabled}
-                onClick={async (signer) => {
+                onClick={async () => {
                   if (isWrapButtonDisabled) {
                     throw Error(
                       `This should never happen. Form state: ${JSON.stringify(

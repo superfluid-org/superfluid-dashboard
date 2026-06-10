@@ -3,7 +3,6 @@ import {
   TransactionInfo,
   transactionTrackerSelectors,
 } from "@superfluid-finance/sdk-redux";
-import { Signer } from "ethers";
 import {
   createContext,
   FC,
@@ -13,16 +12,17 @@ import {
   useMemo,
   useState,
 } from "react";
+import { Address } from "viem";
+import { useAccount } from "@/hooks/useAccount";
 import MutationResult from "../../MutationResult";
 import { Network } from "../network/networks";
 import { useAppSelector } from "../redux/store";
 import { useConnectionBoundary } from "./ConnectionBoundary";
 import { TransactionDialog } from "./TransactionDialog";
 import { TxAnalyticsFn, useAnalytics } from "../analytics/useAnalytics";
-import { useEthersSigner } from "../../utils/wagmiEthersAdapters";
 
 interface TransactionBoundaryContextValue {
-  signer: Signer | null | undefined;
+  accountAddress: Address | undefined;
   dialogOpen: boolean;
   openDialog: () => void;
   closeDialog: () => void;
@@ -52,7 +52,7 @@ export const TransactionBoundary: FC<TransactionBoundaryProps> = ({
   mutationResult,
   ...props
 }) => {
-  const signer = useEthersSigner();
+  const { address: accountAddress } = useAccount();
   const { expectedNetwork } = useConnectionBoundary();
   const { txAnalytics } = useAnalytics();
 
@@ -68,7 +68,7 @@ export const TransactionBoundary: FC<TransactionBoundaryProps> = ({
 
   const contextValue = useMemo<TransactionBoundaryContextValue>(
     () => ({
-      signer,
+      accountAddress,
       dialogOpen,
       openDialog: () => setDialogOpen(true),
       closeDialog: () => setDialogOpen(false),
@@ -80,7 +80,7 @@ export const TransactionBoundary: FC<TransactionBoundaryProps> = ({
       txAnalytics,
     }),
     [
-      signer,
+      accountAddress,
       dialogOpen,
       setDialogLoadingInfo,
       setDialogSuccessActions,

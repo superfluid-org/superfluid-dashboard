@@ -89,7 +89,7 @@ export const DeleteVestingTransactionButton: FC<{
       {...TransactionBoundaryProps}
       mutationResult={deleteVestingScheduleResult}
     >
-      {({ setDialogLoadingInfo, setDialogSuccessActions }) =>
+      {({ accountAddress, setDialogLoadingInfo, setDialogSuccessActions }) =>
         isButtonVisible && (
           <TransactionButton
             {...RestTxButtonProps}
@@ -102,7 +102,11 @@ export const DeleteVestingTransactionButton: FC<{
               startIcon: <CloseRoundedIcon />,
               ...ButtonProps,
             }}
-            onClick={async (signer) => {
+            onClick={async () => {
+              if (!accountAddress) {
+                throw Error("Account not connected.");
+              }
+
               const shouldDeleteActiveFlow =
                 !!activeVestingSchedule && !!activeFlow;
 
@@ -117,7 +121,7 @@ export const DeleteVestingTransactionButton: FC<{
               const primaryArgs = {
                 chainId: network.id,
                 superTokenAddress: superTokenAddress,
-                senderAddress: await signer.getAddress(),
+                senderAddress: accountAddress,
                 receiverAddress: receiverAddress,
                 deleteFlow: shouldDeleteActiveFlow,
                 version

@@ -72,7 +72,7 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
     <ConnectionBoundary expectedNetwork={network}>
       {({ isConnected, isCorrectNetwork }) => (
         <TransactionBoundary mutationResult={flowDeleteMutation}>
-          {({ mutationResult, signer, setDialogLoadingInfo }) =>
+          {({ mutationResult, accountAddress, setDialogLoadingInfo }) =>
             mutationResult.isLoading || !!pendingCancellation ? (
               <CancelStreamProgress
                 isSchedule={!!stream.startDateScheduled}
@@ -111,7 +111,9 @@ const CancelStreamButton: FC<CancelStreamButtonProps> = ({
 
                         deleteStream();
                       }}
-                      disabled={!(isConnected && signer && isCorrectNetwork)}
+                      disabled={
+                        !(isConnected && accountAddress && isCorrectNetwork)
+                      }
                       {...IconButtonProps}
                     >
                       <CancelRoundedIcon />
