@@ -11,7 +11,6 @@ import {
 } from "@sfpro/sdk/abi/automation";
 import { superTokenAbi } from "@sfpro/sdk/abi";
 import { TransactionTitle } from "@superfluid-finance/sdk-redux";
-import { BigNumber } from "ethers";
 import { Address, encodeFunctionData } from "viem";
 import { useAccount } from "@/hooks/useAccount";
 import {
@@ -636,12 +635,12 @@ export function useExecuteBatchVesting() {
       );
 
       const totalRequiredTokenAllowance = requiredAllowances.reduce(
-        (acc, x) => acc.add(x.recommendedTokenAllowance),
-        BigNumber.from(0)
+        (acc, x) => acc + x.recommendedTokenAllowance,
+        0n
       );
       const totalRequiredFlowRateAllowance = requiredAllowances.reduce(
-        (acc, x) => acc.add(x.requiredFlowRateAllowance),
-        BigNumber.from(0)
+        (acc, x) => acc + x.requiredFlowRateAllowance,
+        0n
       );
 
       subOperations.push(
@@ -652,9 +651,7 @@ export function useExecuteBatchVesting() {
           permissionsDelta:
             requiredAllowances[0].requiredFlowOperatorPermissions |
             ACL_UPDATE_PERMISSION, // Update is not required but recommended.
-          flowRateAllowanceDelta: BigInt(
-            totalRequiredFlowRateAllowance.toString()
-          ),
+          flowRateAllowanceDelta: totalRequiredFlowRateAllowance,
         })
       );
 
@@ -664,10 +661,7 @@ export function useExecuteBatchVesting() {
           target: arg.superTokenAddress as Address,
           abi: superTokenAbi,
           functionName: "increaseAllowance",
-          args: [
-            scheduler.address,
-            BigInt(totalRequiredTokenAllowance.toString()),
-          ],
+          args: [scheduler.address, totalRequiredTokenAllowance],
           title: "Approve Allowance",
         })
       );

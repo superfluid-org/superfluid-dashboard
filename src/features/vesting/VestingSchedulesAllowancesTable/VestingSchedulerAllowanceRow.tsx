@@ -115,9 +115,9 @@ interface VestingSchedulerAllowanceRowProps {
   network: Network;
   tokenAddress: string;
   senderAddress: string;
-  recommendedTokenAllowance: BigNumber;
+  recommendedTokenAllowance: bigint;
   requiredFlowOperatorPermissions: number; // Usually 5 (Create or Delete) https://docs.superfluid.finance/superfluid/developers/constant-flow-agreement-cfa/cfa-access-control-list-acl/acl-features
-  requiredFlowRateAllowance: BigNumber;
+  requiredFlowRateAllowance: bigint;
   vestingVersion: VestingVersion;
 }
 
@@ -201,9 +201,10 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
   const { tokenAllowance, flowOperatorPermissions, flowRateAllowance } =
     vestingSchedulerAllowancesQuery.data;
 
-  const isEnoughTokenAllowance = recommendedTokenAllowance.lte(tokenAllowance);
+  const isEnoughTokenAllowance =
+    recommendedTokenAllowance <= BigInt(tokenAllowance);
   const isEnoughFlowRateAllowance =
-    requiredFlowRateAllowance.lte(flowRateAllowance);
+    requiredFlowRateAllowance <= BigInt(flowRateAllowance);
 
   const existingPermissions = Number(flowOperatorPermissions);
   const isEnoughFlowOperatorPermissions =
