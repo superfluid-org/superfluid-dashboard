@@ -1,6 +1,10 @@
 import { RpcEndpointBuilder } from "@superfluid-finance/sdk-redux";
-import { cfaAbi, cfaAddress, governanceAbi, governanceAddress, hostAddress } from "@sfpro/sdk/abi/core";
+import { governanceAbi, governanceAddress, hostAddress } from "@sfpro/sdk/abi/core";
 import { Address, erc20Abi } from "viem";
+import {
+  getActiveFlow,
+  Web3FlowInfo,
+} from "../../transactions/contractReads";
 import { getContractAddress } from "../../transactions/operations";
 import { resolvedWagmiClients } from "../../wallet/WagmiManager";
 import { superTokenAbi } from "../../../generated";
@@ -53,17 +57,11 @@ declare module "@superfluid-finance/sdk-redux" {
   }
 }
 
-export interface Web3FlowInfo {
-  updatedAtTimestamp: number;
-  flowRateWei: string;
-  depositWei: string;
-  owedDepositWei: string;
-}
+export type { Web3FlowInfo } from "../../transactions/contractReads";
 
 export const adHocRpcEndpoints = {
   endpoints: (builder: RpcEndpointBuilder) => ({
     getActiveFlow: builder.query<
-      // TODO(KK): Create equivalent endpoint in the SDK
       Web3FlowInfo | null,
       {
         chainId: number;
@@ -73,26 +71,8 @@ export const adHocRpcEndpoints = {
       }
     >({
       queryFn: async (arg) => {
-        const publicClient = resolvedWagmiClients[arg.chainId]();
-        const [timestamp, flowRate, deposit, owedDeposit] =
-          await publicClient.readContract({
-            abi: cfaAbi,
-            address: getContractAddress(cfaAddress, arg.chainId, "CFAv1"),
-            functionName: "getFlow",
-            args: [
-              arg.tokenAddress as Address,
-              arg.senderAddress as Address,
-              arg.receiverAddress as Address,
-            ],
-          });
-        const result: Web3FlowInfo = {
-          updatedAtTimestamp: Number(timestamp) * 1000,
-          depositWei: deposit.toString(),
-          flowRateWei: flowRate.toString(),
-          owedDepositWei: owedDeposit.toString(),
-        };
         return {
-          data: result.flowRateWei !== "0" ? result : null,
+          data: await getActiveFlow(arg),
         };
       },
       providesTags: (_result, _error, arg) => [

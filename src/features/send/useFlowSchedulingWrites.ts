@@ -15,8 +15,11 @@ import {
   buildDeleteFlowWithSchedulingPendingUpdates,
   buildUpsertFlowWithSchedulingPendingUpdates,
 } from "../pendingUpdates/buildPendingUpdates";
-import { rpcApi, useAppDispatch } from "../redux/store";
-import { getFlowOperatorData } from "../transactions/contractReads";
+import {
+  getActiveFlow,
+  getFlowOperatorData,
+  getFlowSchedule,
+} from "../transactions/contractReads";
 import {
   SubOperation,
   agreementCallSubOperation,
@@ -59,7 +62,6 @@ export interface DeleteFlowWithSchedulingArgs {
  */
 export function useUpsertFlowWithScheduling() {
   const { write, result } = useSuperfluidWriteContract();
-  const dispatch = useAppDispatch();
 
   const upsertFlowWithScheduling = useCallback(
     (arg: UpsertFlowWithSchedulingArgs) =>
@@ -72,20 +74,12 @@ export function useUpsertFlowWithScheduling() {
       const shouldScheduledEnd = !!arg.endTimestamp;
       const shouldSchedule = shouldScheduleStart || shouldScheduledEnd;
 
-      const getActiveFlow = dispatch(
-        rpcApi.endpoints.getActiveFlow.initiate(
-          {
-            chainId,
-            tokenAddress: arg.superTokenAddress,
-            senderAddress: arg.senderAddress,
-            receiverAddress: arg.receiverAddress,
-          },
-          { subscribe: true }
-        )
-      );
-      const activeExistingFlow = await getActiveFlow
-        .unwrap()
-        .finally(() => getActiveFlow.unsubscribe());
+      const activeExistingFlow = await getActiveFlow({
+        chainId,
+        tokenAddress: arg.superTokenAddress,
+        senderAddress: arg.senderAddress,
+        receiverAddress: arg.receiverAddress,
+      });
 
       const subOperations: SubOperation[] = [];
 
@@ -96,26 +90,18 @@ export function useUpsertFlowWithScheduling() {
         const flowSchedulerAddress =
           network.flowSchedulerContractAddress as Address;
 
-        const getFlowSchedule = dispatch(
-          rpcApi.endpoints.getFlowSchedule.initiate(
-            {
-              chainId,
-              superTokenAddress: arg.superTokenAddress,
-              senderAddress: arg.senderAddress,
-              receiverAddress: arg.receiverAddress,
-            },
-            { subscribe: true }
-          )
-        );
-        const existingFlowSchedule = await getFlowSchedule
-          .unwrap()
-          .finally(() => getFlowSchedule.unsubscribe());
+        const existingFlowSchedule = await getFlowSchedule({
+          chainId,
+          superTokenAddress: arg.superTokenAddress,
+          senderAddress: arg.senderAddress,
+          receiverAddress: arg.receiverAddress,
+        });
 
         const {
           startDate: existingStartTimestamp,
           endDate: existingEndTimestamp,
           flowRate: existingFlowRate,
-        } = existingFlowSchedule || {};
+        } = existingFlowSchedule;
 
         if (shouldSchedule) {
           const flowOperatorData = await getFlowOperatorData({
@@ -301,7 +287,7 @@ export function useUpsertFlowWithScheduling() {
           ),
       };
       }),
-    [dispatch, write]
+    [write]
   );
 
   return [upsertFlowWithScheduling, result] as const;
@@ -313,7 +299,6 @@ export function useUpsertFlowWithScheduling() {
  */
 export function useDeleteFlowWithScheduling() {
   const { write, result } = useSuperfluidWriteContract();
-  const dispatch = useAppDispatch();
 
   const deleteFlowWithScheduling = useCallback(
     (arg: DeleteFlowWithSchedulingArgs) =>
@@ -323,20 +308,12 @@ export function useDeleteFlowWithScheduling() {
       const { chainId } = arg;
       const userData: Hex = arg.userDataBytes ?? "0x";
 
-      const getActiveFlow = dispatch(
-        rpcApi.endpoints.getActiveFlow.initiate(
-          {
-            chainId,
-            tokenAddress: arg.superTokenAddress,
-            senderAddress: arg.senderAddress,
-            receiverAddress: arg.receiverAddress,
-          },
-          { subscribe: true }
-        )
-      );
-      const activeExistingFlow = await getActiveFlow
-        .unwrap()
-        .finally(() => getActiveFlow.unsubscribe());
+      const activeExistingFlow = await getActiveFlow({
+        chainId,
+        tokenAddress: arg.superTokenAddress,
+        senderAddress: arg.senderAddress,
+        receiverAddress: arg.receiverAddress,
+      });
 
       const subOperations: SubOperation[] = [];
 
@@ -364,25 +341,17 @@ export function useDeleteFlowWithScheduling() {
       }
 
       if (network?.flowSchedulerContractAddress) {
-        const getFlowSchedule = dispatch(
-          rpcApi.endpoints.getFlowSchedule.initiate(
-            {
-              chainId,
-              superTokenAddress: arg.superTokenAddress,
-              senderAddress: arg.senderAddress,
-              receiverAddress: arg.receiverAddress,
-            },
-            { subscribe: true }
-          )
-        );
-        const existingFlowSchedule = await getFlowSchedule
-          .unwrap()
-          .finally(() => getFlowSchedule.unsubscribe());
+        const existingFlowSchedule = await getFlowSchedule({
+          chainId,
+          superTokenAddress: arg.superTokenAddress,
+          senderAddress: arg.senderAddress,
+          receiverAddress: arg.receiverAddress,
+        });
 
         const {
           startDate: existingStartTimestamp,
           endDate: existingEndTimestamp,
-        } = existingFlowSchedule || {};
+        } = existingFlowSchedule;
 
         if (existingStartTimestamp || existingEndTimestamp) {
           subOperations.push(
@@ -427,7 +396,7 @@ export function useDeleteFlowWithScheduling() {
           ),
       };
       }),
-    [dispatch, write]
+    [write]
   );
 
   return [deleteFlowWithScheduling, result] as const;
