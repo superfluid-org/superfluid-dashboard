@@ -13,7 +13,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Code Generation (run after modifying contracts or GraphQL)
 - `pnpm generate` - Run all code generation tasks
-- `pnpm generate:eth-sdk` - Generate contract interfaces from ABIs
 - `pnpm generate:wagmi` - Generate Wagmi contract hooks
 - `pnpm generate:vesting-graphql` - Generate GraphQL types for vesting subgraph
 - `pnpm generate:auto-wrap-graphql` - Generate GraphQL types for auto-wrap subgraph
@@ -56,9 +55,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
    - Separate slices for UI state (notifications, preferences) and data
 
 5. **Code Generation Pipeline**:
-   - Contract types generated from ABIs using eth-sdk and Wagmi CLI
+   - Contract types generated from ABIs using the Wagmi CLI (`wagmi.config.ts` → `src/generated.ts`; static ABI JSONs live in `src/abis/`)
+   - Most contract ABIs/addresses come from `@sfpro/sdk` (`abi`, `abi/core`, `abi/automation`, `constant`)
    - GraphQL types generated from subgraph schemas
-   - All generated code goes into specific directories (`src/eth-sdk/`, `generated.ts`)
 
 ### Important Patterns
 
@@ -87,9 +86,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 When working with:
 - **New Features**: Create a new directory in `src/features/`
 - **API Integration**: Add new endpoints to existing RTK Query slices or create new ones
-- **Smart Contracts**: Add ABIs to `src/eth-sdk/abis/` and run code generation
+- **Smart Contracts**: Prefer ABIs/addresses from `@sfpro/sdk`; for contracts it lacks, add the ABI JSON to `src/abis/`, register it in `wagmi.config.ts` and run `pnpm generate:wagmi`
 - **UI Components**: Use Material-UI components and follow existing patterns in `src/components/`
 
 ### Notes
 - Advanced features available via `window.superfluid_dashboard.advanced` (see README)
-- When `eth-sdk` generation fails with ES module error, temporarily remove `"type": "module"` from package.json
