@@ -221,16 +221,42 @@ export const listenerMiddleware = createListenerMiddleware();
 
 export const sentryErrorLogger: Middleware =
   (api: MiddlewareAPI) => (next) => (action) => {
-    const { error } = action as { error: { name: string } };
+    const rejectedAction = action as {
+      error?: { name?: string };
+      payload?: unknown;
+      meta?: {
+        requestId?: string;
+        arg?: {
+          endpointName?: string;
+          originalArgs?: Record<string, unknown>;
+        };
+      };
+    };
+    const { error } = rejectedAction;
+    const originalArgs = rejectedAction.meta?.arg?.originalArgs;
+    const isRejectedWithTransactionValue =
+      isRejectedWithValue(action) &&
+      !!originalArgs &&
+      ("signer" in originalArgs || "transactionExtraData" in originalArgs);
 
-    // Log when there was an error/exception but it wasn't explicitly rejected.
-    if (error && isRejected(action) && !isRejectedWithValue(action)) {
+    // Log when there was an error/exception but it wasn't explicitly rejected,
+    // plus transaction mutation errors because pre-popup gas estimation failures
+    // are otherwise only shown in the UI and never reach Sentry.
+    if (
+      error &&
+      isRejected(action) &&
+      (!isRejectedWithValue(action) || isRejectedWithTransactionValue)
+    ) {
       // "aborted" & "condition" inspired by: https://github.com/reduxjs/redux-toolkit/blob/64a30d83384d77bcbc59231fa32aa2f1acd67020/packages/toolkit/src/createAsyncThunk.ts#L521
       const aborted = error?.name === "AbortError";
       const condition = error?.name === "ConditionError";
       if (!aborted && !condition) {
         try {
-          const deserializedError = deserializeError(error); // We need to deserialize the error because RTK has already turned it into a "SerializedError" here. We prefer the deserialized error because Sentry works a lot better with an Error object.
+          const deserializedError = deserializeError(
+            isRejectedWithTransactionValue
+              ? rejectedAction.payload
+              : error
+          ); // We need to deserialize the error because RTK has already turned it into a "SerializedError" here. We prefer the deserialized error because Sentry works a lot better with an Error object.
 
           const errorMessage = (deserializedError as { message?: string })
             .message;
@@ -245,9 +271,30 @@ export const sentryErrorLogger: Middleware =
           }
 
           const isUserRejectedRequest =
-            (deserializedError as { code?: string }).code === "ACTION_REJECTED"; // Inspired by wagmi: https://github.com/wagmi-dev/wagmi/blob/348148b4048e4c6cb930a03b88a7aebe2fad4121/packages/core/src/actions/transactions/sendTransaction.ts#L105 & ethers: https://github.com/ethers-io/ethers.js/blob/ec1b9583039a14a0e0fa15d0a2a6082a2f41cf5b/packages/logger/src.ts/index.ts#L156
+            (deserializedError as { code?: string | number }).code ===
+              "ACTION_REJECTED" ||
+            (deserializedError as { code?: string | number }).code === 4001; // Inspired by wagmi: https://github.com/wagmi-dev/wagmi/blob/348148b4048e4c6cb930a03b88a7aebe2fad4121/packages/core/src/actions/transactions/sendTransaction.ts#L105 & ethers: https://github.com/ethers-io/ethers.js/blob/ec1b9583039a14a0e0fa15d0a2a6082a2f41cf5b/packages/logger/src.ts/index.ts#L156
           if (!isUserRejectedRequest) {
-            Sentry.captureException(deserializedError);
+            Sentry.withScope((scope) => {
+              if (isRejectedWithTransactionValue) {
+                scope.setTag(
+                  "redux.endpoint",
+                  rejectedAction.meta?.arg?.endpointName ?? "unknown"
+                );
+                scope.setContext("transaction", {
+                  requestId: rejectedAction.meta?.requestId,
+                  chainId: originalArgs?.chainId,
+                  amountWei: originalArgs?.amountWei,
+                  superTokenAddress: originalArgs?.superTokenAddress,
+                  tokenAddress: originalArgs?.tokenAddress,
+                  transactionExtraData: originalArgs?.transactionExtraData,
+                  ethersCode: errorMessage?.match(/code=([A-Z0-9_]+)/)?.[1],
+                  ethersMethod: errorMessage?.match(/method="?([^",)]+)"?/)?.[1],
+                });
+              }
+
+              Sentry.captureException(deserializedError);
+            });
           }
         } catch (e) {
           Sentry.captureException(e); // If deserialization failed, let's not break the Redux middleware chain. This should never happen though.
