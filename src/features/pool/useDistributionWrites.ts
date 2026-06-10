@@ -26,7 +26,7 @@ export function useCancelDistributionStream() {
 
   const cancelDistributionStream = useCallback(
     (arg: CancelDistributionStreamArgs) =>
-      write({
+      write(() => ({
         chainId: arg.chainId,
         abi: gdaForwarderAbi,
         address: getContractAddress(
@@ -42,19 +42,19 @@ export function useCancelDistributionStream() {
           0n,
           "0x",
         ],
-        title: "Cancel Distribution Stream",
-        subTransactionTitles: ["Cancel Distribution Stream"],
+        title: "Cancel Distribution Stream" as const,
+        subTransactionTitles: ["Cancel Distribution Stream" as const],
         extraData: arg.transactionExtraData,
         overrides: arg.overrides,
         simulate: arg.simulate,
-        getPendingUpdates: (hash) =>
+        getPendingUpdates: (hash: string) =>
           buildCancelDistributionStreamPendingUpdate(hash, {
             chainId: arg.chainId,
             superTokenAddress: arg.superTokenAddress,
             senderAddress: arg.senderAddress,
             poolAddress: arg.poolAddress,
           }),
-      }),
+      })),
     [write]
   );
 

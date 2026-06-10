@@ -57,25 +57,25 @@ export function useIndexSubscriptionApprove() {
 
   const approveSubscription = useCallback(
     (arg: IndexSubscriptionArgs) =>
-      write({
+      write(() => ({
         chainId: arg.chainId,
         ...indexSubscriptionWriteFragment(
           "approveSubscription",
           "Approve Index Subscription",
           arg
         ),
-        title: "Approve Index Subscription",
+        title: "Approve Index Subscription" as const,
         extraData: arg.transactionExtraData,
         overrides: arg.overrides,
         simulate: arg.simulate,
-        getPendingUpdates: (hash) =>
+        getPendingUpdates: (hash: string) =>
           buildIndexSubscriptionApprovePendingUpdate(hash, {
             chainId: arg.chainId,
             indexId: arg.indexId,
             publisherAddress: arg.publisherAddress,
             superTokenAddress: arg.superTokenAddress,
           }),
-      }),
+      })),
     [write]
   );
 
@@ -91,25 +91,25 @@ export function useIndexSubscriptionRevoke() {
 
   const revokeSubscription = useCallback(
     (arg: IndexSubscriptionArgs) =>
-      write({
+      write(() => ({
         chainId: arg.chainId,
         ...indexSubscriptionWriteFragment(
           "revokeSubscription",
           "Revoke Index Subscription",
           arg
         ),
-        title: "Revoke Index Subscription",
+        title: "Revoke Index Subscription" as const,
         extraData: arg.transactionExtraData,
         overrides: arg.overrides,
         simulate: arg.simulate,
-        getPendingUpdates: (hash) =>
+        getPendingUpdates: (hash: string) =>
           buildIndexSubscriptionRevokePendingUpdate(hash, {
             chainId: arg.chainId,
             indexId: arg.indexId,
             publisherAddress: arg.publisherAddress,
             superTokenAddress: arg.superTokenAddress,
           }),
-      }),
+      })),
     [write]
   );
 

@@ -25,17 +25,17 @@ export function useTokenApprove() {
 
   const approve = useCallback(
     (arg: TokenApproveArgs) =>
-      write({
+      write(() => ({
         chainId: arg.chainId,
         abi: erc20Abi,
         address: arg.underlyingTokenAddress as Address,
         functionName: "approve",
         args: [arg.superTokenAddress as Address, BigInt(arg.amountWei)],
-        title: "Approve Allowance",
+        title: "Approve Allowance" as const,
         extraData: arg.transactionExtraData,
         overrides: arg.overrides,
         simulate: arg.simulate,
-      }),
+      })),
     [write]
   );
 
@@ -62,9 +62,9 @@ export function useTokenWrap() {
 
   const wrap = useCallback(
     (arg: TokenWrapArgs) =>
-      write({
+      write(() => ({
         chainId: arg.chainId,
-        title: "Upgrade to Super Token",
+        title: "Upgrade to Super Token" as const,
         extraData: arg.transactionExtraData,
         overrides: arg.overrides,
         simulate: arg.simulate,
@@ -82,7 +82,7 @@ export function useTokenWrap() {
               functionName: "upgrade",
               args: [BigInt(arg.amountWei)],
             }),
-      }),
+      })),
     [write]
   );
 
@@ -100,9 +100,9 @@ export function useTokenUnwrap() {
 
   const unwrap = useCallback(
     (arg: TokenUnwrapArgs) =>
-      write({
+      write(() => ({
         chainId: arg.chainId,
-        title: "Downgrade from Super Token",
+        title: "Downgrade from Super Token" as const,
         extraData: arg.transactionExtraData,
         overrides: arg.overrides,
         simulate: arg.simulate,
@@ -119,7 +119,7 @@ export function useTokenUnwrap() {
               functionName: "downgrade",
               args: [BigInt(arg.amountWei)],
             }),
-      }),
+      })),
     [write]
   );
 

@@ -62,8 +62,11 @@ export function useUpsertFlowWithScheduling() {
   const dispatch = useAppDispatch();
 
   const upsertFlowWithScheduling = useCallback(
-    async (arg: UpsertFlowWithSchedulingArgs) => {
-      const { chainId } = arg;
+    (arg: UpsertFlowWithSchedulingArgs) =>
+      // Preflight reads & op-building run inside the builder so failures surface
+      // through `result` (dialog) and `isLoading` covers them.
+      write(async () => {
+        const { chainId } = arg;
       const userData: Hex = arg.userDataBytes ?? "0x";
       const shouldScheduleStart = !!arg.startTimestamp;
       const shouldScheduledEnd = !!arg.endTimestamp;
@@ -274,7 +277,7 @@ export function useUpsertFlowWithScheduling() {
               ? "Schedule Stream"
               : "Create Stream";
 
-      return write({
+      return {
         chainId,
         ...subOperationsWriteFragment(chainId, subOperations),
         title: mainTransactionTitle,
@@ -296,8 +299,8 @@ export function useUpsertFlowWithScheduling() {
             },
             subTransactionTitles
           ),
-      });
-    },
+      };
+      }),
     [dispatch, write]
   );
 
@@ -313,7 +316,10 @@ export function useDeleteFlowWithScheduling() {
   const dispatch = useAppDispatch();
 
   const deleteFlowWithScheduling = useCallback(
-    async (arg: DeleteFlowWithSchedulingArgs) => {
+    (arg: DeleteFlowWithSchedulingArgs) =>
+      // Preflight reads & op-building run inside the builder so failures surface
+      // through `result` (dialog) and `isLoading` covers them.
+      write(async () => {
       const { chainId } = arg;
       const userData: Hex = arg.userDataBytes ?? "0x";
 
@@ -400,15 +406,15 @@ export function useDeleteFlowWithScheduling() {
 
       const subTransactionTitles = subOperations.map((x) => x.title);
 
-      return write({
+      return {
         chainId,
         ...subOperationsWriteFragment(chainId, subOperations),
-        title: "Close Stream",
+        title: "Close Stream" as const,
         subTransactionTitles,
         extraData: arg.transactionExtraData,
         overrides: arg.overrides,
         simulate: arg.simulate,
-        getPendingUpdates: (hash) =>
+        getPendingUpdates: (hash: string) =>
           buildDeleteFlowWithSchedulingPendingUpdates(
             hash,
             {
@@ -419,8 +425,8 @@ export function useDeleteFlowWithScheduling() {
             },
             subTransactionTitles
           ),
-      });
-    },
+      };
+      }),
     [dispatch, write]
   );
 

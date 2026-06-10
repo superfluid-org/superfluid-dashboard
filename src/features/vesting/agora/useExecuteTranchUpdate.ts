@@ -158,45 +158,48 @@ export function useExecuteTranchUpdate() {
   const { address: accountAddress } = useAccount();
 
   const executeTranchUpdate = useCallback(
-    (arg: ExecuteTranchUpdateArgs) => {
-      const { chainId, projectsOverview, actionsToExecute } = arg;
-      const { senderAddress } = projectsOverview;
+    (arg: ExecuteTranchUpdateArgs) =>
+      // Validation & op-building run inside the builder so failures surface
+      // through `result` (dialog) instead of an unhandled rejection.
+      write(() => {
+        const { chainId, projectsOverview, actionsToExecute } = arg;
+        const { senderAddress } = projectsOverview;
 
-      if (chainId !== projectsOverview.chainId) {
-        throw new Error("Chain ID does not match");
-      }
+        if (chainId !== projectsOverview.chainId) {
+          throw new Error("Chain ID does not match");
+        }
 
-      if (
-        !accountAddress ||
-        accountAddress.toLowerCase() !== senderAddress.toLowerCase()
-      ) {
-        throw new Error("Signer address does not match sender address");
-      }
+        if (
+          !accountAddress ||
+          accountAddress.toLowerCase() !== senderAddress.toLowerCase()
+        ) {
+          throw new Error("Signer address does not match sender address");
+        }
 
-      const subOperations = mapProjectStateIntoSubOperations(
-        chainId,
-        actionsToExecute
-      );
-      const subTransactionTitles = subOperations.map((x) => x.title);
+        const subOperations = mapProjectStateIntoSubOperations(
+          chainId,
+          actionsToExecute
+        );
+        const subTransactionTitles = subOperations.map((x) => x.title);
 
-      return write({
-        chainId,
-        ...subOperationsWriteFragment(chainId, subOperations, {
-          forceBatch: true,
-        }),
-        title: "Execute Tranch Update",
-        subTransactionTitles,
-        extraData: arg.transactionExtraData,
-        overrides: arg.overrides,
-        simulate: arg.simulate,
-        getPendingUpdates: (hash) =>
-          buildExecuteTranchUpdatePendingUpdates(hash, {
-            chainId,
-            senderAddress: senderAddress as Address,
-            actionsToExecute,
+        return {
+          chainId,
+          ...subOperationsWriteFragment(chainId, subOperations, {
+            forceBatch: true,
           }),
-      });
-    },
+          title: "Execute Tranch Update" as const,
+          subTransactionTitles,
+          extraData: arg.transactionExtraData,
+          overrides: arg.overrides,
+          simulate: arg.simulate,
+          getPendingUpdates: (hash: string) =>
+            buildExecuteTranchUpdatePendingUpdates(hash, {
+              chainId,
+              senderAddress: senderAddress as Address,
+              actionsToExecute,
+            }),
+        };
+      }),
     [write, accountAddress]
   );
 

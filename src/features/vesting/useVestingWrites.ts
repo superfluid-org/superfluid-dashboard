@@ -142,7 +142,10 @@ export function useCreateVestingScheduleFromAmountAndDuration() {
   const { write, result } = useSuperfluidWriteContract();
 
   const createVestingSchedule = useCallback(
-    async (arg: CreateVestingScheduleFromAmountAndDurationArgs) => {
+    (arg: CreateVestingScheduleFromAmountAndDurationArgs) =>
+      // Preflight reads & op-building run inside the builder so failures surface
+      // through `result` (dialog) and `isLoading` covers them.
+      write(async () => {
       const { chainId, version } = arg;
       const scheduler = getVestingSchedulerContractInfo(chainId, version);
       const publicClient = resolvedWagmiClients[chainId]();
@@ -276,17 +279,17 @@ export function useCreateVestingScheduleFromAmountAndDuration() {
 
       const subTransactionTitles = subOperations.map((x) => x.title);
 
-      return write({
+      return {
         chainId,
         ...subOperationsWriteFragment(chainId, subOperations, {
           forceBatch: true,
         }),
-        title: "Create Vesting Schedule",
+        title: "Create Vesting Schedule" as const,
         subTransactionTitles,
         extraData: arg.transactionExtraData,
         overrides: arg.overrides,
         simulate: arg.simulate,
-        getPendingUpdates: (hash) =>
+        getPendingUpdates: (hash: string) =>
           buildCreateVestingScheduleFromAmountAndDurationPendingUpdate(hash, {
             chainId,
             superTokenAddress: arg.superTokenAddress,
@@ -298,8 +301,8 @@ export function useCreateVestingScheduleFromAmountAndDuration() {
             totalAmountWei: arg.totalAmountWei,
             version,
           }),
-      });
-    },
+      };
+      }),
     [write]
   );
 
@@ -326,7 +329,8 @@ export function useDeleteVestingSchedule() {
   const { write, result } = useSuperfluidWriteContract();
 
   const deleteVestingSchedule = useCallback(
-    (arg: DeleteVestingScheduleArgs) => {
+    (arg: DeleteVestingScheduleArgs) =>
+      write(() => {
       const { chainId, version } = arg;
       const scheduler = getVestingSchedulerContractInfo(chainId, version);
 
@@ -391,15 +395,15 @@ export function useDeleteVestingSchedule() {
 
       const subTransactionTitles = subOperations.map((x) => x.title);
 
-      return write({
+      return {
         chainId,
         ...subOperationsWriteFragment(chainId, subOperations),
-        title: "Delete Vesting Schedule",
+        title: "Delete Vesting Schedule" as const,
         subTransactionTitles,
         extraData: arg.transactionExtraData,
         overrides: arg.overrides,
         simulate: arg.simulate,
-        getPendingUpdates: (hash) =>
+        getPendingUpdates: (hash: string) =>
           buildDeleteVestingSchedulePendingUpdate(hash, {
             chainId,
             superTokenAddress: arg.superTokenAddress,
@@ -407,8 +411,8 @@ export function useDeleteVestingSchedule() {
             receiverAddress: arg.receiverAddress,
             version,
           }),
-      });
-    },
+      };
+      }),
     [write]
   );
 
@@ -434,35 +438,36 @@ export function useClaimVestingSchedule() {
   const { write, result } = useSuperfluidWriteContract();
 
   const claimVestingSchedule = useCallback(
-    (arg: ClaimVestingScheduleArgs) => {
-      const { chainId, version } = arg;
-      const scheduler = getVestingSchedulerContractInfo(chainId, version);
+    (arg: ClaimVestingScheduleArgs) =>
+      write(() => {
+        const { chainId, version } = arg;
+        const scheduler = getVestingSchedulerContractInfo(chainId, version);
 
-      return write({
-        chainId,
-        abi: scheduler.abi,
-        address: scheduler.address,
-        functionName: "executeCliffAndFlow",
-        args: [
-          arg.superTokenAddress as Address,
-          arg.senderAddress as Address,
-          arg.receiverAddress as Address,
-        ],
-        title: "Claim Vesting Schedule",
-        subTransactionTitles: [],
-        extraData: arg.transactionExtraData,
-        overrides: arg.overrides,
-        simulate: arg.simulate,
-        getPendingUpdates: (hash) =>
-          buildClaimVestingSchedulePendingUpdate(hash, {
-            chainId,
-            superTokenAddress: arg.superTokenAddress,
-            senderAddress: arg.senderAddress,
-            receiverAddress: arg.receiverAddress,
-            version,
-          }),
-      });
-    },
+        return {
+          chainId,
+          abi: scheduler.abi,
+          address: scheduler.address,
+          functionName: "executeCliffAndFlow",
+          args: [
+            arg.superTokenAddress as Address,
+            arg.senderAddress as Address,
+            arg.receiverAddress as Address,
+          ],
+          title: "Claim Vesting Schedule" as const,
+          subTransactionTitles: [],
+          extraData: arg.transactionExtraData,
+          overrides: arg.overrides,
+          simulate: arg.simulate,
+          getPendingUpdates: (hash: string) =>
+            buildClaimVestingSchedulePendingUpdate(hash, {
+              chainId,
+              superTokenAddress: arg.superTokenAddress,
+              senderAddress: arg.senderAddress,
+              receiverAddress: arg.receiverAddress,
+              version,
+            }),
+        };
+      }),
     [write]
   );
 
@@ -490,7 +495,10 @@ export function useFixAccessForVesting() {
   const { write, result } = useSuperfluidWriteContract();
 
   const fixAccessForVesting = useCallback(
-    async (arg: FixAccessForVestingArgs) => {
+    (arg: FixAccessForVestingArgs) =>
+      // Preflight reads & op-building run inside the builder so failures surface
+      // through `result` (dialog) and `isLoading` covers them.
+      write(async () => {
       const { chainId, version } = arg;
       const scheduler = getVestingSchedulerContractInfo(chainId, version);
 
@@ -563,7 +571,7 @@ export function useFixAccessForVesting() {
 
       const subTransactionTitles = subOperations.map((x) => x.title);
 
-      return write({
+      return {
         chainId,
         ...subOperationsWriteFragment(chainId, subOperations),
         title: `Fix Access for Vesting (${version})` as TransactionTitle,
@@ -571,8 +579,8 @@ export function useFixAccessForVesting() {
         extraData: arg.transactionExtraData,
         overrides: arg.overrides,
         simulate: arg.simulate,
-      });
-    },
+      };
+      }),
     [write]
   );
 
@@ -599,7 +607,8 @@ export function useExecuteBatchVesting() {
   const { address: accountAddress } = useAccount();
 
   const executeBatchVesting = useCallback(
-    (arg: ExecuteBatchVestingArgs) => {
+    (arg: ExecuteBatchVestingArgs) =>
+      write(() => {
       const { chainId, version } = arg;
       const scheduler = getVestingSchedulerContractInfo(chainId, version);
       const network = findNetworkOrThrow(allNetworks, chainId);
@@ -686,17 +695,17 @@ export function useExecuteBatchVesting() {
 
       const subTransactionTitles = subOperations.map((x) => x.title);
 
-      return write({
+      return {
         chainId,
         ...subOperationsWriteFragment(chainId, subOperations, {
           forceBatch: true,
         }),
-        title: "Create Batch of Vesting Schedules",
+        title: "Create Batch of Vesting Schedules" as const,
         subTransactionTitles,
         extraData: arg.transactionExtraData,
         overrides: arg.overrides,
         simulate: arg.simulate,
-        getPendingUpdates: (hash) =>
+        getPendingUpdates: (hash: string) =>
           accountAddress
             ? buildExecuteBatchVestingPendingUpdates(hash, {
                 chainId,
@@ -712,8 +721,8 @@ export function useExecuteBatchVesting() {
                 version,
               })
             : [],
-      });
-    },
+      };
+      }),
     [write, accountAddress]
   );
 

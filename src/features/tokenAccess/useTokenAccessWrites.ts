@@ -65,7 +65,10 @@ export function useUpdateAccess() {
   const { write, result } = useSuperfluidWriteContract();
 
   const updateAccess = useCallback(
-    (arg: UpdateAccessArgs) => {
+    (arg: UpdateAccessArgs) =>
+      // Op-building runs inside the builder so failures (e.g. no changes,
+      // unsupported chain) surface through `result` (dialog).
+      write(() => {
       const subOperations: SubOperation[] = [];
 
       const flowRateAllowanceChanged =
@@ -115,16 +118,16 @@ export function useUpdateAccess() {
         );
       }
 
-      return write({
+      return {
         chainId: arg.chainId,
         ...subOperationsWriteFragment(arg.chainId, subOperations),
-        title: "Modify Permissions & Allowances",
+        title: "Modify Permissions & Allowances" as const,
         subTransactionTitles: subOperations.map((x) => x.title),
         extraData: arg.transactionExtraData,
         overrides: arg.overrides,
         simulate: arg.simulate,
-      });
-    },
+      };
+      }),
     [write]
   );
 
@@ -139,7 +142,8 @@ export function useRevokeAccess() {
   const { write, result } = useSuperfluidWriteContract();
 
   const revokeAccess = useCallback(
-    (arg: RevokeAccessArgs) => {
+    (arg: RevokeAccessArgs) =>
+      write(() => {
       const subOperations: SubOperation[] = [];
 
       if (
@@ -179,16 +183,16 @@ export function useRevokeAccess() {
         );
       }
 
-      return write({
+      return {
         chainId: arg.chainId,
         ...subOperationsWriteFragment(arg.chainId, subOperations),
-        title: "Revoke Access",
+        title: "Revoke Access" as const,
         subTransactionTitles: subOperations.map((x) => x.title),
         extraData: arg.transactionExtraData,
         overrides: arg.overrides,
         simulate: arg.simulate,
-      });
-    },
+      };
+      }),
     [write]
   );
 

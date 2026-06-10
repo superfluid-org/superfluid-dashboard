@@ -22,7 +22,7 @@ export function useConnectToPool() {
 
   const connectToPool = useCallback(
     (arg: PoolConnectionArgs) =>
-      write({
+      write(() => ({
         chainId: arg.chainId,
         abi: gdaForwarderAbi,
         address: getContractAddress(
@@ -32,16 +32,16 @@ export function useConnectToPool() {
         ),
         functionName: "connectPool",
         args: [arg.poolAddress, "0x"],
-        title: "Connect to Pool",
+        title: "Connect to Pool" as const,
         overrides: arg.overrides,
         simulate: arg.simulate,
-        getPendingUpdates: (hash) =>
+        getPendingUpdates: (hash: string) =>
           buildConnectToPoolPendingUpdate(hash, {
             chainId: arg.chainId,
             poolAddress: arg.poolAddress,
             superTokenAddress: arg.superTokenAddress,
           }),
-      }),
+      })),
     [write]
   );
 
@@ -58,7 +58,7 @@ export function useDisconnectFromPool() {
 
   const disconnectFromPool = useCallback(
     (arg: PoolConnectionArgs) =>
-      write({
+      write(() => ({
         chainId: arg.chainId,
         abi: gdaForwarderAbi,
         address: getContractAddress(
@@ -68,10 +68,10 @@ export function useDisconnectFromPool() {
         ),
         functionName: "disconnectPool",
         args: [arg.poolAddress, "0x"],
-        title: "Disconnect from Pool",
+        title: "Disconnect from Pool" as const,
         overrides: arg.overrides,
         simulate: arg.simulate,
-      }),
+      })),
     [write]
   );
 

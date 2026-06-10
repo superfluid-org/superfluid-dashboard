@@ -22,17 +22,17 @@ export function useTransfer() {
 
   const transfer = useCallback(
     (arg: TransferArgs) =>
-      write({
+      write(() => ({
         chainId: arg.chainId,
         abi: erc20Abi,
         address: arg.tokenAddress as Address,
         functionName: "transfer",
         args: [arg.receiverAddress as Address, BigInt(arg.amountWei)],
-        title: "Send Transfer",
+        title: "Send Transfer" as const,
         extraData: arg.transactionExtraData,
         overrides: arg.overrides,
         simulate: arg.simulate,
-      }),
+      })),
     [write]
   );
 
