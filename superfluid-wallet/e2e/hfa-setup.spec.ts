@@ -1,4 +1,10 @@
 import { test, expect } from '@playwright/test'
+import {
+  captureTurnkeyModalScreenshot,
+  expectContainedHorizontally,
+  openHfaSetupSignInModal,
+  turnkeyModalPanel,
+} from './helpers/turnkey-modal-layout'
 
 const SESSION_ID = 'e2e-setup-session-001'
 const AGENT_PUBLIC_KEY = '02' + 'a'.repeat(64)
@@ -72,6 +78,42 @@ test.describe('HFA setup page', () => {
     if (await enableButton.isVisible()) {
       await expect(page.getByText('E2E Test Agent')).toBeVisible()
     }
+
+    expect(pageErrors, `page crashed: ${pageErrors.join('; ')}`).toEqual([])
+  })
+
+  test('Turnkey login modal layout is not clipped or overflowing', async ({ page }, testInfo) => {
+    const pageErrors = trackPageErrors(page)
+
+    await page.route(`${HFA_ORIGIN}/api/turnkey/hfa/setup-sessions/**`, async (route) => {
+      if (route.request().method() === 'GET') {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(pendingSession),
+        })
+        return
+      }
+      await route.continue()
+    })
+
+    const setupUrl = `/hfa/setup?session=${SESSION_ID}&hfa=${encodeURIComponent(HFA_ORIGIN)}`
+    await openHfaSetupSignInModal(page, setupUrl)
+
+    const panel = turnkeyModalPanel(page)
+    const emailField = page.getByPlaceholder('Enter your email')
+    const heading = page.getByText('Log in or sign up')
+    const terms = page.getByText('Terms of Service')
+
+    await expect(emailField).toBeVisible()
+    await expect(terms).toBeVisible()
+
+    const screenshotPath = testInfo.outputPath('turnkey-login-modal.png')
+    await captureTurnkeyModalScreenshot(page, screenshotPath)
+
+    await expectContainedHorizontally(panel, emailField, 'email input')
+    await expectContainedHorizontally(panel, heading, 'modal heading')
+    await expectContainedHorizontally(panel, terms, 'terms line')
 
     expect(pageErrors, `page crashed: ${pageErrors.join('; ')}`).toEqual([])
   })

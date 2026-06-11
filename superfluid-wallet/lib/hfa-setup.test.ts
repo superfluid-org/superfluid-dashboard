@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  buildHfaNotificationPairingUrl,
   buildSetupSessionCompleteUrl,
   buildSetupSessionGetUrl,
   parseHfaSetupUrlParams,
@@ -38,6 +39,13 @@ describe('HFA setup client URLs', () => {
     );
     expect(buildSetupSessionCompleteUrl('http://localhost:3000', 'abc')).toBe(
       'http://localhost:3000/api/turnkey/hfa/setup-sessions/abc/complete'
+    );
+  });
+
+  it('builds notification pairing URL for wallet handoff', () => {
+    const wallet = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266';
+    expect(buildHfaNotificationPairingUrl('http://localhost:5712/', wallet)).toBe(
+      `http://localhost:5712/?agent=${wallet}&from=hfa-setup&mode=relay`
     );
   });
 });

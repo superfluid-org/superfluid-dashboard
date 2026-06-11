@@ -36,7 +36,8 @@ In [Turnkey Dashboard → Wallet Kit → Authentication](https://app.turnkey.com
 ## Troubleshooting
 
 - **`pnpm install` / ignored builds:** ensure `pnpm-workspace.yaml` has `allowBuilds` for `esbuild`, `sharp`, `unrs-resolver`.
-- **Sign In appears inert:** restart dev server after pull; `tailwind.config.ts` must scan `./node_modules/@turnkey/react-wallet-kit/dist/**` (not the dashboard’s `node_modules`).
+- **Sign In appears inert:** restart dev server after pull; `tailwind.config.ts` must scan `./node_modules/@turnkey/react-wallet-kit/dist/**`.
+- **Turnkey login modal clipped or overflowing:** do not set a fixed width on `.tk-modal .bg-modal-background-*` in `globals.css` (Turnkey sizes the panel itself). Verify with `pnpm test:e2e:turnkey-modal` — writes `turnkey-login-modal.png` under `test-results/` for inspection.
 - **Session expired at sign:** use **Sign in to continue** in the popup; dashboard disconnect is not required.
 
 ## HFA delegated-access setup

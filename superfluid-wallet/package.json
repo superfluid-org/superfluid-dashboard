@@ -14,6 +14,7 @@
     "test": "vitest run",
     "playwright:install": "playwright install chromium",
     "test:e2e": "playwright test",
+    "test:e2e:turnkey-modal": "playwright test e2e/hfa-setup.spec.ts --grep 'Turnkey login modal layout'",
     "test:all": "pnpm check-types && pnpm test && pnpm test:e2e"
   },
   "dependencies": {

@@ -1,7 +1,7 @@
 'use client';
 
 import { useTurnkey } from '@turnkey/react-wallet-kit';
-import { Loader2 } from 'lucide-react';
+import { CheckCircle2, Loader2 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { AuthButton } from '@/components/auth';
@@ -16,6 +16,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import {
+  buildHfaNotificationPairingUrl,
   completeHfaSetupSession,
   fetchHfaSetupSession,
   parseHfaSetupUrlParams,
@@ -210,6 +211,16 @@ export default function HfaSetupPage() {
           (address) => address && address.startsWith('0x')
         );
 
+  const notificationPairingUrl =
+    pageState === 'success' &&
+    !('error' in parsedUrl) &&
+    setupSession?.status === 'completed'
+      ? buildHfaNotificationPairingUrl(
+          parsedUrl.hfaBaseUrl,
+          setupSession.walletAddress
+        )
+      : null;
+
   const displayError =
     pageState === 'error'
       ? errorMessage ?? signingReady.error
@@ -261,9 +272,28 @@ export default function HfaSetupPage() {
           )}
 
           {pageState === 'success' && (
-            <p className="text-sm text-green-500">
-              HFA is enabled for this wallet. You can return to your agent.
-            </p>
+            <div className="space-y-3">
+              <div
+                className="flex items-start gap-2 rounded-md border border-green-800/30 bg-green-950/20 px-3 py-2 text-sm text-foreground dark:border-green-700/40 dark:bg-green-950/40"
+                role="status"
+              >
+                <CheckCircle2
+                  className="mt-0.5 h-4 w-4 shrink-0 text-green-700 dark:text-green-400"
+                  aria-hidden
+                />
+                <p>
+                  HFA is enabled for this wallet. One more step: enable approval
+                  notifications on this device so you receive prompts when your agent
+                  submits transactions.
+                </p>
+              </div>
+              {walletAddress && (
+                <div className="text-sm">
+                  <span className="text-muted-foreground">Wallet:</span>{' '}
+                  <code>{walletAddress}</code>
+                </div>
+              )}
+            </div>
           )}
 
           {displayError && (
@@ -285,6 +315,16 @@ export default function HfaSetupPage() {
           {pageState === 'error' && setupSession?.status === 'pending' && (
             <Button onClick={() => void reloadSetupSession()} variant="secondary" className="w-full">
               Retry
+            </Button>
+          )}
+          {pageState === 'success' && notificationPairingUrl && (
+            <Button
+              className="w-full"
+              onClick={() => {
+                window.location.href = notificationPairingUrl;
+              }}
+            >
+              Enable approval notifications
             </Button>
           )}
         </CardFooter>

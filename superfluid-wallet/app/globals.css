@@ -2,23 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Popup context: override the SDK's mobile bottom-sheet layout so the modal
-   is centered and auto-sized. The popup window is 360px wide, which trips the
-   SDK's isMobile threshold (< 640px), causing items-end + a screenWidth-based
-   width that can be wrong on first render. These overrides keep the modal
-   visible regardless of the SDK's inline height calculation. */
+/* Popup / narrow viewports: SDK uses items-end below 640px. Center the sheet only.
+   Do not override panel width/height — Turnkey sizes the panel via ResizeObserver
+   and inline styles; forcing width caused the email row to overflow the card. */
 .tk-modal {
   align-items: center !important;
-}
-.tk-modal .bg-modal-background-light {
-  height: auto !important;
-  min-height: 100px;
-  width: 320px !important;
-  border-radius: 16px !important;
 }
 
 /* Turnkey CSS variables — defined outside @layer so they're not stripped by the v3/v4 cascade layer mismatch */
 :root {
+  --spacing: 0.25rem;
   --color-primary-light: oklch(0.547 0.2389 266.82);
   --color-primary-dark: oklch(0.547 0.2389 266.82);
   --color-primary-text-light: #fff;

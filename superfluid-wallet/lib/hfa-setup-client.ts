@@ -81,6 +81,20 @@ export function buildSetupSessionCompleteUrl(hfaBaseUrl: string, sessionId: stri
   return `${hfaBaseUrl.replace(/\/$/, '')}/api/turnkey/hfa/setup-sessions/${encodeURIComponent(sessionId)}/complete`
 }
 
+/** HFA web UI URL to register push notifications after wallet setup completes. */
+export function buildHfaNotificationPairingUrl(
+  hfaBaseUrl: string,
+  walletAddress: string,
+): string {
+  const base = hfaBaseUrl.replace(/\/$/, '')
+  const params = new URLSearchParams({
+    agent: walletAddress,
+    from: 'hfa-setup',
+    mode: 'relay',
+  })
+  return `${base}/?${params.toString()}`
+}
+
 export async function fetchHfaSetupSession(
   hfaBaseUrl: string,
   sessionId: string,
