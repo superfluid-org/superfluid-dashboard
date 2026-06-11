@@ -39,6 +39,7 @@ import {
   SubOperation,
   agreementCallSubOperation,
   appActionSubOperation,
+  cfaForwarderWriteFragment,
   contractCallSubOperation,
   getContractAddress,
   subOperationsWriteFragment,
@@ -350,6 +351,12 @@ export function useDeleteVestingSchedule() {
                 "0x",
               ],
             }),
+            direct: cfaForwarderWriteFragment(chainId, "deleteFlow", [
+              arg.superTokenAddress as Address,
+              arg.senderAddress as Address,
+              arg.receiverAddress as Address,
+              "0x",
+            ]),
             title: "Close Stream",
           })
         );
@@ -520,6 +527,12 @@ export function useFixAccessForVesting() {
         existingFlowRateAllowance >= requiredFlowRateAllowance;
 
       if (!hasRequiredPermissions || !hasRequiredFlowRateAllowance) {
+        const newPermissions = hasRequiredPermissions
+          ? existingPermissions
+          : existingPermissions | arg.requiredFlowOperatorPermissions;
+        const newFlowRateAllowance = hasRequiredFlowRateAllowance
+          ? existingFlowRateAllowance
+          : requiredFlowRateAllowance;
         subOperations.push(
           agreementCallSubOperation({
             chainId,
@@ -530,15 +543,21 @@ export function useFixAccessForVesting() {
               args: [
                 arg.superTokenAddress as Address,
                 scheduler.address,
-                hasRequiredPermissions
-                  ? existingPermissions
-                  : existingPermissions | arg.requiredFlowOperatorPermissions,
-                hasRequiredFlowRateAllowance
-                  ? existingFlowRateAllowance
-                  : requiredFlowRateAllowance,
+                newPermissions,
+                newFlowRateAllowance,
                 "0x",
               ],
             }),
+            direct: cfaForwarderWriteFragment(
+              chainId,
+              "updateFlowOperatorPermissions",
+              [
+                arg.superTokenAddress as Address,
+                scheduler.address,
+                newPermissions,
+                newFlowRateAllowance,
+              ]
+            ),
             title: "Approve Vesting Scheduler",
           })
         );

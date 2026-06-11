@@ -5,6 +5,7 @@ import {
   OperationType,
   prepareOperation,
 } from "@sfpro/sdk/constant";
+import { cfaForwarderAbi, cfaForwarderAddress } from "@sfpro/sdk/abi";
 import { hostAbi, hostAddress } from "@sfpro/sdk/abi/core";
 import { TransactionTitle } from "@superfluid-finance/sdk-redux";
 
@@ -50,13 +51,35 @@ export interface SubOperation {
   direct: WriteFragment;
 }
 
-/** Superfluid agreement call (CFA/GDA/IDA) — `SUPERFLUID_CALL_AGREEMENT` op. */
+/**
+ * The CFAv1Forwarder equivalent of an agreement call, for standalone execution —
+ * wallets render it as a readable named call instead of opaque `callAgreement` calldata.
+ * Returns `undefined` on chains the SDK has no forwarder address for, so the caller
+ * falls back to `host.callAgreement`.
+ */
+export function cfaForwarderWriteFragment(
+  chainId: number,
+  functionName: string,
+  args: readonly unknown[]
+): WriteFragment | undefined {
+  const address =
+    cfaForwarderAddress[chainId as keyof typeof cfaForwarderAddress];
+  if (!address) return undefined;
+  return { abi: cfaForwarderAbi, address, functionName, args };
+}
+
+/**
+ * Superfluid agreement call (CFA/GDA/IDA) — `SUPERFLUID_CALL_AGREEMENT` op. `direct`
+ * overrides the standalone write (e.g. a CFAv1Forwarder call, mirroring sdk-core);
+ * batching always uses the agreement calldata, as forwarders cannot be batched.
+ */
 export function agreementCallSubOperation(params: {
   chainId: number;
   agreementAddress: Address;
   callData: Hex;
   userData?: Hex;
   title: TransactionTitle;
+  direct?: WriteFragment;
 }): SubOperation {
   const userData = params.userData ?? "0x";
   return {
@@ -67,7 +90,7 @@ export function agreementCallSubOperation(params: {
       data: params.callData,
       userData,
     }),
-    direct: {
+    direct: params.direct ?? {
       abi: hostAbi,
       address: getContractAddress(hostAddress, params.chainId, "Superfluid Host"),
       functionName: "callAgreement",

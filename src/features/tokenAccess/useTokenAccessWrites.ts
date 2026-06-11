@@ -8,6 +8,7 @@ import { ViemFeeOverrides } from "../../utils/ethersOverridesToViem";
 import {
   SubOperation,
   agreementCallSubOperation,
+  cfaForwarderWriteFragment,
   contractCallSubOperation,
   getContractAddress,
   subOperationsWriteFragment,
@@ -98,6 +99,16 @@ export function useUpdateAccess() {
                 "0x",
               ],
             }),
+            direct: cfaForwarderWriteFragment(
+              arg.chainId,
+              "updateFlowOperatorPermissions",
+              [
+                arg.superTokenAddress as Address,
+                arg.operatorAddress as Address,
+                arg.editedAccess.flowOperatorPermissions,
+                BigInt(arg.editedAccess.flowRateAllowanceWei),
+              ]
+            ),
             title: "Update Flow Operator Permissions",
           })
         );
@@ -167,6 +178,12 @@ export function useRevokeAccess() {
                 "0x",
               ],
             }),
+            // The forwarder's `revokePermissions` is the equivalent: zeroes both
+            // permissions and the flow-rate allowance.
+            direct: cfaForwarderWriteFragment(arg.chainId, "revokePermissions", [
+              arg.superTokenAddress as Address,
+              arg.operatorAddress as Address,
+            ]),
             title: "Revoke Flow Operator",
           })
         );

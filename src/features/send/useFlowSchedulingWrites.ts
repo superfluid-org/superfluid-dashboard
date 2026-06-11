@@ -24,6 +24,7 @@ import {
   SubOperation,
   agreementCallSubOperation,
   appActionSubOperation,
+  cfaForwarderWriteFragment,
   getContractAddress,
   subOperationsWriteFragment,
 } from "../transactions/operations";
@@ -225,6 +226,13 @@ export function useUpsertFlowWithScheduling() {
                 ],
               }),
               userData,
+              direct: cfaForwarderWriteFragment(chainId, "updateFlow", [
+                arg.superTokenAddress as Address,
+                arg.senderAddress as Address,
+                arg.receiverAddress as Address,
+                BigInt(arg.flowRateWei),
+                userData,
+              ]),
               title: "Update Stream",
             })
           );
@@ -247,6 +255,13 @@ export function useUpsertFlowWithScheduling() {
                 ],
               }),
               userData,
+              direct: cfaForwarderWriteFragment(chainId, "createFlow", [
+                arg.superTokenAddress as Address,
+                arg.senderAddress as Address,
+                arg.receiverAddress as Address,
+                BigInt(arg.flowRateWei),
+                userData,
+              ]),
               title: "Create Stream",
             })
           );
@@ -335,6 +350,12 @@ export function useDeleteFlowWithScheduling() {
               ],
             }),
             userData,
+            direct: cfaForwarderWriteFragment(chainId, "deleteFlow", [
+              arg.superTokenAddress as Address,
+              arg.senderAddress as Address,
+              arg.receiverAddress as Address,
+              userData,
+            ]),
             title: "Close Stream",
           })
         );
