@@ -1,12 +1,9 @@
 import { ButtonProps, Typography } from "@mui/material";
 import { TransactionTitle } from "@superfluid-finance/sdk-redux";
-import { constants } from "ethers";
 import { FC, memo } from "react";
-import { useSimulateContract, useWalletClient } from "wagmi";
-import { useSuperfluidWriteContract } from "../../transactions/useSuperfluidWriteContract";
+import { useDisableAutoWrap } from "../../auto-wrap/useAutoWrapWrites";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
-import { erc20Abi } from "../../../generated";
 import { Network } from "../../network/networks";
 import { ConnectionBoundaryButtonProps } from "../../transactionBoundary/ConnectionBoundaryButton";
 import { SuperTokenMinimal } from "../../redux/endpoints/tokenTypes";
@@ -21,28 +18,8 @@ const DisableAutoWrapTransactionButton: FC<{
   ButtonProps?: ButtonProps;
   network: Network;
   ConnectionBoundaryButtonProps?: Partial<ConnectionBoundaryButtonProps>
-}> = ({ token, isVisible, ButtonProps = {}, ConnectionBoundaryButtonProps, network, ...props }) => {
-  const { data: walletClient } = useWalletClient();
-
-  const primaryArgs = {
-    spender: network.autoWrap!.strategyContractAddress,
-    amount: BigInt(constants.Zero.toString()),
-  };
-  const prepare = !props.isDisabled && network.autoWrap && walletClient && walletClient.chain.id === network.id;
-  const { data: config } = useSimulateContract(
-    prepare
-      ? {
-          abi: erc20Abi,
-          functionName: "approve",
-          address: token.underlyingAddress as `0x${string}`,
-          chainId: network.id,
-          args: [primaryArgs.spender, primaryArgs.amount],
-          // TODO: overrides
-        }
-      : undefined
-  );
-
-  const { write, result: mutationResult } = useSuperfluidWriteContract();
+}> = ({ token, isVisible, ButtonProps = {}, ConnectionBoundaryButtonProps, network, isDisabled }) => {
+  const [disableAutoWrap, mutationResult] = useDisableAutoWrap();
 
   const underlyingTokenQuery = useTokenQuery({
     chainId: network.id,
@@ -50,8 +27,8 @@ const DisableAutoWrapTransactionButton: FC<{
   });
   const underlyingToken = underlyingTokenQuery.data;
 
-  const isButtonEnabled = prepare && config && config.request;
-  const isButtonDisabled = !isButtonEnabled;
+  const isButtonDisabled =
+    isDisabled || !network.autoWrap || !token.underlyingAddress;
 
   return (
     <TransactionBoundary mutationResult={mutationResult}>
@@ -80,16 +57,15 @@ const DisableAutoWrapTransactionButton: FC<{
                 </Typography>
               );
 
-              write({
+              disableAutoWrap({
                 chainId: network.id,
-                abi: erc20Abi,
-                address: token.underlyingAddress as `0x${string}`,
-                functionName: "approve",
-                args: [primaryArgs.spender, primaryArgs.amount],
-                title: "Disable Auto-Wrap",
+                underlyingTokenAddress: token.underlyingAddress!,
+                simulate: true,
               })
                 .then(
-                  ...txAnalytics("Disable Auto-Wrap", primaryArgs)
+                  ...txAnalytics("Disable Auto-Wrap", {
+                    spender: network.autoWrap?.strategyContractAddress,
+                  })
                 )
                 .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
             }}

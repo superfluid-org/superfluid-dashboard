@@ -1,10 +1,7 @@
 import { Typography } from "@mui/material";
 import { TransactionTitle } from "@superfluid-finance/sdk-redux";
-import { BigNumber } from "ethers";
 import { FC, memo } from "react";
-import { useSimulateContract, useWalletClient  } from "wagmi";
-import { autoWrapManagerAbi, autoWrapManagerAddress } from "../../../generated";
-import { useSuperfluidWriteContract } from "../../transactions/useSuperfluidWriteContract";
+import { useEnableAutoWrap } from "../../auto-wrap/useAutoWrapWrites";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
 import { Network } from "../../network/networks";
@@ -17,41 +14,11 @@ const AutoWrapStrategyTransactionButton: FC<{
   isVisible: boolean;
   isDisabled: boolean;
   network: Network;
-}> = ({ token, isVisible, network, ...props }) => {
-  const { data: walletClient } = useWalletClient();
+}> = ({ token, isVisible, network, isDisabled }) => {
+  const [enableAutoWrap, mutationResult] = useEnableAutoWrap();
 
-  const primaryArgs = {
-    superToken: token.address as `0x${string}`,
-    strategy: network.autoWrap!.strategyContractAddress,
-    liquidityToken: token.underlyingAddress as `0x${string}`,
-    expiry: BigInt(BigNumber.from("3000000000").toString()),
-    lowerLimit: BigInt(BigNumber.from(network.autoWrap!.lowerLimit).toString()),
-    upperLimit: BigInt(BigNumber.from(network.autoWrap!.upperLimit).toString()),
-  };
-
-  const prepare = !props.isDisabled && network.autoWrap && walletClient && walletClient.chain.id === network.id;;
-  const { data: config } = useSimulateContract(
-    prepare
-      ? {
-          abi: autoWrapManagerAbi,
-          functionName: "createWrapSchedule",
-          address: network.autoWrap!.managerContractAddress,
-          args: [
-            primaryArgs.superToken,
-            primaryArgs.strategy,
-            primaryArgs.liquidityToken,
-            primaryArgs.expiry,
-            primaryArgs.lowerLimit,
-            primaryArgs.upperLimit,
-          ],
-          chainId: network.id as keyof typeof autoWrapManagerAddress,
-        }
-      : undefined
-  );
-
-  const { write, result: mutationResult } = useSuperfluidWriteContract();
-  const isButtonEnabled = prepare && config && config.request;
-  const isButtonDisabled = !isButtonEnabled;
+  const isButtonDisabled =
+    isDisabled || !network.autoWrap || !token.underlyingAddress;
 
   return (
     <TransactionBoundary mutationResult={mutationResult}>
@@ -70,23 +37,17 @@ const AutoWrapStrategyTransactionButton: FC<{
                 </Typography>
               );
 
-              write({
+              enableAutoWrap({
                 chainId: network.id,
-                abi: autoWrapManagerAbi,
-                address: network.autoWrap!.managerContractAddress,
-                functionName: "createWrapSchedule",
-                args: [
-                  primaryArgs.superToken,
-                  primaryArgs.strategy,
-                  primaryArgs.liquidityToken,
-                  primaryArgs.expiry,
-                  primaryArgs.lowerLimit,
-                  primaryArgs.upperLimit,
-                ],
-                title: TX_TITLE,
+                superTokenAddress: token.address,
+                underlyingTokenAddress: token.underlyingAddress!,
+                simulate: true,
               })
                 .then(
-                  ...txAnalytics("Enable Auto-Wrap", primaryArgs)
+                  ...txAnalytics("Enable Auto-Wrap", {
+                    superToken: token.address,
+                    liquidityToken: token.underlyingAddress,
+                  })
                 )
                 .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
             }}
