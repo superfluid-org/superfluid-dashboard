@@ -7,7 +7,7 @@ import {
 } from "../../transactions/contractReads";
 import { getContractAddress } from "../../transactions/operations";
 import { resolvedWagmiClients } from "../../wallet/WagmiManager";
-import { superTokenAbi } from "../../../generated";
+import { superTokenAbi } from "@sfpro/sdk/abi";
 import {
   balanceFetcher,
   BalanceQueryParams,

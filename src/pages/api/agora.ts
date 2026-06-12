@@ -10,7 +10,7 @@ import { mapSubgraphVestingSchedule, VestingSchedule } from '../../features/vest
 import { UnitOfTime } from '../../features/send/FlowRateInput'
 import { allNetworks, findNetworkOrThrow } from '../../features/network/networks'
 import { add, getUnixTime } from 'date-fns'
-import { cfaV1ForwarderAbi, cfaV1ForwarderAddress, superTokenAbi } from '../../generated'
+import { cfaForwarderAbi, cfaForwarderAddress, superTokenAbi } from '@sfpro/sdk/abi'
 import { vestingSchedulerV3Abi } from '@sfpro/sdk/abi/automation'
 import { ACL_CREATE_PERMISSION, ACL_DELETE_PERMISSION, ACL_UPDATE_PERMISSION } from '../../utils/constants'
 import { getAddress as getAddress_ } from "ethers/lib/utils"
@@ -796,8 +796,8 @@ export default async function handler(
 
             const flowOperatorData = yield* E.tryPromise({
                 try: () => publicClient.readContract({
-                    address: cfaV1ForwarderAddress[network.id as keyof typeof cfaV1ForwarderAddress],
-                    abi: cfaV1ForwarderAbi,
+                    address: cfaForwarderAddress[network.id as keyof typeof cfaForwarderAddress],
+                    abi: cfaForwarderAbi,
                     functionName: "getFlowOperatorPermissions",
                     args: [token, sender, vestingContractInfo.address]
                 }),

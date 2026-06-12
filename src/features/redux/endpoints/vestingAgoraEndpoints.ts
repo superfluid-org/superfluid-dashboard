@@ -1,7 +1,8 @@
 import { Actions, type ProjectsOverview } from "../../../pages/api/agora";
 import { allNetworks, findNetworkOrThrow } from "../../network/networks";
 import { BatchTransaction } from "../../../libs/gnosis-tx-builder/types";
-import { constantFlowAgreementV1Abi, constantFlowAgreementV1Address, superfluidAbi, superfluidAddress, superTokenAbi } from "../../../generated";
+import { superTokenAbi } from "@sfpro/sdk/abi";
+import { cfaAbi, cfaAddress, hostAbi, hostAddress } from "@sfpro/sdk/abi/core";
 import { vestingSchedulerV3Abi } from "@sfpro/sdk/abi/automation";
 import { encodeFunctionData, getAbiItem } from "viem";
 
@@ -47,26 +48,26 @@ export const mapProjectStateIntoGnosisSafeBatch = (state: ProjectsOverview, acti
                 ] as const;
 
                 const callData = encodeFunctionData({
-                    abi: constantFlowAgreementV1Abi,
+                    abi: cfaAbi,
                     functionName: "increaseFlowRateAllowanceWithPermissions",
                     args: internalArgs
                 });
 
                 const args = [
-                    constantFlowAgreementV1Address[network.id as keyof typeof constantFlowAgreementV1Address],
+                    cfaAddress[network.id as keyof typeof cfaAddress],
                     callData,
                     "0x"
                 ] as const;
 
                 const functionAbi = getAbiItem({
-                    abi: superfluidAbi,
+                    abi: hostAbi,
                     name: 'callAgreement',
                     args
                 })
 
                 const argNames = functionAbi.inputs.map(input => input.name);
                 transactions.push({
-                    to: superfluidAddress[network.id as keyof typeof superfluidAddress],
+                    to: hostAddress[network.id as keyof typeof hostAddress],
                     contractMethod: functionAbi,
                     contractInputsValues: mapArgsIntoContractInputsValues(argNames, args)
                 });

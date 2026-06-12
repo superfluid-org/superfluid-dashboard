@@ -1,7 +1,6 @@
 import { useCallback } from "react";
 import { superTokenAbi } from "@sfpro/sdk/abi";
 import { Address, erc20Abi } from "viem";
-import { nativeAssetSuperTokenAbi } from "../../generated";
 import { ViemFeeOverrides } from "../../utils/ethersOverridesToViem";
 import { useSuperfluidWriteContract } from "../transactions/useSuperfluidWriteContract";
 
@@ -70,7 +69,7 @@ export function useTokenWrap() {
         simulate: arg.simulate,
         ...(arg.isNativeAssetUnderlyingToken
           ? {
-              abi: nativeAssetSuperTokenAbi,
+              abi: superTokenAbi,
               address: arg.superTokenAddress as Address,
               functionName: "upgradeByETH",
               args: [],
@@ -115,7 +114,7 @@ export function useTokenUnwrap() {
         simulate: arg.simulate,
         ...(arg.isNativeAssetUnderlyingToken
           ? {
-              abi: nativeAssetSuperTokenAbi,
+              abi: superTokenAbi,
               address: arg.superTokenAddress as Address,
               functionName: "downgradeToETH",
               args: [BigInt(arg.amountWei)],

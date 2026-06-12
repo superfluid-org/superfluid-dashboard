@@ -6,7 +6,8 @@ import metadata from "@superfluid-finance/metadata";
 
 import { convertVestingScheduleFromAmountAndDurationsToAbsolutes, VestingScheduleFromAmountAndDurationsParams } from "./VestingScheduleParams";
 import { getMaximumNeededTokenAllowance } from "../VestingSchedulesAllowancesTable/calculateRequiredAccessForActiveVestingSchedule";
-import { constantFlowAgreementV1Abi, superfluidAbi, superTokenAbi } from "../../../generated";
+import { superTokenAbi } from "@sfpro/sdk/abi";
+import { cfaAbi, hostAbi } from "@sfpro/sdk/abi/core";
 import { ACL_CREATE_PERMISSION, ACL_DELETE_PERMISSION, ACL_UPDATE_PERMISSION } from "@/utils/constants";
 
 type GetTxBuilderInputArgs = {
@@ -166,7 +167,7 @@ export const prependPermissionTxs =
                 },
             };
 
-            const callAgreement = superfluidAbi.find(
+            const callAgreement = hostAbi.find(
                 (x) => x.type === "function" && x.name === "callAgreement"
             );
             if (!callAgreement) {
@@ -174,7 +175,7 @@ export const prependPermissionTxs =
             }
 
             const callData = encodeFunctionData({
-                abi: constantFlowAgreementV1Abi,
+                abi: cfaAbi,
                 functionName: "increaseFlowRateAllowanceWithPermissions",
                 args: [
                     superTokenAddress,
