@@ -1,3 +1,4 @@
+import BoltRoundedIcon from "@mui/icons-material/BoltRounded";
 import LaunchRoundedIcon from "@mui/icons-material/LaunchRounded";
 import {
   Box,
@@ -78,6 +79,7 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
 
   const subTransactionTitles: TransactionTitle[] =
     (transaction.extraData.subTransactionTitles as TransactionTitle[]) ?? [];
+  const isRelayed = Boolean(transaction.extraData.clearMacroExecutionId);
   const [expand, setExpand] = useState(false);
 
   const groupedSubTransactionTitles = map(
@@ -179,6 +181,18 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
                       <LaunchRoundedIcon />
                     </IconButton>
                   </span>
+                </Tooltip>
+              )}
+              {isRelayed && (
+                <Tooltip
+                  title="Executed gaslessly via the Clear Macro relay"
+                  arrow
+                  placement="top"
+                >
+                  <BoltRoundedIcon
+                    data-cy="tx-relayed-icon"
+                    sx={{ fontSize: 16, color: "text.secondary" }}
+                  />
                 </Tooltip>
               )}
             </Stack>
