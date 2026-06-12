@@ -9,7 +9,7 @@ import {
   ACL_CREATE_PERMISSION,
   ACL_DELETE_PERMISSION,
 } from "../../utils/constants";
-import { ViemFeeOverrides } from "../../utils/ethersOverridesToViem";
+import { ViemFeeOverrides } from "../transactions/viemFeeOverrides";
 import { allNetworks, findNetworkOrThrow } from "../network/networks";
 import {
   buildDeleteFlowWithSchedulingPendingUpdates,

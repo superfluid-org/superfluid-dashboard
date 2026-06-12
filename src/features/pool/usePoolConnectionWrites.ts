@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { gdaForwarderAbi, gdaForwarderAddress } from "@sfpro/sdk/abi";
-import { ViemFeeOverrides } from "../../utils/ethersOverridesToViem";
+import { ViemFeeOverrides } from "../transactions/viemFeeOverrides";
 import { buildConnectToPoolPendingUpdate } from "../pendingUpdates/buildPendingUpdates";
 import { getContractAddress } from "../transactions/operations";
 import { useSuperfluidWriteContract } from "../transactions/useSuperfluidWriteContract";

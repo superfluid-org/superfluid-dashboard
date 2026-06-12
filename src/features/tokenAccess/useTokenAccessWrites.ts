@@ -4,7 +4,7 @@ import { cfaAbi, cfaAddress } from "@sfpro/sdk/abi/core";
 import { superTokenAbi } from "@sfpro/sdk/abi";
 import { TransactionTitle } from "@superfluid-finance/sdk-redux";
 import { Address, encodeFunctionData } from "viem";
-import { ViemFeeOverrides } from "../../utils/ethersOverridesToViem";
+import { ViemFeeOverrides } from "../transactions/viemFeeOverrides";
 import {
   SubOperation,
   agreementCallSubOperation,

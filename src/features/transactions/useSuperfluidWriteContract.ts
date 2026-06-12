@@ -11,10 +11,7 @@ import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import MutationResult, { RelayPhase } from "../../MutationResult";
 import { PendingUpdate } from "../pendingUpdates/PendingUpdate";
 import { allNetworks, findNetworkOrThrow } from "../network/networks";
-import {
-  ethersOverridesToViem,
-  ViemFeeOverrides,
-} from "../../utils/ethersOverridesToViem";
+import { ViemFeeOverrides } from "./viemFeeOverrides";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { useClearMacroEnabled } from "../settings/appSettingsHooks";
 import { ClearMacroAction } from "../clearMacro/dashboardClearMacro";
@@ -105,9 +102,7 @@ export function useSuperfluidWriteContract() {
           : argsOrBuilder;
 
       const network = findNetworkOrThrow(allNetworks, params.chainId);
-      const resolvedOverrides = ethersOverridesToViem(
-        await getTransactionOverrides(network)
-      );
+      const resolvedOverrides = await getTransactionOverrides(network);
 
       // `gas: 0n` signals a smart wallet (e.g. Gnosis Safe): it estimates gas itself, and
       // simulating against the EOA-style call context would be misleading (4337/delegatecall

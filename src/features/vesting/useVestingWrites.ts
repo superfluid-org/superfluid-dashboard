@@ -22,7 +22,7 @@ import {
   isCloseToUnlimitedFlowRateAllowance,
   isCloseToUnlimitedTokenAllowance,
 } from "../../utils/isCloseToUnlimitedAllowance";
-import { ViemFeeOverrides } from "../../utils/ethersOverridesToViem";
+import { ViemFeeOverrides } from "../transactions/viemFeeOverrides";
 import { allNetworks, findNetworkOrThrow } from "../network/networks";
 import { VestingVersion } from "../network/networkConstants";
 import {

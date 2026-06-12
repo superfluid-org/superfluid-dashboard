@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { Address, erc20Abi } from "viem";
-import { ViemFeeOverrides } from "../../../utils/ethersOverridesToViem";
+import { ViemFeeOverrides } from "../../transactions/viemFeeOverrides";
 import { useSuperfluidWriteContract } from "../../transactions/useSuperfluidWriteContract";
 
 interface TransferArgs {

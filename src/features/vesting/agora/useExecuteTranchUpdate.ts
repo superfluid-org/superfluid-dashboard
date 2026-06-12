@@ -5,7 +5,7 @@ import { vestingSchedulerV3Abi } from "@sfpro/sdk/abi/automation";
 import { superTokenAbi } from "@sfpro/sdk/abi";
 import { Address, encodeFunctionData } from "viem";
 import { useAccount } from "@/hooks/useAccount";
-import { ViemFeeOverrides } from "../../../utils/ethersOverridesToViem";
+import { ViemFeeOverrides } from "../../transactions/viemFeeOverrides";
 import {
   Actions,
   type ProjectsOverview,
