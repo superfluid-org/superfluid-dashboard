@@ -156,7 +156,8 @@ export function useSuperfluidWriteContract() {
             macroAddress: network.dashboardClearMacro.macroAddress,
             // Simulating the fallback write surfaces reverts (insufficient balance,
             // existing stream, ...) in the dialog before the signature prompt.
-            fallbackSimulationRequest: request,
+            fallbackSimulationRequest:
+              request as Parameters<typeof simulateContract>[1],
             onPhase: setRelayPhase,
           });
 
@@ -195,7 +196,10 @@ export function useSuperfluidWriteContract() {
       }
 
       if (params.simulate && !isSmartWallet) {
-        await simulateContract(config, request);
+        await simulateContract(
+          config,
+          request as Parameters<typeof simulateContract>[1]
+        );
       }
 
       const hash = await writeContract(config, request);

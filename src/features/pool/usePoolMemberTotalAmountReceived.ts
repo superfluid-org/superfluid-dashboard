@@ -2,7 +2,7 @@ import { BigNumber, BigNumberish } from "ethers";
 import { useMemo } from "react";
 import { Address } from "viem";
 import { superfluidPoolAbi } from "../../generated";
-import { useContractReads } from "wagmi";
+import { useReadContracts } from "wagmi";
 
 export type PoolMemberInput = {
   units: BigNumberish;
@@ -22,7 +22,7 @@ export const useTotalAmountReceivedFromPoolMember = (
   memberAddress?: string | Address,
   poolAddress?: string | Address
 ) => {
-  const { data, dataUpdatedAt } = useContractReads({
+  const { data, dataUpdatedAt } = useReadContracts({
     contracts: [
       {
         chainId: chainId,
