@@ -46,7 +46,15 @@ const tokenAllowanceSubOperation = (
   superTokenAddress: string,
   operatorAddress: string,
   amountWei: string,
-  title: TransactionTitle
+  title: TransactionTitle,
+  options?: {
+    /**
+     * Attach the Clear Macro descriptor (relayed only when this ends up the lone
+     * operation). Opt-in because relay engagement must follow the form's relay chip:
+     * the update flow (SaveButton) renders one, the revoke flow (RevokeButton) doesn't.
+     */
+    withClearMacro?: boolean;
+  }
 ): SubOperation =>
   contractCallSubOperation({
     operationType: OPERATION_TYPE.ERC20_APPROVE,
@@ -55,6 +63,14 @@ const tokenAllowanceSubOperation = (
     functionName: "approve",
     args: [operatorAddress as Address, BigInt(amountWei)],
     title,
+    clearMacro: options?.withClearMacro
+      ? {
+          kind: "approve",
+          superToken: superTokenAddress as Address,
+          spender: operatorAddress as Address,
+          amount: BigInt(amountWei),
+        }
+      : undefined,
   });
 
 /**
@@ -124,7 +140,8 @@ export function useUpdateAccess() {
             arg.superTokenAddress,
             arg.operatorAddress,
             arg.editedAccess.tokenAllowanceWei,
-            "Update Token Allowance"
+            "Update Token Allowance",
+            { withClearMacro: true }
           )
         );
       }

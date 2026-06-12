@@ -86,6 +86,7 @@ import { useSuperTokens } from "../../../hooks/useSuperTokens";
 import { SuperTokenMinimal, isWrappable } from "../../redux/endpoints/tokenTypes";
 import { useTokenQuery } from "../../../hooks/useTokenQuery";
 import { useWhitelist } from "../../../hooks/useWhitelist";
+import { ClearMacroRelayOption } from "../../clearMacro/ClearMacroRelayOption";
 
 // Minimum start and end date difference in seconds.
 export const SCHEDULE_START_END_MIN_DIFF_S = 15 * UnitOfTime.Minute;
@@ -625,7 +626,9 @@ export default memo(function SendStream() {
                 receiverAddress,
                 userDataBytes: undefined,
               };
-              flowDeleteTrigger(primaryArgs)
+              // The form renders the relay chip, so its cancel may relay (the table-row
+              // cancel buttons don't pass this).
+              flowDeleteTrigger({ ...primaryArgs, withClearMacro: true })
                 .then(...txAnalytics("Cancel Stream", primaryArgs))
                 .then(() => resetForm())
                 .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
@@ -825,6 +828,22 @@ export default memo(function SendStream() {
           }}
         >
           <Stack gap={1}>
+            {/* Scheduling adds scheduler operations (multi-op batch) — the lone-action
+                macro relay only engages for a plain unscheduled create/update/cancel. */}
+            <ClearMacroRelayOption
+              actionKind={
+                streamScheduling ||
+                startTimestamp ||
+                endTimestamp ||
+                existingStartTimestamp ||
+                existingEndTimestamp
+                  ? undefined
+                  : activeFlow
+                    ? "updateFlow"
+                    : "createFlow"
+              }
+              network={network}
+            />
             {SendTransactionBoundary}
             {DeleteFlowBoundary}
           </Stack>

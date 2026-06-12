@@ -32,6 +32,12 @@ export function useTransfer() {
         extraData: arg.transactionExtraData,
         overrides: arg.overrides,
         simulate: arg.simulate,
+        clearMacro: {
+          kind: "transfer" as const,
+          superToken: arg.tokenAddress as Address,
+          receiver: arg.receiverAddress as Address,
+          amount: BigInt(arg.amountWei),
+        },
       })),
     [write]
   );

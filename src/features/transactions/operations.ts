@@ -8,6 +8,7 @@ import {
 import { cfaForwarderAbi, cfaForwarderAddress } from "@sfpro/sdk/abi";
 import { hostAbi, hostAddress } from "@sfpro/sdk/abi/core";
 import { TransactionTitle } from "@superfluid-finance/sdk-redux";
+import { ClearMacroAction } from "../clearMacro/dashboardClearMacro";
 
 /**
  * Resolves a contract address from an sfpro-style `Record<chainId, address>` map,
@@ -49,6 +50,12 @@ export interface SubOperation {
   title: TransactionTitle;
   operation: Operation;
   direct: WriteFragment;
+  /**
+   * The Clear Macro equivalent of this operation, if one exists. Only ever executes for a
+   * LONE operation (the macro signs one action per payload) — `subOperationsWriteFragment`
+   * drops it on batch/`forceBatch`, mirroring how `direct` is dropped.
+   */
+  clearMacro?: ClearMacroAction;
 }
 
 /**
@@ -80,10 +87,12 @@ export function agreementCallSubOperation(params: {
   userData?: Hex;
   title: TransactionTitle;
   direct?: WriteFragment;
+  clearMacro?: ClearMacroAction;
 }): SubOperation {
   const userData = params.userData ?? "0x";
   return {
     title: params.title,
+    clearMacro: params.clearMacro,
     operation: prepareOperation({
       operationType: OPERATION_TYPE.SUPERFLUID_CALL_AGREEMENT,
       target: params.agreementAddress,
@@ -134,6 +143,7 @@ export function contractCallSubOperation(params: {
   functionName: string;
   args: readonly unknown[];
   title: TransactionTitle;
+  clearMacro?: ClearMacroAction;
 }): SubOperation {
   const callData = encodeFunctionData({
     abi: params.abi,
@@ -142,6 +152,7 @@ export function contractCallSubOperation(params: {
   } as Parameters<typeof encodeFunctionData>[0]);
   return {
     title: params.title,
+    clearMacro: params.clearMacro,
     operation: prepareOperation({
       operationType: params.operationType,
       target: params.target,
@@ -165,12 +176,15 @@ export function subOperationsWriteFragment(
   chainId: number,
   subOperations: SubOperation[],
   options?: { forceBatch?: boolean }
-): WriteFragment {
+): WriteFragment & { clearMacro?: ClearMacroAction } {
   if (subOperations.length === 0) {
     throw new Error("No operations to execute.");
   }
   if (subOperations.length === 1 && !options?.forceBatch) {
-    return subOperations[0].direct;
+    return {
+      ...subOperations[0].direct,
+      clearMacro: subOperations[0].clearMacro,
+    };
   }
   return {
     abi: hostAbi,

@@ -41,6 +41,7 @@ import { WrapInputCard } from "./WrapInputCard";
 import { ValidWrappingForm, WrappingForm } from "./WrappingFormProvider";
 import { useTokenQuery } from "../../hooks/useTokenQuery";
 import { useTokenPairsQuery } from "./useTokenPairsQuery";
+import { ClearMacroRelayOption } from "../clearMacro/ClearMacroRelayOption";
 
 const underlyingIbAlluoTokenOverrides = [
   // StIbAlluoEth
@@ -430,6 +431,14 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
 
       <Stack gap={2} direction="column" sx={{ width: "100%" }}>
         <ConnectionBoundary>
+          <ClearMacroRelayOption
+            actionKind={
+              isUnderlyingBlockchainNativeAsset || isApproveAllowanceVisible
+                ? undefined
+                : "upgrade"
+            }
+            network={network}
+          />
           <TransactionBoundary mutationResult={approveResult}>
             {({ setDialogLoadingInfo }) =>
               isApproveAllowanceVisible && (

@@ -81,6 +81,13 @@ export function useTokenWrap() {
               address: arg.superTokenAddress as Address,
               functionName: "upgrade",
               args: [BigInt(arg.amountWei)],
+              // The macro's Upgrade pulls the underlying via the super token — the
+              // payable native-asset path (`upgradeByETH`) is not macro-eligible.
+              clearMacro: {
+                kind: "upgrade" as const,
+                superToken: arg.superTokenAddress as Address,
+                amount: BigInt(arg.amountWei),
+              },
             }),
       })),
     [write]
@@ -118,6 +125,11 @@ export function useTokenUnwrap() {
               address: arg.superTokenAddress as Address,
               functionName: "downgrade",
               args: [BigInt(arg.amountWei)],
+              clearMacro: {
+                kind: "downgrade" as const,
+                superToken: arg.superTokenAddress as Address,
+                amount: BigInt(arg.amountWei),
+              },
             }),
       })),
     [write]

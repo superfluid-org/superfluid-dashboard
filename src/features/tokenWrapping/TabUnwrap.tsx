@@ -35,6 +35,7 @@ import { useTokenPairsQuery } from "./useTokenPairsQuery";
 import { SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
 import { Network } from "../network/networks";
 import { RealtimeBalance } from "../redux/endpoints/balanceFetcher";
+import { ClearMacroRelayOption } from "../clearMacro/ClearMacroRelayOption";
 
 interface TabUnwrapProps {
   onSwitchMode: () => void;
@@ -204,61 +205,71 @@ export const TabUnwrap = memo(function TabUnwrap(props: TabUnwrapProps) {
       )}
 
       <ConnectionBoundary>
-        <TransactionBoundary mutationResult={unwrapResult}>
-          {({ setDialogLoadingInfo, txAnalytics }) => (
-            <TransactionButton
-              dataCy={"downgrade-button"}
-              disabled={isDowngradeDisabled}
-              onClick={async () => {
-                if (isDowngradeDisabled) {
-                  throw Error(
-                    `This should never happen.`
+        <Stack gap={1} sx={{ width: "100%" }}>
+          <ClearMacroRelayOption
+            actionKind={
+              tokenPair?.underlyingTokenAddress === NATIVE_ASSET_ADDRESS
+                ? undefined
+                : "downgrade"
+            }
+            network={network}
+          />
+          <TransactionBoundary mutationResult={unwrapResult}>
+            {({ setDialogLoadingInfo, txAnalytics }) => (
+              <TransactionButton
+                dataCy={"downgrade-button"}
+                disabled={isDowngradeDisabled}
+                onClick={async () => {
+                  if (isDowngradeDisabled) {
+                    throw Error(
+                      `This should never happen.`
+                    );
+                  }
+
+                  const { data: formData } = getValues() as ValidWrappingForm;
+
+                  const restoration: SuperTokenDowngradeRestoration = {
+                    type: RestorationType.Unwrap,
+                    version: 2,
+                    chainId: network.id,
+                    tokenPair: formData.tokenPair,
+                    amountWei: parseEther(formData.amountDecimal).toString(),
+                  };
+
+                  setDialogLoadingInfo(
+                    <UnwrapPreview
+                      {...{
+                        amountWei: parseEther(formData.amountDecimal).toString(),
+                        superTokenSymbol: superToken!.symbol,
+                        underlyingTokenSymbol: underlyingToken!.symbol,
+                      }}
+                    />
                   );
-                }
 
-                const { data: formData } = getValues() as ValidWrappingForm;
-
-                const restoration: SuperTokenDowngradeRestoration = {
-                  type: RestorationType.Unwrap,
-                  version: 2,
-                  chainId: network.id,
-                  tokenPair: formData.tokenPair,
-                  amountWei: parseEther(formData.amountDecimal).toString(),
-                };
-
-                setDialogLoadingInfo(
-                  <UnwrapPreview
-                    {...{
-                      amountWei: parseEther(formData.amountDecimal).toString(),
-                      superTokenSymbol: superToken!.symbol,
-                      underlyingTokenSymbol: underlyingToken!.symbol,
-                    }}
-                  />
-                );
-
-                const primaryArgs = {
-                  chainId: network.id,
-                  amountWei: parseEther(formData.amountDecimal).toString(),
-                  superTokenAddress: formData.tokenPair.superTokenAddress,
-                };
-                unwrapTrigger({
-                  ...primaryArgs,
-                  isNativeAssetUnderlyingToken:
-                    formData.tokenPair.underlyingTokenAddress ===
-                    NATIVE_ASSET_ADDRESS,
-                  transactionExtraData: {
-                    restoration,
-                  },
-                })
-                  .then(...txAnalytics("Unwrap", primaryArgs))
-                  .then(() => resetForm())
-                  .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
-              }}
-            >
-              Unwrap
-            </TransactionButton>
-          )}
-        </TransactionBoundary>
+                  const primaryArgs = {
+                    chainId: network.id,
+                    amountWei: parseEther(formData.amountDecimal).toString(),
+                    superTokenAddress: formData.tokenPair.superTokenAddress,
+                  };
+                  unwrapTrigger({
+                    ...primaryArgs,
+                    isNativeAssetUnderlyingToken:
+                      formData.tokenPair.underlyingTokenAddress ===
+                      NATIVE_ASSET_ADDRESS,
+                    transactionExtraData: {
+                      restoration,
+                    },
+                  })
+                    .then(...txAnalytics("Unwrap", primaryArgs))
+                    .then(() => resetForm())
+                    .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
+                }}
+              >
+                Unwrap
+              </TransactionButton>
+            )}
+          </TransactionBoundary>
+        </Stack>
       </ConnectionBoundary>
     </Stack>
   );

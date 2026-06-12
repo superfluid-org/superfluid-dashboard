@@ -6,10 +6,16 @@ import {MinigameCosmetics} from "../minigame/MinigameContext";
 
 export interface AppSettingsState {
   currencyCode: CurrencyCode;
-  lastSuperfluidRunnerCosmetics: MinigameCosmetics
+  lastSuperfluidRunnerCosmetics: MinigameCosmetics;
+  /** Execute eligible writes gaslessly through the Clear Macro relay (EIP-712 signature only). */
+  clearMacroEnabled: boolean;
 }
 
-const initialState: AppSettingsState = { currencyCode: CurrencyCode.USD, lastSuperfluidRunnerCosmetics: 1 };
+const initialState: AppSettingsState = {
+  currencyCode: CurrencyCode.USD,
+  lastSuperfluidRunnerCosmetics: 1,
+  clearMacroEnabled: true,
+};
 
 const appSettingsSlice = createSlice({
   name: "appSettings",

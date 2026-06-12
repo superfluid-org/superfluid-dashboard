@@ -54,6 +54,12 @@ export interface DeleteFlowWithSchedulingArgs {
   transactionExtraData?: Record<string, unknown>;
   overrides?: ViemFeeOverrides;
   simulate?: boolean;
+  /**
+   * Allow the lone deleteFlow to relay via Clear Macro. Opt-in because relay engagement
+   * must follow a visible relay chip: the send-stream form renders one, the table-row
+   * cancel buttons don't.
+   */
+  withClearMacro?: boolean;
 }
 
 /**
@@ -233,6 +239,16 @@ export function useUpsertFlowWithScheduling() {
                 BigInt(arg.flowRateWei),
                 userData,
               ]),
+              // The macro carries no userData — only attach when there is none.
+              clearMacro:
+                userData === "0x"
+                  ? {
+                      kind: "updateFlow",
+                      superToken: arg.superTokenAddress as Address,
+                      receiver: arg.receiverAddress as Address,
+                      flowRate: BigInt(arg.flowRateWei),
+                    }
+                  : undefined,
               title: "Update Stream",
             })
           );
@@ -262,6 +278,16 @@ export function useUpsertFlowWithScheduling() {
                 BigInt(arg.flowRateWei),
                 userData,
               ]),
+              // The macro carries no userData — only attach when there is none.
+              clearMacro:
+                userData === "0x"
+                  ? {
+                      kind: "createFlow",
+                      superToken: arg.superTokenAddress as Address,
+                      receiver: arg.receiverAddress as Address,
+                      flowRate: BigInt(arg.flowRateWei),
+                    }
+                  : undefined,
               title: "Create Stream",
             })
           );
@@ -356,6 +382,16 @@ export function useDeleteFlowWithScheduling() {
               arg.receiverAddress as Address,
               userData,
             ]),
+            // Opt-in (see `withClearMacro`); the macro carries no userData.
+            clearMacro:
+              arg.withClearMacro && userData === "0x"
+                ? {
+                    kind: "deleteFlow",
+                    superToken: arg.superTokenAddress as Address,
+                    sender: arg.senderAddress as Address,
+                    receiver: arg.receiverAddress as Address,
+                  }
+                : undefined,
             title: "Close Stream",
           })
         );

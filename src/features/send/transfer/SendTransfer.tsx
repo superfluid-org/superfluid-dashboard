@@ -33,6 +33,7 @@ import { RestorationType, SendTransferRestoration } from "../../transactionResto
 import { skipToken } from "@reduxjs/toolkit/query/react";
 import { Network } from "../../network/networks";
 import { TokenMinimal } from "../../redux/endpoints/tokenTypes";
+import { ClearMacroRelayOption } from "../../clearMacro/ClearMacroRelayOption";
 
 export default memo(function SendTransfer() {
   const theme = useTheme();
@@ -191,6 +192,7 @@ export default memo(function SendTransfer() {
           }}
         >
           <Stack gap={1}>
+            <ClearMacroRelayOption actionKind="transfer" network={network} />
             {SendTransactionBoundary}
           </Stack>
         </ConnectionBoundaryButton>
