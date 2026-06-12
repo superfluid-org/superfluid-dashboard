@@ -60,35 +60,40 @@ export function useTokenWrap() {
   const { write, result } = useSuperfluidWriteContract();
 
   const wrap = useCallback(
-    (arg: TokenWrapArgs) =>
-      write(() => ({
+    (arg: TokenWrapArgs) => {
+      // Branch into separate `write` calls so each gets a single
+      // functionName/args pair for the ABI-driven inference to check.
+      const common = {
         chainId: arg.chainId,
         title: "Upgrade to Super Token" as const,
         extraData: arg.transactionExtraData,
         overrides: arg.overrides,
         simulate: arg.simulate,
-        ...(arg.isNativeAssetUnderlyingToken
-          ? {
-              abi: superTokenAbi,
-              address: arg.superTokenAddress as Address,
-              functionName: "upgradeByETH",
-              args: [],
-              value: BigInt(arg.amountWei),
-            }
-          : {
-              abi: superTokenAbi,
-              address: arg.superTokenAddress as Address,
-              functionName: "upgrade",
-              args: [BigInt(arg.amountWei)],
-              // The macro's Upgrade pulls the underlying via the super token — the
-              // payable native-asset path (`upgradeByETH`) is not macro-eligible.
-              clearMacro: {
-                kind: "upgrade" as const,
-                superToken: arg.superTokenAddress as Address,
-                amount: BigInt(arg.amountWei),
-              },
-            }),
-      })),
+      };
+      return arg.isNativeAssetUnderlyingToken
+        ? write(() => ({
+            ...common,
+            abi: superTokenAbi,
+            address: arg.superTokenAddress as Address,
+            functionName: "upgradeByETH",
+            args: [],
+            value: BigInt(arg.amountWei),
+          }))
+        : write(() => ({
+            ...common,
+            abi: superTokenAbi,
+            address: arg.superTokenAddress as Address,
+            functionName: "upgrade",
+            args: [BigInt(arg.amountWei)],
+            // The macro's Upgrade pulls the underlying via the super token — the
+            // payable native-asset path (`upgradeByETH`) is not macro-eligible.
+            clearMacro: {
+              kind: "upgrade" as const,
+              superToken: arg.superTokenAddress as Address,
+              amount: BigInt(arg.amountWei),
+            },
+          }));
+    },
     [write]
   );
 

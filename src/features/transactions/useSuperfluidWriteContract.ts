@@ -1,6 +1,11 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { Abi, Address } from "viem";
+import {
+  Abi,
+  Address,
+  ContractFunctionArgs,
+  ContractFunctionName,
+} from "viem";
 import { useConfig } from "wagmi";
 import { simulateContract, writeContract } from "@wagmi/core";
 import { clearMacroForwarderAddress } from "@sfpro/sdk/abi";
@@ -20,13 +25,29 @@ import {
   executeClearMacro,
 } from "../clearMacro/executeClearMacro";
 import { trackTransaction } from "./trackTransaction";
+import { WriteMutability } from "./operations";
 
-export interface SuperfluidWriteArgs {
+export interface SuperfluidWriteArgs<
+  TAbi extends Abi = Abi,
+  TFunctionName extends ContractFunctionName<
+    TAbi,
+    WriteMutability
+  > = ContractFunctionName<TAbi, WriteMutability>,
+  // `args` is its own (inferred) type parameter, mirroring wagmi's
+  // `WriteContractParameters` — the literal infers as a tuple first and is then
+  // constraint-checked, which a bare `ContractFunctionArgs<...>` property can't do
+  // (the unresolved conditional gives the array literal no tuple context).
+  TArgs extends ContractFunctionArgs<
+    TAbi,
+    WriteMutability,
+    TFunctionName
+  > = ContractFunctionArgs<TAbi, WriteMutability, TFunctionName>,
+> {
   chainId: number;
-  abi: Abi;
+  abi: TAbi;
   address: Address;
-  functionName: string;
-  args: readonly unknown[];
+  functionName: TFunctionName;
+  args: TArgs;
   /** Native value sent with the call (payable batchCall, native-asset upgrade). */
   value?: bigint;
   /** Tracked-transaction title shown in the drawer. */
@@ -233,5 +254,33 @@ export function useSuperfluidWriteContract() {
     },
   };
 
-  return { write: mutation.mutateAsync, result };
+  const { mutateAsync } = mutation;
+  // Generic wrapper so each call infers functionName/args from the concrete ABI
+  // (`useMutation` fixes its variables type at hook creation, so the generics must
+  // live here). A narrow instantiation is structurally within the widened type, but
+  // TS can't prove that through the unresolved `ContractFunctionArgs` conditional,
+  // hence the cast.
+  const write = useCallback(
+    <
+      const TAbi extends Abi,
+      TFunctionName extends ContractFunctionName<TAbi, WriteMutability>,
+      const TArgs extends ContractFunctionArgs<
+        TAbi,
+        WriteMutability,
+        TFunctionName
+      >,
+    >(
+      argsOrBuilder:
+        | SuperfluidWriteArgs<TAbi, TFunctionName, TArgs>
+        | (() =>
+            | SuperfluidWriteArgs<TAbi, TFunctionName, TArgs>
+            | Promise<SuperfluidWriteArgs<TAbi, TFunctionName, TArgs>>)
+    ) =>
+      mutateAsync(
+        argsOrBuilder as SuperfluidWriteArgs | SuperfluidWriteArgsBuilder
+      ),
+    [mutateAsync]
+  );
+
+  return { write, result };
 }

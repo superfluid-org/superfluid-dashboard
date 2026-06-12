@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+import { Address } from "viem";
 import { gdaForwarderAbi, gdaForwarderAddress } from "@sfpro/sdk/abi";
 import { ViemFeeOverrides } from "../transactions/viemFeeOverrides";
 import { buildConnectToPoolPendingUpdate } from "../pendingUpdates/buildPendingUpdates";
@@ -31,7 +32,7 @@ export function useConnectToPool() {
           "GDAv1 Forwarder"
         ),
         functionName: "connectPool",
-        args: [arg.poolAddress, "0x"],
+        args: [arg.poolAddress as Address, "0x"],
         title: "Connect to Pool" as const,
         overrides: arg.overrides,
         simulate: arg.simulate,
@@ -67,7 +68,7 @@ export function useDisconnectFromPool() {
           "GDAv1 Forwarder"
         ),
         functionName: "disconnectPool",
-        args: [arg.poolAddress, "0x"],
+        args: [arg.poolAddress as Address, "0x"],
         title: "Disconnect from Pool" as const,
         overrides: arg.overrides,
         simulate: arg.simulate,

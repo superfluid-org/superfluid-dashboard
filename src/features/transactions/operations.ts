@@ -1,4 +1,11 @@
-import { Abi, Address, Hex, encodeFunctionData } from "viem";
+import {
+  Abi,
+  Address,
+  ContractFunctionArgs,
+  ContractFunctionName,
+  Hex,
+  encodeFunctionData,
+} from "viem";
 import {
   OPERATION_TYPE,
   Operation,
@@ -28,6 +35,13 @@ export function getContractAddress(
   }
   return address;
 }
+
+/**
+ * The state mutabilities a write can target — used to constrain `functionName`/`args`
+ * inference (`ContractFunctionName`/`ContractFunctionArgs`) at the boundaries where
+ * callers pass abi + functionName + args together.
+ */
+export type WriteMutability = "nonpayable" | "payable";
 
 /**
  * The contract-call fragment `useSuperfluidWriteContract` consumes
@@ -64,15 +78,32 @@ export interface SubOperation {
  * Returns `undefined` on chains the SDK has no forwarder address for, so the caller
  * falls back to `host.callAgreement`.
  */
-export function cfaForwarderWriteFragment(
+export function cfaForwarderWriteFragment<
+  TFunctionName extends ContractFunctionName<
+    typeof cfaForwarderAbi,
+    WriteMutability
+  >,
+  const TArgs extends ContractFunctionArgs<
+    typeof cfaForwarderAbi,
+    WriteMutability,
+    TFunctionName
+  >,
+>(
   chainId: number,
-  functionName: string,
-  args: readonly unknown[]
+  functionName: TFunctionName,
+  args: TArgs
 ): WriteFragment | undefined {
   const address =
     cfaForwarderAddress[chainId as keyof typeof cfaForwarderAddress];
   if (!address) return undefined;
-  return { abi: cfaForwarderAbi, address, functionName, args };
+  return {
+    abi: cfaForwarderAbi,
+    address,
+    functionName,
+    // TS can't prove the unresolved `ContractFunctionArgs` conditional is an array
+    // inside the generic context; the constraint guarantees it.
+    args: args as readonly unknown[],
+  };
 }
 
 /**
@@ -136,12 +167,16 @@ export function appActionSubOperation(params: {
  * ERC20 approve/increaseAllowance ops (on super tokens) and ERC2771 forward calls
  * (e.g. vesting scheduler). `prepareOperation` strips the ERC20 selector for batching.
  */
-export function contractCallSubOperation(params: {
+export function contractCallSubOperation<
+  const TAbi extends Abi,
+  TFunctionName extends ContractFunctionName<TAbi, WriteMutability>,
+  const TArgs extends ContractFunctionArgs<TAbi, WriteMutability, TFunctionName>,
+>(params: {
   operationType: OperationType;
   target: Address;
-  abi: Abi;
-  functionName: string;
-  args: readonly unknown[];
+  abi: TAbi;
+  functionName: TFunctionName;
+  args: TArgs;
   title: TransactionTitle;
   clearMacro?: ClearMacroAction;
 }): SubOperation {
@@ -162,7 +197,9 @@ export function contractCallSubOperation(params: {
       abi: params.abi,
       address: params.target,
       functionName: params.functionName,
-      args: params.args,
+      // TS can't prove the unresolved `ContractFunctionArgs` conditional is an array
+      // inside the generic context; the constraint guarantees it.
+      args: params.args as readonly unknown[],
     },
   };
 }
