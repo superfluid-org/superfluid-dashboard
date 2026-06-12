@@ -39,7 +39,11 @@ export const TransactionDialog: FC<TransactionDialogProps> = ({
   return (
     <ResponsiveDialog
       open={dialogOpen}
-      onClose={closeDialog}
+      onClose={(_event, reason) => {
+        if (reason !== "backdropClick") {
+          closeDialog();
+        }
+      }}
       PaperProps={{ sx: { borderRadius: "20px", maxHeight: "100%" } }}
       translate="yes"
     >
