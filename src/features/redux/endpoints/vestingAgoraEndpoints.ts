@@ -1,7 +1,8 @@
 import { Actions, type ProjectsOverview } from "../../../pages/api/agora";
 import { allNetworks, findNetworkOrThrow } from "../../network/networks";
 import { BatchTransaction } from "../../../libs/gnosis-tx-builder/types";
-import { constantFlowAgreementV1Abi, constantFlowAgreementV1Address, superfluidAbi, superfluidAddress, superTokenAbi, vestingSchedulerV3Abi } from "../../../generated";
+import { constantFlowAgreementV1Abi, constantFlowAgreementV1Address, superfluidAbi, superfluidAddress, superTokenAbi } from "../../../generated";
+import { vestingSchedulerV3Abi } from "@sfpro/sdk/abi/automation";
 import { encodeFunctionData, getAbiItem } from "viem";
 
 export const mapProjectStateIntoGnosisSafeBatch = (state: ProjectsOverview, actionsToExecute: Actions[]) => {

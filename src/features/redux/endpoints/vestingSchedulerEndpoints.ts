@@ -11,7 +11,7 @@ import { UnitOfTime } from "../../send/FlowRateInput";
 import { getUnixTime } from "date-fns";
 import { allNetworks, findNetworkOrThrow } from "../../network/networks";
 import { resolvedWagmiClients } from "../../wallet/wagmiConfig";
-import { vestingSchedulerAbi, vestingSchedulerAddress, vestingSchedulerV2Abi, vestingSchedulerV2Address, vestingSchedulerV3Abi, vestingSchedulerV3Address } from "../../../generated";
+import { getVestingSchedulerContractInfo } from "../../vesting/useVestingWrites";
 import { VestingVersion } from "../../network/networkConstants";
 
 export const MAX_VESTING_DURATION_IN_YEARS = 10;
@@ -147,12 +147,8 @@ export const vestingSchedulerQueryEndpoints = {
         },
       ],
       queryFn: async ({ chainId, tokenAddress, senderAddress, version }) => {
-        const vestingSchedulerContractAddress =
-          version === "v3"
-            ? vestingSchedulerV3Address[chainId as keyof typeof vestingSchedulerV3Address]
-            : version === "v2"
-            ? vestingSchedulerV2Address[chainId as keyof typeof vestingSchedulerV2Address]
-            : vestingSchedulerAddress[chainId as keyof typeof vestingSchedulerAddress];
+        const { address: vestingSchedulerContractAddress } =
+          getVestingSchedulerContractInfo(chainId, version);
 
         const [tokenAllowance, flowOperatorData] = await Promise.all([
           getErc20Allowance({
@@ -197,12 +193,10 @@ export const vestingSchedulerQueryEndpoints = {
       }) => {
         const publicClient = resolvedWagmiClients[chainId]();
 
-        const abi = version === "v3" ? vestingSchedulerV3Abi : version === "v2" ? vestingSchedulerV2Abi : vestingSchedulerAbi;
-        const address = version === "v3" 
-          ? vestingSchedulerV3Address[chainId as keyof typeof vestingSchedulerV3Address] 
-          : version === "v2" 
-          ? vestingSchedulerV2Address[chainId as keyof typeof vestingSchedulerV2Address] 
-          : vestingSchedulerAddress[chainId as keyof typeof vestingSchedulerAddress];
+        const { abi, address } = getVestingSchedulerContractInfo(
+          chainId,
+          version
+        );
 
         const rpcVestingSchedule = await publicClient.readContract({
           abi,

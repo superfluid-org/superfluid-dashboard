@@ -10,7 +10,8 @@ import { mapSubgraphVestingSchedule, VestingSchedule } from '../../features/vest
 import { UnitOfTime } from '../../features/send/FlowRateInput'
 import { allNetworks, findNetworkOrThrow } from '../../features/network/networks'
 import { add, getUnixTime } from 'date-fns'
-import { cfaV1ForwarderAbi, cfaV1ForwarderAddress, superTokenAbi, vestingSchedulerV3Abi } from '../../generated'
+import { cfaV1ForwarderAbi, cfaV1ForwarderAddress, superTokenAbi } from '../../generated'
+import { vestingSchedulerV3Abi } from '@sfpro/sdk/abi/automation'
 import { ACL_CREATE_PERMISSION, ACL_DELETE_PERMISSION, ACL_UPDATE_PERMISSION } from '../../utils/constants'
 import { getAddress as getAddress_ } from "ethers/lib/utils"
 import { agoraApiEndpoints, agoraSenderAddresses, RoundIdentifier, RoundType, roundTypes, ROUND_START_TIMESTAMPS, tokenAddresses, validChainIds } from '../../features/vesting/agora/constants'
