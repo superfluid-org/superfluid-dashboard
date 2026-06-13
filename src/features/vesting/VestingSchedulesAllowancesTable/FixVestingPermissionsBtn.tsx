@@ -1,9 +1,8 @@
 import { Typography } from "@mui/material";
-import { BigNumber, Signer } from "ethers";
 import { FC, ReactNode, useCallback } from "react";
 import { useAnalytics } from "../../analytics/useAnalytics";
 import { doesNetworkSupportVesting, Network } from "../../network/networks";
-import { rpcApi } from "../../redux/store";
+import { useFixAccessForVesting } from "../useVestingWrites";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
 import { VestingVersion } from "../../network/networkConstants";
@@ -12,9 +11,9 @@ interface FixVestingPermissionsBtnProps {
   network: Network;
   tokenAddress: string;
   senderAddress: string;
-  recommendedTokenAllowance: BigNumber;
+  recommendedTokenAllowance: bigint;
   requiredFlowOperatorPermissions: number; // Usually 5 (Create or Delete) https://docs.superfluid.finance/superfluid/developers/constant-flow-agreement-cfa/cfa-access-control-list-acl/acl-features
-  requiredFlowRateAllowance: BigNumber;
+  requiredFlowRateAllowance: bigint;
   version: VestingVersion;
 }
 
@@ -28,13 +27,10 @@ const FixVestingPermissionsBtn: FC<FixVestingPermissionsBtnProps> = ({
   version
 }) => {
   const { txAnalytics } = useAnalytics();
-  const [fixAccess, fixAccessResult] = rpcApi.useFixAccessForVestingMutation();
+  const [fixAccess, fixAccessResult] = useFixAccessForVesting();
 
   const onFixAccess = useCallback(
-    async (
-      signer: Signer,
-      setDialogLoadingInfo: (children: ReactNode) => void
-    ) => {
+    async (setDialogLoadingInfo: (children: ReactNode) => void) => {
       if (!doesNetworkSupportVesting(network)) {
         throw new Error(
           "No vesting contract configured for network. Should never happen!"
@@ -60,9 +56,7 @@ const FixVestingPermissionsBtn: FC<FixVestingPermissionsBtnProps> = ({
 
       fixAccess({
         ...primaryArgs,
-        signer
       })
-        .unwrap()
         .then(...txAnalytics("Fix Access for Vesting", primaryArgs))
         .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
     },
@@ -89,7 +83,7 @@ const FixVestingPermissionsBtn: FC<FixVestingPermissionsBtnProps> = ({
             fullWidth: false,
             variant: "contained",
           }}
-          onClick={(signer) => onFixAccess(signer, setDialogLoadingInfo)}
+          onClick={() => onFixAccess(setDialogLoadingInfo)}
         >
           Fix Access
         </TransactionButton>

@@ -1,7 +1,10 @@
-import { ChainType, Token, getChains, getTokens,  } from '@lifi/sdk';
+import { ChainType, Token, createClient, getChains, getTokens } from '@lifi/sdk';
 import { useEffect, useState } from "react";
 import { useAvailableNetworks } from "../network/AvailableNetworksContext";
 import { subgraphApi } from "../redux/store";
+
+// Same integrator string as the <LiFiWidget integrator> prop so requests attribute consistently.
+const lifiClient = createClient({ integrator: 'Superfluid' });
 
 const useFeaturedTokens = (): Token[] | undefined => {
     const { availableMainNetworks } = useAvailableNetworks();
@@ -14,12 +17,12 @@ const useFeaturedTokens = (): Token[] | undefined => {
         const availableChainIds = availableMainNetworks.map((x) => x.id); // Note that if the chain ID is not supported by Li.Fi then the request will return 400 (Bad Request).
 
         const runAsync = async () => {
-            const chains = await getChains({ chainTypes: [ChainType.EVM] });
+            const chains = await getChains(lifiClient, { chainTypes: [ChainType.EVM] });
 
             const lifiChainIds = chains.map(x => x.id);
             const bothLifiAndSuperfluidChainIds = availableChainIds.filter(chainId => lifiChainIds.includes(chainId));
 
-            const { tokens } = await getTokens({
+            const { tokens } = await getTokens(lifiClient, {
                 chainTypes: [ChainType.EVM],
                 chains: bothLifiAndSuperfluidChainIds
             });

@@ -1,13 +1,8 @@
 import { NATIVE_ASSET_ADDRESS } from "./tokenTypes";
 import { resolvedWagmiClients } from "../../wallet/WagmiManager";
-import {
-  constantFlowAgreementV1Abi,
-  constantFlowAgreementV1Address,
-  erc20Abi,
-  generalDistributionAgreementV1Abi,
-  generalDistributionAgreementV1Address,
-  superTokenAbi,
-} from "../../../generated";
+import { erc20Abi } from "viem";
+import { superTokenAbi } from "@sfpro/sdk/abi";
+import { cfaAbi, cfaAddress, gdaAbi, gdaAddress } from "@sfpro/sdk/abi/core";
 import { allNetworks, findNetworkOrThrow } from "../../network/networks";
 
 // NOTE: We are using viem's PublicClient here and we're assuming automatic batching (multicall) is turned on: https://viem.sh/docs/clients/public.html#batch-multicall-optional
@@ -65,11 +60,8 @@ export const balanceFetcher = {
         args: [arg.accountAddress as `0x${string}`],
       }),
       publicClient.readContract({
-        abi: constantFlowAgreementV1Abi,
-        address:
-          constantFlowAgreementV1Address[
-            arg.chainId as keyof typeof constantFlowAgreementV1Address
-          ],
+        abi: cfaAbi,
+        address: cfaAddress[arg.chainId as keyof typeof cfaAddress],
         functionName: "getNetFlow",
         args: [
           arg.tokenAddress as `0x${string}`,
@@ -78,11 +70,8 @@ export const balanceFetcher = {
       }),
       network.supportsGDA
         ? publicClient.readContract({
-            abi: generalDistributionAgreementV1Abi,
-            address:
-              generalDistributionAgreementV1Address[
-                arg.chainId as keyof typeof generalDistributionAgreementV1Address
-              ],
+            abi: gdaAbi,
+            address: gdaAddress[arg.chainId as keyof typeof gdaAddress],
             functionName: "getNetFlow",
             args: [
               arg.tokenAddress as `0x${string}`,

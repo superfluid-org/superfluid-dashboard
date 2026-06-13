@@ -3,7 +3,6 @@ import {
   TransactionInfo,
   transactionTrackerSelectors,
 } from "@superfluid-finance/sdk-redux";
-import { Overrides, Signer } from "ethers";
 import {
   createContext,
   FC,
@@ -13,24 +12,23 @@ import {
   useMemo,
   useState,
 } from "react";
-import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
+import { Address } from "viem";
+import { useAccount } from "@/hooks/useAccount";
 import MutationResult from "../../MutationResult";
 import { Network } from "../network/networks";
 import { useAppSelector } from "../redux/store";
 import { useConnectionBoundary } from "./ConnectionBoundary";
 import { TransactionDialog } from "./TransactionDialog";
 import { TxAnalyticsFn, useAnalytics } from "../analytics/useAnalytics";
-import { useEthersSigner } from "../../utils/wagmiEthersAdapters";
 
 interface TransactionBoundaryContextValue {
-  signer: Signer | null | undefined;
+  accountAddress: Address | undefined;
   dialogOpen: boolean;
   openDialog: () => void;
   closeDialog: () => void;
   setDialogLoadingInfo: (children: ReactNode) => void;
   setDialogSuccessActions: (children: ReactNode) => void;
   mutationResult: MutationResult<TransactionInfo>;
-  getOverrides: () => Promise<Overrides>;
   transaction: TrackedTransaction | undefined;
   network: Network;
   txAnalytics: TxAnalyticsFn;
@@ -54,9 +52,8 @@ export const TransactionBoundary: FC<TransactionBoundaryProps> = ({
   mutationResult,
   ...props
 }) => {
-  const signer = useEthersSigner();
+  const { address: accountAddress } = useAccount();
   const { expectedNetwork } = useConnectionBoundary();
-  const getTransactionOverrides = useGetTransactionOverrides();
   const { txAnalytics } = useAnalytics();
 
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -71,25 +68,23 @@ export const TransactionBoundary: FC<TransactionBoundaryProps> = ({
 
   const contextValue = useMemo<TransactionBoundaryContextValue>(
     () => ({
-      signer,
+      accountAddress,
       dialogOpen,
       openDialog: () => setDialogOpen(true),
       closeDialog: () => setDialogOpen(false),
       setDialogLoadingInfo,
       setDialogSuccessActions,
       mutationResult,
-      getOverrides: () => getTransactionOverrides(expectedNetwork),
       transaction: trackedTransaction,
       network: expectedNetwork,
       txAnalytics,
     }),
     [
-      signer,
+      accountAddress,
       dialogOpen,
       setDialogLoadingInfo,
       setDialogSuccessActions,
       mutationResult,
-      getTransactionOverrides,
       trackedTransaction,
       expectedNetwork,
       txAnalytics

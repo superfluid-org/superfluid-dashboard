@@ -1,11 +1,8 @@
 import { Typography } from "@mui/material";
-import { constants } from "ethers";
 import { FC, memo } from "react";
-import { useSimulateContract, useWalletClient } from "wagmi";
-import { rpcApi } from "../../redux/store";
+import { useApproveAutoWrapAllowance } from "../../auto-wrap/useAutoWrapWrites";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
-import { erc20Abi } from "../../../generated";
 import { Network } from "../../network/networks";
 import { SuperTokenMinimal } from "../../redux/endpoints/tokenTypes";
 import { useTokenQuery } from "../../../hooks/useTokenQuery";
@@ -15,28 +12,8 @@ const AutoWrapAllowanceTransactionButton: FC<{
   isVisible: boolean;
   isDisabled: boolean;
   network: Network;
-}> = ({ token, isVisible, network, ...props }) => {
-  const { data: walletClient } = useWalletClient();
-
-  const primaryArgs = {
-    spender: network.autoWrap!.strategyContractAddress,
-    amount: BigInt(constants.MaxUint256.toString()),
-  };
-
-  const prepare = !props.isDisabled && network.autoWrap && walletClient && walletClient.chain.id === network.id;
-  const { data: config } = useSimulateContract(
-    prepare
-      ? {
-        abi: erc20Abi,
-        functionName: "approve",
-        address: token.underlyingAddress as `0x${string}`,
-        chainId: network.id,
-        args: [primaryArgs.spender, primaryArgs.amount],
-      }
-      : undefined
-  );
-
-  const [write, mutationResult] = rpcApi.useWriteContractMutation();
+}> = ({ token, isVisible, network, isDisabled }) => {
+  const [approveAllowance, mutationResult] = useApproveAutoWrapAllowance();
 
   const underlyingTokenQuery = useTokenQuery({
     chainId: network.id,
@@ -44,8 +21,8 @@ const AutoWrapAllowanceTransactionButton: FC<{
   });
   const underlyingToken = underlyingTokenQuery.data;
 
-  const isButtonEnabled = prepare && config && config.request;
-  const isButtonDisabled = !isButtonEnabled;
+  const isButtonDisabled =
+    isDisabled || !network.autoWrap || !token.underlyingAddress;
 
   return (
     <TransactionBoundary mutationResult={mutationResult}>
@@ -54,7 +31,7 @@ const AutoWrapAllowanceTransactionButton: FC<{
           <TransactionButton
             dataCy="auto-wrap-allowance-button"
             disabled={isButtonDisabled}
-            onClick={async (signer) => {
+            onClick={async () => {
               if (isButtonDisabled)
                 throw new Error("This should never happen!");
               setDialogLoadingInfo(
@@ -64,17 +41,15 @@ const AutoWrapAllowanceTransactionButton: FC<{
                 </Typography>
               );
 
-              write({
-                signer,
-                request: {
-                  ...config.request,
-                  chainId: network.id,
-                },
-                transactionTitle: "Approve Allowance",
+              approveAllowance({
+                chainId: network.id,
+                underlyingTokenAddress: token.underlyingAddress!,
+                simulate: true,
               })
-                .unwrap()
                 .then(
-                  ...txAnalytics("Approve Auto-Wrap Allowance", primaryArgs)
+                  ...txAnalytics("Approve Auto-Wrap Allowance", {
+                    spender: network.autoWrap?.strategyContractAddress,
+                  })
                 )
                 .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
             }}

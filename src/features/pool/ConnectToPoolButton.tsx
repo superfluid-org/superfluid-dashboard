@@ -5,10 +5,9 @@ import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary"
 import { Network } from "../network/networks";
 import { PoolMember } from "@superfluid-finance/sdk-core";
 import { useAnalytics } from "../analytics/useAnalytics";
-import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
-import { rpcApi } from "../redux/store";
 import { usePendingConnectToPool } from "../pendingUpdates/PendingConnectToPool";
 import { useConnectionBoundary } from "../transactionBoundary/ConnectionBoundary";
+import { useConnectToPool } from "./usePoolConnectionWrites";
 
 type Props = {
     network: Network;
@@ -18,10 +17,7 @@ type Props = {
 export const ConnectToPoolButton: FC<Props> = ({ network, poolMember }) => {
     const { txAnalytics } = useAnalytics();
 
-    const getTransactionOverrides = useGetTransactionOverrides();
-
-    const [connectToPool, connectToPoolResult] =
-        rpcApi.useConnectToPoolMutation();
+    const [connectToPool, connectToPoolResult] = useConnectToPool();
 
     const pendingUpdate = usePendingConnectToPool({
         chainId: network.id,
@@ -33,7 +29,7 @@ export const ConnectToPoolButton: FC<Props> = ({ network, poolMember }) => {
 
     return (
         <TransactionBoundary mutationResult={connectToPoolResult}>
-            {({ mutationResult, signer, setDialogLoadingInfo }) =>
+            {({ mutationResult, setDialogLoadingInfo }) =>
                 !poolMember.isConnected && (
                     <>
                         {mutationResult.isLoading || pendingUpdate ? (
@@ -66,14 +62,9 @@ export const ConnectToPoolButton: FC<Props> = ({ network, poolMember }) => {
                                         data-cy={"connect-pool-button"}
                                         color="primary"
                                         disabled={
-                                            !signer || !isConnected || !isCorrectNetwork
+                                            !isConnected || !isCorrectNetwork
                                         }
                                         onClick={async () => {
-                                            if (!signer)
-                                                throw new Error(
-                                                    "Signer should always be available here."
-                                                );
-
                                             setDialogLoadingInfo(
                                                 <Typography
                                                     data-cy={"connect-pool-message"}
@@ -85,7 +76,6 @@ export const ConnectToPoolButton: FC<Props> = ({ network, poolMember }) => {
                                                 </Typography>
                                             );
 
-                                            // TODO(KK): Make the operation take subscriber as input. Don't just rely on the wallet's signer -- better to have explicit data flowing
                                             const primaryArgs = {
                                                 chainId: network.id,
                                                 superTokenAddress: poolMember.token,
@@ -94,12 +84,8 @@ export const ConnectToPoolButton: FC<Props> = ({ network, poolMember }) => {
 
                                             connectToPool({
                                                 ...primaryArgs,
-                                                signer,
-                                                overrides: await getTransactionOverrides(
-                                                    network
-                                                )
+                                                simulate: true,
                                             })
-                                                .unwrap()
                                                 .then(
                                                     ...txAnalytics(
                                                         "Connect to GDA Pool",

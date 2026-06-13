@@ -14,13 +14,13 @@ import { memo, useCallback, useEffect, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import TooltipWithIcon from "../../common/TooltipWithIcon";
 import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
-import { rpcApi } from "../../redux/store";
 import { TokenDialogButton } from "../../tokenWrapping/TokenDialogButton";
 import ConnectionBoundary from "../../transactionBoundary/ConnectionBoundary";
 import ConnectionBoundaryButton from "../../transactionBoundary/ConnectionBoundaryButton";
 import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
 import AddressSearch from "../AddressSearch";
 import { PartialTransferForm, ValidTransferForm } from "./TransferFormProvider";
+import { useTransfer } from "./useTransfer";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
 import { parseEtherOrZero } from "../../../utils/tokenUtils";
@@ -33,6 +33,7 @@ import { RestorationType, SendTransferRestoration } from "../../transactionResto
 import { skipToken } from "@reduxjs/toolkit/query/react";
 import { Network } from "../../network/networks";
 import { TokenMinimal } from "../../redux/endpoints/tokenTypes";
+import { ClearMacroRelayOption } from "../../clearMacro/ClearMacroRelayOption";
 
 export default memo(function SendTransfer() {
   const theme = useTheme();
@@ -63,8 +64,7 @@ export default memo(function SendTransfer() {
 
   const { data: superToken } = useTokenQuery(tokenAddress ? { chainId: network.id, id: tokenAddress, onlySuperToken: true } : skipToken);
 
-  const [transfer, transferResult] =
-    rpcApi.useTransferMutation();
+  const [transfer, transferResult] = useTransfer();
 
   const [isSendDisabled, setIsSendDisabled] = useState(true);
   useEffect(() => {
@@ -76,11 +76,11 @@ export default memo(function SendTransfer() {
 
   const SendTransactionBoundary = (
     <TransactionBoundary mutationResult={transferResult}>
-      {({ setDialogLoadingInfo, getOverrides, txAnalytics }) =>
+      {({ setDialogLoadingInfo, txAnalytics, accountAddress }) =>
       (<TransactionButton
         disabled={isSendDisabled}
         dataCy={"transfer-button"}
-        onClick={async (signer) => {
+        onClick={async () => {
           if (isSendDisabled) {
             throw Error(
               `This should never happen.`);
@@ -94,7 +94,10 @@ export default memo(function SendTransfer() {
 
           const { data: formData } = getValues() as ValidTransferForm;
 
-          const senderAddress = await signer.getAddress() as Address
+          if (!accountAddress) {
+            throw Error("Account not connected.");
+          }
+          const senderAddress = accountAddress as Address;
 
           const transactionRestoration: SendTransferRestoration = {
             type: RestorationType.SendTransfer,
@@ -114,13 +117,10 @@ export default memo(function SendTransfer() {
 
           transfer({
             ...primaryArgs,
-            signer,
-            overrides: await getOverrides(),
             transactionExtraData: {
               restoration: transactionRestoration,
             }
           })
-            .unwrap()
             .then(...txAnalytics("Send Transfer", primaryArgs))
             .then(() => resetForm())
             .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
@@ -192,6 +192,7 @@ export default memo(function SendTransfer() {
           }}
         >
           <Stack gap={1}>
+            <ClearMacroRelayOption actionKind="transfer" network={network} />
             {SendTransactionBoundary}
           </Stack>
         </ConnectionBoundaryButton>

@@ -109,6 +109,10 @@ export type Network = Chain & {
   supportsGDA: boolean;
   flowSchedulerContractAddress?: `0x${string}`;
   flowSchedulerSubgraphUrl?: `https://${string}` | undefined;
+  /** Networks with a DashboardClearMacro deployment (gasless relay via Clear Macro). */
+  dashboardClearMacro?: {
+    macroAddress: `0x${string}`;
+  };
   
   vestingContractAddress: {
     v1: VestingContractInfo | undefined,
@@ -979,6 +983,9 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.optimismSepolia,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.optimismSepolia,
+    dashboardClearMacro: {
+      macroAddress: "0x77232a2a953b570D1fEE1FE16b1902299fe7b898",
+    },
   },
 } as const satisfies Record<string, Network>;
 

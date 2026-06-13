@@ -39,7 +39,11 @@ export const TransactionDialog: FC<TransactionDialogProps> = ({
   return (
     <ResponsiveDialog
       open={dialogOpen}
-      onClose={closeDialog}
+      onClose={(_event, reason) => {
+        if (reason !== "backdropClick") {
+          closeDialog();
+        }
+      }}
       PaperProps={{ sx: { borderRadius: "20px", maxHeight: "100%" } }}
       translate="yes"
     >
@@ -62,6 +66,16 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
   const { expectedNetwork } = useConnectionBoundary();
 
   if (mutationResult.isLoading) {
+    // The Clear Macro relay path has phases a plain broadcast doesn't — narrate them.
+    const loadingHeadline =
+      mutationResult.relayPhase === "preparing"
+        ? "Preparing gasless transaction..."
+        : mutationResult.relayPhase === "awaiting-signature"
+          ? "Waiting for your signature..."
+          : mutationResult.relayPhase === "relaying"
+            ? "Relaying transaction..."
+            : "Waiting for transaction approval...";
+
     return (
       <>
         <TransactionDialogTitle></TransactionDialogTitle>
@@ -72,7 +86,7 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
             </Box>
             <Typography variant="h4">
               <span data-cy="approval-message" translate="yes">
-                Waiting for transaction approval...
+                {loadingHeadline}
               </span>{" "}
               <span data-cy="tx-network" translate="no">
                 ({expectedNetwork.name})
@@ -103,6 +117,16 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
             >
               Transaction broadcasted
             </Typography>
+            {mutationResult.relayPhase && (
+              <Typography
+                data-cy={"relayed-message"}
+                variant="body2"
+                color="text.secondary"
+                translate="yes"
+              >
+                Executed gaslessly via the Clear Macro relay.
+              </Typography>
+            )}
           </Stack>
         </TransactionDialogContent>
         {successActions ?? (

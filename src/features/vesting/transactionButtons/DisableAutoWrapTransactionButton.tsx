@@ -1,17 +1,11 @@
 import { ButtonProps, Typography } from "@mui/material";
 import { TransactionTitle } from "@superfluid-finance/sdk-redux";
-import { constants } from "ethers";
 import { FC, memo } from "react";
-import { useSimulateContract, useWalletClient } from "wagmi";
-import { rpcApi, subgraphApi } from "../../redux/store";
+import { useDisableAutoWrap } from "../../auto-wrap/useAutoWrapWrites";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
-import useGetTransactionOverrides from "../../../hooks/useGetTransactionOverrides";
-import { convertOverridesForWagmi } from "../../../utils/convertOverridesForWagmi";
-import { erc20Abi } from "../../../generated";
 import { Network } from "../../network/networks";
 import { ConnectionBoundaryButtonProps } from "../../transactionBoundary/ConnectionBoundaryButton";
-import { useQuery } from "@tanstack/react-query";
 import { SuperTokenMinimal } from "../../redux/endpoints/tokenTypes";
 import { useTokenQuery } from "../../../hooks/useTokenQuery";
 
@@ -24,34 +18,8 @@ const DisableAutoWrapTransactionButton: FC<{
   ButtonProps?: ButtonProps;
   network: Network;
   ConnectionBoundaryButtonProps?: Partial<ConnectionBoundaryButtonProps>
-}> = ({ token, isVisible, ButtonProps = {}, ConnectionBoundaryButtonProps, network, ...props }) => {
-  const { data: walletClient } = useWalletClient();
-  const getGasOverrides = useGetTransactionOverrides();
-  
-  const { data: overrides } = useQuery({
-    queryKey: ["gasOverrides", TX_TITLE, network.id],
-    queryFn: async () => convertOverridesForWagmi(await getGasOverrides(network))
-  });
-
-  const primaryArgs = {
-    spender: network.autoWrap!.strategyContractAddress,
-    amount: BigInt(constants.Zero.toString()),
-  };
-  const prepare = !props.isDisabled && network.autoWrap && walletClient && walletClient.chain.id === network.id;
-  const { data: config } = useSimulateContract(
-    prepare
-      ? {
-          abi: erc20Abi,
-          functionName: "approve",
-          address: token.underlyingAddress as `0x${string}`,
-          chainId: network.id,
-          args: [primaryArgs.spender, primaryArgs.amount],
-          // TODO: overrides
-        }
-      : undefined
-  );
-
-  const [write, mutationResult] = rpcApi.useWriteContractMutation();
+}> = ({ token, isVisible, ButtonProps = {}, ConnectionBoundaryButtonProps, network, isDisabled }) => {
+  const [disableAutoWrap, mutationResult] = useDisableAutoWrap();
 
   const underlyingTokenQuery = useTokenQuery({
     chainId: network.id,
@@ -59,8 +27,8 @@ const DisableAutoWrapTransactionButton: FC<{
   });
   const underlyingToken = underlyingTokenQuery.data;
 
-  const isButtonEnabled = prepare && config && config.request;
-  const isButtonDisabled = !isButtonEnabled;
+  const isButtonDisabled =
+    isDisabled || !network.autoWrap || !token.underlyingAddress;
 
   return (
     <TransactionBoundary mutationResult={mutationResult}>
@@ -78,7 +46,7 @@ const DisableAutoWrapTransactionButton: FC<{
               size: "medium",
               ...ButtonProps,
             }}
-            onClick={async (signer) => {
+            onClick={async () => {
               if (isButtonDisabled)
                 throw new Error("This should never happen!");
 
@@ -89,17 +57,15 @@ const DisableAutoWrapTransactionButton: FC<{
                 </Typography>
               );
 
-              write({
-                signer,
-                request: {
-                  ...config.request,
-                  chainId: network.id,
-                },
-                transactionTitle: "Disable Auto-Wrap",
+              disableAutoWrap({
+                chainId: network.id,
+                underlyingTokenAddress: token.underlyingAddress!,
+                simulate: true,
               })
-                .unwrap()
                 .then(
-                  ...txAnalytics("Disable Auto-Wrap", primaryArgs)
+                  ...txAnalytics("Disable Auto-Wrap", {
+                    spender: network.autoWrap?.strategyContractAddress,
+                  })
                 )
                 .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
             }}

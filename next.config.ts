@@ -115,6 +115,11 @@ const nextConfig: NextConfig = {
       source: "/balance-api/:path*",
       destination: `${process.env.BALANCE_API_REWRITE_TARGET || "https://balances.superfluid.dev"}/:path*`,
     },
+    {
+      // The Clear Macro relay provider serves no CORS headers — proxy it same-origin.
+      source: "/clearmacro-provider/:path*",
+      destination: `${process.env.CLEARMACRO_PROVIDER_REWRITE_TARGET || "https://clearmacro-provider.superfluid.dev"}/:path*`,
+    },
   ],
   env: {
     NEXT_PUBLIC_APP_URL: appUrl,

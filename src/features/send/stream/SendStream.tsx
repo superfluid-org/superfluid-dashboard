@@ -49,6 +49,10 @@ import { Network, networkDefinition } from "../../network/networks";
 import NetworkSwitchLink from "../../network/NetworkSwitchLink";
 import { platformApi } from "../../redux/platformApi/platformApi";
 import { rpcApi } from "../../redux/store";
+import {
+  useDeleteFlowWithScheduling,
+  useUpsertFlowWithScheduling,
+} from "../useFlowSchedulingWrites";
 import Amount from "../../token/Amount";
 import TokenIcon from "../../token/TokenIcon";
 import { BalanceSuperToken } from "../../tokenWrapping/BalanceSuperToken";
@@ -82,6 +86,7 @@ import { useSuperTokens } from "../../../hooks/useSuperTokens";
 import { SuperTokenMinimal, isWrappable } from "../../redux/endpoints/tokenTypes";
 import { useTokenQuery } from "../../../hooks/useTokenQuery";
 import { useWhitelist } from "../../../hooks/useWhitelist";
+import { ClearMacroRelayOption } from "../../clearMacro/ClearMacroRelayOption";
 
 // Minimum start and end date difference in seconds.
 export const SCHEDULE_START_END_MIN_DIFF_S = 15 * UnitOfTime.Minute;
@@ -438,21 +443,20 @@ export default memo(function SendStream() {
     );
   }, [formState.isValid, formState.isValidating, hasAnythingChanged, isFlowScheduleFetching, isActiveFlowFetching]);
 
-  const [upsertFlow, upsertFlowResult] =
-    rpcApi.useUpsertFlowWithSchedulingMutation();
+  const [upsertFlow, upsertFlowResult] = useUpsertFlowWithScheduling();
 
   const isModifying = Boolean(activeFlow || scheduledStream);
 
   const SendTransactionBoundary = (
     <TransactionBoundary mutationResult={upsertFlowResult}>
-      {({ closeDialog, setDialogSuccessActions, setDialogLoadingInfo, getOverrides, txAnalytics }) => (
+      {({ closeDialog, setDialogSuccessActions, setDialogLoadingInfo, txAnalytics, accountAddress }) => (
         <TransactionButton
           dataCy={"send-transaction-button"}
           disabled={isSendDisabled}
           ButtonProps={{
             variant: "contained",
           }}
-          onClick={async (signer) => {
+          onClick={async () => {
             if (isSendDisabled) {
               throw Error(
                 `This should never happen. Form state: ${JSON.stringify(
@@ -493,25 +497,26 @@ export default memo(function SendStream() {
                 : {}),
             };
 
+            if (!accountAddress) {
+              throw Error("Account not connected.");
+            }
+
             const primaryArgs = {
               chainId: network.id,
-              senderAddress: await signer.getAddress(),
+              senderAddress: accountAddress,
               receiverAddress: formData.receiverAddress,
               superTokenAddress: formData.tokenAddress,
               flowRateWei,
               userDataBytes: undefined,
-              startTimestamp: formData.startTimestamp,
-              endTimestamp: formData.endTimestamp,
+              startTimestamp: formData.startTimestamp ?? null,
+              endTimestamp: formData.endTimestamp ?? null,
             };
             upsertFlow({
               ...primaryArgs,
               transactionExtraData: {
                 restoration: transactionRestoration,
               },
-              signer,
-              overrides: await getOverrides(),
             })
-              .unwrap()
               .then(
                 ...txAnalytics(
                   isModifying
@@ -589,12 +594,11 @@ export default memo(function SendStream() {
     </TransactionBoundary>
   );
 
-  const [flowDeleteTrigger, flowDeleteResult] =
-    rpcApi.useDeleteFlowWithSchedulingMutation();
+  const [flowDeleteTrigger, flowDeleteResult] = useDeleteFlowWithScheduling();
 
   const DeleteFlowBoundary = (
     <TransactionBoundary mutationResult={flowDeleteResult}>
-      {({ setDialogLoadingInfo, txAnalytics, getOverrides }) =>
+      {({ setDialogLoadingInfo, txAnalytics }) =>
         isModifying && (
           <TransactionButton
             dataCy={"cancel-stream-button"}
@@ -602,7 +606,7 @@ export default memo(function SendStream() {
               variant: "outlined",
               color: "error",
             }}
-            onClick={async (signer) => {
+            onClick={async () => {
               const superTokenAddress = tokenAddress;
               const senderAddress = visibleAddress;
               if (!receiverAddress || !superTokenAddress || !senderAddress) {
@@ -622,12 +626,9 @@ export default memo(function SendStream() {
                 receiverAddress,
                 userDataBytes: undefined,
               };
-              flowDeleteTrigger({
-                ...primaryArgs,
-                signer,
-                overrides: await getOverrides(),
-              })
-                .unwrap()
+              // The form renders the relay chip, so its cancel may relay (the table-row
+              // cancel buttons don't pass this).
+              flowDeleteTrigger({ ...primaryArgs, withClearMacro: true })
                 .then(...txAnalytics("Cancel Stream", primaryArgs))
                 .then(() => resetForm())
                 .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
@@ -827,6 +828,22 @@ export default memo(function SendStream() {
           }}
         >
           <Stack gap={1}>
+            {/* Scheduling adds scheduler operations (multi-op batch) — the lone-action
+                macro relay only engages for a plain unscheduled create/update/cancel. */}
+            <ClearMacroRelayOption
+              actionKind={
+                streamScheduling ||
+                startTimestamp ||
+                endTimestamp ||
+                existingStartTimestamp ||
+                existingEndTimestamp
+                  ? undefined
+                  : activeFlow
+                    ? "updateFlow"
+                    : "createFlow"
+              }
+              network={network}
+            />
             {SendTransactionBoundary}
             {DeleteFlowBoundary}
           </Stack>

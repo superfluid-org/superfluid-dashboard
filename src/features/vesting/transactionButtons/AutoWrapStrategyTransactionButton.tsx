@@ -1,10 +1,7 @@
 import { Typography } from "@mui/material";
 import { TransactionTitle } from "@superfluid-finance/sdk-redux";
-import { BigNumber } from "ethers";
 import { FC, memo } from "react";
-import { useSimulateContract, useWalletClient  } from "wagmi";
-import { autoWrapManagerAbi, autoWrapManagerAddress } from "../../../generated";
-import { rpcApi } from "../../redux/store";
+import { useEnableAutoWrap } from "../../auto-wrap/useAutoWrapWrites";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
 import { Network } from "../../network/networks";
@@ -17,41 +14,11 @@ const AutoWrapStrategyTransactionButton: FC<{
   isVisible: boolean;
   isDisabled: boolean;
   network: Network;
-}> = ({ token, isVisible, network, ...props }) => {
-  const { data: walletClient } = useWalletClient();
+}> = ({ token, isVisible, network, isDisabled }) => {
+  const [enableAutoWrap, mutationResult] = useEnableAutoWrap();
 
-  const primaryArgs = {
-    superToken: token.address as `0x${string}`,
-    strategy: network.autoWrap!.strategyContractAddress,
-    liquidityToken: token.underlyingAddress as `0x${string}`,
-    expiry: BigInt(BigNumber.from("3000000000").toString()),
-    lowerLimit: BigInt(BigNumber.from(network.autoWrap!.lowerLimit).toString()),
-    upperLimit: BigInt(BigNumber.from(network.autoWrap!.upperLimit).toString()),
-  };
-
-  const prepare = !props.isDisabled && network.autoWrap && walletClient && walletClient.chain.id === network.id;;
-  const { data: config } = useSimulateContract(
-    prepare
-      ? {
-          abi: autoWrapManagerAbi,
-          functionName: "createWrapSchedule",
-          address: network.autoWrap!.managerContractAddress,
-          args: [
-            primaryArgs.superToken,
-            primaryArgs.strategy,
-            primaryArgs.liquidityToken,
-            primaryArgs.expiry,
-            primaryArgs.lowerLimit,
-            primaryArgs.upperLimit,
-          ],
-          chainId: network.id as keyof typeof autoWrapManagerAddress,
-        }
-      : undefined
-  );
-
-  const [write, mutationResult] = rpcApi.useWriteContractMutation();
-  const isButtonEnabled = prepare && config && config.request;
-  const isButtonDisabled = !isButtonEnabled;
+  const isButtonDisabled =
+    isDisabled || !network.autoWrap || !token.underlyingAddress;
 
   return (
     <TransactionBoundary mutationResult={mutationResult}>
@@ -60,7 +27,7 @@ const AutoWrapStrategyTransactionButton: FC<{
           <TransactionButton
             dataCy="enable-auto-wrap-button"
             disabled={isButtonDisabled}
-            onClick={async (signer) => {
+            onClick={async () => {
               if (isButtonDisabled)
                 throw new Error("This should never happen!");
               setDialogLoadingInfo(
@@ -70,17 +37,17 @@ const AutoWrapStrategyTransactionButton: FC<{
                 </Typography>
               );
 
-              write({
-                signer,
-                request: {
-                  ...config.request,
-                  chainId: network.id,
-                },
-                transactionTitle: TX_TITLE,
+              enableAutoWrap({
+                chainId: network.id,
+                superTokenAddress: token.address,
+                underlyingTokenAddress: token.underlyingAddress!,
+                simulate: true,
               })
-                .unwrap()
                 .then(
-                  ...txAnalytics("Enable Auto-Wrap", primaryArgs)
+                  ...txAnalytics("Enable Auto-Wrap", {
+                    superToken: token.address,
+                    liquidityToken: token.underlyingAddress,
+                  })
                 )
                 .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
             }}

@@ -1,11 +1,10 @@
-import { parseUnits } from "ethers/lib/utils";
+import { parseGwei } from "viem";
 import { Network } from "../features/network/networks";
 import gasApi, { GasRecommendation } from "../features/gas/gasApi.slice";
 import { useCallback } from "react";
 import { useAccount } from "@/hooks/useAccount"
-import { merge } from "lodash";
 import { popGlobalGasOverrides } from "../global";
-import { GlobalGasOverrides } from "../typings/global";
+import { ViemFeeOverrides } from "../features/transactions/viemFeeOverrides";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 
 const useGetTransactionOverrides = () => {
@@ -14,7 +13,7 @@ const useGetTransactionOverrides = () => {
   const { isEOA } = useVisibleAddress();
   
   return useCallback(
-    async (network: Network): Promise<GlobalGasOverrides> => {
+    async (network: Network): Promise<ViemFeeOverrides> => {
       const gasQueryTimeout = new Promise<null>((response) =>
         setTimeout(() => response(null), 3000)
       );
@@ -24,25 +23,23 @@ const useGetTransactionOverrides = () => {
         gasQueryTimeout,
       ]);
 
-      const overrides: GlobalGasOverrides = {};
+      const overrides: ViemFeeOverrides = {};
 
       if (gasRecommendation) {
-        overrides.maxPriorityFeePerGas = parseUnits(
-          gasRecommendation.maxPriorityFeeGwei.toFixed(8).toString(),
-          "gwei"
+        overrides.maxPriorityFeePerGas = parseGwei(
+          gasRecommendation.maxPriorityFeeGwei.toFixed(8)
         );
-        overrides.maxFeePerGas = parseUnits(
-          gasRecommendation.maxFeeGwei.toFixed(8).toString(),
-          "gwei"
+        overrides.maxFeePerGas = parseGwei(
+          gasRecommendation.maxFeeGwei.toFixed(8)
         );
       }
 
       if (isEOA === false) {
-        overrides.gasLimit = 0; // Disable gas estimation for Gnosis Safe (and other smart wallets) completely because they don't use it anyway.
+        overrides.gas = 0n; // Disable gas estimation for Gnosis Safe (and other smart wallets) completely because they don't use it anyway.
       }
 
       const globalOverrides = popGlobalGasOverrides();
-      return merge(overrides, globalOverrides);
+      return { ...overrides, ...globalOverrides };
     },
     [queryRecommendedGas, activeConnector, isEOA]
   );

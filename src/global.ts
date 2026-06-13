@@ -1,5 +1,6 @@
 import { isUndefined } from "lodash";
 import { GlobalGasOverrides } from "./typings/global";
+import { ViemFeeOverrides } from "./features/transactions/viemFeeOverrides";
 import { SSR } from "./utils/SSRUtils";
 import { AppDispatch } from "./features/redux/store";
 import { addCustomToken, NetworkCustomToken } from "./features/customTokens/customTokens.slice";
@@ -19,7 +20,7 @@ export const initializeSuperfluidDashboardGlobalObject = ({
   }
 };
 
-export const popGlobalGasOverrides = (): GlobalGasOverrides => {
+export const popGlobalGasOverrides = (): ViemFeeOverrides => {
   const { nextGasOverrides } = window.superfluid_dashboard.advanced;
 
   // Explicitly pick the properties and not blindly take everything from the user-defined object.
@@ -29,12 +30,14 @@ export const popGlobalGasOverrides = (): GlobalGasOverrides => {
   window.superfluid_dashboard.advanced.nextGasOverrides =
     createEmptyGasOverrides();
 
-  // Copy only defined properties.
-  const overrides = {
-    ...(isUndefined(gasLimit) ? {} : { gasLimit }),
-    ...(isUndefined(gasPrice) ? {} : { gasPrice }),
-    ...(isUndefined(maxFeePerGas) ? {} : { maxFeePerGas }),
-    ...(isUndefined(maxPriorityFeePerGas) ? {} : { maxPriorityFeePerGas }),
+  // Copy only defined properties, coerced to viem-style bigints (ethers' `gasLimit` becomes `gas`).
+  const overrides: ViemFeeOverrides = {
+    ...(isUndefined(gasLimit) ? {} : { gas: BigInt(gasLimit) }),
+    ...(isUndefined(gasPrice) ? {} : { gasPrice: BigInt(gasPrice) }),
+    ...(isUndefined(maxFeePerGas) ? {} : { maxFeePerGas: BigInt(maxFeePerGas) }),
+    ...(isUndefined(maxPriorityFeePerGas)
+      ? {}
+      : { maxPriorityFeePerGas: BigInt(maxPriorityFeePerGas) }),
   };
 
   return overrides;

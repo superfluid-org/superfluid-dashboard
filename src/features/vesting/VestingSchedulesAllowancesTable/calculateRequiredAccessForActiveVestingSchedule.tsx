@@ -1,9 +1,8 @@
-import { BigNumber } from "ethers";
 import { ACL_DELETE_PERMISSION, ACL_CREATE_PERMISSION } from "../../../utils/constants";
 
 export type RequiredAccessForActiveVestingSchedule = {
-  recommendedTokenAllowance: BigNumber;
-  requiredFlowRateAllowance: BigNumber;
+  recommendedTokenAllowance: bigint;
+  requiredFlowRateAllowance: bigint;
   requiredFlowOperatorPermissions: number;
 }
 
@@ -30,15 +29,15 @@ export function calculateRequiredAccessForActiveVestingSchedule(
     cliffAndFlowExecutedAt,
   } = schedule;
 
-  const recommendedTokenAllowance = BigNumber.from(getMaximumNeededTokenAllowance({
+  const recommendedTokenAllowance = getMaximumNeededTokenAllowance({
     schedule,
     START_DATE_VALID_AFTER_IN_SECONDS,
     END_DATE_VALID_BEFORE_IN_SECONDS
-  }).toString());
+  });
 
   const requiredFlowRateAllowance = cliffAndFlowExecutedAt
-    ? BigNumber.from("0")
-    : BigNumber.from(flowRate);
+    ? 0n
+    : BigInt(flowRate);
 
   // https://docs.superfluid.finance/superfluid/developers/constant-flow-agreement-cfa/cfa-access-control-list-acl/acl-features
   const requiredFlowOperatorPermissions = cliffAndFlowExecutedAt

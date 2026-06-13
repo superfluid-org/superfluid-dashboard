@@ -10,7 +10,6 @@ import {
   useTheme,
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/query";
-import { BigNumber } from "ethers";
 import { groupBy, uniq } from "lodash";
 import { FC, useMemo } from "react";
 import NoContentPaper from "../../../components/NoContent/NoContentPaper";
@@ -85,20 +84,18 @@ const VestingSchedulerAllowancesTable: FC = () => {
           (previousValue, currentValue) => ({
             ...previousValue,
             recommendedTokenAllowance:
-              previousValue.recommendedTokenAllowance.add(
-                currentValue.recommendedTokenAllowance
-              ),
+              previousValue.recommendedTokenAllowance +
+              currentValue.recommendedTokenAllowance,
             requiredFlowRateAllowance:
-              previousValue.requiredFlowRateAllowance.add(
-                currentValue.requiredFlowRateAllowance
-              ),
+              previousValue.requiredFlowRateAllowance +
+              currentValue.requiredFlowRateAllowance,
             requiredFlowOperatorPermissions:
               previousValue.requiredFlowOperatorPermissions |
               currentValue.requiredFlowOperatorPermissions,
           }),
           {
-            recommendedTokenAllowance: BigNumber.from("0"),
-            requiredFlowRateAllowance: BigNumber.from("0"),
+            recommendedTokenAllowance: 0n,
+            requiredFlowRateAllowance: 0n,
             requiredFlowOperatorPermissions: 0,
           }
         );

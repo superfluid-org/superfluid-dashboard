@@ -5,7 +5,6 @@ import { formatEther, formatUnits, parseEther } from "ethers/lib/utils";
 import { useRouter } from "next/router";
 import { FC, useEffect, useMemo, useRef, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
-import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { inputPropsForEtherAmount } from "../../utils/inputPropsForEtherAmount";
 import { parseAmountOrZero } from "../../utils/tokenUtils";
 import { useAnalytics } from "../analytics/useAnalytics";
@@ -37,10 +36,12 @@ import { BalanceUnderlyingToken } from "./BalanceUnderlyingToken";
 import { SwitchWrapModeBtn } from "./SwitchWrapModeBtn";
 import { TokenDialogButton } from "./TokenDialogButton";
 import { useTokenPairQuery } from "./useTokenPairQuery";
+import { useTokenApprove, useTokenWrap } from "./useTokenWrapWrites";
 import { WrapInputCard } from "./WrapInputCard";
 import { ValidWrappingForm, WrappingForm } from "./WrappingFormProvider";
 import { useTokenQuery } from "../../hooks/useTokenQuery";
 import { useTokenPairsQuery } from "./useTokenPairsQuery";
+import { ClearMacroRelayOption } from "../clearMacro/ClearMacroRelayOption";
 
 const underlyingIbAlluoTokenOverrides = [
   // StIbAlluoEth
@@ -65,7 +66,6 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
   const router = useRouter();
   const { visibleAddress } = useVisibleAddress();
   const { setTransactionDrawerOpen } = useLayoutContext();
-  const getTransactionOverrides = useGetTransactionOverrides();
   const { txAnalytics } = useAnalytics();
 
   const {
@@ -142,8 +142,8 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
       : BigNumber.from(amountWei).sub(currentAllowance)
     : ethers.BigNumber.from(0);
 
-  const [approveTrigger, approveResult] = rpcApi.useApproveMutation();
-  const [wrapTrigger, wrapResult] = rpcApi.useSuperTokenUpgradeMutation();
+  const [approveTrigger, approveResult] = useTokenApprove();
+  const [wrapTrigger, wrapResult] = useTokenWrap();
 
   const isApproveAllowanceVisible = !!(
     underlyingToken &&
@@ -431,12 +431,20 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
 
       <Stack gap={2} direction="column" sx={{ width: "100%" }}>
         <ConnectionBoundary>
+          <ClearMacroRelayOption
+            actionKind={
+              isUnderlyingBlockchainNativeAsset || isApproveAllowanceVisible
+                ? undefined
+                : "upgrade"
+            }
+            network={network}
+          />
           <TransactionBoundary mutationResult={approveResult}>
             {({ setDialogLoadingInfo }) =>
               isApproveAllowanceVisible && (
                 <TransactionButton
                   dataCy={"approve-allowance-button"}
-                  onClick={async (signer) => {
+                  onClick={async () => {
                     const approveAllowanceAmountWei =
                       currentAllowance.add(missingAllowance);
 
@@ -464,13 +472,11 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                     };
                     approveTrigger({
                       ...primaryArgs,
+                      underlyingTokenAddress: tokenPair.underlyingTokenAddress,
                       transactionExtraData: {
                         restoration,
                       },
-                      signer,
-                      overrides: await getTransactionOverrides(network),
                     })
-                      .unwrap()
                       .then(...txAnalytics("Approve Allowance", primaryArgs))
                       .then(() => setTransactionDrawerOpen(true))
                       .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
@@ -492,7 +498,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
               <TransactionButton
                 dataCy={"upgrade-button"}
                 disabled={isWrapButtonDisabled}
-                onClick={async (signer) => {
+                onClick={async () => {
                   if (isWrapButtonDisabled) {
                     throw Error(
                       `This should never happen. Form state: ${JSON.stringify(
@@ -516,18 +522,13 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                     amountWei: amountWei.toString(),
                   };
 
-                  const overrides = await getTransactionOverrides(network);
-
                   // Temp custom override for "IbAlluo" tokens on polygon
                   // TODO: Find a better solution
-                  if (
+                  const isIbAlluoUnderlying =
                     network.id === 137 &&
                     underlyingIbAlluoTokenOverrides.includes(
                       tokenPair.underlyingTokenAddress.toLowerCase()
-                    )
-                  ) {
-                    overrides.gasLimit = 200_000;
-                  }
+                    );
 
                   setDialogLoadingInfo(
                     <WrapPreview
@@ -546,13 +547,15 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                   };
                   wrapTrigger({
                     ...primaryArgs,
+                    isNativeAssetUnderlyingToken:
+                      isUnderlyingBlockchainNativeAsset,
                     transactionExtraData: {
                       restoration,
                     },
-                    signer,
-                    overrides
+                    ...(isIbAlluoUnderlying
+                      ? { overrides: { gas: 200_000n } }
+                      : {}),
                   })
-                    .unwrap()
                     .then(...txAnalytics("Wrap", primaryArgs))
                     .then(() => resetForm())
                     .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
