@@ -48,8 +48,20 @@ export interface SuperfluidWriteArgs<
   address: Address;
   functionName: TFunctionName;
   args: TArgs;
-  /** Native value sent with the call (payable batchCall, native-asset upgrade). */
-  value?: bigint;
+  /**
+   * Native value sent with the call (payable batchCall, native-asset upgrade).
+   * Only accepted when the selected function is payable (wagmi's `GetValue`
+   * pattern); widened usage (e.g. spread `subOperationsWriteFragment` results)
+   * stays permissive via the `Abi extends TAbi` fallback.
+   */
+  value?: Abi extends TAbi
+    ? bigint
+    : TFunctionName extends Extract<
+          TAbi[number],
+          { type: "function"; stateMutability: "payable" }
+        >["name"]
+      ? bigint
+      : never;
   /** Tracked-transaction title shown in the drawer. */
   title: TransactionTitle;
   /** Per-operation titles shown in the drawer for batched calls (kept in `extraData`). */
@@ -277,7 +289,9 @@ export function useSuperfluidWriteContract() {
             | Promise<SuperfluidWriteArgs<TAbi, TFunctionName, TArgs>>)
     ) =>
       mutateAsync(
-        argsOrBuilder as SuperfluidWriteArgs | SuperfluidWriteArgsBuilder
+        argsOrBuilder as unknown as
+          | SuperfluidWriteArgs
+          | SuperfluidWriteArgsBuilder
       ),
     [mutateAsync]
   );

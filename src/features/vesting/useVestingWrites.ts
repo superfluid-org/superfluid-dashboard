@@ -355,7 +355,7 @@ export function useDeleteVestingSchedule() {
               arg.superTokenAddress as Address,
               arg.senderAddress as Address,
               arg.receiverAddress as Address,
-              "0x",
+              "0x", // userData
             ]),
             title: "Close Stream",
           })
@@ -552,10 +552,10 @@ export function useFixAccessForVesting() {
               chainId,
               "updateFlowOperatorPermissions",
               [
-                arg.superTokenAddress as Address,
-                scheduler.address,
-                newPermissions,
-                newFlowRateAllowance,
+                arg.superTokenAddress as Address, // token
+                scheduler.address, // flowOperator
+                newPermissions, // permissions
+                newFlowRateAllowance, // flowrateAllowance
               ]
             ),
             title: "Approve Vesting Scheduler",

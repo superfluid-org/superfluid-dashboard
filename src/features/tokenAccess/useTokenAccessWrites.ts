@@ -119,10 +119,10 @@ export function useUpdateAccess() {
               arg.chainId,
               "updateFlowOperatorPermissions",
               [
-                arg.superTokenAddress as Address,
-                arg.operatorAddress as Address,
-                arg.editedAccess.flowOperatorPermissions,
-                BigInt(arg.editedAccess.flowRateAllowanceWei),
+                arg.superTokenAddress as Address, // token
+                arg.operatorAddress as Address, // flowOperator
+                arg.editedAccess.flowOperatorPermissions, // permissions
+                BigInt(arg.editedAccess.flowRateAllowanceWei), // flowrateAllowance
               ]
             ),
             title: "Update Flow Operator Permissions",
@@ -198,8 +198,8 @@ export function useRevokeAccess() {
             // The forwarder's `revokePermissions` is the equivalent: zeroes both
             // permissions and the flow-rate allowance.
             direct: cfaForwarderWriteFragment(arg.chainId, "revokePermissions", [
-              arg.superTokenAddress as Address,
-              arg.operatorAddress as Address,
+              arg.superTokenAddress as Address, // token
+              arg.operatorAddress as Address, // flowOperator
             ]),
             title: "Revoke Flow Operator",
           })

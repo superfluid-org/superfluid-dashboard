@@ -36,11 +36,11 @@ export function useCancelDistributionStream() {
         ),
         functionName: "distributeFlow",
         args: [
-          arg.superTokenAddress as Address,
-          arg.senderAddress as Address,
-          arg.poolAddress as Address,
-          0n,
-          "0x",
+          arg.superTokenAddress as Address, // token
+          arg.senderAddress as Address, // from
+          arg.poolAddress as Address, // pool
+          0n, // requestedFlowRate (cancel = 0)
+          "0x", // userData
         ],
         title: "Cancel Distribution Stream" as const,
         subTransactionTitles: ["Cancel Distribution Stream" as const],

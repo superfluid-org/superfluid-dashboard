@@ -46,12 +46,12 @@ export function useEnableAutoWrap() {
           address: autoWrap.managerContractAddress,
           functionName: "createWrapSchedule",
           args: [
-            arg.superTokenAddress as Address,
-            autoWrap.strategyContractAddress,
-            arg.underlyingTokenAddress as Address,
-            WRAP_SCHEDULE_EXPIRY,
-            BigInt(autoWrap.lowerLimit.toString()),
-            BigInt(autoWrap.upperLimit.toString()),
+            arg.superTokenAddress as Address, // superToken
+            autoWrap.strategyContractAddress, // strategy
+            arg.underlyingTokenAddress as Address, // liquidityToken
+            WRAP_SCHEDULE_EXPIRY, // expiry
+            BigInt(autoWrap.lowerLimit.toString()), // lowerLimit
+            BigInt(autoWrap.upperLimit.toString()), // upperLimit
           ],
           title: "Enable Auto-Wrap" as const,
           extraData: arg.transactionExtraData,
