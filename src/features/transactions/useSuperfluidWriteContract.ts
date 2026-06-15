@@ -8,6 +8,8 @@ import {
   ContractFunctionName,
   ContractFunctionRevertedError,
   ExecutionRevertedError,
+  InsufficientFundsError,
+  UserRejectedRequestError,
 } from "viem";
 import * as Sentry from "@sentry/react";
 import { useConfig } from "wagmi";
@@ -101,6 +103,9 @@ const toSerializedError = (error: Error) => ({
   name: error.name,
   // viem errors expose a concise `shortMessage`; fall back to the full message.
   message: (error as { shortMessage?: string }).shortMessage ?? error.message,
+  // Stable, viem-aware category for the error dialog to switch on (the viem error CLASS is lost
+  // once serialized to `{ name, message }`, so we classify here while the live error is in hand).
+  code: classifyError(error),
 });
 
 // sdk-core parity: gas limit = estimate + 20%. Protects Superfluid agreement calls and Host
@@ -140,6 +145,25 @@ function isContractRevert(error: unknown): boolean {
       return !GAS_ALLOWANCE_MESSAGE.test(e.message);
     return false;
   });
+}
+
+/** Stable, viem-aware error categories the transaction dialog renders friendly copy for. */
+export type TxErrorCode = "USER_REJECTED" | "INSUFFICIENT_FUNDS" | "CONTRACT_REVERT";
+
+/**
+ * Classifies a thrown write/estimate error by walking the viem error cause chain. Replaces the
+ * dialog's old ethers-era string matching (`INSUFFICIENT_FUNDS`/`UNPREDICTABLE_GAS_LIMIT`), which
+ * viem never emits. Order matters: a user rejection can be wrapped in a contract-execution error,
+ * so it is checked before the revert classification.
+ */
+function classifyError(error: unknown): TxErrorCode | undefined {
+  if (!(error instanceof BaseError)) return undefined;
+  if (error.walk((e) => e instanceof UserRejectedRequestError))
+    return "USER_REJECTED";
+  if (error.walk((e) => e instanceof InsufficientFundsError))
+    return "INSUFFICIENT_FUNDS";
+  if (isContractRevert(error)) return "CONTRACT_REVERT";
+  return undefined;
 }
 
 /**
