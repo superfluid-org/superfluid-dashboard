@@ -42,7 +42,6 @@ export interface UpsertFlowWithSchedulingArgs {
   userDataBytes?: Hex;
   transactionExtraData?: Record<string, unknown>;
   overrides?: ViemFeeOverrides;
-  simulate?: boolean;
 }
 
 export interface DeleteFlowWithSchedulingArgs {
@@ -53,7 +52,6 @@ export interface DeleteFlowWithSchedulingArgs {
   userDataBytes?: Hex;
   transactionExtraData?: Record<string, unknown>;
   overrides?: ViemFeeOverrides;
-  simulate?: boolean;
   /**
    * Allow the lone deleteFlow to relay via Clear Macro. Opt-in because relay engagement
    * must follow a visible relay chip: the send-stream form renders one, the table-row
@@ -311,7 +309,6 @@ export function useUpsertFlowWithScheduling() {
         subTransactionTitles,
         extraData: arg.transactionExtraData,
         overrides: arg.overrides,
-        simulate: arg.simulate,
         getPendingUpdates: (hash) =>
           buildUpsertFlowWithSchedulingPendingUpdates(
             hash,
@@ -439,7 +436,6 @@ export function useDeleteFlowWithScheduling() {
         subTransactionTitles,
         extraData: arg.transactionExtraData,
         overrides: arg.overrides,
-        simulate: arg.simulate,
         getPendingUpdates: (hash: string) =>
           buildDeleteFlowWithSchedulingPendingUpdates(
             hash,

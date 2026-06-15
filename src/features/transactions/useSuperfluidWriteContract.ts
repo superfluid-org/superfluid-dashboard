@@ -3,11 +3,15 @@ import { useMutation } from "@tanstack/react-query";
 import {
   Abi,
   Address,
+  BaseError,
   ContractFunctionArgs,
   ContractFunctionName,
+  ContractFunctionRevertedError,
+  ExecutionRevertedError,
 } from "viem";
+import * as Sentry from "@sentry/react";
 import { useConfig } from "wagmi";
-import { simulateContract, writeContract } from "@wagmi/core";
+import { getPublicClient, simulateContract, writeContract } from "@wagmi/core";
 import { clearMacroForwarderAddress } from "@sfpro/sdk/abi";
 import { TransactionInfo, TransactionTitle } from "@superfluid-finance/sdk-redux";
 import { useAppDispatch } from "../redux/store";
@@ -75,8 +79,6 @@ export interface SuperfluidWriteArgs<
   overrides?: ViemFeeOverrides;
   /** Build the optimistic pending updates once the hash is known (ids/hash filled by caller). */
   getPendingUpdates?: (hash: string) => PendingUpdate[];
-  /** Run `simulateContract` first to surface reverts before the wallet prompt. */
-  simulate?: boolean;
   /**
    * The Clear Macro equivalent of this write. When set AND the relay path is enabled +
    * eligible, the write executes gaslessly via the relay (one EIP-712 signature); any
@@ -101,9 +103,48 @@ const toSerializedError = (error: Error) => ({
   message: (error as { shortMessage?: string }).shortMessage ?? error.message,
 });
 
+// sdk-core parity: gas limit = estimate + 20%. Protects Superfluid agreement calls and Host
+// `batchCall`s whose real on-chain gas exceeds a bare estimate (SuperApp callbacks, solvency
+// branches). Integer-only bigint math.
+const GAS_LIMIT_MULTIPLIER_NUM = 120n;
+const GAS_LIMIT_MULTIPLIER_DEN = 100n;
+
+// viem's `ExecutionRevertedError` is overloaded: its `nodeMessage` regex is
+// `/execution reverted|gas required exceeds allowance/`, so the SAME class is produced both for a
+// genuine bare revert AND for a "gas required exceeds allowance" gas-cap/estimation failure (which
+// is NOT a contract revert). We must not block a write on the latter, so we exclude it by message.
+const GAS_ALLOWANCE_MESSAGE = /gas required exceeds allowance/i;
+
+/**
+ * Discriminates a real on-chain revert from an infra/transport failure on a pre-flight estimate.
+ *
+ * `true`  = the EVM actually reverted (a decodable on-chain revert) → surface it in the dialog,
+ *           matching sdk-core's `estimateGas` revert check.
+ * `false` = the generic `ContractFunctionExecutionError` wrapper around a transport/timeout/
+ *           unsupported-method/node/gas-cap failure → best-effort: omit gas, let the wallet estimate.
+ *
+ * NOTE: we must NOT match `ContractFunctionExecutionError`/`CallExecutionError`. `estimateContractGas`
+ * rethrows EVERY failure wrapped in `ContractFunctionExecutionError`, and `BaseError.walk()` tests the
+ * outer error first — matching that wrapper would return `true` for every failure and make the
+ * best-effort branch dead code. The decoded revert (reason string / custom error — i.e. essentially
+ * every Superfluid/ERC20 revert) lives at the `ContractFunctionRevertedError` cause.
+ * `ExecutionRevertedError` catches reason-less bare reverts too, but is excluded for the
+ * gas-allowance case (see `GAS_ALLOWANCE_MESSAGE`) so a gas-cap estimation failure falls back to
+ * wallet estimation rather than wrongly blocking the write.
+ */
+function isContractRevert(error: unknown): boolean {
+  if (!(error instanceof BaseError)) return false;
+  return !!error.walk((e) => {
+    if (e instanceof ContractFunctionRevertedError) return true;
+    if (e instanceof ExecutionRevertedError)
+      return !GAS_ALLOWANCE_MESSAGE.test(e.message);
+    return false;
+  });
+}
+
 /**
  * Shared core for wagmi-hook based Superfluid writes. One TanStack `useMutation` spans the
- * whole trigger — preflight (args builder) → optional simulate → `writeContract` → handing
+ * whole trigger — preflight (args builder) → gas estimate + buffer → `writeContract` → handing
  * the hash to the Redux tracker via `trackTransaction` — so the entire lifecycle is
  * library-managed (no hand-rolled loading/error state). Returns a `result` shaped like RTK
  * Query's mutation result so the existing `TransactionBoundary` / `TransactionDialog` /
@@ -216,18 +257,45 @@ export function useSuperfluidWriteContract() {
               error,
               error.cause
             );
-            setRelayPhase(undefined);
+            // Surface the gasless→self-pay switch in the dialog. The phase persists through the
+            // self-pay `writeContract` that follows (and into success); the dialog narrates it.
+            setRelayPhase("fallback");
           } else {
             throw error;
           }
         }
       }
 
-      if (params.simulate && !isSmartWallet) {
-        await simulateContract(
-          config,
-          request as Parameters<typeof simulateContract>[1]
-        );
+      // Unified pre-flight (sdk-core parity): one `eth_estimateGas` that both buffers the gas
+      // limit (+20%) AND surfaces reverts before the wallet prompt. Skipped for smart wallets
+      // (estimate themselves) and when a caller supplied an explicit `gas` override. The Clear
+      // Macro relay path already returned above, so this only runs for self-pay writes
+      // (including the relay-fallback case, where self-paying is now correct).
+      if (!isSmartWallet && gas === undefined) {
+        const publicClient = getPublicClient(config, { chainId: params.chainId });
+        try {
+          const estimated = await publicClient!.estimateContractGas({
+            abi: params.abi,
+            address: params.address,
+            functionName: params.functionName,
+            args: params.args,
+            account: address,
+            ...(params.value !== undefined ? { value: params.value } : {}),
+            // Plain eth_estimateGas, no fee prepay. json-rpc/injected accounts already skip
+            // fee-fill; `prepare: false` pins that + skips the prepare round-trip, keeping the
+            // pre-pay check at `balance >= value` (passes for non-payable value=0 and for native
+            // wraps the form already balance-checks).
+            prepare: false,
+          } as Parameters<NonNullable<typeof publicClient>["estimateContractGas"]>[0]);
+          request.gas =
+            (estimated * GAS_LIMIT_MULTIPLIER_NUM) / GAS_LIMIT_MULTIPLIER_DEN;
+        } catch (error) {
+          // A real on-chain revert surfaces in the dialog (sdk-core parity).
+          if (isContractRevert(error)) throw error;
+          // Any other failure (transport/timeout, unsupported method, node hiccup, or
+          // `publicClient` undefined) — log and fall back: omit gas, let the wallet estimate.
+          Sentry.captureException(error, { level: "warning" });
+        }
       }
 
       const hash = await writeContract(config, request);

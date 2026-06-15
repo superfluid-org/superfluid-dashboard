@@ -44,7 +44,6 @@ const AutoWrapAllowanceTransactionButton: FC<{
               approveAllowance({
                 chainId: network.id,
                 underlyingTokenAddress: token.underlyingAddress!,
-                simulate: true,
               })
                 .then(
                   ...txAnalytics("Approve Auto-Wrap Allowance", {

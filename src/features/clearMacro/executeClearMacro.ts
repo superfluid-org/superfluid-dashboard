@@ -264,8 +264,9 @@ export async function executeClearMacro(
   }
 
   // -- Pre-signature simulation of the FALLBACK write -----------------------------------
-  // A revert here is rethrown as-is (NOT wrapped): it surfaces in the dialog exactly like
-  // `simulate: true` does today — falling back would just revert again, with gas.
+  // A revert here is rethrown as-is (NOT wrapped): it surfaces in the dialog exactly like the
+  // self-pay write's own pre-flight gas estimate does — falling back would just revert again,
+  // with gas.
   if (params.fallbackSimulationRequest) {
     await simulateContract(wagmiConfig, params.fallbackSimulationRequest);
   }

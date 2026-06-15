@@ -29,7 +29,6 @@ interface UpdateAccessArgs {
   editedAccess: TokenAccess;
   transactionExtraData?: Record<string, unknown>;
   overrides?: ViemFeeOverrides;
-  simulate?: boolean;
 }
 
 interface RevokeAccessArgs {
@@ -39,7 +38,6 @@ interface RevokeAccessArgs {
   initialAccess: TokenAccess;
   transactionExtraData?: Record<string, unknown>;
   overrides?: ViemFeeOverrides;
-  simulate?: boolean;
 }
 
 const tokenAllowanceSubOperation = (
@@ -153,7 +151,6 @@ export function useUpdateAccess() {
         subTransactionTitles: subOperations.map((x) => x.title),
         extraData: arg.transactionExtraData,
         overrides: arg.overrides,
-        simulate: arg.simulate,
       };
       }),
     [write]
@@ -224,7 +221,6 @@ export function useRevokeAccess() {
         subTransactionTitles: subOperations.map((x) => x.title),
         extraData: arg.transactionExtraData,
         overrides: arg.overrides,
-        simulate: arg.simulate,
       };
       }),
     [write]

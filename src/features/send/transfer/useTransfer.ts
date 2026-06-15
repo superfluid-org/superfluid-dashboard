@@ -10,7 +10,6 @@ interface TransferArgs {
   amountWei: string;
   transactionExtraData?: Record<string, unknown>;
   overrides?: ViemFeeOverrides;
-  simulate?: boolean;
 }
 
 /**
@@ -31,7 +30,6 @@ export function useTransfer() {
         title: "Send Transfer" as const,
         extraData: arg.transactionExtraData,
         overrides: arg.overrides,
-        simulate: arg.simulate,
         clearMacro: {
           kind: "transfer" as const,
           superToken: arg.tokenAddress as Address,

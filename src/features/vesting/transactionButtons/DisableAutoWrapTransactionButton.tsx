@@ -60,7 +60,6 @@ const DisableAutoWrapTransactionButton: FC<{
               disableAutoWrap({
                 chainId: network.id,
                 underlyingTokenAddress: token.underlyingAddress!,
-                simulate: true,
               })
                 .then(
                   ...txAnalytics("Disable Auto-Wrap", {

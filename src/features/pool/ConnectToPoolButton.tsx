@@ -84,7 +84,6 @@ export const ConnectToPoolButton: FC<Props> = ({ network, poolMember }) => {
 
                                             connectToPool({
                                                 ...primaryArgs,
-                                                simulate: true,
                                             })
                                                 .then(
                                                     ...txAnalytics(

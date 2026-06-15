@@ -92,6 +92,17 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
                 ({expectedNetwork.name})
               </span>
             </Typography>
+            {mutationResult.relayPhase === "fallback" && (
+              <Typography
+                data-cy={"relay-fallback-message"}
+                variant="body2"
+                color="text.secondary"
+                translate="yes"
+              >
+                Gasless relay unavailable — you&apos;ll pay network fees for this
+                transaction.
+              </Typography>
+            )}
             {/* // TODO(KK): wrong font! */}
             <Stack sx={{ my: 2 }}>{loadingInfo}</Stack>
           </Stack>
@@ -117,7 +128,7 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
             >
               Transaction broadcasted
             </Typography>
-            {mutationResult.relayPhase && (
+            {mutationResult.relayPhase === "relaying" && (
               <Typography
                 data-cy={"relayed-message"}
                 variant="body2"

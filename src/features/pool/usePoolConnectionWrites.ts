@@ -11,7 +11,6 @@ interface PoolConnectionArgs {
   poolAddress: string;
   superTokenAddress: string;
   overrides?: ViemFeeOverrides;
-  simulate?: boolean;
 }
 
 /**
@@ -35,7 +34,6 @@ export function useConnectToPool() {
         args: [arg.poolAddress as Address, "0x"],
         title: "Connect to Pool" as const,
         overrides: arg.overrides,
-        simulate: arg.simulate,
         getPendingUpdates: (hash: string) =>
           buildConnectToPoolPendingUpdate(hash, {
             chainId: arg.chainId,
@@ -71,7 +69,6 @@ export function useDisconnectFromPool() {
         args: [arg.poolAddress as Address, "0x"],
         title: "Disconnect from Pool" as const,
         overrides: arg.overrides,
-        simulate: arg.simulate,
       })),
     [write]
   );

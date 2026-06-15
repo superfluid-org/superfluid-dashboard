@@ -13,7 +13,6 @@ interface CancelDistributionStreamArgs {
   poolAddress: string;
   transactionExtraData?: Record<string, unknown>;
   overrides?: ViemFeeOverrides;
-  simulate?: boolean;
 }
 
 /**
@@ -46,7 +45,6 @@ export function useCancelDistributionStream() {
         subTransactionTitles: ["Cancel Distribution Stream" as const],
         extraData: arg.transactionExtraData,
         overrides: arg.overrides,
-        simulate: arg.simulate,
         getPendingUpdates: (hash: string) =>
           buildCancelDistributionStreamPendingUpdate(hash, {
             chainId: arg.chainId,

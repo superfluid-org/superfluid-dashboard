@@ -12,7 +12,6 @@ interface TokenApproveArgs {
   amountWei: string;
   transactionExtraData?: Record<string, unknown>;
   overrides?: ViemFeeOverrides;
-  simulate?: boolean;
 }
 
 /**
@@ -33,7 +32,6 @@ export function useTokenApprove() {
         title: "Approve Allowance" as const,
         extraData: arg.transactionExtraData,
         overrides: arg.overrides,
-        simulate: arg.simulate,
       })),
     [write]
   );
@@ -49,7 +47,6 @@ interface TokenWrapArgs {
   amountWei: string;
   transactionExtraData?: Record<string, unknown>;
   overrides?: ViemFeeOverrides;
-  simulate?: boolean;
 }
 
 /**
@@ -68,7 +65,6 @@ export function useTokenWrap() {
         title: "Upgrade to Super Token" as const,
         extraData: arg.transactionExtraData,
         overrides: arg.overrides,
-        simulate: arg.simulate,
       };
       return arg.isNativeAssetUnderlyingToken
         ? write(() => ({
@@ -116,7 +112,6 @@ export function useTokenUnwrap() {
         title: "Downgrade from Super Token" as const,
         extraData: arg.transactionExtraData,
         overrides: arg.overrides,
-        simulate: arg.simulate,
         ...(arg.isNativeAssetUnderlyingToken
           ? {
               abi: superTokenAbi,

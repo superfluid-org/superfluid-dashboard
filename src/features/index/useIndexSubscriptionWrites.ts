@@ -21,7 +21,6 @@ interface IndexSubscriptionArgs {
   userDataBytes?: Hex;
   transactionExtraData?: Record<string, unknown>;
   overrides?: ViemFeeOverrides;
-  simulate?: boolean;
 }
 
 const indexSubscriptionWriteFragment = (
@@ -67,7 +66,6 @@ export function useIndexSubscriptionApprove() {
         title: "Approve Index Subscription" as const,
         extraData: arg.transactionExtraData,
         overrides: arg.overrides,
-        simulate: arg.simulate,
         getPendingUpdates: (hash: string) =>
           buildIndexSubscriptionApprovePendingUpdate(hash, {
             chainId: arg.chainId,
@@ -101,7 +99,6 @@ export function useIndexSubscriptionRevoke() {
         title: "Revoke Index Subscription" as const,
         extraData: arg.transactionExtraData,
         overrides: arg.overrides,
-        simulate: arg.simulate,
         getPendingUpdates: (hash: string) =>
           buildIndexSubscriptionRevokePendingUpdate(hash, {
             chainId: arg.chainId,

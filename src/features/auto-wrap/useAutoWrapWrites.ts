@@ -14,7 +14,6 @@ interface EnableAutoWrapArgs {
   underlyingTokenAddress: string;
   transactionExtraData?: Record<string, unknown>;
   overrides?: ViemFeeOverrides;
-  simulate?: boolean;
 }
 
 /**
@@ -56,7 +55,6 @@ export function useEnableAutoWrap() {
           title: "Enable Auto-Wrap" as const,
           extraData: arg.transactionExtraData,
           overrides: arg.overrides,
-          simulate: arg.simulate,
         };
       }),
     [write]
@@ -70,7 +68,6 @@ interface AutoWrapAllowanceArgs {
   underlyingTokenAddress: string;
   transactionExtraData?: Record<string, unknown>;
   overrides?: ViemFeeOverrides;
-  simulate?: boolean;
 }
 
 /**
@@ -93,7 +90,6 @@ export function useApproveAutoWrapAllowance() {
           title: "Approve Allowance" as const,
           extraData: arg.transactionExtraData,
           overrides: arg.overrides,
-          simulate: arg.simulate,
         };
       }),
     [write]
@@ -122,7 +118,6 @@ export function useDisableAutoWrap() {
           title: "Disable Auto-Wrap" as const,
           extraData: arg.transactionExtraData,
           overrides: arg.overrides,
-          simulate: arg.simulate,
         };
       }),
     [write]

@@ -27,7 +27,6 @@ interface ExecuteTranchUpdateArgs {
   actionsToExecute: Actions[];
   transactionExtraData?: Record<string, unknown>;
   overrides?: ViemFeeOverrides;
-  simulate?: boolean;
 }
 
 function mapProjectStateIntoSubOperations(
@@ -191,7 +190,6 @@ export function useExecuteTranchUpdate() {
           subTransactionTitles,
           extraData: arg.transactionExtraData,
           overrides: arg.overrides,
-          simulate: arg.simulate,
           getPendingUpdates: (hash: string) =>
             buildExecuteTranchUpdatePendingUpdates(hash, {
               chainId,

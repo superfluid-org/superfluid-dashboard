@@ -3,9 +3,15 @@ import { SerializedError } from "@reduxjs/toolkit";
 /**
  * The Clear Macro relay path's in-flight stages, surfaced so the transaction dialog can
  * narrate them ("preparing" = on-chain reads, "awaiting-signature" = wallet prompt is the
- * blocker, "relaying" = signed, polling the relay provider). Unset on the normal write path.
+ * blocker, "relaying" = signed, polling the relay provider). "fallback" = the relay was
+ * attempted but the action wasn't eligible, so the write is proceeding as a normal self-pay
+ * transaction (the user pays network fees). Unset on the plain (never-relayed) write path.
  */
-export type RelayPhase = "preparing" | "awaiting-signature" | "relaying";
+export type RelayPhase =
+  | "preparing"
+  | "awaiting-signature"
+  | "relaying"
+  | "fallback";
 
 /**
  * Inspired by: https://redux-toolkit.js.org/rtk-query/api/created-api/hooks#signature-1

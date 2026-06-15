@@ -250,3 +250,76 @@ exports/op-helpers can be added upstream in `@sfpro/sdk` as part of the dogfoodi
   error display incl. user-reject. Run the **existing app test suite** (`tests/`, Cypress) which
   should behave the same. New op-builder/unit coverage is a follow-up story.
 - Per phase, diff old vs new behavior before deleting any endpoint/matcher.
+
+---
+
+## Retrospective — restoring the +20% gas-limit buffer (2026-06-15)
+
+Follow-up that closed the gas gap flagged above ("Gas/override reconciliation", and the unfinished
+notes at the migration's lines ~86/98-102/230). Full hand-off: `docs/plans/restore-gas-limit-buffer.md`.
+
+**What was dropped and why it mattered.** sdk-core's `Operation.exec` ran ONE `eth_estimateGas` per op
+that did two jobs at once: (1) a **+20% gas-limit buffer** (`multiplyGasLimit(estimated, 1.2)`), which
+protects Superfluid agreement calls / Host `batchCall`s whose real on-chain gas exceeds a bare estimate
+(SuperApp callbacks, solvency-dependent branches); and (2) an **early revert check** (estimateGas
+reverts when the tx would). The wagmi migration dropped estimation entirely. Only the revert-check half
+came back, as an opt-in `simulate: true` flag wired into 5 call sites — **the buffer was never
+restored**, so EOA gas limits came purely from the wallet.
+
+**Restored design (unified estimate, sdk-core parity).** Reunited both jobs into a single pre-flight
+`publicClient.estimateContractGas({ ..., prepare: false })` in
+`src/features/transactions/useSuperfluidWriteContract.ts`, run on every self-paying EOA write inside the
+mutation (on click). It sets `request.gas = estimated * 120n / 100n` and, on failure, applies a
+**strict-vs-best-effort** rule:
+- **Strict** — re-throw only a *confirmed* contract revert so it surfaces in the dialog (sdk-core
+  parity). The `isContractRevert` discriminator walks the viem error chain for
+  `ContractFunctionRevertedError` (decoded reason/custom error — i.e. essentially every Superfluid/ERC20
+  revert).
+- **Best-effort** — on anything else (transport/timeout, unsupported method, node hiccup, gas-cap
+  failure, `publicClient` undefined), `Sentry.captureException(error, { level: "warning" })` then omit
+  `gas` and let the wallet estimate. We deliberately avoid an infra-allowlist: any class we failed to
+  enumerate would wrongly block an otherwise-valid write — the exact regression this work avoids.
+
+**Codex-review refinement (important).** The original plan also matched `ExecutionRevertedError` as
+belt-and-suspenders. A Codex pass against the installed viem 2.52.2 source caught that this class is
+**overloaded**: its `nodeMessage` regex is `/execution reverted|gas required exceeds allowance/`, so the
+SAME class is produced for a genuine bare revert AND for a "gas required exceeds allowance" gas-cap
+estimation failure (code -32000), which is NOT a contract revert. Matching it unconditionally could
+block a valid write on a gas-cap hiccup. Final implementation keeps the `ExecutionRevertedError` arm but
+returns false when `e.message` matches `GAS_ALLOWANCE_MESSAGE` (`/gas required exceeds allowance/i`), so
+gas-cap failures fall back to wallet estimation. (Also why we do NOT match `ContractFunctionExecutionError`:
+`estimateContractGas` wraps *every* failure in it and `walk()` tests the outer error first — matching it
+would make the best-effort branch dead code.)
+
+**Why no `stateOverride` and no fee fields on the estimate.** sdk-core never used a state override
+(plain `estimateGas` → `×1.2`). Passing `prepare: false` and omitting fee fields keeps
+`eth_estimateGas`'s pre-pay check at `balance >= value`, which passes for non-payable calls (`value = 0`)
+and for native wraps the form already balance-checks. (For json-rpc/injected accounts — what this app
+uses — viem skips fee-fill regardless; `prepare: false` pins it and skips the prepare round-trip.)
+
+**Skip conditions (unchanged behavior).** Smart wallets (`gas === 0n` sentinel from
+`useGetTransactionOverrides`), explicit per-call `gas` overrides (e.g. the IbAlluo `200_000n` in
+`TabWrap.tsx`), and the Clear Macro relay path (returns before the estimate block) all bypass the
+estimate. *Known minor edge:* during the transient `isEOA === null` classification window a smart wallet
+hasn't yet been assigned the `gas: 0n` sentinel, so the estimate can briefly run for it; this self-pay
+estimate rarely reverts and the wallet remains the final authority — left as-is (closer to sdk-core,
+which always estimated).
+
+**Cleanup + UX.** Removed the now-dead `simulate?` flag end-to-end (10 feature hooks, 21 interfaces, 5
+`simulate: true` sites); the always-on estimate is now their revert check. The Clear Macro
+`fallbackSimulationRequest` simulation is intentionally retained. Separately surfaced the previously
+silent relay→self-pay fallback: a new `"fallback"` `RelayPhase` shows a "Gasless relay unavailable —
+you'll pay network fees" caption, and the success "Executed gaslessly…" caption was tightened to
+`relayPhase === "relaying"`.
+
+**Timing.** The pre-flight runs on click, inside the mutation — NOT reactively before the click. On a
+real revert the mutation rejects before `writeContract`, so the wallet popup never appears and the dialog
+flips straight to the error view.
+
+**Follow-ups (not done here).**
+1. `TransactionDialogErrorAlert` still has ethers-era friendly branches (`INSUFFICIENT_FUNDS`,
+   `UNPREDICTABLE_GAS_LIMIT`) that viem no longer emits; viem reverts fall through to the generic
+   `shortMessage`. Worth a viem-aware pass now that reverts surface in-dialog on every write.
+2. Upfront (pre-click) reactive simulation/estimation — gate the button via a reactive
+   `useSimulateContract`/`useEstimateGas` and reconcile with the on-click estimate. Incremental; the
+   on-click `write(builder)` API is the blocker.

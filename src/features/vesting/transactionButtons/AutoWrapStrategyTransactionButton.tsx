@@ -41,7 +41,6 @@ const AutoWrapStrategyTransactionButton: FC<{
                 chainId: network.id,
                 superTokenAddress: token.address,
                 underlyingTokenAddress: token.underlyingAddress!,
-                simulate: true,
               })
                 .then(
                   ...txAnalytics("Enable Auto-Wrap", {

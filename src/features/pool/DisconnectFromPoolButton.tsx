@@ -85,7 +85,6 @@ export const DisconnectFromPoolButton: FC<Props> = ({ network, poolMember }) => 
 
                                             disconnectFromPool({
                                                 ...primaryArgs,
-                                                simulate: true,
                                             })
                                                 .then(
                                                     ...txAnalytics(

@@ -130,7 +130,6 @@ interface CreateVestingScheduleFromAmountAndDurationArgs {
   version: "v3";
   transactionExtraData?: Record<string, unknown>;
   overrides?: ViemFeeOverrides;
-  simulate?: boolean;
 }
 
 /**
@@ -288,7 +287,6 @@ export function useCreateVestingScheduleFromAmountAndDuration() {
         subTransactionTitles,
         extraData: arg.transactionExtraData,
         overrides: arg.overrides,
-        simulate: arg.simulate,
         getPendingUpdates: (hash: string) =>
           buildCreateVestingScheduleFromAmountAndDurationPendingUpdate(hash, {
             chainId,
@@ -318,7 +316,6 @@ interface DeleteVestingScheduleArgs {
   version: VestingVersion;
   transactionExtraData?: Record<string, unknown>;
   overrides?: ViemFeeOverrides;
-  simulate?: boolean;
 }
 
 /**
@@ -408,7 +405,6 @@ export function useDeleteVestingSchedule() {
         subTransactionTitles,
         extraData: arg.transactionExtraData,
         overrides: arg.overrides,
-        simulate: arg.simulate,
         getPendingUpdates: (hash: string) =>
           buildDeleteVestingSchedulePendingUpdate(hash, {
             chainId,
@@ -433,7 +429,6 @@ interface ClaimVestingScheduleArgs {
   version: "v2" | "v3";
   transactionExtraData?: Record<string, unknown>;
   overrides?: ViemFeeOverrides;
-  simulate?: boolean;
 }
 
 /**
@@ -463,7 +458,6 @@ export function useClaimVestingSchedule() {
           subTransactionTitles: [],
           extraData: arg.transactionExtraData,
           overrides: arg.overrides,
-          simulate: arg.simulate,
           getPendingUpdates: (hash: string) =>
             buildClaimVestingSchedulePendingUpdate(hash, {
               chainId,
@@ -490,7 +484,6 @@ interface FixAccessForVestingArgs {
   version: VestingVersion;
   transactionExtraData?: Record<string, unknown>;
   overrides?: ViemFeeOverrides;
-  simulate?: boolean;
 }
 
 /**
@@ -596,7 +589,6 @@ export function useFixAccessForVesting() {
         subTransactionTitles,
         extraData: arg.transactionExtraData,
         overrides: arg.overrides,
-        simulate: arg.simulate,
       };
       }),
     [write]
@@ -612,7 +604,6 @@ interface ExecuteBatchVestingArgs {
   version: "v3";
   transactionExtraData?: Record<string, unknown>;
   overrides?: ViemFeeOverrides;
-  simulate?: boolean;
 }
 
 /**
@@ -717,7 +708,6 @@ export function useExecuteBatchVesting() {
         subTransactionTitles,
         extraData: arg.transactionExtraData,
         overrides: arg.overrides,
-        simulate: arg.simulate,
         getPendingUpdates: (hash: string) =>
           accountAddress
             ? buildExecuteBatchVestingPendingUpdates(hash, {
