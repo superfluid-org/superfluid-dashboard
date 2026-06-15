@@ -300,10 +300,14 @@ uses — viem skips fee-fill regardless; `prepare: false` pins it and skips the 
 **Skip conditions (unchanged behavior).** Smart wallets (`gas === 0n` sentinel from
 `useGetTransactionOverrides`), explicit per-call `gas` overrides (e.g. the IbAlluo `200_000n` in
 `TabWrap.tsx`), and the Clear Macro relay path (returns before the estimate block) all bypass the
-estimate. *Known minor edge:* during the transient `isEOA === null` classification window a smart wallet
-hasn't yet been assigned the `gas: 0n` sentinel, so the estimate can briefly run for it; this self-pay
-estimate rarely reverts and the wallet remains the final authority — left as-is (closer to sdk-core,
-which always estimated).
+estimate. *Edge — the `isEOA === null` window (hardened 2026-06-15):* during the transient
+classification window a smart wallet hasn't yet been assigned the `gas: 0n` sentinel, so the estimate
+can briefly run for it, where an EOA-style estimate against a smart wallet could falsely revert and
+block a valid write. Rather than skip the estimate (which would lose the buffer whenever `isEOA` is
+unresolved), the **revert re-throw** is gated on `isConfirmedEoaSigner` (`isEOA === true &&
+visibleAddress === address`, mirroring the relay branch): the estimate still runs and the buffer still
+applies on success, but a revert is only surfaced in-dialog for a confirmed self-paying EOA — otherwise
+(classification pending, or impersonation) it falls back to wallet estimation and never blocks.
 
 **Cleanup + UX.** Removed the now-dead `simulate?` flag end-to-end (10 feature hooks, 21 interfaces, 5
 `simulate: true` sites); the always-on estimate is now their revert check. The Clear Macro

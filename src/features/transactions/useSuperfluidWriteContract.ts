@@ -295,6 +295,15 @@ export function useSuperfluidWriteContract() {
       // (estimate themselves) and when a caller supplied an explicit `gas` override. The Clear
       // Macro relay path already returned above, so this only runs for self-pay writes
       // (including the relay-fallback case, where self-paying is now correct).
+      //
+      // We only *throw* a revert when the signer is a confirmed EOA paying for its own call
+      // (mirrors the relay branch's gate). While the wallet is still being classified
+      // (`isEOA === null`), a smart wallet hasn't been tagged with the `gas: 0n` sentinel yet, so
+      // an EOA-style estimate against it could falsely revert — during that window we still buffer
+      // on success but never block: fall back to wallet estimation instead.
+      const isConfirmedEoaSigner =
+        isEOA === true &&
+        visibleAddress?.toLowerCase() === address.toLowerCase();
       if (!isSmartWallet && gas === undefined) {
         const publicClient = getPublicClient(config, { chainId: params.chainId });
         try {
@@ -314,9 +323,10 @@ export function useSuperfluidWriteContract() {
           request.gas =
             (estimated * GAS_LIMIT_MULTIPLIER_NUM) / GAS_LIMIT_MULTIPLIER_DEN;
         } catch (error) {
-          // A real on-chain revert surfaces in the dialog (sdk-core parity).
-          if (isContractRevert(error)) throw error;
-          // Any other failure (transport/timeout, unsupported method, node hiccup, or
+          // A real on-chain revert surfaces in the dialog (sdk-core parity) — but only for a
+          // confirmed EOA signer; while classification is pending we never block (see above).
+          if (isConfirmedEoaSigner && isContractRevert(error)) throw error;
+          // Any other failure (transport/timeout, unsupported method, node hiccup, gas-cap, or
           // `publicClient` undefined) — log and fall back: omit gas, let the wallet estimate.
           Sentry.captureException(error, { level: "warning" });
         }
