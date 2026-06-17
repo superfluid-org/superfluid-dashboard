@@ -3,7 +3,7 @@
 **Status:** Proof-of-concept, feature-flagged.  
 **Audience:** Engineers continuing Superfluid Wallet integration work.
 
-Operational runbook for the wallet app alone: [`superfluid-wallet/README.md`](../superfluid-wallet/README.md).  
+Operational runbook for the wallet app alone: [`superfluid-wallet` repo](https://github.com/d10r/superfluid-wallet).  
 Vocabulary (Provider vs Wallet vs Client): [`wallet-terminology.md`](wallet-terminology.md).
 
 ---
@@ -16,7 +16,7 @@ A **hosted popup wallet** (Turnkey Auth Proxy + `@turnkey/react-wallet-kit`) int
 |--------|------|
 | Dashboard (`:3000`) | Dapp: wagmi, UI, transaction construction (e.g. wrap via sdk-redux) |
 | `src/features/wallet/superfluidWallet/` | **EIP-1193 provider bridge** — opens popup, routes RPC, persists address metadata |
-| `superfluid-wallet/` (`:3001`) | **Wallet** — Turnkey auth, consent UI, transaction/message signing |
+| `superfluid-wallet` (`:3001`, [separate repo](https://github.com/d10r/superfluid-wallet)) | **Wallet** — Turnkey auth, consent UI, transaction/message signing |
 
 Enabled only when `NEXT_PUBLIC_SUPERFLUID_WALLET_ENABLED=true`. Production target URLs: dashboard `https://app.superfluid.org`, wallet `https://wallet.superfluid.org` (not deployed in this iteration).
 
@@ -167,12 +167,13 @@ dashboard/
 │   ├── ConnectWallet.tsx                  ← dual CTAs
 │   └── ConnectButtonProvider.tsx          ← connectSuperfluidWallet()
 ├── src/utils/config.ts                    ← superfluidWallet.enabled / .url
-├── superfluid-wallet/                     ← separate package.json, :3001
 └── tests/
     ├── unit/                              ← prepareSignTransactionParams, enrich
     ├── cypress/…/SuperfluidWalletWrap.feature  ← mock handler, not live Turnkey
     └── scripts/setup-superfluid-wallet-e2e.mjs
 ```
+
+Wallet app: [`superfluid-wallet` repo](https://github.com/d10r/superfluid-wallet) (`:3001`).
 
 ---
 
@@ -187,7 +188,7 @@ NEXT_PUBLIC_SUPERFLUID_WALLET_URL=http://localhost:3001   # default if unset
 
 ### Wallet app
 
-See [`superfluid-wallet/.env.local.example`](../superfluid-wallet/.env.local.example). Turnkey Auth Proxy must allow origin `http://localhost:3001` (and production wallet origin when deployed).
+See [`superfluid-wallet/.env.local.example`](https://github.com/d10r/superfluid-wallet/blob/main/.env.local.example). Turnkey Auth Proxy must allow origin `http://localhost:3001` (and production wallet origin when deployed).
 
 ### Session behavior
 
@@ -259,13 +260,11 @@ Manual smoke: both dev servers, real Turnkey OTP, Optimism Sepolia wrap, confirm
 
 These are acceptable for the PoC but should be cleaned up before maturing the integration:
 
-1. **Root `pnpm typecheck` is too broad.** The root `tsconfig.json` includes every `**/*.ts(x)` except `node_modules` and `tests`, so it typechecks `contracts/`, `tmp/`, and the separate `superfluid-wallet/` package. This currently produces unrelated errors. Narrow the dashboard TS include or exclude `contracts`, `tmp`, and `superfluid-wallet`.
+1. **Root `pnpm typecheck` is too broad.** The root `tsconfig.json` includes every `**/*.ts(x)` except `node_modules` and `tests`, so it typechecks `contracts/` and `tmp/`. Narrow the dashboard TS include or exclude those paths.
 
-2. **Dashboard unit tests depend on wallet dependencies.** Root `pnpm test:unit` invokes `./superfluid-wallet/node_modules/.bin/vitest`, coupling dashboard unit tests to installing the wallet package first. Prefer a root/dashboard test runner dependency instead.
+2. **RPC routing is duplicated.** The dashboard bridge uses `network.rpcUrls.superfluid.http[0]`, while `superfluid-wallet` maintains its own hardcoded RPC map. This is fine for the PoC but can drift. Either ensure the dashboard always prepares transactions before popup signing, or share/generate a single canonical RPC mapping.
 
-3. **RPC routing is duplicated.** The dashboard bridge uses `network.rpcUrls.superfluid.http[0]`, while `superfluid-wallet/lib/normalize-rpc-transaction.ts` maintains its own hardcoded RPC map. This is fine for the PoC but can drift. Either ensure the dashboard always prepares transactions before popup signing, or share/generate a single canonical RPC mapping.
-
-4. **Local cache artifacts may appear untracked.** `.cache/` and `.pnpm-store/` can show up in the repo root during local development. Add ignore entries if they keep recurring.
+3. **Local cache artifacts may appear untracked.** `.cache/` and `.pnpm-store/` can show up in the repo root during local development. Add ignore entries if they keep recurring.
 
 ---
 
@@ -273,12 +272,12 @@ These are acceptable for the PoC but should be cleaned up before maturing the in
 
 ```bash
 # Terminal 1 — wallet
-cd superfluid-wallet && pnpm install && pnpm dev
+cd ../superfluid-wallet && pnpm install && pnpm dev
 
 # Terminal 2 — dashboard
 NEXT_PUBLIC_SUPERFLUID_WALLET_ENABLED=true pnpm dev
 
 # Unit tests
 pnpm test:unit
-cd superfluid-wallet && pnpm test
+cd ../superfluid-wallet && pnpm test
 ```

@@ -21,7 +21,7 @@
     "depcheck": "pnpm dlx depcheck",
     "typecheck": "pnpm exec tsc --noEmit",
     "test": "pnpm test:unit",
-    "test:unit": "./superfluid-wallet/node_modules/.bin/vitest run --config tests/vitest.config.ts"
+    "test:unit": "pnpm exec vitest run --config tests/vitest.config.ts"
   },
   "dependencies": {
     "@adraffy/ens-normalize": "^1.11.1",
@@ -120,7 +120,8 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "npm-run-all": "^4.1.5",
     "replayio": "^1.8.2",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
   },
   "packageManager": "pnpm@9.15.9+sha512.68046141893c66fad01c079231128e9afb89ef87e2691d69e4d40eee228988295fd4682181bae55b58418c3a253bde65a505ec7c5f9403ece5cc3cd37dcf2531",
   "engines": {

@@ -213,3 +213,6 @@ tmp/
 contracts/
 .cache/
 .pnpm-store/
+
+# Superfluid Wallet is a separate repo; ignore local checkout/build artifacts.
+superfluid-wallet/
