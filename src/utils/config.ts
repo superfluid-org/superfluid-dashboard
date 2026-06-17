@@ -63,6 +63,21 @@ const config = {
       process.env.NEXT_PUBLIC_SUPERFLUID_WALLET_URL || "http://localhost:3001"
     ).trim(),
   },
+  hfa: {
+    enabled: process.env.NEXT_PUBLIC_HFA_ENABLED === "true",
+    url: (process.env.NEXT_PUBLIC_HFA_URL || "http://localhost:3000").trim(),
+    turnkeyApiBaseUrl: (
+      process.env.NEXT_PUBLIC_TURNKEY_API_BASE_URL || "https://api.turnkey.com"
+    ).trim(),
+    pollIntervalMs: Number.parseInt(
+      process.env.NEXT_PUBLIC_HFA_POLL_INTERVAL_MS || "2000",
+      10
+    ),
+    pollTimeoutMs: Number.parseInt(
+      process.env.NEXT_PUBLIC_HFA_POLL_TIMEOUT_MS || "300000",
+      10
+    ),
+  },
   /** Reown AppKit: Coinbase connector in Web3Modal. Set to `false` to disable. */
   appKitEnableCoinbase:
     process.env.NEXT_PUBLIC_APPKIT_ENABLE_COINBASE !== "false",

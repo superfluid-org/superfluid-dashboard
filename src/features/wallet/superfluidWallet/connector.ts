@@ -2,10 +2,14 @@ import { ChainNotConfiguredError } from '@wagmi/core';
 import { SwitchChainError } from 'viem';
 import { type Connector, createConnector } from 'wagmi';
 import {
-  createEIP1193Provider,
   clearProviderStore,
+  createEIP1193Provider,
   setProviderChainId,
 } from './eip1193-provider';
+import {
+  clearDashboardHfaState,
+  syncDashboardHfaWithWallet,
+} from './hfa';
 import { getAddress, type Address, type EIP1193Provider } from 'viem';
 
 let accountsChanged: Connector['onAccountsChanged'] | undefined;
@@ -47,6 +51,7 @@ export function superfluidWalletConnector() {
       }
 
       const chainId = Number(await p.request({ method: 'eth_chainId' }));
+      syncDashboardHfaWithWallet(accounts[0]);
       return { accounts, chainId } as never;
     },
 
@@ -69,6 +74,7 @@ export function superfluidWalletConnector() {
         p.removeListener('disconnect', disconnect);
         disconnect = undefined;
       }
+      clearDashboardHfaState();
       clearProviderStore();
     },
 
@@ -101,7 +107,10 @@ export function superfluidWalletConnector() {
 
     onAccountsChanged(accounts) {
       if (accounts.length === 0) this.onDisconnect();
-      else config.emitter.emit('change', { accounts: accounts.map((x) => getAddress(x)) });
+      else {
+        syncDashboardHfaWithWallet(accounts[0]);
+        config.emitter.emit('change', { accounts: accounts.map((x) => getAddress(x)) });
+      }
     },
 
     onChainChanged(chain) {
@@ -112,6 +121,7 @@ export function superfluidWalletConnector() {
 
     async onDisconnect() {
       config.emitter.emit('disconnect');
+      clearDashboardHfaState();
       clearProviderStore();
       const p = (await this.getProvider()) as EIP1193Provider;
       if (accountsChanged) {

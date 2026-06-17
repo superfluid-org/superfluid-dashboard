@@ -11,6 +11,11 @@ import EventEmitter from 'events';
 import appConfig from '../../../utils/config';
 import { allNetworks, findNetworkOrThrow } from '../../network/networks';
 import { resolvePopupParams } from './resolvePopupParams';
+import {
+  isDashboardHfaReady,
+  submitTransactionThroughHfa,
+  syncDashboardHfaWithWallet,
+} from './hfa';
 import './superfluidWalletMock.types';
 
 interface ProviderStore {
@@ -183,6 +188,16 @@ export function createEIP1193Provider(): EIP1193Provider {
     }
 
     if (method === 'eth_sendTransaction') {
+      const connectedAddress = getStore().accounts[0];
+      syncDashboardHfaWithWallet(connectedAddress);
+      if (isDashboardHfaReady(connectedAddress)) {
+        return submitTransactionThroughHfa(params, {
+          chainIdHex: getStoredChainIdHex(),
+          getRpcUrlForChain,
+          connectedWalletAddress: connectedAddress,
+        });
+      }
+
       const [transaction] = params as WalletRpcSchema[5]['Parameters'];
       const signedTransaction = (await request({
         method: 'eth_signTransaction',
