@@ -291,8 +291,9 @@ export function createEIP1193Provider(): EIP1193Provider {
         getRpcUrlForChain
       );
 
+      const dappOriginParam = `&dappOrigin=${encodeURIComponent(window.location.origin)}`
       popup = window.open(
-        `${walletUrl}?request=${encodeURIComponent(JSON.stringify({ method, params: popupParams }))}${orgParam}${chainParam}`,
+        `${walletUrl}?request=${encodeURIComponent(JSON.stringify({ method, params: popupParams }))}${orgParam}${chainParam}${dappOriginParam}`,
         'Superfluid Wallet',
         `width=${width},height=${height},left=${left},top=${top}`
       );
