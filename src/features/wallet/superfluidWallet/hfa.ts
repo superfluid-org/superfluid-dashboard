@@ -1,5 +1,4 @@
 import { ApiKeyStamper } from '@turnkey/api-key-stamper';
-import { toast } from 'react-toastify';
 import type { Hex } from 'viem';
 
 import appConfig from '../../../utils/config';
@@ -560,55 +559,32 @@ export async function submitTransactionThroughHfa(
   }
   assertConsistentAgentKeys(state);
 
-  const toastId = toast.loading('Preparing HFA request...');
-  try {
-    const [preparedTx] = await resolvePopupParams(
-      'eth_signTransaction',
-      params,
-      options.chainIdHex,
-      options.getRpcUrlForChain
-    ) as [RpcTransaction];
-    if (
-      !preparedTx.from ||
-      !state.walletAddress ||
-      preparedTx.from.toLowerCase() !== state.walletAddress.toLowerCase()
-    ) {
-      throw new Error('HFA setup does not match the transaction sender');
-    }
-    const intent = preparedTransactionToHfaIntent(preparedTx);
-    const draft = await postJson<HfaDraftResponse>(`${getApiBase()}/turnkey/drafts`, {
-      agent: HFA_AGENT_LABEL,
-      agentPublicKey: state.agentPublicKey,
-      intent,
-    });
-
-    toast.update(toastId, {
-      render: 'Waiting for your HFA approval...',
-      isLoading: true,
-    });
-
-    const activity = await submitTurnkeySignTransaction({ state, draft });
-    const request = await postJson<HfaRequestResponse>(`${getApiBase()}/turnkey/requests`, {
-      draftId: draft.draftId,
-      activityId: activity.activityId,
-      fingerprint: activity.fingerprint,
-    });
-
-    const txHash = await pollHfaRequest(request.requestId);
-    toast.update(toastId, {
-      render: 'HFA approved. Transaction executed.',
-      type: 'success',
-      isLoading: false,
-      autoClose: 5000,
-    });
-    return txHash;
-  } catch (error) {
-    toast.update(toastId, {
-      render: error instanceof Error ? error.message : 'HFA request failed',
-      type: 'error',
-      isLoading: false,
-      autoClose: 8000,
-    });
-    throw error;
+  const [preparedTx] = await resolvePopupParams(
+    'eth_signTransaction',
+    params,
+    options.chainIdHex,
+    options.getRpcUrlForChain
+  ) as [RpcTransaction];
+  if (
+    !preparedTx.from ||
+    !state.walletAddress ||
+    preparedTx.from.toLowerCase() !== state.walletAddress.toLowerCase()
+  ) {
+    throw new Error('HFA setup does not match the transaction sender');
   }
+  const intent = preparedTransactionToHfaIntent(preparedTx);
+  const draft = await postJson<HfaDraftResponse>(`${getApiBase()}/turnkey/drafts`, {
+    agent: HFA_AGENT_LABEL,
+    agentPublicKey: state.agentPublicKey,
+    intent,
+  });
+
+  const activity = await submitTurnkeySignTransaction({ state, draft });
+  const request = await postJson<HfaRequestResponse>(`${getApiBase()}/turnkey/requests`, {
+    draftId: draft.draftId,
+    activityId: activity.activityId,
+    fingerprint: activity.fingerprint,
+  });
+
+  return pollHfaRequest(request.requestId);
 }

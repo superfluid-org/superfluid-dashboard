@@ -8,7 +8,6 @@ import { AppProps } from "next/app";
 import Head from "next/head";
 import { ReactElement, ReactNode, useEffect, useState } from "react";
 import { hotjar } from "react-hotjar";
-import "react-toastify/dist/ReactToastify.css";
 import MonitorContext from "../components/MonitorContext/MonitorContext";
 import { ToastProvider } from "../components/Toast/toast";
 import { AnalyticsProvider } from "../features/analytics/AnalyticsProvider";

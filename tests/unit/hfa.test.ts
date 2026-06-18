@@ -8,13 +8,6 @@ vi.mock('@turnkey/api-key-stamper', () => ({
   },
 }));
 
-vi.mock('react-toastify', () => ({
-  toast: {
-    loading: vi.fn(() => 'toast-id'),
-    update: vi.fn(),
-  },
-}));
-
 vi.mock(
   '../../src/features/wallet/superfluidWallet/resolvePopupParams',
   () => ({

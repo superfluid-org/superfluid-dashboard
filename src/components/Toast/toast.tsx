@@ -24,9 +24,6 @@ export const ToastProvider = () => {
       newestOnTop
       theme={theme.palette.mode}
       limit={5}
-      progressStyle={{
-        background: theme.palette.primary.main,
-      }}
     />
   );
 };

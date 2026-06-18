@@ -77,6 +77,9 @@ const config = {
       process.env.NEXT_PUBLIC_HFA_POLL_TIMEOUT_MS || "300000",
       10
     ),
+    mobilePairingUrl: (
+      process.env.NEXT_PUBLIC_HFA_MOBILE_PAIRING_URL || ""
+    ).trim(),
   },
   /** Reown AppKit: Coinbase connector in Web3Modal. Set to `false` to disable. */
   appKitEnableCoinbase:

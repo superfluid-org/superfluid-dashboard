@@ -34,6 +34,7 @@ import {
   syncDashboardHfaWithWallet,
 } from "./superfluidWallet/hfa";
 import { SUPERFLUID_WALLET_CONNECTOR_ID } from "./superfluidWallet/connector";
+import HfaPushPairingCard from "./superfluidWallet/HfaPushPairingCard";
 
 interface AccountModalProps {
   open: boolean;
@@ -267,6 +268,9 @@ const AccountModal: FC<AccountModalProps> = ({ open, onClose }) => {
                     </Alert>
                   )}
                   {hfaError && <Alert severity="error">{hfaError}</Alert>}
+                  {isHfaEnabledForAddress && address && (
+                    <HfaPushPairingCard walletAddress={address} />
+                  )}
                   <Stack direction={isBelowSm ? "column" : "row"} gap={1}>
                     {!isHfaEnabledForAddress && (
                       <Button
