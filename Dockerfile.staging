@@ -1,0 +1,36 @@
+FROM node:22-bookworm AS builder
+
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NEXT_PUBLIC_SUPERFLUID_WALLET_ENABLED=true
+ENV NEXT_PUBLIC_SUPERFLUID_WALLET_URL=https://wallet-image-poc.s.superfluid.dev
+ENV NEXT_PUBLIC_HFA_ENABLED=true
+ENV NEXT_PUBLIC_HFA_URL=https://hfa-image-poc.s.superfluid.dev
+ENV NEXT_PUBLIC_HFA_MOBILE_PAIRING_URL=https://hfa-image-poc.s.superfluid.dev
+ENV NEXT_PUBLIC_TURNKEY_API_BASE_URL=https://api.turnkey.com
+ENV NODE_OPTIONS=--max-old-space-size=4096
+
+WORKDIR /app
+
+RUN corepack enable && corepack prepare pnpm@9.15.9 --activate
+
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
+
+COPY . .
+RUN pnpm build && pnpm prune --prod
+
+FROM node:22-bookworm
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3000
+
+WORKDIR /app
+
+RUN corepack enable && corepack prepare pnpm@9.15.9 --activate
+
+COPY --from=builder /app ./
+
+EXPOSE 3000
+
+CMD ["pnpm", "exec", "next", "start", "--hostname", "0.0.0.0", "--port", "3000"]
