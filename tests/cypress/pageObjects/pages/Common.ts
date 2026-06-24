@@ -1,8 +1,12 @@
 import { BasePage, wordTimeUnitMap } from '../BasePage';
 import { networksBySlug } from '../../superData/networks';
-import HDWalletProvider from '@truffle/hdwallet-provider';
-import { ProviderAdapter } from '@truffle/encoder';
-import { http, createPublicClient } from 'viem';
+import {
+  http,
+  createPublicClient,
+  createWalletClient,
+  numberToHex,
+} from 'viem';
+import { privateKeyToAccount } from 'viem/accounts';
 
 export const TOP_BAR_NETWORK_BUTTON = '[data-cy=top-bar-network-button]';
 export const CONNECTED_WALLET = '[data-cy=wallet-connection-status] h6';
@@ -298,51 +302,139 @@ export class Common extends BasePage {
     cy.visit(page, {
       onBeforeLoad: (window) => {
         try {
-          const hdwallet = new HDWalletProvider({
-            privateKeys: [usedAccountPrivateKey],
-            url: networkRpc,
-            chainId: chainId,
-            pollingInterval: 1000,
-          });
-          console.log('hdwallet', hdwallet);
-          if (Cypress.env('rejected')) {
-            // Make HDWallet automatically reject transaction.
-            // Inspired by: https://github.com/MetaMask/web3-provider-engine/blob/e835b80bf09e76d92b785d797f89baa43ae3fd60/subproviders/hooked-wallet.js#L326
-            for (const provider of hdwallet.engine['_providers']) {
-              console.log('provider', provider);
-              if (provider.checkApproval) {
-                provider.checkApproval = function (type, didApprove, cb) {
-                  cb(new Error(`User denied ${type} signature.`));
-                };
+          const normalizedKey = (
+            usedAccountPrivateKey.startsWith('0x')
+              ? usedAccountPrivateKey
+              : `0x${usedAccountPrivateKey}`
+          ) as `0x${string}`;
+          const account = privateKeyToAccount(normalizedKey);
+
+          // Minimal viem chain definition for the selected network.
+          const chain = {
+            id: chainId,
+            name: selectedNetwork,
+            nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+            rpcUrls: { default: { http: [networkRpc] } },
+          } as const;
+
+          const transport = http(networkRpc);
+          const publicClient = createPublicClient({ chain, transport });
+          const walletClient = createWalletClient({ account, chain, transport });
+
+          const SIGNING_METHODS = [
+            'eth_sendTransaction',
+            'wallet_sendTransaction',
+            'eth_sign',
+            'personal_sign',
+            'eth_signTypedData',
+            'eth_signTypedData_v3',
+            'eth_signTypedData_v4',
+          ];
+          const NUMERIC_TX_FIELDS = [
+            'value',
+            'gas',
+            'gasPrice',
+            'maxFeePerGas',
+            'maxPriorityFeePerGas',
+            'maxFeePerBlobGas',
+          ];
+
+          // viem-native EIP-1193 mock: signs locally with the test key and
+          // forwards reads to the RPC. Replaces @truffle/hdwallet-provider,
+          // which rejected viem 2.x's eth_sendTransaction shape (so viem fell
+          // back to wallet_sendTransaction, which the node can't service).
+          const mockBridge = {
+            request: async ({
+              method,
+              params,
+            }: {
+              method: string;
+              params?: any[];
+            }) => {
+              if (Cypress.env('rejected') && SIGNING_METHODS.includes(method)) {
+                // Real wallets reject with EIP-1193 code 4001 → viem
+                // UserRejectedRequestError → app maps to "Transaction Rejected".
+                throw Object.assign(new Error('User rejected the request.'), {
+                  code: 4001,
+                });
               }
-            }
-          }
+              switch (method) {
+                case 'eth_requestAccounts':
+                case 'eth_accounts':
+                  return [account.address];
+                case 'eth_chainId':
+                  return numberToHex(chainId);
+                case 'wallet_sendTransaction':
+                case 'eth_sendTransaction': {
+                  const tx: any = { ...(params?.[0] ?? {}) };
+                  delete tx.from;
+                  delete tx.type;
+                  for (const f of NUMERIC_TX_FIELDS)
+                    if (tx[f] != null) tx[f] = BigInt(tx[f]);
+                  if (tx.nonce != null) tx.nonce = Number(BigInt(tx.nonce));
+                  // OP Sepolia rejects estimateGas with the default (block-limit)
+                  // gas cap as "intrinsic gas too high" (L1-fee gas inflates it).
+                  // Real wallets pass a sane cap; a local-key viem account does
+                  // not — so when the app didn't pin a limit, estimate with an
+                  // explicit cap here and set it, so viem just signs+broadcasts.
+                  if (tx.gas == null) {
+                    const estParams: any = {
+                      from: account.address,
+                      to: tx.to,
+                      data: tx.data,
+                      gas: numberToHex(8000000),
+                    };
+                    if (tx.value != null) estParams.value = numberToHex(tx.value);
+                    tx.gas = BigInt(
+                      await publicClient.request({
+                        method: 'eth_estimateGas',
+                        params: [estParams],
+                      })
+                    );
+                  }
+                  return await walletClient.sendTransaction({
+                    account,
+                    chain,
+                    ...tx,
+                  });
+                }
+                case 'personal_sign':
+                  return await account.signMessage({
+                    message: { raw: params?.[0] },
+                  });
+                case 'eth_sign':
+                  return await account.signMessage({
+                    message: { raw: params?.[1] },
+                  });
+                case 'eth_signTypedData':
+                case 'eth_signTypedData_v3':
+                case 'eth_signTypedData_v4': {
+                  const raw = params?.[1];
+                  const typed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+                  return await account.signTypedData(typed);
+                }
+                default:
+                  return await publicClient.request({
+                    method: method as any,
+                    params: params as any,
+                  });
+              }
+            },
+            on: () => {},
+            removeListener: () => {},
+            emit: () => {},
+          };
 
-          if (!hdwallet) {
-            console.log('Error: HDWalletProvider not initialized properly');
-            return;
-          }
-
-          const mockBridge = new ProviderAdapter(hdwallet);
           window['mockBridge'] = mockBridge;
-          window['mockWallet'] = hdwallet;
-
+          window['mockWallet'] = {
+            chainId,
+            getAddress: () => account.address,
+          };
           window['mockWalletDebug'] = {
             chainId,
             network: selectedNetwork,
-            address: hdwallet.getAddress(),
+            address: account.address,
           };
-
-          setTimeout(() => {
-            const ethereum = mockBridge;
-            if (ethereum) {
-              console.log('Manually triggering chainChanged event');
-              (ethereum as any).emit?.(
-                'chainChanged',
-                `0x${chainId.toString(16)}`
-              );
-            }
-          }, 500);
         } catch (e) {
           console.log('Error during wallet provider setup: ' + e.message);
           console.error('Error during wallet provider setup: ', e);
@@ -381,7 +473,7 @@ export class Common extends BasePage {
   }
 
   static rejectTransactions() {
-    cy.log('Cypress will reject HDWalletProvider Transactions!');
+    cy.log('Cypress will reject wallet transactions!');
     Cypress.env('rejected', true);
   }
 
