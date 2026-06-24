@@ -14,7 +14,7 @@ export interface AppSettingsState {
 const initialState: AppSettingsState = {
   currencyCode: CurrencyCode.USD,
   lastSuperfluidRunnerCosmetics: 1,
-  clearMacroEnabled: true,
+  clearMacroEnabled: false,
 };
 
 const appSettingsSlice = createSlice({

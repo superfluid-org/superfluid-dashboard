@@ -10,7 +10,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { memo, useCallback, useEffect, useState } from "react";
+import { memo, useCallback } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import TooltipWithIcon from "../../common/TooltipWithIcon";
 import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
@@ -66,13 +66,7 @@ export default memo(function SendTransfer() {
 
   const [transfer, transferResult] = useTransfer();
 
-  const [isSendDisabled, setIsSendDisabled] = useState(true);
-  useEffect(() => {
-    setIsSendDisabled(
-      isValidating ||
-      !isValid
-    );
-  }, [isValid, isValidating]);
+  const isSendDisabled = isValidating || !isValid;
 
   const SendTransactionBoundary = (
     <TransactionBoundary mutationResult={transferResult}>

@@ -1,7 +1,7 @@
 import { Button, Input, Stack, Typography, useTheme } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { formatEther, parseEther } from "ethers/lib/utils";
-import { FC, memo, useEffect, useMemo, useRef, useState } from "react";
+import { FC, memo, useEffect, useMemo, useRef } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { inputPropsForEtherAmount } from "../../utils/inputPropsForEtherAmount";
 import {
@@ -72,10 +72,8 @@ export const TabUnwrap = memo(function TabUnwrap(props: TabUnwrapProps) {
 
   const [unwrapTrigger, unwrapResult] = useTokenUnwrap();
 
-  const [isDowngradeDisabled, setIsDowngradeDisabled] = useState(true);
-  useEffect(() => {
-    setIsDowngradeDisabled(!superToken || !underlyingToken || isValidating || !isValid);
-  }, [superToken, underlyingToken, isValidating, isValid]);
+  const isDowngradeDisabled =
+    !superToken || !underlyingToken || isValidating || !isValid;
 
   const tokenPrice = useTokenPrice(network.id, tokenPair?.superTokenAddress);
 

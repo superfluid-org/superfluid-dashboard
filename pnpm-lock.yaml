@@ -108,8 +108,8 @@ importers:
         specifier: ^10.57.0
         version: 10.57.0(react@19.2.7)
       '@sfpro/sdk':
-        specifier: ^0.2.1
-        version: 0.2.1(@wagmi/core@3.5.0)(react@19.2.7)(viem@2.52.2(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.4.3))(wagmi@3.6.16)
+        specifier: ^0.2.2
+        version: 0.2.2(@wagmi/core@3.5.0)(react@19.2.7)(viem@2.52.2(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.4.3))(wagmi@3.6.16)
       '@superfluid-finance/metadata':
         specifier: ^1.6.3
         version: 1.6.3
@@ -3103,8 +3103,8 @@ packages:
     peerDependencies:
       webpack: '>=5.0.0'
 
-  '@sfpro/sdk@0.2.1':
-    resolution: {integrity: sha512-HIlI7OFmkE7f+SOWBrW3hd2hHV3/YjVK17DUOgJtmOkNXv0AuHmI3PN3nTYapeCr/I0+dqc9AfxgZFQqy11Yyw==}
+  '@sfpro/sdk@0.2.2':
+    resolution: {integrity: sha512-fse777vicvumovoZ8bcRuCKS4CRVyI97Xx0fRbUjgOuD1Q1/FwUD+HXuh5TJFPCnA+g0J/mV9MXQ2YFDBn9IjA==}
     peerDependencies:
       '@wagmi/core': ^2 || ^3
       react: '>=18'
@@ -15280,7 +15280,7 @@ snapshots:
       - encoding
       - supports-color
 
-  '@sfpro/sdk@0.2.1(@wagmi/core@3.5.0)(react@19.2.7)(viem@2.52.2(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.4.3))(wagmi@3.6.16)':
+  '@sfpro/sdk@0.2.2(@wagmi/core@3.5.0)(react@19.2.7)(viem@2.52.2(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.4.3))(wagmi@3.6.16)':
     optionalDependencies:
       '@wagmi/core': 3.5.0(@tanstack/query-core@5.101.0)(@types/react@19.2.17)(accounts@0.12.2)(immer@10.2.0)(react@19.2.7)(typescript@5.9.3)(use-sync-external-store@1.6.0(react@19.2.7))(viem@2.52.2(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.4.3))
       react: 19.2.7
