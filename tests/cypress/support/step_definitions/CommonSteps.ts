@@ -121,10 +121,6 @@ Given(/^The avatar image for "([^"]*)" is shown loaded$/, (account: string) => {
   Common.validateLensImageIsLoaded(account);
 });
 
-Given(/^User selects the first ENS recipient result$/, () => {
-  Common.clickOnFirstLensEntry();
-});
-
 Given(/^User opens the connected account modal$/, () => {
   Common.clickOnConnectedWalletModal();
 });
@@ -260,6 +256,12 @@ Given(/^Stream table requests are mocked to an empty state$/, function () {
 Given(/^Transfer event requests are mocked to an empty state$/, function () {
   Common.mockQueryToEmptyState('transferEvents');
 });
+Given(
+  /^Index subscription requests are mocked to an empty state$/,
+  function () {
+    Common.mockIndexSubscriptionsToEmptyState();
+  }
+);
 
 Given(/^User disconnects their wallet from the dashboard$/, () => {
   Common.disconnectWallet();

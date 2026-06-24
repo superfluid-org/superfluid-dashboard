@@ -43,6 +43,36 @@ export class BasePage {
     });
   }
 
+  // Select a token in the shared token dialog and confirm it actually "stuck".
+  // The old helpers clicked the list item and moved on, so a missed pick only
+  // surfaced much later as a disabled/placeholder action button. We instead
+  // assert the select button shows the chosen token before continuing (the
+  // assertion retries, giving the form state time to settle).
+  static selectTokenFromDialog(token: string) {
+    const SELECT_TOKEN_BUTTON = '[data-cy=select-token-button]';
+    const SELECTED_TOKEN = `${SELECT_TOKEN_BUTTON} span[translate=no]`;
+    const TOKEN_SEARCH_INPUT = '[data-cy=token-search-input] input';
+
+    return this.getSelectedToken(token).then((selectedToken) => {
+      // Some flows open the dialog in a previous step; only open it if needed.
+      cy.get('body', { log: false }).then(($body) => {
+        if (!$body.find(TOKEN_SEARCH_INPUT).filter(':visible').length) {
+          cy.get(SELECT_TOKEN_BUTTON).filter(':visible').first().click();
+        }
+      });
+      cy.get(TOKEN_SEARCH_INPUT, { timeout: 30000 }).should('be.visible');
+      cy.get(`[data-cy="${selectedToken}-list-item"]`, { timeout: 30000 })
+        .filter(':visible')
+        .first()
+        .click();
+      return cy
+        .get(SELECTED_TOKEN, { timeout: 30000 })
+        .filter(':visible')
+        .first()
+        .should('have.text', selectedToken);
+    });
+  }
+
   static ensureDefined<T>(value: T | undefined | null): T {
     if (!value) throw Error('Value has to be defined.');
     return value;

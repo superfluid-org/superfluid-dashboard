@@ -263,12 +263,7 @@ export class SendPage extends BasePage {
   }
 
   static selectTokenForStreaming(token: string) {
-    this.click(SELECT_TOKEN_BUTTON);
-    this.getSelectedToken(token).then((selectedToken) => {
-      this.click(`[data-cy="${selectedToken}-list-item"]`, undefined, {
-        timeout: 30000,
-      });
-    });
+    this.selectTokenFromDialog(token);
   }
 
   static nativeTokenDoesNotHaveWrapButtons(token: string) {

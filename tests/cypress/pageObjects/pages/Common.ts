@@ -625,6 +625,28 @@ export class Common extends BasePage {
     });
   }
 
+  // The token-page distributions tab queries index subscriptions via sdk-redux,
+  // whose generated query aliases the `indexSubscriptions` field to `result`.
+  // Match the request by its query body (the operationName varies) and empty the
+  // result so the no-data row shows regardless of the account's real on-chain
+  // state. (`mockQueryToEmptyState` can't be reused: it writes `data[operationName]`,
+  // not the aliased `result`.)
+  static mockIndexSubscriptionsToEmptyState() {
+    cy.intercept('POST', '**subgraph**', (req) => {
+      const query = (req.body && req.body.query) || '';
+      if (query.includes('indexSubscriptions')) {
+        req.alias = 'indexSubscriptionsQuery';
+        req.continue((res) => {
+          if (res.body && res.body.data) {
+            if (Array.isArray(res.body.data.result)) res.body.data.result = [];
+            if (Array.isArray(res.body.data.indexSubscriptions))
+              res.body.data.indexSubscriptions = [];
+          }
+        });
+      }
+    });
+  }
+
   static disconnectWallet() {
     this.click(WALLET_CONNECTION_STATUS);
     this.click(DISCONNECT_BUTTON);

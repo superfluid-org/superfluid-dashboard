@@ -42,8 +42,10 @@ Feature: Token page test cases
     And User clicks on the unwrap button in the token page
     Then "fDAIx" is selected as the token to unwrap
 
+  @mocked
   Scenario: Distributions table no data message
     Given "Dashboard Page" is open without connecting a wallet
+    And Index subscription requests are mocked to an empty state
     And User uses view mode to look at "staticBalanceAccount"
     And User changes the visible networks to "testnet"
     And User opens "opsepolia" "fDAIx" individual token page
