@@ -2,7 +2,6 @@ const { Framework } = require('@superfluid-finance/sdk-core');
 const { ethers } = require('ethers');
 const { getNetwork } = require('@ethersproject/networks');
 const minimist = require('minimist');
-const { addYears } = require('date-fns');
 
 const autoWrapManagerAddresses = {
   137: '0x2581c27E7f6D6AF452E63fCe884EDE3EDd716b32',
@@ -45,17 +44,20 @@ const flowSchedulerContractAddresses = {
   11155420: '0x73B1Ce21d03ad389C2A291B1d1dc4DAFE7B5Dc68',
 };
 
+// VestingScheduler v3 addresses (mirrors src/features/network/networkConstants.ts
+// `vestingContractAddresses_v3`). The dashboard create form defaults to v3, and its
+// "already exists" check is version-specific, so schedules must be seeded on v3 —
+// the previous v1 addresses left the seeded schedules invisible to the app.
 const vestingContractAddresses = {
-  100: '0x0170FFCC75d178d426EBad5b1a31451d00Ddbd0D',
-  5: '0xF9240F930d847F70ad900aBEE8949F25649Bf24a',
-  137: '0xcFE6382B33F2AdaFbE46e6A26A88E0182ae32b0c',
-  80001: '0x3962EE56c9f7176215D149938BA685F91aBB633B',
-  42161: '0x55c8fc400833eEa791087cF343Ff2409A39DeBcC',
-  10: '0x65377d4dfE9c01639A41952B5083D58964782892',
-  43114: '0x3fA8B653F9abf91428800C0ba0F8D145a71F97A1',
-  56: '0x9B91c27f78376383003C6A12Ad12B341d016C5b9',
-  1: '0x39D5cBBa9adEBc25085a3918d36D5325546C001B',
-  11155420: '0x27444c0235a4D921F3106475faeba0B5e7ABDD7a',
+  100: '0x625F04c9B91ECdfbeb7021271749212388F12c11',
+  137: '0x488913833474bbD9B11f844FdC2f0897FAc0Ca43',
+  42161: '0xc3069bDE869912E3d9B965F35D7764Fc92BccE67',
+  10: '0x5aB84e4B3a5F418c95B77DbdecFAF18D0Fd3b3E4',
+  43114: '0xB84C98d9B51D0e32114C60C500e17eA79dfd0dAf',
+  56: '0xa032265Ee9dE740D36Af6eb90cf18775577B1Ef3',
+  1: '0xbeEDf563D41dcb3e1b7e0B0f7a86685Fd73Ce84C',
+  8453: '0x6Bf35A170056eDf9aEba159dce4a640cfCef9312',
+  11155420: '0x4F4BC2ca9A7CA26AfcFabc6A2A381c104927D72C',
 };
 
 const vestingV2ContractAddresses = {
@@ -449,10 +451,9 @@ const vestingSchedulerAbi = [
       { internalType: 'int96', name: 'flowRate', type: 'int96' },
       { internalType: 'uint256', name: 'cliffAmount', type: 'uint256' },
       { internalType: 'uint32', name: 'endDate', type: 'uint32' },
-      { internalType: 'bytes', name: 'ctx', type: 'bytes' },
     ],
     name: 'createVestingSchedule',
-    outputs: [{ internalType: 'bytes', name: 'newCtx', type: 'bytes' }],
+    outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
   },
@@ -1023,6 +1024,13 @@ const receiverAddress = args.receiver
 const provider = args.rpc
   ? new ethers.providers.JsonRpcProvider(args.rpc)
   : new ethers.providers.InfuraProvider(getNetwork(args.chainId));
+// OP Sepolia rejects eth_estimateGas's default (block-limit) cap as "intrinsic gas
+// too high" — the same quirk ethHelper.ts pins a fixed gasLimit for. Short-circuit
+// estimation to a fixed limit so every sdk-core/contract call below skips it.
+if (Number(args.chainId) === 11155420) {
+  const fixedGasLimit = ethers.BigNumber.from(3000000);
+  provider.estimateGas = async () => fixedGasLimit;
+}
 const wallet = new ethers.Wallet(args.privateKey, provider);
 const nativeTokenSymbol = networkGasTokenSymbols[args.chainId];
 
@@ -1141,9 +1149,14 @@ async function checkAndCreateVestingScheduleIfNecessary(
   signer,
   tokenName
 ) {
-  const currentDate = new Date();
-  const startDate = (addYears(currentDate, 5).getTime() / 1000).toFixed();
-  const endDate = (addYears(currentDate, 10).getTime() / 1000).toFixed();
+  // Deterministic, fixed far-future dates (a 5-year window, one leap day) so the
+  // seeded schedule's total allocation is STABLE across re-seeds. The dashboard's
+  // "sent schedule" fixtures assert an exact amount; the old relative
+  // addYears(now, 5/10) drifted the total (and start/end dates) on every re-seed.
+  // NOTE: the schedule's on-chain `createdAt` is still the seed time, so the
+  // details-page "scheduled date" fixture must be regenerated after re-seeding.
+  const startDate = '1924992000'; // 2031-01-01T00:00:00Z
+  const endDate = '2082758400'; // 2036-01-01T00:00:00Z
   const vestingSchedule = await vestingContract.getVestingSchedule(
     token.address,
     wallet.address,
@@ -1160,13 +1173,15 @@ async function checkAndCreateVestingScheduleIfNecessary(
         '0',
         ethers.utils.parseEther('0.0000003858').toString(),
         '0',
-        endDate,
-        '0x'
+        endDate
       );
     if (args.chainId === '137') {
       createScheduleTx.gasPrice = await provider.getGasPrice();
     }
-    await signer.sendTransaction(createScheduleTx);
+    // Await confirmation (not just submission) so the next schedule's send sees an
+    // advanced nonce. Firing these back-to-back on OP Sepolia raced the RPC's
+    // pending nonce and aborted the seed with "replacement transaction underpriced".
+    await (await signer.sendTransaction(createScheduleTx)).wait();
     console.log(`${tokenName} vesting schedule was created succesfully`);
   } else {
     console.log(`${tokenName} vesting schedule is already created`);
@@ -1206,7 +1221,9 @@ async function checkAndCreateAutoWrapScheduleIfNecessary(
           autoWrapTx.gasPrice = await provider.getGasPrice();
         }
 
-        await signer.sendTransaction(autoWrapTx);
+        // Await confirmation (see createVestingSchedule above) to avoid the
+        // back-to-back nonce race that aborts the seed on OP Sepolia.
+        await (await signer.sendTransaction(autoWrapTx)).wait();
         console.log(`${tokenName} auto-wrap schedule was created succesfully`);
       } else {
         console.log(`${tokenName} auto-wrap schedule is already set up`);
