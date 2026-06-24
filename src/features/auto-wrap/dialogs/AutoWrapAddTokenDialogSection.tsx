@@ -1,4 +1,4 @@
-import { FC, memo } from "react";
+import { FC, memo, useMemo } from "react";
 import ResponsiveDialog from "../../common/ResponsiveDialog";
 import {
   DialogContent,
@@ -176,6 +176,18 @@ const AutoWrapAddTokenDialogSection: FC<{
   platformWhitelistedStatuses,
 }) => {
     const { network: expectedNetwork } = useExpectedNetwork();
+    // Stable identity: AddTokenWrapFormProvider re-initialises (resetting the
+    // selected `data.token` to null) whenever `initialFormValues` changes by
+    // reference. A fresh inline object on every render nulled the user's token
+    // pick on any unrelated re-render (e.g. SDK/network settling), which read as
+    // a "token selection reset" race. Memoising keeps the reset tied to an
+    // actual expectedNetwork change — and to the dialog opening/closing, since the
+    // dialog is `keepMounted` (without that dependency a previously-picked token
+    // would persist on reopen instead of starting blank).
+    const initialFormValues = useMemo(
+      () => ({ network: expectedNetwork }),
+      [expectedNetwork, isEnableAutoWrapDialogOpen]
+    );
     return (
       <ResponsiveDialog
         data-cy={"auto-wrap-add-token-dialog-section"}
@@ -184,11 +196,7 @@ const AutoWrapAddTokenDialogSection: FC<{
         PaperProps={{ sx: { borderRadius: "20px", maxWidth: 479 } }}
         keepMounted={true}
       >
-        <AddTokenWrapFormProvider
-          initialFormValues={{
-            network: expectedNetwork,
-          }}
-        >
+        <AddTokenWrapFormProvider initialFormValues={initialFormValues}>
           <AutoWrapAddTokenForm
             closeEnableAutoWrapDialog={closeEnableAutoWrapDialog}
             platformWhitelistedStatuses={platformWhitelistedStatuses}
