@@ -20,9 +20,12 @@ const AMOUNT_PER_SECOND = '[data-cy=preview-per-second]';
 const ADDRESS_DIALOG_INPUT = '[data-cy=address-dialog-input]';
 const CLOSE_DIALOG_BUTTON = '[data-testid=CloseRoundedIcon]';
 const OTHER_CLOSE_DIALOG_BUTTON = '[data-testid=CloseIcon]';
-const ENS_ENTRIES = '[data-cy=ens-entry]';
-const ENS_ENTRY_NAMES = '[data-cy=ens-entry] h6';
-const ENS_ENTRY_ADDRESS = '[data-cy=ens-entry] p';
+// ENS resolution now flows through the whois service; the dialog renders a `whois-entry`
+// (an AddressListItem) for a resolved name — primary = the resolved name, secondary = the
+// shortened address. (The legacy `ens-entry`/h6/p markup no longer exists.)
+const ENS_ENTRIES = '[data-cy=whois-entry]';
+const ENS_ENTRY_NAMES = '[data-cy=whois-entry] .MuiListItemText-primary';
+const ENS_ENTRY_ADDRESS = '[data-cy=whois-entry] .MuiListItemText-secondary';
 const RECENT_ENTRIES = '[data-cy=recents-entry]';
 const RECENT_ENTRIES_ADDRESS = '[data-cy=recents-entry] h6';
 const RECEIVER_CLEAR_BUTTON = '[data-testid=CloseIcon]';
@@ -171,17 +174,27 @@ export class SendPage extends BasePage {
     this.click(RISK_CHECKBOX);
   }
 
+  // The whois-entry secondary line shows the shortened address (shortenHex(addr, 6)),
+  // never the full 42-char address.
+  private static shortenAddress(address: string) {
+    return `${address.substring(0, 8)}...${address.substring(address.length - 6)}`;
+  }
+
   static recipientEnsResultsContain(result: string) {
     cy.get('@ensNameOrAddress').then((ensNameOrAddress) => {
       this.hasText(ENS_ENTRY_NAMES, ensNameOrAddress);
-      this.hasText(ENS_ENTRY_ADDRESS, result);
+      cy.get(ENS_ENTRIES).contains(SendPage.shortenAddress(result), {
+        matchCase: false,
+      });
     });
   }
 
   static validateEnsEntry(ensName: string) {
     this.hasText(ENS_ENTRY_NAMES, ensName);
     cy.fixture('commonData').then((data) => {
-      this.hasText(ENS_ENTRY_ADDRESS, data[ensName]);
+      cy.get(ENS_ENTRIES).contains(SendPage.shortenAddress(data[ensName]), {
+        matchCase: false,
+      });
     });
   }
 

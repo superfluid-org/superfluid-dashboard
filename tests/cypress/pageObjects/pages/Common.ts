@@ -178,13 +178,16 @@ export class Common extends BasePage {
     this.isVisible(WEB3_MODAL);
   }
   static blockENSApiRequests() {
-    cy.intercept('POST', 'https://rpc-endpoints.superfluid.dev/eth-mainnet', {
+    // ENS/handle resolution now flows through the whois service, not the old mainnet RPC.
+    cy.intercept('GET', 'https://whois.superfluid.finance/api/**', {
       forceNetworkError: true,
     });
   }
 
   static validateErrorShownInRecepientList(serviceType: string) {
-    this.isVisible(`[data-cy=${serviceType.toLowerCase()}-error]`);
+    // whois swallows lookup failures to a null result, so a blocked/failed resolution
+    // surfaces as the graceful "No results found" state rather than a `<service>-error` element.
+    cy.contains('No results found').should('be.visible');
   }
 
   static clickDarkModeButton() {
@@ -220,7 +223,7 @@ export class Common extends BasePage {
     });
   }
   static clickOnFirstLensEntry() {
-    this.click('[data-cy=ens-entry]', 0);
+    this.click('[data-cy=whois-entry]', 0);
   }
   static clickOnAddressModalCopyButton() {
     this.isVisible(COPY_ICON);

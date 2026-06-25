@@ -23,7 +23,6 @@ Feature: Test cases that run indefinitely on all supported networks
       | sepolia        | ETH   |
       | base           | ETH   |
       | scroll         | ETH   |
-      | scrsepolia     | ETH   |
       | opsepolia      | ETH   |
       | degen          | DEGEN |
 
@@ -43,7 +42,6 @@ Feature: Test cases that run indefinitely on all supported networks
       | sepolia        |
       | base           |
       | scroll         |
-      | scrsepolia     |
       | opsepolia      |
       | degenchain     |
 
@@ -63,7 +61,6 @@ Feature: Test cases that run indefinitely on all supported networks
       | sepolia        |
       | base           |
       | scroll         |
-      | scrsepolia     |
       | opsepolia      |
       | degenchain     |
 

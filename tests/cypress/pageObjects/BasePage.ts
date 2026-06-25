@@ -61,6 +61,10 @@ export class BasePage {
         }
       });
       cy.get(TOKEN_SEARCH_INPUT, { timeout: 30000 }).should('be.visible');
+      // Filter the (balance-sorted) list by symbol before clicking. On networks where the
+      // connected account holds no balance of the token, it sorts to the bottom of a long
+      // list; searching brings it to the top and avoids relying on scroll position.
+      cy.get(TOKEN_SEARCH_INPUT).clear().type(selectedToken);
       cy.get(`[data-cy="${selectedToken}-list-item"]`, { timeout: 30000 })
         .filter(':visible')
         .first()
