@@ -56,9 +56,17 @@ export class BasePage {
     return this.getSelectedToken(token).then((selectedToken) => {
       // Some flows open the dialog in a previous step; only open it if needed.
       cy.get('body', { log: false }).then(($body) => {
-        if (!$body.find(TOKEN_SEARCH_INPUT).filter(':visible').length) {
-          cy.get(SELECT_TOKEN_BUTTON).filter(':visible').first().click();
-        }
+        if ($body.find(TOKEN_SEARCH_INPUT).filter(':visible').length) return;
+        // force:true because a *previous* transaction/confirmation dialog can still be fading
+        // out (MuiDialog-container, 225ms opacity) and transiently "cover" this button on slow
+        // CI — and in the ACL / auto-wrap flows the button legitimately lives *inside* a dialog,
+        // so we can't wait for all dialogs to disappear. The open is confirmed below by waiting
+        // for the token search input + list to render.
+        cy.get(SELECT_TOKEN_BUTTON, { timeout: 30000 })
+          .filter(':visible')
+          .first()
+          .scrollIntoView()
+          .click({ force: true });
       });
       cy.get(TOKEN_SEARCH_INPUT, { timeout: 30000 }).should('be.visible');
       // Wait for the initial token fetch to render the list BEFORE typing. The dialog shows a
@@ -75,6 +83,7 @@ export class BasePage {
       cy.get(`[data-cy="${selectedToken}-list-item"]`, { timeout: 30000 })
         .filter(':visible')
         .first()
+        .scrollIntoView()
         .should('be.visible')
         .click();
       return cy

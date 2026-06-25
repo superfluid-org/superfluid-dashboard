@@ -322,3 +322,17 @@ fixed) but exposed two things the fast local runs couldn't:
    the selected receiver button's text (whois name vs full vs shortened, viewport-dependent) can't be
    asserted for stable identity without an app-side address attribute. Per Codex, this needs a selector
    update **plus** mocked/preconditioned recents — tracked separately, not part of the regression hotfix.
+
+### Token-dialog interaction flake (hardening, commit after e7f2bb3b)
+The next CI run rotated rejected failures across networks (different shard/network each run, correlating
+with how slow that run's preview was). Signature: `cy.click()` on `[data-cy=select-token-button]` (opening
+the dialog) **"is being covered by another element"** — a *previous* transaction/confirmation `MuiDialog`
+still fading out (225ms opacity) covers the button. This is the token-selection flake the suite has long
+had (pre-dates this work). Hardening in `BasePage.selectTokenFromDialog`: `scrollIntoView()` + open the
+dialog with `.click({ force:true })`. force is required because (a) a closing prior dialog can transiently
+cover the button, and (b) in the ACL / auto-wrap flows the select-token button legitimately lives *inside*
+a dialog — so the first instinct (wait for "no MuiDialog-container") is self-contradictory and actually
+breaks those flows (verified locally: it timed out on "Adding a new permission"). The dialog open is
+confirmed by waiting for the token search input + list; the list-item click stays a real (non-forced)
+click guarded by the post-click "selected token" assertion. This is **one** robustness pass — the rejected
+suite is transaction-heavy and inherently flaky; `retries.runMode:2` covers residual flake.
