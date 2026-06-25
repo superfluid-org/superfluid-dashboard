@@ -152,11 +152,11 @@ Feature: Vesting page first batch of test cases
     And The navigation drawer shows that "john" is "Connected"
     And Delete vesting schedule button is visible
 
+  @capturesVestingDetail
   Scenario: Sent vesting schedules details
     Given Transactional account john is connected to the dashboard on opsepolia
     And User clicks on the "vesting" navigation button
     And The created vesting schedule is shown correctly in the table
-    And Vesting schedule detail responses are captured
     And User opens the vesting schedule they have created
     And Vesting details page is shown correctly for the created schedule
 

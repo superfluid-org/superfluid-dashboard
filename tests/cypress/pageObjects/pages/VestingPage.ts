@@ -410,7 +410,13 @@ export class VestingPage extends BasePage {
       this.shortenHex('0xF9Ce34dFCD3cc92804772F3022AF27bCd5E43Ff2'),
       0
     );
-    this.hasText(TABLE_ALLOCATED_AMOUNT, '60.9 fTUSDx', 0, { timeout: 30000 });
+    // Allocated amount is ~60.x fTUSDx — the exact decimals depend on the schedule's
+    // seed-relative duration (this method is shared across schedules: ~60.9 here, ~60.87
+    // for the mocked VestingPageTwo one), so match the shape rather than an exact value.
+    cy.get(TABLE_ALLOCATED_AMOUNT, { timeout: 30000 })
+      .eq(0)
+      .invoke('text')
+      .should('match', /^60\.\d+\s*fTUSDx$/);
     this.hasText(VESTED_AMOUNT, '0  fTUSDx', 0);
     // The schedule's start/end dates are seed-relative (seed time + N years), so we can't
     // assert exact static values here. Assert the cell renders two "Mon D, YYYY" dates; the
@@ -445,9 +451,10 @@ export class VestingPage extends BasePage {
     this.hasText(DETAILS_VESTED_SO_FAR_AMOUNT, '0 ');
     this.hasText(DETAILS_VESTED_TOKEN_SYMBOL, 'fTUSDx');
     this.hasText('[data-cy=fTUSDx-cliff-amount]', '0fTUSDx');
-    this.hasText('[data-cy=fTUSDx-allocated]', '60.9fTUSDx', undefined, {
-      timeout: 30000,
-    });
+    // ~60.x fTUSDx — match the shape, not an exact value (see validateCreatedVestingSchedule).
+    cy.get('[data-cy=fTUSDx-allocated]', { timeout: 30000 })
+      .invoke('text')
+      .should('match', /^60\.\d+\s*fTUSDx$/);
     // createdAt is the schedule's on-chain creation time (= the seed time), so it can never
     // match a static fixture. Read the real value from the captured vesting-scheduler detail
     // response (aliased by `captureVestingScheduleDetail()` before the schedule was opened) and

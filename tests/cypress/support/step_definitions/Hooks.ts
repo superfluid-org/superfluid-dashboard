@@ -1,4 +1,5 @@
 import { After, Before } from "@badeball/cypress-cucumber-preprocessor";
+import { VestingPage } from "../../pageObjects/pages/VestingPage";
 
 Before(() => {
   cy.log("Custom tokens set at local storage ✅");
@@ -18,4 +19,12 @@ Before({ tags: "@rejected" }, function () {
 
 Before({ tags: "@platformNeeded" }, () => {
   Cypress.env("platformNeeded", true);
+});
+
+// Alias the vesting-scheduler detail query before the schedule details page loads, so the
+// details assertions can read the schedule's seed-relative createdAt/endDate from the real
+// (or mocked) response instead of stale static fixtures. Registered here (not in a step)
+// because some scenarios open the details page directly in their first Given.
+Before({ tags: "@capturesVestingDetail" }, () => {
+  VestingPage.captureVestingScheduleDetail();
 });
