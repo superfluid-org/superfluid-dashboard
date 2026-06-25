@@ -650,6 +650,26 @@ export class Common extends BasePage {
     });
   }
 
+  // The receiver dialog's "Recents" come from the live `recents` subgraph query
+  // (maps response.streams -> receiver.id). Mock it to a deterministic receiver so the
+  // scenario doesn't depend on the account's live stream history. Register before opening
+  // the dialog. Subgraph addresses are lowercase; the app checksums them for display.
+  static mockRecentsToKnownReceiver() {
+    cy.intercept('POST', '**subgraph**', (req) => {
+      const query = (req.body && req.body.query) || '';
+      if (req.body?.operationName === 'recents' || query.includes('query recents')) {
+        req.alias = 'recentsQuery';
+        req.reply({
+          data: {
+            streams: [
+              { receiver: { id: '0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2' } },
+            ],
+          },
+        });
+      }
+    });
+  }
+
   static disconnectWallet() {
     this.click(WALLET_CONNECTION_STATUS);
     this.click(DISCONNECT_BUTTON);
@@ -791,7 +811,13 @@ export class Common extends BasePage {
     const minutes = `0${newDate.getMinutes()}`.slice(-2);
     const finalFutureDate = `${month}/${day}/${year} ${hours}:${minutes}`;
 
-    this.type(selector, finalFutureDate);
+    // Wait for the field to be visible first (the scheduling form renders it lazily and
+    // re-renders as values change), then overwrite it in a single type command
+    // ({selectall}{del} then the date) rather than a separate this.clear() + type():
+    // clearing re-renders the form and detaches the input mid-command on slower CI
+    // ("cy.clear() failed because the page updated").
+    cy.get(selector, { timeout: 30000 }).should('be.visible');
+    this.type(selector, `{selectall}{del}${finalFutureDate}`);
   }
 
   static validateScheduledStreamRow(
@@ -1361,7 +1387,11 @@ export class Common extends BasePage {
     cy.fixture('networkSpecificData').then((networkSpecificData) => {
       networkSpecificData[network].staticBalanceAccount.recentReceivers.forEach(
         (receiver: any, index: number) => {
-          this.hasText(RECENT_ENTRIES, receiver.address, index);
+          // The recents-entry (AddressListItem) renders a name + the shortened address,
+          // never the full 42-char address — match the shortened form on the indexed row.
+          cy.get(RECENT_ENTRIES)
+            .eq(index)
+            .should('contain.text', this.shortenHex(receiver.address, 6));
         }
       );
     });

@@ -263,6 +263,10 @@ Given(
   }
 );
 
+Given(/^Recent receivers are mocked to a known receiver$/, function () {
+  Common.mockRecentsToKnownReceiver();
+});
+
 Given(/^User disconnects their wallet from the dashboard$/, () => {
   Common.disconnectWallet();
 });

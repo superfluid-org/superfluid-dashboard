@@ -8,8 +8,10 @@ Feature: Send Page test cases
     And User accepts the risk warning
     Then Send button is enabled and asks user to Connect their wallet
 
+  @mocked
   Scenario: Receiver dialog recents and ENS support
     Given "Send Page" is open with "staticBalanceAccount" connected on "polygon"
+    And Recent receivers are mocked to a known receiver
     And User opens the receiver dialog
     Then The recent receivers are shown on "polygon"
     And User closes the dialog
