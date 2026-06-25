@@ -61,13 +61,21 @@ export class BasePage {
         }
       });
       cy.get(TOKEN_SEARCH_INPUT, { timeout: 30000 }).should('be.visible');
-      // Filter the (balance-sorted) list by symbol before clicking. On networks where the
-      // connected account holds no balance of the token, it sorts to the bottom of a long
-      // list; searching brings it to the top and avoids relying on scroll position.
-      cy.get(TOKEN_SEARCH_INPUT).clear().type(selectedToken);
+      // Wait for the initial token fetch to render the list BEFORE typing. The dialog shows a
+      // spinner while fetching and re-renders as balances load; typing/clearing mid-re-render
+      // detaches the search input on slower CI ("cy.clear() failed because the page updated").
+      cy.get('[data-cy$="-list-item"]', { timeout: 30000 }).should(
+        'have.length.gte',
+        1
+      );
+      // Filter the (balance-sorted) list by symbol so a token the connected account holds no
+      // balance of still surfaces. The dialog resets the search to empty on open, so type
+      // directly — no chained .clear() (which would detach the chain on re-render).
+      cy.get(TOKEN_SEARCH_INPUT).type(selectedToken);
       cy.get(`[data-cy="${selectedToken}-list-item"]`, { timeout: 30000 })
         .filter(':visible')
         .first()
+        .should('be.visible')
         .click();
       return cy
         .get(SELECTED_TOKEN, { timeout: 30000 })

@@ -304,3 +304,21 @@ to `not @ignoreDuringUI and not @hourly`. Removes 4 environmental failures from 
 ## Review note
 The plan was reviewed by Codex (via PAL `clink`), which corrected two initial misdiagnoses (ExportPage was
 a shortenHex/text mismatch, not whois/EFP gating; ENS was selector drift, not live-flake) before implementation.
+
+## CI follow-up (commit after 11b6c302)
+The first CI run on 11b6c302 went mostly green (rejected green on gnosis/base/polygon, ExportPage/Bridge/ENS
+fixed) but exposed two things the fast local runs couldn't:
+
+1. **Regression (fixed):** `BasePage.selectTokenFromDialog`'s new `cy.get(TOKEN_SEARCH_INPUT).clear().type()`
+   detached on the slower CI preview ("cy.clear() failed because the page updated") — it broke
+   `rejected-tests (avalanche)` "Giving approval" (avalanche's `DAI.e`). Fix: wait for `[data-cy$=-list-item]`
+   to render before typing, and type without the chained `.clear()` (the dialog resets search to empty on
+   open); `TokenDialog` keys rows by `token.address` and doesn't re-sort on balance updates, so the
+   post-type re-queried click is stable (Codex-confirmed).
+2. **Deferred (live-data):** SendPage "Receiver dialog recents and ENS support" still fails — `recents-entry`
+   is now an `AddressListItem` (no `h6`; name in `.MuiListItemText-primary`, shortened addr in
+   `.MuiListItemText-secondary`), and `Common.recentReceiversAreShown` asserts the full address via exact
+   `have.text`. Beyond the selector drift, recents come from **live subgraph data** (`useRecentsQuery`), and
+   the selected receiver button's text (whois name vs full vs shortened, viewport-dependent) can't be
+   asserted for stable identity without an app-side address attribute. Per Codex, this needs a selector
+   update **plus** mocked/preconditioned recents — tracked separately, not part of the regression hotfix.
