@@ -828,6 +828,7 @@ export default memo(function SendStream() {
           }}
         >
           <Stack gap={1}>
+            {SendTransactionBoundary}
             {/* Scheduling adds scheduler operations (multi-op batch) — the lone-action
                 macro relay only engages for a plain unscheduled create/update/cancel. */}
             <ClearMacroRelayOption
@@ -844,7 +845,6 @@ export default memo(function SendStream() {
               }
               network={network}
             />
-            {SendTransactionBoundary}
             {DeleteFlowBoundary}
           </Stack>
         </ConnectionBoundaryButton>

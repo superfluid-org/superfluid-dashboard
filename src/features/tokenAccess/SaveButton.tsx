@@ -46,12 +46,6 @@ const SaveButton: FC<SaveButtonProps> = ({
 
   return (
     <Stack gap={1}>
-      {network && (
-        <ClearMacroRelayOption
-          actionKind={onlyAllowanceChanged ? "approve" : undefined}
-          network={network}
-        />
-      )}
       <TransactionBoundary mutationResult={updateAccessResult}>
         {({ setDialogLoadingInfo, txAnalytics }) => (
           <TransactionButton
@@ -106,6 +100,12 @@ const SaveButton: FC<SaveButtonProps> = ({
           </TransactionButton>
         )}
       </TransactionBoundary>
+      {network && (
+        <ClearMacroRelayOption
+          actionKind={onlyAllowanceChanged ? "approve" : undefined}
+          network={network}
+        />
+      )}
     </Stack>
   );
 };

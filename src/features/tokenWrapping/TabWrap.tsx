@@ -431,14 +431,6 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
 
       <Stack gap={2} direction="column" sx={{ width: "100%" }}>
         <ConnectionBoundary>
-          <ClearMacroRelayOption
-            actionKind={
-              isUnderlyingBlockchainNativeAsset || isApproveAllowanceVisible
-                ? undefined
-                : "upgrade"
-            }
-            network={network}
-          />
           <TransactionBoundary mutationResult={approveResult}>
             {({ setDialogLoadingInfo }) =>
               isApproveAllowanceVisible && (
@@ -590,6 +582,14 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
               </TransactionButton>
             )}
           </TransactionBoundary>
+          <ClearMacroRelayOption
+            actionKind={
+              isUnderlyingBlockchainNativeAsset || isApproveAllowanceVisible
+                ? undefined
+                : "upgrade"
+            }
+            network={network}
+          />
         </ConnectionBoundary>
       </Stack>
     </Stack>

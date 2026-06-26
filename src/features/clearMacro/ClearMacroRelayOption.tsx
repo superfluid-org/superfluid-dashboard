@@ -1,5 +1,6 @@
 import BoltRoundedIcon from "@mui/icons-material/BoltRounded";
-import { Stack, Switch, Typography } from "@mui/material";
+import { Paper, Switch, Typography } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 import { FC } from "react";
 import TooltipWithIcon from "../common/TooltipWithIcon";
 import { Network } from "../network/networks";
@@ -16,6 +17,10 @@ interface ClearMacroRelayOptionProps {
  * The form-level pre-click signal for the Clear Macro relay path: shows next to the
  * primary `TransactionButton` of macro-eligible forms only, and flips the persisted
  * preference. Renders nothing when the relay cannot engage (network/wallet/action).
+ *
+ * Visually it's an outlined "perk" strip that only takes on the primary accent (border,
+ * faint fill, bolt) while enabled — mirroring the outlined-Alert tint used elsewhere in
+ * the send flow — so the off state reads as neutral and the on state as an active perk.
  */
 export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
   actionKind,
@@ -27,17 +32,28 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
   if (!isEligible) return null;
 
   return (
-    <Stack
+    <Paper
+      variant="outlined"
       data-cy="clear-macro-relay-option"
-      direction="row"
-      alignItems="center"
-      gap={0.5}
+      sx={(theme) => ({
+        display: "flex",
+        alignItems: "center",
+        gap: 1,
+        px: 1.5,
+        py: 1,
+        borderRadius: "12px",
+        borderColor: isRelayEnabled
+          ? theme.palette.primary.main
+          : theme.palette.other.outline,
+        backgroundColor: isRelayEnabled
+          ? alpha(theme.palette.primary.main, 0.04)
+          : "transparent",
+        transition: theme.transitions.create([
+          "border-color",
+          "background-color",
+        ]),
+      })}
     >
-      <BoltRoundedIcon fontSize="small" color="primary" />
-      <Typography variant="body2" sx={{ flex: 1 }} translate="yes">
-        Gasless via Clear Macro relay
-      </Typography>
-      <TooltipWithIcon title="Instead of a regular transaction, you sign one human-readable message and a relay service submits the transaction and pays the gas." />
       <Switch
         data-cy="clear-macro-relay-switch"
         size="small"
@@ -45,6 +61,14 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
         onChange={(_event, checked) => setRelayEnabled(checked)}
         inputProps={{ "aria-label": "Toggle gasless Clear Macro relay" }}
       />
-    </Stack>
+      <BoltRoundedIcon
+        fontSize="small"
+        sx={{ color: isRelayEnabled ? "primary.main" : "text.secondary" }}
+      />
+      <Typography variant="body2" sx={{ flex: 1 }} translate="yes">
+        Gasless via Clear Macro relay
+      </Typography>
+      <TooltipWithIcon title="Instead of a regular transaction, you sign one human-readable message and a relay service submits the transaction and pays the gas." />
+    </Paper>
   );
 };

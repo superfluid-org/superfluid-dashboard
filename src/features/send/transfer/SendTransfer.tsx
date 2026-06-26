@@ -186,8 +186,8 @@ export default memo(function SendTransfer() {
           }}
         >
           <Stack gap={1}>
-            <ClearMacroRelayOption actionKind="transfer" network={network} />
             {SendTransactionBoundary}
+            <ClearMacroRelayOption actionKind="transfer" network={network} />
           </Stack>
         </ConnectionBoundaryButton>
       </ConnectionBoundary>

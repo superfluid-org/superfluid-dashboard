@@ -204,14 +204,6 @@ export const TabUnwrap = memo(function TabUnwrap(props: TabUnwrapProps) {
 
       <ConnectionBoundary>
         <Stack gap={1} sx={{ width: "100%" }}>
-          <ClearMacroRelayOption
-            actionKind={
-              tokenPair?.underlyingTokenAddress === NATIVE_ASSET_ADDRESS
-                ? undefined
-                : "downgrade"
-            }
-            network={network}
-          />
           <TransactionBoundary mutationResult={unwrapResult}>
             {({ setDialogLoadingInfo, txAnalytics }) => (
               <TransactionButton
@@ -267,6 +259,14 @@ export const TabUnwrap = memo(function TabUnwrap(props: TabUnwrapProps) {
               </TransactionButton>
             )}
           </TransactionBoundary>
+          <ClearMacroRelayOption
+            actionKind={
+              tokenPair?.underlyingTokenAddress === NATIVE_ASSET_ADDRESS
+                ? undefined
+                : "downgrade"
+            }
+            network={network}
+          />
         </Stack>
       </ConnectionBoundary>
     </Stack>
