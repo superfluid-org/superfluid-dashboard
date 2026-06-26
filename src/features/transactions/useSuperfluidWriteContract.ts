@@ -18,7 +18,11 @@ import MutationResult, { RelayPhase } from "../../MutationResult";
 import { PendingUpdate } from "../pendingUpdates/PendingUpdate";
 import { allNetworks, findNetworkOrThrow } from "../network/networks";
 import { ViemFeeOverrides } from "./viemFeeOverrides";
-import { classifyError, isContractRevert } from "./viemTransactionErrors";
+import {
+  classifyError,
+  hasUserRejectionMessage,
+  isContractRevert,
+} from "./viemTransactionErrors";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { useClearMacroEnabled } from "../settings/appSettingsHooks";
 import { ClearMacroAction } from "../clearMacro/dashboardClearMacro";
@@ -135,6 +139,18 @@ export function useSuperfluidWriteContract() {
     // Clear a stale phase from a previous run (it is deliberately left set after success
     // so the success view can note the relay).
     onMutate: () => setRelayPhase(undefined),
+    // Centralized Sentry logging for write failures. The old RTK Query write path got this from
+    // the `sentryErrorLogger` Redux middleware (store.ts), which no longer sees these wagmi /
+    // TanStack mutations. Skip user-side, non-actionable conditions the dialog already explains:
+    // user rejections (viem-typed + message-only, both walking the cause chain) and insufficient
+    // native funds. Contract reverts are intentionally logged — they can signal a real
+    // tx-construction bug.
+    onError: (error) => {
+      const code = classifyError(error); // walks for UserRejectedRequestError / InsufficientFundsError
+      if (code === "USER_REJECTED" || code === "INSUFFICIENT_FUNDS") return;
+      if (hasUserRejectionMessage(error)) return; // rejections viem doesn't type (auto-wrap, Cypress)
+      Sentry.captureException(error);
+    },
     mutationFn: async (argsOrBuilder) => {
       if (!address) throw new Error("No connected account.");
 

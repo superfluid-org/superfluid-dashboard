@@ -232,6 +232,7 @@ exports/op-helpers can be added upstream in `@sfpro/sdk` as part of the dogfoodi
 - **Error monitoring & analytics — low priority.** Wire Sentry capture + analytics through the shared
   executor so they don't regress, but **don't over-invest**: neither is closely monitored, and Segment
   analytics is currently **disabled on the integration side**. Best-effort parity is enough.
+  *(Sentry capture resolved 2026-06-26 — see the retrospective below.)*
 - **`useWaitForTransactionReceipt` vs tracker** — tracker remains the source of truth for drawer
   confirmation/restore; use the wagmi hook only for a local `isFinished` if a feature needs it. Note
   the reference's `queryClient.invalidateQueries` targets wagmi's TanStack cache; our reads are mostly
@@ -327,3 +328,52 @@ flips straight to the error view.
 2. Upfront (pre-click) reactive simulation/estimation — gate the button via a reactive
    `useSimulateContract`/`useEstimateGas` and reconcile with the on-click estimate. Incremental; the
    on-click `write(builder)` API is the blocker.
+
+---
+
+## Retrospective — restoring centralized Sentry logging for write failures (2026-06-26)
+
+Closes the Sentry half of the "Error monitoring & analytics" open question above.
+
+**What was dropped and why it mattered.** The old RTK Query write path got Sentry logging *for free*
+from a centralized Redux middleware, `sentryErrorLogger` (`src/features/redux/store.ts`): every
+rejected RTK Query async-thunk flowed through it → `Sentry.captureException`, filtering out user
+rejections (`ACTION_REJECTED`) and RTK's `AbortError`/`ConditionError`. The wagmi migration moved
+writes onto a TanStack `useMutation` in `useSuperfluidWriteContract.ts`, which **bypasses Redux
+entirely** — so write failures stopped reaching that middleware. The only remaining write-path
+capture was the gas-estimation fallback (`level: "warning"`, see the gas-buffer retrospective). Real
+transaction failures (reverts, RPC/transport errors, unexpected throws) surfaced only in the dialog,
+**never in Sentry**. (The middleware still exists and still covers the remaining RTK Query *reads*,
+and the faucet backend call, which stays an RTK Query thunk.)
+
+**Restored design.** Added an `onError` to the single shared `useMutation` in
+`useSuperfluidWriteContract.ts` — the one choke point all migrated Superfluid contract writes pass
+through (direct, SubOperation batch, and the Clear Macro relay, whose sign/relay run inside the
+`mutationFn`). It mirrors the old middleware's filter, viem-aware:
+- Skip user rejections — `classifyError(error) === "USER_REJECTED"` (walks the cause chain for
+  `UserRejectedRequestError`), **plus** message-only rejections viem doesn't type, via the new
+  walk-aware `hasUserRejectionMessage` (`viemTransactionErrors.ts`).
+- Skip insufficient funds — `classifyError(error) === "INSUFFICIENT_FUNDS"`; user-side, the dialog
+  already explains it, potentially high-volume.
+- Log everything else, **including contract reverts** — a revert can signal a real tx-construction
+  bug.
+
+Out of scope (and never centrally logged as "writes" before): wallet/connector actions
+(`useSwitchChain`, `useWatchAsset`, Safe auto-connect). No double-logging: the gas-estimate `catch`
+swallows infra failures (it doesn't rethrow), so only a rethrown revert reaches `onError`; a swallowed
+estimate *warning* followed by a fallback-write *error* is two distinct, level-distinguishable events
+by design.
+
+**Codex-review refinement (important).** The first draft reused the dialog's loose user-rejection
+fallback `includes("rejected") && includes("request")`. A Codex pass flagged that applying this to
+*Sentry filtering* would wrongly **suppress** real failures — e.g. `ClearMacroRelayError`'s
+"Relay rejected the execution: ..." (`relayApi.ts`) when the relay body mentions a "request".
+`hasUserRejectionMessage` was tightened to specific cancellation phrases (`"denied transaction
+signature"`, `"user rejected"`, `"user denied"`); the viem-typed "User rejected the request." is
+already covered by `classifyError`, so nothing is lost. The dialog keeps its own looser predicate
+deliberately — over-suppressing in Sentry is worse than a generic dialog message, so the two are NOT
+shared.
+
+**Verification.** `pnpm typecheck` + `pnpm lint` clean. No unit-test runner in the repo; the tightened
+predicate removes the relay false-positive by construction. Manual: a reverting write produces a Sentry
+event; user-reject and insufficient-funds produce none.

@@ -60,3 +60,43 @@ export function classifyError(error: unknown): TxErrorCode | undefined {
   if (isContractRevert(error)) return "CONTRACT_REVERT";
   return undefined;
 }
+
+/**
+ * Pure message-level user-cancellation signals that viem may NOT wrap as
+ * `UserRejectedRequestError` (so `classifyError` misses them): the auto-wrap permission flow and
+ * Cypress-injected errors. Operates on a single message string (e.g. a serialized error in the
+ * dialog).
+ *
+ * IMPORTANT: match SPECIFIC cancellation phrases, NOT loose words. An unordered
+ * `includes("rejected") && includes("request")` would wrongly classify real failures such as
+ * `ClearMacroRelayError`'s "Relay rejected the execution: ..." (relayApi.ts) as a user
+ * cancellation. The viem-typed "User rejected the request." case is already handled by
+ * `classifyError(...) === "USER_REJECTED"` (which walks the cause chain), so it need not be
+ * matched here.
+ */
+export function isUserRejectionMessage(message: string): boolean {
+  const m = message.toLowerCase();
+  return (
+    m.includes("denied transaction signature") || // Cypress + some wallets
+    m.includes("user rejected") || // exact provider phrase, when the viem type is lost
+    m.includes("user denied") // MetaMask-style
+  );
+}
+
+/**
+ * Walk-aware: does any node in the (viem) error cause chain carry a message-only cancellation
+ * signal? Use for live errors; `classifyError(...) === "USER_REJECTED"` already covers the
+ * viem-typed `UserRejectedRequestError` case (also via walk).
+ *
+ * SCOPE: viem's `BaseError.walk` follows the linear `.cause` chain only. We add a top-level
+ * fallback for a plain (non-`BaseError`) `Error` (e.g. a Cypress-injected one). Deeply nested
+ * plain `Error.cause` chains and `AggregateError.errors` are intentionally NOT traversed — the
+ * write path's cancellation errors are either viem `BaseError`s or a top-level plain `Error`.
+ */
+export function hasUserRejectionMessage(error: unknown): boolean {
+  if (error instanceof BaseError)
+    return !!error.walk(
+      (e) => e instanceof Error && isUserRejectionMessage(e.message)
+    );
+  return error instanceof Error && isUserRejectionMessage(error.message);
+}
