@@ -186,6 +186,7 @@ Feature: Send Page test cases
     And Scheduled stream transaction dialogs are shown
     And Transaction rejected error is shown
 
+  @checkEndDate
   Scenario: Modifying a stream with just end date
     Given HDWallet transactions are rejected
 
@@ -201,6 +202,7 @@ Feature: Send Page test cases
     And Scheduled stream transaction dialogs are shown
     And Transaction rejected error is shown
 
+  @checkEndDate
   Scenario: Modifying a stream with start and end date ( not started yet )
     Given HDWallet transactions are rejected
 
