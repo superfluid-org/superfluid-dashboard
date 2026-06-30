@@ -51,6 +51,7 @@ import { impersonationSlice } from "../impersonation/impersonation.slice";
 import { notificationsSlice } from "../notifications/notifications.slice";
 import { networkPreferencesSlice, NetworkPreferencesState } from "../network/networkPreferences.slice";
 import { pendingUpdateSlice } from "../pendingUpdates/pendingUpdate.slice";
+import { relayRecoverySlice } from "../clearMacro/relayRecovery.slice";
 import appSettingsReducer from "../settings/appSettings.slice";
 import tokenPriceApi from "../tokenPrice/tokenPriceApi.slice";
 import { adHocRpcEndpoints } from "./endpoints/adHocRpcEndpoints";
@@ -205,6 +206,13 @@ const notificatonsPersistedReducer = persistReducer(
   notificationsSlice.reducer
 );
 
+// In-flight Clear Macro relay executions. Persisted so a 120s poll timeout / closed tab / reload
+// never orphans a signed execution — the background poller resumes them on load.
+const relayRecoveryPersistedReducer = persistReducer(
+  { storage, key: "relayRecovery", version: 1 },
+  relayRecoverySlice.reducer
+);
+
 export const listenerMiddleware = createListenerMiddleware();
 
 export const sentryErrorLogger: Middleware =
@@ -272,6 +280,7 @@ export const reduxStore = configureStore({
     networkPreferences: networkPreferencesPersistedReducer,
     notifications: notificatonsPersistedReducer,
     flags: flagsPersistedReducer,
+    relayRecovery: relayRecoveryPersistedReducer,
 
     // Default slices
     pendingUpdates: pendingUpdateSlice.reducer,

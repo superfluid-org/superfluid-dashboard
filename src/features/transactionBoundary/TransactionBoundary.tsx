@@ -97,6 +97,14 @@ export const TransactionBoundary: FC<TransactionBoundaryProps> = ({
     }
   }, [mutationResult.isLoading]);
 
+  // Reopen the dialog if the relay poll times out into "status unknown" after the user already
+  // closed the loading dialog — they must see the "don't retry" warning + execution id.
+  useEffect(() => {
+    if (mutationResult.relayPhase === "relay-status-unknown") {
+      setDialogOpen(true);
+    }
+  }, [mutationResult.relayPhase]);
+
   return (
     <TransactionBoundaryContext.Provider value={contextValue}>
       {children(contextValue)}

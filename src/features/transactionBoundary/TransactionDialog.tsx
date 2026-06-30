@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowUpwardRoundedIcon from "@mui/icons-material/ArrowUpwardRounded";
+import HourglassEmptyRoundedIcon from "@mui/icons-material/HourglassEmptyRounded";
 import TransactionDialogErrorAlert from "../transactions/TransactionDialogErrorAlert";
 import { FC, PropsWithChildren, ReactNode } from "react";
 import { useTransactionBoundary } from "./TransactionBoundary";
@@ -150,6 +151,56 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
             </TransactionDialogButton>
           </TransactionDialogActions>
         )}
+      </>
+    );
+  }
+
+  // Distinct from a hard error: the signed gasless payload was accepted but the 120s poll timed
+  // out, so the outcome is unknown (the tx may still land). Coincides with `isError`, so this
+  // branch must precede it. The background poller keeps resolving it and tracks a late success.
+  if (mutationResult.relayPhase === "relay-status-unknown") {
+    const executionId = mutationResult.relayStatusUnknown?.executionId;
+    return (
+      <>
+        <TransactionDialogTitle>Still confirming</TransactionDialogTitle>
+        <TransactionDialogContent>
+          <Stack gap={2} alignItems="center" textAlign="center">
+            <OutlineIcon data-cy={"relay-status-unknown-icon"}>
+              <HourglassEmptyRoundedIcon fontSize="large" color="primary" />
+            </OutlineIcon>
+            <Typography
+              data-cy={"relay-status-unknown-message"}
+              variant="h5"
+              translate="yes"
+            >
+              Your gasless transaction is still being confirmed
+            </Typography>
+            <Typography variant="body2" color="text.secondary" translate="yes">
+              You signed it and we sent it to the relay, but couldn&apos;t confirm
+              it within the time limit. It may still complete — we&apos;ll keep
+              checking, and it will appear in your transactions if it succeeds.
+              Please don&apos;t retry.
+            </Typography>
+            {executionId && (
+              <Typography
+                data-cy={"relay-status-unknown-execution-id"}
+                variant="body2"
+                color="text.secondary"
+                translate="no"
+              >
+                Execution ID: {executionId}
+              </Typography>
+            )}
+          </Stack>
+        </TransactionDialogContent>
+        <TransactionDialogActions>
+          <TransactionDialogButton
+            data-cy={"relay-status-unknown-close"}
+            onClick={closeDialog}
+          >
+            Close
+          </TransactionDialogButton>
+        </TransactionDialogActions>
       </>
     );
   }

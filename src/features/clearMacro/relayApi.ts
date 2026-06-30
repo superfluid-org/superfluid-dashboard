@@ -162,8 +162,28 @@ export async function createRelayExecution(
   return (await response.json()) as RelayExecution;
 }
 
+/** Per-request cap so a hung fetch can't outlast the poll's own deadline check. */
+const REQUEST_TIMEOUT_MS = 15_000;
+
+/**
+ * `fetch` with a timeout via `AbortController` — deliberately NOT `AbortSignal.timeout` (Baseline
+ * 2024; the project's browserslist still includes browsers without it, where it would throw before
+ * the request and break every poll).
+ */
+function fetchWithTimeout(
+  input: string,
+  init?: RequestInit,
+  timeoutMs = REQUEST_TIMEOUT_MS
+): Promise<Response> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  return fetch(input, { ...init, signal: controller.signal }).finally(() =>
+    clearTimeout(timer)
+  );
+}
+
 export async function getRelayExecution(id: string): Promise<RelayExecution> {
-  const response = await fetch(
+  const response = await fetchWithTimeout(
     `${RELAY_PROVIDER_BASE_URL}/v1/relay-executions/${encodeURIComponent(id)}`
   );
   if (!response.ok) {
@@ -191,7 +211,23 @@ const POLL_TIMEOUT_MS = 120_000;
 export async function pollRelayExecutionUntilTerminal(id: string): Promise<RelayExecution> {
   const deadline = Date.now() + POLL_TIMEOUT_MS;
   for (;;) {
-    const execution = await getRelayExecution(id);
+    let execution: RelayExecution;
+    try {
+      execution = await getRelayExecution(id);
+    } catch (error) {
+      // Transient lookup failure (network blip / request timeout). Keep retrying until the
+      // deadline; then surface POLL_TIMEOUT so the caller hands the execution off to the
+      // background recovery poller rather than treating it as a hard failure.
+      if (Date.now() >= deadline) {
+        throw new ClearMacroRelayError(
+          `Timed out waiting for the relayed transaction (execution ${id}).`,
+          "POLL_TIMEOUT",
+          id
+        );
+      }
+      await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
+      continue;
+    }
     if (execution.terminal) {
       if (execution.state === "succeeded" && getFinalTransactionHash(execution)) {
         return execution;

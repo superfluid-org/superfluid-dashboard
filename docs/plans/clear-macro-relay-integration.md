@@ -328,11 +328,10 @@ op), auto-wrap, anything multi-op.
 
 ## Known gaps / accepted trade-offs (documented deliberately — do not silently "fix")
 
-1. **Orphaned relay executions.** If the user closes the tab after the relay POST but before the
-   terminal state, the relay still executes the signed payload, but the dashboard never tracks it —
-   no drawer entry, no pending update. Accepted for the OP Sepolia demo. Future fix: persist
-   `{ executionId, chainId, signerAddress, title }` (e.g. redux-persist) before polling and resume
-   polling on app load, feeding `trackTransaction` on completion.
+1. ~~**Orphaned relay executions.**~~ **RESOLVED (2026-06-30)** — see the
+   "Post-signature timeout recovery" retrospective at the end of this doc. The execution is now
+   persisted before polling and a background poller resumes it (across reloads) until terminal or
+   `validBefore + grace`, feeding `trackTransaction` on a late success.
 2. **Dialog resolves at relay-terminal**, not at wallet-submit — the loading state spans
    confirmation. Accepted (fast blocks on OP Sepolia; web3 UX is eventual-consistency-based
    anyway). Revisit if this ships on slower networks.
@@ -519,3 +518,73 @@ resolves on `succeeded` + final-hash-present and `executeClearMacro` returns it.
 upstream as an API-description mismatch. Also hardened: all `ClearMacroRelayError` messages
 now append the relay error's `details` when populated (it was empty during incident 1, which
 is itself upstream feedback — `PREFLIGHT_REVERTED` should carry the revert data).
+
+---
+
+# Post-signature timeout recovery (2026-06-30)
+
+Resolves Known gap #1 ("Orphaned relay executions") and a PR-review extension of it: once the
+user has **signed**, a relay poll timeout is no longer a safe "failed transaction".
+
+## The problem
+`executeClearMacro` signs → POSTs → `pollRelayExecutionUntilTerminal` polls for **120s**, but the
+signed payload's on-chain validity window is **600s**. If the poll times out (or the tab closes)
+while the relay later lands the tx, the old code threw → the mutation errored → `trackTransaction`
+was **never** called (no drawer entry, no reconciliation). The user saw an error and might retry.
+
+For non-idempotent actions (transfer/upgrade/downgrade) a retry *after the first payload already
+settled* reads a **fresh nonce** and signs a **second, distinct** payload → double execution.
+
+**On-chain nonce reasoning (why this is the only residual risk):** the forwarder's per-signer
+nonce makes a signed payload single-use, so (a) re-broadcasting the *same* signature reverts
+`InvalidNonce`, and (b) a *concurrent* retry before the first lands re-reads the **same** nonce →
+both carry nonce N → one wins, the other reverts. The nonce does **not** cover a *sequential*
+retry once the first settled (fresh nonce N+1 = a brand-new valid authorization). So the only fix
+needed is to make the outcome **known** and tell the user **not to retry** — the chain handles the
+rest.
+
+## What shipped
+- **`relayRecovery.slice.ts`** — redux-persisted (`key: "relayRecovery"`) entity adapter of
+  in-flight executions. `ownership: "live" | "recovering"` partitions who polls: a live mutation
+  (watcher ignores it) vs. the background poller. Entity is JSON-safe (`toJsonSafe` strips
+  bigint/functions).
+- **State machine.** Created → `live` (persisted **before** polling; the write hook
+  `dispatch(registerLive)` then `await reduxPersistor.flush()` for durability against an
+  immediate tab close). In-mutation success → `trackTransaction` + remove. In-mutation terminal
+  failure → remove (normal error dialog). In-mutation **120s timeout** → `live → recovering`,
+  surfaced as `relayPhase: "relay-status-unknown"`. App load → `reclaimOnLoad` flips all `live` →
+  `recovering`.
+- **Background poller** — `useClearMacroRelayRecovery.tsx`, mounted in `ReduxProviderCore`
+  (post-rehydration). One react-query `<RelayRecoveryWatcher>` per `recovering` entry. Resolves
+  exactly like the live poll: `succeeded` + final hash → idempotent `trackTransaction` (guarded by
+  `transactionTrackerSelectors.selectById`); `succeeded` without a hash → keep polling; terminal
+  failure → drop; past `validBefore + GRACE_SECONDS` (180s) → one final GET, then expire.
+- **UI.** New non-error `TransactionDialog` branch for `relay-status-unknown` (shows the execution
+  id + "please don't retry"); `TransactionBoundary` reopens the dialog if the timeout happens
+  after the user closed it. A sticky `react-toastify` "don't retry" toast per recovering execution
+  (survives reload) dismissed on resolution, with success/failure toasts.
+
+## Decisions / non-goals
+- **Recovery only — no hard re-submit guard, and no `clientRequestId`.** The on-chain nonce +
+  recovery + "don't retry" UX covers the realistic double-execution path; the provider's
+  `executionId` already gives correlation. A stable-id server-dedup (the provider replays a
+  repeated `clientRequestId` with `200`) only pays off bundled with a retry↔pending matcher
+  (≈ the hard guard) and risks wrongly de-duping a legitimately repeated identical action — so
+  both are a deferred follow-on.
+- **No optimistic pending-updates on the recovery path** — they need a live `getPendingUpdates`
+  closure + the (then-unknown) hash; recovery relies on the drawer entry + RPC/subgraph refetch.
+  The in-session happy path keeps full pending updates.
+- **One unrecoverable window remains: the `createRelayExecution` POST response is lost** (request
+  succeeds server-side but the client never sees the `executionId` — dropped connection during the
+  POST). With no `executionId` there is nothing to persist or poll. Closing it needs an idempotent
+  retry keyed by a stable `clientRequestId`, which is the deferred follow-on. The signed payload's
+  nonce still prevents a *same-nonce* double-execution; only a later fresh-nonce manual retry is at
+  risk, same as the general no-guard tradeoff. Poll-side hangs/blips ARE covered: `getRelayExecution`
+  has a 15s per-request timeout and `pollRelayExecutionUntilTerminal` tolerates transient failures
+  until the 120s deadline, then hands off to recovery.
+
+## Reviewed
+Plan and implementation reviewed with Codex (PAL `clink`); incorporated durable `flush()` before
+polling, the succeeded-requires-hash invariant in recovery (no non-null assert), `executionId` as
+structured mutation state, a surface that survives dialog-close/reload, and concrete
+grace + final-poll-before-expire.

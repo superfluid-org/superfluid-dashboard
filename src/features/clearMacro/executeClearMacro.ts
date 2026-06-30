@@ -52,6 +52,16 @@ export interface ExecuteClearMacroParams {
    */
   fallbackSimulationRequest?: Parameters<typeof simulateContract>[1];
   onPhase?: (phase: RelayPhase) => void;
+  /**
+   * Called once, immediately after the relay accepts the signed payload and BEFORE polling —
+   * with the provider's `executionId` and echoed `validBefore` (unix seconds). The caller uses
+   * this to durably persist the execution so a poll timeout / closed tab / reload can still
+   * recover it. Awaited so the caller can flush the persisted write before the poll begins.
+   */
+  onExecutionCreated?: (info: {
+    executionId: string;
+    validBefore: number;
+  }) => void | Promise<void>;
 }
 
 /**
@@ -295,6 +305,13 @@ export async function executeClearMacro(
     payload: encodedPayload,
     signature,
     metadata: { source: "dashboard" },
+  });
+
+  // Durably persist the execution BEFORE polling. From here the signed payload may land
+  // on-chain regardless of what the poll observes, so the outcome must never be lost.
+  await params.onExecutionCreated?.({
+    executionId: execution.id,
+    validBefore: Number(execution.validity.validBefore),
   });
 
   const terminalExecution = await pollRelayExecutionUntilTerminal(execution.id);

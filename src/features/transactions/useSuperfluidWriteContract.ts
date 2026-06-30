@@ -11,7 +11,7 @@ import { useConfig } from "wagmi";
 import { getPublicClient, simulateContract, writeContract } from "@wagmi/core";
 import { clearMacroForwarderAddress } from "@sfpro/sdk/abi";
 import { TransactionInfo, TransactionTitle } from "@superfluid-finance/sdk-redux";
-import { useAppDispatch } from "../redux/store";
+import { reduxPersistor, useAppDispatch } from "../redux/store";
 import { useAccount } from "@/hooks/useAccount";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import MutationResult, { RelayPhase } from "../../MutationResult";
@@ -30,6 +30,11 @@ import {
   ClearMacroNotEligibleError,
   executeClearMacro,
 } from "../clearMacro/executeClearMacro";
+import { ClearMacroRelayError } from "../clearMacro/relayApi";
+import {
+  relayRecoveryActions,
+  toJsonSafe,
+} from "../clearMacro/relayRecovery.slice";
 import { trackTransaction } from "./trackTransaction";
 import { WriteMutability } from "./operations";
 
@@ -130,6 +135,9 @@ export function useSuperfluidWriteContract() {
   const clearMacroEnabled = useClearMacroEnabled();
   const { isEOA, visibleAddress } = useVisibleAddress();
   const [relayPhase, setRelayPhase] = useState<RelayPhase | undefined>();
+  const [relayStatusUnknown, setRelayStatusUnknown] = useState<
+    { executionId: string } | undefined
+  >();
 
   const mutation = useMutation<
     TransactionInfo,
@@ -138,7 +146,10 @@ export function useSuperfluidWriteContract() {
   >({
     // Clear a stale phase from a previous run (it is deliberately left set after success
     // so the success view can note the relay).
-    onMutate: () => setRelayPhase(undefined),
+    onMutate: () => {
+      setRelayPhase(undefined);
+      setRelayStatusUnknown(undefined);
+    },
     // Centralized Sentry logging for write failures. The old RTK Query write path got this from
     // the `sentryErrorLogger` Redux middleware (store.ts), which no longer sees these wagmi /
     // TanStack mutations. Skip user-side, non-actionable conditions the dialog already explains:
@@ -146,6 +157,13 @@ export function useSuperfluidWriteContract() {
     // native funds. Contract reverts are intentionally logged — they can signal a real
     // tx-construction bug.
     onError: (error) => {
+      // A post-signature poll timeout is an expected "status unknown", not a failure — the
+      // background poller keeps resolving it. Don't log it as an error.
+      if (
+        error instanceof ClearMacroRelayError &&
+        error.code === "POLL_TIMEOUT"
+      )
+        return;
       const code = classifyError(error); // walks for UserRejectedRequestError / InsufficientFundsError
       if (code === "USER_REJECTED" || code === "INSUFFICIENT_FUNDS") return;
       if (hasUserRejectionMessage(error)) return; // rejections viem doesn't type (auto-wrap, Cypress)
@@ -201,17 +219,40 @@ export function useSuperfluidWriteContract() {
           params.chainId as keyof typeof clearMacroForwarderAddress
         ]
       ) {
+        const clearMacroAction = params.clearMacro;
+        // Set once the relay accepts the signed payload — from here the execution exists and an
+        // error must hand off to recovery, never leave the entry stuck "live".
+        let createdExecutionId: string | undefined;
         try {
           const { hash, executionId } = await executeClearMacro(config, {
             chainId: params.chainId,
             signerAddress: address,
-            action: params.clearMacro,
+            action: clearMacroAction,
             macroAddress: network.dashboardClearMacro.macroAddress,
             // Simulating the fallback write surfaces reverts (insufficient balance,
             // existing stream, ...) in the dialog before the signature prompt.
             fallbackSimulationRequest:
               request as Parameters<typeof simulateContract>[1],
             onPhase: setRelayPhase,
+            // Persist the execution the moment the relay accepts the signed payload, BEFORE
+            // polling — and flush so a closed tab / reload / poll timeout can't orphan it.
+            onExecutionCreated: async ({ executionId, validBefore }) => {
+              createdExecutionId = executionId;
+              dispatch(
+                relayRecoveryActions.registerLive({
+                  executionId,
+                  chainId: params.chainId,
+                  signerAddress: address,
+                  validBefore,
+                  title: params.title,
+                  subTransactionTitles: params.subTransactionTitles,
+                  extraData: toJsonSafe(params.extraData),
+                  actionKind: clearMacroAction.kind,
+                  createdAt: Date.now(),
+                })
+              );
+              await reduxPersistor.flush();
+            },
           });
 
           await dispatch(
@@ -230,6 +271,8 @@ export function useSuperfluidWriteContract() {
               pendingUpdates: params.getPendingUpdates?.(hash),
             })
           );
+          // Tracked in-session; the background poller must not also handle it.
+          dispatch(relayRecoveryActions.resolveAndRemove(executionId));
 
           return { hash, chainId: params.chainId };
         } catch (error) {
@@ -244,7 +287,33 @@ export function useSuperfluidWriteContract() {
             // Surface the gasless→self-pay switch in the dialog. The phase persists through the
             // self-pay `writeContract` that follows (and into success); the dialog narrates it.
             setRelayPhase("fallback");
+          } else if (error instanceof ClearMacroRelayError) {
+            const executionId = error.executionId ?? createdExecutionId;
+            if (error.code === "POLL_TIMEOUT") {
+              // Signed and accepted, but not confirmed within 120s. Hand the execution to the
+              // background poller and surface a distinct "status unknown" state — NOT a hard
+              // error, and the user must not retry (a fresh-nonce retry could double-execute).
+              if (executionId) {
+                dispatch(relayRecoveryActions.handOffToRecovery(executionId));
+                setRelayStatusUnknown({ executionId });
+              }
+              setRelayPhase("relay-status-unknown");
+            } else if (executionId) {
+              // Terminal failure (reverted/rejected/failed/expired/...) — the normal error
+              // dialog surfaces it (the message already names the execution id). Drop the entry.
+              dispatch(relayRecoveryActions.resolveAndRemove(executionId));
+            }
+            throw error;
           } else {
+            // A non-relay error (e.g. network) AFTER the execution was created: the signed
+            // payload may still land, so hand off to recovery + "status unknown" rather than
+            // leaving the persisted entry stuck "live". Pre-creation errors (signature
+            // rejection, etc.) have no execution and surface as normal errors.
+            if (createdExecutionId) {
+              dispatch(relayRecoveryActions.handOffToRecovery(createdExecutionId));
+              setRelayStatusUnknown({ executionId: createdExecutionId });
+              setRelayPhase("relay-status-unknown");
+            }
             throw error;
           }
         }
@@ -322,8 +391,10 @@ export function useSuperfluidWriteContract() {
     error: mutation.error ? toSerializedError(mutation.error) : undefined,
     data: mutation.data,
     relayPhase,
+    relayStatusUnknown,
     reset: () => {
       setRelayPhase(undefined);
+      setRelayStatusUnknown(undefined);
       mutation.reset();
     },
   };
