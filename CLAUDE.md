@@ -25,7 +25,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Architecture Overview
 
 ### Core Technologies
-- **Next.js 15** deployed to Vercel as serverless
+- **Next.js 16** deployed to Vercel as serverless
 - **TypeScript** with strict mode
 - **Redux Toolkit** with RTK Query for state management and API calls
 - **Wagmi v2** for Web3 wallet connections

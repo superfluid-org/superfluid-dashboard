@@ -3,6 +3,12 @@ import { blockedCountries, blockedRegions } from "./geofencing"
 import { geolocation } from '@vercel/functions'
 
 export function proxy(req: NextRequest) {
+    // The Sentry tunnel route (`tunnelRoute` in next.config.ts) must not be intercepted by this
+    // geofence proxy, otherwise client-side error reports would be blocked. Let it pass through.
+    if (req.nextUrl.pathname === "/monitoring" || req.nextUrl.pathname === "/monitoring/") {
+        return NextResponse.next()
+    }
+
     const geo = geolocation(req)
 
     const country = geo?.country
