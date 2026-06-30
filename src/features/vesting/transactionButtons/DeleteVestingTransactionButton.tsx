@@ -2,6 +2,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import { FC } from "react";
 import { usePendingVestingScheduleDelete } from "../../pendingUpdates/PendingVestingScheduleDelete";
 import { rpcApi } from "../../redux/store";
+import { useDeleteVestingSchedule } from "../useVestingWrites";
 import { useConnectionBoundary } from "../../transactionBoundary/ConnectionBoundary";
 import {
   TransactionBoundary,
@@ -39,7 +40,7 @@ export const DeleteVestingTransactionButton: FC<{
 }) => {
   const { txAnalytics } = useAnalytics();
   const [deleteVestingSchedule, deleteVestingScheduleResult] =
-    rpcApi.useDeleteVestingScheduleMutation();
+    useDeleteVestingSchedule();
 
   const { expectedNetwork: network } = useConnectionBoundary();
 
@@ -88,7 +89,7 @@ export const DeleteVestingTransactionButton: FC<{
       {...TransactionBoundaryProps}
       mutationResult={deleteVestingScheduleResult}
     >
-      {({ getOverrides, setDialogLoadingInfo, setDialogSuccessActions }) =>
+      {({ accountAddress, setDialogLoadingInfo, setDialogSuccessActions }) =>
         isButtonVisible && (
           <TransactionButton
             {...RestTxButtonProps}
@@ -101,7 +102,11 @@ export const DeleteVestingTransactionButton: FC<{
               startIcon: <CloseRoundedIcon />,
               ...ButtonProps,
             }}
-            onClick={async (signer) => {
+            onClick={async () => {
+              if (!accountAddress) {
+                throw Error("Account not connected.");
+              }
+
               const shouldDeleteActiveFlow =
                 !!activeVestingSchedule && !!activeFlow;
 
@@ -116,17 +121,12 @@ export const DeleteVestingTransactionButton: FC<{
               const primaryArgs = {
                 chainId: network.id,
                 superTokenAddress: superTokenAddress,
-                senderAddress: await signer.getAddress(),
+                senderAddress: accountAddress,
                 receiverAddress: receiverAddress,
                 deleteFlow: shouldDeleteActiveFlow,
                 version
               };
-              deleteVestingSchedule({
-                ...primaryArgs,
-                signer,
-                overrides: await getOverrides()
-              })
-                .unwrap()
+              deleteVestingSchedule(primaryArgs)
                 .then(...txAnalytics("Delete Vesting Schedule", primaryArgs))
                 .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
 

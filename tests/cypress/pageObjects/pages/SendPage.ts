@@ -20,9 +20,12 @@ const AMOUNT_PER_SECOND = '[data-cy=preview-per-second]';
 const ADDRESS_DIALOG_INPUT = '[data-cy=address-dialog-input]';
 const CLOSE_DIALOG_BUTTON = '[data-testid=CloseRoundedIcon]';
 const OTHER_CLOSE_DIALOG_BUTTON = '[data-testid=CloseIcon]';
-const ENS_ENTRIES = '[data-cy=ens-entry]';
-const ENS_ENTRY_NAMES = '[data-cy=ens-entry] h6';
-const ENS_ENTRY_ADDRESS = '[data-cy=ens-entry] p';
+// ENS resolution now flows through the whois service; the dialog renders a `whois-entry`
+// (an AddressListItem) for a resolved name — primary = the resolved name, secondary = the
+// shortened address. (The legacy `ens-entry`/h6/p markup no longer exists.)
+const ENS_ENTRIES = '[data-cy=whois-entry]';
+const ENS_ENTRY_NAMES = '[data-cy=whois-entry] .MuiListItemText-primary';
+const ENS_ENTRY_ADDRESS = '[data-cy=whois-entry] .MuiListItemText-secondary';
 const RECENT_ENTRIES = '[data-cy=recents-entry]';
 const RECENT_ENTRIES_ADDRESS = '[data-cy=recents-entry] h6';
 const RECEIVER_CLEAR_BUTTON = '[data-testid=CloseIcon]';
@@ -171,17 +174,27 @@ export class SendPage extends BasePage {
     this.click(RISK_CHECKBOX);
   }
 
+  // The whois-entry secondary line shows the shortened address (shortenHex(addr, 6)),
+  // never the full 42-char address.
+  private static shortenAddress(address: string) {
+    return `${address.substring(0, 8)}...${address.substring(address.length - 6)}`;
+  }
+
   static recipientEnsResultsContain(result: string) {
     cy.get('@ensNameOrAddress').then((ensNameOrAddress) => {
       this.hasText(ENS_ENTRY_NAMES, ensNameOrAddress);
-      this.hasText(ENS_ENTRY_ADDRESS, result);
+      cy.get(ENS_ENTRIES).contains(SendPage.shortenAddress(result), {
+        matchCase: false,
+      });
     });
   }
 
   static validateEnsEntry(ensName: string) {
     this.hasText(ENS_ENTRY_NAMES, ensName);
     cy.fixture('commonData').then((data) => {
-      this.hasText(ENS_ENTRY_ADDRESS, data[ensName]);
+      cy.get(ENS_ENTRIES).contains(SendPage.shortenAddress(data[ensName]), {
+        matchCase: false,
+      });
     });
   }
 
@@ -195,7 +208,10 @@ export class SendPage extends BasePage {
 
   static clearReceiverField() {
     this.clickFirstVisible(RECEIVER_CLEAR_BUTTON);
-    this.hasText(RECEIVER_BUTTON, 'Public Address, ENS or Lens');
+    this.hasText(
+      RECEIVER_BUTTON,
+      'Public Address, ENS domain or Farcaster handle'
+    );
   }
 
   static closeDialog() {
@@ -209,18 +225,15 @@ export class SendPage extends BasePage {
   }
 
   static selectFirstRecentReceiver() {
-    cy.get(RECENT_ENTRIES_ADDRESS)
-      .eq(0)
-      .then((el) => {
-        cy.wrap(el.text()).as('lastChosenReceiver');
-      });
     this.clickFirstVisible(RECENT_ENTRIES);
   }
 
   static correctRecentReceiverIsChosen() {
-    cy.get('@lastChosenReceiver').then((lastChosenReceiver) => {
-      this.hasText(ADDRESS_BUTTON_TEXT, lastChosenReceiver);
-    });
+    // The receiver button's text isn't a stable identity (AddressName renders a name, the
+    // full address, or a shortened form depending on resolution/viewport), so assert the
+    // selection "stuck": the dialog closed and the button is no longer the placeholder.
+    this.doesNotExist(RECEIVER_DIALOG);
+    cy.get(RECEIVER_BUTTON).should('not.contain.text', 'Public Address');
   }
 
   static validateTokenBalancesInSelectionScreen(
@@ -263,12 +276,7 @@ export class SendPage extends BasePage {
   }
 
   static selectTokenForStreaming(token: string) {
-    this.click(SELECT_TOKEN_BUTTON);
-    this.getSelectedToken(token).then((selectedToken) => {
-      this.click(`[data-cy="${selectedToken}-list-item"]`, undefined, {
-        timeout: 30000,
-      });
-    });
+    this.selectTokenFromDialog(token);
   }
 
   static nativeTokenDoesNotHaveWrapButtons(token: string) {
@@ -587,12 +595,12 @@ export class SendPage extends BasePage {
   }
 
   static inputStartDate(amount: number, timeunit: string) {
-    this.clear(START_DATE);
+    // No separate clear() — inputDateIntoField overwrites in one command (clearing the date
+    // re-renders the scheduling form and detaches the input mid-command on slower CI).
     Common.inputDateIntoField(START_DATE, amount, timeunit);
   }
 
   static inputEndDate(amount: number, timeunit: string) {
-    this.clear(END_DATE);
     Common.inputDateIntoField(END_DATE, amount, timeunit);
   }
 

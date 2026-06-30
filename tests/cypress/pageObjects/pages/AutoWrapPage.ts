@@ -116,9 +116,14 @@ export class AutoWrapPage extends BasePage {
   static selectNetworkForAutoWrap(network: string) {
     let selectedNetwork = this.getSelectedNetwork(network);
     this.click(TOP_BAR_NETWORK_BUTTON, -1);
-    this.click(`[data-cy=${selectedNetwork}-button`);
-    //Cypress is too fast and sometimes the token selection resets if we don't wait for sdk to initialize
-    cy.wait(3000);
+    this.click(`[data-cy=${selectedNetwork}-button]`);
+    // The token picker stays disabled until the dialog's network is set. Waiting
+    // for it to enable replaces a flaky fixed `cy.wait(3000)` and confirms the
+    // SDK/network settled before we pick a token (the token-pick helper still
+    // re-selects if a late re-render resets the choice).
+    this.get(`${ADD_TOKEN_DIALOG} [data-cy=select-token-button]`).should(
+      'not.be.disabled'
+    );
   }
 
   static clickEnableButtonForTokenOnNetwork(token: string, network: string) {

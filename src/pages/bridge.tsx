@@ -1,8 +1,18 @@
 import { Container, Stack, Typography, useTheme } from "@mui/material";
 import { NextPage } from "next";
+import dynamic from "next/dynamic";
 import withStaticSEO from "../components/SEO/withStaticSEO";
 import Link from "../features/common/Link";
-import { LiFiWidgetManager } from "../features/bridge/LiFiWidgetManager";
+
+// Client-only: @lifi/widget v4 bundles MUI v9, whose ESM build Node cannot
+// import when externalized during SSR/page-data collection.
+const LiFiWidgetManager = dynamic(
+  () =>
+    import("../features/bridge/LiFiWidgetManager").then(
+      (mod) => mod.LiFiWidgetManager
+    ),
+  { ssr: false }
+);
 
 
 const Bridge: NextPage = () => {

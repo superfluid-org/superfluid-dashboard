@@ -1,6 +1,7 @@
 import { skipToken } from "@reduxjs/toolkit/query";
 import { FC } from "react";
 import { rpcApi } from "../../redux/store";
+import { useClaimVestingSchedule } from "../useVestingWrites";
 import { useConnectionBoundary } from "../../transactionBoundary/ConnectionBoundary";
 import {
   TransactionBoundary,
@@ -38,7 +39,7 @@ export const ClaimVestingScheduleTransactionButton: FC<{
 }) => {
     const { txAnalytics } = useAnalytics();
     const [claimVestingSchedule, claimVestingScheduleResult] =
-      rpcApi.useClaimVestingScheduleMutation();
+      useClaimVestingSchedule();
 
     const { expectedNetwork: network } = useConnectionBoundary();
 
@@ -81,7 +82,7 @@ export const ClaimVestingScheduleTransactionButton: FC<{
         {...TransactionBoundaryProps}
         mutationResult={claimVestingScheduleResult}
       >
-        {({ getOverrides, setDialogLoadingInfo, setDialogSuccessActions }) =>
+        {({ setDialogLoadingInfo, setDialogSuccessActions }) =>
           isButtonVisible && (
             <TransactionButton
               {...RestTxButtonProps}
@@ -96,7 +97,7 @@ export const ClaimVestingScheduleTransactionButton: FC<{
                 // TODO: What icon to use?
                 ...ButtonProps,
               }}
-              onClick={async (signer) => {
+              onClick={async () => {
                 setDialogLoadingInfo(
                   <Typography variant="h5" color="text.secondary" translate="yes">
                     { isSender ? "You are claiming the vesting schedule on behalf of the receiver." : "You are claiming the vesting schedule."}
@@ -110,12 +111,7 @@ export const ClaimVestingScheduleTransactionButton: FC<{
                   receiverAddress: receiverAddress,
                   version: version as "v2" | "v3"
                 };
-                claimVestingSchedule({
-                  ...primaryArgs,
-                  signer,
-                  overrides: await getOverrides()
-                })
-                  .unwrap()
+                claimVestingSchedule(primaryArgs)
                   .then(...txAnalytics("Claim Vesting Schedule", primaryArgs))
                   .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
 

@@ -51,26 +51,20 @@ import { impersonationSlice } from "../impersonation/impersonation.slice";
 import { notificationsSlice } from "../notifications/notifications.slice";
 import { networkPreferencesSlice, NetworkPreferencesState } from "../network/networkPreferences.slice";
 import { pendingUpdateSlice } from "../pendingUpdates/pendingUpdate.slice";
+import { relayRecoverySlice } from "../clearMacro/relayRecovery.slice";
 import appSettingsReducer from "../settings/appSettings.slice";
 import tokenPriceApi from "../tokenPrice/tokenPriceApi.slice";
 import { adHocRpcEndpoints } from "./endpoints/adHocRpcEndpoints";
 import { adHocSubgraphEndpoints } from "./endpoints/adHocSubgraphEndpoints";
 import { flowSchedulerEndpoints } from "./endpoints/flowSchedulerEndpoints";
-import {
-  vestingSchedulerMutationEndpoints,
-  vestingSchedulerQueryEndpoints,
-} from "./endpoints/vestingSchedulerEndpoints";
+import { vestingSchedulerQueryEndpoints } from "./endpoints/vestingSchedulerEndpoints";
 import { platformApi } from "./platformApi/platformApi";
 import addressBookRpcApi from "../addressBook/addressBookRpcApi.slice";
 import { autoWrapEndpoints } from "./endpoints/autoWrapEndpoints";
 import { autoWrapSubgraphApi } from "../../auto-wrap-subgraph/autoWrapSubgraphApi";
-import { tokenAccessMutationEndpoints } from "./endpoints/tokenAccessEndpoints";
-import { gdaEndpoints } from "./endpoints/gdaEndpoints";
 import { deprecatedNetworkChainIds } from "../network/networks";
 import _ from "lodash";
 import { isDefined } from "../../utils/ensureDefined";
-import { batchVestingEndpoints } from "./endpoints/batchVestingEndpoints";
-import { vestingAgoraEndpoints } from "./endpoints/vestingAgoraEndpoints";
 
 export const rpcApi = initializeRpcApiSlice((options) =>
   {
@@ -85,13 +79,8 @@ export const rpcApi = initializeRpcApiSlice((options) =>
   .injectEndpoints(allRpcEndpoints)
   .injectEndpoints(adHocRpcEndpoints)
   .injectEndpoints(flowSchedulerEndpoints)
-  .injectEndpoints(vestingSchedulerMutationEndpoints)
-  .injectEndpoints(tokenAccessMutationEndpoints)
   .injectEndpoints(vestingSchedulerQueryEndpoints)
-  .injectEndpoints(autoWrapEndpoints)
-  .injectEndpoints(gdaEndpoints)
-  .injectEndpoints(batchVestingEndpoints)
-  .injectEndpoints(vestingAgoraEndpoints);
+  .injectEndpoints(autoWrapEndpoints);
   
 export const subgraphApi = initializeSubgraphApiSlice((options) =>
   createApiWithReactHooks({
@@ -217,6 +206,13 @@ const notificatonsPersistedReducer = persistReducer(
   notificationsSlice.reducer
 );
 
+// In-flight Clear Macro relay executions. Persisted so a 120s poll timeout / closed tab / reload
+// never orphans a signed execution — the background poller resumes them on load.
+const relayRecoveryPersistedReducer = persistReducer(
+  { storage, key: "relayRecovery", version: 1 },
+  relayRecoverySlice.reducer
+);
+
 export const listenerMiddleware = createListenerMiddleware();
 
 export const sentryErrorLogger: Middleware =
@@ -284,6 +280,7 @@ export const reduxStore = configureStore({
     networkPreferences: networkPreferencesPersistedReducer,
     notifications: notificatonsPersistedReducer,
     flags: flagsPersistedReducer,
+    relayRecovery: relayRecoveryPersistedReducer,
 
     // Default slices
     pendingUpdates: pendingUpdateSlice.reducer,

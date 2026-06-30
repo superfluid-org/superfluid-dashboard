@@ -1,12 +1,18 @@
-import { BigNumber, BigNumberish } from "ethers";
+/** Anything `BigInt()` can consume via `toString()` — covers bigint, string, number and ethers BigNumber. */
+type BigIntish = bigint | string | number | { toString(): string };
 
-const MAX_INT256 = BigNumber.from("57896044618658097711785492504343953926634992332820282019728792003956564819967");
-const MAX_TOKEN_ALLOWANCE_THRESHOLD = MAX_INT256.div(2); // "Good enough solution". Could also compare with token total supply. Or uint... Doesn't matter too much, the values are huge.
+const toBigInt = (value: BigIntish): bigint =>
+  typeof value === "bigint" ? value : BigInt(value.toString());
 
-const MAX_INT96 = BigNumber.from("39614081257132168796771975168");
-const MAX_FLOWRATE_ALLOWANCE_THRESHOLD = MAX_INT96.div(2);
+const MAX_INT256 =
+  57896044618658097711785492504343953926634992332820282019728792003956564819967n;
+const MAX_TOKEN_ALLOWANCE_THRESHOLD = MAX_INT256 / 2n; // "Good enough solution". Could also compare with token total supply. Or uint... Doesn't matter too much, the values are huge.
 
-export const isCloseToUnlimitedTokenAllowance = (wei: BigNumberish) => BigNumber.from(wei).gt(MAX_TOKEN_ALLOWANCE_THRESHOLD);
+const MAX_INT96 = 39614081257132168796771975168n;
+const MAX_FLOWRATE_ALLOWANCE_THRESHOLD = MAX_INT96 / 2n;
 
-export const isCloseToUnlimitedFlowRateAllowance = (wei: BigNumberish) =>
-  BigNumber.from(wei).gt(MAX_FLOWRATE_ALLOWANCE_THRESHOLD);
+export const isCloseToUnlimitedTokenAllowance = (wei: BigIntish) =>
+  toBigInt(wei) > MAX_TOKEN_ALLOWANCE_THRESHOLD;
+
+export const isCloseToUnlimitedFlowRateAllowance = (wei: BigIntish) =>
+  toBigInt(wei) > MAX_FLOWRATE_ALLOWANCE_THRESHOLD;

@@ -3,6 +3,7 @@
 import { Box, useTheme } from "@mui/material";
 import { ClientOnly } from "./ClientOnly";
 import { WidgetConfig, WidgetSkeleton, WidgetTheme, jumperTheme } from "@lifi/widget";
+import { EthereumProvider } from "@lifi/widget-provider-ethereum";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { ELEVATION1_BG } from "../theme/theme";
 import { useAvailableNetworks } from "../network/AvailableNetworksContext";
@@ -16,6 +17,10 @@ const LiFiWidget = dynamic(() => import('@lifi/widget').then(mod => mod.LiFiWidg
   ssr: false,
   loading: () => <div>Loading LiFi Widget...</div>
 });
+
+// The Ethereum provider detects the app's surrounding WagmiProvider and reuses its
+// connections. No reactive inputs, so a single module-level instance suffices.
+const widgetProviders = [EthereumProvider()];
 
 export function LiFiWidgetManager() {
     const theme = useTheme();
@@ -58,8 +63,9 @@ export function LiFiWidgetManager() {
             chains: {
                 allow: availableMainNetworks.map(x => x.id)
             },
-            requiredUI: isEOA ? [] : ["toAddress"],
-            hiddenUI: ["appearance"],
+            requiredUI: { toAddress: !isEOA },
+            hiddenUI: { appearance: true },
+            providers: widgetProviders,
             walletConfig: {
                 onConnect() {
                     openConnectModal()

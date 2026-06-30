@@ -175,7 +175,8 @@ export class AddressBookPage extends BasePage {
   static validateAddressBookResult(name: string, address: string) {
     this.isVisible(ADDRESS_BOOK_ENTRIES);
     this.hasText(ADDRESS_BOOK_ENTRIES_NAME, name);
-    this.hasText(ADDRESS_BOOK_ENTRIES_ADDRESS, address);
+    // The entry's secondary line renders the shortened address, never the full 42-char form.
+    this.hasText(ADDRESS_BOOK_ENTRIES_ADDRESS, this.shortenHex(address, 6));
   }
 
   static validateConnectedWalletName(name: string) {

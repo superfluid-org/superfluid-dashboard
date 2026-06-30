@@ -6,7 +6,7 @@ Feature: Vesting page first batch of test cases
     Then Vesting page while a wallet is not connected screen is shown
 
   Scenario: No vesting schedule messages
-    Given Transactional account staticBalanceAccount is connected to the dashboard on opsepolia
+    Given Transactional account NewRandomWallet is connected to the dashboard on opsepolia
     And User clicks on the "vesting" navigation button
     Then No received vesting schedules message is shown
     And No created vesting schedules message is shown
@@ -152,6 +152,7 @@ Feature: Vesting page first batch of test cases
     And The navigation drawer shows that "john" is "Connected"
     And Delete vesting schedule button is visible
 
+  @capturesVestingDetail
   Scenario: Sent vesting schedules details
     Given Transactional account john is connected to the dashboard on opsepolia
     And User clicks on the "vesting" navigation button

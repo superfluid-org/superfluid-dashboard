@@ -18,13 +18,15 @@ import { BigNumber } from "ethers";
 import { FC, useMemo } from "react";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
-import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { subscriptionWeiAmountReceived } from "../../utils/tokenUtils";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import { Network } from "../network/networks";
 import { usePendingIndexSubscriptionApprove } from "../pendingUpdates/PendingIndexSubscriptionApprove";
 import { usePendingIndexSubscriptionRevoke } from "../pendingUpdates/PendingIndexSubscriptionRevoke";
-import { rpcApi } from "../redux/store";
+import {
+  useIndexSubscriptionApprove,
+  useIndexSubscriptionRevoke,
+} from "./useIndexSubscriptionWrites";
 import Amount from "../token/Amount";
 import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
@@ -128,12 +130,10 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
     ]
   );
 
-  const getTransactionOverrides = useGetTransactionOverrides();
-
   const [approveSubscription, approveSubscriptionResult] =
-    rpcApi.useIndexSubscriptionApproveMutation();
+    useIndexSubscriptionApprove();
   const [revokeSubscription, revokeSubscriptionResult] =
-    rpcApi.useIndexSubscriptionRevokeMutation();
+    useIndexSubscriptionRevoke();
 
   const pendingApproval = usePendingIndexSubscriptionApprove({
     chainId: network.id,
@@ -232,7 +232,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
           {({ isConnected, isCorrectNetwork, expectedNetwork }) => (
             <>
               <TransactionBoundary mutationResult={approveSubscriptionResult}>
-                {({ mutationResult, signer, setDialogLoadingInfo }) =>
+                {({ mutationResult, accountAddress, setDialogLoadingInfo }) =>
                   !subscription.approved && (
                     <>
                       {mutationResult.isLoading || pendingApproval ? (
@@ -266,14 +266,11 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
                               color="primary"
                               size="small"
                               disabled={
-                                !signer || !isConnected || !isCorrectNetwork
+                                !accountAddress ||
+                                !isConnected ||
+                                !isCorrectNetwork
                               }
                               onClick={async () => {
-                                if (!signer)
-                                  throw new Error(
-                                    "Signer should always be available here."
-                                  );
-
                                 setDialogLoadingInfo(
                                   <Typography
                                     data-cy={"approve-index-message"}
@@ -293,14 +290,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
                                   superTokenAddress: subscription.token,
                                   userDataBytes: undefined,
                                 };
-                                approveSubscription({
-                                  ...primaryArgs,
-                                  signer,
-                                  overrides: await getTransactionOverrides(
-                                    network
-                                  )
-                                })
-                                  .unwrap()
+                                approveSubscription(primaryArgs)
                                   .then(
                                     ...txAnalytics(
                                       "Approve IDA Subscription",
@@ -320,7 +310,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
                 }
               </TransactionBoundary>
               <TransactionBoundary mutationResult={revokeSubscriptionResult}>
-                {({ mutationResult, signer, setDialogLoadingInfo }) =>
+                {({ mutationResult, accountAddress, setDialogLoadingInfo }) =>
                   subscription.approved && (
                     <>
                       {mutationResult.isLoading || pendingRevoke ? (
@@ -352,14 +342,11 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
                               color="error"
                               size="small"
                               disabled={
-                                !signer || !isConnected || !isCorrectNetwork
+                                !accountAddress ||
+                                !isConnected ||
+                                !isCorrectNetwork
                               }
                               onClick={async () => {
-                                if (!signer)
-                                  throw new Error(
-                                    "Signer should always bet available here."
-                                  );
-
                                 setDialogLoadingInfo(
                                   <Typography
                                     data-cy={"revoke-message"}
@@ -380,14 +367,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
                                   superTokenAddress: subscription.token,
                                   userDataBytes: undefined,
                                 };
-                                revokeSubscription({
-                                  ...primaryArgs,
-                                  signer,
-                                  overrides: await getTransactionOverrides(
-                                    network
-                                  )
-                                })
-                                  .unwrap()
+                                revokeSubscription(primaryArgs)
                                   .then(
                                     ...txAnalytics(
                                       "Revoke IDA Subscription",

@@ -15,3 +15,7 @@ export const useAppCurrency = (): Currency => {
 export const useAppLastSuperfluidRunnerCosmetics = (): MinigameCosmetics => {
   return useSetting("lastSuperfluidRunnerCosmetics") as MinigameCosmetics;
 };
+
+export const useClearMacroEnabled = (): boolean => {
+  return useSetting("clearMacroEnabled") as boolean;
+};

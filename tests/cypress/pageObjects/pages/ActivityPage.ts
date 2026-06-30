@@ -200,8 +200,17 @@ export class ActivityPage extends BasePage {
   }
 
   static validateNoActivityByTypeShown(type: string) {
-    cy.get(ACTIVITY_NAME).each((el) => {
-      cy.wrap(el).should('not.have.text', type);
+    // "No <type> shown" is satisfied by EITHER remaining rows (none of `type`) OR
+    // the empty-state card. A bare `cy.get(ACTIVITY_NAME)` would fail on a valid
+    // empty result (cy.get requires >= 1 element), so branch on the empty state.
+    cy.get('body').then(($body) => {
+      if ($body.find(NO_ACTIVITY_TITLE).filter(':visible').length > 0) {
+        this.isVisible(NO_ACTIVITY_TITLE);
+        return;
+      }
+      cy.get(ACTIVITY_NAME).each((el) => {
+        cy.wrap(el).should('not.have.text', type);
+      });
     });
   }
 

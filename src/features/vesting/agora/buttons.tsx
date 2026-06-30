@@ -2,7 +2,7 @@ import { Button, Typography } from "@mui/material";
 import JSZip from "jszip";
 import { FC, useState } from "react";
 import { mapProjectStateIntoGnosisSafeBatch } from "../../redux/endpoints/vestingAgoraEndpoints";
-import { rpcApi } from "../../redux/store";
+import { useExecuteTranchUpdate } from "./useExecuteTranchUpdate";
 import { TransactionButton, transactionButtonDefaultProps } from "../../transactionBoundary/TransactionButton";
 import { TransactionDialogActions, TransactionDialogButton } from "../../transactionBoundary/TransactionDialog";
 import { TxBuilder } from "../../../libs/gnosis-tx-builder";
@@ -78,7 +78,7 @@ export const ExecuteTranchUpdateTransactionButton: FC<Props> = ({
     actionsToExecute
 }) => {
     const [executeTranchUpdate, executeTranchUpdateResult] =
-        rpcApi.useExecuteTranchUpdateMutation();
+        useExecuteTranchUpdate();
 
     const isVisible = !executeTranchUpdateResult.isSuccess;
 
@@ -86,7 +86,6 @@ export const ExecuteTranchUpdateTransactionButton: FC<Props> = ({
         <TransactionBoundary mutationResult={executeTranchUpdateResult}>
             {({
                 network,
-                getOverrides,
                 setDialogLoadingInfo,
                 setDialogSuccessActions,
                 txAnalytics,
@@ -96,7 +95,7 @@ export const ExecuteTranchUpdateTransactionButton: FC<Props> = ({
                     <TransactionButton
                         dataCy={"create-schedule-tx-button"}
                         disabled={isDisabled}
-                        onClick={async (signer) => {
+                        onClick={async () => {
                             setDialogLoadingInfo(
                                 <Typography
                                     variant="h5"
@@ -108,12 +107,10 @@ export const ExecuteTranchUpdateTransactionButton: FC<Props> = ({
                             );
 
                             executeTranchUpdate({
-                                signer,
-                                superTokenAddress: projectsOverview.superTokenAddress,
                                 chainId: projectsOverview.chainId,
                                 projectsOverview,
                                 actionsToExecute
-                            }).unwrap();
+                            }).catch((error: unknown) => void error); // Error is surfaced in the dialog UI.
 
                             setDialogSuccessActions(
                                 <TransactionDialogActions>

@@ -1,8 +1,12 @@
 import { BasePage, wordTimeUnitMap } from '../BasePage';
 import { networksBySlug } from '../../superData/networks';
-import HDWalletProvider from '@truffle/hdwallet-provider';
-import { ProviderAdapter } from '@truffle/encoder';
-import { http, createPublicClient } from 'viem';
+import {
+  http,
+  createPublicClient,
+  createWalletClient,
+  numberToHex,
+} from 'viem';
+import { privateKeyToAccount } from 'viem/accounts';
 
 export const TOP_BAR_NETWORK_BUTTON = '[data-cy=top-bar-network-button]';
 export const CONNECTED_WALLET = '[data-cy=wallet-connection-status] h6';
@@ -174,13 +178,16 @@ export class Common extends BasePage {
     this.isVisible(WEB3_MODAL);
   }
   static blockENSApiRequests() {
-    cy.intercept('POST', 'https://rpc-endpoints.superfluid.dev/eth-mainnet', {
+    // ENS/handle resolution now flows through the whois service, not the old mainnet RPC.
+    cy.intercept('GET', 'https://whois.superfluid.finance/api/**', {
       forceNetworkError: true,
     });
   }
 
   static validateErrorShownInRecepientList(serviceType: string) {
-    this.isVisible(`[data-cy=${serviceType.toLowerCase()}-error]`);
+    // whois swallows lookup failures to a null result, so a blocked/failed resolution
+    // surfaces as the graceful "No results found" state rather than a `<service>-error` element.
+    cy.contains('No results found').should('be.visible');
   }
 
   static clickDarkModeButton() {
@@ -216,7 +223,7 @@ export class Common extends BasePage {
     });
   }
   static clickOnFirstLensEntry() {
-    this.click('[data-cy=ens-entry]', 0);
+    this.click('[data-cy=whois-entry]', 0);
   }
   static clickOnAddressModalCopyButton() {
     this.isVisible(COPY_ICON);
@@ -298,51 +305,139 @@ export class Common extends BasePage {
     cy.visit(page, {
       onBeforeLoad: (window) => {
         try {
-          const hdwallet = new HDWalletProvider({
-            privateKeys: [usedAccountPrivateKey],
-            url: networkRpc,
-            chainId: chainId,
-            pollingInterval: 1000,
-          });
-          console.log('hdwallet', hdwallet);
-          if (Cypress.env('rejected')) {
-            // Make HDWallet automatically reject transaction.
-            // Inspired by: https://github.com/MetaMask/web3-provider-engine/blob/e835b80bf09e76d92b785d797f89baa43ae3fd60/subproviders/hooked-wallet.js#L326
-            for (const provider of hdwallet.engine['_providers']) {
-              console.log('provider', provider);
-              if (provider.checkApproval) {
-                provider.checkApproval = function (type, didApprove, cb) {
-                  cb(new Error(`User denied ${type} signature.`));
-                };
+          const normalizedKey = (
+            usedAccountPrivateKey.startsWith('0x')
+              ? usedAccountPrivateKey
+              : `0x${usedAccountPrivateKey}`
+          ) as `0x${string}`;
+          const account = privateKeyToAccount(normalizedKey);
+
+          // Minimal viem chain definition for the selected network.
+          const chain = {
+            id: chainId,
+            name: selectedNetwork,
+            nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+            rpcUrls: { default: { http: [networkRpc] } },
+          } as const;
+
+          const transport = http(networkRpc);
+          const publicClient = createPublicClient({ chain, transport });
+          const walletClient = createWalletClient({ account, chain, transport });
+
+          const SIGNING_METHODS = [
+            'eth_sendTransaction',
+            'wallet_sendTransaction',
+            'eth_sign',
+            'personal_sign',
+            'eth_signTypedData',
+            'eth_signTypedData_v3',
+            'eth_signTypedData_v4',
+          ];
+          const NUMERIC_TX_FIELDS = [
+            'value',
+            'gas',
+            'gasPrice',
+            'maxFeePerGas',
+            'maxPriorityFeePerGas',
+            'maxFeePerBlobGas',
+          ];
+
+          // viem-native EIP-1193 mock: signs locally with the test key and
+          // forwards reads to the RPC. Replaces @truffle/hdwallet-provider,
+          // which rejected viem 2.x's eth_sendTransaction shape (so viem fell
+          // back to wallet_sendTransaction, which the node can't service).
+          const mockBridge = {
+            request: async ({
+              method,
+              params,
+            }: {
+              method: string;
+              params?: any[];
+            }) => {
+              if (Cypress.env('rejected') && SIGNING_METHODS.includes(method)) {
+                // Real wallets reject with EIP-1193 code 4001 → viem
+                // UserRejectedRequestError → app maps to "Transaction Rejected".
+                throw Object.assign(new Error('User rejected the request.'), {
+                  code: 4001,
+                });
               }
-            }
-          }
+              switch (method) {
+                case 'eth_requestAccounts':
+                case 'eth_accounts':
+                  return [account.address];
+                case 'eth_chainId':
+                  return numberToHex(chainId);
+                case 'wallet_sendTransaction':
+                case 'eth_sendTransaction': {
+                  const tx: any = { ...(params?.[0] ?? {}) };
+                  delete tx.from;
+                  delete tx.type;
+                  for (const f of NUMERIC_TX_FIELDS)
+                    if (tx[f] != null) tx[f] = BigInt(tx[f]);
+                  if (tx.nonce != null) tx.nonce = Number(BigInt(tx.nonce));
+                  // OP Sepolia rejects estimateGas with the default (block-limit)
+                  // gas cap as "intrinsic gas too high" (L1-fee gas inflates it).
+                  // Real wallets pass a sane cap; a local-key viem account does
+                  // not — so when the app didn't pin a limit, estimate with an
+                  // explicit cap here and set it, so viem just signs+broadcasts.
+                  if (tx.gas == null) {
+                    const estParams: any = {
+                      from: account.address,
+                      to: tx.to,
+                      data: tx.data,
+                      gas: numberToHex(8000000),
+                    };
+                    if (tx.value != null) estParams.value = numberToHex(tx.value);
+                    tx.gas = BigInt(
+                      await publicClient.request({
+                        method: 'eth_estimateGas',
+                        params: [estParams],
+                      })
+                    );
+                  }
+                  return await walletClient.sendTransaction({
+                    account,
+                    chain,
+                    ...tx,
+                  });
+                }
+                case 'personal_sign':
+                  return await account.signMessage({
+                    message: { raw: params?.[0] },
+                  });
+                case 'eth_sign':
+                  return await account.signMessage({
+                    message: { raw: params?.[1] },
+                  });
+                case 'eth_signTypedData':
+                case 'eth_signTypedData_v3':
+                case 'eth_signTypedData_v4': {
+                  const raw = params?.[1];
+                  const typed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+                  return await account.signTypedData(typed);
+                }
+                default:
+                  return await publicClient.request({
+                    method: method as any,
+                    params: params as any,
+                  });
+              }
+            },
+            on: () => {},
+            removeListener: () => {},
+            emit: () => {},
+          };
 
-          if (!hdwallet) {
-            console.log('Error: HDWalletProvider not initialized properly');
-            return;
-          }
-
-          const mockBridge = new ProviderAdapter(hdwallet);
           window['mockBridge'] = mockBridge;
-          window['mockWallet'] = hdwallet;
-
+          window['mockWallet'] = {
+            chainId,
+            getAddress: () => account.address,
+          };
           window['mockWalletDebug'] = {
             chainId,
             network: selectedNetwork,
-            address: hdwallet.getAddress(),
+            address: account.address,
           };
-
-          setTimeout(() => {
-            const ethereum = mockBridge;
-            if (ethereum) {
-              console.log('Manually triggering chainChanged event');
-              (ethereum as any).emit?.(
-                'chainChanged',
-                `0x${chainId.toString(16)}`
-              );
-            }
-          }, 500);
         } catch (e) {
           console.log('Error during wallet provider setup: ' + e.message);
           console.error('Error during wallet provider setup: ', e);
@@ -381,7 +476,7 @@ export class Common extends BasePage {
   }
 
   static rejectTransactions() {
-    cy.log('Cypress will reject HDWalletProvider Transactions!');
+    cy.log('Cypress will reject wallet transactions!');
     Cypress.env('rejected', true);
   }
 
@@ -533,6 +628,48 @@ export class Common extends BasePage {
     });
   }
 
+  // The token-page distributions tab queries index subscriptions via sdk-redux,
+  // whose generated query aliases the `indexSubscriptions` field to `result`.
+  // Match the request by its query body (the operationName varies) and empty the
+  // result so the no-data row shows regardless of the account's real on-chain
+  // state. (`mockQueryToEmptyState` can't be reused: it writes `data[operationName]`,
+  // not the aliased `result`.)
+  static mockIndexSubscriptionsToEmptyState() {
+    cy.intercept('POST', '**subgraph**', (req) => {
+      const query = (req.body && req.body.query) || '';
+      if (query.includes('indexSubscriptions')) {
+        req.alias = 'indexSubscriptionsQuery';
+        req.continue((res) => {
+          if (res.body && res.body.data) {
+            if (Array.isArray(res.body.data.result)) res.body.data.result = [];
+            if (Array.isArray(res.body.data.indexSubscriptions))
+              res.body.data.indexSubscriptions = [];
+          }
+        });
+      }
+    });
+  }
+
+  // The receiver dialog's "Recents" come from the live `recents` subgraph query
+  // (maps response.streams -> receiver.id). Mock it to a deterministic receiver so the
+  // scenario doesn't depend on the account's live stream history. Register before opening
+  // the dialog. Subgraph addresses are lowercase; the app checksums them for display.
+  static mockRecentsToKnownReceiver() {
+    cy.intercept('POST', '**subgraph**', (req) => {
+      const query = (req.body && req.body.query) || '';
+      if (req.body?.operationName === 'recents' || query.includes('query recents')) {
+        req.alias = 'recentsQuery';
+        req.reply({
+          data: {
+            streams: [
+              { receiver: { id: '0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2' } },
+            ],
+          },
+        });
+      }
+    });
+  }
+
   static disconnectWallet() {
     this.click(WALLET_CONNECTION_STATUS);
     this.click(DISCONNECT_BUTTON);
@@ -674,7 +811,13 @@ export class Common extends BasePage {
     const minutes = `0${newDate.getMinutes()}`.slice(-2);
     const finalFutureDate = `${month}/${day}/${year} ${hours}:${minutes}`;
 
-    this.type(selector, finalFutureDate);
+    // Wait for the field to be visible first (the scheduling form renders it lazily and
+    // re-renders as values change), then overwrite it in a single type command
+    // ({selectall}{del} then the date) rather than a separate this.clear() + type():
+    // clearing re-renders the form and detaches the input mid-command on slower CI
+    // ("cy.clear() failed because the page updated").
+    cy.get(selector, { timeout: 30000 }).should('be.visible');
+    this.type(selector, `{selectall}{del}${finalFutureDate}`);
   }
 
   static validateScheduledStreamRow(
@@ -1244,7 +1387,11 @@ export class Common extends BasePage {
     cy.fixture('networkSpecificData').then((networkSpecificData) => {
       networkSpecificData[network].staticBalanceAccount.recentReceivers.forEach(
         (receiver: any, index: number) => {
-          this.hasText(RECENT_ENTRIES, receiver.address, index);
+          // The recents-entry (AddressListItem) renders a name + the shortened address,
+          // never the full 42-char address — match the shortened form on the indexed row.
+          cy.get(RECENT_ENTRIES)
+            .eq(index)
+            .should('contain.text', this.shortenHex(receiver.address, 6));
         }
       );
     });

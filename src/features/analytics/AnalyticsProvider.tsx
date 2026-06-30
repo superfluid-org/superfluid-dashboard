@@ -26,7 +26,7 @@ const useAnalyticsBrowser = () =>
         }
       );
     } else {
-      console.warn("Segment not initialized. No-op instance provided instead.");
+      // Tracking is intentionally disabled; provide a no-op Segment instance.
       return AnalyticsBrowser.load({ writeKey: "NOOP" });
     }
   }, []);
