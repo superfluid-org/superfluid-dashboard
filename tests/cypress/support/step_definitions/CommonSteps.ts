@@ -232,6 +232,16 @@ Given(
     Common.openDashboardWithConnectedTxAccount('/', persona, network);
   }
 );
+Given(
+  /^Transactional account ([^"]*) is connected via Superfluid Wallet on ([^"]*)$/,
+  (persona: string, network: string) => {
+    Common.openDashboardWithSuperfluidWalletTxAccount('/', persona, network);
+    Common.connectViaSuperfluidWalletInAppKit();
+  }
+);
+Given(/^User connects their Superfluid Wallet to the dashboard$/, () => {
+  Common.connectViaSuperfluidWalletInAppKit();
+});
 Given(/^User restores the last transaction$/, () => {
   Common.restoreLastTx();
 });
