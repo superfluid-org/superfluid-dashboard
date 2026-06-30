@@ -79,46 +79,53 @@ export function useUpsertFlowWithScheduling() {
       const shouldScheduledEnd = !!arg.endTimestamp;
       const shouldSchedule = shouldScheduleStart || shouldScheduledEnd;
 
-      const activeExistingFlow = await getActiveFlow({
-        chainId,
-        tokenAddress: arg.superTokenAddress,
-        senderAddress: arg.senderAddress,
-        receiverAddress: arg.receiverAddress,
-      });
+      const network = findNetworkOrThrow(allNetworks, chainId);
+      const cfa = getContractAddress(cfaAddress, chainId, "CFAv1");
+      const flowSchedulerAddress = network?.flowSchedulerContractAddress as
+        | Address
+        | undefined;
+
+      // Fire the independent preflight reads together so wagmi's multicall coalesces
+      // them into a single round-trip (sequential awaits would each be their own call).
+      const [activeExistingFlow, existingFlowSchedule, flowOperatorData] =
+        await Promise.all([
+          getActiveFlow({
+            chainId,
+            tokenAddress: arg.superTokenAddress,
+            senderAddress: arg.senderAddress,
+            receiverAddress: arg.receiverAddress,
+          }),
+          flowSchedulerAddress
+            ? getFlowSchedule({
+                chainId,
+                superTokenAddress: arg.superTokenAddress,
+                senderAddress: arg.senderAddress,
+                receiverAddress: arg.receiverAddress,
+              })
+            : Promise.resolve(undefined),
+          flowSchedulerAddress && shouldSchedule
+            ? getFlowOperatorData({
+                chainId,
+                superTokenAddress: arg.superTokenAddress,
+                senderAddress: arg.senderAddress,
+                flowOperatorAddress: flowSchedulerAddress,
+              })
+            : Promise.resolve(undefined),
+        ]);
 
       const subOperations: SubOperation[] = [];
 
-      const network = findNetworkOrThrow(allNetworks, chainId);
-      const cfa = getContractAddress(cfaAddress, chainId, "CFAv1");
-
-      if (network?.flowSchedulerContractAddress) {
-        const flowSchedulerAddress =
-          network.flowSchedulerContractAddress as Address;
-
-        const existingFlowSchedule = await getFlowSchedule({
-          chainId,
-          superTokenAddress: arg.superTokenAddress,
-          senderAddress: arg.senderAddress,
-          receiverAddress: arg.receiverAddress,
-        });
-
+      if (flowSchedulerAddress) {
         const {
           startDate: existingStartTimestamp,
           endDate: existingEndTimestamp,
           flowRate: existingFlowRate,
-        } = existingFlowSchedule;
+        } = existingFlowSchedule!;
 
         if (shouldSchedule) {
-          const flowOperatorData = await getFlowOperatorData({
-            chainId,
-            superTokenAddress: arg.superTokenAddress,
-            senderAddress: arg.senderAddress,
-            flowOperatorAddress: flowSchedulerAddress,
-          });
-
           const existingFlowRateAllowance =
-            flowOperatorData.flowRateAllowanceWei;
-          const existingPermissions = flowOperatorData.permissions;
+            flowOperatorData!.flowRateAllowanceWei;
+          const existingPermissions = flowOperatorData!.permissions;
 
           const permissionsDelta =
             (shouldScheduleStart ? ACL_CREATE_PERMISSION : 0) |
@@ -346,16 +353,30 @@ export function useDeleteFlowWithScheduling() {
       const { chainId } = arg;
       const userData: Hex = arg.userDataBytes ?? "0x";
 
-      const activeExistingFlow = await getActiveFlow({
-        chainId,
-        tokenAddress: arg.superTokenAddress,
-        senderAddress: arg.senderAddress,
-        receiverAddress: arg.receiverAddress,
-      });
+      const network = findNetworkOrThrow(allNetworks, chainId);
+      const flowSchedulerAddress = network?.flowSchedulerContractAddress as
+        | Address
+        | undefined;
+
+      // Batch the two independent preflight reads into one multicall round-trip.
+      const [activeExistingFlow, existingFlowSchedule] = await Promise.all([
+        getActiveFlow({
+          chainId,
+          tokenAddress: arg.superTokenAddress,
+          senderAddress: arg.senderAddress,
+          receiverAddress: arg.receiverAddress,
+        }),
+        flowSchedulerAddress
+          ? getFlowSchedule({
+              chainId,
+              superTokenAddress: arg.superTokenAddress,
+              senderAddress: arg.senderAddress,
+              receiverAddress: arg.receiverAddress,
+            })
+          : Promise.resolve(undefined),
+      ]);
 
       const subOperations: SubOperation[] = [];
-
-      const network = findNetworkOrThrow(allNetworks, chainId);
 
       if (activeExistingFlow) {
         subOperations.push(
@@ -394,24 +415,17 @@ export function useDeleteFlowWithScheduling() {
         );
       }
 
-      if (network?.flowSchedulerContractAddress) {
-        const existingFlowSchedule = await getFlowSchedule({
-          chainId,
-          superTokenAddress: arg.superTokenAddress,
-          senderAddress: arg.senderAddress,
-          receiverAddress: arg.receiverAddress,
-        });
-
+      if (flowSchedulerAddress) {
         const {
           startDate: existingStartTimestamp,
           endDate: existingEndTimestamp,
-        } = existingFlowSchedule;
+        } = existingFlowSchedule!;
 
         if (existingStartTimestamp || existingEndTimestamp) {
           subOperations.push(
             appActionSubOperation({
               chainId,
-              appAddress: network.flowSchedulerContractAddress as Address,
+              appAddress: flowSchedulerAddress,
               callData: encodeFunctionData({
                 abi: flowSchedulerAbi,
                 functionName: "deleteFlowSchedule",

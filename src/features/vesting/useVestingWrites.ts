@@ -212,11 +212,14 @@ export function useCreateVestingScheduleFromAmountAndDuration() {
       const newPermissions = existingPermissions | permissionsDelta;
 
       const existingFlowRateAllowance = flowOperatorData.flowRateAllowanceWei;
+      // CFA flow-rate allowance is a consumable budget the operator draws down when it
+      // opens the vesting flow — so the *added* delta is exactly this schedule's flow rate.
+      // (Adding `existing + flowRate` double-counts the remaining budget into the grant.)
       const flowRateAllowanceDelta = isCloseToUnlimitedFlowRateAllowance(
         existingFlowRateAllowance
       )
         ? 0n
-        : existingFlowRateAllowance + params.flowRate;
+        : params.flowRate;
       const newFlowRateAllowance =
         existingFlowRateAllowance + flowRateAllowanceDelta;
 
@@ -515,7 +518,8 @@ export function useFixAccessForVesting() {
       const requiredFlowRateAllowance = BigInt(arg.requiredFlowRateAllowanceWei);
 
       const hasRequiredPermissions =
-        existingPermissions & arg.requiredFlowOperatorPermissions;
+        (existingPermissions & arg.requiredFlowOperatorPermissions) ===
+        arg.requiredFlowOperatorPermissions;
       const hasRequiredFlowRateAllowance =
         existingFlowRateAllowance >= requiredFlowRateAllowance;
 

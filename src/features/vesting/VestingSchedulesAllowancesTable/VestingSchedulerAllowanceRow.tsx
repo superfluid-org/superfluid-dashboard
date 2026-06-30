@@ -208,8 +208,8 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
 
   const existingPermissions = Number(flowOperatorPermissions);
   const isEnoughFlowOperatorPermissions =
-    requiredFlowOperatorPermissions === 0 ||
-    existingPermissions & requiredFlowOperatorPermissions;
+    (existingPermissions & requiredFlowOperatorPermissions) ===
+    requiredFlowOperatorPermissions;
 
   const showFixRequiredAccessButton =
     isSenderLooking &&
