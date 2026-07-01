@@ -1,0 +1,4 @@
+[submodule "contracts/lib/superfluid-protocol-monorepo"]
+	path = contracts/lib/superfluid-protocol-monorepo
+	url = https://github.com/superfluid-finance/protocol-monorepo.git
+	branch = 2026-03-permit2_and_macro

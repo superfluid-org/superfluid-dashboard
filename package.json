@@ -18,7 +18,9 @@
     "generate:scheduling-graphql": "graphclient build --dir ./src/scheduling-subgraph",
     "generate:balance-api": "openapi-typescript https://balances.superfluid.dev/doc -o src/features/balance/balanceApi.generated.ts",
     "depcheck": "pnpm dlx depcheck",
-    "typecheck": "pnpm exec tsc --noEmit"
+    "typecheck": "pnpm exec tsc --noEmit",
+    "contracts:build": "forge build --root contracts",
+    "contracts:test": "forge test --root contracts -vv"
   },
   "dependencies": {
     "@adraffy/ens-normalize": "^1.11.1",

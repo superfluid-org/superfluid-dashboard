@@ -1,0 +1,18 @@
+[profile.default]
+src = "src"
+test = "test"
+out = "out"
+libs = ["lib"]
+solc_version = "0.8.30"
+evm_version = "cancun"
+optimizer = true
+optimizer_runs = 200
+
+remappings = [
+    "@superfluid-finance/ethereum-contracts/=lib/superfluid-protocol-monorepo/packages/ethereum-contracts/",
+    "@superfluid-finance/solidity-semantic-money/=lib/superfluid-protocol-monorepo/packages/solidity-semantic-money/",
+    "@openzeppelin-v5/=lib/superfluid-protocol-monorepo/lib/openzeppelin-contracts/",
+    "@openzeppelin/=lib/superfluid-protocol-monorepo/lib/openzeppelin-contracts/",
+    "forge-std/=lib/superfluid-protocol-monorepo/lib/forge-std/src/",
+    "ds-test/=lib/superfluid-protocol-monorepo/lib/forge-std/lib/ds-test/src/",
+]
