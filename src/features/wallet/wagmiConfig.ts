@@ -25,7 +25,7 @@ const customRpcUrls = allNetworks.reduce<CustomRpcUrlMap>((acc, x) => {
 
   // const transport = fallback([
   //   http(x.rpcUrls.superfluid.http[0]), // Prioritize Superfluid API
-  //   http(x.rpcUrls.default.http[0]) // Fallback to wagmi-defined default public RPC
+  //   http(x.rpcUrls.default.http[0]), // Fallback to wagmi-defined default public RPC
   // ], {
   //   rank: false
   // })
