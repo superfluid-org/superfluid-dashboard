@@ -58,7 +58,10 @@ With [Foundry](https://book.getfoundry.sh/getting-started/installation) installe
 ```bash
 pnpm contracts:build
 pnpm contracts:test
+pnpm contracts:abi    # build + regenerate src/features/clearMacro/dashboardClearMacroAbi.generated.ts
 ```
+
+Run `pnpm contracts:abi` after changing the macro's external interface so the dashboard's generated ABI module stays in sync.
 
 Equivalent direct `forge` invocations:
 

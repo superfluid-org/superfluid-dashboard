@@ -20,7 +20,8 @@
     "depcheck": "pnpm dlx depcheck",
     "typecheck": "pnpm exec tsc --noEmit",
     "contracts:build": "forge build --root contracts",
-    "contracts:test": "forge test --root contracts -vv"
+    "contracts:test": "forge test --root contracts -vv",
+    "contracts:abi": "forge build --root contracts && node scripts/generate-clear-macro-abi.mjs"
   },
   "dependencies": {
     "@adraffy/ens-normalize": "^1.11.1",
