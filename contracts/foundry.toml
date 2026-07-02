@@ -11,6 +11,7 @@ optimizer_runs = 200
 remappings = [
     "@superfluid-finance/ethereum-contracts/=lib/superfluid-protocol-monorepo/packages/ethereum-contracts/",
     "@superfluid-finance/solidity-semantic-money/=lib/superfluid-protocol-monorepo/packages/solidity-semantic-money/",
+    "@superfluid-finance/automation-contracts/=lib/superfluid-protocol-monorepo/packages/automation-contracts/",
     "@openzeppelin-v5/=lib/superfluid-protocol-monorepo/lib/openzeppelin-contracts/",
     "@openzeppelin/=lib/superfluid-protocol-monorepo/lib/openzeppelin-contracts/",
     "forge-std/=lib/superfluid-protocol-monorepo/lib/forge-std/src/",

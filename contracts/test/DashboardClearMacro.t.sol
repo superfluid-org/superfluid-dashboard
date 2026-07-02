@@ -22,6 +22,10 @@ import {ClearMacroBase} from "@superfluid-finance/ethereum-contracts/contracts/u
 import {
     IClearMacroForwarderV1
 } from "@superfluid-finance/ethereum-contracts/contracts/interfaces/utils/IClearMacroForwarderV1.sol";
+import {FlowScheduler} from "@superfluid-finance/automation-contracts/scheduler/contracts/FlowScheduler.sol";
+import {
+    IFlowScheduler
+} from "@superfluid-finance/automation-contracts/scheduler/contracts/interface/IFlowScheduler.sol";
 
 import {DashboardClearMacro} from "../src/DashboardClearMacro.sol";
 
@@ -37,12 +41,14 @@ contract DashboardClearMacroTest is FoundrySuperfluidTester {
 
     DashboardClearMacro internal dashboardClearMacro;
     ClearMacroForwarderV1 internal forwarder;
+    FlowScheduler internal flowScheduler;
 
     constructor() FoundrySuperfluidTester(5) {}
 
     function setUp() public override {
         super.setUp();
-        dashboardClearMacro = new DashboardClearMacro(sf.host);
+        flowScheduler = new FlowScheduler(sf.host);
+        dashboardClearMacro = new DashboardClearMacro(sf.host, flowScheduler);
         forwarder = new ClearMacroForwarderV1(sf.host);
         _grantProviderRole(PROVIDER, address(this));
 
@@ -163,6 +169,302 @@ contract DashboardClearMacroTest is FoundrySuperfluidTester {
         assertEq(superToken.balanceOf(bob), bobBefore + DEFAULT_AMOUNT);
     }
 
+    function testScheduleFlowStartAndEnd() external {
+        VmSafe.Wallet memory signer = _newSigner("schedule");
+        _fundSuper(signer, 100e18);
+        uint32 startDate = uint32(block.timestamp + 1 days);
+        uint32 endDate = uint32(block.timestamp + 30 days);
+
+        bytes memory actionParams = dashboardClearMacro.encodeScheduleFlow(
+            LANG_EN,
+            DashboardClearMacro.ScheduleFlowParams({
+                superToken: superToken,
+                receiver: bob,
+                startDate: startDate,
+                flowRate: DEFAULT_FLOW_RATE,
+                endDate: endDate
+            })
+        );
+        _runAsProvider(signer, actionParams, 0, PROVIDER, 0, 0);
+
+        IFlowScheduler.FlowSchedule memory schedule =
+            flowScheduler.getFlowSchedule(address(superToken), signer.addr, bob);
+        assertEq(schedule.startDate, startDate);
+        assertEq(schedule.startMaxDelay, uint32(1 days));
+        assertEq(schedule.endDate, endDate);
+        assertEq(schedule.flowRate, DEFAULT_FLOW_RATE);
+        assertEq(schedule.startAmount, 0);
+
+        (, uint8 permissions, int96 flowRateAllowance) =
+            sf.cfa.getFlowOperatorData(superToken, signer.addr, address(flowScheduler));
+        assertEq(uint256(permissions), 5); // create | delete
+        assertEq(flowRateAllowance, DEFAULT_FLOW_RATE);
+    }
+
+    function testScheduleFlowEndOnly() external {
+        VmSafe.Wallet memory signer = _newSigner("schedule-end-only");
+        _fundSuper(signer, 100e18);
+        uint32 endDate = uint32(block.timestamp + 30 days);
+
+        bytes memory actionParams = dashboardClearMacro.encodeScheduleFlow(
+            LANG_EN,
+            DashboardClearMacro.ScheduleFlowParams({
+                superToken: superToken,
+                receiver: bob,
+                startDate: 0,
+                flowRate: 0,
+                endDate: endDate
+            })
+        );
+        _runAsProvider(signer, actionParams, 0, PROVIDER, 0, 0);
+
+        IFlowScheduler.FlowSchedule memory schedule =
+            flowScheduler.getFlowSchedule(address(superToken), signer.addr, bob);
+        assertEq(schedule.startDate, 0);
+        assertEq(schedule.startMaxDelay, 0);
+        assertEq(schedule.endDate, endDate);
+
+        (, uint8 permissions, int96 flowRateAllowance) =
+            sf.cfa.getFlowOperatorData(superToken, signer.addr, address(flowScheduler));
+        assertEq(uint256(permissions), 4); // delete only
+        assertEq(flowRateAllowance, 0);
+    }
+
+    function testScheduleFlowSkipsGrantWhenFullControlAlready() external {
+        VmSafe.Wallet memory signer = _newSigner("schedule-full-control");
+        _fundSuper(signer, 100e18);
+
+        vm.prank(signer.addr);
+        sf.host.callAgreement(
+            sf.cfa,
+            abi.encodeCall(
+                sf.cfa.authorizeFlowOperatorWithFullControl, (superToken, address(flowScheduler), new bytes(0))
+            ),
+            new bytes(0)
+        );
+        (, uint8 permissionsBefore, int96 allowanceBefore) =
+            sf.cfa.getFlowOperatorData(superToken, signer.addr, address(flowScheduler));
+        assertEq(uint256(permissionsBefore), 7);
+        assertEq(allowanceBefore, type(int96).max);
+
+        // An unconditional additive grant would overflow the max allowance and revert here.
+        uint32 startDate = uint32(block.timestamp + 1 days);
+        bytes memory actionParams = dashboardClearMacro.encodeScheduleFlow(
+            LANG_EN,
+            DashboardClearMacro.ScheduleFlowParams({
+                superToken: superToken,
+                receiver: bob,
+                startDate: startDate,
+                flowRate: DEFAULT_FLOW_RATE,
+                endDate: 0
+            })
+        );
+        _runAsProvider(signer, actionParams, 0, PROVIDER, 0, 0);
+
+        IFlowScheduler.FlowSchedule memory schedule =
+            flowScheduler.getFlowSchedule(address(superToken), signer.addr, bob);
+        assertEq(schedule.startDate, startDate);
+
+        (, uint8 permissionsAfter, int96 allowanceAfter) =
+            sf.cfa.getFlowOperatorData(superToken, signer.addr, address(flowScheduler));
+        assertEq(uint256(permissionsAfter), 7);
+        assertEq(allowanceAfter, type(int96).max);
+    }
+
+    function testScheduleFlowModifyDoesNotAccumulateAllowance() external {
+        VmSafe.Wallet memory signer = _newSigner("schedule-modify");
+        _fundSuper(signer, 100e18);
+        uint32 startDate = uint32(block.timestamp + 1 days);
+        uint32 endDate = uint32(block.timestamp + 30 days);
+
+        for (uint256 i = 0; i < 2; ++i) {
+            bytes memory actionParams = dashboardClearMacro.encodeScheduleFlow(
+                LANG_EN,
+                DashboardClearMacro.ScheduleFlowParams({
+                    superToken: superToken,
+                    receiver: bob,
+                    startDate: startDate,
+                    flowRate: DEFAULT_FLOW_RATE,
+                    endDate: endDate
+                })
+            );
+            _runAsProvider(signer, actionParams, 0, PROVIDER, 0, 0);
+        }
+        (, uint8 permissions, int96 flowRateAllowance) =
+            sf.cfa.getFlowOperatorData(superToken, signer.addr, address(flowScheduler));
+        assertEq(uint256(permissions), 5);
+        assertEq(flowRateAllowance, DEFAULT_FLOW_RATE); // unchanged after re-signing, not doubled
+
+        int96 higherRate = DEFAULT_FLOW_RATE * 2;
+        bytes memory higherRateParams = dashboardClearMacro.encodeScheduleFlow(
+            LANG_EN,
+            DashboardClearMacro.ScheduleFlowParams({
+                superToken: superToken,
+                receiver: bob,
+                startDate: startDate,
+                flowRate: higherRate,
+                endDate: endDate
+            })
+        );
+        _runAsProvider(signer, higherRateParams, 0, PROVIDER, 0, 0);
+
+        IFlowScheduler.FlowSchedule memory schedule =
+            flowScheduler.getFlowSchedule(address(superToken), signer.addr, bob);
+        assertEq(schedule.flowRate, higherRate);
+        (,, flowRateAllowance) = sf.cfa.getFlowOperatorData(superToken, signer.addr, address(flowScheduler));
+        assertEq(flowRateAllowance, higherRate); // topped up to the new rate, not summed
+    }
+
+    function testScheduleFlowExecutesViaKeeper() external {
+        VmSafe.Wallet memory signer = _newSigner("schedule-exec");
+        _fundSuper(signer, 100e18);
+        uint32 startDate = uint32(block.timestamp + 1 days);
+
+        bytes memory actionParams = dashboardClearMacro.encodeScheduleFlow(
+            LANG_EN,
+            DashboardClearMacro.ScheduleFlowParams({
+                superToken: superToken,
+                receiver: bob,
+                startDate: startDate,
+                flowRate: DEFAULT_FLOW_RATE,
+                endDate: 0
+            })
+        );
+        _runAsProvider(signer, actionParams, 0, PROVIDER, 0, 0);
+        assertEq(superToken.getFlowRate(signer.addr, bob), 0);
+
+        vm.warp(startDate);
+        flowScheduler.executeCreateFlow(superToken, signer.addr, bob, new bytes(0));
+
+        assertEq(superToken.getFlowRate(signer.addr, bob), DEFAULT_FLOW_RATE);
+    }
+
+    function testScheduleFlowEndOnlyExecutesViaKeeper() external {
+        VmSafe.Wallet memory signer = _newSigner("schedule-end-exec");
+        _fundSuper(signer, 100e18);
+
+        bytes memory createActionParams = dashboardClearMacro.encodeCreateFlow(
+            LANG_EN,
+            DashboardClearMacro.CreateFlowParams({superToken: superToken, receiver: bob, flowRate: DEFAULT_FLOW_RATE})
+        );
+        _runAsProvider(signer, createActionParams, 0, PROVIDER, 0, 0);
+        assertEq(superToken.getFlowRate(signer.addr, bob), DEFAULT_FLOW_RATE);
+
+        uint32 endDate = uint32(block.timestamp + 30 days);
+        bytes memory actionParams = dashboardClearMacro.encodeScheduleFlow(
+            LANG_EN,
+            DashboardClearMacro.ScheduleFlowParams({
+                superToken: superToken,
+                receiver: bob,
+                startDate: 0,
+                flowRate: 0,
+                endDate: endDate
+            })
+        );
+        _runAsProvider(signer, actionParams, 0, PROVIDER, 0, 0);
+
+        vm.warp(endDate);
+        flowScheduler.executeDeleteFlow(superToken, signer.addr, bob, new bytes(0));
+
+        assertEq(superToken.getFlowRate(signer.addr, bob), 0);
+    }
+
+    function testDeleteFlowSchedule() external {
+        VmSafe.Wallet memory signer = _newSigner("schedule-cancel");
+        _fundSuper(signer, 100e18);
+        uint32 startDate = uint32(block.timestamp + 1 days);
+        uint32 endDate = uint32(block.timestamp + 30 days);
+
+        bytes memory scheduleActionParams = dashboardClearMacro.encodeScheduleFlow(
+            LANG_EN,
+            DashboardClearMacro.ScheduleFlowParams({
+                superToken: superToken,
+                receiver: bob,
+                startDate: startDate,
+                flowRate: DEFAULT_FLOW_RATE,
+                endDate: endDate
+            })
+        );
+        _runAsProvider(signer, scheduleActionParams, 0, PROVIDER, 0, 0);
+
+        bytes memory actionParams = dashboardClearMacro.encodeDeleteFlowSchedule(
+            LANG_EN, DashboardClearMacro.DeleteFlowScheduleParams({superToken: superToken, receiver: bob})
+        );
+        _runAsProvider(signer, actionParams, 0, PROVIDER, 0, 0);
+
+        IFlowScheduler.FlowSchedule memory schedule =
+            flowScheduler.getFlowSchedule(address(superToken), signer.addr, bob);
+        assertEq(schedule.startDate, 0);
+        assertEq(schedule.endDate, 0);
+        assertEq(schedule.flowRate, 0);
+    }
+
+    function testScheduleFlowRevertsWithoutDates() external {
+        VmSafe.Wallet memory signer = _newSigner("schedule-no-dates");
+        bytes memory actionParams = dashboardClearMacro.encodeScheduleFlow(
+            LANG_EN,
+            DashboardClearMacro.ScheduleFlowParams({
+                superToken: superToken,
+                receiver: bob,
+                startDate: 0,
+                flowRate: DEFAULT_FLOW_RATE,
+                endDate: 0
+            })
+        );
+        bytes memory encodedPayload = _getEncodedPayload(
+            actionParams, PROVIDER, 0, 0, forwarder.getNonce(signer.addr, 0), address(dashboardClearMacro)
+        );
+        bytes memory sig = _signEncodedPayload(signer, encodedPayload);
+
+        vm.expectRevert(DashboardClearMacro.InvalidTimeWindow.selector);
+        forwarder.runMacro(dashboardClearMacro, encodedPayload, signer.addr, sig);
+    }
+
+    function testScheduleFlowRevertsZeroOrNegativeRate() external {
+        VmSafe.Wallet memory signer = _newSigner("schedule-bad-rate");
+        uint32 startDate = uint32(block.timestamp + 1 days);
+        int96[2] memory badRates = [int96(0), int96(-1)];
+
+        for (uint256 i = 0; i < badRates.length; ++i) {
+            bytes memory actionParams = dashboardClearMacro.encodeScheduleFlow(
+                LANG_EN,
+                DashboardClearMacro.ScheduleFlowParams({
+                    superToken: superToken,
+                    receiver: bob,
+                    startDate: startDate,
+                    flowRate: badRates[i],
+                    endDate: 0
+                })
+            );
+            bytes memory encodedPayload = _getEncodedPayload(
+                actionParams, PROVIDER, 0, 0, forwarder.getNonce(signer.addr, 0), address(dashboardClearMacro)
+            );
+            bytes memory sig = _signEncodedPayload(signer, encodedPayload);
+
+            vm.expectRevert(DashboardClearMacro.InvalidFlowRate.selector);
+            forwarder.runMacro(dashboardClearMacro, encodedPayload, signer.addr, sig);
+        }
+
+        // A stop-only schedule must not carry a flow rate.
+        bytes memory stopOnlyParams = dashboardClearMacro.encodeScheduleFlow(
+            LANG_EN,
+            DashboardClearMacro.ScheduleFlowParams({
+                superToken: superToken,
+                receiver: bob,
+                startDate: 0,
+                flowRate: DEFAULT_FLOW_RATE,
+                endDate: uint32(block.timestamp + 30 days)
+            })
+        );
+        bytes memory stopOnlyPayload = _getEncodedPayload(
+            stopOnlyParams, PROVIDER, 0, 0, forwarder.getNonce(signer.addr, 0), address(dashboardClearMacro)
+        );
+        bytes memory stopOnlySig = _signEncodedPayload(signer, stopOnlyPayload);
+
+        vm.expectRevert(DashboardClearMacro.InvalidFlowRate.selector);
+        forwarder.runMacro(dashboardClearMacro, stopOnlyPayload, signer.addr, stopOnlySig);
+    }
+
     function testEnglishDescriptionsForAllActions() external view {
         string memory receiverHex = Strings.toHexString(uint256(uint160(bob)), 20);
         string memory spenderHex = Strings.toHexString(uint256(uint160(alice)), 20);
@@ -213,6 +515,42 @@ contract DashboardClearMacroTest is FoundrySuperfluidTester {
         );
         assertTrue(_contains(transferDesc, "Transfer"));
         assertTrue(_contains(transferDesc, receiverHex));
+
+        string memory scheduleDesc = dashboardClearMacro.describeScheduleFlow(
+            LANG_EN,
+            DashboardClearMacro.ScheduleFlowParams({
+                superToken: superToken,
+                receiver: bob,
+                startDate: 1750000000,
+                flowRate: DEFAULT_FLOW_RATE,
+                endDate: 1760000000
+            })
+        );
+        assertTrue(_contains(scheduleDesc, "Schedule a stream of"));
+        assertTrue(_contains(scheduleDesc, superToken.symbol()));
+        assertTrue(_contains(scheduleDesc, receiverHex));
+        assertTrue(_contains(scheduleDesc, "1750000000"));
+        assertTrue(_contains(scheduleDesc, "1760000000"));
+        assertTrue(_contains(scheduleDesc, "authorize the Flow Scheduler"));
+
+        string memory stopOnlyDesc = dashboardClearMacro.describeScheduleFlow(
+            LANG_EN,
+            DashboardClearMacro.ScheduleFlowParams({
+                superToken: superToken,
+                receiver: bob,
+                startDate: 0,
+                flowRate: 0,
+                endDate: 1760000000
+            })
+        );
+        assertTrue(_contains(stopOnlyDesc, "to stop at"));
+        assertTrue(_contains(stopOnlyDesc, "1760000000"));
+
+        string memory cancelDesc = dashboardClearMacro.describeDeleteFlowSchedule(
+            LANG_EN, DashboardClearMacro.DeleteFlowScheduleParams({superToken: superToken, receiver: bob})
+        );
+        assertTrue(_contains(cancelDesc, "Cancel the scheduled stream"));
+        assertTrue(_contains(cancelDesc, receiverHex));
     }
 
     function testRevertsOnInvalidSignature() external {
@@ -233,7 +571,7 @@ contract DashboardClearMacroTest is FoundrySuperfluidTester {
     function testRevertsOnMacroMismatch() external {
         VmSafe.Wallet memory signer = _newSigner("mismatch");
         _fundSuper(signer, 1e18);
-        DashboardClearMacro otherDashboardClearMacro = new DashboardClearMacro(sf.host);
+        DashboardClearMacro otherDashboardClearMacro = new DashboardClearMacro(sf.host, flowScheduler);
 
         bytes memory actionParams = dashboardClearMacro.encodeTransfer(
             LANG_EN, DashboardClearMacro.TransferParams({superToken: superToken, receiver: bob, amount: DEFAULT_AMOUNT})

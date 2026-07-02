@@ -6,8 +6,10 @@ Types for the forwarder and ClearMacro base live in `@superfluid-finance/ethereu
 
 ## Purpose
 
-- **`DashboardClearMacro`**: multi-action macro for dashboard flows (create/update/delete streams, upgrade/downgrade, approve, transfer).
+- **`DashboardClearMacro`**: multi-action macro for dashboard flows (create/update/delete streams, upgrade/downgrade, approve, transfer, flow scheduling).
 - **`FormatterLibs`**: helpers used by encoders and human-readable descriptions.
+
+The macro is constructed with two per-chain addresses: the Superfluid host and the [FlowScheduler](https://docs.superfluid.finance/) automation contract (both published in `@superfluid-finance/metadata`). The scheduling actions grant the FlowScheduler the required CFA flow-operator permissions and register the schedule in the same signed batch; off-chain keepers later trigger the actual stream start/stop.
 
 ## ClearMacro payload flow
 
@@ -36,6 +38,10 @@ Each action exposes:
 | 5  | Downgrade     | `superToken`, `amount` | Downgrade `amount` `superSymbol` to `underlyingSymbol` |
 | 6  | Approve       | `superToken`, `spender`, `amount` | Approve `spender` for an allowance of `amount` `superSymbol` |
 | 7  | Transfer      | `superToken`, `receiver`, `amount` | Transfer `amount` `superSymbol` to `receiver` |
+| 8  | Schedule Flow | `superToken`, `receiver`, `startDate`, `flowRate`, `endDate` | Schedule a stream of `flowRate`/day `superSymbol` to `receiver` (start and/or stop; unix timestamps), and authorize the Flow Scheduler |
+| 9  | Delete Flow Schedule | `superToken`, `receiver` | Cancel the scheduled stream of `superSymbol` to `receiver` |
+
+Schedule Flow notes: `startDate = 0` schedules a stop only (requires `flowRate = 0`); `endDate = 0` schedules a start only (requires `flowRate > 0`); at least one date must be set. A scheduled start uses the dashboard's default `startMaxDelay` of 1 day and no upfront `startAmount`. The bundled permission grant (`increaseFlowRateAllowanceWithPermissions`) only adds what is missing: the macro reads the FlowScheduler's existing flow-operator permissions and allowance for the signer and grants the missing permission bits (create for a start, delete for a stop) and the allowance top-up to `flowRate` — skipped entirely when already sufficient (e.g. after a prior full-control grant), so repeated schedule edits do not accumulate allowance. Cancelling a schedule does not revoke previously granted permissions.
 
 ## Clone and dependencies
 
@@ -69,6 +75,6 @@ forge test --root contracts -vv
 
 ## Tests
 
-The Foundry suite (when present) exercises action happy paths on deployed protocol fixtures, signature and macro mismatch cases, unknown actions, unsupported languages, provider authorization (`self` vs ACL), nonce replay / ordering, and validity window boundaries.
+The Foundry suite exercises action happy paths on deployed protocol fixtures, signature and macro mismatch cases, unknown actions, unsupported languages, provider authorization (`self` vs ACL), nonce replay / ordering, validity window boundaries, and the full flow-scheduling lifecycle (schedule via macro, then keeper-style `executeCreateFlow` / `executeDeleteFlow` against a locally deployed FlowScheduler).
 
-CI runs `forge test --root contracts -vv` with a recursive submodule checkout (see `.github/workflows/ci.yml`, job `forge-contracts`).
+CI runs `forge test --root contracts -vv` with a recursive submodule checkout (see `.github/workflows/contracts.yml`, job `forge-contracts`).

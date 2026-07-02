@@ -15,6 +15,9 @@ import {
 import {SuperTokenV1Library} from "@superfluid-finance/ethereum-contracts/contracts/apps/SuperTokenV1Library.sol";
 
 import {ClearMacroBase} from "@superfluid-finance/ethereum-contracts/contracts/utils/ClearMacroBase.sol";
+import {
+    IFlowScheduler
+} from "@superfluid-finance/automation-contracts/scheduler/contracts/interface/IFlowScheduler.sol";
 import {FlowRateFormatter, AmountFormatter} from "./FormatterLibs.sol";
 
 using SuperTokenV1Library for ISuperToken;
@@ -23,7 +26,8 @@ using AmountFormatter for uint256;
 
 /**
  * @title DashboardClearMacro
- * @dev ClearMacro for dashboard operations (CFA flows, upgrade/downgrade, approve, transfer).
+ * @dev ClearMacro for dashboard operations (CFA flows, upgrade/downgrade, approve, transfer,
+ *      flow scheduling via the FlowScheduler automation contract).
  *
  * Wire format for `Payload.action.params` (`actionParams`):
  * `abi.encode(uint8 actionId, bytes32 lang, bytes actionSpecificParams)`.
@@ -37,8 +41,14 @@ contract DashboardClearMacro is ClearMacroBase {
         Upgrade,
         Downgrade,
         Approve,
-        Transfer
+        Transfer,
+        ScheduleFlow,
+        DeleteFlowSchedule
     }
+
+    error InvalidTimeWindow();
+    error InvalidFlowRate();
+    error ZeroAddress();
 
     bytes32 private constant _LANG_EN = bytes32("en");
 
@@ -54,8 +64,17 @@ contract DashboardClearMacro is ClearMacroBase {
         "Action(string description,address token,address spender,uint256 amount)";
     string private constant _TYPEDEF_TRANSFER =
         "Action(string description,address token,address receiver,uint256 amount)";
+    string private constant _TYPEDEF_SCHEDULE_FLOW =
+        "Action(string description,address token,address receiver,uint32 startDate,int96 flowRate,uint32 endDate)";
+    string private constant _TYPEDEF_DELETE_FLOW_SCHEDULE = "Action(string description,address token,address receiver)";
+
+    /// How long after `startDate` the keeper may still execute the scheduled start (dashboard default).
+    uint32 private constant _START_MAX_DELAY = 1 days;
+    uint8 private constant _ACL_CREATE = 1;
+    uint8 private constant _ACL_DELETE = 4;
 
     IConstantFlowAgreementV1 internal immutable _cfa;
+    IFlowScheduler internal immutable _flowScheduler;
 
     struct CreateFlowParams {
         ISuperToken superToken;
@@ -97,10 +116,26 @@ contract DashboardClearMacro is ClearMacroBase {
         uint256 amount;
     }
 
-    constructor(ISuperfluid host) {
+    /// `startDate == 0` means no scheduled start (stop-only); `endDate == 0` means no scheduled stop.
+    struct ScheduleFlowParams {
+        ISuperToken superToken;
+        address receiver;
+        uint32 startDate;
+        int96 flowRate;
+        uint32 endDate;
+    }
+
+    struct DeleteFlowScheduleParams {
+        ISuperToken superToken;
+        address receiver;
+    }
+
+    constructor(ISuperfluid host, IFlowScheduler flowScheduler) {
+        if (address(flowScheduler) == address(0)) revert ZeroAddress();
         _cfa = IConstantFlowAgreementV1(
             address(host.getAgreementClass(keccak256("org.superfluid-finance.agreements.ConstantFlowAgreement.v1")))
         );
+        _flowScheduler = flowScheduler;
     }
 
     function _registerActions() internal override {
@@ -174,6 +209,26 @@ contract DashboardClearMacro is ClearMacroBase {
                 postCheck: _noOpPostCheck
             })
         );
+        _registerAction(
+            uint8(ActionId.ScheduleFlow),
+            ClearMacroBase.ActionSpec({
+                primaryTypeName: "ScheduleFlow",
+                actionTypeDefinition: _TYPEDEF_SCHEDULE_FLOW,
+                getActionStructHash: _getActionStructHashScheduleFlow,
+                buildOperations: _buildOperationsScheduleFlow,
+                postCheck: _noOpPostCheck
+            })
+        );
+        _registerAction(
+            uint8(ActionId.DeleteFlowSchedule),
+            ClearMacroBase.ActionSpec({
+                primaryTypeName: "DeleteFlowSchedule",
+                actionTypeDefinition: _TYPEDEF_DELETE_FLOW_SCHEDULE,
+                getActionStructHash: _getActionStructHashDeleteFlowSchedule,
+                buildOperations: _buildOperationsDeleteFlowSchedule,
+                postCheck: _noOpPostCheck
+            })
+        );
     }
 
     function _encodeRaw(ActionId actionId, bytes32 lang, bytes memory actionSpecificParams)
@@ -228,6 +283,24 @@ contract DashboardClearMacro is ClearMacroBase {
         return _encodeRaw(ActionId.Transfer, lang, abi.encode(p.superToken, p.receiver, p.amount));
     }
 
+    function encodeScheduleFlow(bytes32 lang, ScheduleFlowParams calldata p)
+        external
+        pure
+        returns (bytes memory actionParams)
+    {
+        return _encodeRaw(
+            ActionId.ScheduleFlow, lang, abi.encode(p.superToken, p.receiver, p.startDate, p.flowRate, p.endDate)
+        );
+    }
+
+    function encodeDeleteFlowSchedule(bytes32 lang, DeleteFlowScheduleParams calldata p)
+        external
+        pure
+        returns (bytes memory actionParams)
+    {
+        return _encodeRaw(ActionId.DeleteFlowSchedule, lang, abi.encode(p.superToken, p.receiver));
+    }
+
     function describeCreateFlow(bytes32 lang, CreateFlowParams calldata p) external view returns (string memory) {
         return _descriptionCreateFlow(lang, p.superToken, p.receiver, p.flowRate);
     }
@@ -254,6 +327,18 @@ contract DashboardClearMacro is ClearMacroBase {
 
     function describeTransfer(bytes32 lang, TransferParams calldata p) external view returns (string memory) {
         return _descriptionTransfer(lang, p.superToken, p.receiver, p.amount);
+    }
+
+    function describeScheduleFlow(bytes32 lang, ScheduleFlowParams calldata p) external view returns (string memory) {
+        return _descriptionScheduleFlow(lang, p.superToken, p.receiver, p.startDate, p.flowRate, p.endDate);
+    }
+
+    function describeDeleteFlowSchedule(bytes32 lang, DeleteFlowScheduleParams calldata p)
+        external
+        view
+        returns (string memory)
+    {
+        return _descriptionDeleteFlowSchedule(lang, p.superToken, p.receiver);
     }
 
     function _buildOperationsCreateFlow(ISuperfluid, bytes memory actionSpecificParams, address)
@@ -357,6 +442,88 @@ contract DashboardClearMacro is ClearMacroBase {
             operationType: BatchOperation.OPERATION_TYPE_ERC20_TRANSFER_FROM,
             target: address(p.superToken),
             data: abi.encode(account, p.receiver, p.amount)
+        });
+    }
+
+    // Grants the FlowScheduler the flow operator permissions it needs (create for a scheduled
+    // start, delete for a scheduled stop) in the same batch that creates the schedule. Only the
+    // missing permission bits and allowance top-up are granted — repeated schedule edits do not
+    // accumulate allowance, and an existing full-control grant (allowance = type(int96).max)
+    // would otherwise overflow CFA's checked allowance addition and revert the whole action.
+    // The FlowScheduler accepts a zero/negative-rate start schedule but CFA rejects it at
+    // execution time, so that combination is rejected here instead of failing at the keeper.
+    function _buildOperationsScheduleFlow(ISuperfluid, bytes memory actionSpecificParams, address account)
+        internal
+        view
+        returns (ISuperfluid.Operation[] memory operations)
+    {
+        ScheduleFlowParams memory p = abi.decode(actionSpecificParams, (ScheduleFlowParams));
+        if (p.startDate == 0 && p.endDate == 0) revert InvalidTimeWindow();
+        if (p.startDate != 0 ? p.flowRate <= 0 : p.flowRate != 0) revert InvalidFlowRate();
+
+        (uint8 permissionsToAdd, int96 allowanceToAdd) = _missingSchedulerGrant(p, account);
+        bool needsGrant = permissionsToAdd != 0 || allowanceToAdd != 0;
+
+        operations = new ISuperfluid.Operation[](needsGrant ? 2 : 1);
+        if (needsGrant) {
+            operations[0] = ISuperfluid.Operation({
+                operationType: BatchOperation.OPERATION_TYPE_SUPERFLUID_CALL_AGREEMENT,
+                target: address(_cfa),
+                data: abi.encode(
+                    abi.encodeCall(
+                        _cfa.increaseFlowRateAllowanceWithPermissions,
+                        (p.superToken, address(_flowScheduler), permissionsToAdd, allowanceToAdd, new bytes(0))
+                    ),
+                    new bytes(0)
+                )
+            });
+        }
+        operations[operations.length - 1] = ISuperfluid.Operation({
+            operationType: BatchOperation.OPERATION_TYPE_SUPERFLUID_CALL_APP_ACTION,
+            target: address(_flowScheduler),
+            data: abi.encodeCall(
+                IFlowScheduler.createFlowSchedule,
+                (
+                    p.superToken,
+                    p.receiver,
+                    p.startDate,
+                    p.startDate != 0 ? _START_MAX_DELAY : 0,
+                    p.flowRate,
+                    uint256(0),
+                    p.endDate,
+                    new bytes(0),
+                    new bytes(0)
+                )
+            )
+        });
+    }
+
+    // Diff between what the schedule needs from the FlowScheduler as flow operator and what the
+    // signer has already granted, so the grant operation covers only the shortfall.
+    function _missingSchedulerGrant(ScheduleFlowParams memory p, address account)
+        internal
+        view
+        returns (uint8 permissionsToAdd, int96 allowanceToAdd)
+    {
+        uint8 neededPermissions = (p.startDate != 0 ? _ACL_CREATE : 0) | (p.endDate != 0 ? _ACL_DELETE : 0);
+        int96 neededAllowance = p.startDate != 0 ? p.flowRate : int96(0);
+        (, uint8 existingPermissions, int96 existingAllowance) =
+            _cfa.getFlowOperatorData(p.superToken, account, address(_flowScheduler));
+        permissionsToAdd = neededPermissions & ~existingPermissions;
+        allowanceToAdd = existingAllowance >= neededAllowance ? int96(0) : neededAllowance - existingAllowance;
+    }
+
+    function _buildOperationsDeleteFlowSchedule(ISuperfluid, bytes memory actionSpecificParams, address)
+        internal
+        view
+        returns (ISuperfluid.Operation[] memory operations)
+    {
+        DeleteFlowScheduleParams memory p = abi.decode(actionSpecificParams, (DeleteFlowScheduleParams));
+        operations = new ISuperfluid.Operation[](1);
+        operations[0] = ISuperfluid.Operation({
+            operationType: BatchOperation.OPERATION_TYPE_SUPERFLUID_CALL_APP_ACTION,
+            target: address(_flowScheduler),
+            data: abi.encodeCall(IFlowScheduler.deleteFlowSchedule, (p.superToken, p.receiver, new bytes(0)))
         });
     }
 
@@ -477,6 +644,43 @@ contract DashboardClearMacro is ClearMacroBase {
         );
     }
 
+    function _getActionStructHashScheduleFlow(bytes memory actionSpecificParams, bytes32 lang)
+        internal
+        view
+        returns (bytes32)
+    {
+        ScheduleFlowParams memory p = abi.decode(actionSpecificParams, (ScheduleFlowParams));
+        return keccak256(
+            abi.encode(
+                keccak256(abi.encodePacked(_TYPEDEF_SCHEDULE_FLOW)),
+                keccak256(
+                    bytes(_descriptionScheduleFlow(lang, p.superToken, p.receiver, p.startDate, p.flowRate, p.endDate))
+                ),
+                p.superToken,
+                p.receiver,
+                p.startDate,
+                p.flowRate,
+                p.endDate
+            )
+        );
+    }
+
+    function _getActionStructHashDeleteFlowSchedule(bytes memory actionSpecificParams, bytes32 lang)
+        internal
+        view
+        returns (bytes32)
+    {
+        DeleteFlowScheduleParams memory p = abi.decode(actionSpecificParams, (DeleteFlowScheduleParams));
+        return keccak256(
+            abi.encode(
+                keccak256(abi.encodePacked(_TYPEDEF_DELETE_FLOW_SCHEDULE)),
+                keccak256(bytes(_descriptionDeleteFlowSchedule(lang, p.superToken, p.receiver))),
+                p.superToken,
+                p.receiver
+            )
+        );
+    }
+
     function _descriptionCreateFlow(bytes32 lang, ISuperToken token, address receiver, int96 flowRate)
         internal
         view
@@ -556,6 +760,63 @@ contract DashboardClearMacro is ClearMacroBase {
     {
         _requireEnglish(lang);
         return string.concat("Transfer ", amount.toHumanReadable(), " ", token.symbol(), " to ", _hex(receiver));
+    }
+
+    function _descriptionScheduleFlow(
+        bytes32 lang,
+        ISuperToken token,
+        address receiver,
+        uint32 startDate,
+        int96 flowRate,
+        uint32 endDate
+    ) internal view returns (string memory) {
+        _requireEnglish(lang);
+        if (startDate != 0 && endDate != 0) {
+            return string.concat(
+                "Schedule a stream of ",
+                flowRate.toFlowRatePerDay(),
+                " ",
+                token.symbol(),
+                "/day to ",
+                _hex(receiver),
+                ", starting at ",
+                Strings.toString(startDate),
+                " and stopping at ",
+                Strings.toString(endDate),
+                " (unix time), and authorize the Flow Scheduler"
+            );
+        } else if (startDate != 0) {
+            return string.concat(
+                "Schedule a stream of ",
+                flowRate.toFlowRatePerDay(),
+                " ",
+                token.symbol(),
+                "/day to ",
+                _hex(receiver),
+                ", starting at ",
+                Strings.toString(startDate),
+                " (unix time), and authorize the Flow Scheduler"
+            );
+        } else {
+            return string.concat(
+                "Schedule the stream of ",
+                token.symbol(),
+                " to ",
+                _hex(receiver),
+                " to stop at ",
+                Strings.toString(endDate),
+                " (unix time), and authorize the Flow Scheduler"
+            );
+        }
+    }
+
+    function _descriptionDeleteFlowSchedule(bytes32 lang, ISuperToken token, address receiver)
+        internal
+        view
+        returns (string memory)
+    {
+        _requireEnglish(lang);
+        return string.concat("Cancel the scheduled stream of ", token.symbol(), " to ", _hex(receiver));
     }
 
     function _requireEnglish(bytes32 lang) internal pure {
