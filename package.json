@@ -18,9 +18,11 @@
     "generate:scheduling-graphql": "graphclient build --dir ./src/scheduling-subgraph",
     "generate:balance-api": "openapi-typescript https://balances.superfluid.dev/doc -o src/features/balance/balanceApi.generated.ts",
     "depcheck": "pnpm dlx depcheck",
-    "typecheck": "pnpm exec tsc --noEmit"
+    "typecheck": "pnpm exec tsc --noEmit",
+    "test:unit": "vitest run --config vitest.config.ts"
   },
   "dependencies": {
+    "@d10r/wagmi-superfluid-wallet": "0.1.0-rc.1",
     "@adraffy/ens-normalize": "^1.11.1",
     "@base-org/account": "^2.5.1",
     "@emotion/cache": "^11.14.0",
@@ -121,7 +123,8 @@
     "npm-run-all": "^4.1.5",
     "openapi-typescript": "^7.13.0",
     "replayio": "^1.8.2",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
   },
   "packageManager": "pnpm@9.15.9+sha512.68046141893c66fad01c079231128e9afb89ef87e2691d69e4d40eee228988295fd4682181bae55b58418c3a253bde65a505ec7c5f9403ece5cc3cd37dcf2531",
   "engines": {

@@ -2,6 +2,7 @@ import { Connector, createConnector, CreateConnectorFn, createStorage, custom } 
 import { defaultAppDescription } from '../../components/SEO/StaticSEO';
 import { allNetworks, findNetworkOrThrow } from '../network/networks';
 import appConfig from "../../utils/config";
+import { getSuperfluidWalletConnector } from "./superfluidWalletConnector";
 import { safe } from 'wagmi/connectors';
 import { getPublicClient, GetPublicClientReturnType } from "wagmi/actions"
 import { Address, createWalletClient } from "viem";
@@ -207,6 +208,9 @@ const wagmiAdapter = new WagmiAdapter({
       debug: false,
       shimDisconnect: true
     }),
+    ...(appConfig.superfluidWallet.enabled
+      ? [getSuperfluidWalletConnector()]
+      : []),
     ...testConnectors,
   ],
   batch: {

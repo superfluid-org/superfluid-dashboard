@@ -1,5 +1,6 @@
 import { BasePage, wordTimeUnitMap } from '../BasePage';
 import { networksBySlug } from '../../superData/networks';
+import { installSuperfluidWalletMock } from '../../support/superfluidWalletMock';
 import {
   http,
   createPublicClient,
@@ -322,7 +323,11 @@ export class Common extends BasePage {
 
           const transport = http(networkRpc);
           const publicClient = createPublicClient({ chain, transport });
-          const walletClient = createWalletClient({ account, chain, transport });
+          const walletClient = createWalletClient({
+            account,
+            chain,
+            transport,
+          });
 
           const SIGNING_METHODS = [
             'eth_sendTransaction',
@@ -387,7 +392,8 @@ export class Common extends BasePage {
                       data: tx.data,
                       gas: numberToHex(8000000),
                     };
-                    if (tx.value != null) estParams.value = numberToHex(tx.value);
+                    if (tx.value != null)
+                      estParams.value = numberToHex(tx.value);
                     tx.gas = BigInt(
                       await publicClient.request({
                         method: 'eth_estimateGas',
@@ -473,6 +479,61 @@ export class Common extends BasePage {
         console.log(`Final wallet status: ${el.text()}`);
       });
     });
+  }
+
+  static resolveTxAccountPrivateKey(persona: string): string {
+    if (persona === 'superfluidE2E') {
+      return Cypress.env('SUPERFLUID_WALLET_E2E_PRIVATE_KEY');
+    }
+    const personas = ['alice', 'bob', 'dan', 'john'];
+    if (personas.includes(persona)) {
+      const chosenPersona = personas.findIndex((el) => el === persona) + 1;
+      return Cypress.env(`TX_ACCOUNT_PRIVATE_KEY${chosenPersona}`);
+    }
+    if (persona === 'NewRandomWallet') {
+      return this.generateNewWallet();
+    }
+    return persona === 'staticBalanceAccount'
+      ? Cypress.env('STATIC_BALANCE_ACCOUNT_PRIVATE_KEY')
+      : Cypress.env('ONGOING_STREAM_ACCOUNT_PRIVATE_KEY');
+  }
+
+  static openDashboardWithSuperfluidWalletTxAccount(
+    page: string,
+    persona: string,
+    network: string
+  ) {
+    const usedAccountPrivateKey = this.resolveTxAccountPrivateKey(persona);
+    const selectedNetwork = this.getSelectedNetwork(network);
+    const chainId = networksBySlug.get(selectedNetwork)?.id;
+
+    cy.visit(page, {
+      onBeforeLoad: (window) => {
+        installSuperfluidWalletMock(window, {
+          privateKey: (usedAccountPrivateKey.startsWith('0x')
+            ? usedAccountPrivateKey
+            : `0x${usedAccountPrivateKey}`) as `0x${string}`,
+          chainId: chainId!,
+        });
+      },
+    });
+
+    if (Cypress.env('dev')) {
+      cy.get('nextjs-portal').shadow().find('[aria-label=Close]').click();
+    }
+
+    this.changeNetwork(selectedNetwork);
+  }
+
+  static connectViaSuperfluidWalletInAppKit() {
+    this.click(CONNECT_WALLET_BUTTON);
+    this.isVisible(WEB3_MODAL);
+    cy.get(WEB3_MODAL).contains('Superfluid Wallet').click({ force: true });
+    this.doesNotExist(CONNECT_WALLET_BUTTON, undefined, { timeout: 30000 });
+    cy.get(WALLET_CONNECTION_STATUS, { timeout: 15000 }).should(
+      'contain.text',
+      'Connected'
+    );
   }
 
   static rejectTransactions() {
@@ -657,12 +718,17 @@ export class Common extends BasePage {
   static mockRecentsToKnownReceiver() {
     cy.intercept('POST', '**subgraph**', (req) => {
       const query = (req.body && req.body.query) || '';
-      if (req.body?.operationName === 'recents' || query.includes('query recents')) {
+      if (
+        req.body?.operationName === 'recents' ||
+        query.includes('query recents')
+      ) {
         req.alias = 'recentsQuery';
         req.reply({
           data: {
             streams: [
-              { receiver: { id: '0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2' } },
+              {
+                receiver: { id: '0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2' },
+              },
             ],
           },
         });
