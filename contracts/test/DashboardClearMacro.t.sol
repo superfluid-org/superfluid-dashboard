@@ -356,6 +356,124 @@ contract DashboardClearMacroTest is DashboardClearMacroTestBase {
         assertEq(superToken.getFlowRate(signer.addr, bob), 0);
     }
 
+    function testScheduleFlowImmediateStart() external {
+        VmSafe.Wallet memory signer = _newSigner("schedule-immediate");
+        _fundSuper(signer, 100e18);
+        uint32 endDate = uint32(block.timestamp + 30 days);
+
+        _runAsProvider(signer, _scheduleParams(bob, 0, DEFAULT_FLOW_RATE, endDate), 0, PROVIDER, 0, 0);
+
+        // The flow is live immediately, without a keeper run.
+        assertEq(superToken.getFlowRate(signer.addr, bob), DEFAULT_FLOW_RATE);
+
+        // The stored row is a plain end-only schedule (rate 0) — the same shape the dashboard's
+        // direct batch stores for an end-only schedule.
+        IFlowScheduler.FlowSchedule memory schedule =
+            flowScheduler.getFlowSchedule(address(superToken), signer.addr, bob);
+        assertEq(schedule.startDate, 0);
+        assertEq(schedule.startMaxDelay, 0);
+        assertEq(schedule.endDate, endDate);
+        assertEq(schedule.flowRate, 0);
+        assertEq(schedule.startAmount, 0);
+
+        (, uint8 permissions, int96 flowRateAllowance) =
+            sf.cfa.getFlowOperatorData(superToken, signer.addr, address(flowScheduler));
+        assertEq(uint256(permissions), 4); // delete only — the immediate create runs as the signer
+        assertEq(flowRateAllowance, 0);
+
+        // New end-only schedule: setup (incl. the immediate create) + executeDeleteFlow => 2x base fee.
+        assertEq(superToken.balanceOf(FEE_RECEIVER), 2 * BASE_FEE);
+    }
+
+    function testScheduleFlowImmediateStartStopExecutesViaKeeper() external {
+        VmSafe.Wallet memory signer = _newSigner("schedule-immediate-exec");
+        _fundSuper(signer, 100e18);
+        uint32 endDate = uint32(block.timestamp + 30 days);
+
+        _runAsProvider(signer, _scheduleParams(bob, 0, DEFAULT_FLOW_RATE, endDate), 0, PROVIDER, 0, 0);
+        assertEq(superToken.getFlowRate(signer.addr, bob), DEFAULT_FLOW_RATE);
+
+        vm.warp(endDate);
+        flowScheduler.executeDeleteFlow(superToken, signer.addr, bob, new bytes(0));
+
+        assertEq(superToken.getFlowRate(signer.addr, bob), 0);
+    }
+
+    function testScheduleFlowImmediateStartSkipsGrantWhenFullControlAlready() external {
+        VmSafe.Wallet memory signer = _newSigner("schedule-immediate-full-control");
+        _fundSuper(signer, 100e18);
+
+        vm.prank(signer.addr);
+        sf.host.callAgreement(
+            sf.cfa,
+            abi.encodeCall(
+                sf.cfa.authorizeFlowOperatorWithFullControl, (superToken, address(flowScheduler), new bytes(0))
+            ),
+            new bytes(0)
+        );
+
+        // An unconditional additive grant would overflow the max allowance and revert here.
+        uint32 endDate = uint32(block.timestamp + 30 days);
+        _runAsProvider(signer, _scheduleParams(bob, 0, DEFAULT_FLOW_RATE, endDate), 0, PROVIDER, 0, 0);
+
+        assertEq(superToken.getFlowRate(signer.addr, bob), DEFAULT_FLOW_RATE);
+
+        (, uint8 permissionsAfter, int96 allowanceAfter) =
+            sf.cfa.getFlowOperatorData(superToken, signer.addr, address(flowScheduler));
+        assertEq(uint256(permissionsAfter), 7);
+        assertEq(allowanceAfter, type(int96).max);
+    }
+
+    function testScheduleFlowImmediateStartRevertsWhenFlowActive() external {
+        VmSafe.Wallet memory signer = _newSigner("schedule-immediate-active");
+        _fundSuper(signer, 100e18);
+        uint32 endDate = uint32(block.timestamp + 30 days);
+
+        bytes memory createActionParams = dashboardClearMacro.encodeCreateFlow(
+            LANG_EN,
+            DashboardClearMacro.CreateFlowParams({superToken: superToken, receiver: bob, flowRate: DEFAULT_FLOW_RATE})
+        );
+        _runAsProvider(signer, createActionParams, 0, PROVIDER, 0, 0);
+
+        // The signed text promises to START a stream; with one already running the CFA createFlow
+        // reverts and the whole action must roll back.
+        bytes memory actionParams = _scheduleParams(bob, 0, DEFAULT_FLOW_RATE, endDate);
+        bytes memory encodedPayload = _getEncodedPayload(
+            actionParams, PROVIDER, 0, 0, forwarder.getNonce(signer.addr, 0), address(dashboardClearMacro)
+        );
+        bytes memory sig = _signEncodedPayload(signer, encodedPayload);
+
+        vm.expectRevert();
+        forwarder.runMacro(dashboardClearMacro, encodedPayload, signer.addr, sig);
+
+        // Atomicity: the schedule row was not created either.
+        IFlowScheduler.FlowSchedule memory schedule =
+            flowScheduler.getFlowSchedule(address(superToken), signer.addr, bob);
+        assertEq(schedule.endDate, 0);
+    }
+
+    function testScheduleFlowImmediateStartOnExistingScheduleChargesBaseOnly() external {
+        VmSafe.Wallet memory signer = _newSigner("schedule-immediate-modify");
+        _fundSuper(signer, 100e18);
+        uint32 endDate = uint32(block.timestamp + 30 days);
+
+        // An end-only row created directly via the FlowScheduler (outside the macro) — no fee yet.
+        vm.prank(signer.addr);
+        flowScheduler.createFlowSchedule(superToken, bob, 0, 0, int96(0), 0, endDate, new bytes(0), new bytes(0));
+        assertEq(superToken.balanceOf(FEE_RECEIVER), 0);
+
+        // The row already exists => the quote and the charge are the 1x modify fee.
+        bytes memory actionParams = _scheduleParams(bob, 0, DEFAULT_FLOW_RATE, endDate);
+        (,, uint256 currentFee, uint256 maxFee) = dashboardClearMacro.previewRelayFee(actionParams, signer.addr);
+        assertEq(currentFee, BASE_FEE);
+        assertEq(maxFee, 2 * BASE_FEE);
+
+        _runAsProvider(signer, actionParams, 0, PROVIDER, 0, 0);
+
+        assertEq(superToken.getFlowRate(signer.addr, bob), DEFAULT_FLOW_RATE);
+        assertEq(superToken.balanceOf(FEE_RECEIVER), BASE_FEE);
+    }
+
     function testDeleteFlowSchedule() external {
         VmSafe.Wallet memory signer = _newSigner("schedule-cancel");
         _fundSuper(signer, 100e18);
@@ -432,14 +550,14 @@ contract DashboardClearMacroTest is DashboardClearMacroTestBase {
             forwarder.runMacro(dashboardClearMacro, encodedPayload, signer.addr, sig);
         }
 
-        // A stop-only schedule must not carry a flow rate.
+        // A stop-only schedule may carry a positive rate (immediate start) but never a negative one.
         bytes memory stopOnlyParams = dashboardClearMacro.encodeScheduleFlow(
             LANG_EN,
             DashboardClearMacro.ScheduleFlowParams({
                 superToken: superToken,
                 receiver: bob,
                 startDate: 0,
-                flowRate: DEFAULT_FLOW_RATE,
+                flowRate: -1,
                 endDate: uint32(block.timestamp + 30 days)
             })
         );
@@ -547,6 +665,24 @@ contract DashboardClearMacroTest is DashboardClearMacroTestBase {
         assertTrue(_contains(cancelDesc, receiverHex));
     }
 
+    // Separate from testEnglishDescriptionsForAllActions: one more local there is stack-too-deep.
+    function testEnglishDescriptionImmediateStart() external view {
+        string memory immediateDesc = dashboardClearMacro.describeScheduleFlow(
+            LANG_EN,
+            DashboardClearMacro.ScheduleFlowParams({
+                superToken: superToken,
+                receiver: bob,
+                startDate: 0,
+                flowRate: DEFAULT_FLOW_RATE,
+                endDate: 1760000000
+            })
+        );
+        assertTrue(_contains(immediateDesc, "Start a stream of"));
+        assertTrue(_contains(immediateDesc, "immediately"));
+        assertTrue(_contains(immediateDesc, "1760000000"));
+        assertTrue(_contains(immediateDesc, "for a new schedule, or"));
+    }
+
     // Exact-string checks: the action struct hash commits to this precise text (clear signing), and the
     // FeeNotRepresentable granularity guarantees the disclosed fee literal equals the amount charged.
     // BASE_FEE = 1e15 formats as "0.00100" (2x "0.00200", 3x "0.00300"); DEFAULT_FLOW_RATE as "0.10000"/day.
@@ -631,6 +767,26 @@ contract DashboardClearMacroTest is DashboardClearMacroTestBase {
             string.concat(
                 "Schedule the stream of ", sym, " to ", receiverHex,
                 " to stop at 1760000000 (unix time), and authorize the Flow Scheduler",
+                ", plus a relay fee payable to ", feeReceiverHex,
+                " of 0.00200 ", sym, " for a new schedule, or 0.00100 ", sym, " when modifying an existing schedule"
+            )
+        );
+
+        string memory immediateDesc = dashboardClearMacro.describeScheduleFlow(
+            LANG_EN,
+            DashboardClearMacro.ScheduleFlowParams({
+                superToken: superToken,
+                receiver: bob,
+                startDate: 0,
+                flowRate: DEFAULT_FLOW_RATE,
+                endDate: 1760000000
+            })
+        );
+        assertEq(
+            immediateDesc,
+            string.concat(
+                "Start a stream of 0.10000 ", sym, "/day to ", receiverHex,
+                " immediately, stopping at 1760000000 (unix time), and authorize the Flow Scheduler",
                 ", plus a relay fee payable to ", feeReceiverHex,
                 " of 0.00200 ", sym, " for a new schedule, or 0.00100 ", sym, " when modifying an existing schedule"
             )
@@ -1159,6 +1315,11 @@ contract DashboardClearMacroTest is DashboardClearMacroTestBase {
         bytes memory startOnlyParams = _scheduleParams(bob, startDate, DEFAULT_FLOW_RATE, 0);
         (,, currentFee, maxFee) = dashboardClearMacro.previewRelayFee(startOnlyParams, alice);
         assertEq(currentFee, 2 * BASE_FEE); // new start-only => 2x
+        assertEq(maxFee, 2 * BASE_FEE);
+
+        bytes memory immediateParams = _scheduleParams(bob, 0, DEFAULT_FLOW_RATE, endDate);
+        (,, currentFee, maxFee) = dashboardClearMacro.previewRelayFee(immediateParams, alice);
+        assertEq(currentFee, 2 * BASE_FEE); // immediate start + end: the create rides in the setup tx => 2x
         assertEq(maxFee, 2 * BASE_FEE);
     }
 

@@ -30,14 +30,55 @@ import {
   subOperationsWriteFragment,
 } from "../transactions/operations";
 import { useSuperfluidWriteContract } from "../transactions/useSuperfluidWriteContract";
+import { ClearMacroAction } from "../clearMacro/dashboardClearMacro";
 import { UnitOfTime } from "./FlowRateInput";
 
 /**
- * Single source for the grant sub-op's title: the grant+schedule→one-relayable-action
- * reduction below matches on it, so the assignment and the comparison must never drift.
+ * Single source for the grant sub-op's title: `reduceToScheduleFlowAction` matches on it,
+ * so the assignment and the comparison must never drift.
  */
 const APPROVE_STREAM_SCHEDULER_TITLE =
   "Approve Stream Scheduler" satisfies TransactionTitle;
+
+/**
+ * The macro's scheduleFlow performs the missing flow-operator grant itself and, in
+ * immediate-start mode (startDate 0, flowRate > 0), also opens the flow — so
+ * `[schedule]`, `[grant, schedule]`, `[schedule, createFlow]` and
+ * `[grant, schedule, createFlow]` batches all reduce to that one relayable action.
+ *
+ * False-positive audit against every sub-op the upsert hook can push (grant, schedule
+ * create/delete, updateFlow, createFlow): `[schedule(rate 0 on active flow), updateFlow]`
+ * and `[deleteFlowSchedule, createFlow]` fail the kind checks; `[grant]` alone leaves no
+ * head; any batch built with `userDataBytes !== "0x"` has no `clearMacro` on any sub-op
+ * (every attach site is gated on empty userData), so it can never reduce.
+ */
+export function reduceToScheduleFlowAction(
+  subOperations: SubOperation[]
+): ClearMacroAction | undefined {
+  const ops =
+    subOperations[0]?.title === APPROVE_STREAM_SCHEDULER_TITLE
+      ? subOperations.slice(1)
+      : subOperations;
+  const [scheduleOp, createFlowOp, ...rest] = ops;
+  if (rest.length > 0) return undefined;
+  const action =
+    scheduleOp?.clearMacro?.kind === "scheduleFlow"
+      ? scheduleOp.clearMacro
+      : undefined;
+  if (!action) return undefined;
+  if (!createFlowOp) return action;
+  // The trailing createFlow folds in only when the macro's immediate-start mode
+  // reproduces it exactly (same token/receiver/rate, no scheduled start).
+  const createAction = createFlowOp.clearMacro;
+  return createAction?.kind === "createFlow" &&
+    action.startDate === 0 &&
+    action.flowRate > 0n &&
+    createAction.superToken === action.superToken &&
+    createAction.receiver === action.receiver &&
+    createAction.flowRate === action.flowRate
+    ? action
+    : undefined;
+}
 
 export interface UpsertFlowWithSchedulingArgs {
   chainId: number;
@@ -205,7 +246,11 @@ export function useUpsertFlowWithScheduling() {
                   ],
                 }),
                 // The macro bundles the flow-operator grant and fixes startMaxDelay/
-                // startAmount to these same values; it carries no userData.
+                // startAmount to these same values; it carries no userData. A positive
+                // rate with no start date is the macro's immediate-start mode (it opens
+                // the flow itself) — only valid because the hook always pushes the
+                // matching "Create Stream" sub-op in exactly that case (no active flow,
+                // no scheduled start), which `reduceToScheduleFlowAction` cross-checks.
                 clearMacro:
                   userData === "0x"
                     ? {
@@ -213,9 +258,10 @@ export function useUpsertFlowWithScheduling() {
                         superToken: arg.superTokenAddress as Address,
                         receiver: arg.receiverAddress as Address,
                         startDate: arg.startTimestamp || 0,
-                        flowRate: shouldScheduleStart
-                          ? BigInt(arg.flowRateWei)
-                          : 0n,
+                        flowRate:
+                          shouldScheduleStart || !activeExistingFlow
+                            ? BigInt(arg.flowRateWei)
+                            : 0n,
                         endDate: arg.endTimestamp || 0,
                       }
                     : undefined,
@@ -342,15 +388,8 @@ export function useUpsertFlowWithScheduling() {
               : "Create Stream";
 
       const writeFragment = subOperationsWriteFragment(chainId, subOperations);
-      // The macro's scheduleFlow performs the missing flow-operator grant itself, so a
-      // grant+schedule batch still reduces to one relayable action.
       const clearMacro =
-        writeFragment.clearMacro ??
-        (subOperations.length === 2 &&
-        subOperations[0].title === APPROVE_STREAM_SCHEDULER_TITLE &&
-        subOperations[1].clearMacro?.kind === "scheduleFlow"
-          ? subOperations[1].clearMacro
-          : undefined);
+        writeFragment.clearMacro ?? reduceToScheduleFlowAction(subOperations);
 
       return {
         chainId,

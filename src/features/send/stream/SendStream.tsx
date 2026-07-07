@@ -455,19 +455,25 @@ export default memo(function SendStream() {
   const clearMacroActionKind = useMemo<ClearMacroActionKind | undefined>(() => {
     const hasExistingSchedule = !!(existingStartTimestamp || existingEndTimestamp);
     const wantsSchedule = !!(startTimestamp || endTimestamp);
-    if (!wantsSchedule && !hasExistingSchedule) {
-      return activeFlow ? "updateFlow" : "createFlow";
-    }
     const flowRateChanged =
       !!activeFlow && flowRateWei.toString() !== activeFlow.flowRateWei;
+    if (!wantsSchedule && !hasExistingSchedule) {
+      // An active flow with an unchanged rate builds no operations at all (submit stays
+      // disabled), so there is nothing to relay.
+      return activeFlow
+        ? flowRateChanged
+          ? "updateFlow"
+          : undefined
+        : "createFlow";
+    }
     if (!wantsSchedule) {
       // Clearing the existing schedule: relayable only as a lone deleteFlowSchedule —
       // an immediate createFlow (no active flow) or a rate change joins the batch.
       return activeFlow && !flowRateChanged ? "deleteFlowSchedule" : undefined;
     }
-    // A new stream with only an end date starts immediately (createFlow in the batch);
-    // a rate change on the active flow adds an updateFlow op — neither is relayable.
-    if (!activeFlow && !startTimestamp) return undefined;
+    // A rate change on the active flow adds an updateFlow op — not relayable. A new
+    // stream with only an end date IS: the macro's immediate-start scheduleFlow opens
+    // the flow and schedules the stop in one action.
     if (flowRateChanged) return undefined;
     return "scheduleFlow";
   }, [

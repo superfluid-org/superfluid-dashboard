@@ -485,6 +485,10 @@ contract DashboardClearMacro is ClearMacroBase {
     // would otherwise overflow CFA's checked allowance addition and revert the whole action.
     // The FlowScheduler accepts a zero/negative-rate start schedule but CFA rejects it at
     // execution time, so that combination is rejected here instead of failing at the keeper.
+    // A positive flowRate with no start date means "immediate start": the batch also opens the
+    // flow right now (CFA createFlow, executed as the signer — no operator grant needed for it)
+    // and the schedule only carries the stop; the stored schedule row keeps flowRate 0, the same
+    // shape an end-only schedule created directly by the dashboard has.
     function _buildOperationsScheduleFlow(ISuperfluid, bytes memory actionSpecificParams, address account)
         internal
         view
@@ -492,14 +496,16 @@ contract DashboardClearMacro is ClearMacroBase {
     {
         ScheduleFlowParams memory p = abi.decode(actionSpecificParams, (ScheduleFlowParams));
         if (p.startDate == 0 && p.endDate == 0) revert InvalidTimeWindow();
-        if (p.startDate != 0 ? p.flowRate <= 0 : p.flowRate != 0) revert InvalidFlowRate();
+        if (p.startDate != 0 ? p.flowRate <= 0 : p.flowRate < 0) revert InvalidFlowRate();
+        bool immediateStart = p.startDate == 0 && p.flowRate > 0;
 
         (uint8 permissionsToAdd, int96 allowanceToAdd) = _missingSchedulerGrant(p, account);
         bool needsGrant = permissionsToAdd != 0 || allowanceToAdd != 0;
 
-        operations = new ISuperfluid.Operation[](needsGrant ? 2 : 1);
+        uint256 i = 0;
+        operations = new ISuperfluid.Operation[]((needsGrant ? 1 : 0) + 1 + (immediateStart ? 1 : 0));
         if (needsGrant) {
-            operations[0] = ISuperfluid.Operation({
+            operations[i++] = ISuperfluid.Operation({
                 operationType: BatchOperation.OPERATION_TYPE_SUPERFLUID_CALL_AGREEMENT,
                 target: address(_cfa),
                 data: abi.encode(
@@ -511,7 +517,7 @@ contract DashboardClearMacro is ClearMacroBase {
                 )
             });
         }
-        operations[operations.length - 1] = ISuperfluid.Operation({
+        operations[i++] = ISuperfluid.Operation({
             operationType: BatchOperation.OPERATION_TYPE_SUPERFLUID_CALL_APP_ACTION,
             target: address(_flowScheduler),
             data: abi.encodeCall(
@@ -521,7 +527,7 @@ contract DashboardClearMacro is ClearMacroBase {
                     p.receiver,
                     p.startDate,
                     p.startDate != 0 ? _START_MAX_DELAY : 0,
-                    p.flowRate,
+                    p.startDate != 0 ? p.flowRate : int96(0),
                     uint256(0),
                     p.endDate,
                     new bytes(0),
@@ -529,6 +535,18 @@ contract DashboardClearMacro is ClearMacroBase {
                 )
             )
         });
+        if (immediateStart) {
+            // Reverts if a flow already exists — deliberate: the signed text promises to START a
+            // stream, and silently updating an existing one would exceed that consent.
+            operations[i++] = ISuperfluid.Operation({
+                operationType: BatchOperation.OPERATION_TYPE_SUPERFLUID_CALL_AGREEMENT,
+                target: address(_cfa),
+                data: abi.encode(
+                    abi.encodeCall(_cfa.createFlow, (p.superToken, p.receiver, p.flowRate, new bytes(0))),
+                    new bytes(0)
+                )
+            });
+        }
 
         // Fee is charged per transaction the relay executes (see _scheduleTxCount): a new schedule also
         // reserves the keeper executions it triggers; modifying an existing schedule only pays the setup tx.
@@ -923,6 +941,20 @@ contract DashboardClearMacro is ClearMacroBase {
                 _hex(receiver),
                 ", starting at ",
                 Strings.toString(startDate),
+                " (unix time), and authorize the Flow Scheduler",
+                _scheduleFeeSuffix(startDate, endDate)
+            );
+        } else if (flowRate > 0) {
+            // Immediate start: the action opens the flow NOW and schedules only the stop.
+            return string.concat(
+                "Start a stream of ",
+                flowRate.toFlowRatePerDay(),
+                " ",
+                token.symbol(),
+                "/day to ",
+                _hex(receiver),
+                " immediately, stopping at ",
+                Strings.toString(endDate),
                 " (unix time), and authorize the Flow Scheduler",
                 _scheduleFeeSuffix(startDate, endDate)
             );
