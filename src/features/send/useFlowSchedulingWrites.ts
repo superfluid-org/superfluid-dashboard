@@ -53,9 +53,9 @@ export interface DeleteFlowWithSchedulingArgs {
   transactionExtraData?: Record<string, unknown>;
   overrides?: ViemFeeOverrides;
   /**
-   * Allow the lone deleteFlow to relay via Clear Macro. Opt-in because relay engagement
-   * must follow a visible relay chip: the send-stream form renders one, the table-row
-   * cancel buttons don't.
+   * Allow a lone deleteFlow or deleteFlowSchedule to relay via Clear Macro. Opt-in
+   * because relay engagement must follow a visible relay chip: the send-stream form
+   * renders one, the table-row cancel buttons don't.
    */
   withClearMacro?: boolean;
 }
@@ -196,6 +196,21 @@ export function useUpsertFlowWithScheduling() {
                     "0x",
                   ],
                 }),
+                // The macro bundles the flow-operator grant and fixes startMaxDelay/
+                // startAmount to these same values; it carries no userData.
+                clearMacro:
+                  userData === "0x"
+                    ? {
+                        kind: "scheduleFlow",
+                        superToken: arg.superTokenAddress as Address,
+                        receiver: arg.receiverAddress as Address,
+                        startDate: arg.startTimestamp || 0,
+                        flowRate: shouldScheduleStart
+                          ? BigInt(arg.flowRateWei)
+                          : 0n,
+                        endDate: arg.endTimestamp || 0,
+                      }
+                    : undefined,
                 title: isModifyingSchedule ? "Modify Schedule" : "Create Schedule",
               })
             );
@@ -214,6 +229,15 @@ export function useUpsertFlowWithScheduling() {
                   "0x",
                 ],
               }),
+              // The macro carries no userData — only attach when there is none.
+              clearMacro:
+                userData === "0x"
+                  ? {
+                      kind: "deleteFlowSchedule",
+                      superToken: arg.superTokenAddress as Address,
+                      receiver: arg.receiverAddress as Address,
+                    }
+                  : undefined,
               title: "Delete Schedule",
             })
           );
@@ -309,9 +333,21 @@ export function useUpsertFlowWithScheduling() {
               ? "Schedule Stream"
               : "Create Stream";
 
+      const writeFragment = subOperationsWriteFragment(chainId, subOperations);
+      // The macro's scheduleFlow performs the missing flow-operator grant itself, so a
+      // grant+schedule batch still reduces to one relayable action.
+      const clearMacro =
+        writeFragment.clearMacro ??
+        (subOperations.length === 2 &&
+        subOperations[0].title === "Approve Stream Scheduler" &&
+        subOperations[1].clearMacro?.kind === "scheduleFlow"
+          ? subOperations[1].clearMacro
+          : undefined);
+
       return {
         chainId,
-        ...subOperationsWriteFragment(chainId, subOperations),
+        ...writeFragment,
+        clearMacro,
         title: mainTransactionTitle,
         subTransactionTitles,
         extraData: arg.transactionExtraData,
@@ -435,6 +471,15 @@ export function useDeleteFlowWithScheduling() {
                   "0x",
                 ],
               }),
+              // Opt-in (see `withClearMacro`); the macro carries no userData.
+              clearMacro:
+                arg.withClearMacro && userData === "0x"
+                  ? {
+                      kind: "deleteFlowSchedule",
+                      superToken: arg.superTokenAddress as Address,
+                      receiver: arg.receiverAddress as Address,
+                    }
+                  : undefined,
               title: "Delete Schedule",
             })
           );

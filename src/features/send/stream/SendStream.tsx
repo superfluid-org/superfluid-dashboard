@@ -87,6 +87,7 @@ import { SuperTokenMinimal, isWrappable } from "../../redux/endpoints/tokenTypes
 import { useTokenQuery } from "../../../hooks/useTokenQuery";
 import { useWhitelist } from "../../../hooks/useWhitelist";
 import { ClearMacroRelayOption } from "../../clearMacro/ClearMacroRelayOption";
+import type { ClearMacroActionKind } from "../../clearMacro/dashboardClearMacro";
 
 // Minimum start and end date difference in seconds.
 export const SCHEDULE_START_END_MIN_DIFF_S = 15 * UnitOfTime.Minute;
@@ -446,6 +447,37 @@ export default memo(function SendStream() {
   const [upsertFlow, upsertFlowResult] = useUpsertFlowWithScheduling();
 
   const isModifying = Boolean(activeFlow || scheduledStream);
+
+  // Mirrors which lone macro action `useUpsertFlowWithScheduling` will attach (the hook
+  // is the runtime source of truth — a mismatch here only affects chip visibility).
+  // Toggling scheduling off clears both timestamps, so the timestamps alone track the
+  // hook's `shouldSchedule`.
+  const clearMacroActionKind = useMemo<ClearMacroActionKind | undefined>(() => {
+    const hasExistingSchedule = !!(existingStartTimestamp || existingEndTimestamp);
+    const wantsSchedule = !!(startTimestamp || endTimestamp);
+    if (!wantsSchedule && !hasExistingSchedule) {
+      return activeFlow ? "updateFlow" : "createFlow";
+    }
+    const flowRateChanged =
+      !!activeFlow && flowRateWei.toString() !== activeFlow.flowRateWei;
+    if (!wantsSchedule) {
+      // Clearing the existing schedule: relayable only as a lone deleteFlowSchedule —
+      // an immediate createFlow (no active flow) or a rate change joins the batch.
+      return activeFlow && !flowRateChanged ? "deleteFlowSchedule" : undefined;
+    }
+    // A new stream with only an end date starts immediately (createFlow in the batch);
+    // a rate change on the active flow adds an updateFlow op — neither is relayable.
+    if (!activeFlow && !startTimestamp) return undefined;
+    if (flowRateChanged) return undefined;
+    return "scheduleFlow";
+  }, [
+    startTimestamp,
+    endTimestamp,
+    existingStartTimestamp,
+    existingEndTimestamp,
+    activeFlow,
+    flowRateWei,
+  ]);
 
   const SendTransactionBoundary = (
     <TransactionBoundary mutationResult={upsertFlowResult}>
@@ -829,23 +861,11 @@ export default memo(function SendStream() {
         >
           <Stack gap={1}>
             {SendTransactionBoundary}
-            {/* Scheduling adds scheduler operations (multi-op batch) — the lone-action
-                macro relay only engages for a plain unscheduled create/update/cancel. */}
+            {DeleteFlowBoundary}
             <ClearMacroRelayOption
-              actionKind={
-                streamScheduling ||
-                startTimestamp ||
-                endTimestamp ||
-                existingStartTimestamp ||
-                existingEndTimestamp
-                  ? undefined
-                  : activeFlow
-                    ? "updateFlow"
-                    : "createFlow"
-              }
+              actionKind={clearMacroActionKind}
               network={network}
             />
-            {DeleteFlowBoundary}
           </Stack>
         </ConnectionBoundaryButton>
       </ConnectionBoundary>

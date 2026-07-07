@@ -3,10 +3,11 @@ import { type Address, stringToHex } from "viem";
 /**
  * DashboardClearMacro ABI, generated from the Foundry project in `contracts/`
  * (regenerate with `pnpm contracts:abi`). The deployed OP Sepolia instance
- * (0x77232a2a953b570D1fEE1FE16b1902299fe7b898) predates the FlowScheduler actions —
- * the `*ScheduleFlow*`/`*FlowSchedule*` entries only work on-chain once the two-arg
- * macro is deployed (contracts/script/DeployDashboardClearMacro.s.sol) and
- * `macroAddress` in networks.ts points at it.
+ * (0xa7AA0ff51Bf4a20A1E3516cFEa2C1aD44561a411, set in networks.ts) is the two-arg
+ * `(host, flowScheduler)` macro from contracts/script/DeployDashboardClearMacro.s.sol,
+ * so every action here — including the `*ScheduleFlow*`/`*FlowSchedule*` FlowScheduler
+ * entries — is live on-chain. (It replaced an earlier instance,
+ * 0x77232a2a953b570D1fEE1FE16b1902299fe7b898, which predated those actions.)
  */
 export { dashboardClearMacroAbi } from "./dashboardClearMacroAbi.generated";
 
@@ -21,7 +22,16 @@ export type ClearMacroAction =
   | { kind: "downgrade"; superToken: Address; amount: bigint }
   | { kind: "createFlow"; superToken: Address; receiver: Address; flowRate: bigint }
   | { kind: "updateFlow"; superToken: Address; receiver: Address; flowRate: bigint }
-  | { kind: "deleteFlow"; superToken: Address; sender: Address; receiver: Address };
+  | { kind: "deleteFlow"; superToken: Address; sender: Address; receiver: Address }
+  | {
+      kind: "scheduleFlow";
+      superToken: Address;
+      receiver: Address;
+      startDate: number;
+      flowRate: bigint;
+      endDate: number;
+    }
+  | { kind: "deleteFlowSchedule"; superToken: Address; receiver: Address };
 
 export type ClearMacroActionKind = ClearMacroAction["kind"];
 
@@ -96,6 +106,24 @@ export function getActionCallInfo(action: ClearMacroAction): {
           sender: action.sender,
           receiver: action.receiver,
         },
+      };
+    case "scheduleFlow":
+      return {
+        encodeFunctionName: "encodeScheduleFlow",
+        describeFunctionName: "describeScheduleFlow",
+        tuple: {
+          superToken: action.superToken,
+          receiver: action.receiver,
+          startDate: action.startDate,
+          flowRate: action.flowRate,
+          endDate: action.endDate,
+        },
+      };
+    case "deleteFlowSchedule":
+      return {
+        encodeFunctionName: "encodeDeleteFlowSchedule",
+        describeFunctionName: "describeDeleteFlowSchedule",
+        tuple: { superToken: action.superToken, receiver: action.receiver },
       };
   }
 }
