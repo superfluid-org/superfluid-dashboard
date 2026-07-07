@@ -38,6 +38,8 @@ contract DashboardClearMacroTest is FoundrySuperfluidTester {
     uint8 internal constant UNKNOWN_ACTION_ID = 99;
     int96 internal constant DEFAULT_FLOW_RATE = 1_157_407_407_407; // 0.1/day
     uint256 internal constant DEFAULT_AMOUNT = 1e17;
+    uint256 internal constant BASE_FEE = 1e15; // 0.001, a multiple of 1e13 so the disclosed amount is exact
+    address internal constant FEE_RECEIVER = address(0xFEE);
 
     DashboardClearMacro internal dashboardClearMacro;
     ClearMacroForwarderV1 internal forwarder;
@@ -48,7 +50,7 @@ contract DashboardClearMacroTest is FoundrySuperfluidTester {
     function setUp() public override {
         super.setUp();
         flowScheduler = new FlowScheduler(sf.host);
-        dashboardClearMacro = new DashboardClearMacro(sf.host, flowScheduler);
+        dashboardClearMacro = new DashboardClearMacro(sf.host, flowScheduler, superToken, BASE_FEE, FEE_RECEIVER);
         forwarder = new ClearMacroForwarderV1(sf.host);
         _grantProviderRole(PROVIDER, address(this));
 
@@ -128,7 +130,8 @@ contract DashboardClearMacroTest is FoundrySuperfluidTester {
         );
         _runAsProvider(signer, actionParams, 0, PROVIDER, 0, 0);
 
-        assertEq(superToken.balanceOf(signer.addr), DEFAULT_AMOUNT);
+        assertEq(superToken.balanceOf(signer.addr), DEFAULT_AMOUNT - BASE_FEE);
+        assertEq(superToken.balanceOf(FEE_RECEIVER), BASE_FEE);
     }
 
     function testDowngrade() external {
@@ -140,7 +143,8 @@ contract DashboardClearMacroTest is FoundrySuperfluidTester {
         );
         _runAsProvider(signer, actionParams, 0, PROVIDER, 0, 0);
 
-        assertEq(superToken.balanceOf(signer.addr), 1e18 - DEFAULT_AMOUNT);
+        assertEq(superToken.balanceOf(signer.addr), 1e18 - DEFAULT_AMOUNT - BASE_FEE);
+        assertEq(superToken.balanceOf(FEE_RECEIVER), BASE_FEE);
     }
 
     function testApprove() external {
@@ -165,8 +169,9 @@ contract DashboardClearMacroTest is FoundrySuperfluidTester {
         );
         _runAsProvider(signer, actionParams, 0, PROVIDER, 0, 0);
 
-        assertEq(superToken.balanceOf(signer.addr), 1e18 - DEFAULT_AMOUNT);
+        assertEq(superToken.balanceOf(signer.addr), 1e18 - DEFAULT_AMOUNT - BASE_FEE);
         assertEq(superToken.balanceOf(bob), bobBefore + DEFAULT_AMOUNT);
+        assertEq(superToken.balanceOf(FEE_RECEIVER), BASE_FEE);
     }
 
     function testScheduleFlowStartAndEnd() external {
@@ -199,6 +204,9 @@ contract DashboardClearMacroTest is FoundrySuperfluidTester {
             sf.cfa.getFlowOperatorData(superToken, signer.addr, address(flowScheduler));
         assertEq(uint256(permissions), 5); // create | delete
         assertEq(flowRateAllowance, DEFAULT_FLOW_RATE);
+
+        // New start+end schedule: setup + executeCreateFlow + executeDeleteFlow => 3x base fee.
+        assertEq(superToken.balanceOf(FEE_RECEIVER), 3 * BASE_FEE);
     }
 
     function testScheduleFlowEndOnly() external {
@@ -228,6 +236,9 @@ contract DashboardClearMacroTest is FoundrySuperfluidTester {
             sf.cfa.getFlowOperatorData(superToken, signer.addr, address(flowScheduler));
         assertEq(uint256(permissions), 4); // delete only
         assertEq(flowRateAllowance, 0);
+
+        // New end-only schedule: setup + executeDeleteFlow => 2x base fee.
+        assertEq(superToken.balanceOf(FEE_RECEIVER), 2 * BASE_FEE);
     }
 
     function testScheduleFlowSkipsGrantWhenFullControlAlready() external {
@@ -476,6 +487,10 @@ contract DashboardClearMacroTest is FoundrySuperfluidTester {
         assertTrue(_contains(createDesc, superToken.symbol()));
         assertTrue(_contains(createDesc, receiverHex));
 
+        string memory feeReceiverHex = Strings.toHexString(uint256(uint160(FEE_RECEIVER)), 20);
+        assertTrue(_contains(createDesc, "relay fee of"));
+        assertTrue(_contains(createDesc, feeReceiverHex));
+
         string memory updateDesc = dashboardClearMacro.describeUpdateFlow(
             LANG_EN,
             DashboardClearMacro.UpdateFlowParams({superToken: superToken, receiver: bob, flowRate: DEFAULT_FLOW_RATE})
@@ -532,6 +547,8 @@ contract DashboardClearMacroTest is FoundrySuperfluidTester {
         assertTrue(_contains(scheduleDesc, "1750000000"));
         assertTrue(_contains(scheduleDesc, "1760000000"));
         assertTrue(_contains(scheduleDesc, "authorize the Flow Scheduler"));
+        assertTrue(_contains(scheduleDesc, "relay fee payable to"));
+        assertTrue(_contains(scheduleDesc, "for a new schedule, or"));
 
         string memory stopOnlyDesc = dashboardClearMacro.describeScheduleFlow(
             LANG_EN,
@@ -545,6 +562,7 @@ contract DashboardClearMacroTest is FoundrySuperfluidTester {
         );
         assertTrue(_contains(stopOnlyDesc, "to stop at"));
         assertTrue(_contains(stopOnlyDesc, "1760000000"));
+        assertTrue(_contains(stopOnlyDesc, "for a new schedule, or"));
 
         string memory cancelDesc = dashboardClearMacro.describeDeleteFlowSchedule(
             LANG_EN, DashboardClearMacro.DeleteFlowScheduleParams({superToken: superToken, receiver: bob})
@@ -571,7 +589,8 @@ contract DashboardClearMacroTest is FoundrySuperfluidTester {
     function testRevertsOnMacroMismatch() external {
         VmSafe.Wallet memory signer = _newSigner("mismatch");
         _fundSuper(signer, 1e18);
-        DashboardClearMacro otherDashboardClearMacro = new DashboardClearMacro(sf.host, flowScheduler);
+        DashboardClearMacro otherDashboardClearMacro =
+            new DashboardClearMacro(sf.host, flowScheduler, superToken, BASE_FEE, FEE_RECEIVER);
 
         bytes memory actionParams = dashboardClearMacro.encodeTransfer(
             LANG_EN, DashboardClearMacro.TransferParams({superToken: superToken, receiver: bob, amount: DEFAULT_AMOUNT})
@@ -745,6 +764,442 @@ contract DashboardClearMacroTest is FoundrySuperfluidTester {
         forwarder.runMacro(dashboardClearMacro, encodedPayload, signer.addr, sig);
     }
 
+    // ----------------------------------------------------------------------------------------------------
+    //  Relay fee
+    // ----------------------------------------------------------------------------------------------------
+
+    function testRelayFeeChargedOnPlainAction() external {
+        VmSafe.Wallet memory signer = _newSigner("fee-plain");
+        _fundSuper(signer, 100e18);
+
+        bytes memory actionParams = dashboardClearMacro.encodeCreateFlow(
+            LANG_EN,
+            DashboardClearMacro.CreateFlowParams({superToken: superToken, receiver: bob, flowRate: DEFAULT_FLOW_RATE})
+        );
+        _runAsProvider(signer, actionParams, 0, PROVIDER, 0, 0);
+
+        assertEq(superToken.getFlowRate(signer.addr, bob), DEFAULT_FLOW_RATE);
+        assertEq(superToken.balanceOf(FEE_RECEIVER), BASE_FEE); // plain action => 1x
+    }
+
+    function testNewScheduleChargesPerReservedTx() external {
+        uint32 startDate = uint32(block.timestamp + 1 days);
+        uint32 endDate = uint32(block.timestamp + 30 days);
+
+        // start-only reserves executeCreateFlow => 2x
+        VmSafe.Wallet memory startSigner = _newSigner("fee-schedule-start");
+        _fundSuper(startSigner, 100e18);
+        bytes memory startOnly = dashboardClearMacro.encodeScheduleFlow(
+            LANG_EN,
+            DashboardClearMacro.ScheduleFlowParams({
+                superToken: superToken,
+                receiver: bob,
+                startDate: startDate,
+                flowRate: DEFAULT_FLOW_RATE,
+                endDate: 0
+            })
+        );
+        _runAsProvider(startSigner, startOnly, 0, PROVIDER, 0, 0);
+        assertEq(superToken.balanceOf(FEE_RECEIVER), 2 * BASE_FEE);
+
+        // start+end reserves both keeper executions => 3x (fresh schedule row for a different sender)
+        VmSafe.Wallet memory bothSigner = _newSigner("fee-schedule-both");
+        _fundSuper(bothSigner, 100e18);
+        uint256 balanceBefore = superToken.balanceOf(FEE_RECEIVER);
+        bytes memory both = dashboardClearMacro.encodeScheduleFlow(
+            LANG_EN,
+            DashboardClearMacro.ScheduleFlowParams({
+                superToken: superToken,
+                receiver: bob,
+                startDate: startDate,
+                flowRate: DEFAULT_FLOW_RATE,
+                endDate: endDate
+            })
+        );
+        _runAsProvider(bothSigner, both, 0, PROVIDER, 0, 0);
+        assertEq(superToken.balanceOf(FEE_RECEIVER) - balanceBefore, 3 * BASE_FEE);
+    }
+
+    function testModifyScheduleChargesBaseOnly() external {
+        VmSafe.Wallet memory signer = _newSigner("fee-modify");
+        _fundSuper(signer, 100e18);
+        uint32 startDate = uint32(block.timestamp + 1 days);
+        uint32 endDate = uint32(block.timestamp + 30 days);
+
+        _runAsProvider(
+            signer,
+            dashboardClearMacro.encodeScheduleFlow(
+                LANG_EN,
+                DashboardClearMacro.ScheduleFlowParams({
+                    superToken: superToken,
+                    receiver: bob,
+                    startDate: startDate,
+                    flowRate: DEFAULT_FLOW_RATE,
+                    endDate: endDate
+                })
+            ),
+            0,
+            PROVIDER,
+            0,
+            0
+        );
+        assertEq(superToken.balanceOf(FEE_RECEIVER), 3 * BASE_FEE); // new start+end
+
+        // Move the end date later. The row already exists, so only the setup tx is charged (1x): the fee
+        // is not re-applied for a modification.
+        uint32 newEndDate = uint32(block.timestamp + 60 days);
+        _runAsProvider(
+            signer,
+            dashboardClearMacro.encodeScheduleFlow(
+                LANG_EN,
+                DashboardClearMacro.ScheduleFlowParams({
+                    superToken: superToken,
+                    receiver: bob,
+                    startDate: startDate,
+                    flowRate: DEFAULT_FLOW_RATE,
+                    endDate: newEndDate
+                })
+            ),
+            0,
+            PROVIDER,
+            0,
+            0
+        );
+        assertEq(superToken.balanceOf(FEE_RECEIVER), 4 * BASE_FEE); // 3x + 1x modify
+
+        IFlowScheduler.FlowSchedule memory schedule =
+            flowScheduler.getFlowSchedule(address(superToken), signer.addr, bob);
+        assertEq(schedule.endDate, newEndDate);
+    }
+
+    function testModifyAddingDateChargesBaseOnly() external {
+        // Documented simplification: an existing row is 1x even when the modify adds a previously-absent date.
+        VmSafe.Wallet memory signer = _newSigner("fee-modify-add");
+        _fundSuper(signer, 100e18);
+        uint32 endDate = uint32(block.timestamp + 30 days);
+
+        _runAsProvider(
+            signer,
+            dashboardClearMacro.encodeScheduleFlow(
+                LANG_EN,
+                DashboardClearMacro.ScheduleFlowParams({
+                    superToken: superToken,
+                    receiver: bob,
+                    startDate: 0,
+                    flowRate: 0,
+                    endDate: endDate
+                })
+            ),
+            0,
+            PROVIDER,
+            0,
+            0
+        );
+        assertEq(superToken.balanceOf(FEE_RECEIVER), 2 * BASE_FEE); // new end-only
+
+        uint32 startDate = uint32(block.timestamp + 1 days);
+        _runAsProvider(
+            signer,
+            dashboardClearMacro.encodeScheduleFlow(
+                LANG_EN,
+                DashboardClearMacro.ScheduleFlowParams({
+                    superToken: superToken,
+                    receiver: bob,
+                    startDate: startDate,
+                    flowRate: DEFAULT_FLOW_RATE,
+                    endDate: endDate
+                })
+            ),
+            0,
+            PROVIDER,
+            0,
+            0
+        );
+        assertEq(superToken.balanceOf(FEE_RECEIVER), 3 * BASE_FEE); // 2x + 1x modify (not surcharged)
+    }
+
+    function testDeleteThenRecreateChargesFullFee() external {
+        VmSafe.Wallet memory signer = _newSigner("fee-delete-recreate");
+        _fundSuper(signer, 100e18);
+        uint32 startDate = uint32(block.timestamp + 1 days);
+        uint32 endDate = uint32(block.timestamp + 30 days);
+
+        bytes memory scheduleParams = dashboardClearMacro.encodeScheduleFlow(
+            LANG_EN,
+            DashboardClearMacro.ScheduleFlowParams({
+                superToken: superToken,
+                receiver: bob,
+                startDate: startDate,
+                flowRate: DEFAULT_FLOW_RATE,
+                endDate: endDate
+            })
+        );
+        _runAsProvider(signer, scheduleParams, 0, PROVIDER, 0, 0);
+        assertEq(superToken.balanceOf(FEE_RECEIVER), 3 * BASE_FEE);
+
+        _runAsProvider(
+            signer,
+            dashboardClearMacro.encodeDeleteFlowSchedule(
+                LANG_EN, DashboardClearMacro.DeleteFlowScheduleParams({superToken: superToken, receiver: bob})
+            ),
+            0,
+            PROVIDER,
+            0,
+            0
+        );
+        assertEq(superToken.balanceOf(FEE_RECEIVER), 4 * BASE_FEE); // cancel => 1x
+
+        // Row was cleared, so recreating is a new schedule again => full 3x.
+        _runAsProvider(signer, scheduleParams, 0, PROVIDER, 0, 0);
+        assertEq(superToken.balanceOf(FEE_RECEIVER), 7 * BASE_FEE);
+    }
+
+    function testDirectScheduleThenMacroModifyChargesBaseOnly() external {
+        VmSafe.Wallet memory signer = _newSigner("fee-direct");
+        _fundSuper(signer, 100e18);
+        uint32 startDate = uint32(block.timestamp + 1 days);
+        uint32 endDate = uint32(block.timestamp + 30 days);
+
+        // Create a schedule directly via the FlowScheduler (outside the macro) — no macro fee is charged.
+        vm.prank(signer.addr);
+        flowScheduler.createFlowSchedule(
+            superToken, bob, startDate, uint32(1 days), DEFAULT_FLOW_RATE, 0, endDate, new bytes(0), new bytes(0)
+        );
+        assertEq(superToken.balanceOf(FEE_RECEIVER), 0);
+
+        // Modify via the macro: the row already exists => only 1x is charged.
+        _runAsProvider(
+            signer,
+            dashboardClearMacro.encodeScheduleFlow(
+                LANG_EN,
+                DashboardClearMacro.ScheduleFlowParams({
+                    superToken: superToken,
+                    receiver: bob,
+                    startDate: startDate,
+                    flowRate: DEFAULT_FLOW_RATE,
+                    endDate: endDate
+                })
+            ),
+            0,
+            PROVIDER,
+            0,
+            0
+        );
+        assertEq(superToken.balanceOf(FEE_RECEIVER), BASE_FEE);
+    }
+
+    function testCancelScheduleChargesBase() external {
+        VmSafe.Wallet memory signer = _newSigner("fee-cancel");
+        _fundSuper(signer, 100e18);
+        uint32 endDate = uint32(block.timestamp + 30 days);
+
+        _runAsProvider(
+            signer,
+            dashboardClearMacro.encodeScheduleFlow(
+                LANG_EN,
+                DashboardClearMacro.ScheduleFlowParams({
+                    superToken: superToken,
+                    receiver: bob,
+                    startDate: 0,
+                    flowRate: 0,
+                    endDate: endDate
+                })
+            ),
+            0,
+            PROVIDER,
+            0,
+            0
+        );
+        uint256 balanceBefore = superToken.balanceOf(FEE_RECEIVER);
+
+        _runAsProvider(
+            signer,
+            dashboardClearMacro.encodeDeleteFlowSchedule(
+                LANG_EN, DashboardClearMacro.DeleteFlowScheduleParams({superToken: superToken, receiver: bob})
+            ),
+            0,
+            PROVIDER,
+            0,
+            0
+        );
+        assertEq(superToken.balanceOf(FEE_RECEIVER) - balanceBefore, BASE_FEE); // cancel => 1x
+    }
+
+    function testFeelessInstance() external {
+        DashboardClearMacro feeless =
+            new DashboardClearMacro(sf.host, flowScheduler, ISuperToken(address(0)), 0, address(0));
+
+        VmSafe.Wallet memory signer = _newSigner("feeless");
+        _fundSuper(signer, 100e18);
+        uint256 balanceBefore = superToken.balanceOf(FEE_RECEIVER);
+
+        bytes memory actionParams = feeless.encodeCreateFlow(
+            LANG_EN,
+            DashboardClearMacro.CreateFlowParams({superToken: superToken, receiver: bob, flowRate: DEFAULT_FLOW_RATE})
+        );
+        _runAsProviderOn(feeless, signer, actionParams);
+
+        assertEq(superToken.getFlowRate(signer.addr, bob), DEFAULT_FLOW_RATE);
+        assertEq(superToken.balanceOf(FEE_RECEIVER), balanceBefore); // no fee charged
+
+        // Feeless descriptions carry no fee clause.
+        string memory desc = feeless.describeCreateFlow(
+            LANG_EN,
+            DashboardClearMacro.CreateFlowParams({superToken: superToken, receiver: bob, flowRate: DEFAULT_FLOW_RATE})
+        );
+        assertFalse(_contains(desc, "relay fee"));
+    }
+
+    function testPreviewRelayFeePlainAction() external view {
+        bytes memory createParams = dashboardClearMacro.encodeCreateFlow(
+            LANG_EN,
+            DashboardClearMacro.CreateFlowParams({superToken: superToken, receiver: bob, flowRate: DEFAULT_FLOW_RATE})
+        );
+        (ISuperToken feeToken, address feeReceiver, uint256 currentFee, uint256 maxFee) =
+            dashboardClearMacro.previewRelayFee(createParams, alice);
+        assertEq(address(feeToken), address(superToken));
+        assertEq(feeReceiver, FEE_RECEIVER);
+        assertEq(currentFee, BASE_FEE); // plain action => 1x, current == max
+        assertEq(maxFee, BASE_FEE);
+    }
+
+    function testPreviewRelayFeeNewSchedule() external view {
+        uint32 startDate = uint32(block.timestamp + 1 days);
+        uint32 endDate = uint32(block.timestamp + 30 days);
+
+        bytes memory bothParams = _scheduleParams(bob, startDate, DEFAULT_FLOW_RATE, endDate);
+        (,, uint256 currentFee, uint256 maxFee) = dashboardClearMacro.previewRelayFee(bothParams, alice);
+        assertEq(currentFee, 3 * BASE_FEE); // new start+end => 3x
+        assertEq(maxFee, 3 * BASE_FEE);
+
+        bytes memory endOnlyParams = _scheduleParams(bob, 0, 0, endDate);
+        (,, currentFee, maxFee) = dashboardClearMacro.previewRelayFee(endOnlyParams, alice);
+        assertEq(currentFee, 2 * BASE_FEE); // new end-only => 2x
+        assertEq(maxFee, 2 * BASE_FEE);
+    }
+
+    function testPreviewRelayFeeModify() external {
+        VmSafe.Wallet memory signer = _newSigner("preview-modify");
+        _fundSuper(signer, 100e18);
+        uint32 startDate = uint32(block.timestamp + 1 days);
+        uint32 endDate = uint32(block.timestamp + 30 days);
+        bytes memory scheduleParams = _scheduleParams(bob, startDate, DEFAULT_FLOW_RATE, endDate);
+
+        _runAsProvider(signer, scheduleParams, 0, PROVIDER, 0, 0);
+
+        // Row now exists => a re-quote for the same signer is a modify: current 1x, max stays 3x.
+        (,, uint256 currentFee, uint256 maxFee) = dashboardClearMacro.previewRelayFee(scheduleParams, signer.addr);
+        assertEq(currentFee, BASE_FEE);
+        assertEq(maxFee, 3 * BASE_FEE);
+    }
+
+    function testPreviewRelayFeeFeelessInstance() external {
+        DashboardClearMacro feeless =
+            new DashboardClearMacro(sf.host, flowScheduler, ISuperToken(address(0)), 0, address(0));
+        bytes memory createParams = dashboardClearMacro.encodeCreateFlow(
+            LANG_EN,
+            DashboardClearMacro.CreateFlowParams({superToken: superToken, receiver: bob, flowRate: DEFAULT_FLOW_RATE})
+        );
+        (ISuperToken feeToken,, uint256 currentFee, uint256 maxFee) = feeless.previewRelayFee(createParams, alice);
+        assertEq(address(feeToken), address(0));
+        assertEq(currentFee, 0);
+        assertEq(maxFee, 0);
+    }
+
+    function testPreviewRelayFeeRevertsOnUnknownAction() external {
+        bytes memory unknownParams = abi.encode(UNKNOWN_ACTION_ID, LANG_EN, abi.encode(superToken, bob, DEFAULT_AMOUNT));
+        vm.expectRevert(abi.encodeWithSelector(ClearMacroBase.UnknownActionId.selector, UNKNOWN_ACTION_ID));
+        dashboardClearMacro.previewRelayFee(unknownParams, alice);
+    }
+
+    function _scheduleParams(address receiver, uint32 startDate, int96 flowRate, uint32 endDate)
+        internal
+        view
+        returns (bytes memory)
+    {
+        return dashboardClearMacro.encodeScheduleFlow(
+            LANG_EN,
+            DashboardClearMacro.ScheduleFlowParams({
+                superToken: superToken,
+                receiver: receiver,
+                startDate: startDate,
+                flowRate: flowRate,
+                endDate: endDate
+            })
+        );
+    }
+
+    function testConstructorRejectsUnrepresentableFee() external {
+        vm.expectRevert(DashboardClearMacro.FeeNotRepresentable.selector);
+        new DashboardClearMacro(sf.host, flowScheduler, superToken, 1e13 + 1, FEE_RECEIVER);
+    }
+
+    function testInsufficientFeeRevertsOnApprove() external {
+        // Approve needs no balance of its own, so only the fee transfer can fail — isolates fee enforcement.
+        VmSafe.Wallet memory signer = _newSigner("fee-insufficient-approve");
+        _fundSuper(signer, BASE_FEE / 2);
+
+        bytes memory actionParams = dashboardClearMacro.encodeApprove(
+            LANG_EN, DashboardClearMacro.ApproveParams({superToken: superToken, spender: bob, amount: DEFAULT_AMOUNT})
+        );
+        bytes memory encodedPayload = _getEncodedPayload(
+            actionParams, PROVIDER, 0, 0, forwarder.getNonce(signer.addr, 0), address(dashboardClearMacro)
+        );
+        bytes memory sig = _signEncodedPayload(signer, encodedPayload);
+
+        vm.expectRevert();
+        forwarder.runMacro(dashboardClearMacro, encodedPayload, signer.addr, sig);
+        assertEq(superToken.allowance(signer.addr, bob), 0); // atomic: nothing persisted
+    }
+
+    function testInsufficientFeeRevertsOnTransfer() external {
+        VmSafe.Wallet memory signer = _newSigner("fee-insufficient-transfer");
+        _fundSuper(signer, DEFAULT_AMOUNT); // enough to transfer, not enough to also pay the fee
+        uint256 bobBefore = superToken.balanceOf(bob);
+
+        bytes memory actionParams = dashboardClearMacro.encodeTransfer(
+            LANG_EN, DashboardClearMacro.TransferParams({superToken: superToken, receiver: bob, amount: DEFAULT_AMOUNT})
+        );
+        bytes memory encodedPayload = _getEncodedPayload(
+            actionParams, PROVIDER, 0, 0, forwarder.getNonce(signer.addr, 0), address(dashboardClearMacro)
+        );
+        bytes memory sig = _signEncodedPayload(signer, encodedPayload);
+
+        vm.expectRevert();
+        forwarder.runMacro(dashboardClearMacro, encodedPayload, signer.addr, sig);
+        assertEq(superToken.balanceOf(bob), bobBefore); // atomic: transfer rolled back
+    }
+
+    function testInsufficientFeeRevertsOnSchedule() external {
+        VmSafe.Wallet memory signer = _newSigner("fee-insufficient-schedule");
+        _fundSuper(signer, BASE_FEE); // < 3x needed for a new start+end schedule
+        uint32 startDate = uint32(block.timestamp + 1 days);
+        uint32 endDate = uint32(block.timestamp + 30 days);
+
+        bytes memory actionParams = dashboardClearMacro.encodeScheduleFlow(
+            LANG_EN,
+            DashboardClearMacro.ScheduleFlowParams({
+                superToken: superToken,
+                receiver: bob,
+                startDate: startDate,
+                flowRate: DEFAULT_FLOW_RATE,
+                endDate: endDate
+            })
+        );
+        bytes memory encodedPayload = _getEncodedPayload(
+            actionParams, PROVIDER, 0, 0, forwarder.getNonce(signer.addr, 0), address(dashboardClearMacro)
+        );
+        bytes memory sig = _signEncodedPayload(signer, encodedPayload);
+
+        vm.expectRevert();
+        forwarder.runMacro(dashboardClearMacro, encodedPayload, signer.addr, sig);
+
+        IFlowScheduler.FlowSchedule memory schedule =
+            flowScheduler.getFlowSchedule(address(superToken), signer.addr, bob);
+        assertEq(schedule.startDate, 0); // atomic: no schedule created
+        assertEq(schedule.endDate, 0);
+    }
+
     function _newSigner(string memory label) internal returns (VmSafe.Wallet memory signer) {
         signer = vm.createWallet(label);
         vm.deal(signer.addr, 10 ether);
@@ -795,6 +1250,25 @@ contract DashboardClearMacroTest is FoundrySuperfluidTester {
             _getEncodedPayload(actionParams, provider, validAfter, validBefore, nonce, address(dashboardClearMacro));
         bytes memory sig = _signEncodedPayload(signer, encodedPayload);
         forwarder.runMacro(dashboardClearMacro, encodedPayload, signer.addr, sig);
+    }
+
+    // Runs an action against an arbitrary macro instance (not the default `dashboardClearMacro`), used to
+    // exercise a separately-deployed feeless macro.
+    function _runAsProviderOn(DashboardClearMacro macroInstance, VmSafe.Wallet memory signer, bytes memory actionParams)
+        internal
+    {
+        IClearMacroForwarderV1.Security memory security = IClearMacroForwarderV1.Security({
+            domain: SECURITY_DOMAIN,
+            macroContract: address(macroInstance),
+            provider: PROVIDER,
+            validAfter: 0,
+            validBefore: 0,
+            nonce: forwarder.getNonce(signer.addr, 0)
+        });
+        bytes memory encodedPayload = forwarder.encodeParams(actionParams, security);
+        bytes32 digest = forwarder.getDigest(macroInstance, encodedPayload);
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(signer, digest);
+        forwarder.runMacro(macroInstance, encodedPayload, signer.addr, abi.encodePacked(r, s, v));
     }
 
     function _signEncodedPayload(VmSafe.Wallet memory signer, bytes memory encodedPayload)

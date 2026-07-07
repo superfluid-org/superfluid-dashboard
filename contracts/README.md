@@ -9,7 +9,7 @@ Types for the forwarder and ClearMacro base live in `@superfluid-finance/ethereu
 - **`DashboardClearMacro`**: multi-action macro for dashboard flows (create/update/delete streams, upgrade/downgrade, approve, transfer, flow scheduling).
 - **`FormatterLibs`**: helpers used by encoders and human-readable descriptions.
 
-The macro is constructed with two per-chain addresses: the Superfluid host and the [FlowScheduler](https://docs.superfluid.finance/) automation contract (both published in `@superfluid-finance/metadata`). The scheduling actions grant the FlowScheduler the required CFA flow-operator permissions and register the schedule in the same signed batch; off-chain keepers later trigger the actual stream start/stop.
+The macro is constructed with two per-chain addresses — the Superfluid host and the [FlowScheduler](https://docs.superfluid.finance/) automation contract (both published in `@superfluid-finance/metadata`) — plus the relay fee configuration (fee SuperToken, base fee per relayed transaction, fee receiver). The scheduling actions grant the FlowScheduler the required CFA flow-operator permissions and register the schedule in the same signed batch; off-chain keepers later trigger the actual stream start/stop.
 
 ## ClearMacro payload flow
 
@@ -41,7 +41,7 @@ Each action exposes:
 | 8  | Schedule Flow | `superToken`, `receiver`, `startDate`, `flowRate`, `endDate` | Schedule a stream of `flowRate`/day `superSymbol` to `receiver` (start and/or stop; unix timestamps), and authorize the Flow Scheduler |
 | 9  | Delete Flow Schedule | `superToken`, `receiver` | Cancel the scheduled stream of `superSymbol` to `receiver` |
 
-Schedule Flow notes: `startDate = 0` schedules a stop only (requires `flowRate = 0`); `endDate = 0` schedules a start only (requires `flowRate > 0`); at least one date must be set. A scheduled start uses the dashboard's default `startMaxDelay` of 1 day and no upfront `startAmount`. The bundled permission grant (`increaseFlowRateAllowanceWithPermissions`) only adds what is missing: the macro reads the FlowScheduler's existing flow-operator permissions and allowance for the signer and grants the missing permission bits (create for a start, delete for a stop) and the allowance top-up to `flowRate` — skipped entirely when already sufficient (e.g. after a prior full-control grant), so repeated schedule edits do not accumulate allowance. Cancelling a schedule does not revoke previously granted permissions.
+Schedule Flow notes: `startDate = 0` schedules a stop only (requires `flowRate = 0`); `endDate = 0` schedules a start only (requires `flowRate > 0`); at least one date must be set. A scheduled start uses the dashboard's default `startMaxDelay` of 1 day and no upfront `startAmount`. The bundled permission grant (`increaseFlowRateAllowanceWithPermissions`) only adds what is missing: the macro reads the FlowScheduler's existing flow-operator permissions and allowance for the signer and grants the missing permission bits (create for a start, delete for a stop) and the allowance top-up to `flowRate` — skipped entirely when already sufficient (e.g. after a prior full-control grant), so repeated schedule edits do not accumulate allowance. Cancelling a schedule does not revoke previously granted permissions. A **new** schedule is charged the relay fee for each keeper execution it reserves (2x for one date, 3x for both); modifying an existing schedule row is charged 1x (see **Fees** below). Every description above also discloses the relay fee.
 
 ## Clone and dependencies
 
@@ -74,7 +74,7 @@ forge test --root contracts -vv
 
 - **Keyed nonces:** replay protection follows ERC-4337-style keyed nonces: `key << 64 | sequence`.
 - **`provider` and relay:** `provider = "self"` allows the signer to relay their own execution. Any other `provider` string requires the corresponding ACL role on `host.getSimpleACL()`.
-- **Fees:** this macro version does not charge a create-flow fee.
+- **Fees:** a relay fee of `BASE_FEE_AMOUNT * txCount` is charged in `FEE_SUPER_TOKEN` to `FEE_RECEIVER` on every action, where `txCount` is the number of transactions the relay executes: **1x** for any plain action and for cancelling a schedule; a **new** schedule reserves the keeper executions it triggers, so it costs **2x** (start-only or stop-only) or **3x** (start and stop); **modifying** an existing schedule is **1x** (the keeper executions were reserved when it was first created, so the fee is not re-applied). The fee is transferred from the signer (a self-spend, so no allowance is needed) and disclosed in the signed description. `BASE_FEE_AMOUNT` must be a multiple of `1e13` (5-decimal granularity, so the disclosed amount is exact), and `BASE_FEE_AMOUNT = 0` deploys a feeless macro. The fee configuration is immutable per deployment.
 
 ## Tests
 

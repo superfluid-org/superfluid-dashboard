@@ -16,9 +16,37 @@ export const dashboardClearMacroAbi = [
         "name": "flowScheduler",
         "type": "address",
         "internalType": "contract IFlowScheduler"
+      },
+      {
+        "name": "feeSuperToken",
+        "type": "address",
+        "internalType": "contract ISuperToken"
+      },
+      {
+        "name": "baseFeeAmount",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "feeReceiver",
+        "type": "address",
+        "internalType": "address"
       }
     ],
     "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "baseFee",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
   },
   {
     "type": "function",
@@ -796,6 +824,19 @@ export const dashboardClearMacroAbi = [
   },
   {
     "type": "function",
+    "name": "feeToken",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "contract ISuperToken"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "getActionStructHash",
     "inputs": [
       {
@@ -873,6 +914,50 @@ export const dashboardClearMacroAbi = [
     ],
     "outputs": [],
     "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "previewRelayFee",
+    "inputs": [
+      {
+        "name": "actionParams",
+        "type": "bytes",
+        "internalType": "bytes"
+      },
+      {
+        "name": "account",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "feeToken",
+        "type": "address",
+        "internalType": "contract ISuperToken"
+      },
+      {
+        "name": "feeReceiver",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "currentFee",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "maxFee",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "error",
+    "name": "FeeNotRepresentable",
+    "inputs": []
   },
   {
     "type": "error",

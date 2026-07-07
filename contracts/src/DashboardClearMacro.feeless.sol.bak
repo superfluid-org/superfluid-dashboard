@@ -49,7 +49,6 @@ contract DashboardClearMacro is ClearMacroBase {
     error InvalidTimeWindow();
     error InvalidFlowRate();
     error ZeroAddress();
-    error FeeNotRepresentable();
 
     bytes32 private constant _LANG_EN = bytes32("en");
 
@@ -76,13 +75,6 @@ contract DashboardClearMacro is ClearMacroBase {
 
     IConstantFlowAgreementV1 internal immutable _cfa;
     IFlowScheduler internal immutable _flowScheduler;
-
-    // Relay fee configuration. A fee of `_baseFeeAmount * txCount` is charged in `_feeSuperToken` to
-    // `_feeReceiver` on every action, where `txCount` is the number of transactions the relay executes for
-    // that action (1 for a plain action; a new schedule reserves its keeper executions). Zero => feeless.
-    ISuperToken internal immutable _feeSuperToken;
-    uint256 internal immutable _baseFeeAmount;
-    address internal immutable _feeReceiver;
 
     struct CreateFlowParams {
         ISuperToken superToken;
@@ -138,30 +130,12 @@ contract DashboardClearMacro is ClearMacroBase {
         address receiver;
     }
 
-    constructor(
-        ISuperfluid host,
-        IFlowScheduler flowScheduler,
-        ISuperToken feeSuperToken,
-        uint256 baseFeeAmount,
-        address feeReceiver
-    ) {
+    constructor(ISuperfluid host, IFlowScheduler flowScheduler) {
         if (address(flowScheduler) == address(0)) revert ZeroAddress();
-        // Require fee config only when a fee is actually charged, so baseFeeAmount == 0 deploys feeless.
-        if (baseFeeAmount != 0 && (address(feeSuperToken) == address(0) || feeReceiver == address(0))) {
-            revert ZeroAddress();
-        }
-        // The description formatter (AmountFormatter.toHumanReadable) rounds to 5 decimals. Constrain the fee
-        // to that granularity so the disclosed amount always equals the exact amount charged: baseFeeAmount
-        // and baseFeeAmount * txCount (txCount <= 3) both stay multiples of 1e13 = 10^(18-5) for an
-        // 18-decimal SuperToken.
-        if (baseFeeAmount % 1e13 != 0) revert FeeNotRepresentable();
         _cfa = IConstantFlowAgreementV1(
             address(host.getAgreementClass(keccak256("org.superfluid-finance.agreements.ConstantFlowAgreement.v1")))
         );
         _flowScheduler = flowScheduler;
-        _feeSuperToken = feeSuperToken;
-        _baseFeeAmount = baseFeeAmount;
-        _feeReceiver = feeReceiver;
     }
 
     function _registerActions() internal override {
@@ -367,7 +341,7 @@ contract DashboardClearMacro is ClearMacroBase {
         return _descriptionDeleteFlowSchedule(lang, p.superToken, p.receiver);
     }
 
-    function _buildOperationsCreateFlow(ISuperfluid, bytes memory actionSpecificParams, address account)
+    function _buildOperationsCreateFlow(ISuperfluid, bytes memory actionSpecificParams, address)
         internal
         view
         returns (ISuperfluid.Operation[] memory operations)
@@ -381,10 +355,9 @@ contract DashboardClearMacro is ClearMacroBase {
                 abi.encodeCall(_cfa.createFlow, (p.superToken, p.receiver, p.flowRate, new bytes(0))), new bytes(0)
             )
         });
-        return _appendFee(operations, account, 1);
     }
 
-    function _buildOperationsUpdateFlow(ISuperfluid, bytes memory actionSpecificParams, address account)
+    function _buildOperationsUpdateFlow(ISuperfluid, bytes memory actionSpecificParams, address)
         internal
         view
         returns (ISuperfluid.Operation[] memory operations)
@@ -398,10 +371,9 @@ contract DashboardClearMacro is ClearMacroBase {
                 abi.encodeCall(_cfa.updateFlow, (p.superToken, p.receiver, p.flowRate, new bytes(0))), new bytes(0)
             )
         });
-        return _appendFee(operations, account, 1);
     }
 
-    function _buildOperationsDeleteFlow(ISuperfluid, bytes memory actionSpecificParams, address account)
+    function _buildOperationsDeleteFlow(ISuperfluid, bytes memory actionSpecificParams, address)
         internal
         view
         returns (ISuperfluid.Operation[] memory operations)
@@ -415,12 +387,11 @@ contract DashboardClearMacro is ClearMacroBase {
                 abi.encodeCall(_cfa.deleteFlow, (p.superToken, p.sender, p.receiver, new bytes(0))), new bytes(0)
             )
         });
-        return _appendFee(operations, account, 1);
     }
 
-    function _buildOperationsUpgrade(ISuperfluid, bytes memory actionSpecificParams, address account)
+    function _buildOperationsUpgrade(ISuperfluid, bytes memory actionSpecificParams, address)
         internal
-        view
+        pure
         returns (ISuperfluid.Operation[] memory operations)
     {
         UpgradeParams memory p = abi.decode(actionSpecificParams, (UpgradeParams));
@@ -430,12 +401,11 @@ contract DashboardClearMacro is ClearMacroBase {
             target: address(p.superToken),
             data: abi.encode(p.amount)
         });
-        return _appendFee(operations, account, 1);
     }
 
-    function _buildOperationsDowngrade(ISuperfluid, bytes memory actionSpecificParams, address account)
+    function _buildOperationsDowngrade(ISuperfluid, bytes memory actionSpecificParams, address)
         internal
-        view
+        pure
         returns (ISuperfluid.Operation[] memory operations)
     {
         DowngradeParams memory p = abi.decode(actionSpecificParams, (DowngradeParams));
@@ -445,12 +415,11 @@ contract DashboardClearMacro is ClearMacroBase {
             target: address(p.superToken),
             data: abi.encode(p.amount)
         });
-        return _appendFee(operations, account, 1);
     }
 
-    function _buildOperationsApprove(ISuperfluid, bytes memory actionSpecificParams, address account)
+    function _buildOperationsApprove(ISuperfluid, bytes memory actionSpecificParams, address)
         internal
-        view
+        pure
         returns (ISuperfluid.Operation[] memory operations)
     {
         ApproveParams memory p = abi.decode(actionSpecificParams, (ApproveParams));
@@ -460,12 +429,11 @@ contract DashboardClearMacro is ClearMacroBase {
             target: address(p.superToken),
             data: abi.encode(p.spender, p.amount)
         });
-        return _appendFee(operations, account, 1);
     }
 
     function _buildOperationsTransfer(ISuperfluid, bytes memory actionSpecificParams, address account)
         internal
-        view
+        pure
         returns (ISuperfluid.Operation[] memory operations)
     {
         TransferParams memory p = abi.decode(actionSpecificParams, (TransferParams));
@@ -475,7 +443,6 @@ contract DashboardClearMacro is ClearMacroBase {
             target: address(p.superToken),
             data: abi.encode(account, p.receiver, p.amount)
         });
-        return _appendFee(operations, account, 1);
     }
 
     // Grants the FlowScheduler the flow operator permissions it needs (create for a scheduled
@@ -529,11 +496,6 @@ contract DashboardClearMacro is ClearMacroBase {
                 )
             )
         });
-
-        // Fee is charged per transaction the relay executes (see _scheduleTxCount): a new schedule also
-        // reserves the keeper executions it triggers; modifying an existing schedule only pays the setup tx.
-        (uint256 txCount,) = _scheduleTxCount(p, account);
-        return _appendFee(operations, account, txCount);
     }
 
     // Diff between what the schedule needs from the FlowScheduler as flow operator and what the
@@ -551,86 +513,7 @@ contract DashboardClearMacro is ClearMacroBase {
         allowanceToAdd = existingAllowance >= neededAllowance ? int96(0) : neededAllowance - existingAllowance;
     }
 
-    // Appends a relay fee of `_baseFeeAmount * txCount` to the action's operations. The fee is an ERC20
-    // transferFrom of the fee SuperToken from the signer (`account`) to `_feeReceiver`. Because the batch
-    // runs with the signer as msg.sender, this is a self-spend (holder == spender) and needs no allowance —
-    // the same mechanism the Transfer action relies on. Returns the array unchanged when feeless.
-    function _appendFee(ISuperfluid.Operation[] memory core, address account, uint256 txCount)
-        internal
-        view
-        returns (ISuperfluid.Operation[] memory ops)
-    {
-        uint256 feeAmount = _baseFeeAmount * txCount;
-        if (feeAmount == 0) return core;
-        ops = new ISuperfluid.Operation[](core.length + 1);
-        for (uint256 j = 0; j < core.length; j++) {
-            ops[j] = core[j];
-        }
-        ops[core.length] = ISuperfluid.Operation({
-            operationType: BatchOperation.OPERATION_TYPE_ERC20_TRANSFER_FROM,
-            target: address(_feeSuperToken),
-            data: abi.encode(account, _feeReceiver, feeAmount)
-        });
-    }
-
-    // Whether a FlowScheduler schedule already exists for this (token, sender, receiver). A stored schedule
-    // always has a start or an end date, so this distinguishes a new schedule from a modification.
-    function _scheduleExists(ISuperToken superToken, address sender, address receiver)
-        internal
-        view
-        returns (bool)
-    {
-        IFlowScheduler.FlowSchedule memory s = _flowScheduler.getFlowSchedule(address(superToken), sender, receiver);
-        return s.startDate != 0 || s.endDate != 0;
-    }
-
-    // The single definition of the ScheduleFlow relay-tx multiplier, shared by the operations builder and
-    // `previewRelayFee`. `maxTx` treats the schedule as new (its full keeper reservation); `currentTx` is
-    // what would actually be charged for `account` now (1 when a schedule row already exists = a modify).
-    function _scheduleTxCount(ScheduleFlowParams memory p, address account)
-        internal
-        view
-        returns (uint256 currentTx, uint256 maxTx)
-    {
-        maxTx = 1 + (p.startDate != 0 ? 1 : 0) + (p.endDate != 0 ? 1 : 0);
-        currentTx = _scheduleExists(p.superToken, account, p.receiver) ? 1 : maxTx;
-    }
-
-    /// @notice The Super Token relay fees are charged in (address(0) on a feeless deployment).
-    function feeToken() external view returns (ISuperToken) {
-        return _feeSuperToken;
-    }
-
-    /// @notice The base fee charged per relayed transaction (a scheduling action reserves 2-3 of them).
-    function baseFee() external view returns (uint256) {
-        return _baseFeeAmount;
-    }
-
-    /// @notice Quote the relay fee for an encoded action without executing it.
-    /// @param actionParams The output of `encode<Action>` — `abi.encode(uint8 actionId, bytes32 lang, bytes
-    ///        actionSpecificParams)`.
-    /// @param account The signer the fee would be charged to (used to tell a new schedule from a modify).
-    /// @return feeToken The Super Token the fee is charged in (address(0) on a feeless deployment).
-    /// @return feeReceiver Where the fee is sent.
-    /// @return currentFee The fee that would be charged now for `account`.
-    /// @return maxFee The upper bound (a schedule counts as new). Size balances/permits against this, since
-    ///         schedule state can change between quoting and execution.
-    function previewRelayFee(bytes calldata actionParams, address account)
-        external
-        view
-        returns (ISuperToken feeToken, address feeReceiver, uint256 currentFee, uint256 maxFee)
-    {
-        (uint8 actionId,, bytes memory actionSpecificParams) = abi.decode(actionParams, (uint8, bytes32, bytes));
-        _getAction(actionId); // reverts UnknownActionId for an unregistered id (matches the exec paths)
-        uint256 currentTx = 1;
-        uint256 maxTx = 1;
-        if (actionId == uint8(ActionId.ScheduleFlow)) {
-            (currentTx, maxTx) = _scheduleTxCount(abi.decode(actionSpecificParams, (ScheduleFlowParams)), account);
-        }
-        return (_feeSuperToken, _feeReceiver, _baseFeeAmount * currentTx, _baseFeeAmount * maxTx);
-    }
-
-    function _buildOperationsDeleteFlowSchedule(ISuperfluid, bytes memory actionSpecificParams, address account)
+    function _buildOperationsDeleteFlowSchedule(ISuperfluid, bytes memory actionSpecificParams, address)
         internal
         view
         returns (ISuperfluid.Operation[] memory operations)
@@ -642,7 +525,6 @@ contract DashboardClearMacro is ClearMacroBase {
             target: address(_flowScheduler),
             data: abi.encodeCall(IFlowScheduler.deleteFlowSchedule, (p.superToken, p.receiver, new bytes(0)))
         });
-        return _appendFee(operations, account, 1);
     }
 
     function _getActionStructHashCreateFlow(bytes memory actionSpecificParams, bytes32 lang)
@@ -806,8 +688,7 @@ contract DashboardClearMacro is ClearMacroBase {
     {
         _requireEnglish(lang);
         return string.concat(
-            "Create a new flow of ", flowRate.toFlowRatePerDay(), " ", token.symbol(), "/day to ", _hex(receiver),
-            _feeSuffix(1)
+            "Create a new flow of ", flowRate.toFlowRatePerDay(), " ", token.symbol(), "/day to ", _hex(receiver)
         );
     }
 
@@ -819,8 +700,7 @@ contract DashboardClearMacro is ClearMacroBase {
         _requireEnglish(lang);
         return
             string.concat(
-                "Update flow to ", flowRate.toFlowRatePerDay(), " ", token.symbol(), "/day to ", _hex(receiver),
-                _feeSuffix(1)
+                "Update flow to ", flowRate.toFlowRatePerDay(), " ", token.symbol(), "/day to ", _hex(receiver)
             );
     }
 
@@ -830,9 +710,7 @@ contract DashboardClearMacro is ClearMacroBase {
         returns (string memory)
     {
         _requireEnglish(lang);
-        return string.concat(
-            "Delete flow of ", token.symbol(), " from ", _hex(sender), " to ", _hex(receiver), _feeSuffix(1)
-        );
+        return string.concat("Delete flow of ", token.symbol(), " from ", _hex(sender), " to ", _hex(receiver));
     }
 
     function _descriptionUpgrade(bytes32 lang, ISuperToken token, uint256 amount)
@@ -843,8 +721,7 @@ contract DashboardClearMacro is ClearMacroBase {
         _requireEnglish(lang);
         address underlyingToken = token.getUnderlyingToken();
         return string.concat(
-            "Upgrade ", amount.toHumanReadable(), " ", IERC20Metadata(underlyingToken).symbol(), " to ", token.symbol(),
-            _feeSuffix(1)
+            "Upgrade ", amount.toHumanReadable(), " ", IERC20Metadata(underlyingToken).symbol(), " to ", token.symbol()
         );
     }
 
@@ -861,8 +738,7 @@ contract DashboardClearMacro is ClearMacroBase {
             " ",
             token.symbol(),
             " to ",
-            IERC20Metadata(underlyingToken).symbol(),
-            _feeSuffix(1)
+            IERC20Metadata(underlyingToken).symbol()
         );
     }
 
@@ -873,8 +749,7 @@ contract DashboardClearMacro is ClearMacroBase {
     {
         _requireEnglish(lang);
         return string.concat(
-            "Approve ", _hex(spender), " for an allowance of ", amount.toHumanReadable(), " ", token.symbol(),
-            _feeSuffix(1)
+            "Approve ", _hex(spender), " for an allowance of ", amount.toHumanReadable(), " ", token.symbol()
         );
     }
 
@@ -884,9 +759,7 @@ contract DashboardClearMacro is ClearMacroBase {
         returns (string memory)
     {
         _requireEnglish(lang);
-        return string.concat(
-            "Transfer ", amount.toHumanReadable(), " ", token.symbol(), " to ", _hex(receiver), _feeSuffix(1)
-        );
+        return string.concat("Transfer ", amount.toHumanReadable(), " ", token.symbol(), " to ", _hex(receiver));
     }
 
     function _descriptionScheduleFlow(
@@ -910,8 +783,7 @@ contract DashboardClearMacro is ClearMacroBase {
                 Strings.toString(startDate),
                 " and stopping at ",
                 Strings.toString(endDate),
-                " (unix time), and authorize the Flow Scheduler",
-                _scheduleFeeSuffix(startDate, endDate)
+                " (unix time), and authorize the Flow Scheduler"
             );
         } else if (startDate != 0) {
             return string.concat(
@@ -923,8 +795,7 @@ contract DashboardClearMacro is ClearMacroBase {
                 _hex(receiver),
                 ", starting at ",
                 Strings.toString(startDate),
-                " (unix time), and authorize the Flow Scheduler",
-                _scheduleFeeSuffix(startDate, endDate)
+                " (unix time), and authorize the Flow Scheduler"
             );
         } else {
             return string.concat(
@@ -934,8 +805,7 @@ contract DashboardClearMacro is ClearMacroBase {
                 _hex(receiver),
                 " to stop at ",
                 Strings.toString(endDate),
-                " (unix time), and authorize the Flow Scheduler",
-                _scheduleFeeSuffix(startDate, endDate)
+                " (unix time), and authorize the Flow Scheduler"
             );
         }
     }
@@ -946,9 +816,7 @@ contract DashboardClearMacro is ClearMacroBase {
         returns (string memory)
     {
         _requireEnglish(lang);
-        return string.concat(
-            "Cancel the scheduled stream of ", token.symbol(), " to ", _hex(receiver), _feeSuffix(1)
-        );
+        return string.concat("Cancel the scheduled stream of ", token.symbol(), " to ", _hex(receiver));
     }
 
     function _requireEnglish(bytes32 lang) internal pure {
@@ -957,39 +825,5 @@ contract DashboardClearMacro is ClearMacroBase {
 
     function _hex(address account) internal pure returns (string memory) {
         return Strings.toHexString(uint256(uint160(account)), 20);
-    }
-
-    // Fee disclosure for a fixed-txCount action. Returns "" when feeless.
-    function _feeSuffix(uint256 txCount) internal view returns (string memory) {
-        if (_baseFeeAmount == 0) return "";
-        return string.concat(
-            ", plus a relay fee of ",
-            (_baseFeeAmount * txCount).toHumanReadable(),
-            " ",
-            _feeSuperToken.symbol(),
-            " payable to ",
-            _hex(_feeReceiver)
-        );
-    }
-
-    // Fee disclosure for ScheduleFlow. The description cannot see the signer, so it cannot tell whether the
-    // schedule is new or a modification; it discloses both exact amounts (a new schedule reserves its keeper
-    // executions, a modification only pays the setup tx). The receiver is stated once so it applies to both.
-    function _scheduleFeeSuffix(uint32 startDate, uint32 endDate) internal view returns (string memory) {
-        if (_baseFeeAmount == 0) return "";
-        uint256 newTxCount = 1 + (startDate != 0 ? 1 : 0) + (endDate != 0 ? 1 : 0);
-        return string.concat(
-            ", plus a relay fee payable to ",
-            _hex(_feeReceiver),
-            " of ",
-            (_baseFeeAmount * newTxCount).toHumanReadable(),
-            " ",
-            _feeSuperToken.symbol(),
-            " for a new schedule, or ",
-            _baseFeeAmount.toHumanReadable(),
-            " ",
-            _feeSuperToken.symbol(),
-            " when modifying an existing schedule"
-        );
     }
 }
