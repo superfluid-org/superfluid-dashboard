@@ -21,6 +21,7 @@
     "typecheck": "pnpm exec tsc --noEmit",
     "contracts:build": "forge build --root contracts",
     "contracts:test": "forge test --root contracts -vv",
+    "contracts:coverage": "forge coverage --root contracts --no-match-coverage \"(test|lib|script)\" --report summary --report lcov --report-file lcov.info",
     "contracts:abi": "forge build --root contracts && node scripts/generate-clear-macro-abi.mjs"
   },
   "dependencies": {

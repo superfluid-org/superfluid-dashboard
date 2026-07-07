@@ -55,6 +55,25 @@ via the forwarder's Permit2 path) as well as from **USDCx** directly.
 `forge test` 44/44 ✅, `pnpm contracts:abi` ✅, `pnpm typecheck` ✅, changed files lint-clean ✅. Reviewed
 twice by Codex (see §6). **End-to-end runtime NOT yet exercised** — blocked on the deployment prerequisite.
 
+### Test hardening (2026-07-08)
+Contract suite expanded **44 → 80 tests** across 3 files (shared harness extracted to
+`contracts/test/DashboardClearMacroTestBase.t.sol`, identical pass list verified before/after):
+- `DashboardClearMacro.t.sol` (+10): constructor zero-address guards (flowScheduler, fee token,
+  fee receiver) and the 1e13 minimum-fee acceptance; `feeToken()`/`baseFee()` getters; start-only
+  `previewRelayFee` (2×); lower-rate modify leaves the operator allowance untouched (grant op elided);
+  truncated/malformed `actionParams` revert; **exact** description strings for CreateFlow and all three
+  ScheduleFlow branches — the fee literals (`0.00100`/`0.00200`/`0.00300`) the struct hash commits to.
+- `FormatterLibs.t.sol` (new, 16 + 3 fuzz): literal expectations for rounding half-up, trailing-zero
+  and leading-zero padding, carry into the integer part, all periods; the round-trip fuzz **mechanizes
+  the "disclosed == charged for multiples of 1e13" invariant** behind `FeeNotRepresentable`.
+  `InvalidPeriod` is unreachable at solc 0.8.30 (enum cleanup panics 0x21 first) — locked in as such.
+- `DashboardClearMacroEip712.t.sol` (new, 7): typedef/primaryType literals for all 9 actions
+  (redeclared in-test so contract drift fails), ERC-5267 domain check, independent digest recomputation
+  layer-by-layer, an execution signed from a **recomputed** digest (never calling `getDigest`), and
+  description-commitment checks for all 9 action struct hashes.
+- New `pnpm contracts:coverage` (lcov + summary, src-only): `DashboardClearMacro.sol` 100% lines /
+  93.3% branches / 100% funcs; `FormatterLibs.sol` 94.4% lines (only the unreachable defensive revert).
+
 ### Deployment prerequisite — RESOLVED (2026-07-07)
 The 5-arg fee macro is deployed on OP Sepolia (see §9-H) and `networks.ts`
 `dashboardClearMacro.macroAddress` now points at **`0x576d1274Ef1E4e1f6093ffC1188c8D32411dDD65`**;
