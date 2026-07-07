@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import { cfaAbi, cfaAddress } from "@sfpro/sdk/abi/core";
 import { flowSchedulerAbi } from "@sfpro/sdk/abi/automation";
+import { TransactionTitle } from "@superfluid-finance/sdk-redux";
 import { Address, Hex, encodeFunctionData } from "viem";
 import {
   isCloseToUnlimitedFlowRateAllowance,
@@ -30,6 +31,13 @@ import {
 } from "../transactions/operations";
 import { useSuperfluidWriteContract } from "../transactions/useSuperfluidWriteContract";
 import { UnitOfTime } from "./FlowRateInput";
+
+/**
+ * Single source for the grant sub-op's title: the grant+schedule→one-relayable-action
+ * reduction below matches on it, so the assignment and the comparison must never drift.
+ */
+const APPROVE_STREAM_SCHEDULER_TITLE =
+  "Approve Stream Scheduler" satisfies TransactionTitle;
 
 export interface UpsertFlowWithSchedulingArgs {
   chainId: number;
@@ -163,7 +171,7 @@ export function useUpsertFlowWithScheduling() {
                   ],
                 }),
                 userData,
-                title: "Approve Stream Scheduler",
+                title: APPROVE_STREAM_SCHEDULER_TITLE,
               })
             );
           }
@@ -339,7 +347,7 @@ export function useUpsertFlowWithScheduling() {
       const clearMacro =
         writeFragment.clearMacro ??
         (subOperations.length === 2 &&
-        subOperations[0].title === "Approve Stream Scheduler" &&
+        subOperations[0].title === APPROVE_STREAM_SCHEDULER_TITLE &&
         subOperations[1].clearMacro?.kind === "scheduleFlow"
           ? subOperations[1].clearMacro
           : undefined);

@@ -24,11 +24,15 @@ import {
   isContractRevert,
 } from "./viemTransactionErrors";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
-import { useClearMacroEnabled } from "../settings/appSettingsHooks";
+import {
+  useClearMacroEnabled,
+  useClearMacroPaymentMode,
+} from "../settings/appSettingsHooks";
 import { ClearMacroAction } from "../clearMacro/dashboardClearMacro";
 import {
   ClearMacroInsufficientFeeError,
   ClearMacroNotEligibleError,
+  ClearMacroPermit2ApprovalRequiredError,
   executeClearMacro,
 } from "../clearMacro/executeClearMacro";
 import { ClearMacroRelayError } from "../clearMacro/relayApi";
@@ -134,6 +138,7 @@ export function useSuperfluidWriteContract() {
   const { address } = useAccount();
   const getTransactionOverrides = useGetTransactionOverrides();
   const clearMacroEnabled = useClearMacroEnabled();
+  const clearMacroPaymentMode = useClearMacroPaymentMode();
   const { isEOA, visibleAddress } = useVisibleAddress();
   const [relayPhase, setRelayPhase] = useState<RelayPhase | undefined>();
   const [relayStatusUnknown, setRelayStatusUnknown] = useState<
@@ -167,6 +172,9 @@ export function useSuperfluidWriteContract() {
         return;
       // A known fee-balance shortfall surfaced before signing — the dialog explains it; not a bug.
       if (error instanceof ClearMacroInsufficientFeeError) return;
+      // A missing one-time Permit2 approval, surfaced before signing — the chip offers the
+      // approve; expected user-side condition, not a bug.
+      if (error instanceof ClearMacroPermit2ApprovalRequiredError) return;
       const code = classifyError(error); // walks for UserRejectedRequestError / InsufficientFundsError
       if (code === "USER_REJECTED" || code === "INSUFFICIENT_FUNDS") return;
       if (hasUserRejectionMessage(error)) return; // rejections viem doesn't type (auto-wrap, Cypress)
@@ -236,8 +244,9 @@ export function useSuperfluidWriteContract() {
             // existing stream, ...) in the dialog before the signature prompt.
             fallbackSimulationRequest:
               request as Parameters<typeof simulateContract>[1],
-            // Phase 1: the fee is always paid from an existing USDCx balance.
-            paymentMode: "usdcx-direct",
+            // The persisted chip selection: pay the fee from USDCx directly, or fund it
+            // from USDC via Permit2.
+            paymentMode: clearMacroPaymentMode,
             onPhase: setRelayPhase,
             // Persist the execution the moment the relay accepts the signed payload, BEFORE
             // polling — and flush so a closed tab / reload / poll timeout can't orphan it.
@@ -292,10 +301,14 @@ export function useSuperfluidWriteContract() {
             // Surface the gasless→self-pay switch in the dialog. The phase persists through the
             // self-pay `writeContract` that follows (and into success); the dialog narrates it.
             setRelayPhase("fallback");
-          } else if (error instanceof ClearMacroInsufficientFeeError) {
-            // Known fee shortfall, thrown BEFORE signing — surface it (the error dialog shows
-            // the message). Deliberately NOT a silent self-pay fallback: the user should decide
-            // to add USDCx (or, in Phase 2, pay from USDC). No execution exists to hand off.
+          } else if (
+            error instanceof ClearMacroInsufficientFeeError ||
+            error instanceof ClearMacroPermit2ApprovalRequiredError
+          ) {
+            // Known fee shortfall / missing one-time Permit2 approval, thrown BEFORE signing —
+            // surface it (the error dialog shows the message). Deliberately NOT a silent
+            // self-pay fallback: the user should decide to top up, approve, or switch the
+            // payment mode in the chip. No execution exists to hand off.
             throw error;
           } else if (error instanceof ClearMacroRelayError) {
             const executionId = error.executionId ?? createdExecutionId;

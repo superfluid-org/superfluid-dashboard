@@ -141,6 +141,18 @@ export function getCapabilities(): Promise<RelayCapabilities> {
   return capabilitiesCache;
 }
 
+/** Whether the provider accepts `clearMacroPermit2V1` (pay-with-USDC) on this chain. */
+export function chainSupportsPermit2(
+  capabilities: RelayCapabilities,
+  chainId: number
+): boolean {
+  return (
+    capabilities.chains
+      .find((chain) => chain.chainId === chainId)
+      ?.supportedKinds.includes("clearMacroPermit2V1") ?? false
+  );
+}
+
 /** `runMacro` relay body — a single ClearMacro digest signature. */
 export interface ClearMacroV1Body {
   kind: "clearMacroV1";

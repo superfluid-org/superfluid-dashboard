@@ -3,11 +3,12 @@ import { type Address, stringToHex } from "viem";
 /**
  * DashboardClearMacro ABI, generated from the Foundry project in `contracts/`
  * (regenerate with `pnpm contracts:abi`). The deployed OP Sepolia instance
- * (0xa7AA0ff51Bf4a20A1E3516cFEa2C1aD44561a411, set in networks.ts) is the two-arg
- * `(host, flowScheduler)` macro from contracts/script/DeployDashboardClearMacro.s.sol,
- * so every action here — including the `*ScheduleFlow*`/`*FlowSchedule*` FlowScheduler
- * entries — is live on-chain. (It replaced an earlier instance,
- * 0x77232a2a953b570D1fEE1FE16b1902299fe7b898, which predated those actions.)
+ * (0x576d1274Ef1E4e1f6093ffC1188c8D32411dDD65, set in networks.ts) is the five-arg
+ * fee-charging macro from contracts/script/DeployDashboardClearMacro.s.sol —
+ * fee token fUSDCx 0x131780640eDF9830099AaC2203229073D6D2FE69, base fee 0.01,
+ * fee receiver 0x7269B0c7C831598465a9EB17F6c5a03331353dAF — so every action AND the
+ * fee reads (`previewRelayFee`/`feeToken`/`baseFee`) are live on-chain. (It replaced
+ * the feeless two-arg 0xa7AA0ff51Bf4a20A1E3516cFEa2C1aD44561a411.)
  */
 export { dashboardClearMacroAbi } from "./dashboardClearMacroAbi.generated";
 
