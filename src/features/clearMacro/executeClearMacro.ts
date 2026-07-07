@@ -1,4 +1,4 @@
-import { Address, Hex, hashTypedData } from "viem";
+import { Address, formatEther, Hex, hashTypedData } from "viem";
 import {
   Config,
   readContract,
@@ -8,6 +8,7 @@ import {
 import {
   clearMacroForwarderAbi,
   clearMacroForwarderAddress,
+  superTokenAbi,
 } from "@sfpro/sdk/abi";
 import { RelayPhase } from "../../MutationResult";
 import {
@@ -36,6 +37,33 @@ export class ClearMacroNotEligibleError extends Error {
   }
 }
 
+/**
+ * The signer can't cover the macro's relay fee for this payment mode. Thrown BEFORE the
+ * signature and — unlike `ClearMacroNotEligibleError` — deliberately NOT a silent self-pay
+ * fallback: a known fee shortfall is surfaced to the user (who, in the Permit2 path, can pay
+ * from USDC instead). Carries the numbers so the UI can format a message.
+ */
+export class ClearMacroInsufficientFeeError extends Error {
+  constructor(
+    message: string,
+    public readonly details: {
+      feeToken: Address;
+      requiredFee: bigint;
+      availableBalance: bigint;
+    }
+  ) {
+    super(message);
+    this.name = "ClearMacroInsufficientFeeError";
+  }
+}
+
+/**
+ * How the macro's USDCx fee is funded. `usdcx-direct` (default) charges an existing USDCx
+ * balance via plain `runMacro`. `usdc-permit2` (Phase 2) wraps USDC just-in-time via the
+ * forwarder's Permit2 path — not yet implemented here.
+ */
+export type ClearMacroPaymentMode = "usdcx-direct" | "usdc-permit2";
+
 /** The payload's signature validity window, from signing time. */
 const VALIDITY_WINDOW_IN_SECONDS = 600;
 
@@ -51,6 +79,8 @@ export interface ExecuteClearMacroParams {
    * batch operations.
    */
   fallbackSimulationRequest?: Parameters<typeof simulateContract>[1];
+  /** Fee funding mode; defaults to `usdcx-direct`. */
+  paymentMode?: ClearMacroPaymentMode;
   onPhase?: (phase: RelayPhase) => void;
   /**
    * Called once, immediately after the relay accepts the signed payload and BEFORE polling —
@@ -116,6 +146,9 @@ export async function executeClearMacro(
     message: Record<string, unknown>;
   };
   let encodedPayload: Hex;
+  // The raw encoded action (`encode<Action>` output). Hoisted so the post-assembly fee-readiness
+  // guard can pass it to `previewRelayFee` without re-reading it.
+  let actionParams: Hex;
   try {
     const nonce = (await readContract(wagmiConfig, {
       chainId,
@@ -125,7 +158,7 @@ export async function executeClearMacro(
       args: [signerAddress, 0n],
     })) as bigint;
 
-    const actionParams = (await readContract(wagmiConfig, {
+    actionParams = (await readContract(wagmiConfig, {
       chainId,
       abi: dashboardClearMacroAbi,
       address: macroAddress,
@@ -271,6 +304,72 @@ export async function executeClearMacro(
       "Clear Macro payload assembly failed.",
       { cause: error }
     );
+  }
+
+  // -- Fee readiness (pre-signature) ----------------------------------------------------
+  // Placed AFTER the assembly try/catch on purpose: a fee shortfall must surface as its own
+  // error, NOT be wrapped as ClearMacroNotEligibleError (which silently self-pays). The
+  // `previewRelayFee` read is tolerant — an older/feeless macro without the function (or a
+  // transient miss) leaves nothing to guard, so we proceed. Phase 2's usdc-permit2 mode funds
+  // the fee from USDC and skips this USDCx check.
+  if ((params.paymentMode ?? "usdcx-direct") === "usdcx-direct") {
+    const feeQuote = await readContract(wagmiConfig, {
+      chainId,
+      abi: dashboardClearMacroAbi,
+      address: macroAddress,
+      functionName: "previewRelayFee",
+      args: [actionParams, signerAddress],
+    } as Parameters<typeof readContract>[1])
+      .then((r) => r as readonly [Address, Address, bigint, bigint])
+      .catch(() => undefined);
+
+    const feeToken = feeQuote?.[0];
+    // Gate on maxFee (the new-schedule upper bound), not currentFee: a schedule row can be
+    // deleted/executed between signing and relay execution, pushing the charge up to maxFee —
+    // so requiring maxFee avoids signing into a relay revert. The fee is tiny, so this never
+    // meaningfully over-blocks. (maxFee == currentFee for every non-schedule action.)
+    const requiredFee = feeQuote?.[3] ?? 0n;
+    if (feeToken && requiredFee > 0n) {
+      const [availableBalance] = (await readContract(wagmiConfig, {
+        chainId,
+        abi: superTokenAbi,
+        address: feeToken,
+        functionName: "realtimeBalanceOfNow",
+        args: [signerAddress],
+      } as Parameters<typeof readContract>[1])) as readonly [
+        bigint,
+        bigint,
+        bigint,
+        bigint,
+      ];
+
+      // Same-fee-token adjustment: the action itself can move the fee token within the same
+      // batch BEFORE the appended fee transfer — `upgrade` mints it (relaxes the check),
+      // `transfer`/`downgrade` spend it (tightens it). A gate, not a guarantee: streams/
+      // deposits can still shift the real transferable balance by execution time.
+      let effective = availableBalance;
+      if (action.superToken.toLowerCase() === feeToken.toLowerCase()) {
+        if (action.kind === "upgrade") effective += action.amount;
+        else if (action.kind === "transfer" || action.kind === "downgrade")
+          effective -= action.amount;
+      }
+
+      if (effective < requiredFee) {
+        const symbol = (await readContract(wagmiConfig, {
+          chainId,
+          abi: superTokenAbi,
+          address: feeToken,
+          functionName: "symbol",
+        } as Parameters<typeof readContract>[1]).catch(
+          () => "the fee token"
+        )) as string;
+        throw new ClearMacroInsufficientFeeError(
+          `Not enough ${symbol} to pay the up-to-${formatEther(requiredFee)} ${symbol} relay fee ` +
+            `(available ${formatEther(effective < 0n ? 0n : effective)} ${symbol}).`,
+          { feeToken, requiredFee, availableBalance }
+        );
+      }
+    }
   }
 
   // -- Pre-signature simulation of the FALLBACK write -----------------------------------

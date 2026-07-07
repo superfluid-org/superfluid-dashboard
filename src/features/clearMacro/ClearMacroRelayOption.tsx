@@ -1,11 +1,12 @@
 import BoltRoundedIcon from "@mui/icons-material/BoltRounded";
-import { Paper, Switch, Typography } from "@mui/material";
+import { Paper, Stack, Switch, Typography } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import { FC } from "react";
 import TooltipWithIcon from "../common/TooltipWithIcon";
 import { Network } from "../network/networks";
 import { ClearMacroActionKind } from "./dashboardClearMacro";
 import { useClearMacroEligibility } from "./useClearMacroEligibility";
+import { useRelayFeeDisclosure } from "./useRelayFee";
 
 interface ClearMacroRelayOptionProps {
   /** The macro action this form's primary button maps to; `undefined` = not eligible. */
@@ -28,8 +29,16 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
 }) => {
   const { isEligible, isRelayEnabled, setRelayEnabled } =
     useClearMacroEligibility(actionKind, network);
+  const { feeAvailable, feeSymbol, feeText } = useRelayFeeDisclosure(
+    network,
+    actionKind
+  );
 
   if (!isEligible) return null;
+
+  const tooltip = feeAvailable
+    ? `You sign one human-readable message and a relay service submits the transaction and pays the gas. The macro charges a ${feeText} fee in ${feeSymbol} on success.`
+    : "You sign one human-readable message and a relay service submits the transaction and pays the gas.";
 
   return (
     <Paper
@@ -59,16 +68,23 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
         size="small"
         checked={isRelayEnabled}
         onChange={(_event, checked) => setRelayEnabled(checked)}
-        inputProps={{ "aria-label": "Toggle gasless Clear Macro relay" }}
+        inputProps={{ "aria-label": "Toggle Clear Macro relay" }}
       />
       <BoltRoundedIcon
         fontSize="small"
         sx={{ color: isRelayEnabled ? "primary.main" : "text.secondary" }}
       />
-      <Typography variant="body2" sx={{ flex: 1 }} translate="yes">
-        Gasless via Clear Macro relay
-      </Typography>
-      <TooltipWithIcon title="Instead of a regular transaction, you sign one human-readable message and a relay service submits the transaction and pays the gas." />
+      <Stack sx={{ flex: 1 }}>
+        <Typography variant="body2" translate="yes">
+          Relay pays gas via Clear Macro
+        </Typography>
+        {feeAvailable && (
+          <Typography variant="caption" color="text.secondary" translate="no">
+            Fee: {feeText}
+          </Typography>
+        )}
+      </Stack>
+      <TooltipWithIcon title={tooltip} />
     </Paper>
   );
 };

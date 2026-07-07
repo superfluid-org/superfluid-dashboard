@@ -10,11 +10,22 @@ import { Address, Hex } from "viem";
  */
 const RELAY_PROVIDER_BASE_URL = "/clearmacro-provider";
 
+/**
+ * Relay execution modes the provider supports:
+ * - `clearMacroV1`: plain `runMacro` with a ClearMacro digest signature (fee paid from an
+ *   existing USDCx balance).
+ * - `clearMacroPermit2V1`: `runPermit2AndMacro` with a single Permit2 witness signature that
+ *   wraps USDC→USDCx just-in-time (used by the Phase 2 pay-with-USDC path).
+ */
+export type RelayKind = "clearMacroV1" | "clearMacroPermit2V1";
+
 export interface RelayCapabilities {
   providerName: string;
   chains: {
     chainId: number;
     forwarderAddress: Address;
+    /** The relay kinds this provider accepts on this chain. */
+    supportedKinds: RelayKind[];
     macroPolicy: { mode: string };
   }[];
 }
@@ -33,7 +44,7 @@ export interface RelayExecution {
   id: string;
   state: RelayExecutionState;
   terminal: boolean;
-  kind: "clearMacroV1";
+  kind: RelayKind;
   chainId: number;
   clientRequestId?: string;
   metadata: Record<string, string>;
@@ -130,16 +141,48 @@ export function getCapabilities(): Promise<RelayCapabilities> {
   return capabilitiesCache;
 }
 
-export interface CreateRelayExecutionBody {
+/** `runMacro` relay body — a single ClearMacro digest signature. */
+export interface ClearMacroV1Body {
   kind: "clearMacroV1";
   chainId: number;
   macroAddress: Address;
   signerAddress: Address;
   payload: Hex;
   signature: Hex;
+  value?: string;
   clientRequestId?: string;
   metadata?: Record<string, string>;
 }
+
+/**
+ * `runPermit2AndMacro` relay body — one Permit2 `PermitWitnessTransferFrom` signature whose
+ * witness binds the ClearMacro payload (no top-level `signature`). The provider derives the
+ * witness on-chain from `macroAddress` + `payload` + `permit2.upgradeSuperToken`. Amounts,
+ * nonce, and deadline are decimal strings (Uniswap SignatureTransfer). Used by Phase 2.
+ */
+export interface ClearMacroPermit2V1Body {
+  kind: "clearMacroPermit2V1";
+  chainId: number;
+  macroAddress: Address;
+  signerAddress: Address;
+  payload: Hex;
+  permit2: {
+    permit: {
+      permitted: { token: Address; amount: string };
+      nonce: string;
+      deadline: string;
+    };
+    spender: Address;
+    upgradeSuperToken: Address;
+    signature: Hex;
+  };
+  value?: string;
+  clientRequestId?: string;
+  metadata?: Record<string, string>;
+}
+
+/** Discriminated on `kind`. Phase 1 only builds `ClearMacroV1Body`. */
+export type CreateRelayExecutionBody = ClearMacroV1Body | ClearMacroPermit2V1Body;
 
 export async function createRelayExecution(
   body: CreateRelayExecutionBody

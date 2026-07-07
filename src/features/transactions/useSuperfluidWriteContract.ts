@@ -27,6 +27,7 @@ import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { useClearMacroEnabled } from "../settings/appSettingsHooks";
 import { ClearMacroAction } from "../clearMacro/dashboardClearMacro";
 import {
+  ClearMacroInsufficientFeeError,
   ClearMacroNotEligibleError,
   executeClearMacro,
 } from "../clearMacro/executeClearMacro";
@@ -164,6 +165,8 @@ export function useSuperfluidWriteContract() {
         error.code === "POLL_TIMEOUT"
       )
         return;
+      // A known fee-balance shortfall surfaced before signing — the dialog explains it; not a bug.
+      if (error instanceof ClearMacroInsufficientFeeError) return;
       const code = classifyError(error); // walks for UserRejectedRequestError / InsufficientFundsError
       if (code === "USER_REJECTED" || code === "INSUFFICIENT_FUNDS") return;
       if (hasUserRejectionMessage(error)) return; // rejections viem doesn't type (auto-wrap, Cypress)
@@ -233,6 +236,8 @@ export function useSuperfluidWriteContract() {
             // existing stream, ...) in the dialog before the signature prompt.
             fallbackSimulationRequest:
               request as Parameters<typeof simulateContract>[1],
+            // Phase 1: the fee is always paid from an existing USDCx balance.
+            paymentMode: "usdcx-direct",
             onPhase: setRelayPhase,
             // Persist the execution the moment the relay accepts the signed payload, BEFORE
             // polling — and flush so a closed tab / reload / poll timeout can't orphan it.
@@ -287,6 +292,11 @@ export function useSuperfluidWriteContract() {
             // Surface the gasless→self-pay switch in the dialog. The phase persists through the
             // self-pay `writeContract` that follows (and into success); the dialog narrates it.
             setRelayPhase("fallback");
+          } else if (error instanceof ClearMacroInsufficientFeeError) {
+            // Known fee shortfall, thrown BEFORE signing — surface it (the error dialog shows
+            // the message). Deliberately NOT a silent self-pay fallback: the user should decide
+            // to add USDCx (or, in Phase 2, pay from USDC). No execution exists to hand off.
+            throw error;
           } else if (error instanceof ClearMacroRelayError) {
             const executionId = error.executionId ?? createdExecutionId;
             if (error.code === "POLL_TIMEOUT") {
