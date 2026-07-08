@@ -57,15 +57,34 @@ Load-bearing invariants:
 
 ## Deployment (OP Sepolia, 2026-07-08)
 
-**`0x0725db8cf32CDefa1e822CB336ca5caf4cbE69FD`**
-(tx `0xe0b6104f1c775171fd7d6ceffa771b181abdb33e3e1a7952f7e979eaa9227d3b`), same constructor params
-as its predecessor: fee token fUSDCx `0x131780640EDf9830099AAc2203229073d6D2FE69`, base fee 0.01,
-fee receiver `0x7269B0c7C831598465a9EB17F6c5a03331353dAF`. Replaces
-`0x576d1274Ef1E4e1f6093ffC1188c8D32411dDD65` in `networks.ts` (which replaced the feeless
-`0xa7AA0ff5…`). Verified live: `baseFee()`/`feeToken()` reads and an on-chain
-`describeScheduleFlow(start=0, rate>0)` returning the immediate-start text with exact fee
+**`0xa35C9faC83e1673e6f1221979e2843Dea4812e78`**
+(tx `0x20b28c150aa4cc0ada6d108587b6a88f12edce584210c7332cab2061bc364461`): fee token fUSDCx
+`0x131780640EDf9830099AAc2203229073d6D2FE69`, base fee 0.01, fee receiver
+**`0x74cD5673dF7efC148067Ecab494A19a46b0a3167`** — a freshly generated empty address, chosen so
+arriving relay fees are visible as its entire balance (the earlier receiver was the deployer
+itself, making test fees invisible self-transfers). Verified live: `previewRelayFee` reports the
+new receiver and 0.01 base fee.
+
+Supersedes the same-code `0x0725db8cf32CDefa1e822CB336ca5caf4cbE69FD`
+(tx `0xe0b6104f…`, fee receiver = deployer `0x7269B0c7…`), which replaced
+`0x576d1274Ef1E4e1f6093ffC1188c8D32411dDD65` (pre-immediate-start), which replaced the feeless
+`0xa7AA0ff5…`. Verified on the first immediate-start deploy: `baseFee()`/`feeToken()` reads and an
+on-chain `describeScheduleFlow(start=0, rate>0)` returning the immediate-start text with exact fee
 disclosure (0.02 new / 0.01 modify). ABI regen (`pnpm contracts:abi`) was a no-op, as expected —
 only internals and description text changed.
+
+### Known blocker: relay provider gas handling (2026-07-08)
+
+Two live immediate-start relays (executions `fae3db02-39f7…` Permit2, `b7eea1f1-1f55…`
+USDCx-direct) **reverted OutOfGas**: the relayer (`0x29e21461…`) submitted with a hard
+**200,000 gas limit** while the action needs ~687k (tx
+`0x7014e159f0683826d302fd81bfa5d1fd9f421806ba4ec17971bd5e91d47b7793`, died on the host's first
+governance config read). Proven not-our-bug: replaying the exact calldata from the relayer address
+at the pre-failure block succeeds, and `eth_estimateGas` there returns 687,253. The provider API
+accepts no gas hint, so the fix is provider-side (use the estimate; also, `category: "user"`,
+`retryable: false` is a misleading taxonomy for relayer infrastructure behavior). Lighter actions
+fit under 200k — an end-only schedule on an active flow relayed fine — so only multi-op schedule
+actions are blocked. Re-verify immediate-start end-to-end after the provider fix.
 
 ## Verification status
 

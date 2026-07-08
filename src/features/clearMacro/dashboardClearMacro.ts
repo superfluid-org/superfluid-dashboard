@@ -3,14 +3,16 @@ import { type Address, stringToHex } from "viem";
 /**
  * DashboardClearMacro ABI, generated from the Foundry project in `contracts/`
  * (regenerate with `pnpm contracts:abi`). The deployed OP Sepolia instance
- * (0x0725db8cf32CDefa1e822CB336ca5caf4cbE69FD, set in networks.ts) is the five-arg
+ * (0xa35C9faC83e1673e6f1221979e2843Dea4812e78, set in networks.ts) is the five-arg
  * fee-charging macro from contracts/script/DeployDashboardClearMacro.s.sol —
  * fee token fUSDCx 0x131780640eDF9830099AaC2203229073D6D2FE69, base fee 0.01,
- * fee receiver 0x7269B0c7C831598465a9EB17F6c5a03331353dAF — so every action AND the
- * fee reads (`previewRelayFee`/`feeToken`/`baseFee`) are live on-chain. This build adds
+ * fee receiver 0x74cD5673dF7efC148067Ecab494A19a46b0a3167 (a fresh empty address, so
+ * arriving fees are visible as its whole balance) — so every action AND the fee reads
+ * (`previewRelayFee`/`feeToken`/`baseFee`) are live on-chain. This build adds
  * ScheduleFlow's immediate-start mode (startDate 0 + positive rate = create the flow now,
- * schedule only the stop). (It replaced 0x576d1274Ef1E4e1f6093ffC1188c8D32411dDD65,
- * which replaced the feeless two-arg 0xa7AA0ff51Bf4a20A1E3516cFEa2C1aD44561a411.)
+ * schedule only the stop). (It replaced same-code 0x0725db8cf32CDefa1e822CB336ca5caf4cbE69FD
+ * which paid fees to the deployer, before that 0x576d1274Ef1E4e1f6093ffC1188c8D32411dDD65,
+ * and originally the feeless two-arg 0xa7AA0ff51Bf4a20A1E3516cFEa2C1aD44561a411.)
  */
 export { dashboardClearMacroAbi } from "./dashboardClearMacroAbi.generated";
 

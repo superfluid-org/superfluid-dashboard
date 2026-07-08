@@ -100,7 +100,7 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
   const tooltip = fee.feeAvailable
     ? `You sign one human-readable message and a relay service submits the transaction and pays the gas. The macro charges a ${fee.feeText} fee on success.` +
       (canPayWithUsdc
-        ? ` The fee can be paid from your ${fee.feeSymbol} balance, or funded from ${underlyingSymbol} (wrapped automatically — still one signature, after a one-time approval).`
+        ? ` The fee can be paid from your ${fee.feeSymbol} balance, or funded from ${underlyingSymbol} (wrapped automatically — still one signature, after a one-time unlimited ${underlyingSymbol} approval to Permit2).`
         : "")
     : "You sign one human-readable message and a relay service submits the transaction and pays the gas.";
 
@@ -236,9 +236,11 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
                           color="text.secondary"
                           translate="yes"
                         >
-                          You are granting the one-time {underlyingSymbol}{" "}
-                          approval that lets the relay fee be funded from{" "}
-                          {underlyingSymbol}.
+                          You are approving an unlimited{" "}
+                          <span translate="no">{underlyingSymbol}</span>{" "}
+                          allowance for Permit2 to use — the standard one-time
+                          Permit2 setup. Each relay fee still needs a signed
+                          permit from you for its exact amount.
                         </Typography>
                       );
                       const primaryArgs = {
