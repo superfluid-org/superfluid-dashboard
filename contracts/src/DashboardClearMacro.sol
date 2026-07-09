@@ -401,20 +401,37 @@ contract DashboardClearMacro is ClearMacroBase {
         return _appendFee(operations, account, 1);
     }
 
+    // Also removes the signer's flow schedule row for (token, signer, receiver) when one exists,
+    // so cancelling a scheduled stream is one signed action. Gated on `account == p.sender`
+    // because the FlowScheduler resolves the row's sender from the batch signer: CFA lets the
+    // flow's receiver delete too, and an unconditional call would then target the wrong row
+    // (token, receiver, receiver). The existence check keeps the common schedule-less delete
+    // light on gas. The description stays state-independent ("if you are the sender ... any
+    // matching schedule") so a schedule change between signing and execution cannot flip the
+    // recomputed struct hash into InvalidSignature.
     function _buildOperationsDeleteFlow(ISuperfluid, bytes memory actionSpecificParams, address account)
         internal
         view
         returns (ISuperfluid.Operation[] memory operations)
     {
         DeleteFlowParams memory p = abi.decode(actionSpecificParams, (DeleteFlowParams));
-        operations = new ISuperfluid.Operation[](1);
-        operations[0] = ISuperfluid.Operation({
+        bool deleteSchedule = account == p.sender && _scheduleExists(p.superToken, account, p.receiver);
+        uint256 i = 0;
+        operations = new ISuperfluid.Operation[](deleteSchedule ? 2 : 1);
+        operations[i++] = ISuperfluid.Operation({
             operationType: BatchOperation.OPERATION_TYPE_SUPERFLUID_CALL_AGREEMENT,
             target: address(_cfa),
             data: abi.encode(
                 abi.encodeCall(_cfa.deleteFlow, (p.superToken, p.sender, p.receiver, new bytes(0))), new bytes(0)
             )
         });
+        if (deleteSchedule) {
+            operations[i++] = ISuperfluid.Operation({
+                operationType: BatchOperation.OPERATION_TYPE_SUPERFLUID_CALL_APP_ACTION,
+                target: address(_flowScheduler),
+                data: abi.encodeCall(IFlowScheduler.deleteFlowSchedule, (p.superToken, p.receiver, new bytes(0)))
+            });
+        }
         return _appendFee(operations, account, 1);
     }
 
@@ -849,7 +866,14 @@ contract DashboardClearMacro is ClearMacroBase {
     {
         _requireEnglish(lang);
         return string.concat(
-            "Delete flow of ", token.symbol(), " from ", _hex(sender), " to ", _hex(receiver), _feeSuffix(1)
+            "Delete flow of ",
+            token.symbol(),
+            " from ",
+            _hex(sender),
+            " to ",
+            _hex(receiver),
+            " and, if you are the sender, cancel any matching schedule for it",
+            _feeSuffix(1)
         );
     }
 

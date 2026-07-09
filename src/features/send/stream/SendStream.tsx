@@ -448,11 +448,19 @@ export default memo(function SendStream() {
 
   const isModifying = Boolean(activeFlow || scheduledStream);
 
-  // Mirrors which lone macro action `useUpsertFlowWithScheduling` will attach (the hook
-  // is the runtime source of truth — a mismatch here only affects chip visibility).
-  // Toggling scheduling off clears both timestamps, so the timestamps alone track the
-  // hook's `shouldSchedule`.
+  // Mirrors which macro action the write hooks will attach (the hooks are the runtime
+  // source of truth — a mismatch here only affects chip visibility). Toggling scheduling
+  // off clears both timestamps, so the timestamps alone track the hook's `shouldSchedule`.
+  // While the primary send/modify button is disabled on an existing stream, Cancel is the
+  // only live action, so the chip reflects the cancel instead: `useDeleteFlowWithScheduling`
+  // relays it as a lone deleteFlow/deleteFlowSchedule or as the macro's combined deleteFlow
+  // (which also removes the schedule row). When the primary button is enabled but its batch
+  // is not relayable, the chip stays hidden — it must not advertise a relay next to a
+  // direct-executing primary button.
   const clearMacroActionKind = useMemo<ClearMacroActionKind | undefined>(() => {
+    if (isModifying && isSendDisabled) {
+      return activeFlow ? "deleteFlow" : "deleteFlowSchedule";
+    }
     const hasExistingSchedule = !!(existingStartTimestamp || existingEndTimestamp);
     const wantsSchedule = !!(startTimestamp || endTimestamp);
     const flowRateChanged =
@@ -483,6 +491,8 @@ export default memo(function SendStream() {
     existingEndTimestamp,
     activeFlow,
     flowRateWei,
+    isModifying,
+    isSendDisabled,
   ]);
 
   const SendTransactionBoundary = (

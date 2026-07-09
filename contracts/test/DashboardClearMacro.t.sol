@@ -69,6 +69,117 @@ contract DashboardClearMacroTest is DashboardClearMacroTestBase {
         _runAsProvider(signer, actionParams, 0, PROVIDER, 0, 0);
 
         assertEq(superToken.getFlowRate(signer.addr, bob), 0);
+        // create (1x) + delete (1x): a schedule-less delete stays a plain action.
+        assertEq(superToken.balanceOf(FEE_RECEIVER), 2 * BASE_FEE);
+    }
+
+    function testDeleteFlowRemovesScheduleRow() external {
+        VmSafe.Wallet memory signer = _newSigner("delete-with-schedule");
+        _fundSuper(signer, 100e18);
+        uint32 endDate = uint32(block.timestamp + 30 days);
+
+        // Active flow + end-only schedule row, both created outside the macro so the only relay
+        // fee in this test is the DeleteFlow one.
+        vm.startPrank(signer.addr);
+        superToken.createFlow(bob, DEFAULT_FLOW_RATE);
+        flowScheduler.createFlowSchedule(superToken, bob, 0, 0, int96(0), 0, endDate, new bytes(0), new bytes(0));
+        vm.stopPrank();
+
+        bytes memory actionParams = dashboardClearMacro.encodeDeleteFlow(
+            LANG_EN, DashboardClearMacro.DeleteFlowParams({superToken: superToken, sender: signer.addr, receiver: bob})
+        );
+        _runAsProvider(signer, actionParams, 0, PROVIDER, 0, 0);
+
+        assertEq(superToken.getFlowRate(signer.addr, bob), 0);
+        IFlowScheduler.FlowSchedule memory schedule =
+            flowScheduler.getFlowSchedule(address(superToken), signer.addr, bob);
+        assertEq(schedule.startDate, 0);
+        assertEq(schedule.endDate, 0);
+        // The schedule cleanup rides in the same relayed tx: still a plain 1x action.
+        assertEq(superToken.balanceOf(FEE_RECEIVER), BASE_FEE);
+    }
+
+    function testDeleteFlowByReceiverKeepsSendersSchedule() external {
+        VmSafe.Wallet memory sender = _newSigner("delete-by-receiver-sender");
+        VmSafe.Wallet memory receiver = _newSigner("delete-by-receiver-receiver");
+        _fundSuper(sender, 100e18);
+        _fundSuper(receiver, 1e18); // fee funds
+
+        uint32 endDate = uint32(block.timestamp + 30 days);
+        vm.startPrank(sender.addr);
+        superToken.createFlow(receiver.addr, DEFAULT_FLOW_RATE);
+        flowScheduler.createFlowSchedule(
+            superToken, receiver.addr, 0, 0, int96(0), 0, endDate, new bytes(0), new bytes(0)
+        );
+        vm.stopPrank();
+
+        // CFA lets the receiver close an incoming flow; the sender's schedule row must survive,
+        // as the macro only deletes the row when the signer IS the flow's sender.
+        bytes memory actionParams = dashboardClearMacro.encodeDeleteFlow(
+            LANG_EN,
+            DashboardClearMacro.DeleteFlowParams({superToken: superToken, sender: sender.addr, receiver: receiver.addr})
+        );
+        _runAsProvider(receiver, actionParams, 0, PROVIDER, 0, 0);
+
+        assertEq(superToken.getFlowRate(sender.addr, receiver.addr), 0);
+        IFlowScheduler.FlowSchedule memory schedule =
+            flowScheduler.getFlowSchedule(address(superToken), sender.addr, receiver.addr);
+        assertEq(schedule.endDate, endDate);
+    }
+
+    function testDeleteFlowRevertsWhenNoFlowEvenWithSchedule() external {
+        VmSafe.Wallet memory signer = _newSigner("delete-no-flow");
+        _fundSuper(signer, 1e18);
+        uint32 endDate = uint32(block.timestamp + 30 days);
+
+        vm.prank(signer.addr);
+        flowScheduler.createFlowSchedule(superToken, bob, 0, 0, int96(0), 0, endDate, new bytes(0), new bytes(0));
+
+        bytes memory actionParams = dashboardClearMacro.encodeDeleteFlow(
+            LANG_EN, DashboardClearMacro.DeleteFlowParams({superToken: superToken, sender: signer.addr, receiver: bob})
+        );
+        bytes memory encodedPayload = _getEncodedPayload(
+            actionParams, PROVIDER, 0, 0, forwarder.getNonce(signer.addr, 0), address(dashboardClearMacro)
+        );
+        bytes memory sig = _signEncodedPayload(signer, encodedPayload);
+
+        // The signed text promises to delete a flow; with none running the CFA deleteFlow reverts
+        // and the whole action rolls back, leaving the schedule row untouched (a schedule-only
+        // cancel has its own DeleteFlowSchedule action).
+        vm.expectRevert();
+        forwarder.runMacro(dashboardClearMacro, encodedPayload, signer.addr, sig);
+
+        IFlowScheduler.FlowSchedule memory schedule =
+            flowScheduler.getFlowSchedule(address(superToken), signer.addr, bob);
+        assertEq(schedule.endDate, endDate);
+    }
+
+    function testDeleteFlowExecutesAfterScheduleRemoved() external {
+        VmSafe.Wallet memory signer = _newSigner("delete-schedule-race");
+        _fundSuper(signer, 100e18);
+        uint32 endDate = uint32(block.timestamp + 30 days);
+
+        vm.startPrank(signer.addr);
+        superToken.createFlow(bob, DEFAULT_FLOW_RATE);
+        flowScheduler.createFlowSchedule(superToken, bob, 0, 0, int96(0), 0, endDate, new bytes(0), new bytes(0));
+        vm.stopPrank();
+
+        // Sign while the schedule row exists...
+        bytes memory actionParams = dashboardClearMacro.encodeDeleteFlow(
+            LANG_EN, DashboardClearMacro.DeleteFlowParams({superToken: superToken, sender: signer.addr, receiver: bob})
+        );
+        bytes memory encodedPayload = _getEncodedPayload(
+            actionParams, PROVIDER, 0, 0, forwarder.getNonce(signer.addr, 0), address(dashboardClearMacro)
+        );
+        bytes memory sig = _signEncodedPayload(signer, encodedPayload);
+
+        // ...then remove it before execution. The description (and thus the struct hash) is
+        // state-independent, so the signature stays valid and only the flow deletion runs.
+        vm.prank(signer.addr);
+        flowScheduler.deleteFlowSchedule(superToken, bob, new bytes(0));
+
+        forwarder.runMacro(dashboardClearMacro, encodedPayload, signer.addr, sig);
+        assertEq(superToken.getFlowRate(signer.addr, bob), 0);
     }
 
     function testUpgrade() external {
@@ -600,6 +711,7 @@ contract DashboardClearMacroTest is DashboardClearMacroTestBase {
         assertTrue(_contains(deleteDesc, superToken.symbol()));
         assertTrue(_contains(deleteDesc, spenderHex));
         assertTrue(_contains(deleteDesc, receiverHex));
+        assertTrue(_contains(deleteDesc, "if you are the sender, cancel any matching schedule"));
 
         string memory upgradeDesc = dashboardClearMacro.describeUpgrade(
             LANG_EN, DashboardClearMacro.UpgradeParams({superToken: superToken, amount: DEFAULT_AMOUNT})
@@ -699,6 +811,28 @@ contract DashboardClearMacroTest is DashboardClearMacroTestBase {
                 superToken.symbol(),
                 "/day to ",
                 Strings.toHexString(uint256(uint160(bob)), 20),
+                ", plus a relay fee of 0.00100 ",
+                superToken.symbol(),
+                " payable to ",
+                Strings.toHexString(uint256(uint160(FEE_RECEIVER)), 20)
+            )
+        );
+    }
+
+    function testDeleteFlowDescriptionExact() external view {
+        string memory desc = dashboardClearMacro.describeDeleteFlow(
+            LANG_EN, DashboardClearMacro.DeleteFlowParams({superToken: superToken, sender: alice, receiver: bob})
+        );
+        assertEq(
+            desc,
+            string.concat(
+                "Delete flow of ",
+                superToken.symbol(),
+                " from ",
+                Strings.toHexString(uint256(uint160(alice)), 20),
+                " to ",
+                Strings.toHexString(uint256(uint160(bob)), 20),
+                " and, if you are the sender, cancel any matching schedule for it",
                 ", plus a relay fee of 0.00100 ",
                 superToken.symbol(),
                 " payable to ",
@@ -1295,6 +1429,23 @@ contract DashboardClearMacroTest is DashboardClearMacroTestBase {
         assertEq(address(feeToken), address(superToken));
         assertEq(feeReceiver, FEE_RECEIVER);
         assertEq(currentFee, BASE_FEE); // plain action => 1x, current == max
+        assertEq(maxFee, BASE_FEE);
+    }
+
+    function testPreviewRelayFeeDeleteFlowWithScheduleStaysFlat() external {
+        VmSafe.Wallet memory signer = _newSigner("preview-delete");
+        _fundSuper(signer, 1e18);
+        uint32 endDate = uint32(block.timestamp + 30 days);
+        vm.prank(signer.addr);
+        flowScheduler.createFlowSchedule(superToken, bob, 0, 0, int96(0), 0, endDate, new bytes(0), new bytes(0));
+
+        // The schedule cleanup rides in the same relayed tx, so DeleteFlow stays a flat 1x quote
+        // even when a schedule row exists for the signer.
+        bytes memory actionParams = dashboardClearMacro.encodeDeleteFlow(
+            LANG_EN, DashboardClearMacro.DeleteFlowParams({superToken: superToken, sender: signer.addr, receiver: bob})
+        );
+        (,, uint256 currentFee, uint256 maxFee) = dashboardClearMacro.previewRelayFee(actionParams, signer.addr);
+        assertEq(currentFee, BASE_FEE);
         assertEq(maxFee, BASE_FEE);
     }
 

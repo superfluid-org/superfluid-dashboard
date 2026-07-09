@@ -80,6 +80,37 @@ export function reduceToScheduleFlowAction(
     : undefined;
 }
 
+/**
+ * The macro's deleteFlow also removes the signer's flow schedule row when one exists, so
+ * the `[deleteFlow, deleteFlowSchedule]` batch a scheduled-stream cancel builds reduces
+ * to that one relayable action.
+ *
+ * False-positive audit against every sub-op the delete hook can push (a deleteFlow head,
+ * a deleteFlowSchedule tail — nothing else): a lone `[deleteFlowSchedule]` leaves no
+ * matching head (it relays as itself via the lone-op write fragment); any batch built
+ * with `userDataBytes !== "0x"` or without `withClearMacro` has no `clearMacro` on any
+ * sub-op, so it can never reduce; the upsert hook's batches never have a deleteFlow head.
+ * Signer == flow sender is enforced by the executor's `visibleAddress === address` gate
+ * and again by the macro contract (it only touches the row when the signer is `sender`).
+ */
+export function reduceToDeleteFlowAction(
+  subOperations: SubOperation[]
+): ClearMacroAction | undefined {
+  const [deleteFlowOp, deleteScheduleOp, ...rest] = subOperations;
+  if (rest.length > 0 || !deleteScheduleOp) return undefined;
+  const action =
+    deleteFlowOp?.clearMacro?.kind === "deleteFlow"
+      ? deleteFlowOp.clearMacro
+      : undefined;
+  if (!action) return undefined;
+  const scheduleAction = deleteScheduleOp.clearMacro;
+  return scheduleAction?.kind === "deleteFlowSchedule" &&
+    scheduleAction.superToken === action.superToken &&
+    scheduleAction.receiver === action.receiver
+    ? action
+    : undefined;
+}
+
 export interface UpsertFlowWithSchedulingArgs {
   chainId: number;
   superTokenAddress: string;
@@ -102,9 +133,11 @@ export interface DeleteFlowWithSchedulingArgs {
   transactionExtraData?: Record<string, unknown>;
   overrides?: ViemFeeOverrides;
   /**
-   * Allow a lone deleteFlow or deleteFlowSchedule to relay via Clear Macro. Opt-in
-   * because relay engagement must follow a visible relay chip: the send-stream form
-   * renders one, the table-row cancel buttons don't.
+   * Allow the cancel to relay via Clear Macro: a lone deleteFlow or deleteFlowSchedule,
+   * or the `[deleteFlow, deleteFlowSchedule]` batch (which reduces to the macro's
+   * combined deleteFlow — see `reduceToDeleteFlowAction`). Opt-in because relay
+   * engagement must follow a visible relay chip: the send-stream form renders one, the
+   * table-row cancel buttons don't.
    */
   withClearMacro?: boolean;
 }
@@ -535,9 +568,14 @@ export function useDeleteFlowWithScheduling() {
 
       const subTransactionTitles = subOperations.map((x) => x.title);
 
+      const writeFragment = subOperationsWriteFragment(chainId, subOperations);
+      const clearMacro =
+        writeFragment.clearMacro ?? reduceToDeleteFlowAction(subOperations);
+
       return {
         chainId,
-        ...subOperationsWriteFragment(chainId, subOperations),
+        ...writeFragment,
+        clearMacro,
         title: "Close Stream" as const,
         subTransactionTitles,
         extraData: arg.transactionExtraData,
