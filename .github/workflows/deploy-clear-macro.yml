@@ -1,0 +1,123 @@
+name: Deploy Clear Macro
+
+# Manual-dispatch-only deployment of DashboardClearMacro via contracts/script/deploy-clear-macro.sh.
+# All per-chain settings (host, FlowScheduler, fee SuperToken, fee policy) are hardcoded in
+# contracts/script/DeployDashboardClearMacro.s.sol; the only inputs CI supplies are the target
+# network(s) and the deployer credentials.
+#
+# Required repository secrets (for broadcast runs):
+#   CLEAR_MACRO_DEPLOYER_PRIVATE_KEY  raw hex private key of the deployer EOA (funded on the targets)
+#   ETHERSCAN_API_KEY                 Etherscan v2 multichain key (verification; not needed for
+#                                     optimism-sepolia, which verifies on Blockscout)
+#
+# Broadcast runs use the `contract-deployment` environment — configure required reviewers on it
+# for an approval gate before real deployments. Simulation runs are unrestricted.
+
+on:
+  workflow_dispatch:
+    inputs:
+      network:
+        description: "Target network"
+        required: true
+        type: choice
+        default: optimism-sepolia
+        options:
+          - all
+          - eth-mainnet
+          - optimism-mainnet
+          - bsc-mainnet
+          - xdai-mainnet
+          - polygon-mainnet
+          - base-mainnet
+          - arbitrum-one
+          - avalanche-c
+          - optimism-sepolia
+      broadcast:
+        description: "Broadcast for real (unchecked = simulate only)"
+        type: boolean
+        default: false
+      verify:
+        description: "Verify on the explorer after broadcast"
+        type: boolean
+        default: true
+
+concurrency:
+  group: deploy-clear-macro
+  cancel-in-progress: false
+
+jobs:
+  simulate:
+    if: ${{ !inputs.broadcast }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+
+      - name: Simulate deployment
+        run: |
+          set -o pipefail
+          ./contracts/script/deploy-clear-macro.sh "${{ inputs.network }}" | tee deploy.log
+
+      - name: Job summary
+        if: always()
+        run: |
+          {
+            echo '## Clear Macro deployment (simulation)'
+            echo '```'
+            tail -n 60 deploy.log 2>/dev/null || echo "no output"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  deploy:
+    if: ${{ inputs.broadcast }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: contract-deployment
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+
+      - name: Deploy
+        env:
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.CLEAR_MACRO_DEPLOYER_PRIVATE_KEY }}
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+        run: |
+          set -o pipefail
+          ARGS=(--broadcast)
+          if [ "${{ inputs.verify }}" = "true" ]; then
+            ARGS+=(--verify)
+          fi
+          ./contracts/script/deploy-clear-macro.sh "${ARGS[@]}" "${{ inputs.network }}" | tee deploy.log
+
+      # The broadcast records are gitignored, so the workflow artifact is the durable record of
+      # what was deployed with which constructor args. Uploaded even if verification failed.
+      - name: Upload broadcast records
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: clear-macro-broadcast-${{ inputs.network }}-${{ github.run_id }}
+          path: contracts/broadcast/DeployDashboardClearMacro.s.sol/*/run-latest.json
+          if-no-files-found: warn
+
+      - name: Job summary
+        if: always()
+        run: |
+          {
+            echo '## Clear Macro deployment (broadcast)'
+            echo '```'
+            tail -n 60 deploy.log 2>/dev/null || echo "no output"
+            echo '```'
+            echo 'Next: wire the printed macroAddress into src/features/network/networks.ts'
+            echo 'and extend the lineage comment in src/features/clearMacro/dashboardClearMacro.ts.'
+          } >> "$GITHUB_STEP_SUMMARY"

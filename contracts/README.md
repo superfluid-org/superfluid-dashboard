@@ -70,6 +70,26 @@ forge build --root contracts
 forge test --root contracts -vv
 ```
 
+## Deployment
+
+Per-chain constructor settings (host, FlowScheduler, fee SuperToken, fee policy) live in a
+`block.chainid`-keyed table in `script/DeployDashboardClearMacro.s.sol`; env vars override any value per
+invocation. The driver `script/deploy-clear-macro.sh` deploys and verifies selectively per network
+(simulation by default, `--broadcast` requires an explicit `--account`):
+
+```bash
+pnpm contracts:deploy all                                                # dry-run every eligible chain
+pnpm contracts:deploy --broadcast --verify --account <keystore> <network>
+```
+
+Deployments can also run from CI: the manual-dispatch workflow `.github/workflows/deploy-clear-macro.yml`
+takes the target network as input, simulates by default, and sources the deployer from repository secrets
+(`CLEAR_MACRO_DEPLOYER_PRIVATE_KEY`, plus `ETHERSCAN_API_KEY` for verification); broadcast runs are gated
+behind the `contract-deployment` environment.
+
+Eligibility is bounded by FlowScheduler availability. Full rollout notes, the config table sources, and
+the dashboard wiring step are in `docs/plans/clear-macro-multi-network-deploy.md`.
+
 ## Security and replay notes
 
 - **Keyed nonces:** replay protection follows ERC-4337-style keyed nonces: `key << 64 | sequence`.
