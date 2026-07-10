@@ -47,9 +47,9 @@ import TooltipWithIcon from "../../common/TooltipWithIcon";
 import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
 import { Network, networkDefinition } from "../../network/networks";
 import NetworkSwitchLink from "../../network/NetworkSwitchLink";
-import { platformApi } from "../../redux/platformApi/platformApi";
 import { rpcApi } from "../../redux/store";
 import {
+  normalizeScheduleTimestamp,
   useDeleteFlowWithScheduling,
   useUpsertFlowWithScheduling,
 } from "../useFlowSchedulingWrites";
@@ -86,7 +86,12 @@ import { useSuperTokens } from "../../../hooks/useSuperTokens";
 import { SuperTokenMinimal, isWrappable } from "../../redux/endpoints/tokenTypes";
 import { useTokenQuery } from "../../../hooks/useTokenQuery";
 import { useWhitelist } from "../../../hooks/useWhitelist";
+import { useAccount } from "@/hooks/useAccount";
 import { ClearMacroRelayOption } from "../../clearMacro/ClearMacroRelayOption";
+import {
+  isClearMacroSupportedOnNetwork,
+  useClearMacroEligibility,
+} from "../../clearMacro/useClearMacroEligibility";
 import type { ClearMacroActionKind } from "../../clearMacro/dashboardClearMacro";
 
 // Minimum start and end date difference in seconds.
@@ -433,9 +438,11 @@ export default memo(function SendStream() {
     (!activeFlow && !scheduledStream && flowRateEther.amountEther !== "");
 
   // These shenanigans are because of react-hook-form's issue ()
-  const [isSendDisabled, setIsSendDisabled] = useState(true);
+  // "Base" = form validity/change/fetching only; the final `isSendDisabled` below layers
+  // the forced-relay gating on top.
+  const [isSendDisabledBase, setIsSendDisabledBase] = useState(true);
   useEffect(() => {
-    setIsSendDisabled(
+    setIsSendDisabledBase(
       formState.isValidating ||
       !formState.isValid ||
       !hasAnythingChanged ||
@@ -448,19 +455,16 @@ export default memo(function SendStream() {
 
   const isModifying = Boolean(activeFlow || scheduledStream);
 
-  // Mirrors which macro action the write hooks will attach (the hooks are the runtime
-  // source of truth — a mismatch here only affects chip visibility). Toggling scheduling
-  // off clears both timestamps, so the timestamps alone track the hook's `shouldSchedule`.
-  // While the primary send/modify button is disabled on an existing stream, Cancel is the
-  // only live action, so the chip reflects the cancel instead: `useDeleteFlowWithScheduling`
-  // relays it as a lone deleteFlow/deleteFlowSchedule or as the macro's combined deleteFlow
-  // (which also removes the schedule row). When the primary button is enabled but its batch
-  // is not relayable, the chip stays hidden — it must not advertise a relay next to a
-  // direct-executing primary button.
-  const clearMacroActionKind = useMemo<ClearMacroActionKind | undefined>(() => {
-    if (isModifying && isSendDisabled) {
-      return activeFlow ? "deleteFlow" : "deleteFlowSchedule";
-    }
+  // Mirrors which macro action the upsert hook will attach to the PRIMARY button's batch
+  // (the hooks are the runtime source of truth — a mismatch here only affects chip
+  // visibility and pre-click gating; the hook's fail-closed guard covers drift). Toggling
+  // scheduling off clears both timestamps, so the timestamps alone track the hook's
+  // `shouldSchedule`. `undefined` = the batch is not macro-expressible: the chip stays
+  // hidden — it must not advertise a relay next to a direct-executing primary button —
+  // and on forced-relay networks the submit is blocked with an explanatory alert instead.
+  const primaryClearMacroActionKind = useMemo<
+    ClearMacroActionKind | undefined
+  >(() => {
     const hasExistingSchedule = !!(existingStartTimestamp || existingEndTimestamp);
     const wantsSchedule = !!(startTimestamp || endTimestamp);
     const flowRateChanged =
@@ -491,9 +495,80 @@ export default memo(function SendStream() {
     existingEndTimestamp,
     activeFlow,
     flowRateWei,
-    isModifying,
-    isSendDisabled,
   ]);
+
+  // While the primary send/modify button is BASE-disabled on an existing stream, Cancel is
+  // the only live action, so the chip reflects the cancel instead:
+  // `useDeleteFlowWithScheduling` relays it as a lone deleteFlow/deleteFlowSchedule or as
+  // the macro's combined deleteFlow (which also removes the schedule row). Deliberately
+  // keyed on the BASE disabled: when the button is disabled only because the forced relay
+  // toggle is off, the chip must advertise the primary action the user needs to turn on —
+  // not the cancel.
+  const clearMacroActionKind: ClearMacroActionKind | undefined =
+    isModifying && isSendDisabledBase
+      ? activeFlow
+        ? "deleteFlow"
+        : "deleteFlowSchedule"
+      : primaryClearMacroActionKind;
+
+  const { isAccountEligible, isRelayEnabled } = useClearMacroEligibility(
+    clearMacroActionKind,
+    network
+  );
+  const { address } = useAccount();
+  const isSameSigner =
+    !!address && visibleAddress?.toLowerCase() === address.toLowerCase();
+  const isEOAPending = isEOA === null;
+
+  // Form-level mirror of the upsert hook's (timestamp-normalized) schedule push
+  // conditions: does this submit create/modify/clear a FlowScheduler row? CFA-only
+  // submits — incl. a rate-only edit on an end-dated stream — stay false and are never
+  // relay-forced.
+  const touchesScheduler = useMemo(() => {
+    if (!network.flowSchedulerContractAddress) return false;
+    const wantsSchedule = !!(startTimestamp || endTimestamp);
+    const hasExistingSchedule = !!(existingStartTimestamp || existingEndTimestamp);
+    if (!wantsSchedule) return hasExistingSchedule; // clearing → deleteFlowSchedule op
+    return (
+      normalizeScheduleTimestamp(startTimestamp) !==
+        normalizeScheduleTimestamp(existingStartTimestamp) ||
+      normalizeScheduleTimestamp(endTimestamp) !==
+        normalizeScheduleTimestamp(existingEndTimestamp) ||
+      // The hook re-writes the schedule row when a scheduled start's rate changes.
+      (!!startTimestamp && flowRateWei.toString() !== existingFlowRate)
+    );
+  }, [
+    network.flowSchedulerContractAddress,
+    startTimestamp,
+    endTimestamp,
+    existingStartTimestamp,
+    existingEndTimestamp,
+    flowRateWei,
+    existingFlowRate,
+  ]);
+
+  // On Clear Macro networks the relay fee pays for the scheduling service, so
+  // scheduler-touching submits are forced through the relay: submit stays disabled until
+  // the relay toggle is on, and macro-inexpressible combinations (e.g. rate + schedule
+  // change in one submit) are blocked with the alert below. Also held disabled while a
+  // same-signer wallet is still being classified (`isEOA === null`) so an actual EOA can
+  // never race a direct scheduler write through the brief unclassified window. Cancel is
+  // deliberately ungated — stopping an outflow is a safety action.
+  const isSchedulerRelayForced = isAccountEligible && touchesScheduler;
+  const isSchedulerRelayPending =
+    isClearMacroSupportedOnNetwork(network) &&
+    isSameSigner &&
+    isEOAPending &&
+    touchesScheduler;
+  const isCombinedEditBlocked =
+    isSchedulerRelayForced &&
+    !isSendDisabledBase &&
+    primaryClearMacroActionKind === undefined;
+  const isSendDisabled =
+    isSendDisabledBase ||
+    isSchedulerRelayPending ||
+    (isSchedulerRelayForced &&
+      (!isRelayEnabled || primaryClearMacroActionKind === undefined));
 
   const SendTransactionBoundary = (
     <TransactionBoundary mutationResult={upsertFlowResult}>
@@ -561,6 +636,9 @@ export default memo(function SendStream() {
             };
             upsertFlow({
               ...primaryArgs,
+              // Forced relay for scheduler-touching submits on Clear Macro networks;
+              // the hook fails closed if the runtime batch disagrees with the form.
+              requireClearMacroRelay: isSchedulerRelayForced,
               transactionExtraData: {
                 restoration: transactionRestoration,
               },
@@ -708,7 +786,20 @@ export default memo(function SendStream() {
     return null;
   }, [activeFlow, scheduledStream]);
 
-  const { isPlatformWhitelisted, isWhitelistLoading } = useWhitelist({ accountAddress: visibleAddress, network });
+  // Clear Macro networks replace the platform allowlist for eligible signers — the
+  // macro's relay fee pays for the scheduling service. Optimistic while the wallet is
+  // still being classified so an EOA never sees the overlay flash; same-signer only, so
+  // view/impersonation mode never skips the overlay, even transiently. Visual gate only —
+  // the submit gating above stays strict.
+  const isAllowlistBypassed =
+    isAccountEligible ||
+    (isClearMacroSupportedOnNetwork(network) && isSameSigner && isEOAPending);
+  const { isPlatformWhitelisted } = useWhitelist({
+    // Skips the allowlist API query entirely for bypassed users.
+    accountAddress: isAllowlistBypassed ? undefined : visibleAddress,
+    network,
+  });
+  const showAllowlistGate = !isPlatformWhitelisted && !isAllowlistBypassed;
 
   // TODO: Remove when The Platform is deployed to Base.
   const doesNetworkSupportScheduling = !!network.flowSchedulerContractAddress || network.id === networkDefinition.base.id;
@@ -791,7 +882,7 @@ export default memo(function SendStream() {
                 sx={{
                   display: "grid",
                   gridTemplateColumns: "1fr 1fr",
-                  ...(!isPlatformWhitelisted ? { opacity: 0.5 } : {}),
+                  ...(showAllowlistGate ? { opacity: 0.5 } : {}),
                 }}
                 gap={2.5}
               >
@@ -825,7 +916,7 @@ export default memo(function SendStream() {
 
               <Stack
                 sx={{
-                  ...(!isPlatformWhitelisted ? { opacity: 0.5 } : {}),
+                  ...(showAllowlistGate ? { opacity: 0.5 } : {}),
                 }}
               >
                 <Stack
@@ -841,7 +932,7 @@ export default memo(function SendStream() {
                 {TotalStreamedController}
               </Stack>
 
-              {!isPlatformWhitelisted && <WhitelistTransparentBox />}
+              {showAllowlistGate && <WhitelistTransparentBox />}
             </Stack>
           </Collapse>
         </>
@@ -876,11 +967,42 @@ export default memo(function SendStream() {
           }}
         >
           <Stack gap={1}>
+            {isCombinedEditBlocked && (
+              // The chip is hidden in this state (no macro action exists for the batch),
+              // so this alert is the only explanation for the disabled button.
+              <Alert
+                severity="info"
+                data-cy="clear-macro-combined-edit-alert"
+              >
+                This edit combines a schedule change with another stream change,
+                which can&apos;t be done in one gasless transaction. Make the
+                changes in two separate steps.
+              </Alert>
+            )}
+            {isSchedulerRelayPending && (
+              // Normally a moment (one RPC read), but if classification stalls the
+              // button must not sit disabled with no explanation — the chip is also
+              // hidden in this state (eligibility needs a confirmed EOA).
+              <Typography
+                data-cy="clear-macro-classification-pending"
+                variant="caption"
+                color="text.secondary"
+                textAlign="center"
+                translate="yes"
+              >
+                Checking your wallet type before scheduling…
+              </Typography>
+            )}
             {SendTransactionBoundary}
             {DeleteFlowBoundary}
             <ClearMacroRelayOption
               actionKind={clearMacroActionKind}
               network={network}
+              relayRequired={
+                !isSendDisabledBase &&
+                isSchedulerRelayForced &&
+                primaryClearMacroActionKind !== undefined
+              }
             />
           </Stack>
         </ConnectionBoundaryButton>

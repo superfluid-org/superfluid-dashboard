@@ -123,6 +123,12 @@ export interface ExecuteClearMacroParams {
   fallbackSimulationRequest?: Parameters<typeof simulateContract>[1];
   /** Fee funding mode; defaults to `usdcx-direct`. */
   paymentMode?: ClearMacroPaymentMode;
+  /**
+   * The caller forces this write through the relay (scheduler-touching batch on a Clear
+   * Macro network), so "turn the relay option off" is not an available remedy — fee
+   * shortfall messages must not suggest it.
+   */
+  relayRequired?: boolean;
   onPhase?: (phase: RelayPhase) => void;
   /**
    * Called once, immediately after the relay accepts the signed payload and BEFORE polling —
@@ -693,7 +699,9 @@ export async function executeClearMacro(
         throw new ClearMacroInsufficientFeeError(
           `Not enough ${symbol} to pay the up-to-${formatEther(requiredFee)} ${symbol} relay fee ` +
             `(available ${formatEther(effective < 0n ? 0n : effective)} ${symbol}). ` +
-            `Top up ${symbol}, or turn the relay option off to send a regular transaction instead.`,
+            (params.relayRequired
+              ? `Top up ${symbol} to continue.`
+              : `Top up ${symbol}, or turn the relay option off to send a regular transaction instead.`),
           { feeToken, requiredFee, availableBalance }
         );
       }
@@ -739,7 +747,9 @@ export async function executeClearMacro(
         `Not enough ${symbol} to fund the up-to-${formatUnits(requiredUnderlyingTotal, underlyingDecimals)} ${symbol} ` +
           `${includesWrapAmount ? "needed (amount being wrapped + relay fee)" : "relay fee"} ` +
           `(available ${formatUnits(underlyingBalance, underlyingDecimals)} ${symbol}). ` +
-          `Top up ${symbol}, switch the fee payment back to the Super Token, or turn the relay option off.`,
+          (params.relayRequired
+            ? `Top up ${symbol}, or switch the fee payment back to the Super Token.`
+            : `Top up ${symbol}, switch the fee payment back to the Super Token, or turn the relay option off.`),
         {
           feeToken: underlyingToken,
           requiredFee: requiredUnderlyingTotal,

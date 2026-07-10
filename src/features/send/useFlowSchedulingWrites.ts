@@ -41,6 +41,16 @@ const APPROVE_STREAM_SCHEDULER_TITLE =
   "Approve Stream Scheduler" satisfies TransactionTitle;
 
 /**
+ * The FlowScheduler stores "no date" as `0`, the form as `null`, and `getFlowSchedule`
+ * as `undefined` — comparing those absent representations with `!==` misreads an
+ * unchanged schedule as changed. Shared by the schedule-changed condition below and
+ * SendStream's `touchesScheduler` mirror so the two can never drift.
+ */
+export const normalizeScheduleTimestamp = (
+  timestamp: number | null | undefined
+): number => timestamp ?? 0;
+
+/**
  * The macro's scheduleFlow performs the missing flow-operator grant itself and, in
  * immediate-start mode (startDate 0, flowRate > 0), also opens the flow — so
  * `[schedule]`, `[grant, schedule]`, `[schedule, createFlow]` and
@@ -122,6 +132,16 @@ export interface UpsertFlowWithSchedulingArgs {
   userDataBytes?: Hex;
   transactionExtraData?: Record<string, unknown>;
   overrides?: ViemFeeOverrides;
+  /**
+   * Caller intent: on Clear Macro networks the scheduling service is paid for via the
+   * macro's relay fee, so a batch with FlowScheduler operations must NOT execute as a
+   * direct self-paid write. When set and the built batch touches the scheduler, the hook
+   * fails closed if no macro action covers the batch (instead of leaking a direct write
+   * when fresh preflight reads disagree with the form's view), and the write carries
+   * `clearMacroRequired` so a pre-signature relay miss surfaces instead of silently
+   * falling back. CFA-only batches are unaffected — forcing is scoped to scheduling.
+   */
+  requireClearMacroRelay?: boolean;
 }
 
 export interface DeleteFlowWithSchedulingArgs {
@@ -196,6 +216,10 @@ export function useUpsertFlowWithScheduling() {
         ]);
 
       const subOperations: SubOperation[] = [];
+      // Whether the RUNTIME batch contains FlowScheduler work (grant/schedule/delete) —
+      // the fail-closed `requireClearMacroRelay` guard below keys on this, not on the
+      // form's view, so stale form state can never leak a scheduler write to self-pay.
+      let hasSchedulerSubOperations = false;
 
       if (flowSchedulerAddress) {
         const {
@@ -229,6 +253,7 @@ export function useUpsertFlowWithScheduling() {
             existingFlowRateAllowance === newFlowRateAllowance;
 
           if (!hasEnoughSuperTokenAccess) {
+            hasSchedulerSubOperations = true;
             subOperations.push(
               agreementCallSubOperation({
                 chainId,
@@ -251,14 +276,17 @@ export function useUpsertFlowWithScheduling() {
           }
 
           if (
-            arg.startTimestamp !== existingStartTimestamp ||
-            arg.endTimestamp !== existingEndTimestamp ||
+            normalizeScheduleTimestamp(arg.startTimestamp) !==
+              normalizeScheduleTimestamp(existingStartTimestamp) ||
+            normalizeScheduleTimestamp(arg.endTimestamp) !==
+              normalizeScheduleTimestamp(existingEndTimestamp) ||
             (shouldScheduleStart && arg.flowRateWei !== existingFlowRate)
           ) {
             const isModifyingSchedule = !!(
               existingStartTimestamp || existingEndTimestamp
             );
 
+            hasSchedulerSubOperations = true;
             subOperations.push(
               appActionSubOperation({
                 chainId,
@@ -303,6 +331,7 @@ export function useUpsertFlowWithScheduling() {
             );
           }
         } else if (existingStartTimestamp || existingEndTimestamp) {
+          hasSchedulerSubOperations = true;
           subOperations.push(
             appActionSubOperation({
               chainId,
@@ -424,10 +453,23 @@ export function useUpsertFlowWithScheduling() {
       const clearMacro =
         writeFragment.clearMacro ?? reduceToScheduleFlowAction(subOperations);
 
+      // Fail closed on caller intent: a scheduler-touching batch with no macro action
+      // must never proceed as a direct self-paid write (the relay fee IS the scheduling
+      // payment). Reachable only when fresh preflight reads disagree with the form's
+      // relayability mirror — the form blocks known-unrelayable combinations pre-click.
+      const clearMacroRequired =
+        arg.requireClearMacroRelay && hasSchedulerSubOperations;
+      if (clearMacroRequired && !clearMacro) {
+        throw new Error(
+          "This change can't be made in one gasless transaction — the form may be out of date. Refresh and make the changes in two separate steps."
+        );
+      }
+
       return {
         chainId,
         ...writeFragment,
         clearMacro,
+        clearMacroRequired,
         title: mainTransactionTitle,
         subTransactionTitles,
         extraData: arg.transactionExtraData,

@@ -28,6 +28,12 @@ export function useClearMacroEligibility(
 ): {
   /** The relay CAN engage for this action (regardless of the user's preference). */
   isEligible: boolean;
+  /**
+   * The account/network half of `isEligible` (macro network + confirmed EOA + connected +
+   * not impersonating), independent of any action — for gates that exist before an action
+   * kind does, e.g. the send form's forced-relay scheduling and allowlist bypass.
+   */
+  isAccountEligible: boolean;
   /** The user's persisted preference. */
   isRelayEnabled: boolean;
   setRelayEnabled: (enabled: boolean) => void;
@@ -39,12 +45,13 @@ export function useClearMacroEligibility(
 
   // `isEOA` classifies the VISIBLE address — it only stands for the signer when they
   // are the same account (i.e. not impersonating). Same gate as the executor's.
-  const isEligible =
-    !!actionKind &&
+  const isAccountEligible =
     isClearMacroSupportedOnNetwork(network) &&
     isEOA === true &&
     !!address &&
     visibleAddress?.toLowerCase() === address.toLowerCase();
+
+  const isEligible = !!actionKind && isAccountEligible;
 
   const setRelayEnabled = useCallback(
     (enabled: boolean) =>
@@ -52,5 +59,5 @@ export function useClearMacroEligibility(
     [dispatch]
   );
 
-  return { isEligible, isRelayEnabled, setRelayEnabled };
+  return { isEligible, isAccountEligible, isRelayEnabled, setRelayEnabled };
 }

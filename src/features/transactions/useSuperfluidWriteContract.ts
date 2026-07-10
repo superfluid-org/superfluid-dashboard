@@ -97,6 +97,14 @@ export interface SuperfluidWriteArgs<
    * pre-signature miss falls back to the normal path below.
    */
   clearMacro?: ClearMacroAction;
+  /**
+   * Caller intent: this write must go through the relay — its batch pays for a service
+   * (scheduling) via the macro's fee. Fail closed instead of self-paying: a pre-signature
+   * relay miss (`ClearMacroNotEligibleError`) surfaces as a readable error rather than
+   * silently falling back, and if the relay gate below can't engage at all (e.g. the
+   * toggle raced off), the write throws instead of executing direct.
+   */
+  clearMacroRequired?: boolean;
 }
 
 /**
@@ -247,6 +255,8 @@ export function useSuperfluidWriteContract() {
             // The persisted chip selection: pay the fee from USDCx directly, or fund it
             // from USDC via Permit2.
             paymentMode: clearMacroPaymentMode,
+            // Forced writes can't offer "turn the relay off" as a fee-shortfall remedy.
+            relayRequired: params.clearMacroRequired,
             onPhase: setRelayPhase,
             // Persist the execution the moment the relay accepts the signed payload, BEFORE
             // polling — and flush so a closed tab / reload / poll timeout can't orphan it.
@@ -291,6 +301,16 @@ export function useSuperfluidWriteContract() {
           return { hash, chainId: params.chainId };
         } catch (error) {
           if (error instanceof ClearMacroNotEligibleError) {
+            if (params.clearMacroRequired) {
+              // A forced write must never self-pay (the relay fee IS the payment for the
+              // scheduling service) — surface a readable message instead of falling back.
+              // The dialog renders messages verbatim, so the raw cause (digest mismatch,
+              // capabilities fetch failure, ...) must not be the message itself.
+              throw new Error(
+                "The gasless transaction service is unavailable right now — please try again later.",
+                { cause: error }
+              );
+            }
             // Nothing was signed — fall through to the normal write path below.
             // The cause carries the real reason (failed fetch/read, field mismatch).
             console.warn(
@@ -340,6 +360,13 @@ export function useSuperfluidWriteContract() {
             throw error;
           }
         }
+      } else if (params.clearMacroRequired) {
+        // The caller demanded the relay but the gate above couldn't engage (toggle raced
+        // off, wallet reclassified, ...). The form keeps its submit disabled in these
+        // states, so this is a belt-and-suspenders guard — fail closed, never self-pay.
+        throw new Error(
+          "This change requires the gasless relay. Turn the relay option on and try again."
+        );
       }
 
       // Unified pre-flight (sdk-core parity): one `eth_estimateGas` that both buffers the gas

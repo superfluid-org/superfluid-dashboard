@@ -25,6 +25,13 @@ interface ClearMacroRelayOptionProps {
   /** The macro action this form's primary button maps to; `undefined` = not eligible. */
   actionKind: ClearMacroActionKind | undefined;
   network: Network;
+  /**
+   * The primary action is forced through the relay on this network (scheduler-touching
+   * submit — the fee pays for the scheduling service) and its button stays disabled
+   * until the toggle is on; the chip explains that when off. Only pass when the chip
+   * represents the primary action (not a cancel fallback).
+   */
+  relayRequired?: boolean;
 }
 
 /** Super Tokens are always 18 decimals. */
@@ -52,6 +59,7 @@ const formatBalance = (wei: bigint, decimals: number) =>
 export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
   actionKind,
   network,
+  relayRequired,
 }) => {
   const { isEligible, isRelayEnabled, setRelayEnabled } =
     useClearMacroEligibility(actionKind, network);
@@ -146,6 +154,17 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
           {fee.feeAvailable && (
             <Typography variant="caption" color="text.secondary" translate="no">
               Fee: {fee.feeText}
+            </Typography>
+          )}
+          {relayRequired && !isRelayEnabled && (
+            <Typography
+              data-cy="clear-macro-relay-required"
+              variant="caption"
+              color="warning.main"
+              translate="yes"
+            >
+              Required for scheduled streams on {network.name} — turn on to
+              continue.
             </Typography>
           )}
         </Stack>
