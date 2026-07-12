@@ -10,18 +10,27 @@
 #   ./contracts/script/deploy-clear-macro.sh --verify optimism-sepolia   # verify the latest broadcast only
 #
 # Networks are the canonical superfluid-finance/metadata names (run with no args to list them). Constructor
-# settings per chain live in DeployDashboardClearMacro.s.sol (`_defaultConfig`); env vars SUPERFLUID_HOST,
-# FLOW_SCHEDULER, FEE_SUPER_TOKEN, BASE_FEE_AMOUNT, FEE_RECEIVER override them per invocation.
+# settings per chain live in DeployDashboardClearMacro.s.sol (`_defaultConfig`).
 #
-# - Simulation is the default; --broadcast requires a deployer: --account <keystore> / DEPLOYER_ACCOUNT
-#   locally, or DEPLOYER_PRIVATE_KEY (raw hex, takes precedence) in CI where no keystore file exists.
-#   Note: forge's --account takes the plain keystore filename (e.g. `hacked_dev`), NOT the 0x-prefixed
-#   display name that `cast wallet list` shows.
-# - RPC per chain defaults to https://rpc-endpoints.superfluid.dev/<network>; override with RPC_URL_<chainId>.
-# - Verification runs standalone after broadcast (`forge script --root <dir> --verify` resolves its compiler
-#   cache from the CWD and fails from the repo root). Address and constructor args are read back from
-#   contracts/broadcast/.../run-latest.json so they always match the instance actually deployed. Default
-#   verifier is the Etherscan v2 multichain API (needs ETHERSCAN_API_KEY); OP Sepolia uses Blockscout (no key).
+# Environment variables:
+#   DEPLOYER_PRIVATE_KEY    deployer EOA key (raw hex). Required for --broadcast unless a keystore is
+#                           given; takes precedence over it. The CI path (no keystore file exists there).
+#   DEPLOYER_ACCOUNT        default for --account: a forge keystore, for --broadcast locally. Note: the
+#                           plain keystore filename (e.g. `hacked_dev`), NOT the 0x-prefixed display name
+#                           that `cast wallet list` shows.
+#   ETHERSCAN_API_KEY       required for --verify (Etherscan v2 multichain API), except optimism-sepolia
+#                           which verifies on Blockscout without a key.
+#   SUPERFLUID_HOST, FLOW_SCHEDULER, FEE_SUPER_TOKEN, BASE_FEE_AMOUNT, FEE_RECEIVER
+#                           optional per-invocation overrides of the per-chain defaults in
+#                           DeployDashboardClearMacro.s.sol (`_defaultConfig`).
+#   RPC_URL_<chainId>       optional RPC override (e.g. RPC_URL_10);
+#                           default https://rpc-endpoints.superfluid.dev/<network>.
+#
+# Simulation (the default) needs none of these.
+#
+# Verification runs standalone after broadcast (`forge script --root <dir> --verify` resolves its compiler
+# cache from the CWD and fails from the repo root). Address and constructor args are read back from
+# contracts/broadcast/.../run-latest.json so they always match the instance actually deployed.
 #
 # After a real deployment, wire the printed address into `dashboardClearMacro.macroAddress` for that network
 # in src/features/network/networks.ts and extend the lineage comment in

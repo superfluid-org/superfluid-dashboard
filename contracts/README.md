@@ -73,9 +73,11 @@ forge test --root contracts -vv
 ## Deployment
 
 Per-chain constructor settings (host, FlowScheduler, fee SuperToken, fee policy) live in a
-`block.chainid`-keyed table in `script/DeployDashboardClearMacro.s.sol`; env vars override any value per
+`block.chainid`-keyed table in `script/DeployDashboardClearMacro.s.sol`; the env vars `SUPERFLUID_HOST`,
+`FLOW_SCHEDULER`, `FEE_SUPER_TOKEN`, `BASE_FEE_AMOUNT` and `FEE_RECEIVER` override any value per
 invocation. The driver `script/deploy-clear-macro.sh` deploys and verifies selectively per network
-(simulation by default, `--broadcast` requires an explicit `--account`):
+(simulation by default, `--broadcast` requires an explicit `--account`); the full environment-variable
+reference is in the script's header comment:
 
 ```bash
 pnpm contracts:deploy all                                                # dry-run every eligible chain
