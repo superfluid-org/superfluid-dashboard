@@ -7,6 +7,12 @@ This is the working document for adding a relay **fee** to the Clear Macro path 
 It complements [`clear-macro-relay-integration.md`](./clear-macro-relay-integration.md) (the base
 relay integration) — read that first for the overall relay architecture.
 
+> **Superseded (2026-07-13):** the fee weighting described below was `baseFee × txCount` (new schedule
+> 2×/3×) with base `0.01`. It has since changed to weighted fee units — a new schedule pays **2× base per
+> reserved keeper execution** on top of the 1× relay fee (3× one date, 5× both), modify/cancel stay 1× —
+> with base `0.1`. See `contracts/README.md` (Fees) and `clear-macro-multi-network-deploy.md` (fee policy)
+> for the current model; the text below is kept as the implementation record of Phases 0–2.
+
 ---
 
 ## 1. Context / why
@@ -202,8 +208,9 @@ frontend does NOT send `witness`/`witnessTypeString` — only the fields above.
   read (function missing = old feeless macro) is treated as feeless; any other `previewRelayFee`
   failure throws `ClearMacroNotEligibleError` (degrades to self-pay) instead of silently skipping
   the guard.
-- Chip **schedule fee label** shows "up to 3×" for all scheduling (a start/stop-only new schedule is only
-  2×) — conservative; exact needs the full action params via `previewRelayFee`. STILL DEFERRED.
+- Chip **schedule fee label** shows the full new-schedule range for all scheduling (since 2026-07-13:
+  "up to 5×"; a start/stop-only new schedule is only 3×) — conservative; exact needs the full action
+  params via `previewRelayFee`. STILL DEFERRED.
 - ~~Deploy the fee macro + update `networks.ts` + the stale ABI-module comment~~ — DONE (§9-H).
 
 ## 8. Verification (Phase 2)

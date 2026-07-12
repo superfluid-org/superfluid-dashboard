@@ -10,20 +10,20 @@ import { feeToUnderlyingUnitsCeil } from "./permit2";
 /** Super Tokens are always 18 decimals, so the fee (in the fee Super Token) formats with 18. */
 const FEE_TOKEN_DECIMALS = 18;
 
-/** A scheduling action reserves up to 3 relayed txs (setup + 2 keeper runs); everything else is 1. */
-function maxTxMultiplier(actionKind: ClearMacroActionKind | undefined): number {
-  return actionKind === "scheduleFlow" ? 3 : 1;
+/** A new schedule pays 2x base per reserved keeper run on top of the setup tx, so up to 5x (start and stop); everything else is 1x. */
+function maxFeeMultiplier(actionKind: ClearMacroActionKind | undefined): number {
+  return actionKind === "scheduleFlow" ? 5 : 1;
 }
 
 export interface RelayFeeDisclosure {
   /** Whether the deployed macro exposes a non-zero fee we could read. */
   feeAvailable: boolean;
   feeSymbol?: string;
-  /** Human-readable fee, e.g. `"0.001 USDCx"` — a range like `"0.001–0.003 USDCx"` for scheduling. */
+  /** Human-readable fee, e.g. `"0.1 USDCx"` — a range like `"0.1–0.5 USDCx"` for scheduling. */
   feeText?: string;
   /** The fee Super Token (USDCx) address, when a fee is disclosed. */
   feeToken?: Address;
-  /** Upper-bound fee for this action kind (`baseFee × maxTxMultiplier`, 18 decimals) — what the executor's guard and the Permit2 permit are sized against. */
+  /** Upper-bound fee for this action kind (`baseFee × maxFeeMultiplier`, 18 decimals) — what the executor's guard and the Permit2 permit are sized against. */
   maxFeeWei?: bigint;
   /** The fee token's ERC-20 underlying (USDC) — resolvable only for a Wrapper Super Token. */
   underlyingAddress?: Address;
@@ -38,7 +38,7 @@ export interface RelayFeeDisclosure {
  * `baseFee()` getters and formats the amount. The exact per-action fee (incl. the schedule
  * multiplier and modify-detection) is quoted by the contract's `previewRelayFee` at execution;
  * here we only need enough for an honest pre-click label, so we show the base fee and — for a
- * scheduling action — the up-to-3× range from `actionKind` alone. Also resolves the fee
+ * scheduling action — the up-to-5× range from `actionKind` alone. Also resolves the fee
  * token's ERC-20 underlying (for the pay-with-USDC option). Resilient: an older/feeless
  * macro without the getters simply reports `feeAvailable: false`.
  */
@@ -90,7 +90,7 @@ export function useRelayFeeDisclosure(
     });
     const symbol = feeTokenEntry?.symbol ?? "tokens";
     const format = (value: bigint) => formatUnits(value, FEE_TOKEN_DECIMALS);
-    const multiplier = maxTxMultiplier(actionKind);
+    const multiplier = maxFeeMultiplier(actionKind);
     const maxFeeWei = baseFee * BigInt(multiplier);
     const feeText =
       multiplier > 1

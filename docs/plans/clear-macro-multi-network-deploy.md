@@ -47,9 +47,11 @@ network's block in `src/features/network/networks.ts`.
   On Optimism/Polygon/Arbitrum deliberately not the bridged `USDC.ex` — the fee token must exist as a
   `WrapperSuperToken` in the token list for the dashboard's pay-with-USDC (Permit2) path to resolve its
   underlying.
-- **fee policy** (per-network configurable in the table; currently uniform): base fee `0.01e18` (must stay
-  a multiple of `1e13`), receiver `0x74cD5673dF7efC148067Ecab494A19a46b0a3167` (dedicated fee EOA). Fee
-  config is immutable per deployment — changing it means redeploying.
+- **fee policy** (per-network configurable in the table; currently uniform): base fee `0.1e18` (must stay
+  a multiple of `1e13`; raised from `0.01e18` on 2026-07-13), receiver
+  `0x74cD5673dF7efC148067Ecab494A19a46b0a3167` (dedicated fee EOA). A new schedule pays 2x base per
+  reserved keeper execution on top of the 1x relay fee (3x with one scheduled date, 5x with both);
+  modify/cancel stay 1x. Fee config is immutable per deployment — changing it means redeploying.
 - Overridable per invocation via `SUPERFLUID_HOST`, `FLOW_SCHEDULER`, `FEE_SUPER_TOKEN`, `BASE_FEE_AMOUNT`
   (`=0` → feeless), `FEE_RECEIVER`.
 

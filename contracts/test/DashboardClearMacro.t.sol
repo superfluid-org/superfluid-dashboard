@@ -266,8 +266,8 @@ contract DashboardClearMacroTest is DashboardClearMacroTestBase {
         assertEq(uint256(permissions), 5); // create | delete
         assertEq(flowRateAllowance, DEFAULT_FLOW_RATE);
 
-        // New start+end schedule: setup + executeCreateFlow + executeDeleteFlow => 3x base fee.
-        assertEq(superToken.balanceOf(FEE_RECEIVER), 3 * BASE_FEE);
+        // New start+end schedule: setup + 2x per reserved keeper execution => 5x base fee.
+        assertEq(superToken.balanceOf(FEE_RECEIVER), 5 * BASE_FEE);
     }
 
     function testScheduleFlowEndOnly() external {
@@ -298,8 +298,8 @@ contract DashboardClearMacroTest is DashboardClearMacroTestBase {
         assertEq(uint256(permissions), 4); // delete only
         assertEq(flowRateAllowance, 0);
 
-        // New end-only schedule: setup + executeDeleteFlow => 2x base fee.
-        assertEq(superToken.balanceOf(FEE_RECEIVER), 2 * BASE_FEE);
+        // New end-only schedule: setup + 2x for the reserved executeDeleteFlow => 3x base fee.
+        assertEq(superToken.balanceOf(FEE_RECEIVER), 3 * BASE_FEE);
     }
 
     function testScheduleFlowSkipsGrantWhenFullControlAlready() external {
@@ -492,8 +492,9 @@ contract DashboardClearMacroTest is DashboardClearMacroTestBase {
         assertEq(uint256(permissions), 4); // delete only — the immediate create runs as the signer
         assertEq(flowRateAllowance, 0);
 
-        // New end-only schedule: setup (incl. the immediate create) + executeDeleteFlow => 2x base fee.
-        assertEq(superToken.balanceOf(FEE_RECEIVER), 2 * BASE_FEE);
+        // New end-only schedule: setup (incl. the immediate create) + 2x for the reserved
+        // executeDeleteFlow => 3x base fee.
+        assertEq(superToken.balanceOf(FEE_RECEIVER), 3 * BASE_FEE);
     }
 
     function testScheduleFlowImmediateStartStopExecutesViaKeeper() external {
@@ -577,7 +578,7 @@ contract DashboardClearMacroTest is DashboardClearMacroTestBase {
         bytes memory actionParams = _scheduleParams(bob, 0, DEFAULT_FLOW_RATE, endDate);
         (,, uint256 currentFee, uint256 maxFee) = dashboardClearMacro.previewRelayFee(actionParams, signer.addr);
         assertEq(currentFee, BASE_FEE);
-        assertEq(maxFee, 2 * BASE_FEE);
+        assertEq(maxFee, 3 * BASE_FEE);
 
         _runAsProvider(signer, actionParams, 0, PROVIDER, 0, 0);
 
@@ -797,7 +798,7 @@ contract DashboardClearMacroTest is DashboardClearMacroTestBase {
 
     // Exact-string checks: the action struct hash commits to this precise text (clear signing), and the
     // FeeNotRepresentable granularity guarantees the disclosed fee literal equals the amount charged.
-    // BASE_FEE = 1e15 formats as "0.00100" (2x "0.00200", 3x "0.00300"); DEFAULT_FLOW_RATE as "0.10000"/day.
+    // BASE_FEE = 1e15 formats as "0.00100" (3x "0.00300", 5x "0.00500"); DEFAULT_FLOW_RATE as "0.10000"/day.
 
     function testCreateFlowDescriptionExact() external view {
         string memory desc = dashboardClearMacro.describeCreateFlow(
@@ -862,7 +863,7 @@ contract DashboardClearMacroTest is DashboardClearMacroTestBase {
                 "Schedule a stream of 0.10000 ", sym, "/day to ", receiverHex,
                 ", starting at 1750000000 and stopping at 1760000000 (unix time), and authorize the Flow Scheduler",
                 ", plus a relay fee payable to ", feeReceiverHex,
-                " of 0.00300 ", sym, " for a new schedule, or 0.00100 ", sym, " when modifying an existing schedule"
+                " of 0.00500 ", sym, " for a new schedule, or 0.00100 ", sym, " when modifying an existing schedule"
             )
         );
 
@@ -882,7 +883,7 @@ contract DashboardClearMacroTest is DashboardClearMacroTestBase {
                 "Schedule a stream of 0.10000 ", sym, "/day to ", receiverHex,
                 ", starting at 1750000000 (unix time), and authorize the Flow Scheduler",
                 ", plus a relay fee payable to ", feeReceiverHex,
-                " of 0.00200 ", sym, " for a new schedule, or 0.00100 ", sym, " when modifying an existing schedule"
+                " of 0.00300 ", sym, " for a new schedule, or 0.00100 ", sym, " when modifying an existing schedule"
             )
         );
 
@@ -902,7 +903,7 @@ contract DashboardClearMacroTest is DashboardClearMacroTestBase {
                 "Schedule the stream of ", sym, " to ", receiverHex,
                 " to stop at 1760000000 (unix time), and authorize the Flow Scheduler",
                 ", plus a relay fee payable to ", feeReceiverHex,
-                " of 0.00200 ", sym, " for a new schedule, or 0.00100 ", sym, " when modifying an existing schedule"
+                " of 0.00300 ", sym, " for a new schedule, or 0.00100 ", sym, " when modifying an existing schedule"
             )
         );
 
@@ -922,7 +923,7 @@ contract DashboardClearMacroTest is DashboardClearMacroTestBase {
                 "Start a stream of 0.10000 ", sym, "/day to ", receiverHex,
                 " immediately, stopping at 1760000000 (unix time), and authorize the Flow Scheduler",
                 ", plus a relay fee payable to ", feeReceiverHex,
-                " of 0.00200 ", sym, " for a new schedule, or 0.00100 ", sym, " when modifying an existing schedule"
+                " of 0.00300 ", sym, " for a new schedule, or 0.00100 ", sym, " when modifying an existing schedule"
             )
         );
     }
@@ -1155,7 +1156,7 @@ contract DashboardClearMacroTest is DashboardClearMacroTestBase {
         uint32 startDate = uint32(block.timestamp + 1 days);
         uint32 endDate = uint32(block.timestamp + 30 days);
 
-        // start-only reserves executeCreateFlow => 2x
+        // start-only reserves executeCreateFlow at 2x on top of the setup tx => 3x
         VmSafe.Wallet memory startSigner = _newSigner("fee-schedule-start");
         _fundSuper(startSigner, 100e18);
         bytes memory startOnly = dashboardClearMacro.encodeScheduleFlow(
@@ -1169,9 +1170,9 @@ contract DashboardClearMacroTest is DashboardClearMacroTestBase {
             })
         );
         _runAsProvider(startSigner, startOnly, 0, PROVIDER, 0, 0);
-        assertEq(superToken.balanceOf(FEE_RECEIVER), 2 * BASE_FEE);
+        assertEq(superToken.balanceOf(FEE_RECEIVER), 3 * BASE_FEE);
 
-        // start+end reserves both keeper executions => 3x (fresh schedule row for a different sender)
+        // start+end reserves both keeper executions at 2x each => 5x (fresh schedule row for a different sender)
         VmSafe.Wallet memory bothSigner = _newSigner("fee-schedule-both");
         _fundSuper(bothSigner, 100e18);
         uint256 balanceBefore = superToken.balanceOf(FEE_RECEIVER);
@@ -1186,7 +1187,7 @@ contract DashboardClearMacroTest is DashboardClearMacroTestBase {
             })
         );
         _runAsProvider(bothSigner, both, 0, PROVIDER, 0, 0);
-        assertEq(superToken.balanceOf(FEE_RECEIVER) - balanceBefore, 3 * BASE_FEE);
+        assertEq(superToken.balanceOf(FEE_RECEIVER) - balanceBefore, 5 * BASE_FEE);
     }
 
     function testModifyScheduleChargesBaseOnly() external {
@@ -1212,7 +1213,7 @@ contract DashboardClearMacroTest is DashboardClearMacroTestBase {
             0,
             0
         );
-        assertEq(superToken.balanceOf(FEE_RECEIVER), 3 * BASE_FEE); // new start+end
+        assertEq(superToken.balanceOf(FEE_RECEIVER), 5 * BASE_FEE); // new start+end
 
         // Move the end date later. The row already exists, so only the setup tx is charged (1x): the fee
         // is not re-applied for a modification.
@@ -1234,7 +1235,7 @@ contract DashboardClearMacroTest is DashboardClearMacroTestBase {
             0,
             0
         );
-        assertEq(superToken.balanceOf(FEE_RECEIVER), 4 * BASE_FEE); // 3x + 1x modify
+        assertEq(superToken.balanceOf(FEE_RECEIVER), 6 * BASE_FEE); // 5x + 1x modify
 
         IFlowScheduler.FlowSchedule memory schedule =
             flowScheduler.getFlowSchedule(address(superToken), signer.addr, bob);
@@ -1264,7 +1265,7 @@ contract DashboardClearMacroTest is DashboardClearMacroTestBase {
             0,
             0
         );
-        assertEq(superToken.balanceOf(FEE_RECEIVER), 2 * BASE_FEE); // new end-only
+        assertEq(superToken.balanceOf(FEE_RECEIVER), 3 * BASE_FEE); // new end-only
 
         uint32 startDate = uint32(block.timestamp + 1 days);
         _runAsProvider(
@@ -1284,7 +1285,7 @@ contract DashboardClearMacroTest is DashboardClearMacroTestBase {
             0,
             0
         );
-        assertEq(superToken.balanceOf(FEE_RECEIVER), 3 * BASE_FEE); // 2x + 1x modify (not surcharged)
+        assertEq(superToken.balanceOf(FEE_RECEIVER), 4 * BASE_FEE); // 3x + 1x modify (not surcharged)
     }
 
     function testDeleteThenRecreateChargesFullFee() external {
@@ -1304,7 +1305,7 @@ contract DashboardClearMacroTest is DashboardClearMacroTestBase {
             })
         );
         _runAsProvider(signer, scheduleParams, 0, PROVIDER, 0, 0);
-        assertEq(superToken.balanceOf(FEE_RECEIVER), 3 * BASE_FEE);
+        assertEq(superToken.balanceOf(FEE_RECEIVER), 5 * BASE_FEE);
 
         _runAsProvider(
             signer,
@@ -1316,11 +1317,11 @@ contract DashboardClearMacroTest is DashboardClearMacroTestBase {
             0,
             0
         );
-        assertEq(superToken.balanceOf(FEE_RECEIVER), 4 * BASE_FEE); // cancel => 1x
+        assertEq(superToken.balanceOf(FEE_RECEIVER), 6 * BASE_FEE); // cancel => 1x
 
-        // Row was cleared, so recreating is a new schedule again => full 3x.
+        // Row was cleared, so recreating is a new schedule again => full 5x.
         _runAsProvider(signer, scheduleParams, 0, PROVIDER, 0, 0);
-        assertEq(superToken.balanceOf(FEE_RECEIVER), 7 * BASE_FEE);
+        assertEq(superToken.balanceOf(FEE_RECEIVER), 11 * BASE_FEE);
     }
 
     function testDirectScheduleThenMacroModifyChargesBaseOnly() external {
@@ -1455,23 +1456,23 @@ contract DashboardClearMacroTest is DashboardClearMacroTestBase {
 
         bytes memory bothParams = _scheduleParams(bob, startDate, DEFAULT_FLOW_RATE, endDate);
         (,, uint256 currentFee, uint256 maxFee) = dashboardClearMacro.previewRelayFee(bothParams, alice);
-        assertEq(currentFee, 3 * BASE_FEE); // new start+end => 3x
-        assertEq(maxFee, 3 * BASE_FEE);
+        assertEq(currentFee, 5 * BASE_FEE); // new start+end => 5x
+        assertEq(maxFee, 5 * BASE_FEE);
 
         bytes memory endOnlyParams = _scheduleParams(bob, 0, 0, endDate);
         (,, currentFee, maxFee) = dashboardClearMacro.previewRelayFee(endOnlyParams, alice);
-        assertEq(currentFee, 2 * BASE_FEE); // new end-only => 2x
-        assertEq(maxFee, 2 * BASE_FEE);
+        assertEq(currentFee, 3 * BASE_FEE); // new end-only => 3x
+        assertEq(maxFee, 3 * BASE_FEE);
 
         bytes memory startOnlyParams = _scheduleParams(bob, startDate, DEFAULT_FLOW_RATE, 0);
         (,, currentFee, maxFee) = dashboardClearMacro.previewRelayFee(startOnlyParams, alice);
-        assertEq(currentFee, 2 * BASE_FEE); // new start-only => 2x
-        assertEq(maxFee, 2 * BASE_FEE);
+        assertEq(currentFee, 3 * BASE_FEE); // new start-only => 3x
+        assertEq(maxFee, 3 * BASE_FEE);
 
         bytes memory immediateParams = _scheduleParams(bob, 0, DEFAULT_FLOW_RATE, endDate);
         (,, currentFee, maxFee) = dashboardClearMacro.previewRelayFee(immediateParams, alice);
-        assertEq(currentFee, 2 * BASE_FEE); // immediate start + end: the create rides in the setup tx => 2x
-        assertEq(maxFee, 2 * BASE_FEE);
+        assertEq(currentFee, 3 * BASE_FEE); // immediate start + end: the create rides in the setup tx => 3x
+        assertEq(maxFee, 3 * BASE_FEE);
     }
 
     function testPreviewRelayFeeModify() external {
@@ -1483,10 +1484,10 @@ contract DashboardClearMacroTest is DashboardClearMacroTestBase {
 
         _runAsProvider(signer, scheduleParams, 0, PROVIDER, 0, 0);
 
-        // Row now exists => a re-quote for the same signer is a modify: current 1x, max stays 3x.
+        // Row now exists => a re-quote for the same signer is a modify: current 1x, max stays 5x.
         (,, uint256 currentFee, uint256 maxFee) = dashboardClearMacro.previewRelayFee(scheduleParams, signer.addr);
         assertEq(currentFee, BASE_FEE);
-        assertEq(maxFee, 3 * BASE_FEE);
+        assertEq(maxFee, 5 * BASE_FEE);
     }
 
     function testPreviewRelayFeeFeelessInstance() external {
@@ -1586,7 +1587,7 @@ contract DashboardClearMacroTest is DashboardClearMacroTestBase {
 
     function testInsufficientFeeRevertsOnSchedule() external {
         VmSafe.Wallet memory signer = _newSigner("fee-insufficient-schedule");
-        _fundSuper(signer, BASE_FEE); // < 3x needed for a new start+end schedule
+        _fundSuper(signer, BASE_FEE); // < 5x needed for a new start+end schedule
         uint32 startDate = uint32(block.timestamp + 1 days);
         uint32 endDate = uint32(block.timestamp + 30 days);
 

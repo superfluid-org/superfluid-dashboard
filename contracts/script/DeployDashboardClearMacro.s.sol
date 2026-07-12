@@ -46,7 +46,7 @@ import {DashboardClearMacro} from "../src/DashboardClearMacro.sol";
 contract DeployDashboardClearMacro is Script {
     /// Relay fee policy currently shared by all networks; per-network deviations belong in `_defaultConfig`.
     /// Must stay a multiple of 1e13 (5-decimal granularity enforced by the constructor).
-    uint256 internal constant DEFAULT_BASE_FEE = 0.01e18;
+    uint256 internal constant DEFAULT_BASE_FEE = 0.1e18;
     /// Dedicated fee-collection EOA (fresh account, so arriving fees are visible as its whole balance).
     address internal constant DEFAULT_FEE_RECEIVER = 0x74cD5673dF7efC148067Ecab494A19a46b0a3167;
 

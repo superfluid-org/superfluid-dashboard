@@ -77,9 +77,9 @@ contract DashboardClearMacro is ClearMacroBase {
     IConstantFlowAgreementV1 internal immutable _cfa;
     IFlowScheduler internal immutable _flowScheduler;
 
-    // Relay fee configuration. A fee of `_baseFeeAmount * txCount` is charged in `_feeSuperToken` to
-    // `_feeReceiver` on every action, where `txCount` is the number of transactions the relay executes for
-    // that action (1 for a plain action; a new schedule reserves its keeper executions). Zero => feeless.
+    // Relay fee configuration. A fee of `_baseFeeAmount * feeUnits` is charged in `_feeSuperToken` to
+    // `_feeReceiver` on every action: 1 unit for the relayed transaction itself, plus 2 units per keeper
+    // execution a new schedule reserves (so 3 with one scheduled date, 5 with both). Zero => feeless.
     ISuperToken internal immutable _feeSuperToken;
     uint256 internal immutable _baseFeeAmount;
     address internal immutable _feeReceiver;
@@ -152,7 +152,7 @@ contract DashboardClearMacro is ClearMacroBase {
         }
         // The description formatter (AmountFormatter.toHumanReadable) rounds to 5 decimals. Constrain the fee
         // to that granularity so the disclosed amount always equals the exact amount charged: baseFeeAmount
-        // and baseFeeAmount * txCount (txCount <= 3) both stay multiples of 1e13 = 10^(18-5) for an
+        // and baseFeeAmount * feeUnits (feeUnits <= 5) both stay multiples of 1e13 = 10^(18-5) for an
         // 18-decimal SuperToken.
         if (baseFeeAmount % 1e13 != 0) revert FeeNotRepresentable();
         _cfa = IConstantFlowAgreementV1(
@@ -565,10 +565,10 @@ contract DashboardClearMacro is ClearMacroBase {
             });
         }
 
-        // Fee is charged per transaction the relay executes (see _scheduleTxCount): a new schedule also
-        // reserves the keeper executions it triggers; modifying an existing schedule only pays the setup tx.
-        (uint256 txCount,) = _scheduleTxCount(p, account);
-        return _appendFee(operations, account, txCount);
+        // Fee weighting lives in _scheduleFeeUnits: a new schedule pays 2x base per keeper execution it
+        // reserves on top of the relay itself; modifying an existing schedule only pays the setup tx.
+        (uint256 feeUnits,) = _scheduleFeeUnits(p, account);
+        return _appendFee(operations, account, feeUnits);
     }
 
     // Diff between what the schedule needs from the FlowScheduler as flow operator and what the
@@ -586,16 +586,16 @@ contract DashboardClearMacro is ClearMacroBase {
         allowanceToAdd = existingAllowance >= neededAllowance ? int96(0) : neededAllowance - existingAllowance;
     }
 
-    // Appends a relay fee of `_baseFeeAmount * txCount` to the action's operations. The fee is an ERC20
+    // Appends a relay fee of `_baseFeeAmount * feeUnits` to the action's operations. The fee is an ERC20
     // transferFrom of the fee SuperToken from the signer (`account`) to `_feeReceiver`. Because the batch
     // runs with the signer as msg.sender, this is a self-spend (holder == spender) and needs no allowance —
     // the same mechanism the Transfer action relies on. Returns the array unchanged when feeless.
-    function _appendFee(ISuperfluid.Operation[] memory core, address account, uint256 txCount)
+    function _appendFee(ISuperfluid.Operation[] memory core, address account, uint256 feeUnits)
         internal
         view
         returns (ISuperfluid.Operation[] memory ops)
     {
-        uint256 feeAmount = _baseFeeAmount * txCount;
+        uint256 feeAmount = _baseFeeAmount * feeUnits;
         if (feeAmount == 0) return core;
         ops = new ISuperfluid.Operation[](core.length + 1);
         for (uint256 j = 0; j < core.length; j++) {
@@ -619,16 +619,18 @@ contract DashboardClearMacro is ClearMacroBase {
         return s.startDate != 0 || s.endDate != 0;
     }
 
-    // The single definition of the ScheduleFlow relay-tx multiplier, shared by the operations builder and
-    // `previewRelayFee`. `maxTx` treats the schedule as new (its full keeper reservation); `currentTx` is
-    // what would actually be charged for `account` now (1 when a schedule row already exists = a modify).
-    function _scheduleTxCount(ScheduleFlowParams memory p, address account)
+    // The single definition of the ScheduleFlow fee weighting, shared by the operations builder and
+    // `previewRelayFee`: 1 unit for the relayed setup tx, plus 2 units per keeper execution a new schedule
+    // reserves (scheduled start / scheduled stop). `maxUnits` treats the schedule as new (its full keeper
+    // reservation); `currentUnits` is what would actually be charged for `account` now (1 when a schedule
+    // row already exists = a modify).
+    function _scheduleFeeUnits(ScheduleFlowParams memory p, address account)
         internal
         view
-        returns (uint256 currentTx, uint256 maxTx)
+        returns (uint256 currentUnits, uint256 maxUnits)
     {
-        maxTx = 1 + (p.startDate != 0 ? 1 : 0) + (p.endDate != 0 ? 1 : 0);
-        currentTx = _scheduleExists(p.superToken, account, p.receiver) ? 1 : maxTx;
+        maxUnits = 1 + (p.startDate != 0 ? 2 : 0) + (p.endDate != 0 ? 2 : 0);
+        currentUnits = _scheduleExists(p.superToken, account, p.receiver) ? 1 : maxUnits;
     }
 
     /// @notice The Super Token relay fees are charged in (address(0) on a feeless deployment).
@@ -636,7 +638,8 @@ contract DashboardClearMacro is ClearMacroBase {
         return _feeSuperToken;
     }
 
-    /// @notice The base fee charged per relayed transaction (a scheduling action reserves 2-3 of them).
+    /// @notice The base fee charged for a relayed transaction. A new schedule additionally pays 2x base per
+    ///         keeper execution it reserves, so it totals 3x (one scheduled date) or 5x (start and stop).
     function baseFee() external view returns (uint256) {
         return _baseFeeAmount;
     }
@@ -657,12 +660,12 @@ contract DashboardClearMacro is ClearMacroBase {
     {
         (uint8 actionId,, bytes memory actionSpecificParams) = abi.decode(actionParams, (uint8, bytes32, bytes));
         _getAction(actionId); // reverts UnknownActionId for an unregistered id (matches the exec paths)
-        uint256 currentTx = 1;
-        uint256 maxTx = 1;
+        uint256 currentUnits = 1;
+        uint256 maxUnits = 1;
         if (actionId == uint8(ActionId.ScheduleFlow)) {
-            (currentTx, maxTx) = _scheduleTxCount(abi.decode(actionSpecificParams, (ScheduleFlowParams)), account);
+            (currentUnits, maxUnits) = _scheduleFeeUnits(abi.decode(actionSpecificParams, (ScheduleFlowParams)), account);
         }
-        return (_feeSuperToken, _feeReceiver, _baseFeeAmount * currentTx, _baseFeeAmount * maxTx);
+        return (_feeSuperToken, _feeReceiver, _baseFeeAmount * currentUnits, _baseFeeAmount * maxUnits);
     }
 
     function _buildOperationsDeleteFlowSchedule(ISuperfluid, bytes memory actionSpecificParams, address account)
@@ -1015,12 +1018,12 @@ contract DashboardClearMacro is ClearMacroBase {
         return Strings.toHexString(uint256(uint160(account)), 20);
     }
 
-    // Fee disclosure for a fixed-txCount action. Returns "" when feeless.
-    function _feeSuffix(uint256 txCount) internal view returns (string memory) {
+    // Fee disclosure for a fixed-fee action. Returns "" when feeless.
+    function _feeSuffix(uint256 feeUnits) internal view returns (string memory) {
         if (_baseFeeAmount == 0) return "";
         return string.concat(
             ", plus a relay fee of ",
-            (_baseFeeAmount * txCount).toHumanReadable(),
+            (_baseFeeAmount * feeUnits).toHumanReadable(),
             " ",
             _feeSuperToken.symbol(),
             " payable to ",
@@ -1029,16 +1032,17 @@ contract DashboardClearMacro is ClearMacroBase {
     }
 
     // Fee disclosure for ScheduleFlow. The description cannot see the signer, so it cannot tell whether the
-    // schedule is new or a modification; it discloses both exact amounts (a new schedule reserves its keeper
-    // executions, a modification only pays the setup tx). The receiver is stated once so it applies to both.
+    // schedule is new or a modification; it discloses both exact amounts (a new schedule pays 2x base per
+    // reserved keeper execution, a modification only pays the setup tx). The receiver is stated once so it
+    // applies to both. Must mirror the weighting in `_scheduleFeeUnits`.
     function _scheduleFeeSuffix(uint32 startDate, uint32 endDate) internal view returns (string memory) {
         if (_baseFeeAmount == 0) return "";
-        uint256 newTxCount = 1 + (startDate != 0 ? 1 : 0) + (endDate != 0 ? 1 : 0);
+        uint256 newFeeUnits = 1 + (startDate != 0 ? 2 : 0) + (endDate != 0 ? 2 : 0);
         return string.concat(
             ", plus a relay fee payable to ",
             _hex(_feeReceiver),
             " of ",
-            (_baseFeeAmount * newTxCount).toHumanReadable(),
+            (_baseFeeAmount * newFeeUnits).toHumanReadable(),
             " ",
             _feeSuperToken.symbol(),
             " for a new schedule, or ",

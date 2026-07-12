@@ -43,12 +43,12 @@ contract DashboardClearMacroCompositionTest is DashboardClearMacroTestBase {
     }
 
     // The fee op _appendFee builds: a self-spend ERC20 transferFrom of the fee token from the signer.
-    function _assertFeeOp(ISuperfluid.Operation memory op, address account, uint256 txCount) internal view {
+    function _assertFeeOp(ISuperfluid.Operation memory op, address account, uint256 feeUnits) internal view {
         _assertOp(
             op,
             BatchOperation.OPERATION_TYPE_ERC20_TRANSFER_FROM,
             address(superToken),
-            abi.encode(account, FEE_RECEIVER, txCount * BASE_FEE)
+            abi.encode(account, FEE_RECEIVER, feeUnits * BASE_FEE)
         );
     }
 
@@ -310,7 +310,7 @@ contract DashboardClearMacroCompositionTest is DashboardClearMacroTestBase {
             address(flowScheduler),
             _createFlowScheduleData(startDate, START_MAX_DELAY, DEFAULT_FLOW_RATE, endDate)
         );
-        _assertFeeOp(ops[2], SIGNER, 3); // setup + both reserved keeper executions
+        _assertFeeOp(ops[2], SIGNER, 5); // setup + both reserved keeper executions at 2x each
     }
 
     function testScheduleFlowStartOnly() external view {
@@ -331,7 +331,7 @@ contract DashboardClearMacroCompositionTest is DashboardClearMacroTestBase {
             address(flowScheduler),
             _createFlowScheduleData(startDate, START_MAX_DELAY, DEFAULT_FLOW_RATE, 0)
         );
-        _assertFeeOp(ops[2], SIGNER, 2); // setup + reserved executeCreateFlow
+        _assertFeeOp(ops[2], SIGNER, 3); // setup + reserved executeCreateFlow at 2x
     }
 
     function testScheduleFlowEndOnly() external view {
@@ -352,7 +352,7 @@ contract DashboardClearMacroCompositionTest is DashboardClearMacroTestBase {
             address(flowScheduler),
             _createFlowScheduleData(0, 0, 0, endDate)
         );
-        _assertFeeOp(ops[2], SIGNER, 2); // setup + reserved executeDeleteFlow
+        _assertFeeOp(ops[2], SIGNER, 3); // setup + reserved executeDeleteFlow at 2x
     }
 
     function testScheduleFlowImmediateStart() external view {
@@ -380,7 +380,7 @@ contract DashboardClearMacroCompositionTest is DashboardClearMacroTestBase {
             address(sf.cfa),
             _agreementData(abi.encodeCall(sf.cfa.createFlow, (superToken, bob, DEFAULT_FLOW_RATE, new bytes(0))))
         );
-        _assertFeeOp(ops[3], SIGNER, 2); // the immediate create rides in the setup tx
+        _assertFeeOp(ops[3], SIGNER, 3); // the immediate create rides in the setup tx; the stop reserves 2x
     }
 
     function testScheduleFlowOmitsGrantWhenFullControl() external {
@@ -406,7 +406,7 @@ contract DashboardClearMacroCompositionTest is DashboardClearMacroTestBase {
             address(flowScheduler),
             _createFlowScheduleData(startDate, START_MAX_DELAY, DEFAULT_FLOW_RATE, endDate)
         );
-        _assertFeeOp(ops[1], SIGNER, 3); // still a new schedule row: full reservation
+        _assertFeeOp(ops[1], SIGNER, 5); // still a new schedule row: full reservation
     }
 
     function testScheduleFlowImmediateStartOmitsGrantWhenFullControl() external {
@@ -436,7 +436,7 @@ contract DashboardClearMacroCompositionTest is DashboardClearMacroTestBase {
             address(sf.cfa),
             _agreementData(abi.encodeCall(sf.cfa.createFlow, (superToken, bob, DEFAULT_FLOW_RATE, new bytes(0))))
         );
-        _assertFeeOp(ops[2], SIGNER, 2);
+        _assertFeeOp(ops[2], SIGNER, 3); // end-only reservation at 2x; the immediate create rides in the setup tx
     }
 
     function testScheduleFlowGrantsOnlyMissingPermissionsAndAllowanceDelta() external {
@@ -470,7 +470,7 @@ contract DashboardClearMacroCompositionTest is DashboardClearMacroTestBase {
             address(flowScheduler),
             _createFlowScheduleData(startDate, START_MAX_DELAY, DEFAULT_FLOW_RATE, endDate)
         );
-        _assertFeeOp(ops[2], SIGNER, 3);
+        _assertFeeOp(ops[2], SIGNER, 5);
     }
 
     function testScheduleFlowGrantsAllowanceOnlyDelta() external {
@@ -506,7 +506,7 @@ contract DashboardClearMacroCompositionTest is DashboardClearMacroTestBase {
             address(flowScheduler),
             _createFlowScheduleData(startDate, START_MAX_DELAY, DEFAULT_FLOW_RATE, endDate)
         );
-        _assertFeeOp(ops[2], SIGNER, 3);
+        _assertFeeOp(ops[2], SIGNER, 5);
     }
 
     function testScheduleFlowModifyChargesBaseFeeOnly() external {
