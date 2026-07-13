@@ -1,10 +1,10 @@
 import BoltRoundedIcon from "@mui/icons-material/BoltRounded";
 import {
+  Chip,
   Paper,
   Stack,
   Switch,
-  ToggleButton,
-  ToggleButtonGroup,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { alpha } from "@mui/material/styles";
@@ -46,8 +46,75 @@ const SUPER_TOKEN_DECIMALS = 18;
 
 const formatBalance = (wei: bigint, decimals: number) =>
   Number(formatUnits(wei, decimals)).toLocaleString(undefined, {
-    maximumFractionDigits: 4,
+    maximumFractionDigits: 2,
   });
+
+const feeChipSx = {
+  height: 20,
+  "& .MuiChip-label": { px: 1, fontSize: "0.75rem" },
+} as const;
+
+/**
+ * One fee-token choice as a compact chip: the chosen chip is filled (error-colored
+ * when its balance can't cover the fee) and carries its balance inline; the unchosen
+ * chip is outlined, dimmed, and shows its balance in a tooltip instead.
+ */
+const FeeTokenChip: FC<{
+  selected: boolean;
+  symbol: string;
+  balanceText: string | null;
+  insufficient: boolean;
+  disabled: boolean;
+  dataCy: string;
+  onSelect: () => void;
+}> = ({ selected, symbol, balanceText, insufficient, disabled, dataCy, onSelect }) => (
+  <Tooltip
+    title={
+      !selected && balanceText != null ? (
+        <>
+          Balance: <span translate="no">{balanceText}</span>
+        </>
+      ) : (
+        ""
+      )
+    }
+    disableInteractive
+  >
+    {/* span keeps the tooltip working while the chip is disabled */}
+    <span>
+      {/* `clickable` stays on even when selected so both chips keep a focusable
+          ButtonBase root — otherwise the chosen chip degrades to a plain div and
+          keyboard focus is lost the moment a chip becomes selected. The onClick
+          guard (not `clickable`) is what makes the chosen chip a no-op. */}
+      <Chip
+        data-cy={dataCy}
+        aria-pressed={selected}
+        aria-disabled={disabled || undefined}
+        aria-label={
+          balanceText != null ? `${symbol}, balance ${balanceText}` : symbol
+        }
+        size="small"
+        clickable
+        disabled={disabled}
+        label={
+          <span translate="no">
+            {selected && balanceText != null
+              ? `${symbol} · ${balanceText}`
+              : symbol}
+          </span>
+        }
+        color={selected ? (insufficient ? "error" : "primary") : undefined}
+        variant={selected ? "filled" : "outlined"}
+        onClick={selected ? undefined : onSelect}
+        sx={
+          selected
+            ? feeChipSx
+            : { ...feeChipSx, color: "text.secondary", borderColor: "divider" }
+        }
+      />
+    </span>
+  </Tooltip>
+);
 
 /**
  * The form-level pre-click signal for the Clear Macro relay path: shows next to the
@@ -55,9 +122,10 @@ const formatBalance = (wei: bigint, decimals: number) =>
  * preference. Renders nothing when the relay cannot engage (network/wallet/action).
  *
  * When the provider supports the Permit2 path and the fee token's underlying (USDC)
- * resolves, the chip also carries the fee-payment selector: pay from USDCx directly, or
- * fund the fee from USDC (wrapped just-in-time by the forwarder — still one signature,
- * after a one-time USDC→Permit2 approval offered inline).
+ * resolves, the strip also carries the fee-payment selector — a single "Pay fee with"
+ * row of compact token chips (the chosen one shows its balance inline): pay from USDCx
+ * directly, or fund the fee from USDC (wrapped just-in-time by the forwarder — still
+ * one signature, after a one-time USDC→Permit2 approval offered inline).
  *
  * Visually it's an outlined "perk" strip that only takes on the primary accent (border,
  * faint fill, bolt) while enabled — mirroring the outlined-Alert tint used elsewhere in
@@ -135,7 +203,7 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
       sx={(theme) => ({
         display: "flex",
         flexDirection: "column",
-        gap: 1,
+        gap: 0.75,
         px: 1.5,
         py: 1,
         borderRadius: "12px",
@@ -189,62 +257,54 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
 
       {showPaymentSelector && (
         <Stack gap={1} data-cy="clear-macro-payment-selector">
-          <Stack direction="row" alignItems="center" gap={1}>
-            <Typography variant="caption" color="text.secondary" translate="yes">
+          <Stack
+            direction="row"
+            alignItems="center"
+            gap={0.75}
+            role="group"
+            aria-label="Relay fee payment method"
+          >
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              translate="yes"
+              sx={{ whiteSpace: "nowrap" }}
+            >
               Pay fee with
             </Typography>
-            <ToggleButtonGroup
-              exclusive
-              size="small"
-              value={paymentMode}
-              onChange={(_event, mode) => mode && setPaymentMode(mode)}
-              aria-label="Relay fee payment method"
+            <FeeTokenChip
+              selected={!isUsdcSelected}
+              symbol={fee.feeSymbol ?? "USDCx"}
+              balanceText={
+                usdcxBalanceWei != null
+                  ? formatBalance(usdcxBalanceWei, SUPER_TOKEN_DECIMALS)
+                  : null
+              }
+              insufficient={usdcxShortfall}
               disabled={isUsdcSelectionTentative}
-            >
-              <ToggleButton
-                value="usdcx-direct"
-                data-cy="clear-macro-pay-with-usdcx"
-                sx={{ px: 1.5, py: 0.25, textTransform: "none" }}
-              >
-                <Stack alignItems="flex-start">
-                  <Typography variant="caption" fontWeight={500} translate="no">
-                    {fee.feeSymbol}
-                  </Typography>
-                  {usdcxBalanceWei != null && (
-                    <Typography
-                      variant="caption"
-                      color={usdcxShortfall ? "error" : "text.secondary"}
-                      translate="no"
-                    >
-                      {formatBalance(usdcxBalanceWei, SUPER_TOKEN_DECIMALS)}
-                      {usdcxShortfall && " (insufficient)"}
-                    </Typography>
-                  )}
-                </Stack>
-              </ToggleButton>
-              <ToggleButton
-                value="usdc-permit2"
-                data-cy="clear-macro-pay-with-usdc"
-                sx={{ px: 1.5, py: 0.25, textTransform: "none" }}
-              >
-                <Stack alignItems="flex-start">
-                  <Typography variant="caption" fontWeight={500} translate="no">
-                    {underlyingSymbol}
-                  </Typography>
-                  {usdcBalanceWei != null && fee.underlyingDecimals != null && (
-                    <Typography
-                      variant="caption"
-                      color={usdcInsufficient ? "error" : "text.secondary"}
-                      translate="no"
-                    >
-                      {formatBalance(usdcBalanceWei, fee.underlyingDecimals)}
-                      {usdcInsufficient && " (insufficient)"}
-                    </Typography>
-                  )}
-                </Stack>
-              </ToggleButton>
-            </ToggleButtonGroup>
+              dataCy="clear-macro-pay-with-usdcx"
+              onSelect={() => setPaymentMode("usdcx-direct")}
+            />
+            <FeeTokenChip
+              selected={isUsdcSelected}
+              symbol={underlyingSymbol}
+              balanceText={
+                usdcBalanceWei != null && fee.underlyingDecimals != null
+                  ? formatBalance(usdcBalanceWei, fee.underlyingDecimals)
+                  : null
+              }
+              insufficient={usdcInsufficient}
+              disabled={isUsdcSelectionTentative}
+              dataCy="clear-macro-pay-with-usdc"
+              onSelect={() => setPaymentMode("usdc-permit2")}
+            />
           </Stack>
+
+          {!isUsdcSelected && usdcxShortfall && (
+            <Typography variant="caption" color="error" translate="yes">
+              Not enough {fee.feeSymbol} for the relay fee.
+            </Typography>
+          )}
 
           {isUsdcSelected && usdcInsufficient && (
             <Typography variant="caption" color="error" translate="yes">
