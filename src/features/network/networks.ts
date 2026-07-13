@@ -984,7 +984,7 @@ export const networkDefinition = {
     flowSchedulerContractAddress: flowSchedulerContractAddresses.optimismSepolia,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.optimismSepolia,
     dashboardClearMacro: {
-      macroAddress: "0xEeFC8492f24898289E65Ee06dE7B8A19F30832a5",
+      macroAddress: "0xEde7e7d71AE56af5CcF8f36952f9bb85FB16fC2d",
     },
   },
 } as const satisfies Record<string, Network>;
