@@ -2,8 +2,11 @@ import { AutoModeOutlined } from "@mui/icons-material";
 import AssessmentRoundedIcon from "@mui/icons-material/AssessmentRounded";
 import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
 import ShowerRoundedIcon from "@mui/icons-material/ShowerRounded";
+import SummarizeRoundedIcon from "@mui/icons-material/SummarizeRounded";
 import {
+  Chip,
   ListItemButton,
   ListItemIcon,
   ListItemText,
@@ -13,6 +16,7 @@ import {
 import Image from "next/legacy/image";
 import NextLink from "next/link";
 import { FC, MouseEvent, useState } from "react";
+import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 
 interface MenuItemImageProps {
   src: string;
@@ -34,6 +38,11 @@ const MenuItemImage: FC<MenuItemImageProps> = ({ src, alt }) => (
 
 const MoreNavigationItem: FC = () => {
   const theme = useTheme();
+  const { visibleAddress } = useVisibleAddress();
+
+  const reporterUrl = visibleAddress
+    ? `https://reporter.superfluid.org/?account=${visibleAddress}`
+    : "https://reporter.superfluid.org/";
 
   const [moreMenuAnchor, setMoreMenuAnchor] = useState<HTMLElement | null>(
     null
@@ -148,6 +157,28 @@ const MoreNavigationItem: FC = () => {
               />
             </ListItemIcon>
             <ListItemText>Export Stream Data</ListItemText>
+          </ListItemButton>
+        </NextLink>
+        <NextLink href={reporterUrl} target="_blank" passHref legacyBehavior>
+          <ListItemButton
+            data-cy={"more-reporter-btn"}
+            href=""
+            target="_blank"
+            onClick={closeMoreMenu}
+          >
+            <ListItemIcon>
+              <SummarizeRoundedIcon
+                sx={{ color: theme.palette.text.primary }}
+              />
+            </ListItemIcon>
+            <ListItemText>
+              Reporter <OpenInNewRoundedIcon fontSize="inherit" />{" "}
+              <Chip
+                label="Beta"
+                size="small"
+                sx={{ height: 18, fontSize: "0.65rem" }}
+              />
+            </ListItemText>
           </ListItemButton>
         </NextLink>
       </Popover>
