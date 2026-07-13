@@ -93,6 +93,7 @@ import {
   useClearMacroEligibility,
 } from "../../clearMacro/useClearMacroEligibility";
 import type { ClearMacroActionKind } from "../../clearMacro/dashboardClearMacro";
+import type { ScheduleFlowQuoteAction } from "../../clearMacro/useRelayFee";
 
 // Minimum start and end date difference in seconds.
 export const SCHEDULE_START_END_MIN_DIFF_S = 15 * UnitOfTime.Minute;
@@ -510,6 +511,31 @@ export default memo(function SendStream() {
         ? "deleteFlow"
         : "deleteFlowSchedule"
       : primaryClearMacroActionKind;
+
+  // The chip's exact-fee quote shape — only for the PRIMARY scheduleFlow (cancel
+  // fallbacks and plain kinds are flat 1x). Mirrors the upsert hook's `clearMacro`
+  // attach (startDate/endDate = the form timestamps or 0); the rate never affects the
+  // fee and is canonicalized inside the disclosure hook, so 0n keeps the quote's
+  // query key stable across rate keystrokes. Address validity is re-checked by the
+  // hook before any read fires.
+  const scheduleQuoteAction = useMemo<ScheduleFlowQuoteAction | undefined>(() => {
+    if (clearMacroActionKind !== "scheduleFlow") return undefined;
+    if (!tokenAddress || !receiverAddress) return undefined;
+    return {
+      kind: "scheduleFlow",
+      superToken: tokenAddress as `0x${string}`,
+      receiver: receiverAddress as `0x${string}`,
+      startDate: startTimestamp || 0,
+      flowRate: 0n,
+      endDate: endTimestamp || 0,
+    };
+  }, [
+    clearMacroActionKind,
+    tokenAddress,
+    receiverAddress,
+    startTimestamp,
+    endTimestamp,
+  ]);
 
   const { isAccountEligible, isRelayEnabled } = useClearMacroEligibility(
     clearMacroActionKind,
@@ -1003,6 +1029,7 @@ export default memo(function SendStream() {
                 isSchedulerRelayForced &&
                 primaryClearMacroActionKind !== undefined
               }
+              scheduleAction={scheduleQuoteAction}
             />
           </Stack>
         </ConnectionBoundaryButton>

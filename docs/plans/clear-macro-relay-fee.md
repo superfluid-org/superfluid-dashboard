@@ -12,6 +12,15 @@ relay integration) — read that first for the overall relay architecture.
 > reserved keeper execution** on top of the 1× relay fee (3× one date, 5× both), modify/cancel stay 1× —
 > with base `0.1`. See `contracts/README.md` (Fees) and `clear-macro-multi-network-deploy.md` (fee policy)
 > for the current model; the text below is kept as the implementation record of Phases 0–2.
+>
+> **Superseded (2026-07-14):** fee sizing changed from `maxFee` to `currentFee`. The chip now quotes the
+> exact fee pre-click through the contract's own `encodeScheduleFlow` + `previewRelayFee`
+> (`useRelayFee.ts`), and the Permit2 permit and the USDCx guard are sized to that same point-in-time
+> quote (`executeClearMacro.ts`) — chosen because the forwarder pulls and wraps the FULL permitted
+> amount, so `maxFee` sizing wrapped surplus USDCx on every modify. Accepted trade-off: the quote is not
+> an execution-time cap — a schedule-state change between signing and relay makes the relay revert
+> (retry), or charge the description-disclosed higher amount when spare USDCx already covers it. The
+> §9/§10 text below records the original `maxFee` sizing.
 
 ---
 
@@ -208,9 +217,11 @@ frontend does NOT send `witness`/`witnessTypeString` — only the fields above.
   read (function missing = old feeless macro) is treated as feeless; any other `previewRelayFee`
   failure throws `ClearMacroNotEligibleError` (degrades to self-pay) instead of silently skipping
   the guard.
-- Chip **schedule fee label** shows the full new-schedule range for all scheduling (since 2026-07-13:
-  "up to 5×"; a start/stop-only new schedule is only 3×) — conservative; exact needs the full action
-  params via `previewRelayFee`. STILL DEFERRED.
+- ~~Chip **schedule fee label** shows the full new-schedule range for all scheduling~~ — DONE
+  (2026-07-14): the chip quotes the exact fee pre-click via the contract's `encodeScheduleFlow` +
+  `previewRelayFee` (rate canonicalized in the quote so keystrokes don't refire the reads; "up to 5×"
+  placeholder while loading), and the permit/guard are sized to the same quote — see the superseded
+  note at the top.
 - ~~Deploy the fee macro + update `networks.ts` + the stale ABI-module comment~~ — DONE (§9-H).
 
 ## 8. Verification (Phase 2)

@@ -359,8 +359,12 @@ export async function executeClearMacro(
     // Resolve the Permit2 fee funding up-front. Unfundable (feeless macro, or no resolvable
     // ERC-20 underlying) degrades to the usdcx-direct relay — a feeless macro needs no
     // funding at all, and otherwise the fee simply comes from the fee token, covered by the
-    // usdcx guard below. Sized against maxFee, not currentFee: schedule state can change
-    // between signing and execution, and surplus wrapped fee token stays with the signer.
+    // usdcx guard below. Sized against currentFee (the point-in-time quote the chip also
+    // shows), NOT maxFee: the forwarder pulls and wraps the FULL permitted amount, so a
+    // maxFee permit would wrap surplus USDCx on every modify. If schedule state changes
+    // between signing and execution, the macro recomputes the fee — the relay then reverts
+    // (no funds move; the user re-signs at the fresh quote), or, when spare USDCx already
+    // covers the difference, charges the description-disclosed higher amount.
     let permit2Funding:
       | {
           feeToken: Address;
@@ -377,9 +381,9 @@ export async function executeClearMacro(
         signerAddress,
       });
       const feeToken = feeQuote?.[0];
-      const maxFee = feeQuote?.[3] ?? 0n;
+      const currentFee = feeQuote?.[2] ?? 0n;
       const feeTokenEntry =
-        feeToken && maxFee > 0n
+        feeToken && currentFee > 0n
           ? findTokenFromTokenList({ chainId, address: feeToken })
           : undefined;
       // Only a Wrapper Super Token has an ERC-20 underlying that Permit2 can pull.
@@ -393,13 +397,13 @@ export async function executeClearMacro(
         ? findTokenFromTokenList({ chainId, address: underlyingAddress })
             ?.decimals
         : undefined;
-      if (feeToken && maxFee > 0n && underlyingAddress && underlyingDecimals != null) {
+      if (feeToken && currentFee > 0n && underlyingAddress && underlyingDecimals != null) {
         permit2Funding = {
           feeToken,
           underlyingToken: underlyingAddress,
           underlyingDecimals,
           requiredUnderlyingAmount: feeToUnderlyingUnitsCeil(
-            maxFee,
+            currentFee,
             underlyingDecimals
           ),
         };
@@ -657,11 +661,12 @@ export async function executeClearMacro(
     });
 
     const feeToken = feeQuote?.[0];
-    // Gate on maxFee (the new-schedule upper bound), not currentFee: a schedule row can be
-    // deleted/executed between signing and relay execution, pushing the charge up to maxFee —
-    // so requiring maxFee avoids signing into a relay revert. The fee is tiny, so this never
-    // meaningfully over-blocks. (maxFee == currentFee for every non-schedule action.)
-    const requiredFee = feeQuote?.[3] ?? 0n;
+    // Gate on currentFee — the same point-in-time quote the chip shows, so what the user
+    // sees is what the guard requires. A schedule row deleted/executed between signing and
+    // relay execution pushes the real charge up to maxFee; the relay then reverts (no funds
+    // move) unless spare USDCx covers the description-disclosed higher amount — accepted in
+    // favor of over-requiring balance. (maxFee == currentFee for non-schedule actions.)
+    const requiredFee = feeQuote?.[2] ?? 0n;
     if (feeToken && requiredFee > 0n) {
       const [availableBalance] = (await readContract(wagmiConfig, {
         chainId,
@@ -697,7 +702,7 @@ export async function executeClearMacro(
           () => "the fee token"
         )) as string;
         throw new ClearMacroInsufficientFeeError(
-          `Not enough ${symbol} to pay the up-to-${formatEther(requiredFee)} ${symbol} relay fee ` +
+          `Not enough ${symbol} to pay the ${formatEther(requiredFee)} ${symbol} relay fee ` +
             `(available ${formatEther(effective < 0n ? 0n : effective)} ${symbol}). ` +
             (params.relayRequired
               ? `Top up ${symbol} to continue.`
@@ -744,7 +749,7 @@ export async function executeClearMacro(
       const includesWrapAmount =
         requiredUnderlyingTotal > requiredUnderlyingAmount;
       throw new ClearMacroInsufficientFeeError(
-        `Not enough ${symbol} to fund the up-to-${formatUnits(requiredUnderlyingTotal, underlyingDecimals)} ${symbol} ` +
+        `Not enough ${symbol} to fund the ${formatUnits(requiredUnderlyingTotal, underlyingDecimals)} ${symbol} ` +
           `${includesWrapAmount ? "needed (amount being wrapped + relay fee)" : "relay fee"} ` +
           `(available ${formatUnits(underlyingBalance, underlyingDecimals)} ${symbol}). ` +
           (params.relayRequired

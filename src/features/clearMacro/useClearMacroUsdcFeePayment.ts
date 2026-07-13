@@ -12,7 +12,11 @@ import { ClearMacroActionKind } from "./dashboardClearMacro";
 import { ClearMacroPaymentMode } from "./executeClearMacro";
 import { PERMIT2_ADDRESS } from "./permit2";
 import { chainSupportsPermit2, getCapabilities } from "./relayApi";
-import { RelayFeeDisclosure, useRelayFeeDisclosure } from "./useRelayFee";
+import {
+  RelayFeeDisclosure,
+  ScheduleFlowQuoteAction,
+  useRelayFeeDisclosure,
+} from "./useRelayFee";
 
 /**
  * The relay provider's capabilities as a react-query query. `getCapabilities` is already
@@ -44,7 +48,7 @@ export interface ClearMacroUsdcFeePayment {
   usdcxBalanceWei?: bigint;
   /** The signer's underlying (USDC) balance. */
   usdcBalanceWei?: bigint;
-  /** USDCx can't cover the action's upper-bound fee — pay-with-USDC is the natural pick. */
+  /** USDCx can't cover the action's quoted fee — pay-with-USDC is the natural pick. */
   usdcxShortfall: boolean;
   /** The one-time USDC→Permit2 approval is still missing (only meaningful with `canPayWithUsdc`). */
   needsApproval: boolean;
@@ -61,11 +65,12 @@ export interface ClearMacroUsdcFeePayment {
  */
 export function useClearMacroUsdcFeePayment(
   network: Network,
-  actionKind: ClearMacroActionKind | undefined
+  actionKind: ClearMacroActionKind | undefined,
+  scheduleAction?: ScheduleFlowQuoteAction
 ): ClearMacroUsdcFeePayment {
   const dispatch = useAppDispatch();
   const { address } = useAccount();
-  const fee = useRelayFeeDisclosure(network, actionKind);
+  const fee = useRelayFeeDisclosure(network, actionKind, scheduleAction);
   const paymentMode = useClearMacroPaymentMode();
 
   const { data: capabilities, isPending: isCapabilitiesPending } =
@@ -117,9 +122,9 @@ export function useClearMacroUsdcFeePayment(
   const { refetch: refetchAllowance } = allowanceQuery;
 
   const usdcxShortfall =
-    fee.maxFeeWei != null &&
+    fee.feeWei != null &&
     usdcxBalanceWei != null &&
-    usdcxBalanceWei < fee.maxFeeWei;
+    usdcxBalanceWei < fee.feeWei;
   const needsApproval =
     canPayWithUsdc &&
     fee.requiredUnderlyingWei != null &&

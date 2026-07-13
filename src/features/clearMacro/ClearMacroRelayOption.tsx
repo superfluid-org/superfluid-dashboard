@@ -20,6 +20,7 @@ import { ClearMacroActionKind } from "./dashboardClearMacro";
 import { useApproveUsdcForPermit2 } from "./useApproveUsdcForPermit2";
 import { useClearMacroEligibility } from "./useClearMacroEligibility";
 import { useClearMacroUsdcFeePayment } from "./useClearMacroUsdcFeePayment";
+import { ScheduleFlowQuoteAction } from "./useRelayFee";
 
 interface ClearMacroRelayOptionProps {
   /** The macro action this form's primary button maps to; `undefined` = not eligible. */
@@ -32,6 +33,12 @@ interface ClearMacroRelayOptionProps {
    * represents the primary action (not a cancel fallback).
    */
   relayRequired?: boolean;
+  /**
+   * The ScheduleFlow shape to quote the exact fee with (only meaningful with
+   * `actionKind === "scheduleFlow"`); without it the fee shows the worst-case
+   * "up to" placeholder.
+   */
+  scheduleAction?: ScheduleFlowQuoteAction;
 }
 
 /** Super Tokens are always 18 decimals. */
@@ -60,6 +67,7 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
   actionKind,
   network,
   relayRequired,
+  scheduleAction,
 }) => {
   const { isEligible, isRelayEnabled, setRelayEnabled } =
     useClearMacroEligibility(actionKind, network);
@@ -75,7 +83,7 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
     needsApproval,
     usdcInsufficient,
     refetchAllowance,
-  } = useClearMacroUsdcFeePayment(network, actionKind);
+  } = useClearMacroUsdcFeePayment(network, actionKind, scheduleAction);
   const [approveTrigger, approveResult] = useApproveUsdcForPermit2();
 
   // The approve write resolves on SUBMISSION (hash), not confirmation — the allowance only
@@ -104,9 +112,17 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
     fee.feeAvailable &&
     (canPayWithUsdc || isUsdcSelectionTentative);
 
-  // `feeText` already carries the token symbol (e.g. "0.001 USDCx").
+  // `feeText` already carries the token symbol (e.g. "0.1 USDCx" or "up to 0.5 USDCx").
+  // While a schedule quote is loading/unquotable the text is the worst-case placeholder,
+  // so the sentence must not read as an exact, already-quoted amount.
+  const isFeePlaceholder = actionKind === "scheduleFlow" && !fee.isQuoteExact;
   const tooltip = fee.feeAvailable
-    ? `You sign one human-readable message and a relay service submits the transaction and pays the gas. The macro charges a ${fee.feeText} fee on success.` +
+    ? `You sign one human-readable message and a relay service submits the transaction and pays the gas. The macro charges ${isFeePlaceholder ? fee.feeText : `a ${fee.feeText} fee`} on success.` +
+      (actionKind === "scheduleFlow"
+        ? isFeePlaceholder
+          ? " The exact fee is quoted from the schedule's dates and current state once the form is complete."
+          : " The fee is quoted from the current schedule state; if that changes before the relay executes, the charge follows it (the signed message discloses the amounts)."
+        : "") +
       (canPayWithUsdc
         ? ` The fee can be paid from your ${fee.feeSymbol} balance, or funded from ${underlyingSymbol} (wrapped automatically — still one signature, after a one-time unlimited ${underlyingSymbol} approval to Permit2).`
         : "")
