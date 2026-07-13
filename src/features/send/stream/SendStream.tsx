@@ -172,6 +172,7 @@ export default memo(function SendStream() {
     resetFormData();
     setStreamScheduling(false);
     setTotalStreamedEther("");
+    setShowBufferAlert(false);
   }, [resetFormData]);
 
   const [
@@ -402,6 +403,9 @@ export default memo(function SendStream() {
     />
   );
 
+  // Per-edit-session latch: once the form has been fully filled the alert stays up
+  // through transient field edits, until `resetForm` clears it after a confirmed
+  // transaction.
   const [showBufferAlert, setShowBufferAlert] = useState(false);
 
   useEffect(() => {
