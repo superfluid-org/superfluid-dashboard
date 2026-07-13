@@ -72,9 +72,9 @@ RPC_URL_8453=https://... pnpm contracts:deploy base-mainnet   # RPC override
 - Simulation is the default and runs the full script (config checks + constructor) against forked state.
 - `--broadcast` refuses to run without `--account <keystore>` / `DEPLOYER_ACCOUNT`. forge's `--account`
   takes the plain keystore filename (e.g. `hacked_dev`), not the `0x`-prefixed name `cast wallet list` shows.
-- `--verify` needs `ETHERSCAN_API_KEY` (Etherscan v2 multichain API) for all chains except OP Sepolia,
-  which uses Blockscout (`https://testnet-explorer.optimism.io/api`, no key). Verification args are read
-  back from `contracts/broadcast/.../run-latest.json` so they always match the instance actually deployed.
+- `--verify` needs `ETHERSCAN_API_KEY` (Etherscan v2 multichain API) on every chain, OP Sepolia included.
+  Verification args are read back from `contracts/broadcast/.../run-latest.json` so they always match the
+  instance actually deployed.
 
 After a real deployment (per network):
 

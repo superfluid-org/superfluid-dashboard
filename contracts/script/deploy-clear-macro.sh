@@ -18,8 +18,7 @@
 #   DEPLOYER_ACCOUNT        default for --account: a forge keystore, for --broadcast locally. Note: the
 #                           plain keystore filename (e.g. `hacked_dev`), NOT the 0x-prefixed display name
 #                           that `cast wallet list` shows.
-#   ETHERSCAN_API_KEY       required for --verify (Etherscan v2 multichain API), except optimism-sepolia
-#                           which verifies on Blockscout without a key.
+#   ETHERSCAN_API_KEY       required for --verify (Etherscan v2 multichain API).
 #   SUPERFLUID_HOST, FLOW_SCHEDULER, FEE_SUPER_TOKEN, BASE_FEE_AMOUNT, FEE_RECEIVER
 #                           optional per-invocation overrides of the per-chain defaults in
 #                           DeployDashboardClearMacro.s.sol (`_defaultConfig`).
@@ -119,13 +118,8 @@ fi
 
 if $VERIFY; then
   command -v jq >/dev/null || { echo "--verify needs jq." >&2; exit 1; }
-  # Every chain except optimism-sepolia (Blockscout) verifies via the Etherscan v2 multichain API.
-  needs_etherscan=false
-  for network in "${NETWORKS[@]}"; do
-    [[ "$network" != "optimism-sepolia" ]] && needs_etherscan=true
-  done
-  if $needs_etherscan && [[ -z "${ETHERSCAN_API_KEY:-}" ]]; then
-    echo "--verify needs ETHERSCAN_API_KEY for: ${NETWORKS[*]}" >&2
+  if [[ -z "${ETHERSCAN_API_KEY:-}" ]]; then
+    echo "--verify needs ETHERSCAN_API_KEY (Etherscan v2 multichain API)." >&2
     exit 1
   fi
 fi
@@ -146,23 +140,22 @@ verify_latest() { # <network> <chainId>
   encoded_args="$(jq -r '[.transactions[] | select(.transactionType == "CREATE" and .contractName == "DashboardClearMacro")][0].arguments | join(" ")' "$run_json" \
     | xargs cast abi-encode "constructor(address,address,address,uint256,address)")"
 
-  local verifier_args=(--chain "$chain_id" --etherscan-api-key "${ETHERSCAN_API_KEY:-}")
-  if [[ "$network" == "optimism-sepolia" ]]; then
-    verifier_args=(--chain "$chain_id" --verifier blockscout --verifier-url "https://testnet-explorer.optimism.io/api")
-  fi
+  local verifier_args=(--chain "$chain_id" --etherscan-api-key "$ETHERSCAN_API_KEY")
 
   echo "--- Verifying $network: $address"
   forge verify-contract "$address" src/DashboardClearMacro.sol:DashboardClearMacro \
     --root "$REPO_ROOT/contracts" "${verifier_args[@]}" --constructor-args "$encoded_args" --watch
 }
 
-deployed_address_for() { # <chainId>; prints the address from the latest broadcast, or "-"
+deployed_address_for() { # <chainId>; prints the checksummed address from the latest broadcast, or "-"
   local run_json="$REPO_ROOT/contracts/broadcast/DeployDashboardClearMacro.s.sol/$1/run-latest.json"
+  local address="-"
   if [[ -f "$run_json" ]] && command -v jq >/dev/null; then
-    jq -r '[.transactions[] | select(.transactionType == "CREATE" and .contractName == "DashboardClearMacro")][0].contractAddress // "-"' "$run_json"
-  else
-    echo "-"
+    address="$(jq -r '[.transactions[] | select(.transactionType == "CREATE" and .contractName == "DashboardClearMacro")][0].contractAddress // "-"' "$run_json")"
   fi
+  # The broadcast JSON stores the address lowercase; checksum it so the networks.ts snippet is exact.
+  [[ "$address" == "-" ]] || address="$(cast to-check-sum-address "$address")"
+  echo "$address"
 }
 
 SUMMARY=()

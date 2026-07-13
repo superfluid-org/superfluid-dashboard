@@ -7,8 +7,8 @@ name: Deploy Clear Macro
 #
 # Required repository secrets (for broadcast runs):
 #   CLEAR_MACRO_DEPLOYER_PRIVATE_KEY  raw hex private key of the deployer EOA (funded on the targets)
-#   ETHERSCAN_API_KEY                 Etherscan v2 multichain key (verification; not needed for
-#                                     optimism-sepolia, which verifies on Blockscout)
+#   ETHERSCAN_API_KEY                 Etherscan v2 multichain key (required for verification on
+#                                     all networks)
 #
 # Broadcast runs use the `contract-deployment` environment — configure required reviewers on it
 # for an approval gate before real deployments. Simulation runs are unrestricted.
