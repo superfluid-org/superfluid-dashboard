@@ -1,6 +1,10 @@
+import AccountBalanceWalletRoundedIcon from "@mui/icons-material/AccountBalanceWalletRounded";
 import ArrowUpwardRoundedIcon from "@mui/icons-material/ArrowUpwardRounded";
 import BoltRoundedIcon from "@mui/icons-material/BoltRounded";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
+import DrawRoundedIcon from "@mui/icons-material/DrawRounded";
+import FingerprintRoundedIcon from "@mui/icons-material/FingerprintRounded";
+import HistoryEduRoundedIcon from "@mui/icons-material/HistoryEduRounded";
 import HourglassEmptyRoundedIcon from "@mui/icons-material/HourglassEmptyRounded";
 import {
   Box,
@@ -151,6 +155,160 @@ const BaselineVisual: FC<{ phase: SimPhase }> = ({ phase }) => {
     );
   }
   return <CircularProgress size={80} />;
+};
+
+// ---------------------------------------------------------------------------------------
+// 0b. Baseline + bolt core — the minimal delta: today's spinner with the relay bolt at its
+//     center. The bolt vanishes on fallback (the gasless promise is what disappeared).
+//     The spinner is a custom arc (same size/stroke as the success badge's border) so that
+//     on success the SAME ring spins shut into the badge while the bolt pops into the arrow
+//     — a seamless close two swapped components could never do.
+// ---------------------------------------------------------------------------------------
+
+const BoltSpinnerRoot = styled("div")(
+  ({ theme }) => `
+  position: relative;
+  width: 80px;
+  height: 80px;
+
+  svg { overflow: visible; }
+  .spinGroup {
+    transform-box: view-box;
+    transform-origin: center;
+    animation: bspSpin 1.4s linear infinite;
+  }
+  .arc {
+    fill: none;
+    stroke: ${theme.palette.primary.main};
+    stroke-width: 5;
+    stroke-linecap: round;
+    /* Circumference of r=37.5 is ~235.6 — a 70% arc while loading. */
+    stroke-dasharray: 165 70.6;
+  }
+  .icon {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: ${theme.palette.primary.main};
+  }
+  .boltIcon { transition: opacity 250ms ease, transform 250ms ease; }
+  .arrowIcon { opacity: 0; transform: scale(0.4); }
+  .ripple {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid ${theme.palette.primary.main};
+    opacity: 0;
+  }
+
+  @keyframes bspSpin {
+    to { transform: rotate(360deg); }
+  }
+  @keyframes bspRingClose {
+    to { stroke-dasharray: 236 0; }
+  }
+  @keyframes bspArrowPop {
+    0% { opacity: 0; transform: scale(0.4); }
+    60% { opacity: 1; transform: scale(1.18); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+  @keyframes bspSigPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.12); }
+  }
+  /* Same explosion as the Current Ring's success (ringRipple), which reads great. */
+  @keyframes bspRipple {
+    0% { transform: scale(0.9); opacity: 0.6; }
+    100% { transform: scale(1.45); opacity: 0; }
+  }
+
+  &[data-phase="success"] {
+    /* The spin keeps running — a full ring rotating is invisible, and NOT cancelling it
+       avoids an angle jump at the moment the arc snaps shut. */
+    .arc { animation: bspRingClose 350ms ease-out 1 forwards; }
+    .boltIcon { opacity: 0; transform: scale(0.4); }
+    .arrowIcon { animation: bspArrowPop 450ms cubic-bezier(0.34, 1.56, 0.64, 1) 150ms 1 forwards; }
+    .ripple { animation: bspRipple 900ms ease-out 200ms 1 forwards; }
+  }
+  &[data-phase="fallback"] {
+    .boltIcon { opacity: 0; }
+  }
+
+  /* Awaiting-signature with an alternate center icon chosen: the bolt hands the center
+     over to the "your move" icon (same morph as the success arrow), which then gently
+     pulses until the signature lands. */
+  .sigIcon { opacity: 0; transform: scale(0.4); }
+  &[data-phase="awaiting-signature"][data-sig="alt"] {
+    .boltIcon { opacity: 0; transform: scale(0.4); }
+    .sigIcon {
+      animation:
+        bspArrowPop 350ms cubic-bezier(0.34, 1.56, 0.64, 1) 1 forwards,
+        bspSigPulse 1.8s ease-in-out 500ms infinite;
+    }
+  }
+`
+);
+
+const SIGNATURE_ICON_OPTIONS = [
+  { key: "bolt", label: "Bolt (same)", Icon: BoltRoundedIcon },
+  { key: "pen", label: "Pen", Icon: DrawRoundedIcon },
+  { key: "quill", label: "Quill", Icon: HistoryEduRoundedIcon },
+  { key: "wallet", label: "Wallet", Icon: AccountBalanceWalletRoundedIcon },
+  { key: "fingerprint", label: "Fingerprint", Icon: FingerprintRoundedIcon },
+] as const;
+
+type SignatureIconKey = (typeof SIGNATURE_ICON_OPTIONS)[number]["key"];
+
+const BoltSpinnerVisual: FC<{ phase: SimPhase }> = ({ phase }) => {
+  const [sigIconKey, setSigIconKey] = useState<SignatureIconKey>("wallet");
+  if (phase === "relay-status-unknown") {
+    return <BaselineVisual phase={phase} />;
+  }
+  const SigIcon = SIGNATURE_ICON_OPTIONS.find((o) => o.key === sigIconKey)!.Icon;
+  return (
+    <Stack alignItems="center" gap={1.5}>
+      <BoltSpinnerRoot
+        data-phase={phase}
+        data-sig={sigIconKey === "bolt" ? "bolt" : "alt"}
+      >
+        <svg viewBox="0 0 80 80" width={80} height={80}>
+          <g className="spinGroup">
+            <circle className="arc" cx="40" cy="40" r="37.5" />
+          </g>
+        </svg>
+        <Box className="ripple" />
+        <Box className="icon boltIcon">
+          <BoltRoundedIcon fontSize="large" />
+        </Box>
+        <Box className="icon sigIcon">
+          {/* The wallet renders slightly smaller — its glyph is visually denser. */}
+          <SigIcon sx={{ fontSize: sigIconKey === "wallet" ? 30 : 35 }} />
+        </Box>
+        <Box className="icon arrowIcon">
+          <ArrowUpwardRoundedIcon fontSize="large" />
+        </Box>
+      </BoltSpinnerRoot>
+      {/* Lab-only picker for the awaiting-signature center icon. */}
+      <Stack direction="row" alignItems="center" gap={0.5} flexWrap="wrap" justifyContent="center">
+        <Typography variant="caption" color="text.secondary" sx={{ mr: 0.5 }}>
+          Signing icon:
+        </Typography>
+        {SIGNATURE_ICON_OPTIONS.map((option) => (
+          <Chip
+            key={option.key}
+            size="small"
+            clickable
+            label={option.label}
+            color={option.key === sigIconKey ? "primary" : undefined}
+            variant={option.key === sigIconKey ? "filled" : "outlined"}
+            onClick={() => setSigIconKey(option.key)}
+          />
+        ))}
+      </Stack>
+    </Stack>
+  );
 };
 
 // ---------------------------------------------------------------------------------------
@@ -486,9 +644,32 @@ const LiquidBoltSvg = styled("svg")(
     transform-box: fill-box;
     transform-origin: center;
   }
+  .badge {
+    fill: none;
+    stroke: ${theme.palette.primary.main};
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    /* Circumference of r=34 (~213.6), fully offset = invisible until drawn. */
+    stroke-dasharray: 213.6;
+    stroke-dashoffset: 213.6;
+    opacity: 0;
+    /* Start the draw from 12 o'clock. */
+    transform: rotate(-90deg);
+    transform-box: fill-box;
+    transform-origin: center;
+  }
 
   @keyframes liquidDrift {
     to { transform: translateX(40px); }
+  }
+  @keyframes liquidPop {
+    0% { transform: scale(1); }
+    45% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+  @keyframes liquidBadgeDraw {
+    0% { opacity: 1; stroke-dashoffset: 213.6; }
+    100% { opacity: 1; stroke-dashoffset: 0; }
   }
   @keyframes liquidThresholdPulse {
     0%, 100% { opacity: 0.35; }
@@ -508,8 +689,10 @@ const LiquidBoltSvg = styled("svg")(
     filter: drop-shadow(0 0 7px ${alpha(theme.palette.primary.main, 0.55)});
   }
   &[data-phase="success"] {
+    animation: liquidPop 450ms cubic-bezier(0.34, 1.56, 0.64, 1) 1;
     .liquid { transform: translateY(0); }
     .ripple { animation: liquidRipple 0.9s ease-out 1 forwards; }
+    .badge { animation: liquidBadgeDraw 550ms ease-out 120ms 1 forwards; }
   }
   &[data-phase="fallback"] {
     opacity: 0.55;
@@ -543,8 +726,149 @@ const LiquidBoltLoader: FC<{ phase: SimPhase }> = ({ phase }) => (
     {/* Threshold marker at the awaiting-signature fill level. */}
     <line className="threshold" x1="2" y1="30" x2="58" y2="30" />
     <circle className="ripple" cx="30" cy="40" r="26" />
+    {/* Success: a ring draws itself around the full bolt, landing as a badge. */}
+    <circle className="badge" cx="30" cy="40" r="34" />
   </LiquidBoltSvg>
 );
+
+// ---------------------------------------------------------------------------------------
+// 0c. Bolt core + liquid fill — 0b's spinner, but the center bolt fills like the Liquid
+//     Bolt through the phases (no threshold line): half-full while preparing, holding with
+//     a breath at the signature, snapping full on relay. Success is 0b's ring-close +
+//     bolt→arrow morph + explosion ripple.
+// ---------------------------------------------------------------------------------------
+
+const BoltFillSpinnerRoot = styled("div")(
+  ({ theme }) => `
+  position: relative;
+  width: 80px;
+  height: 80px;
+
+  svg { overflow: visible; }
+  .spinGroup {
+    transform-box: view-box;
+    transform-origin: center;
+    animation: bfsSpin 1.4s linear infinite;
+  }
+  .arc {
+    fill: none;
+    stroke: ${theme.palette.primary.main};
+    stroke-width: 5;
+    stroke-linecap: round;
+    stroke-dasharray: 165 70.6;
+  }
+  .icon {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: ${theme.palette.primary.main};
+  }
+  .fillBolt { transition: opacity 250ms ease, transform 250ms ease; }
+  .fillBolt svg { transition: filter 500ms ease; }
+  .arrowIcon { opacity: 0; transform: scale(0.4); }
+  .ripple {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid ${theme.palette.primary.main};
+    opacity: 0;
+  }
+
+  .boltBg { fill: ${alpha(theme.palette.primary.main, 0.1)}; }
+  .outline {
+    fill: none;
+    stroke: ${theme.palette.primary.main};
+    stroke-width: 4;
+    stroke-linejoin: round;
+  }
+  .liquid {
+    transform: translateY(41px);
+    transition: transform 1000ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .wave1 { fill: ${alpha(theme.palette.primary.main, 0.85)}; animation: bfsDrift 2.6s linear infinite; }
+  .wave2 { fill: ${alpha(theme.palette.primary.main, 0.4)}; animation: bfsDrift 3.9s linear infinite reverse; }
+
+  @keyframes bfsSpin {
+    to { transform: rotate(360deg); }
+  }
+  @keyframes bfsRingClose {
+    to { stroke-dasharray: 236 0; }
+  }
+  @keyframes bfsArrowPop {
+    0% { opacity: 0; transform: scale(0.4); }
+    60% { opacity: 1; transform: scale(1.18); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+  @keyframes bfsRipple {
+    0% { transform: scale(0.9); opacity: 0.6; }
+    100% { transform: scale(1.45); opacity: 0; }
+  }
+  @keyframes bfsBreathe {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+  @keyframes bfsDrift {
+    to { transform: translateX(40px); }
+  }
+
+  &[data-phase="awaiting-signature"] {
+    .liquid { transform: translateY(24px); }
+    .fillBolt { animation: bfsBreathe 1.8s ease-in-out infinite; }
+  }
+  &[data-phase="relaying"] {
+    .liquid { transform: translateY(0); transition-duration: 500ms; }
+    .fillBolt svg { filter: drop-shadow(0 0 6px ${alpha(theme.palette.primary.main, 0.55)}); }
+  }
+  &[data-phase="success"] {
+    .liquid { transform: translateY(0); }
+    .arc { animation: bfsRingClose 350ms ease-out 1 forwards; }
+    .fillBolt { opacity: 0; transform: scale(0.4); }
+    .arrowIcon { animation: bfsArrowPop 450ms cubic-bezier(0.34, 1.56, 0.64, 1) 150ms 1 forwards; }
+    .ripple { animation: bfsRipple 900ms ease-out 200ms 1 forwards; }
+  }
+  &[data-phase="fallback"] {
+    .fillBolt { opacity: 0; }
+  }
+`
+);
+
+const BoltFillSpinnerVisual: FC<{ phase: SimPhase }> = ({ phase }) => {
+  if (phase === "relay-status-unknown") {
+    return <BaselineVisual phase={phase} />;
+  }
+  return (
+    <BoltFillSpinnerRoot data-phase={phase}>
+      <svg viewBox="0 0 80 80" width={80} height={80}>
+        <g className="spinGroup">
+          <circle className="arc" cx="40" cy="40" r="37.5" />
+        </g>
+      </svg>
+      <Box className="ripple" />
+      <Box className="icon fillBolt">
+        <svg viewBox="0 0 60 80" width={30} height={40}>
+          <defs>
+            <clipPath id="dev-relay-bolt-clip-mini">
+              <path d={BOLT_PATH} />
+            </clipPath>
+          </defs>
+          <path className="boltBg" d={BOLT_PATH} />
+          <g clipPath="url(#dev-relay-bolt-clip-mini)">
+            <g className="liquid">
+              <path className="wave2" d={WAVE_PATH} transform="translate(0, -2)" />
+              <path className="wave1" d={WAVE_PATH} />
+            </g>
+          </g>
+          <path className="outline" d={BOLT_PATH} />
+        </svg>
+      </Box>
+      <Box className="icon arrowIcon">
+        <ArrowUpwardRoundedIcon fontSize="large" />
+      </Box>
+    </BoltFillSpinnerRoot>
+  );
+};
 
 // ---------------------------------------------------------------------------------------
 // 4. Bolt Baton Relay — the bolt as a baton passed Dashboard → You → Relay, holding with
@@ -1032,6 +1356,24 @@ const VARIANTS: VariantDefinition[] = [
     render: (phase) => <BaselineVisual phase={phase} />,
   },
   {
+    name: "0b · Baseline + bolt core",
+    blurb:
+      "Minimal delta: today's spinner with the relay bolt at its center. On success the ring spins shut into the badge and the bolt pops into the arrow; the bolt disappears on fallback.",
+    cost: "low",
+    copy: CURRENT_COPY,
+    showTips: false,
+    render: (phase) => <BoltSpinnerVisual phase={phase} />,
+  },
+  {
+    name: "0c · Bolt core + liquid fill",
+    blurb:
+      "0b's spinner, but the center bolt fills like the Liquid Bolt through the phases — half while preparing, breathing at the signature, snapping full on relay. Same ring-close success.",
+    cost: "medium",
+    copy: CURRENT_COPY,
+    showTips: false,
+    render: (phase) => <BoltFillSpinnerVisual phase={phase} />,
+  },
+  {
     name: "1 · Live Current Pipeline",
     blurb:
       "One pipe, three nodes. The current flows to the active step, pools for your signature, then a bolt rides the relay leg.",
@@ -1052,7 +1394,7 @@ const VARIANTS: VariantDefinition[] = [
   {
     name: "3 · Liquid Bolt Fill",
     blurb:
-      "The chip strip’s bolt fills with flowing liquid, holds at a threshold for the signature, and snaps full on relay.",
+      "The chip strip’s bolt fills with flowing liquid, holds at a threshold for the signature, and snaps full on relay. Success pops the bolt and draws a ring badge around it.",
     cost: "medium",
     copy: PROPOSED_COPY,
     showTips: true,
