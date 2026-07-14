@@ -13,28 +13,9 @@ import {
   Popover,
   useTheme,
 } from "@mui/material";
-import Image from "next/legacy/image";
 import NextLink from "next/link";
 import { FC, MouseEvent, useState } from "react";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
-
-interface MenuItemImageProps {
-  src: string;
-  alt: string;
-}
-
-const MenuItemImage: FC<MenuItemImageProps> = ({ src, alt }) => (
-  <ListItemIcon>
-    <Image
-      unoptimized
-      src={src}
-      width={24}
-      height={24}
-      layout="fixed"
-      alt={alt}
-    />
-  </ListItemIcon>
-);
 
 const MoreNavigationItem: FC = () => {
   const theme = useTheme();
@@ -78,49 +59,6 @@ const MoreNavigationItem: FC = () => {
           square: true,
         }}
       >
-        <NextLink
-          href="https://www.superfluid.finance"
-          target="_blank"
-          passHref
-          legacyBehavior
-        >
-          <ListItemButton data-cy={"more-website-btn"} href="" target="_blank">
-            <MenuItemImage
-              src={
-                theme.palette.mode === "dark"
-                  ? "/icons/superfluid-light.svg"
-                  : "/icons/superfluid-dark.svg"
-              }
-              alt="Superfluid logo"
-            />
-            <ListItemText>Website</ListItemText>
-          </ListItemButton>
-        </NextLink>
-
-        <NextLink
-          href="https://discord.gg/XsK7nahanQ"
-          target="_blank"
-          passHref
-          legacyBehavior
-        >
-          <ListItemButton data-cy={"more-discord-btn"} href="" target="_blank">
-            <MenuItemImage src="/icons/social/discord.svg" alt="Discord logo" />
-            <ListItemText>Discord</ListItemText>
-          </ListItemButton>
-        </NextLink>
-
-        <NextLink
-          href="https://twitter.com/intent/follow?screen_name=Superfluid_HQ"
-          target="_blank"
-          passHref
-          legacyBehavior
-        >
-          <ListItemButton data-cy={"more-twitter-btn"} href="" target="_blank">
-            <MenuItemImage src="/icons/social/twitter.svg" alt="Twitter logo" />
-            <ListItemText>Twitter</ListItemText>
-          </ListItemButton>
-        </NextLink>
-
         {/* <NextLink href="/?showFaucet=true" legacyBehavior>
           <ListItemButton
             data-cy={"more-faucet-btn"}

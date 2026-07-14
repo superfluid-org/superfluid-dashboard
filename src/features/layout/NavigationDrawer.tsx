@@ -32,6 +32,7 @@ import ThemeChanger from "../theme/ThemeChanger";
 import ConnectWallet from "../wallet/ConnectWallet";
 import { useLayoutContext } from "./LayoutContext";
 import MoreNavigationItem from "./MoreNavigationItem";
+import SocialLinks from "./SocialLinks";
 import Link from "../common/Link";
 import packageJson from "../../../package.json";
 
@@ -296,46 +297,46 @@ export default memo(function NavigationDrawer() {
         >
           <ThemeChanger />
           <MoreNavigationItem />
-          {isOutOfSync && remoteMajorVersion ? (
-            <IconButton
-              onClick={handleRefresh}
-              title={`Newer version v${remoteMajorVersion} available. Click to refresh.`}
-              sx={{
-                mt: 0.5,
-                py: theme.spacing(0.5),
-                px: theme.spacing(2),
-                borderRadius: theme.shape.borderRadius,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: theme.spacing(0.5),
-                color: 'inherit',
-                width: 'fit-content',
-                alignSelf: 'center',
-              }}
-            >
-              <Typography variant="body2" component="span">
+          <Stack
+            direction="row"
+            alignItems="center"
+            gap={0.75}
+            sx={{ mt: 0.5, pl: 1.5 }}
+          >
+            <SocialLinks />
+            <Typography variant="body2" component="span">
+              ·
+            </Typography>
+            {isOutOfSync && remoteMajorVersion ? (
+              <IconButton
+                onClick={handleRefresh}
+                title={`Newer version v${remoteMajorVersion} available. Click to refresh.`}
+                sx={{
+                  p: 0.5,
+                  borderRadius: theme.shape.borderRadius,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: theme.spacing(0.5),
+                  color: 'inherit',
+                }}
+              >
+                <Typography variant="body2" component="span">
+                  v{localMajorVersion}
+                </Typography>
+                <WarningAmberRoundedIcon
+                  fontSize="small"
+                  sx={{ color: theme.palette.warning.main }}
+                />
+              </IconButton>
+            ) : (
+              <Typography
+                variant="body2"
+                title={`The current Dashboard version is v${localMajorVersion}.`}
+              >
                 v{localMajorVersion}
               </Typography>
-              <WarningAmberRoundedIcon
-                fontSize="small"
-                sx={{ color: theme.palette.warning.main }}
-              />
-            </IconButton>
-          ) : (
-            <Typography
-              variant="body2"
-              sx={{
-                textAlign: "center",
-                mt: 0.5,
-                py: theme.spacing(0.5),
-                px: theme.spacing(2),
-              }}
-              title={`The current Dashboard version is v${localMajorVersion}.`}
-            >
-              v{localMajorVersion}
-            </Typography>
-          )}
+            )}
+          </Stack>
         </Stack>
       </Stack>
     </SwipeableDrawer>
