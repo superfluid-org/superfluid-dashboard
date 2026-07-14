@@ -1,16 +1,19 @@
-import { IconButton, Stack, Tooltip, useTheme } from "@mui/material";
+import { alpha, IconButton, Stack, Tooltip, useTheme } from "@mui/material";
 import Image from "next/legacy/image";
-import { FC } from "react";
+import { FC, ReactNode } from "react";
+import { SocialIcon } from "react-social-icons/component";
+import "react-social-icons/discord";
+import "react-social-icons/x";
 import Link from "../common/Link";
 
 interface SocialLinkProps {
   dataCy: string;
   title: string;
   href: string;
-  src: string;
+  children: ReactNode;
 }
 
-const SocialLink: FC<SocialLinkProps> = ({ dataCy, title, href, src }) => (
+const SocialLink: FC<SocialLinkProps> = ({ dataCy, title, href, children }) => (
   <Tooltip title={title}>
     <IconButton
       data-cy={dataCy}
@@ -19,15 +22,9 @@ const SocialLink: FC<SocialLinkProps> = ({ dataCy, title, href, src }) => (
       href={href}
       target="_blank"
       aria-label={title}
+      sx={{ opacity: 0.6, "&:hover": { opacity: 1 } }}
     >
-      <Image
-        unoptimized
-        src={src}
-        width={18}
-        height={18}
-        layout="fixed"
-        alt={`${title} logo`}
-      />
+      {children}
     </IconButton>
   </Tooltip>
 );
@@ -41,24 +38,47 @@ const SocialLinks: FC = () => {
         dataCy="socials-website-btn"
         title="Website"
         href="https://www.superfluid.finance"
-        src={
-          theme.palette.mode === "dark"
-            ? "/icons/superfluid-light.svg"
-            : "/icons/superfluid-dark.svg"
-        }
-      />
+      >
+        <Image
+          unoptimized
+          src={
+            theme.palette.mode === "dark"
+              ? "/icons/superfluid-light.svg"
+              : "/icons/superfluid-dark.svg"
+          }
+          width={18}
+          height={18}
+          layout="fixed"
+          alt="Website logo"
+        />
+      </SocialLink>
       <SocialLink
         dataCy="socials-discord-btn"
         title="Discord"
         href="https://discord.gg/XsK7nahanQ"
-        src="/icons/social/discord.svg"
-      />
+      >
+        <SocialIcon
+          as="span"
+          network="discord"
+          bgColor={alpha(theme.palette.text.primary, 1)}
+          fgColor="transparent"
+          style={{ width: 18, height: 18, display: "flex" }}
+        />
+      </SocialLink>
       <SocialLink
-        dataCy="socials-twitter-btn"
-        title="Twitter"
+        dataCy="socials-x-btn"
+        title="X"
         href="https://twitter.com/intent/follow?screen_name=Superfluid_HQ"
-        src="/icons/social/twitter.svg"
-      />
+      >
+        {/* network is explicit — the twitter.com URL would auto-detect the old bird logo. */}
+        <SocialIcon
+          as="span"
+          network="x"
+          bgColor={alpha(theme.palette.text.primary, 1)}
+          fgColor="transparent"
+          style={{ width: 18, height: 18, display: "flex" }}
+        />
+      </SocialLink>
     </Stack>
   );
 };

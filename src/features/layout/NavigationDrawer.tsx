@@ -16,6 +16,7 @@ import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
 import {
   alpha,
   Box,
+  Divider,
   IconButton,
   List,
   ListItemButton,
@@ -372,11 +373,12 @@ export default memo(function NavigationDrawer() {
             isExternal
             dense
           />
+          <Divider sx={{ mt: 1, opacity: 0.6 }} />
           <Stack
             direction="row"
             alignItems="center"
             gap={0.75}
-            sx={{ mt: 1.5, pl: 1.5 }}
+            sx={{ mt: 0.5, pl: 1.5 }}
           >
             <SocialLinks />
             <Typography variant="body2" component="span">
