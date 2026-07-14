@@ -1,4 +1,4 @@
-import { alpha, IconButton, Stack, Tooltip, useTheme } from "@mui/material";
+import { alpha, IconButton, Stack, useTheme } from "@mui/material";
 import Image from "next/legacy/image";
 import { FC, ReactNode } from "react";
 import { SocialIcon } from "react-social-icons/component";
@@ -14,19 +14,17 @@ interface SocialLinkProps {
 }
 
 const SocialLink: FC<SocialLinkProps> = ({ dataCy, title, href, children }) => (
-  <Tooltip title={title}>
-    <IconButton
-      data-cy={dataCy}
-      size="small"
-      LinkComponent={Link}
-      href={href}
-      target="_blank"
-      aria-label={title}
-      sx={{ opacity: 0.6, "&:hover": { opacity: 1 } }}
-    >
-      {children}
-    </IconButton>
-  </Tooltip>
+  <IconButton
+    data-cy={dataCy}
+    size="small"
+    LinkComponent={Link}
+    href={href}
+    target="_blank"
+    aria-label={title}
+    sx={{ opacity: 0.6, "&:hover": { opacity: 1 } }}
+  >
+    {children}
+  </IconButton>
 );
 
 const SocialLinks: FC = () => {
@@ -68,9 +66,8 @@ const SocialLinks: FC = () => {
       <SocialLink
         dataCy="socials-x-btn"
         title="X"
-        href="https://twitter.com/intent/follow?screen_name=Superfluid_HQ"
+        href="https://x.com/Superfluid_HQ"
       >
-        {/* network is explicit — the twitter.com URL would auto-detect the old bird logo. */}
         <SocialIcon
           as="span"
           network="x"
