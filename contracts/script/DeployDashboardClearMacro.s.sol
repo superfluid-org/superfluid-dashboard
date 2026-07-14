@@ -47,8 +47,9 @@ contract DeployDashboardClearMacro is Script {
     /// Relay fee policy currently shared by all networks; per-network deviations belong in `_defaultConfig`.
     /// Must stay a multiple of 1e13 (5-decimal granularity enforced by the constructor).
     uint256 internal constant DEFAULT_BASE_FEE = 0.1e18;
-    /// Dedicated fee-collection EOA (fresh account, so arriving fees are visible as its whole balance).
-    address internal constant DEFAULT_FEE_RECEIVER = 0x74cD5673dF7efC148067Ecab494A19a46b0a3167;
+    /// Superfluid DAO Safe (dao.superfluid.eth). On chains where the Safe has no code yet it can
+    /// be re-instantiated at the same address (Safe factory replay) before fees are collected.
+    address internal constant DEFAULT_FEE_RECEIVER = 0xac808840f02c47C05507f48165d2222FF28EF4e1;
 
     struct ChainConfig {
         string name; // canonical network name in superfluid-finance/metadata

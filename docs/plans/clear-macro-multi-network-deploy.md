@@ -49,7 +49,11 @@ network's block in `src/features/network/networks.ts`.
   underlying.
 - **fee policy** (per-network configurable in the table; currently uniform): base fee `0.1e18` (must stay
   a multiple of `1e13`; raised from `0.01e18` on 2026-07-13), receiver
-  `0x74cD5673dF7efC148067Ecab494A19a46b0a3167` (dedicated fee EOA). A new schedule pays 2x base per
+  `0xac808840f02c47C05507f48165d2222FF28EF4e1` (Superfluid DAO Safe, dao.superfluid.eth; changed
+  2026-07-14 from the dedicated fee EOA `0x74cD5673dF7efC148067Ecab494A19a46b0a3167`, which the
+  deployed OP Sepolia instance still uses). The Safe has code on eth-mainnet and Base today; on the
+  other chains it can be re-instantiated at the same address before fees are collected. A new
+  schedule pays 2x base per
   reserved keeper execution on top of the 1x relay fee (3x with one scheduled date, 5x with both);
   modify/cancel stay 1x. Fee config is immutable per deployment — changing it means redeploying.
 - Overridable per invocation via `SUPERFLUID_HOST`, `FLOW_SCHEDULER`, `FEE_SUPER_TOKEN`, `BASE_FEE_AMOUNT`
