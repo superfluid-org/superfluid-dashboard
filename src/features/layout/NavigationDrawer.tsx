@@ -1,13 +1,13 @@
 import AppsRoundedIcon from "@mui/icons-material/AppsRounded";
 import ArrowRightAltRoundedIcon from "@mui/icons-material/ArrowRightAltRounded";
-import AssessmentRoundedIcon from "@mui/icons-material/AssessmentRounded";
+import AssessmentOutlinedIcon from "@mui/icons-material/AssessmentOutlined";
 import AutoAwesomeMosaicRoundedIcon from "@mui/icons-material/AutoAwesomeMosaicRounded";
 import AutoModeOutlinedIcon from "@mui/icons-material/AutoModeOutlined";
 import AutoStoriesOutlinedIcon from "@mui/icons-material/AutoStoriesOutlined";
 import ControlPointDuplicateOutlinedIcon from "@mui/icons-material/ControlPointDuplicateOutlined";
 import HistoryRoundedIcon from "@mui/icons-material/HistoryRounded";
-import LockClockRoundedIcon from "@mui/icons-material/LockClockRounded";
-import FactCheckRoundedIcon from "@mui/icons-material/FactCheckRounded";
+import LockClockOutlinedIcon from "@mui/icons-material/LockClockOutlined";
+import FactCheckOutlinedIcon from "@mui/icons-material/FactCheckOutlined";
 import LooksRoundedIcon from "@mui/icons-material/LooksRounded";
 import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
 import ReceiptLongRoundedIcon from "@mui/icons-material/ReceiptLongRounded";
@@ -16,7 +16,6 @@ import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
 import {
   alpha,
   Box,
-  Chip,
   IconButton,
   List,
   ListItemButton,
@@ -279,15 +278,6 @@ export default memo(function NavigationDrawer() {
         />
 
         <NavigationItem
-          id="nav-history"
-          title="Activity History"
-          href="/history"
-          onClick={closeNavigationDrawer}
-          active={isActiveRoute("/history")}
-          icon={HistoryRoundedIcon}
-        />
-
-        <NavigationItem
           id="nav-vesting"
           title="Vesting"
           href="/vesting"
@@ -297,7 +287,7 @@ export default memo(function NavigationDrawer() {
             "/vesting/create",
             "/vesting/[_network]/[_id]"
           )}
-          icon={LockClockRoundedIcon}
+          icon={LockClockOutlinedIcon}
         />
 
         <NavigationItem
@@ -310,21 +300,21 @@ export default memo(function NavigationDrawer() {
         />
 
         <NavigationItem
-          id="nav-address-book"
-          title="Address Book"
-          href="/address-book"
-          onClick={closeNavigationDrawer}
-          active={isActiveRoute("/address-book")}
-          icon={AutoStoriesOutlinedIcon}
-        />
-
-        <NavigationItem
           id="nav-approvals"
           title="Approvals"
           href="/approvals"
           onClick={closeNavigationDrawer}
           active={isActiveRoute("/approvals")}
-          icon={FactCheckRoundedIcon}
+          icon={FactCheckOutlinedIcon}
+        />
+
+        <NavigationItem
+          id="nav-history"
+          title="Activity History"
+          href="/history"
+          onClick={closeNavigationDrawer}
+          active={isActiveRoute("/history")}
+          icon={HistoryRoundedIcon}
         />
 
       </Stack>
@@ -335,12 +325,21 @@ export default memo(function NavigationDrawer() {
           gap={0.5}
         >
           <NavigationItem
+            id="nav-address-book"
+            title="Address Book"
+            href="/address-book"
+            onClick={closeNavigationDrawer}
+            active={isActiveRoute("/address-book")}
+            icon={AutoStoriesOutlinedIcon}
+            dense
+          />
+          <NavigationItem
             id="nav-export"
             title="Export Stream Data"
             href="/accounting"
             onClick={closeNavigationDrawer}
             active={isActiveRoute("/accounting")}
-            icon={AssessmentRoundedIcon}
+            icon={AssessmentOutlinedIcon}
             dense
           />
           <NavigationItem
@@ -352,13 +351,6 @@ export default memo(function NavigationDrawer() {
             icon={ReceiptLongRoundedIcon}
             isExternal
             dense
-            chip={
-              <Chip
-                label="Beta"
-                size="small"
-                sx={{ height: 18, fontSize: "0.65rem" }}
-              />
-            }
           />
           <NavigationItem
             id="nav-superfluid-runner"
