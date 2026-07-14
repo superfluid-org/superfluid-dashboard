@@ -48,7 +48,6 @@ import faucetApi from "../faucet/faucetApi.slice";
 import { flagsSlice } from "../flags/flags.slice";
 import gasApi from "../gas/gasApi.slice";
 import { impersonationSlice } from "../impersonation/impersonation.slice";
-import { notificationsSlice } from "../notifications/notifications.slice";
 import { networkPreferencesSlice, NetworkPreferencesState } from "../network/networkPreferences.slice";
 import { pendingUpdateSlice } from "../pendingUpdates/pendingUpdate.slice";
 import { relayRecoverySlice } from "../clearMacro/relayRecovery.slice";
@@ -201,11 +200,6 @@ const appSettingsPersistedReducer = persistReducer(
   appSettingsReducer
 );
 
-const notificatonsPersistedReducer = persistReducer(
-  { storage, key: "notifications", version: 1 },
-  notificationsSlice.reducer
-);
-
 // In-flight Clear Macro relay executions. Persisted so a 120s poll timeout / closed tab / reload
 // never orphans a signed execution — the background poller resumes them on load.
 const relayRecoveryPersistedReducer = persistReducer(
@@ -278,7 +272,6 @@ export const reduxStore = configureStore({
     addressBook: addressBookPersistedReducer,
     customTokens: customTokensPersistedReducer,
     networkPreferences: networkPreferencesPersistedReducer,
-    notifications: notificatonsPersistedReducer,
     flags: flagsPersistedReducer,
     relayRecovery: relayRecoveryPersistedReducer,
 

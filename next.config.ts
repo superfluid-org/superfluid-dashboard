@@ -112,6 +112,14 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  redirects: async () => [
+    {
+      // The Settings page was repurposed and renamed to Approvals.
+      source: "/settings",
+      destination: "/approvals",
+      permanent: true,
+    },
+  ],
   rewrites: async () => [
     {
       source: "/balance-api/:path*",

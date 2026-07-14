@@ -1,16 +1,20 @@
 import AppsRoundedIcon from "@mui/icons-material/AppsRounded";
 import ArrowRightAltRoundedIcon from "@mui/icons-material/ArrowRightAltRounded";
+import AssessmentRoundedIcon from "@mui/icons-material/AssessmentRounded";
 import AutoAwesomeMosaicRoundedIcon from "@mui/icons-material/AutoAwesomeMosaicRounded";
+import AutoModeOutlinedIcon from "@mui/icons-material/AutoModeOutlined";
 import AutoStoriesOutlinedIcon from "@mui/icons-material/AutoStoriesOutlined";
 import ControlPointDuplicateOutlinedIcon from "@mui/icons-material/ControlPointDuplicateOutlined";
 import HistoryRoundedIcon from "@mui/icons-material/HistoryRounded";
 import LockClockRoundedIcon from "@mui/icons-material/LockClockRounded";
+import FactCheckRoundedIcon from "@mui/icons-material/FactCheckRounded";
 import LooksRoundedIcon from "@mui/icons-material/LooksRounded";
-import SettingsIcon from "@mui/icons-material/Settings";
 import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
+import ReceiptLongRoundedIcon from "@mui/icons-material/ReceiptLongRounded";
 import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
 import {
   Box,
+  Chip,
   IconButton,
   List,
   ListItemButton,
@@ -26,12 +30,12 @@ import {
 } from "@mui/material";
 import Image from "next/legacy/image";
 import { useRouter } from "next/router";
-import { FC, memo, useCallback } from "react";
+import { FC, memo, ReactNode, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import ThemeChanger from "../theme/ThemeChanger";
 import ConnectWallet from "../wallet/ConnectWallet";
 import { useLayoutContext } from "./LayoutContext";
-import MoreNavigationItem from "./MoreNavigationItem";
+import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import SocialLinks from "./SocialLinks";
 import Link from "../common/Link";
 import packageJson from "../../../package.json";
@@ -45,6 +49,7 @@ interface NavigationItemProps {
   active: boolean;
   icon: typeof SvgIcon;
   isExternal?: true;
+  chip?: ReactNode;
   onClick?: () => void;
 }
 
@@ -55,6 +60,7 @@ const NavigationItem: FC<NavigationItemProps> = ({
   active,
   icon: Icon,
   isExternal,
+  chip,
   onClick,
 }) => {
   const theme = useTheme();
@@ -77,7 +83,7 @@ const NavigationItem: FC<NavigationItemProps> = ({
         <ListItemIcon>
           <Icon />
         </ListItemIcon>
-        <ListItemText data-cy={id} primary={<>{title} {isExternal && <OpenInNewRoundedIcon fontSize="inherit" />}</>} />
+        <ListItemText data-cy={id} primary={<>{title} {isExternal && <OpenInNewRoundedIcon fontSize="inherit" />} {chip}</>} />
       </ListItemButton>
     );
   };
@@ -87,6 +93,11 @@ export default memo(function NavigationDrawer() {
   const isBelowLg = useMediaQuery(theme.breakpoints.down("lg"));
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { navigationDrawerOpen, setNavigationDrawerOpen } = useLayoutContext();
+  const { visibleAddress } = useVisibleAddress();
+
+  const reporterUrl = visibleAddress
+    ? `https://reporter.superfluid.org/?account=${visibleAddress}`
+    : "https://reporter.superfluid.org/";
 
   const localMajorVersion = packageJson.version.split('.')[0];
 
@@ -248,15 +259,6 @@ export default memo(function NavigationDrawer() {
         />
 
         <NavigationItem
-          id="nav-address-book"
-          title="Address Book"
-          href="/address-book"
-          onClick={closeNavigationDrawer}
-          active={isActiveRoute("/address-book")}
-          icon={AutoStoriesOutlinedIcon}
-        />
-
-        <NavigationItem
           id="nav-vesting"
           title="Vesting"
           href="/vesting"
@@ -270,22 +272,30 @@ export default memo(function NavigationDrawer() {
         />
 
         <NavigationItem
-          id="nav-settings"
-          title="Settings"
-          href="/settings"
+          id="nav-auto-wrap"
+          title="Auto-Wrap"
+          href="/auto-wrap"
           onClick={closeNavigationDrawer}
-          active={isActiveRoute("/settings")}
-          icon={SettingsIcon}
+          active={isActiveRoute("/auto-wrap")}
+          icon={AutoModeOutlinedIcon}
         />
 
         <NavigationItem
-          id="nav-ecosystem"
-          title="Ecosystem"
-          href="https://www.superfluid.finance/ecosystem"
+          id="nav-address-book"
+          title="Address Book"
+          href="/address-book"
           onClick={closeNavigationDrawer}
-          active={false}
-          icon={AppsRoundedIcon}
-          isExternal
+          active={isActiveRoute("/address-book")}
+          icon={AutoStoriesOutlinedIcon}
+        />
+
+        <NavigationItem
+          id="nav-approvals"
+          title="Approvals"
+          href="/approvals"
+          onClick={closeNavigationDrawer}
+          active={isActiveRoute("/approvals")}
+          icon={FactCheckRoundedIcon}
         />
 
       </Stack>
@@ -293,10 +303,42 @@ export default memo(function NavigationDrawer() {
       <Stack justifyContent="flex-end" sx={{ flex: 1 }}>
         <Stack
           sx={{ my: 2, px: 2, color: theme.palette.text.secondary }}
-          gap={1}
+          gap={0.5}
         >
+          <NavigationItem
+            id="nav-export"
+            title="Export Stream Data"
+            href="/accounting"
+            onClick={closeNavigationDrawer}
+            active={isActiveRoute("/accounting")}
+            icon={AssessmentRoundedIcon}
+          />
+          <NavigationItem
+            id="nav-reporter"
+            title="Reporter"
+            href={reporterUrl}
+            onClick={closeNavigationDrawer}
+            active={false}
+            icon={ReceiptLongRoundedIcon}
+            isExternal
+            chip={
+              <Chip
+                label="Beta"
+                size="small"
+                sx={{ height: 18, fontSize: "0.65rem" }}
+              />
+            }
+          />
+          <NavigationItem
+            id="nav-ecosystem"
+            title="Ecosystem"
+            href="https://www.superfluid.finance/ecosystem"
+            onClick={closeNavigationDrawer}
+            active={false}
+            icon={AppsRoundedIcon}
+            isExternal
+          />
           <ThemeChanger />
-          <MoreNavigationItem />
           <Stack
             direction="row"
             alignItems="center"

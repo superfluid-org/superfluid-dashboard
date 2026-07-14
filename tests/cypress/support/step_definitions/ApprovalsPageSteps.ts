@@ -1,136 +1,133 @@
 import { Given, Then } from "@badeball/cypress-cucumber-preprocessor";
-import { SettingsPage } from "../../pageObjects/pages/SettingsPage";
+import { ApprovalsPage } from "../../pageObjects/pages/ApprovalsPage";
 
-Then(/^"([^"]*)" is visible in the settings page$/, function (address: string) {
-  SettingsPage.validateVisibleAddress(address);
+Then(/^"([^"]*)" is visible in the approvals page$/, function (address: string) {
+  ApprovalsPage.validateVisibleAddress(address);
 });
-Given(/^User clicks on the notification button$/, function () {
-  SettingsPage.clickNotificationButton();
-});
-Then(/^Settings page wallet not connected screen is visible$/, function () {
-  SettingsPage.validateNotConnectedScreen();
+Then(/^Approvals page wallet not connected screen is visible$/, function () {
+  ApprovalsPage.validateNotConnectedScreen();
 });
 
-Then(/^Settings page No Access Data screen screen is visible$/, function () {
-  SettingsPage.validateNoAccessDataScreen();
+Then(/^Approvals page No Access Data screen screen is visible$/, function () {
+  ApprovalsPage.validateNoAccessDataScreen();
 });
 
 Then(/^User clicks on the add approval button$/, () => {
-  SettingsPage.clickOnAddApprovalButton();
+  ApprovalsPage.clickOnAddApprovalButton();
 });
 
 Then(/^User opens the add approval modal is visible$/, () => {
-  SettingsPage.validateApprovalModalScreen();
+  ApprovalsPage.validateApprovalModalScreen();
 });
 
 Then(/^User closes the add approval modal$/, () => {
-  SettingsPage.clickOnCloseApprovalModalButton();
+  ApprovalsPage.clickOnCloseApprovalModalButton();
 });
 
 Then(/^Approval modal should not exist$/, () => {
-  SettingsPage.approvalModalShouldNotExist();
+  ApprovalsPage.approvalModalShouldNotExist();
 });
 
 Then(
   /^User inputs a allowance "([^"]*)" into the field$/,
   function (amount: string) {
-    SettingsPage.inputAllowanceInFormField(amount);
+    ApprovalsPage.inputAllowanceInFormField(amount);
   }
 );
 
 Then(
   /^User inputs a flow rate "([^"]*)" into the field$/,
   function (flowRate: string) {
-    SettingsPage.inputFlowRateInFormField(flowRate);
+    ApprovalsPage.inputFlowRateInFormField(flowRate);
   }
 );
 
 Then(/^User toggle on a create permission$/, function () {
-  SettingsPage.toggleOnCreatePermission();
+  ApprovalsPage.toggleOnCreatePermission();
 });
 
 Then(/^User toggle on a update permission$/, function () {
-  SettingsPage.toggleOnUpdatePermission();
+  ApprovalsPage.toggleOnUpdatePermission();
 });
 
 Then(/^User toggle on a delete permission$/, function () {
-  SettingsPage.toggleOnDeletePermission();
+  ApprovalsPage.toggleOnDeletePermission();
 });
 
 Then(/^User toggle off a update permission$/, function () {
-  SettingsPage.toggleOffUpdatePermission();
+  ApprovalsPage.toggleOffUpdatePermission();
 });
 
 Then(/^Unsaved Changes modal should be visible$/, function () {
-  SettingsPage.unsavedConfirmationModalShouldBeVisible();
+  ApprovalsPage.unsavedConfirmationModalShouldBeVisible();
 });
 
 Then(/^User closes the unsaved changes modal$/, function () {
-  SettingsPage.userClosesUnsavedChangesModal();
+  ApprovalsPage.userClosesUnsavedChangesModal();
 });
 
 Then(/^Unsaved Changes modal should not exist$/, function () {
-  SettingsPage.unsavedConfirmationModalShouldNotExist();
+  ApprovalsPage.unsavedConfirmationModalShouldNotExist();
 });
 
 Then(/^User click on approvals add button$/, function () {
-  SettingsPage.clickSaveChangesButton();
+  ApprovalsPage.clickSaveChangesButton();
 });
 
 Then(/^User closes tx the dialog$/, function () {
-  SettingsPage.userCloseTxDialog();
+  ApprovalsPage.userCloseTxDialog();
 });
 Given(
   /^User opens the first modify permissions form on "([^"]*)"$/,
   function (network: string) {
-    SettingsPage.openFirstModifyFormOnNetwork(network);
+    ApprovalsPage.openFirstModifyFormOnNetwork(network);
   }
 );
 Given(/^User clicks the create permission toggle$/, function () {
-  SettingsPage.clickCreatePermissionToggle();
+  ApprovalsPage.clickCreatePermissionToggle();
 });
 Given(/^User clicks the update permission toggle$/, function () {
-  SettingsPage.clickUpdatePermissionToggle();
+  ApprovalsPage.clickUpdatePermissionToggle();
 });
 Given(/^User clicks the delete permission toggle$/, function () {
-  SettingsPage.clickDeletePermissionToggle();
+  ApprovalsPage.clickDeletePermissionToggle();
 });
 
 Then(
   /^"([^"]*)" permission row with "([^"]*)" as an operator on "([^"]*)" is visible$/,
   function (token: string, operator: string, network: string) {
-    SettingsPage.validatePermissionRowIsVisible(token, operator, network);
+    ApprovalsPage.validatePermissionRowIsVisible(token, operator, network);
   }
 );
 Then(
   /^Permission row for "([^"]*)" to use "([^"]*)" on "([^"]*)" does not exist$/,
   function (operator: string, token: string, network: string) {
-    SettingsPage.validatePermissionRowDoesNotExist(operator, token, network);
+    ApprovalsPage.validatePermissionRowDoesNotExist(operator, token, network);
   }
 );
 Given(
   /^User clicks on the revoke button in the permissions form$/,
   function () {
-    SettingsPage.clickRevokeButtonInPermissionsForm();
+    ApprovalsPage.clickRevokeButtonInPermissionsForm();
   }
 );
 Then(
   /^The selected row token , network and operator are auto\-filled in the modify form$/,
   function () {
-    SettingsPage.validatePreFilledForm();
+    ApprovalsPage.validatePreFilledForm();
   }
 );
 Given(/^User clicks on the save changes button$/, function () {
-  SettingsPage.clickSaveChangesButton();
+  ApprovalsPage.clickSaveChangesButton();
 });
 Then(
   /^One stop viewing button is visible in the permissions form$/,
   function () {
-    SettingsPage.validateOneStopViewingButtonIsVisibleInPermissionsForm();
+    ApprovalsPage.validateOneStopViewingButtonIsVisibleInPermissionsForm();
   }
 );
 Then(/^One change network is visible in the permissions form$/, function () {
-  SettingsPage.validateOneChangeNetworkButtonIsVisibleInPermissionsForm();
+  ApprovalsPage.validateOneChangeNetworkButtonIsVisibleInPermissionsForm();
 });
 Then(
   /^"([^"]*)" permission row with "([^"]*)" as an operator has "([^"]*)" token allowance on "([^"]*)"$/,
@@ -140,7 +137,7 @@ Then(
     allowance: string,
     network: string
   ) {
-    SettingsPage.validateTokenAllowanceForSpecificRow(
+    ApprovalsPage.validateTokenAllowanceForSpecificRow(
       token,
       operator,
       allowance,
@@ -156,7 +153,7 @@ Then(
     allowance: string,
     network: string
   ) {
-    SettingsPage.validateStreamAllowanceForSpecificRow(
+    ApprovalsPage.validateStreamAllowanceForSpecificRow(
       token,
       operator,
       allowance,

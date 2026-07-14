@@ -10,7 +10,6 @@ import {
 } from "./Common";
 import { ethers } from "ethers";
 
-const NOTIFICATION_BUTTON = "[data-cy=notification-button]";
 const WALLET_ADDRESS = "[data-cy=wallet-address]";
 const NOT_CONNECTED_TITLE = "[data-cy=no-user-settings]";
 const NOT_CONNECTED_MESSAGE = "[data-cy=no-history-text]";
@@ -50,7 +49,7 @@ const STREAM_ALLOWANCES = "[data-cy=flow-rate-allowance]";
 const ASSETS_IN_TABLE = "[data-cy=token-symbol]";
 const PERMISSIONS_FORM_TITLE = "[data-cy=permissions-form-title]";
 
-export class SettingsPage extends BasePage {
+export class ApprovalsPage extends BasePage {
   static clickUpdatePermissionToggle() {
     this.click(APPROVAL_MODAL_UPDATE_ACL_PERMISSION);
   }
@@ -183,15 +182,11 @@ export class SettingsPage extends BasePage {
     this.hasText(WALLET_ADDRESS, address);
   }
 
-  static clickNotificationButton() {
-    this.click(NOTIFICATION_BUTTON);
-  }
-
   static validateNotConnectedScreen() {
     this.hasText(NOT_CONNECTED_TITLE, "Wallet not connected");
     this.hasText(
       NOT_CONNECTED_MESSAGE,
-      "Wallet is not connected, please connect wallet to modify settings."
+      "Wallet is not connected, please connect wallet to continue."
     );
     this.isVisible(CONNECT_WALLET_BUTTON);
   }

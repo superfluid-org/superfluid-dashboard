@@ -279,18 +279,9 @@ Then(
     Common.validateNoEthereumMainnetShownInDropdown();
   }
 );
-Then(/^User opens the navigation more menu$/, function () {
-  Common.openNavigationMoreMenu();
-});
 Then(/^User opens the access code menu$/, function () {
   Common.openAccessCodeMenu();
 });
-Then(
-  /^User clicks on the "([^"]*)" button in the more menu$/,
-  function (button: string) {
-    Common.clickMoreMenuButton(button);
-  }
-);
 
 Then(/^User types "([^"]*)" in the access code menu$/, function (code: string) {
   Common.inputAccessCode(code);
@@ -340,10 +331,6 @@ Then(
 );
 Given(/^User opens the faucet view from the navigation menu$/, function () {
   Common.openFaucetMenu();
-});
-
-Given(/^User opens the auto-wrap page from the navigation menu$/, function () {
-  Common.openAutoWrapPage();
 });
 
 Then(/^Connect wallet button is visible in the faucet menu$/, function () {
@@ -408,78 +395,6 @@ Given(/^The new wallet address is visible in the faucet menu$/, function () {
 // );
 Then(/^Faucet view is visible$/, function () {
   Common.validateOpenFaucetView();
-});
-Given(/^User opens the notifications modal$/, function () {
-  Common.clickNotificationButton();
-});
-
-Then(
-  /^User switches to the "([^"]*)" notification tab$/,
-  function (tab: string) {
-    Common.switchNotificationTabTo(tab);
-  }
-);
-Then(
-  /^You are not subscribed to notifications message is shown$/,
-  function (tab: string) {
-    Common.validateNotSubscribedMessage();
-  }
-);
-Then(
-  /^Connect wallet button is visible in the notification modal$/,
-  function () {
-    Common.validateConnectWalletButtonInNotifModal();
-  }
-);
-Given(
-  /^Notifications requests are mocked to "([^"]*)"$/,
-  function (type: string) {
-    Common.mockNotificationRequestsTo(type);
-  }
-);
-Then(/^Notification toast is visible for "([^"]*)"$/, function (type: string) {
-  Common.validateNotificationToast(type);
-});
-Then(
-  /^Notification badge shows "([^"]*)" new notification$/,
-  function (amount: string) {
-    Common.validateNotificationBadge(amount);
-  }
-);
-
-Then(/^User closes the notification modal$/, function () {
-  Common.closeDropdown();
-});
-
-Then(/^User archives the last notification$/, function () {
-  Common.archiveLastNotification();
-});
-Then(/^Archived "([^"]*)" notification is shown$/, function (type: string) {
-  Common.validateArchivedNotification(type);
-});
-Then(/^Wrap button is visible in the notifications modal$/, function () {
-  Common.validateWrapButtonsInNotifModal();
-});
-Then(
-  /^User clicks on the wrap button in the notifications modal$/,
-  function () {
-    Common.clickWrapButtonInNotifModal();
-  }
-);
-Then(/^No wrap button is visible in the notifications modal$/, function () {
-  Common.validateNoWrapButtonsInNotifModal();
-});
-Then(/^New "([^"]*)" notification is shown$/, function (type: string) {
-  Common.validateNewNotification(type);
-});
-Then(/^Read "([^"]*)" notification is shown$/, function (type: string) {
-  Common.validateReadNotification(type);
-});
-Then(/^No "([^"]*)" notifications message is shown$/, function (tab: string) {
-  Common.validateNoNewNotificationsMessage(tab);
-});
-Given(/^User clicks on the notification settings button$/, function () {
-  Common.clickNotificationSettingsButton();
 });
 Given(
   /^"([^"]*)" is open using view mode to look at "([^"]*)"$/,

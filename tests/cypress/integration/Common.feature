@@ -26,7 +26,6 @@ Feature: Common element test cases
     And User opens the dashboard network selection dropdown
     Then Ethereum mainnet is not available in the network selection dropdown
     And User closes the dropdown
-    And User opens the navigation more menu
     And User opens the access code menu
     And User types "AHR2_MAINNET" in the access code menu
     And User submits the access code
@@ -37,7 +36,6 @@ Feature: Common element test cases
   @skip
   Scenario: Submitting wrong access codes
     Given "Dashboard page" is open without connecting a wallet
-    And User opens the navigation more menu
     And User opens the access code menu
     And User types "Testing" in the access code menu
     And User submits the access code
@@ -101,76 +99,6 @@ Feature: Common element test cases
   #     And User opens the navigation more menu
   #     And User opens the faucet view from the navigation menu
   #     Then The claim token is disabled and shows Tokens claimed message
-  # Notifications are hidden
-  @skip
-  Scenario: No new notifications message
-    Given "Settings Page" is open with "dan" connected on "ethereum"
-    And User opens the notifications modal
-    Then No "new" notifications message is shown
-    And User switches to the "archive" notification tab
-    Then No "archive" notifications message is shown
-
-  @skip
-  Scenario: You are not subscribed to notifications message
-    Given "Settings Page" is open with "bob" connected on "ethereum"
-    And User opens the notifications modal
-    Then You are not subscribed to notifications message is shown
-    And User switches to the "archive" notification tab
-    Then You are not subscribed to notifications message is shown
-
-  @skip
-  Scenario: Connect wallet buttons visible in the notification modal
-    Given "Settings page" is open without connecting a wallet
-    And User opens the notifications modal
-    Then Connect wallet button is visible in the notification modal
-
-  @skip
-  @mocked
-  Scenario Outline: Receiving opening and archiving a notification
-    Given Notifications requests are mocked to "<notification>"
-
-    Given "Settings Page" is open with "dan" connected on "ethereum"
-    Then Notification toast is visible for "<notification>"
-    And Notification badge shows "1" new notification
-    And User opens the notifications modal
-    Then New "<notification>" notification is shown
-    And User closes the notification modal
-    And User opens the notifications modal
-    Then Notification badge shows "0" new notification
-    Then Read "<notification>" notification is shown
-    And User archives the last notification
-    Then No "new" notifications message is shown
-    And User switches to the "archive" notification tab
-    Then Archived "<notification>" notification is shown
-
-    Examples:
-      | notification            |
-      | Liquidated              |
-      | Liquidation Risk        |
-      | Urgent Liquidation Risk |
-      | Outdated Format         |
-
-  @skip
-  @mocked
-  Scenario: Wrap buttons in liquidation warning messages
-    Given Notifications requests are mocked to "Liquidation Risk"
-
-    Given "Settings Page" is open with "alice" connected on "polygon"
-    And User opens the notifications modal
-    Then Wrap button is visible in the notifications modal
-    And User clicks on the wrap button in the notifications modal
-    Then "TDL" is selected as the token to wrap
-
-  @skip
-  @mocked
-  Scenario: Notifications automatically archived if older than a month
-    Given Notifications requests are mocked to "Old notification"
-
-    Given "Settings Page" is open with "dan" connected on "opsepolia"
-    And User opens the notifications modal
-    Then No "new" notifications message is shown
-    And User switches to the "archive" notification tab
-    And Archived "Old notification" notification is shown
 
   Scenario: Using view mode from the Connect or Impersonate screen
     Given "Vesting page" is open without connecting a wallet

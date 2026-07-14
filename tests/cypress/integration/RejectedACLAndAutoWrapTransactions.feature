@@ -81,8 +81,8 @@ Feature: ACL and Auto-Wrap related rejected test cases
     And User clicks on the Fix permissions button
     Then Transaction rejected error is shown for auto-wrap or vesting transaction
 
-  Scenario: Settings page: Adding a new permission - save changes screen
-    Given "Settings Page" is open with "john" connected on "selected network"
+  Scenario: Approvals page: Adding a new permission - save changes screen
+    Given "Approvals Page" is open with "john" connected on "selected network"
     And User clicks on the add approval button
     And User opens the add approval modal is visible
     And User selects "TokenOnex" as the super token to use for the stream
@@ -98,10 +98,10 @@ Feature: ACL and Auto-Wrap related rejected test cases
     And User clicks on the save changes button
     Then Transaction rejected error is shown
 
-  Scenario: Settings page: Adding a new permission
+  Scenario: Approvals page: Adding a new permission
     Given HDWallet transactions are rejected
 
-    Given "Settings Page" is open with "john" connected on "selected network"
+    Given "Approvals Page" is open with "john" connected on "selected network"
     And User clicks on the add approval button
     And User opens the add approval modal is visible
     And User selects "TokenOnex" as the super token to use for the stream
@@ -119,8 +119,8 @@ Feature: ACL and Auto-Wrap related rejected test cases
     And User closes tx the dialog
     And User closes the unsaved changes modal
 
-  Scenario: Settings page: Changing ACL permissions
-    Given "Settings Page" is open with "john" connected on "selected network"
+  Scenario: Approvals page: Changing ACL permissions
+    Given "Approvals Page" is open with "john" connected on "selected network"
     And No loading skeletons are visible in the page
     And User opens the first modify permissions form on "selected network"
     And User clicks the create permission toggle
@@ -129,24 +129,24 @@ Feature: ACL and Auto-Wrap related rejected test cases
     And User click on approvals add button
     And Transaction rejected error is shown
 
-  Scenario: Settings page: Changing Token allowance
-    Given "Settings Page" is open with "john" connected on "selected network"
+  Scenario: Approvals page: Changing Token allowance
+    Given "Approvals Page" is open with "john" connected on "selected network"
     And No loading skeletons are visible in the page
     And User opens the first modify permissions form on "selected network"
     And User inputs a allowance "42069" into the field
     And User click on approvals add button
     And Transaction rejected error is shown
 
-  Scenario: Settings page: Changing flow rate allowance
-    Given "Settings Page" is open with "john" connected on "selected network"
+  Scenario: Approvals page: Changing flow rate allowance
+    Given "Approvals Page" is open with "john" connected on "selected network"
     And No loading skeletons are visible in the page
     And User opens the first modify permissions form on "selected network"
     And User inputs a flow rate "42069" into the field
     And User click on approvals add button
     And Transaction rejected error is shown
 
-  Scenario: Settings page: Revoking a permission
-    Given "Settings Page" is open with "john" connected on "selected network"
+  Scenario: Approvals page: Revoking a permission
+    Given "Approvals Page" is open with "john" connected on "selected network"
     And No loading skeletons are visible in the page
     And User opens the first modify permissions form on "selected network"
     And User clicks on the revoke button in the permissions form
