@@ -175,22 +175,15 @@ Then(/^User clicks on the modify streams onboarding card$/, () => {
   Common.clickModifyStreamsOnboardingCard();
 });
 Then(
-  /^The minigame container iframe is visible without a wallet connected$/,
+  /^The Superfluid Runner navigation link points to the game without an address$/,
   () => {
-    Common.validateMiniGameContainerWithoutWalletConnected();
+    Common.validateSuperfluidRunnerLinkWithoutAddress();
   }
 );
-Then(/^In-game cosmetics warning is shown$/, () => {
-  Common.validateMiniGameCosmeticsWarningIsVisible();
-});
-
-Then(/^In-game cosmetics warning does not exist$/, () => {
-  Common.validateMiniGameCosmeticsWarningDoesNotExist();
-});
 Then(
-  /^The minigame container iframe is visible with a wallet connected$/,
-  () => {
-    Common.validateMiniGameContainerWithWalletConnected();
+  /^The Superfluid Runner navigation link points to the game with "([^"]*)" as the address$/,
+  (account: string) => {
+    Common.validateSuperfluidRunnerLinkWithAddress(account);
   }
 );
 

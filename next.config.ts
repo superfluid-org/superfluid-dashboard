@@ -119,6 +119,13 @@ const nextConfig: NextConfig = {
       destination: "/approvals",
       permanent: true,
     },
+    {
+      // The embedded minigame page was removed; the game is linked from the
+      // sidebar instead. Kept temporary since the destination is external.
+      source: "/superfluid-runner",
+      destination: "https://astrobunny.superfluid.finance/",
+      permanent: false,
+    },
   ],
   rewrites: async () => [
     {

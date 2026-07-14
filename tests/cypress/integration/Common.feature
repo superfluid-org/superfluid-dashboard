@@ -178,15 +178,10 @@ Feature: Common element test cases
     And User clicks on the modify streams onboarding card
     Then Wallet connection modal is shown
 
-  #Not the greatest solution as minigame could not load and it would miss it, but I can't really validate the game itself with Cypress
-  Scenario: Opening the mini-game without a wallet connected
-    Given "Minigame page" is open without connecting a wallet
-    Then The minigame container iframe is visible without a wallet connected
-    Then In-game cosmetics warning is shown
+  Scenario: Superfluid Runner link without a wallet connected
+    Given "Dashboard page" is open without connecting a wallet
+    Then The Superfluid Runner navigation link points to the game without an address
 
-  # Easter-egg mini-game embeds a flaky third-party game iframe; excluded from the deploy gate.
-  @ignoreDuringUI
-  Scenario: Opening the mini-game with a wallet connected
-    Given "Minigame page" is open with "john" connected on "polygon"
-    Then The minigame container iframe is visible with a wallet connected
-    Then In-game cosmetics warning does not exist
+  Scenario: Superfluid Runner link with a wallet connected
+    Given "Dashboard Page" is open with "john" connected on "polygon"
+    Then The Superfluid Runner navigation link points to the game with "john" as the address

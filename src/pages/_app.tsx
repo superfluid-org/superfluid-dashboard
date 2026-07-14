@@ -85,13 +85,13 @@ export default function MyApp(props: AppPropsWithLayout) {
                                 <AnalyticsProvider>
                                   <ToastProvider />
                                   <IntercomProvider>
-                                    <Layout>
-                                      <MinigameProvider>
+                                    <MinigameProvider>
+                                      <Layout>
                                         {mounted ? getLayout(
                                           <Component {...pageProps} />
                                         ) : null}
-                                      </MinigameProvider>
-                                    </Layout>
+                                      </Layout>
+                                    </MinigameProvider>
                                     <MonitorContext />
                                   </IntercomProvider>
                                 </AnalyticsProvider>

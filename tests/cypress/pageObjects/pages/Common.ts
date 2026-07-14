@@ -88,8 +88,7 @@ const MODIFY_OR_CANCEL_STREAM_ONBOARDING_CARD =
   '[data-cy=modify-or-cancel-streams-onboarding-card]';
 const TRY_SUPERFLUID_ONBOARDING_CARD =
   '[data-cy=try-out-superfluid-onboarding-card]';
-const MINIGAME_WARNING = '[data-cy=superfluid-runner-game-alert-text]';
-const MINIGAME_COMPONENT = '[data-cy=minigame-component]';
+const SUPERFLUID_RUNNER_NAV_LINK = '[data-cy=nav-superfluid-runner]';
 const RECEIVER_BUTTON = '[data-cy=address-button]';
 const RECENT_ENTRIES = '[data-cy=recents-entry]';
 const TOKEN_SELECT_SYMBOL = '[data-cy=token-symbol-and-name] h6';
@@ -108,32 +107,31 @@ export class Common extends BasePage {
       .should('have.attr', 'target', '_blank');
   }
 
-  static validateMiniGameContainerWithoutWalletConnected() {
-    //Locally it just loads to an 403 :/
-    this.hasAttributeWithValue(
-      MINIGAME_COMPONENT,
-      'src',
-      'https://astrobunny.superfluid.finance/?level=1'
-    );
+  static validateSuperfluidRunnerLinkWithoutAddress() {
+    cy.get(SUPERFLUID_RUNNER_NAV_LINK)
+      .parent()
+      .should('have.attr', 'target', '_blank')
+      .invoke('attr', 'href')
+      .should((href) => {
+        expect(href).to.contain('https://astrobunny.superfluid.finance/?level=');
+        expect(href).to.not.contain('address=');
+      });
   }
-  static validateMiniGameCosmeticsWarningIsVisible() {
-    this.isVisible(MINIGAME_WARNING);
-    this.hasText(
-      MINIGAME_WARNING,
-      'To access and unlock in-game cosmetics, please connect your wallet before beginning the game.'
-    );
-  }
-  static validateMiniGameCosmeticsWarningDoesNotExist() {
-    this.doesNotExist(MINIGAME_WARNING);
-  }
-  static validateMiniGameContainerWithWalletConnected() {
-    //Locally it just loads to an 403 :/
+  static validateSuperfluidRunnerLinkWithAddress(account: string) {
     cy.fixture('commonData').then((addresses) => {
-      this.hasAttributeWithValue(
-        MINIGAME_COMPONENT,
-        'src',
-        `https://astrobunny.superfluid.finance/?level=1&address=${addresses['john']}`
-      );
+      cy.get(SUPERFLUID_RUNNER_NAV_LINK)
+        .parent()
+        .should('have.attr', 'target', '_blank')
+        .invoke('attr', 'href')
+        .should((href) => {
+          expect(href).to.contain(
+            'https://astrobunny.superfluid.finance/?level='
+          );
+          // Case-insensitive: the address checksum casing depends on the connector.
+          expect(href!.toLowerCase()).to.contain(
+            `address=${addresses[account].toLowerCase()}`
+          );
+        });
     });
   }
   static hoverOnModifyStreamsOnboardingCard() {
@@ -926,7 +924,6 @@ export class Common extends BasePage {
           'vesting stream details page': `/stream/polygon/${vestingData.polygon.USDCx.vestingStream.id}`,
           '404 token page': '/token/polygon/Testing420HaveANiceDay',
           '404 vesting page': '/vesting/polygon/Testing',
-          'minigame page': '/superfluid-runner',
         };
         if (pagesAliases[name] === undefined) {
           throw new Error(`Hmm, you haven't set up the link for : ${name}`);

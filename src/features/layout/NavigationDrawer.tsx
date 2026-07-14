@@ -11,8 +11,10 @@ import FactCheckRoundedIcon from "@mui/icons-material/FactCheckRounded";
 import LooksRoundedIcon from "@mui/icons-material/LooksRounded";
 import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
 import ReceiptLongRoundedIcon from "@mui/icons-material/ReceiptLongRounded";
+import SportsEsportsRoundedIcon from "@mui/icons-material/SportsEsportsRounded";
 import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
 import {
+  alpha,
   Box,
   Chip,
   IconButton,
@@ -35,6 +37,7 @@ import { useQuery } from "@tanstack/react-query";
 import ThemeChanger from "../theme/ThemeChanger";
 import ConnectWallet from "../wallet/ConnectWallet";
 import { useLayoutContext } from "./LayoutContext";
+import { useMinigame } from "../minigame/MinigameContext";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import SocialLinks from "./SocialLinks";
 import Link from "../common/Link";
@@ -50,6 +53,7 @@ interface NavigationItemProps {
   icon: typeof SvgIcon;
   isExternal?: true;
   chip?: ReactNode;
+  dense?: boolean;
   onClick?: () => void;
 }
 
@@ -61,6 +65,7 @@ const NavigationItem: FC<NavigationItemProps> = ({
   icon: Icon,
   isExternal,
   chip,
+  dense,
   onClick,
 }) => {
   const theme = useTheme();
@@ -75,15 +80,38 @@ const NavigationItem: FC<NavigationItemProps> = ({
           easing: theme.transitions.easing.easeOut,
           duration: theme.transitions.duration.short,
         }),
+        "&.Mui-selected": {
+          backgroundColor: alpha(theme.palette.primary.main, 0.08),
+        },
+        "&.Mui-selected:hover": {
+          backgroundColor: alpha(theme.palette.primary.main, 0.12),
+        },
+        ...(dense && { minHeight: 40, py: 0.5 }),
       }}
       selected={active}
       onClick={onClick}
       {...(isExternal && { target: "_blank" })}
       >
-        <ListItemIcon>
-          <Icon />
+        {/* Dense icons are 20px in a 24px-wide slot (ml 2px + mr 18px), so labels
+            share the same x-coordinate as the 24px-icon tier above. */}
+        <ListItemIcon sx={dense ? { ml: 0.25, mr: 2.25 } : undefined}>
+          <Icon fontSize={dense ? "small" : "medium"} />
         </ListItemIcon>
-        <ListItemText data-cy={id} primary={<>{title} {isExternal && <OpenInNewRoundedIcon fontSize="inherit" />} {chip}</>} />
+        <ListItemText
+          data-cy={id}
+          primary={title}
+          primaryTypographyProps={dense ? { variant: "body2" } : undefined}
+        />
+        {(chip || isExternal) && (
+          <Stack direction="row" alignItems="center" gap={0.75}>
+            {chip}
+            {isExternal && (
+              <OpenInNewRoundedIcon
+                sx={{ fontSize: 16, color: "text.disabled" }}
+              />
+            )}
+          </Stack>
+        )}
       </ListItemButton>
     );
   };
@@ -94,6 +122,7 @@ export default memo(function NavigationDrawer() {
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { navigationDrawerOpen, setNavigationDrawerOpen } = useLayoutContext();
   const { visibleAddress } = useVisibleAddress();
+  const { getUrl: getMinigameUrl } = useMinigame();
 
   const reporterUrl = visibleAddress
     ? `https://reporter.superfluid.org/?account=${visibleAddress}`
@@ -312,15 +341,17 @@ export default memo(function NavigationDrawer() {
             onClick={closeNavigationDrawer}
             active={isActiveRoute("/accounting")}
             icon={AssessmentRoundedIcon}
+            dense
           />
           <NavigationItem
             id="nav-reporter"
-            title="Reporter"
+            title="Superfluid Reporter"
             href={reporterUrl}
             onClick={closeNavigationDrawer}
             active={false}
             icon={ReceiptLongRoundedIcon}
             isExternal
+            dense
             chip={
               <Chip
                 label="Beta"
@@ -330,6 +361,16 @@ export default memo(function NavigationDrawer() {
             }
           />
           <NavigationItem
+            id="nav-superfluid-runner"
+            title="Superfluid Runner"
+            href={getMinigameUrl().toString()}
+            onClick={closeNavigationDrawer}
+            active={false}
+            icon={SportsEsportsRoundedIcon}
+            isExternal
+            dense
+          />
+          <NavigationItem
             id="nav-ecosystem"
             title="Ecosystem"
             href="https://www.superfluid.finance/ecosystem"
@@ -337,13 +378,13 @@ export default memo(function NavigationDrawer() {
             active={false}
             icon={AppsRoundedIcon}
             isExternal
+            dense
           />
-          <ThemeChanger />
           <Stack
             direction="row"
             alignItems="center"
             gap={0.75}
-            sx={{ mt: 0.5, pl: 1.5 }}
+            sx={{ mt: 1.5, pl: 1.5 }}
           >
             <SocialLinks />
             <Typography variant="body2" component="span">
@@ -378,6 +419,12 @@ export default memo(function NavigationDrawer() {
                 v{localMajorVersion}
               </Typography>
             )}
+            {/* mr aligns the icon's right edge with the dense rows' trailing
+                ↗ icons: 16px container padding + 12px here + 4px IconButton
+                padding = the arrows' 32px inset from the drawer edge. */}
+            <Box sx={{ ml: "auto", mr: 1.5 }}>
+              <ThemeChanger />
+            </Box>
           </Stack>
         </Stack>
       </Stack>
