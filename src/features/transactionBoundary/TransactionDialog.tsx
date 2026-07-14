@@ -1,9 +1,7 @@
 import {
   Avatar,
-  Box,
   Button,
   ButtonProps,
-  CircularProgress,
   DialogActions,
   DialogContent,
   DialogTitle,
@@ -14,10 +12,10 @@ import {
   useTheme,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import ArrowUpwardRoundedIcon from "@mui/icons-material/ArrowUpwardRounded";
 import HourglassEmptyRoundedIcon from "@mui/icons-material/HourglassEmptyRounded";
 import TransactionDialogErrorAlert from "../transactions/TransactionDialogErrorAlert";
 import { FC, PropsWithChildren, ReactNode } from "react";
+import { TransactionProgressIndicator } from "./TransactionProgressIndicator";
 import { useTransactionBoundary } from "./TransactionBoundary";
 import ResponsiveDialog from "../common/ResponsiveDialog";
 import React from "react";
@@ -66,6 +64,18 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
   const { mutationResult, closeDialog } = useTransactionBoundary();
   const { expectedNetwork } = useConnectionBoundary();
 
+  // The relay's in-flight phases show the bolt; everything else that is loading — a plain
+  // write or a relay fallback — is waiting for the wallet confirmation, which renders
+  // identically to the relay's signature wait (breathing wallet). The success branch
+  // reuses the SAME component at the SAME tree position so the arc closes into the
+  // success badge without remounting.
+  const loadingVisualPhase =
+    mutationResult.relayPhase === "preparing" ||
+    mutationResult.relayPhase === "awaiting-signature" ||
+    mutationResult.relayPhase === "relaying"
+      ? mutationResult.relayPhase
+      : "awaiting-approval";
+
   if (mutationResult.isLoading) {
     // The Clear Macro relay path has phases a plain broadcast doesn't — narrate them.
     const loadingHeadline =
@@ -82,9 +92,7 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
         <TransactionDialogTitle></TransactionDialogTitle>
         <TransactionDialogContent>
           <Stack spacing={1} alignItems="center" textAlign="center">
-            <Box sx={{ mb: 4 }}>
-              <CircularProgress size={80} />
-            </Box>
+            <TransactionProgressIndicator phase={loadingVisualPhase} />
             <Typography variant="h4">
               <span data-cy="approval-message" translate="yes">
                 {loadingHeadline}
@@ -118,9 +126,7 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
         <TransactionDialogTitle></TransactionDialogTitle>
         <TransactionDialogContent>
           <Stack spacing={1} alignItems="center" textAlign="center">
-            <OutlineIcon data-cy={"broadcasted-icon"}>
-              <ArrowUpwardRoundedIcon fontSize="large" color="primary" />
-            </OutlineIcon>
+            <TransactionProgressIndicator phase="success" />
             <Typography
               data-cy={"broadcasted-message"}
               sx={{ my: 2 }}
