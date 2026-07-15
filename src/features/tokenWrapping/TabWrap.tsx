@@ -192,7 +192,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
         return allowedTokenPairs.concat([tokenPair]);
       }, [] as SuperTokenPair[])
       .map((x) => x.underlyingToken);
-  }, [tokenPairs.length]);
+  }, [tokenPairs]);
 
   const { underlyingBalance } = rpcApi.useUnderlyingBalanceQuery(
     tokenPair && visibleAddress

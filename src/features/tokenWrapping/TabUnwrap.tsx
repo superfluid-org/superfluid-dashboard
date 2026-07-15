@@ -346,7 +346,7 @@ const UnwrapTokenController = memo(function UnwrapTokenController(props: {
     network: props.network
   })
 
-  const superTokens = useMemo(() => tokenPairsQuery.data?.map((x) => x.superToken), [tokenPairsQuery.data?.length ?? 0])
+  const superTokens = useMemo(() => tokenPairsQuery.data?.map((x) => x.superToken), [tokenPairsQuery.data])
 
   return (
     <Controller
