@@ -56,6 +56,7 @@ const AnimatedHeight: FC<
     let lastHeight: number | null = null;
     let animating = false;
     let settleTimer: ReturnType<typeof setTimeout> | undefined;
+    let rafId: number | undefined;
 
     // `lastHeight` is deliberately NOT updated here: restoring `auto` lets the content
     // report its natural height again, so a change that landed mid-animation re-fires
@@ -76,38 +77,51 @@ const AnimatedHeight: FC<
     outer.addEventListener("transitionend", onTransitionEnd);
 
     const observer = new ResizeObserver(() => {
-      // While the height is pinned, the flex chain makes the content track the animated
-      // (not natural) height — those fires must not retarget the animation.
-      if (animating) return;
-      const newHeight = inner.getBoundingClientRect().height;
-      const from = lastHeight;
-      lastHeight = newHeight;
-      // `from === null` is the initial observe fire on mount — record only, no animation
-      // on dialog open.
-      if (from === null || !enabledRef.current || Math.abs(newHeight - from) < 1)
-        return;
+      // Mutating layout inside the observer's delivery cycle re-resizes `inner` in the
+      // same frame (pinning Outer stretches Inner through the flex chain), which the
+      // browser reports as an uncaught "ResizeObserver loop" error. One rAF defers the
+      // work past delivery and coalesces multiple fires per frame.
+      if (rafId !== undefined) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = undefined;
+        // While the height is pinned, the flex chain makes the content track the
+        // animated (not natural) height — those fires must not retarget the animation.
+        if (animating) return;
+        const newHeight = inner.getBoundingClientRect().height;
+        const from = lastHeight;
+        lastHeight = newHeight;
+        // `from === null` is the initial observe fire on mount — record only, no
+        // animation on dialog open.
+        if (
+          from === null ||
+          !enabledRef.current ||
+          Math.abs(newHeight - from) < 1
+        )
+          return;
 
-      outer.style.overflow = "hidden";
-      // Keep the content at its natural height while Outer glides: without this, growing
-      // flex-squeezes the content (min-height: 0), and a scroll container inside (e.g.
-      // DialogContent) flashes its own scrollbar mid-animation. Clipping via Outer's
-      // overflow reveals the content progressively instead.
-      inner.style.flexShrink = "0";
-      outer.style.height = `${from}px`;
-      // Reflow so the transition starts from the old height instead of snapping.
-      void outer.offsetHeight;
-      outer.style.transition = `height ${durationMs}ms ${easing}`;
-      outer.style.height = `${newHeight}px`;
-      animating = true;
-      // transitionend is swallowed when the tab is hidden or the transition is
-      // interrupted — the timer guarantees the settle.
-      settleTimer = setTimeout(settle, durationMs + 60);
+        outer.style.overflow = "hidden";
+        // Keep the content at its natural height while Outer glides: without this,
+        // growing flex-squeezes the content (min-height: 0), and a scroll container
+        // inside (e.g. DialogContent) flashes its own scrollbar mid-animation. Clipping
+        // via Outer's overflow reveals the content progressively instead.
+        inner.style.flexShrink = "0";
+        outer.style.height = `${from}px`;
+        // Reflow so the transition starts from the old height instead of snapping.
+        void outer.offsetHeight;
+        outer.style.transition = `height ${durationMs}ms ${easing}`;
+        outer.style.height = `${newHeight}px`;
+        animating = true;
+        // transitionend is swallowed when the tab is hidden or the transition is
+        // interrupted — the timer guarantees the settle.
+        settleTimer = setTimeout(settle, durationMs + 60);
+      });
     });
     observer.observe(inner);
 
     return () => {
       observer.disconnect();
       outer.removeEventListener("transitionend", onTransitionEnd);
+      if (rafId !== undefined) cancelAnimationFrame(rafId);
       clearTimeout(settleTimer);
       outer.style.transition = "";
       outer.style.height = "";
