@@ -1,4 +1,5 @@
 import BoltRoundedIcon from "@mui/icons-material/BoltRounded";
+import ErrorOutlineRoundedIcon from "@mui/icons-material/ErrorOutlineRounded";
 import {
   Chip,
   Paper,
@@ -29,8 +30,8 @@ interface ClearMacroRelayOptionProps {
   /**
    * The primary action is forced through the relay on this network (scheduler-touching
    * submit — the fee pays for the scheduling service) and its button stays disabled
-   * until the toggle is on; the chip explains that when off. Only pass when the chip
-   * represents the primary action (not a cancel fallback).
+   * until the toggle is on; while off, the strip takes a warning state that says so.
+   * Only pass when the strip represents the primary action (not a cancel fallback).
    */
   relayRequired?: boolean;
   /**
@@ -130,6 +131,9 @@ const FeeTokenChip: FC<{
  * Visually it's an outlined "perk" strip that only takes on the primary accent (border,
  * faint fill, bolt) while enabled — mirroring the outlined-Alert tint used elsewhere in
  * the send flow — so the off state reads as neutral and the on state as an active perk.
+ * When the relay is required but still off (`relayRequired`), the strip takes a warning
+ * accent instead — amber border and faint amber fill with a red call-to-action line — so
+ * the blocker is visible before the user reaches the disabled submit button.
  */
 export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
   actionKind,
@@ -196,6 +200,8 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
         : "")
     : "You sign one human-readable message and a relay service submits the transaction and pays the gas.";
 
+  const showRelayRequiredWarning = Boolean(relayRequired) && !isRelayEnabled;
+
   return (
     <Paper
       variant="outlined"
@@ -209,10 +215,14 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
         borderRadius: "12px",
         borderColor: isRelayEnabled
           ? theme.palette.primary.main
-          : theme.palette.other.outline,
+          : showRelayRequiredWarning
+            ? theme.palette.warning.main
+            : theme.palette.other.outline,
         backgroundColor: isRelayEnabled
           ? alpha(theme.palette.primary.main, 0.04)
-          : "transparent",
+          : showRelayRequiredWarning
+            ? alpha(theme.palette.warning.main, 0.05)
+            : "transparent",
         transition: theme.transitions.create([
           "border-color",
           "background-color",
@@ -240,15 +250,16 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
               Fee: {fee.feeText}
             </Typography>
           )}
-          {relayRequired && !isRelayEnabled && (
+          {showRelayRequiredWarning && (
             <Typography
               data-cy="clear-macro-relay-required"
               variant="caption"
-              color="warning.main"
+              color="error.main"
               translate="yes"
+              sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
             >
-              Required for scheduled streams on {network.name} — turn on to
-              continue.
+              <ErrorOutlineRoundedIcon sx={{ fontSize: 14 }} />
+              Turn on to schedule streams on {network.name}.
             </Typography>
           )}
         </Stack>
