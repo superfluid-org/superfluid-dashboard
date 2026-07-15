@@ -16,6 +16,11 @@ import { type Address, stringToHex } from "viem";
  * removes the signer's flow schedule row — see docs/plans/clear-macro-combined-delete.md)
  * and ScheduleFlow's immediate-start mode (startDate 0 + positive rate = create the
  * flow now, schedule only the stop).
+ * The same build is deployed on Base mainnet at
+ * 0x7043E0B26F221470289d771Ef3139460623D073b (set in networks.ts) — fee token USDCx
+ * 0xD04383398dD2426297da660F9CCA3d439AF9ce1b, base fee 0.1, fee receiver the
+ * Superfluid DAO Safe 0xac808840f02c47C05507f48165d2222FF28EF4e1; deployed unverified
+ * for testing (verify later with `pnpm contracts:deploy --verify base-mainnet`).
  * (It replaced 0xEeFC8492f24898289E65Ee06dE7B8A19F30832a5 — same features at base fee
  * 0.01 charged flat per relayed action — which replaced
  * 0xa35C9faC83e1673e6f1221979e2843Dea4812e78 (immediate-start, no combined DeleteFlow),
