@@ -366,7 +366,7 @@ export default memo(function NavigationDrawer() {
           <NavigationItem
             id="nav-ecosystem"
             title="Ecosystem"
-            href="https://www.superfluid.finance/ecosystem"
+            href="https://superfluid.org/ecosystem"
             onClick={closeNavigationDrawer}
             active={false}
             icon={AppsRoundedIcon}

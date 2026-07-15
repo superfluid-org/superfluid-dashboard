@@ -101,7 +101,7 @@ export class Common extends BasePage {
   static validateEcosystemNavigationButtonHref() {
     cy.get('[data-cy=nav-ecosystem')
       .parent()
-      .should('have.attr', 'href', 'https://www.superfluid.finance/ecosystem');
+      .should('have.attr', 'href', 'https://superfluid.org/ecosystem');
     cy.get('[data-cy=nav-ecosystem')
       .parent()
       .should('have.attr', 'target', '_blank');

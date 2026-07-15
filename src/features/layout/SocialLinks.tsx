@@ -35,7 +35,7 @@ const SocialLinks: FC = () => {
       <SocialLink
         dataCy="socials-website-btn"
         title="Website"
-        href="https://www.superfluid.finance"
+        href="https://superfluid.org"
       >
         <Image
           unoptimized
