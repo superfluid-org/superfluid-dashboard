@@ -171,19 +171,23 @@ const BoltSpinnerRoot = styled("div")(
   width: 80px;
   height: 80px;
 
-  svg { overflow: visible; }
-  .spinGroup {
-    transform-box: view-box;
-    transform-origin: center;
-    animation: bspSpin 1.4s linear infinite;
+  .spinner { transition: opacity 150ms ease; }
+  .ringSvg {
+    position: absolute;
+    inset: 0;
+    overflow: visible;
   }
-  .arc {
+  .closeRing {
     fill: none;
     stroke: ${theme.palette.primary.main};
-    stroke-width: 5;
+    stroke-width: 6.5;
     stroke-linecap: round;
-    /* Circumference of r=37.5 is ~235.6 — a 70% arc while loading. */
-    stroke-dasharray: 165 70.6;
+    /* Circumference of r=37.5 is ~235.6 — a 76% arc that sweeps shut on success. */
+    stroke-dasharray: 180 55.6;
+    opacity: 0;
+    transform: rotate(-90deg);
+    transform-box: view-box;
+    transform-origin: center;
   }
   .icon {
     position: absolute;
@@ -203,11 +207,8 @@ const BoltSpinnerRoot = styled("div")(
     opacity: 0;
   }
 
-  @keyframes bspSpin {
-    to { transform: rotate(360deg); }
-  }
   @keyframes bspRingClose {
-    to { stroke-dasharray: 236 0; }
+    to { stroke-dasharray: 236 0; stroke-width: 5; }
   }
   @keyframes bspArrowPop {
     0% { opacity: 0; transform: scale(0.4); }
@@ -225,9 +226,10 @@ const BoltSpinnerRoot = styled("div")(
   }
 
   &[data-phase="success"] {
-    /* The spin keeps running — a full ring rotating is invisible, and NOT cancelling it
-       avoids an angle jump at the moment the arc snaps shut. */
-    .arc { animation: bspRingClose 350ms ease-out 1 forwards; }
+    /* The real MUI spinner cross-fades out while the close ring sweeps shut into the
+       badge (stroke narrowing from the spinner's ~6.5px to the badge's 5px). */
+    .spinner { opacity: 0; }
+    .closeRing { opacity: 1; animation: bspRingClose 350ms ease-out 1 forwards; }
     .boltIcon { opacity: 0; transform: scale(0.4); }
     .arrowIcon { animation: bspArrowPop 450ms cubic-bezier(0.34, 1.56, 0.64, 1) 150ms 1 forwards; }
     .ripple { animation: bspRipple 900ms ease-out 200ms 1 forwards; }
@@ -273,10 +275,15 @@ const BoltSpinnerVisual: FC<{ phase: SimPhase }> = ({ phase }) => {
         data-phase={phase}
         data-sig={sigIconKey === "bolt" ? "bolt" : "alt"}
       >
-        <svg viewBox="0 0 80 80" width={80} height={80}>
-          <g className="spinGroup">
-            <circle className="arc" cx="40" cy="40" r="37.5" />
-          </g>
+        <CircularProgress className="spinner" size={80} />
+        <svg
+          className="ringSvg"
+          viewBox="0 0 80 80"
+          width={80}
+          height={80}
+          aria-hidden="true"
+        >
+          <circle className="closeRing" cx="40" cy="40" r="37.5" />
         </svg>
         <Box className="ripple" />
         <Box className="icon boltIcon">
