@@ -19,15 +19,39 @@ export type TransactionProgressPhase =
   | "success";
 
 /**
+ * Reduced-motion variant of the choreography: opacity-only crossfades, a statically
+ * closed ring, and no ripples or scale movement. Written as a fragment with `&`-based
+ * selectors so it can apply under BOTH the prefers-reduced-motion media query and the
+ * data-force-reduced-motion attribute (the dev rehearsal page's toggle — a media query
+ * can't be flipped from JS). Must stay LAST in the Root template: several of these rules
+ * tie on specificity with the normal-motion rules and win by source order.
+ */
+const reducedMotionCss = `
+  .spinner { transition: opacity 300ms ease; }
+  .closeRing { transition: opacity 300ms ease; stroke-dasharray: 236 0; }
+  .boltIcon, .walletIcon, .arrowIcon { transition: opacity 300ms ease; transform: none; }
+  &[data-phase="awaiting-signature"] .walletIcon,
+  &[data-phase="awaiting-approval"] .walletIcon { animation: none; opacity: 1; }
+  &[data-phase="success"] {
+    .closeRing { animation: none; opacity: 1; }
+    .arrowIcon { animation: none; opacity: 1; }
+    .ripple { animation: none; }
+  }
+`;
+
+/**
  * The transaction progress visual: the dialog's original MUI CircularProgress with a
  * narrating center icon — bolt (relay working) → wallet (act in your wallet, breathing
  * for urgency) → bolt (relaying) → arrow (done). Plain writes skip the bolt and hold the
  * breathing wallet for their whole loading window. On success the spinner cross-fades
- * into a ring that sweeps shut into the success badge (its stroke narrowing from the
- * spinner's ~6.5px weight to the badge's 5px border) while the arrow pops in and a ripple
- * fires. This is one component across the dialog's loading and success branches (kept at
- * the same tree position so the DOM survives the branch switch) to keep that hand-off
- * seamless.
+ * into a ring that sweeps shut into the success badge at the spinner's own stroke weight
+ * (~6.5px) while the arrow pops in and a green ripple fires. This is one
+ * component across the dialog's loading and success branches (kept at the same tree
+ * position so the DOM survives the branch switch) to keep that hand-off seamless.
+ *
+ * NOTE: the ripple overshoots the 80px box by up to 20px per side (scale 1.5) — the
+ * consumer must leave that much headroom against clipping ancestors (DialogContent is a
+ * scroll container). The dialog does this with a padded wrapper Box.
  */
 const Root = styled("div")(
   ({ theme }) => `
@@ -35,7 +59,7 @@ const Root = styled("div")(
   width: 80px;
   height: 80px;
 
-  .spinner { transition: opacity 150ms ease; }
+  .spinner { transition: opacity 200ms ease; }
   .ringSvg {
     position: absolute;
     inset: 0;
@@ -73,7 +97,7 @@ const Root = styled("div")(
   }
 
   @keyframes txRingClose {
-    to { stroke-dasharray: 236 0; stroke-width: 5; }
+    to { stroke-dasharray: 236 0; }
   }
   @keyframes txIconPop {
     0% { opacity: 0; transform: scale(0.4); }
@@ -85,8 +109,8 @@ const Root = styled("div")(
     50% { transform: scale(1.12); }
   }
   @keyframes txRipple {
-    0% { transform: scale(0.9); opacity: 0.6; }
-    100% { transform: scale(1.45); opacity: 0; }
+    0% { transform: scale(0.9); opacity: 0.7; }
+    100% { transform: scale(1.5); opacity: 0; }
   }
 
   &[data-phase="preparing"], &[data-phase="relaying"] {
@@ -101,37 +125,36 @@ const Root = styled("div")(
         txWalletBreathe 1.8s ease-in-out 500ms infinite;
     }
   }
+  /* The beat: ring sweeps shut (0–420ms), arrow pops (220–670ms), the ripple fires as
+     the ring lands (320ms). The dialog delays its text/actions entrance past this so
+     the badge leads. */
   &[data-phase="success"] {
     .spinner { opacity: 0; }
-    .closeRing { opacity: 1; animation: txRingClose 350ms ease-out 1 forwards; }
-    .arrowIcon { animation: txIconPop 450ms cubic-bezier(0.34, 1.56, 0.64, 1) 150ms 1 forwards; }
-    .ripple { animation: txRipple 900ms ease-out 200ms 1 forwards; }
+    .closeRing { opacity: 1; animation: txRingClose 420ms ease-out 1 forwards; }
+    .arrowIcon { animation: txIconPop 450ms cubic-bezier(0.34, 1.56, 0.64, 1) 220ms 1 forwards; }
+    .ripple { animation: txRipple 900ms ease-out 320ms 1 forwards; }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    /* State changes become plain opacity swaps with no pops, breathing, or ripple. (The
-       MUI spinner keeps its own indeterminate motion, as it always has in this dialog.) */
-    .boltIcon, .walletIcon, .arrowIcon { transition: opacity 250ms ease; }
-    &[data-phase="awaiting-signature"] .walletIcon,
-    &[data-phase="awaiting-approval"] .walletIcon { animation: none; opacity: 1; transform: none; }
-    &[data-phase="success"] {
-      .closeRing { animation: none; stroke-dasharray: 236 0; stroke-width: 5; }
-      .arrowIcon { animation: none; opacity: 1; transform: none; }
-      .ripple { animation: none; }
-    }
+    ${reducedMotionCss}
+  }
+  &[data-force-reduced-motion="true"] {
+    ${reducedMotionCss}
   }
 `
 );
 
 export const TransactionProgressIndicator: FC<{
   phase: TransactionProgressPhase;
-}> = ({ phase }) => (
+  /** Lab-only escape hatch: applies the reduced-motion styles regardless of the media query. */
+  forceReducedMotion?: boolean;
+}> = ({ phase, forceReducedMotion }) => (
   <Root
     data-phase={phase}
+    data-force-reduced-motion={forceReducedMotion ? "true" : undefined}
     data-cy={
       phase === "success" ? "broadcasted-icon" : "transaction-progress-indicator"
     }
-    sx={phase === "success" ? undefined : { mb: 4 }}
   >
     <CircularProgress className="spinner" size={80} />
     <svg

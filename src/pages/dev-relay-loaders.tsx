@@ -2,6 +2,7 @@ import AccountBalanceWalletRoundedIcon from "@mui/icons-material/AccountBalanceW
 import ArrowUpwardRoundedIcon from "@mui/icons-material/ArrowUpwardRounded";
 import BoltRoundedIcon from "@mui/icons-material/BoltRounded";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
+import CloseIcon from "@mui/icons-material/Close";
 import DrawRoundedIcon from "@mui/icons-material/DrawRounded";
 import FingerprintRoundedIcon from "@mui/icons-material/FingerprintRounded";
 import HistoryEduRoundedIcon from "@mui/icons-material/HistoryEduRounded";
@@ -11,8 +12,10 @@ import {
   Chip,
   CircularProgress,
   Container,
+  DialogTitle,
   Divider,
   FormControlLabel,
+  IconButton,
   Paper,
   Stack,
   Switch,
@@ -24,6 +27,18 @@ import { alpha, styled } from "@mui/material/styles";
 import { NextPage } from "next";
 import { FC, ReactNode, useEffect, useState } from "react";
 import { RelayPhase } from "../MutationResult";
+import AnimatedHeight from "../features/common/AnimatedHeight";
+import {
+  OutlineIcon,
+  SuccessReveal,
+  TransactionDialogActions,
+  TransactionDialogButton,
+  TransactionDialogContent,
+} from "../features/transactionBoundary/TransactionDialog";
+import {
+  TransactionProgressIndicator,
+  TransactionProgressPhase,
+} from "../features/transactionBoundary/TransactionProgressIndicator";
 
 /**
  * TEMPORARY prototype page (not linked from the nav): renders the candidate Clear Macro
@@ -1341,6 +1356,174 @@ const ParticleStreamLoader: FC<{ phase: SimPhase }> = ({ phase }) => (
 );
 
 // ---------------------------------------------------------------------------------------
+// Dialog transition rehearsal — the REAL TransactionDialog building blocks at real size,
+// driven by the same phase controls, so the loading→success hand-off (height glide, badge
+// choreography, ripple headroom) can be tuned visually. The variant cards below use their
+// own fixed-height mocks and can't show dialog size changes.
+// ---------------------------------------------------------------------------------------
+
+const toIndicatorPhase = (phase: SimPhase): TransactionProgressPhase =>
+  phase === "preparing" ||
+  phase === "awaiting-signature" ||
+  phase === "relaying" ||
+  phase === "success"
+    ? phase
+    : "awaiting-approval";
+
+interface RehearsalSettings {
+  animateHeight: boolean;
+  forceReducedMotion: boolean;
+  showLoadingInfo: boolean;
+}
+
+const RehearsalDialog: FC<{
+  phase: SimPhase;
+  settings: RehearsalSettings;
+  onReplay: () => void;
+}> = ({ phase, settings, onReplay }) => {
+  const { animateHeight, forceReducedMotion, showLoadingInfo } = settings;
+  const forcedAttr = forceReducedMotion ? "true" : undefined;
+  const isLoading = isLoadingPhase(phase) || phase === "fallback";
+
+  // Mirrors the real TransactionDialogCore rule: identical wrapper Box + indicator at the
+  // Stack's first slot across the loading and success branches, so the DOM node survives
+  // the flip and the ring-close continues from the live spinner.
+  const indicator = (
+    <Box sx={{ pt: 3, pb: isLoading ? 3 : 1 }}>
+      <TransactionProgressIndicator
+        phase={toIndicatorPhase(phase)}
+        forceReducedMotion={forceReducedMotion}
+      />
+    </Box>
+  );
+
+  const loadingHeadline =
+    phase === "preparing"
+      ? "Preparing gasless transaction..."
+      : phase === "awaiting-signature"
+        ? "Waiting for your signature..."
+        : phase === "relaying"
+          ? "Relaying transaction..."
+          : "Waiting for transaction approval...";
+
+  return (
+    <Paper
+      variant="outlined"
+      sx={{
+        borderRadius: "20px",
+        width: 600,
+        maxWidth: "100%",
+        mx: "auto",
+        position: "relative",
+        display: "flex",
+        flexDirection: "column",
+        // Prod parity: the real dialog paper clips overflow (a plain Paper's default
+        // overflow: visible would hide paper-edge artifacts the dialog would show).
+        overflow: "hidden",
+      }}
+    >
+      <AnimatedHeight disableAnimation={!animateHeight || forceReducedMotion}>
+        {/* Mock of TransactionDialogTitle (the real one needs the boundary context). Using
+            the real DialogTitle/DialogContent keeps MUI's sibling padding rule — and thus
+            the ripple clipping behavior — identical to production. */}
+        <Stack component={DialogTitle} sx={{ p: 4 }}>
+          <IconButton
+            aria-label="close"
+            disabled
+            sx={{ position: "absolute", right: 24, top: 24 }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </Stack>
+        {/* Every branch is a fragment with TransactionDialogContent at child 0, occupying
+            the SAME child slot — mirroring the real TransactionDialogCore's returns — so
+            the content (and the indicator within it) is never remounted by a phase flip. */}
+        {isLoading ? (
+          <>
+            <TransactionDialogContent>
+              <Stack spacing={1} alignItems="center" textAlign="center">
+                {indicator}
+                <Typography variant="h4">
+                  {loadingHeadline} <span translate="no">(OP Sepolia)</span>
+                </Typography>
+                {phase === "fallback" && (
+                  <Typography variant="body2" color="text.secondary">
+                    Gasless relay unavailable — you&apos;ll pay network fees for
+                    this transaction.
+                  </Typography>
+                )}
+                {showLoadingInfo && (
+                  <Stack sx={{ pt: 2 }}>
+                    <Typography variant="body2" color="text.secondary">
+                      Sending 500 USDCx
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      to 0xA478…9f3C on OP Sepolia
+                    </Typography>
+                  </Stack>
+                )}
+              </Stack>
+            </TransactionDialogContent>
+          </>
+        ) : phase === "success" ? (
+          <>
+            <TransactionDialogContent>
+              <Stack spacing={1} alignItems="center" textAlign="center">
+                {indicator}
+                <SuccessReveal
+                  delayMs={150}
+                  data-force-reduced-motion={forcedAttr}
+                >
+                  <Typography variant="h4" color="text.secondary">
+                    Transaction broadcasted
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Executed gaslessly via the Clear Macro relay.
+                  </Typography>
+                </SuccessReveal>
+              </Stack>
+            </TransactionDialogContent>
+            <SuccessReveal delayMs={280} data-force-reduced-motion={forcedAttr}>
+              <TransactionDialogActions>
+                <TransactionDialogButton onClick={onReplay}>
+                  OK (replay)
+                </TransactionDialogButton>
+              </TransactionDialogActions>
+            </SuccessReveal>
+          </>
+        ) : (
+          <>
+            {/* relay-status-unknown: the dialog's biggest height delta — the height
+                glide's stress test. */}
+            <TransactionDialogContent>
+              <Stack gap={2} alignItems="center" textAlign="center">
+                <OutlineIcon>
+                  <HourglassEmptyRoundedIcon fontSize="large" color="primary" />
+                </OutlineIcon>
+                <Typography variant="h5">
+                  Your gasless transaction is still being confirmed
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  You signed it and we sent it to the relay, but couldn&apos;t
+                  confirm it within the time limit. It may still complete —
+                  we&apos;ll keep checking, and it will appear in your
+                  transactions if it succeeds. Please don&apos;t retry.
+                </Typography>
+              </Stack>
+            </TransactionDialogContent>
+            <TransactionDialogActions>
+              <TransactionDialogButton onClick={onReplay}>
+                Close (replay)
+              </TransactionDialogButton>
+            </TransactionDialogActions>
+          </>
+        )}
+      </AnimatedHeight>
+    </Paper>
+  );
+};
+
+// ---------------------------------------------------------------------------------------
 // Page scaffolding: mock dialog wrapper, variant cards, global phase controls.
 // ---------------------------------------------------------------------------------------
 
@@ -1502,6 +1685,13 @@ const DevRelayLoadersPage: NextPage = () => {
   const [phase, setPhase] = useState<SimPhase>("preparing");
   const [autoPlay, setAutoPlay] = useState(true);
   const [tipIndex, setTipIndex] = useState(0);
+  const [rehearsalSettings, setRehearsalSettings] = useState<RehearsalSettings>(
+    {
+      animateHeight: true,
+      forceReducedMotion: false,
+      showLoadingInfo: true,
+    }
+  );
 
   useEffect(() => {
     if (!autoPlay) return;
@@ -1579,6 +1769,71 @@ const DevRelayLoadersPage: NextPage = () => {
           label={<Typography variant="body2">Auto-play the happy path</Typography>}
         />
       </Paper>
+
+      <Stack gap={1.5} sx={{ mb: 4 }}>
+        <Typography variant="h5" component="h2">
+          Dialog transition rehearsal
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          The real dialog building blocks at real size — including the height
+          glide and the success choreography that the fixed-height cards below
+          can&apos;t show. Re-enter the Success phase to replay the beat. The
+          true reduced-motion media path can be verified via DevTools →
+          Rendering → &ldquo;Emulate CSS media feature
+          prefers-reduced-motion&rdquo;.
+        </Typography>
+        <Stack direction="row" flexWrap="wrap" alignItems="center" gap={2}>
+          <FormControlLabel
+            control={
+              <Switch
+                size="small"
+                checked={rehearsalSettings.animateHeight}
+                onChange={(_event, checked) =>
+                  setRehearsalSettings((s) => ({ ...s, animateHeight: checked }))
+                }
+              />
+            }
+            label={<Typography variant="body2">Animate height</Typography>}
+          />
+          <FormControlLabel
+            control={
+              <Switch
+                size="small"
+                checked={rehearsalSettings.forceReducedMotion}
+                onChange={(_event, checked) =>
+                  setRehearsalSettings((s) => ({
+                    ...s,
+                    forceReducedMotion: checked,
+                  }))
+                }
+              />
+            }
+            label={
+              <Typography variant="body2">Force reduced motion</Typography>
+            }
+          />
+          <FormControlLabel
+            control={
+              <Switch
+                size="small"
+                checked={rehearsalSettings.showLoadingInfo}
+                onChange={(_event, checked) =>
+                  setRehearsalSettings((s) => ({
+                    ...s,
+                    showLoadingInfo: checked,
+                  }))
+                }
+              />
+            }
+            label={<Typography variant="body2">Show tx details</Typography>}
+          />
+        </Stack>
+        <RehearsalDialog
+          phase={phase}
+          settings={rehearsalSettings}
+          onReplay={() => setPhase("preparing")}
+        />
+      </Stack>
 
       <Box
         sx={{

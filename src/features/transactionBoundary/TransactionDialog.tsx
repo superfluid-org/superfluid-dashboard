@@ -1,5 +1,6 @@
 import {
   Avatar,
+  Box,
   Button,
   ButtonProps,
   DialogActions,
@@ -9,8 +10,10 @@ import {
   Stack,
   styled,
   Typography,
+  useMediaQuery,
   useTheme,
 } from "@mui/material";
+import { keyframes } from "@emotion/react";
 import CloseIcon from "@mui/icons-material/Close";
 import HourglassEmptyRoundedIcon from "@mui/icons-material/HourglassEmptyRounded";
 import TransactionDialogErrorAlert from "../transactions/TransactionDialogErrorAlert";
@@ -18,9 +21,45 @@ import { FC, PropsWithChildren, ReactNode } from "react";
 import { TransactionProgressIndicator } from "./TransactionProgressIndicator";
 import { useTransactionBoundary } from "./TransactionBoundary";
 import ResponsiveDialog from "../common/ResponsiveDialog";
+import AnimatedHeight from "../common/AnimatedHeight";
 import React from "react";
 import { useConnectionBoundary } from "./ConnectionBoundary";
 import { supportId } from "../analytics/useAppInstanceDetails";
+
+const successRevealRise = keyframes`
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+`;
+const successRevealFade = keyframes`
+  from { opacity: 0; }
+  to { opacity: 1; }
+`;
+
+/**
+ * Entrance for the success branch's text and actions: held invisible through a short
+ * delay (the "both" fill) so the badge's ring-close leads the beat, then fades/rises in.
+ * Reduced motion drops the rise; data-force-reduced-motion is the dev rehearsal page's
+ * hook for previewing that without the media query. Exported for that page.
+ *
+ * Object styles on purpose: Emotion only resolves keyframes objects interpolated into
+ * `animation`/`animationName` VALUES — in a plain template string they stringify to an
+ * _EMO_ sentinel that leaks into the CSS in production.
+ */
+export const SuccessReveal = styled("div", {
+  shouldForwardProp: (prop) => prop !== "delayMs",
+})<{ delayMs?: number }>(({ theme, delayMs = 0 }) => ({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "inherit",
+  gap: theme.spacing(1),
+  animation: `${successRevealRise} 300ms ease-out ${delayMs}ms both`,
+  "@media (prefers-reduced-motion: reduce)": {
+    animationName: `${successRevealFade}`,
+  },
+  '&[data-force-reduced-motion="true"]': {
+    animationName: `${successRevealFade}`,
+  },
+}));
 
 interface TransactionDialogProps {
   children: ReactNode;
@@ -34,6 +73,11 @@ export const TransactionDialog: FC<TransactionDialogProps> = ({
   successActions,
 }) => {
   const { dialogOpen, closeDialog } = useTransactionBoundary();
+  const theme = useTheme();
+  // Keep in sync with ResponsiveDialog's fullScreen switch: there the paper's height is
+  // viewport-fixed, so animating the content height would only detach the actions from
+  // the bottom.
+  const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
     <ResponsiveDialog
@@ -43,15 +87,22 @@ export const TransactionDialog: FC<TransactionDialogProps> = ({
           closeDialog();
         }
       }}
-      PaperProps={{ sx: { borderRadius: "20px", maxHeight: "100%" } }}
+      PaperProps={{
+        // overflow hidden: the paper never scrolls itself (DialogContent does), and its
+        // default overflow-y: auto would flash a scrollbar whenever an entrance/ripple
+        // transform momentarily extends the scrollable overflow past the paper's edge.
+        sx: { borderRadius: "20px", maxHeight: "100%", overflow: "hidden" },
+      }}
       translate="yes"
     >
-      <TransactionDialogCore
-        loadingInfo={loadingInfo}
-        successActions={successActions}
-      >
-        {children}
-      </TransactionDialogCore>
+      <AnimatedHeight disableAnimation={fullScreen}>
+        <TransactionDialogCore
+          loadingInfo={loadingInfo}
+          successActions={successActions}
+        >
+          {children}
+        </TransactionDialogCore>
+      </AnimatedHeight>
     </ResponsiveDialog>
   );
 };
@@ -67,8 +118,11 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
   // The relay's in-flight phases show the bolt; everything else that is loading — a plain
   // write or a relay fallback — is waiting for the wallet confirmation, which renders
   // identically to the relay's signature wait (breathing wallet). The success branch
-  // reuses the SAME component at the SAME tree position so the arc closes into the
-  // success badge without remounting.
+  // reuses the SAME component at the SAME tree position — including the identical padded
+  // wrapper Box at the Stack's first slot — so the ring closes into the success badge
+  // without remounting. The wrapper's padding (NOT margin: this Stack uses `spacing`,
+  // whose child-margin reset beats sx margins) gives the success ripples headroom against
+  // DialogContent's clip edge, whose padding-top is 0 under a DialogTitle.
   const loadingVisualPhase =
     mutationResult.relayPhase === "preparing" ||
     mutationResult.relayPhase === "awaiting-signature" ||
@@ -92,7 +146,9 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
         <TransactionDialogTitle></TransactionDialogTitle>
         <TransactionDialogContent>
           <Stack spacing={1} alignItems="center" textAlign="center">
-            <TransactionProgressIndicator phase={loadingVisualPhase} />
+            <Box sx={{ pt: 3, pb: 3 }}>
+              <TransactionProgressIndicator phase={loadingVisualPhase} />
+            </Box>
             <Typography variant="h4">
               <span data-cy="approval-message" translate="yes">
                 {loadingHeadline}
@@ -113,7 +169,7 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
               </Typography>
             )}
             {/* // TODO(KK): wrong font! */}
-            <Stack sx={{ my: 2 }}>{loadingInfo}</Stack>
+            <Stack sx={{ pt: 2 }}>{loadingInfo}</Stack>
           </Stack>
         </TransactionDialogContent>
       </>
@@ -126,37 +182,42 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
         <TransactionDialogTitle></TransactionDialogTitle>
         <TransactionDialogContent>
           <Stack spacing={1} alignItems="center" textAlign="center">
-            <TransactionProgressIndicator phase="success" />
-            <Typography
-              data-cy={"broadcasted-message"}
-              sx={{ my: 2 }}
-              variant="h4"
-              color="text.secondary"
-            >
-              Transaction broadcasted
-            </Typography>
-            {mutationResult.relayPhase === "relaying" && (
+            <Box sx={{ pt: 3, pb: 1 }}>
+              <TransactionProgressIndicator phase="success" />
+            </Box>
+            <SuccessReveal delayMs={150}>
               <Typography
-                data-cy={"relayed-message"}
-                variant="body2"
+                data-cy={"broadcasted-message"}
+                variant="h4"
                 color="text.secondary"
-                translate="yes"
               >
-                Executed gaslessly via the Clear Macro relay.
+                Transaction broadcasted
               </Typography>
-            )}
+              {mutationResult.relayPhase === "relaying" && (
+                <Typography
+                  data-cy={"relayed-message"}
+                  variant="body2"
+                  color="text.secondary"
+                  translate="yes"
+                >
+                  Executed gaslessly via the Clear Macro relay.
+                </Typography>
+              )}
+            </SuccessReveal>
           </Stack>
         </TransactionDialogContent>
-        {successActions ?? (
-          <TransactionDialogActions>
-            <TransactionDialogButton
-              data-cy={"ok-button"}
-              onClick={closeDialog}
-            >
-              OK
-            </TransactionDialogButton>
-          </TransactionDialogActions>
-        )}
+        <SuccessReveal delayMs={280}>
+          {successActions ?? (
+            <TransactionDialogActions>
+              <TransactionDialogButton
+                data-cy={"ok-button"}
+                onClick={closeDialog}
+              >
+                OK
+              </TransactionDialogButton>
+            </TransactionDialogActions>
+          )}
+        </SuccessReveal>
       </>
     );
   }
