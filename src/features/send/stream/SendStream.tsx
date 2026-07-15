@@ -35,6 +35,7 @@ import {
 } from "../../../hooks/streamSchedulingHooks";
 import { getTokenPagePath } from "../../../pages/token/[_network]/[_token]";
 import { CreateTask } from "../../../scheduling-subgraph/.graphclient";
+import { ALLOWLIST_CONTACT_URL } from "../../../utils/constants";
 import { dateNowSeconds, getTimeInSeconds } from "../../../utils/dateUtils";
 import { getDecimalPlacesToRoundTo } from "../../../utils/DecimalUtils";
 import {
@@ -1076,10 +1077,10 @@ const WhitelistTransparentBox = memo(function WhitelistTransparentBox() {
           If you want to set start and end dates for your streams,{" "}
           <Link
             data-cy={"allowlist-link"}
-            href="https://use.superfluid.finance/schedulestreams"
+            href={ALLOWLIST_CONTACT_URL}
             target="_blank"
           >
-            Apply for access
+            Contact us for access
           </Link>{" "}
           or try it out on{" "}
           <NetworkSwitchLink

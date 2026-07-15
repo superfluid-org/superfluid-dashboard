@@ -806,13 +806,13 @@ export class VestingPage extends BasePage {
   static validateAllowListMessage() {
     this.hasText(
       ALLOWLIST_MESSAGE,
-      'You are not on the allow list.If you want to create vesting schedules, Apply for access or try it out on OP Sepolia.'
+      'You are not on the allow list.If you want to create vesting schedules, Contact us for access or try it out on OP Sepolia.'
     );
     this.isVisible(ALLOWLIST_LINK);
     this.hasAttributeWithValue(
       ALLOWLIST_LINK,
       'href',
-      'https://use.superfluid.finance/vesting'
+      'https://superfluid.org/contact'
     );
     this.isVisible(TRY_OP_SEPOLIA_BUTTON);
   }

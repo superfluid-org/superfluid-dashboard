@@ -630,11 +630,11 @@ export class SendPage extends BasePage {
       ALLOWLIST_MESSAGE,
       'If you want to set start and end dates for your streams,'
     );
-    this.containsText(ALLOWLIST_LINK, 'Apply for access');
+    this.containsText(ALLOWLIST_LINK, 'Contact us for access');
     this.hasAttributeWithValue(
       ALLOWLIST_LINK,
       'href',
-      'https://use.superfluid.finance/schedulestreams'
+      'https://superfluid.org/contact'
     );
   }
 
