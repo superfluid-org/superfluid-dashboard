@@ -509,8 +509,9 @@ export default memo(function SendStream() {
   // keyed on the BASE disabled: when the button is disabled only because the forced relay
   // toggle is off, the chip must advertise the primary action the user needs to turn on —
   // not the cancel.
+  const isCancelFallbackChip = isModifying && isSendDisabledBase;
   const clearMacroActionKind: ClearMacroActionKind | undefined =
-    isModifying && isSendDisabledBase
+    isCancelFallbackChip
       ? activeFlow
         ? "deleteFlow"
         : "deleteFlowSchedule"
@@ -1029,7 +1030,11 @@ export default memo(function SendStream() {
               actionKind={clearMacroActionKind}
               network={network}
               relayRequired={
-                !isSendDisabledBase &&
+                // Keyed on raw watched scheduling state so the warning shows the moment
+                // a start/end date forces the relay — not once the whole form is valid.
+                // Suppressed only while the chip represents the cancel fallback (which
+                // is deliberately relay-ungated).
+                !isCancelFallbackChip &&
                 isSchedulerRelayForced &&
                 primaryClearMacroActionKind !== undefined
               }
