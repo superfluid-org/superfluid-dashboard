@@ -592,6 +592,24 @@ export default memo(function SendStream() {
     isSameSigner &&
     isEOAPending &&
     touchesScheduler;
+
+  // The submit hold above is immediate (safety), but its explanatory caption is
+  // delayed: classification normally resolves in one fast RPC read, and the caption
+  // must not flash for that moment — it only appears once the pending state has
+  // actually stalled.
+  const [showClassificationPendingCaption, setShowClassificationPendingCaption] =
+    useState(false);
+  useEffect(() => {
+    if (!isSchedulerRelayPending) {
+      setShowClassificationPendingCaption(false);
+      return;
+    }
+    const timer = setTimeout(
+      () => setShowClassificationPendingCaption(true),
+      1000
+    );
+    return () => clearTimeout(timer);
+  }, [isSchedulerRelayPending]);
   const isCombinedEditBlocked =
     isSchedulerRelayForced &&
     !isSendDisabledBase &&
@@ -1011,7 +1029,7 @@ export default memo(function SendStream() {
                 changes in two separate steps.
               </Alert>
             )}
-            {isSchedulerRelayPending && (
+            {showClassificationPendingCaption && (
               // Normally a moment (one RPC read), but if classification stalls the
               // button must not sit disabled with no explanation — the chip is also
               // hidden in this state (eligibility needs a confirmed EOA).

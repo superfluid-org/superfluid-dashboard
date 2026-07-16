@@ -4,6 +4,7 @@ import {
   FC,
   PropsWithChildren,
   useContext,
+  useEffect,
   useMemo,
 } from "react";
 import { useImpersonation } from "../impersonation/ImpersonationContext";
@@ -25,7 +26,7 @@ export const VisibleAddressProvider: FC<PropsWithChildren> = ({ children }) => {
   const { address: accountAddress } = useAccount();
   const visibleAddress = (impersonatedAddress ?? accountAddress) as Address | undefined;
 
-  const { isEOA } = rpcApi.useIsEOAQuery(
+  const { isEOA, isError, isFetching, refetch } = rpcApi.useIsEOAQuery(
     visibleAddress
       ? {
           chainId: network.id,
@@ -33,9 +34,24 @@ export const VisibleAddressProvider: FC<PropsWithChildren> = ({ children }) => {
         }
       : skipToken,
     {
-      selectFromResult: ({ data }) => ({ isEOA: data ?? null }),
+      selectFromResult: ({ data, isError, isFetching }) => ({
+        isEOA: data ?? null,
+        isError,
+        isFetching,
+      }),
     }
   );
+
+  // This provider lives for the whole session, so a rejected classification would
+  // otherwise never re-run (nothing re-subscribes) and `isEOA` would stay null —
+  // hiding Clear Macro eligibility until a full reload. Keep retrying on a slow
+  // timer while errored; `isFetching` in the deps re-arms the timer after each
+  // failed attempt.
+  useEffect(() => {
+    if (!isError || isFetching) return;
+    const timer = setTimeout(() => void refetch(), 15_000);
+    return () => clearTimeout(timer);
+  }, [isError, isFetching, refetch]);
 
   const contextValue = useMemo(
     () => ({
