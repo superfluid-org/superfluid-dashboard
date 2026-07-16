@@ -120,7 +120,9 @@ const FeeTokenChip: FC<{
 /**
  * The form-level pre-click signal for the Clear Macro relay path: shows next to the
  * primary `TransactionButton` of macro-eligible forms only, and flips the persisted
- * preference. Renders nothing when the relay cannot engage (network/wallet/action).
+ * preference. Renders nothing when the relay cannot engage (network/action/pending
+ * classification) — except for a confirmed smart-contract wallet on a macro network,
+ * which gets a muted "not available" strip so the absence is explained.
  *
  * When the provider supports the Permit2 path and the fee token's underlying (USDC)
  * resolves, the strip also carries the fee-payment selector — a single "Pay fee with"
@@ -141,7 +143,7 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
   relayRequired,
   scheduleAction,
 }) => {
-  const { isEligible, isRelayEnabled, setRelayEnabled } =
+  const { isEligible, isContractWalletBlocked, isRelayEnabled, setRelayEnabled } =
     useClearMacroEligibility(actionKind, network);
   const {
     fee,
@@ -170,7 +172,42 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
     if (isApproveConfirmed) refetchAllowance();
   }, [isApproveConfirmed, refetchAllowance]);
 
-  if (!isEligible) return null;
+  if (!isEligible) {
+    // A confirmed smart-contract wallet on a macro network gets a visible "not
+    // available" state instead of nothing — silent absence reads as a missing
+    // feature (7702-delegated EOAs are NOT this case; they classify as EOAs and
+    // get the live strip). Only when an action kind exists, though: an undefined
+    // actionKind means "no relay for this action" (native-asset wrap, pending
+    // approval, …) and must stay hidden for every wallet type.
+    if (actionKind && isContractWalletBlocked) {
+      return (
+        <Paper
+          variant="outlined"
+          data-cy="clear-macro-relay-unavailable"
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            px: 1.5,
+            py: 1,
+            borderRadius: "12px",
+          }}
+        >
+          <BoltRoundedIcon fontSize="small" sx={{ color: "text.disabled" }} />
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            translate="yes"
+            sx={{ flex: 1 }}
+          >
+            Gasless relay isn&apos;t available for smart contract wallets
+          </Typography>
+          <TooltipWithIcon title="The relay verifies a signature from the account itself, which smart contract wallets (e.g. Safe) can't produce the way an EOA can. Transactions from this wallet are submitted directly instead." />
+        </Paper>
+      );
+    }
+    return null;
+  }
 
   const underlyingSymbol = fee.underlyingSymbol ?? "USDC";
   const isUsdcSelected = paymentMode === "usdc-permit2";

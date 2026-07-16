@@ -15,6 +15,12 @@ import { useAccount } from "@/hooks/useAccount";
 
 interface VisibleAddressContextValue {
   visibleAddress: Address | undefined;
+  /**
+   * Whether the visible address signs like an EOA. EIP-7702-delegated EOAs count as
+   * `true` (their key still signs plain ECDSA and they estimate gas normally);
+   * `false` means a genuine smart-contract wallet (Safe etc.); `null` while the
+   * classification is pending or unavailable.
+   */
   isEOA: boolean | null;
 }
 

@@ -247,9 +247,18 @@ export const adHocRpcEndpoints = {
             const code = await publicClient.getCode({
               address: accountAddress as Address,
             });
-            const isSmartContract = !!code && code.length > 2; // The code is "0x"/undefined when not a smart contract.
+            const hasCode = !!code && code.length > 2; // The code is "0x"/undefined when not a smart contract.
+            // An EIP-7702-delegated EOA carries a 23-byte delegation designator
+            // (0xef0100 + delegate address) as its "code", but its key still signs
+            // plain ECDSA — for everything this verdict gates (Clear Macro relay
+            // eligibility, gas estimation, same-key-across-chains) it behaves like
+            // an EOA, not like a contract wallet.
+            const isDelegatedEOA =
+              !!code &&
+              code.toLowerCase().startsWith("0xef0100") &&
+              code.length === 48;
             return {
-              data: !isSmartContract,
+              data: !hasCode || isDelegatedEOA,
             };
           } catch (e) {
             if (attempt >= maxAttempts) {
