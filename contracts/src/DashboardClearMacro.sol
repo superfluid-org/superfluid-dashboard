@@ -50,6 +50,7 @@ contract DashboardClearMacro is ClearMacroBase {
     error InvalidFlowRate();
     error ZeroAddress();
     error FeeNotRepresentable();
+    error FeeTooHigh();
 
     bytes32 private constant _LANG_EN = bytes32("en");
 
@@ -68,6 +69,10 @@ contract DashboardClearMacro is ClearMacroBase {
     string private constant _TYPEDEF_SCHEDULE_FLOW =
         "Action(string description,address token,address receiver,uint32 startDate,int96 flowRate,uint32 endDate)";
     string private constant _TYPEDEF_DELETE_FLOW_SCHEDULE = "Action(string description,address token,address receiver)";
+
+    /// Upper bound for the base fee: 10 whole fee SuperTokens (always 18 decimals). Any sane relay fee
+    /// is far below this; the cap turns a fee misconfiguration into an immediate deploy failure.
+    uint256 private constant _MAX_BASE_FEE = 10e18;
 
     /// How long after `startDate` the keeper may still execute the scheduled start (dashboard default).
     uint32 private constant _START_MAX_DELAY = 1 days;
@@ -155,6 +160,7 @@ contract DashboardClearMacro is ClearMacroBase {
         // and baseFeeAmount * feeUnits (feeUnits <= 5) both stay multiples of 1e13 = 10^(18-5) for an
         // 18-decimal SuperToken.
         if (baseFeeAmount % 1e13 != 0) revert FeeNotRepresentable();
+        if (baseFeeAmount > _MAX_BASE_FEE) revert FeeTooHigh();
         _cfa = IConstantFlowAgreementV1(
             address(host.getAgreementClass(keccak256("org.superfluid-finance.agreements.ConstantFlowAgreement.v1")))
         );

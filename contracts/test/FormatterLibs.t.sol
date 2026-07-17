@@ -91,6 +91,15 @@ contract FormatterLibsTest is Test {
         assertEq(harness.formatUnits(42e18, 18, 5), "42");
     }
 
+    // The unlimited-approval value must format rather than overflow: rounding may not add to the
+    // amount before dividing. Locks in the exact literal signed for a max-uint Approve.
+    function testFormatUnitsMaxUint() external view {
+        assertEq(
+            harness.formatUnits(type(uint256).max, 18, 5),
+            "115792089237316195423570985008687907853269984665640564039457.58401"
+        );
+    }
+
     function testFormatUnitsNoRoundingWhenExponentEqualsMaxDecimals() external view {
         assertEq(harness.formatUnits(123456, 5, 5), "1.23456");
     }

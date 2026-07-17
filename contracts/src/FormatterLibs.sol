@@ -9,7 +9,8 @@ function _formatUnits(uint256 amount, uint8 exponent, uint8 maxDecimals) pure re
     // Step 1: Apply rounding first to the entire value
     if (exponent > maxDecimals) {
         uint256 factor = 10 ** (exponent - maxDecimals); // Scale factor to limit decimals
-        amount = (amount + (factor / 2)) / factor; // Apply rounding
+        // Round half-up via quotient/remainder so amounts near type(uint256).max cannot overflow
+        amount = amount / factor + (amount % factor >= factor / 2 ? 1 : 0);
     }
 
     // Step 2: Calculate the integer part and fractional part after rounding

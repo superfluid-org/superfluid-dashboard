@@ -220,6 +220,23 @@ contract DashboardClearMacroTest is DashboardClearMacroTestBase {
         assertEq(superToken.allowance(signer.addr, bob), DEFAULT_AMOUNT);
     }
 
+    // The common "unlimited approval" value must survive the whole path — describe, sign, execute —
+    // since the formatter runs on the amount before signature verification.
+    function testApproveUnlimited() external {
+        VmSafe.Wallet memory signer = _newSigner("approve-unlimited");
+        _fundSuper(signer, 1e18);
+
+        DashboardClearMacro.ApproveParams memory params =
+            DashboardClearMacro.ApproveParams({superToken: superToken, spender: bob, amount: type(uint256).max});
+        string memory desc = dashboardClearMacro.describeApprove(LANG_EN, params);
+        assertTrue(_contains(desc, "115792089237316195423570985008687907853269984665640564039457.58401"));
+
+        bytes memory actionParams = dashboardClearMacro.encodeApprove(LANG_EN, params);
+        _runAsProvider(signer, actionParams, 0, PROVIDER, 0, 0);
+
+        assertEq(superToken.allowance(signer.addr, bob), type(uint256).max);
+    }
+
     function testTransfer() external {
         VmSafe.Wallet memory signer = _newSigner("transfer");
         _fundSuper(signer, 1e18);
@@ -1522,6 +1539,16 @@ contract DashboardClearMacroTest is DashboardClearMacroTestBase {
     function testConstructorAcceptsMinimumRepresentableFee() external {
         DashboardClearMacro minimal = new DashboardClearMacro(sf.host, flowScheduler, superToken, 1e13, FEE_RECEIVER);
         assertEq(minimal.baseFee(), 1e13);
+    }
+
+    function testConstructorRejectsFeeAboveMaximum() external {
+        vm.expectRevert(DashboardClearMacro.FeeTooHigh.selector);
+        new DashboardClearMacro(sf.host, flowScheduler, superToken, 10e18 + 1e13, FEE_RECEIVER);
+    }
+
+    function testConstructorAcceptsMaximumFee() external {
+        DashboardClearMacro maximal = new DashboardClearMacro(sf.host, flowScheduler, superToken, 10e18, FEE_RECEIVER);
+        assertEq(maximal.baseFee(), 10e18);
     }
 
     function testConstructorRejectsZeroFlowScheduler() external {
