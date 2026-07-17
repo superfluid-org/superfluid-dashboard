@@ -13,8 +13,10 @@
 # settings per chain live in DeployDashboardClearMacro.s.sol (`_defaultConfig`).
 #
 # Environment variables:
-#   DEPLOYER_PRIVATE_KEY    deployer EOA key (raw hex). Required for --broadcast unless a keystore is
-#                           given; takes precedence over it. The CI path (no keystore file exists there).
+#   DEPLOYER_MNEMONIC       BIP-39 mnemonic of the deployer; the account at derivation index 0 is
+#                           used. Highest precedence. The CI path (no keystore file exists there).
+#   DEPLOYER_PRIVATE_KEY    deployer EOA key (raw hex). Used for --broadcast when no mnemonic is
+#                           set; takes precedence over a keystore.
 #   DEPLOYER_ACCOUNT        default for --account: a forge keystore, for --broadcast locally. Note: the
 #                           plain keystore filename (e.g. `hacked_dev`), NOT the 0x-prefixed display name
 #                           that `cast wallet list` shows.
@@ -105,13 +107,18 @@ done
 
 WALLET_ARGS=()
 if $BROADCAST; then
-  if [[ -n "${DEPLOYER_PRIVATE_KEY:-}" ]]; then
-    # CI/CD path: the ephemeral runner holds the raw key as a secret env var (no keystore file).
+  if [[ -n "${DEPLOYER_MNEMONIC:-}" ]]; then
+    # CI/CD path: the ephemeral runner holds the mnemonic as a secret env var (no keystore file);
+    # the deployer is the first derived account (index 0).
+    WALLET_ARGS=(--mnemonics "$DEPLOYER_MNEMONIC" --mnemonic-indexes 0)
+    echo "Deployer (mnemonic, index 0): $(cast wallet address --mnemonic "$DEPLOYER_MNEMONIC" --mnemonic-index 0)"
+  elif [[ -n "${DEPLOYER_PRIVATE_KEY:-}" ]]; then
     WALLET_ARGS=(--private-key "$DEPLOYER_PRIVATE_KEY")
+    echo "Deployer (private key): $(cast wallet address --private-key "$DEPLOYER_PRIVATE_KEY")"
   elif [[ -n "$ACCOUNT" ]]; then
     WALLET_ARGS=(--account "$ACCOUNT")
   else
-    echo "Refusing to broadcast without a deployer: pass --account <keystore>, or set DEPLOYER_ACCOUNT or DEPLOYER_PRIVATE_KEY." >&2
+    echo "Refusing to broadcast without a deployer: pass --account <keystore>, or set DEPLOYER_ACCOUNT, DEPLOYER_MNEMONIC, or DEPLOYER_PRIVATE_KEY." >&2
     exit 1
   fi
 fi

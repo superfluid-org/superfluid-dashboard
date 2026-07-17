@@ -6,9 +6,10 @@ name: Deploy Clear Macro
 # network(s) and the deployer credentials.
 #
 # Required repository secrets (for broadcast runs):
-#   CLEAR_MACRO_DEPLOYER_PRIVATE_KEY  raw hex private key of the deployer EOA (funded on the targets)
-#   ETHERSCAN_API_KEY                 Etherscan v2 multichain key (required for verification on
-#                                     all networks)
+#   BUILD_AGENT_MNEMONIC  BIP-39 mnemonic of the deployer; the account at derivation index 0 is
+#                         used (expected 0xd15d5d0f5b1b56a4daef75cfe108cb825e97d015, funded on the
+#                         targets). The deploy script logs the derived address for sanity checking.
+#   ETHERSCAN_API_KEY     Etherscan v2 multichain key (required for verification on all networks)
 #
 # Broadcast runs use the `contract-deployment` environment — configure required reviewers on it
 # for an approval gate before real deployments. Simulation runs are unrestricted.
@@ -90,7 +91,7 @@ jobs:
 
       - name: Deploy
         env:
-          DEPLOYER_PRIVATE_KEY: ${{ secrets.CLEAR_MACRO_DEPLOYER_PRIVATE_KEY }}
+          DEPLOYER_MNEMONIC: ${{ secrets.BUILD_AGENT_MNEMONIC }}
           ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
         run: |
           set -o pipefail
