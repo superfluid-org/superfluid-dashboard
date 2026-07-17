@@ -203,7 +203,9 @@ export const TabUnwrap = memo(function TabUnwrap(props: TabUnwrapProps) {
       )}
 
       <ConnectionBoundary>
-        <Stack gap={1} sx={{ width: "100%" }}>
+        {/* 2.5 matches the block rhythm around TX buttons app-wide so the relay
+            strip reads as its own block rather than hugging the button. */}
+        <Stack gap={2.5} sx={{ width: "100%" }}>
           <TransactionBoundary mutationResult={unwrapResult}>
             {({ setDialogLoadingInfo, txAnalytics }) => (
               <TransactionButton

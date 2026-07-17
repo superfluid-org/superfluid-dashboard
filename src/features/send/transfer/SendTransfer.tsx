@@ -185,7 +185,8 @@ export default memo(function SendTransfer() {
             size: "xl",
           }}
         >
-          <Stack gap={1}>
+          {/* 2.5 matches the form's block rhythm so the relay strip reads as its own block. */}
+          <Stack gap={2.5}>
             {SendTransactionBoundary}
             <ClearMacroRelayOption actionKind="transfer" network={network} />
           </Stack>

@@ -1016,35 +1016,38 @@ export default memo(function SendStream() {
             size: "xl",
           }}
         >
-          <Stack gap={1}>
-            {isCombinedEditBlocked && (
-              // The chip is hidden in this state (no macro action exists for the batch),
-              // so this alert is the only explanation for the disabled button.
-              <Alert
-                severity="info"
-                data-cy="clear-macro-combined-edit-alert"
-              >
-                This edit combines a schedule change with another stream change,
-                which can&apos;t be done in one gasless transaction. Make the
-                changes in two separate steps.
-              </Alert>
-            )}
-            {showClassificationPendingCaption && (
-              // Normally a moment (one RPC read), but if classification stalls the
-              // button must not sit disabled with no explanation — the chip is also
-              // hidden in this state (eligibility needs a confirmed EOA).
-              <Typography
-                data-cy="clear-macro-classification-pending"
-                variant="caption"
-                color="text.secondary"
-                textAlign="center"
-                translate="yes"
-              >
-                Checking your wallet type before scheduling…
-              </Typography>
-            )}
-            {SendTransactionBoundary}
-            {DeleteFlowBoundary}
+          {/* 2.5 matches the form's block rhythm (root Stack spacing) so the relay
+              strip reads as its own block; the inner 1 keeps the button group tight. */}
+          <Stack gap={2.5}>
+            <Stack gap={1}>
+              {isCombinedEditBlocked && (
+                // The chip is hidden in this state (no macro action exists for the batch),
+                // so this alert is the only explanation for the disabled button.
+                <Alert
+                  severity="info"
+                  data-cy="clear-macro-combined-edit-alert"
+                >
+                  These changes can&apos;t be combined into one gasless
+                  transaction. Please make them in two separate steps.
+                </Alert>
+              )}
+              {showClassificationPendingCaption && (
+                // Normally a moment (one RPC read), but if classification stalls the
+                // button must not sit disabled with no explanation — the chip is also
+                // hidden in this state (eligibility needs a confirmed EOA).
+                <Typography
+                  data-cy="clear-macro-classification-pending"
+                  variant="caption"
+                  color="text.secondary"
+                  textAlign="center"
+                  translate="yes"
+                >
+                  Checking wallet compatibility…
+                </Typography>
+              )}
+              {SendTransactionBoundary}
+              {DeleteFlowBoundary}
+            </Stack>
             <ClearMacroRelayOption
               actionKind={clearMacroActionKind}
               network={network}
