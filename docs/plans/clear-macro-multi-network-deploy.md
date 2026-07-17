@@ -95,11 +95,13 @@ After a real deployment (per network):
 - Inputs: `network` (choice of the 9 eligible chains or `all`), `broadcast` (default off → simulation),
   `verify` (default on, only applied with broadcast).
 - All per-chain settings stay hardcoded in the repo's scripts; CI supplies only the credentials:
-  repository secrets `CLEAR_MACRO_DEPLOYER_PRIVATE_KEY` (raw hex key of a funded deployer EOA — the
-  driver's `DEPLOYER_PRIVATE_KEY` path, taking precedence over keystore accounts) and
-  `ETHERSCAN_API_KEY` (verification).
-- Broadcast runs use the `contract-deployment` environment — add required reviewers to it in repo
-  settings to get an approval gate before real deployments. Simulation runs are ungated.
+  the org secret `BUILD_AGENT_MNEMONIC` (BIP-39 mnemonic of the funded deployer, account at
+  derivation index 0, expected 0xd15d5d0f5b1b56a4daef75cfe108cb825e97d015 — the driver's
+  `DEPLOYER_MNEMONIC` path, taking precedence over private key and keystore) and the repository
+  secret `ETHERSCAN_API_KEY` (verification).
+- Broadcasts are open to anyone with repo write access; there is deliberately no approval gate.
+  A deployed macro has no user-facing effect until its address is added to
+  `src/features/network/networks.ts` in a reviewed PR — that review is the effective gate.
 - The gitignored `broadcast/*/run-latest.json` records are uploaded as a workflow artifact
   (`clear-macro-broadcast-<network>-<run id>`) — the durable record of what was deployed with which
   constructor args. The job summary shows the driver output including the `networks.ts` snippets.

@@ -76,8 +76,9 @@ Per-chain constructor settings (host, FlowScheduler, fee SuperToken, fee policy)
 `block.chainid`-keyed table in `script/DeployDashboardClearMacro.s.sol`; the env vars `SUPERFLUID_HOST`,
 `FLOW_SCHEDULER`, `FEE_SUPER_TOKEN`, `BASE_FEE_AMOUNT` and `FEE_RECEIVER` override any value per
 invocation. The driver `script/deploy-clear-macro.sh` deploys and verifies selectively per network
-(simulation by default, `--broadcast` requires an explicit `--account`); the full environment-variable
-reference is in the script's header comment:
+(simulation by default; `--broadcast` requires a deployer via `DEPLOYER_MNEMONIC`, `DEPLOYER_PRIVATE_KEY`,
+or an `--account`/`DEPLOYER_ACCOUNT` keystore); the full environment-variable reference is in the
+script's header comment:
 
 ```bash
 pnpm contracts:deploy all                                                # dry-run every eligible chain
@@ -85,9 +86,10 @@ pnpm contracts:deploy --broadcast --verify --account <keystore> <network>
 ```
 
 Deployments can also run from CI: the manual-dispatch workflow `.github/workflows/deploy-clear-macro.yml`
-takes the target network as input, simulates by default, and sources the deployer from repository secrets
-(`CLEAR_MACRO_DEPLOYER_PRIVATE_KEY`, plus `ETHERSCAN_API_KEY` for verification); broadcast runs are gated
-behind the `contract-deployment` environment.
+takes the target network as input, simulates by default, and sources the deployer from the org secret
+`BUILD_AGENT_MNEMONIC` (first derived account, plus the `ETHERSCAN_API_KEY` repository secret for
+verification). Broadcasts are open to anyone with repo write access — a deployment is inert until its
+address is wired into the dashboard via a reviewed PR.
 
 Eligibility is bounded by FlowScheduler availability. Full rollout notes, the config table sources, and
 the dashboard wiring step are in `docs/plans/clear-macro-multi-network-deploy.md`.

@@ -166,6 +166,42 @@ deployed_address_for() { # <chainId>; prints the checksummed address from the la
 }
 
 SUMMARY=()
+
+# Printed via an EXIT trap so a mid-run failure (e.g. one RPC down during `all`) still reports the
+# networks already broadcast — those deployments are final even though the run aborted.
+print_summary() {
+  local status=$?
+  [[ ${#SUMMARY[@]} -gt 0 ]] || return 0
+  echo
+  if [[ $status -ne 0 ]]; then
+    echo "RUN FAILED (exit $status) — summary below covers only the networks completed before the failure."
+  fi
+  echo "network | chainId | macroAddress"
+  echo "--------|---------|-------------"
+  for row in "${SUMMARY[@]}"; do
+    echo "${row//|/ | }"
+  done
+
+  if $BROADCAST; then
+    echo
+    echo "networks.ts snippets (add inside each network's block):"
+    for row in "${SUMMARY[@]}"; do
+      IFS='|' read -r network chain_id address <<<"$row"
+      [[ "$address" == "-" ]] && continue
+      echo "  // $network ($chain_id)"
+      echo "  dashboardClearMacro: {"
+      echo "    macroAddress: \"$address\","
+      echo "  },"
+    done
+    echo
+    echo "NOTE: a deployment has no effect in the app until its dashboardClearMacro.macroAddress"
+    echo "is added to the network's block in src/features/network/networks.ts (that entry is what"
+    echo "enables the Clear Macro relay option there). Also extend the deployment lineage comment"
+    echo "in src/features/clearMacro/dashboardClearMacro.ts."
+  fi
+}
+trap print_summary EXIT
+
 for network in "${NETWORKS[@]}"; do
   chain_id="$(chain_id_for "$network")"
   rpc_url="$(rpc_url_for "$network" "$chain_id")"
@@ -191,28 +227,3 @@ for network in "${NETWORKS[@]}"; do
     fi
   fi
 done
-
-echo
-echo "network | chainId | macroAddress"
-echo "--------|---------|-------------"
-for row in "${SUMMARY[@]}"; do
-  echo "${row//|/ | }"
-done
-
-if $BROADCAST; then
-  echo
-  echo "networks.ts snippets (add inside each network's block):"
-  for row in "${SUMMARY[@]}"; do
-    IFS='|' read -r network chain_id address <<<"$row"
-    [[ "$address" == "-" ]] && continue
-    echo "  // $network ($chain_id)"
-    echo "  dashboardClearMacro: {"
-    echo "    macroAddress: \"$address\","
-    echo "  },"
-  done
-  echo
-  echo "NOTE: a deployment has no effect in the app until its dashboardClearMacro.macroAddress"
-  echo "is added to the network's block in src/features/network/networks.ts (that entry is what"
-  echo "enables the Clear Macro relay option there). Also extend the deployment lineage comment"
-  echo "in src/features/clearMacro/dashboardClearMacro.ts."
-fi
