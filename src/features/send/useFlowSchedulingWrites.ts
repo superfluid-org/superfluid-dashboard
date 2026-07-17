@@ -461,7 +461,7 @@ export function useUpsertFlowWithScheduling() {
         arg.requireClearMacroRelay && hasSchedulerSubOperations;
       if (clearMacroRequired && !clearMacro) {
         throw new Error(
-          "This change can't be made in one gasless transaction — the form may be out of date. Refresh and make the changes in two separate steps."
+          "This change can't be completed as one gasless transaction. The form may be out of date, so refresh the page and make the changes in two steps."
         );
       }
 

@@ -307,7 +307,7 @@ export function useSuperfluidWriteContract() {
               // The dialog renders messages verbatim, so the raw cause (digest mismatch,
               // capabilities fetch failure, ...) must not be the message itself.
               throw new Error(
-                "The gasless transaction service is unavailable right now — please try again later.",
+                "The gasless transaction service is unavailable right now. Please try again later.",
                 { cause: error }
               );
             }
@@ -365,7 +365,7 @@ export function useSuperfluidWriteContract() {
         // off, wallet reclassified, ...). The form keeps its submit disabled in these
         // states, so this is a belt-and-suspenders guard — fail closed, never self-pay.
         throw new Error(
-          "This change requires the gasless relay. Turn the relay option on and try again."
+          "This change needs to be sent gaslessly. Turn on the gasless option and try again."
         );
       }
 

@@ -200,9 +200,9 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
             translate="yes"
             sx={{ flex: 1 }}
           >
-            Gasless relay isn&apos;t available for smart contract wallets
+            Gasless transactions aren&apos;t available for this wallet type
           </Typography>
-          <TooltipWithIcon title="The relay verifies a signature from the account itself, which smart contract wallets (e.g. Safe) can't produce the way an EOA can. Transactions from this wallet are submitted directly instead." />
+          <TooltipWithIcon title="Gasless transactions currently only support regular wallet accounts. Transactions from this wallet are sent the normal way instead." />
         </Paper>
       );
     }
@@ -226,16 +226,16 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
   // so the sentence must not read as an exact, already-quoted amount.
   const isFeePlaceholder = actionKind === "scheduleFlow" && !fee.isQuoteExact;
   const tooltip = fee.feeAvailable
-    ? `You sign one human-readable message and a relay service submits the transaction and pays the gas. The macro charges ${isFeePlaceholder ? fee.feeText : `a ${fee.feeText} fee`} on success.` +
+    ? `You sign a message instead of paying gas. The transaction is submitted for you and the network fee is covered. A ${isFeePlaceholder ? `service fee of ${fee.feeText}` : `${fee.feeText} service fee`} is charged only if it succeeds.` +
       (actionKind === "scheduleFlow"
         ? isFeePlaceholder
-          ? " The exact fee is quoted from the schedule's dates and current state once the form is complete."
-          : " The fee is quoted from the current schedule state; if that changes before the relay executes, the charge follows it (the signed message discloses the amounts)."
+          ? " The exact fee will be shown once the form is complete."
+          : " The fee is based on your schedule. If the schedule changes before the transaction completes, the fee adjusts to match."
         : "") +
       (canPayWithUsdc
-        ? ` The fee can be paid from your ${fee.feeSymbol} balance, or funded from ${underlyingSymbol} (wrapped automatically — still one signature, after a one-time unlimited ${underlyingSymbol} approval to Permit2).`
+        ? ` You can pay the fee with ${fee.feeSymbol} or with ${underlyingSymbol}, which is converted automatically as part of the same transaction (after a one-time ${underlyingSymbol} approval).`
         : "")
-    : "You sign one human-readable message and a relay service submits the transaction and pays the gas.";
+    : "You sign a message instead of paying gas. The transaction is submitted for you and the network fee is covered.";
 
   const showRelayRequiredWarning = Boolean(relayRequired) && !isRelayEnabled;
 
@@ -272,7 +272,7 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
           size="small"
           checked={isRelayEnabled}
           onChange={(_event, checked) => setRelayEnabled(checked)}
-          inputProps={{ "aria-label": "Toggle Clear Macro relay" }}
+          inputProps={{ "aria-label": "Toggle gasless transactions" }}
         />
         <BoltRoundedIcon
           fontSize="small"
@@ -280,11 +280,11 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
         />
         <Stack sx={{ flex: 1 }}>
           <Typography variant="body2" translate="yes">
-            Relay pays gas via Clear Macro
+            Gasless transaction
           </Typography>
           {fee.feeAvailable && (
             <Typography variant="caption" color="text.secondary" translate="no">
-              Fee: {fee.feeText}
+              Service fee: {fee.feeText}
             </Typography>
           )}
           {showRelayRequiredWarning && (
@@ -296,7 +296,7 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
               sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
             >
               <ErrorOutlineRoundedIcon sx={{ fontSize: 14 }} />
-              Turn on to schedule streams on {network.name}.
+              Turn this on to schedule streams on {network.name}.
             </Typography>
           )}
         </Stack>
@@ -310,7 +310,7 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
             alignItems="center"
             gap={0.75}
             role="group"
-            aria-label="Relay fee payment method"
+            aria-label="Fee payment token"
           >
             <Typography
               variant="caption"
@@ -350,13 +350,13 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
 
           {!isUsdcSelected && usdcxShortfall && (
             <Typography variant="caption" color="error" translate="yes">
-              Not enough {fee.feeSymbol} for the relay fee.
+              Not enough {fee.feeSymbol} to cover the fee.
             </Typography>
           )}
 
           {isUsdcSelected && usdcInsufficient && (
             <Typography variant="caption" color="error" translate="yes">
-              Not enough {underlyingSymbol} for the relay fee.
+              Not enough {underlyingSymbol} to cover the fee.
             </Typography>
           )}
 
@@ -379,11 +379,11 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
                           color="text.secondary"
                           translate="yes"
                         >
-                          You are approving an unlimited{" "}
+                          You&apos;re granting a one-time unlimited{" "}
                           <span translate="no">{underlyingSymbol}</span>{" "}
-                          allowance for Permit2 to use — the standard one-time
-                          Permit2 setup. Each relay fee still needs a signed
-                          permit from you for its exact amount.
+                          approval to Permit2, a widely used token-approval
+                          standard. You&apos;ll still sign off on each fee
+                          individually for its exact amount.
                         </Typography>
                       );
                       const primaryArgs = {

@@ -138,7 +138,7 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
         : mutationResult.relayPhase === "awaiting-signature"
           ? "Waiting for your signature..."
           : mutationResult.relayPhase === "relaying"
-            ? "Relaying transaction..."
+            ? "Submitting your transaction..."
             : "Waiting for transaction approval...";
 
     return (
@@ -164,8 +164,8 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
                 color="text.secondary"
                 translate="yes"
               >
-                Gasless relay unavailable — you&apos;ll pay network fees for this
-                transaction.
+                Gasless sending isn&apos;t available right now. This transaction
+                will use regular network fees.
               </Typography>
             )}
             {/* // TODO(KK): wrong font! */}
@@ -200,7 +200,7 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
                   color="text.secondary"
                   translate="yes"
                 >
-                  Executed gaslessly via the Clear Macro relay.
+                  Sent gaslessly, no network fee paid.
                 </Typography>
               )}
             </SuccessReveal>
@@ -244,7 +244,7 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
             </Typography>
             <Typography variant="body2" color="text.secondary" translate="yes">
               You signed it and we sent it to the relay, but couldn&apos;t confirm
-              it within the time limit. It may still complete — we&apos;ll keep
+              it within the time limit. It may still complete. We&apos;ll keep
               checking, and it will appear in your transactions if it succeeds.
               Please don&apos;t retry.
             </Typography>

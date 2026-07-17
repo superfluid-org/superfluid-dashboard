@@ -702,11 +702,11 @@ export async function executeClearMacro(
           () => "the fee token"
         )) as string;
         throw new ClearMacroInsufficientFeeError(
-          `Not enough ${symbol} to pay the ${formatEther(requiredFee)} ${symbol} relay fee ` +
-            `(available ${formatEther(effective < 0n ? 0n : effective)} ${symbol}). ` +
+          `You need ${formatEther(requiredFee)} ${symbol} to pay the fee, but you have ` +
+            `${formatEther(effective < 0n ? 0n : effective)} ${symbol}. ` +
             (params.relayRequired
               ? `Top up ${symbol} to continue.`
-              : `Top up ${symbol}, or turn the relay option off to send a regular transaction instead.`),
+              : `Top up ${symbol}, or turn off gasless sending to pay with gas instead.`),
           { feeToken, requiredFee, availableBalance }
         );
       }
@@ -749,12 +749,12 @@ export async function executeClearMacro(
       const includesWrapAmount =
         requiredUnderlyingTotal > requiredUnderlyingAmount;
       throw new ClearMacroInsufficientFeeError(
-        `Not enough ${symbol} to fund the ${formatUnits(requiredUnderlyingTotal, underlyingDecimals)} ${symbol} ` +
-          `${includesWrapAmount ? "needed (amount being wrapped + relay fee)" : "relay fee"} ` +
-          `(available ${formatUnits(underlyingBalance, underlyingDecimals)} ${symbol}). ` +
+        `You need ${formatUnits(requiredUnderlyingTotal, underlyingDecimals)} ${symbol} to cover ` +
+          `${includesWrapAmount ? "the amount you're wrapping plus the fee" : "the fee"}, but you have ` +
+          `${formatUnits(underlyingBalance, underlyingDecimals)} ${symbol}. ` +
           (params.relayRequired
-            ? `Top up ${symbol}, or switch the fee payment back to the Super Token.`
-            : `Top up ${symbol}, switch the fee payment back to the Super Token, or turn the relay option off.`),
+            ? `Top up ${symbol}, or pay the fee with the Super Token instead.`
+            : `Top up ${symbol}, pay the fee with the Super Token instead, or turn off gasless sending.`),
         {
           feeToken: underlyingToken,
           requiredFee: requiredUnderlyingTotal,
@@ -771,7 +771,7 @@ export async function executeClearMacro(
     })) as bigint;
     if (permit2Allowance < requiredUnderlyingAmount) {
       throw new ClearMacroPermit2ApprovalRequiredError(
-        "Paying the relay fee from the underlying token requires a one-time Permit2 approval first.",
+        "Paying the fee this way needs a one-time approval first. Use the Approve button next to the fee options.",
         {
           token: underlyingToken,
           spender: PERMIT2_ADDRESS,
