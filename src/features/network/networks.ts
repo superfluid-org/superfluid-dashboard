@@ -810,9 +810,6 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.base,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.base,
-    dashboardClearMacro: {
-      macroAddress: "0x7043E0B26F221470289d771Ef3139460623D073b",
-    },
   },
   baseSepolia: {
     ...chain.baseSepolia,

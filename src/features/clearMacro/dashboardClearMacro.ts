@@ -17,7 +17,8 @@ import { type Address, stringToHex } from "viem";
  * and ScheduleFlow's immediate-start mode (startDate 0 + positive rate = create the
  * flow now, schedule only the stop).
  * The same build is deployed on Base mainnet at
- * 0x7043E0B26F221470289d771Ef3139460623D073b (set in networks.ts) — fee token USDCx
+ * 0x7043E0B26F221470289d771Ef3139460623D073b (deliberately not wired up in
+ * networks.ts until the full production release) — fee token USDCx
  * 0xD04383398dD2426297da660F9CCA3d439AF9ce1b, base fee 0.1, fee receiver the
  * Superfluid DAO Safe 0xac808840f02c47C05507f48165d2222FF28EF4e1; deployed unverified
  * for testing (verify later with `pnpm contracts:deploy --verify base-mainnet`).
