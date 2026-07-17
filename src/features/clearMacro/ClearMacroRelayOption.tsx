@@ -234,8 +234,9 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
         : "") +
       (canPayWithUsdc
         ? ` You can pay the fee with ${fee.feeSymbol} or with ${underlyingSymbol}, which is converted automatically as part of the same transaction (after a one-time ${underlyingSymbol} approval).`
-        : "")
-    : "You sign a message instead of paying gas. The transaction is submitted for you and the network fee is covered.";
+        : "") +
+      " Powered by Clear Macro."
+    : "You sign a message instead of paying gas. The transaction is submitted for you and the network fee is covered. Powered by Clear Macro.";
 
   const showRelayRequiredWarning = Boolean(relayRequired) && !isRelayEnabled;
 
