@@ -630,6 +630,23 @@ contract DashboardClearMacro is ClearMacroBase {
     // reserves (scheduled start / scheduled stop). `maxUnits` treats the schedule as new (its full keeper
     // reservation); `currentUnits` is what would actually be charged for `account` now (1 when a schedule
     // row already exists = a modify).
+    //
+    // "A row exists" is a deliberate approximation of "reserves no new keeper executions". It is exact for a
+    // true modification (moving a date releases the old reservation and takes a new one, net zero, so the
+    // setup tx alone is the right charge) and underpays by one unit when the modification sets a date that
+    // was previously zero: an end-only schedule (3) later given a start date (1) totals 4, where the same end
+    // state costs 5 in one action and 6 under strict per-reservation pricing (two relay txs + two keeper
+    // executions). Splitting is therefore slightly cheaper than doing it at once, despite costing the relay
+    // an extra transaction.
+    //
+    // Pricing the delta instead would be gas-neutral — `_scheduleExists` already loads the full FlowSchedule
+    // struct and keeps only a bool, so comparing the stored dates is nearly free. The cost is disclosure:
+    // `_scheduleFeeSuffix` cannot see the signer, so a start+stop action would have to enumerate four
+    // possible charges (5/3/3/1) in the signed text instead of two. At a 0.1 base fee the gap is worth ~one
+    // tenth of a fee token, one-shot per schedule and non-compounding, which does not justify making every
+    // signer read a four-branch fee clause. Revisit if a deployment raises the base fee materially (the
+    // constructor permits up to _MAX_BASE_FEE), since the fee is immutable per deployment and that decision
+    // is already a redeploy.
     function _scheduleFeeUnits(ScheduleFlowParams memory p, address account)
         internal
         view
@@ -646,6 +663,8 @@ contract DashboardClearMacro is ClearMacroBase {
 
     /// @notice The base fee charged for a relayed transaction. A new schedule additionally pays 2x base per
     ///         keeper execution it reserves, so it totals 3x (one scheduled date) or 5x (start and stop).
+    ///         Building up to start-and-stop over two actions totals 4x rather than 5x — see the
+    ///         approximation documented on `_scheduleFeeUnits`.
     function baseFee() external view returns (uint256) {
         return _baseFeeAmount;
     }
