@@ -41,7 +41,9 @@ green success ripple barely registered.
   of root cause 1; identical type/position so the indicator's DOM node survives the flip —
   a remount would kill the ring-close continuity). Success text/actions enter via
   `SuccessReveal` (delayed fade/rise, 150ms/280ms) so the badge leads.
-- `/dev-relay-loaders`: new "Dialog transition rehearsal" section — the real indicator +
+- `/dev-relay-loaders` (prototype page, since removed — it existed only to pick the
+  concept, and was deleted once the winner shipped in `TransactionProgressIndicator`):
+  new "Dialog transition rehearsal" section — the real indicator +
   real Dialog building blocks at real dialog size (the variant cards' fixed-height mocks
   can't show size changes), with toggles for height animation, forced reduced motion, and
   loadingInfo presence (a single/double-ripple A/B toggle existed until the single ripple
