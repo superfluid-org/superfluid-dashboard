@@ -112,6 +112,21 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  redirects: async () => [
+    {
+      // The Settings page was repurposed and renamed to Approvals.
+      source: "/settings",
+      destination: "/approvals",
+      permanent: true,
+    },
+    {
+      // The embedded minigame page was removed; the game is linked from the
+      // sidebar instead. Kept temporary since the destination is external.
+      source: "/superfluid-runner",
+      destination: "https://astrobunny.superfluid.finance/",
+      permanent: false,
+    },
+  ],
   rewrites: async () => [
     {
       source: "/balance-api/:path*",

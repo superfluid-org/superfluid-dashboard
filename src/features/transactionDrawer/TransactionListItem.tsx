@@ -185,7 +185,7 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
               )}
               {isRelayed && (
                 <Tooltip
-                  title="Executed gaslessly via the Clear Macro relay"
+                  title="Sent gaslessly, no network fee paid"
                   arrow
                   placement="top"
                 >

@@ -1,13 +1,6 @@
 import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
 import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
-import {
-  IconButton,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Tooltip,
-  useTheme as useThemeMui,
-} from "@mui/material";
+import { IconButton, Tooltip, useTheme as useThemeMui } from "@mui/material";
 import { useTheme as useThemeNextThemes } from "next-themes";
 
 export default function ThemeChanger() {
@@ -18,16 +11,22 @@ export default function ThemeChanger() {
 
   const toggleTheme = () => setTheme(isDarkTheme ? "light" : "dark");
 
+  const title = isDarkTheme ? "Switch to light mode" : "Switch to dark mode";
+
   return (
-    <ListItemButton data-cy={isDarkTheme ? "light-mode-button" : "dark-mode-button"} sx={{ borderRadius: "10px" }} onClick={toggleTheme}>
-      <ListItemIcon sx={{ ml: 0.25, mr: 2.25 }}>
+    <Tooltip title={title}>
+      <IconButton
+        data-cy={isDarkTheme ? "light-mode-button" : "dark-mode-button"}
+        size="small"
+        onClick={toggleTheme}
+        aria-label={title}
+      >
         {isDarkTheme ? (
           <LightModeOutlinedIcon fontSize="small" />
         ) : (
           <DarkModeOutlinedIcon fontSize="small" />
         )}
-      </ListItemIcon>
-      <ListItemText primary={isDarkTheme ? "Light mode" : "Dark mode"} />
-    </ListItemButton>
+      </IconButton>
+    </Tooltip>
   );
 }

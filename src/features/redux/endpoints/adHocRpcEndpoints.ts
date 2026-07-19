@@ -231,25 +231,47 @@ export const adHocRpcEndpoints = {
       ],
     }),
     isEOA: builder.query<
-      boolean | null,
+      boolean,
       { chainId: number; accountAddress: string }
     >({
       keepUnusedDataFor: Number.MAX_VALUE,
       queryFn: async ({ chainId, accountAddress }) => {
         const publicClient = resolvedWagmiClients[chainId]();
-        try {
-          const code = await publicClient.getCode({
-            address: accountAddress as Address,
-          });
-          const isSmartContract = !!code && code.length > 2; // The code is "0x"/undefined when not a smart contract.
-          return {
-            data: !isSmartContract,
-          };
-        } catch (e) {
-          console.error("Error while checking if account is EOA", e);
-          return {
-            data: null,
-          };
+        // The verdict gates Clear Macro eligibility and is cached for the whole session,
+        // so a transient RPC failure must never be baked in as a verdict: retry here
+        // (on top of the transport's own retries), and surface the final failure as a
+        // query ERROR — an errored entry stays refetchable instead of poisoning the cache.
+        const maxAttempts = 3;
+        for (let attempt = 1; ; attempt++) {
+          try {
+            const code = await publicClient.getCode({
+              address: accountAddress as Address,
+            });
+            const hasCode = !!code && code.length > 2; // The code is "0x"/undefined when not a smart contract.
+            // An EIP-7702-delegated EOA carries a 23-byte delegation designator
+            // (0xef0100 + delegate address) as its "code", but its key still signs
+            // plain ECDSA — for everything this verdict gates (Clear Macro relay
+            // eligibility, gas estimation, same-key-across-chains) it behaves like
+            // an EOA, not like a contract wallet.
+            const isDelegatedEOA =
+              !!code &&
+              code.toLowerCase().startsWith("0xef0100") &&
+              code.length === 48;
+            return {
+              data: !hasCode || isDelegatedEOA,
+            };
+          } catch (e) {
+            if (attempt >= maxAttempts) {
+              console.error("Error while checking if account is EOA", e);
+              return {
+                error: {
+                  name: "IsEOAClassificationError",
+                  message: e instanceof Error ? e.message : String(e),
+                },
+              };
+            }
+            await new Promise((resolve) => setTimeout(resolve, 500 * attempt));
+          }
         }
       },
     }),

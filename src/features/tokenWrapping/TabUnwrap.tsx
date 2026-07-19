@@ -36,6 +36,7 @@ import { SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
 import { Network } from "../network/networks";
 import { RealtimeBalance } from "../redux/endpoints/balanceFetcher";
 import { ClearMacroRelayOption } from "../clearMacro/ClearMacroRelayOption";
+import { useClearMacroFeeFacts } from "../clearMacro/useClearMacroFeeFacts";
 
 interface TabUnwrapProps {
   onSwitchMode: () => void;
@@ -93,6 +94,13 @@ export const TabUnwrap = memo(function TabUnwrap(props: TabUnwrapProps) {
     amount ? { value: amount, decimals: 18 } : undefined
   );
 
+  // Chip only. MAX needs no equivalent: the fee token is a Wrapper Super Token, so its
+  // `feeToken === superTokenAddress` check can never match a native-asset pair anyway.
+  const relayActionKind =
+    tokenPair?.underlyingTokenAddress === NATIVE_ASSET_ADDRESS
+      ? undefined
+      : ("downgrade" as const);
+
   return (
     <Stack direction="column" alignItems="center">
       <WrapInputCard>
@@ -122,7 +130,13 @@ export const TabUnwrap = memo(function TabUnwrap(props: TabUnwrapProps) {
                 TypographyProps={{ color: "text.secondary" }}
               />
               {realtimeBalance && (
-                <MaxAmountController realtimeBalance={realtimeBalance} />
+                <MaxAmountController
+                  realtimeBalance={realtimeBalance}
+                  network={network}
+                  superTokenAddress={
+                    tokenPair.superTokenAddress as `0x${string}`
+                  }
+                />
               )}
             </Stack>
           </Stack>
@@ -203,7 +217,9 @@ export const TabUnwrap = memo(function TabUnwrap(props: TabUnwrapProps) {
       )}
 
       <ConnectionBoundary>
-        <Stack gap={1} sx={{ width: "100%" }}>
+        {/* 2.5 matches the block rhythm around TX buttons app-wide so the relay
+            strip reads as its own block rather than hugging the button. */}
+        <Stack gap={2.5} sx={{ width: "100%" }}>
           <TransactionBoundary mutationResult={unwrapResult}>
             {({ setDialogLoadingInfo, txAnalytics }) => (
               <TransactionButton
@@ -260,11 +276,7 @@ export const TabUnwrap = memo(function TabUnwrap(props: TabUnwrapProps) {
             )}
           </TransactionBoundary>
           <ClearMacroRelayOption
-            actionKind={
-              tokenPair?.underlyingTokenAddress === NATIVE_ASSET_ADDRESS
-                ? undefined
-                : "downgrade"
-            }
+            actionKind={relayActionKind}
             network={network}
           />
         </Stack>
@@ -346,7 +358,7 @@ const UnwrapTokenController = memo(function UnwrapTokenController(props: {
     network: props.network
   })
 
-  const superTokens = useMemo(() => tokenPairsQuery.data?.map((x) => x.superToken), [tokenPairsQuery.data?.length ?? 0])
+  const superTokens = useMemo(() => tokenPairsQuery.data?.map((x) => x.superToken), [tokenPairsQuery.data])
 
   return (
     <Controller
@@ -389,8 +401,20 @@ const UnwrapTokenController = memo(function UnwrapTokenController(props: {
 
 const MaxAmountController = memo(function MaxAmountController(props: {
   realtimeBalance: RealtimeBalance;
+  network: Network;
+  superTokenAddress: `0x${string}`;
 }) {
   const { control } = useFormContext<WrappingForm>();
+  // Best-effort convenience only: leave the relay fee behind so MAX lands on a submittable
+  // amount. Correctness is the form's fee validation, which re-runs — if this is stale or
+  // zero, the user gets an explanatory error instead of an unsubmittable form.
+  const feeFacts = useClearMacroFeeFacts(props.network);
+  const feeReservationWei =
+    feeFacts.couldPayFromSuperToken &&
+    feeFacts.feeWei != null &&
+    feeFacts.feeToken?.toLowerCase() === props.superTokenAddress.toLowerCase()
+      ? feeFacts.feeWei
+      : 0n;
 
   return (
     <Controller
@@ -414,9 +438,15 @@ const MaxAmountController = memo(function MaxAmountController(props: {
               flowRateWei: props.realtimeBalance.flowRate,
               balanceWei: props.realtimeBalance.balance,
               balanceTimestamp: props.realtimeBalance.balanceTimestamp,
-            }).sub(flowingBalanceSkew);
+            })
+              .sub(flowingBalanceSkew)
+              .sub(BigNumber.from(feeReservationWei.toString()));
 
-            return onChange(formatEther(maxBalance));
+            // A balance at or below the fee has no relayable maximum; clamp rather than
+            // offer a negative amount the form would reject as malformed.
+            return onChange(
+              formatEther(maxBalance.isNegative() ? BigNumber.from(0) : maxBalance)
+            );
           }}
           onBlur={onBlur}
         >

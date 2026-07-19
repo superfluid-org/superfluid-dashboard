@@ -31,7 +31,7 @@ import {
 import * as chains from "viem/chains";
 import { clearMacroForwarderAbi, clearMacroForwarderAddress } from "@sfpro/sdk/abi";
 import sfMeta from "@superfluid-finance/metadata";
-import { dashboardClearMacroAbi } from "../src/features/clearMacro/dashboardClearMacro.ts";
+import { dashboardClearMacroAbi } from "../src/features/clearMacro/dashboardClearMacroAbi.generated.ts";
 
 /** Relay signers known to be in use (from observed relayed transactions). */
 const KNOWN_RELAY_SIGNERS = {

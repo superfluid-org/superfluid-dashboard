@@ -7,6 +7,7 @@ import {
   Paper,
 } from "@mui/material";
 import Link from "next/link";
+import { ALLOWLIST_CONTACT_URL } from "../../utils/constants";
 
 const ScheduledWrapApplyCard = () => {
   const theme = useTheme();
@@ -37,11 +38,11 @@ const ScheduledWrapApplyCard = () => {
       </Typography>
       <Link
         data-cy={"auto-wrap-allowlist-link"}
-        href="https://use.superfluid.finance/autowrap"
+        href={ALLOWLIST_CONTACT_URL}
         target="_blank"
       >
         <Button variant="contained" color="primary" size="large">
-          Apply for access
+          Contact us for access
         </Button>
       </Link>
     </Stack>

@@ -4,16 +4,14 @@ Feature: Auto-wrap page test cases
     Given "Auto-wrap page" is open using view mode to look at "john"
     And No loading skeletons are visible in the page
     And User changes their network to "opsepolia"
-    And User opens the navigation more menu
-    And User opens the auto-wrap page from the navigation menu
+    And User clicks on the "auto-wrap" navigation button
     Then There are no enable or disable auto-wrap buttons visible
     And User clicks on the stop viewing as an address button
-    Then Settings page wallet not connected screen is visible
+    Then Approvals page wallet not connected screen is visible
 
   Scenario: Change network buttons in the table
     Given "Dashboard Page" is open with "john" connected on "sepolia"
-    And User opens the navigation more menu
-    And User opens the auto-wrap page from the navigation menu
+    And User clicks on the "auto-wrap" navigation button
     And No loading skeletons are visible in the page
     Then All action buttons are changed to switch network buttons on "opsepolia" table
 

@@ -1,0 +1,125 @@
+name: Deploy Clear Macro
+
+# Manual-dispatch-only deployment of DashboardClearMacro via contracts/script/deploy-clear-macro.sh.
+# All per-chain settings (host, FlowScheduler, fee SuperToken, fee policy) are hardcoded in
+# contracts/script/DeployDashboardClearMacro.s.sol; the only inputs CI supplies are the target
+# network(s) and the deployer credentials.
+#
+# Required secrets (for broadcast runs):
+#   BUILD_AGENT_MNEMONIC  org secret; BIP-39 mnemonic of the deployer; the account at derivation
+#                         index 0 is used (expected 0xd15d5d0f5b1b56a4daef75cfe108cb825e97d015,
+#                         funded on the targets). The deploy script logs the derived address for
+#                         sanity checking.
+#   ETHERSCAN_API_KEY     Etherscan v2 multichain key (required for verification on all networks)
+#
+# Security model: anyone with repo write access can dispatch a broadcast — deliberate, no approval
+# gate. A deployed macro is inert until its address lands in src/features/network/networks.ts via
+# a reviewed PR, so dashboard code review is the effective gate for user-facing impact.
+
+on:
+  workflow_dispatch:
+    inputs:
+      network:
+        description: "Target network"
+        required: true
+        type: choice
+        default: optimism-sepolia
+        options:
+          - all
+          - eth-mainnet
+          - optimism-mainnet
+          - bsc-mainnet
+          - xdai-mainnet
+          - polygon-mainnet
+          - base-mainnet
+          - arbitrum-one
+          - avalanche-c
+          - optimism-sepolia
+      broadcast:
+        description: "Broadcast for real (unchecked = simulate only)"
+        type: boolean
+        default: false
+      verify:
+        description: "Verify on the explorer after broadcast"
+        type: boolean
+        default: true
+
+concurrency:
+  group: deploy-clear-macro
+  cancel-in-progress: false
+
+jobs:
+  simulate:
+    if: ${{ !inputs.broadcast }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+
+      - name: Simulate deployment
+        run: |
+          set -o pipefail
+          ./contracts/script/deploy-clear-macro.sh "${{ inputs.network }}" | tee deploy.log
+
+      - name: Job summary
+        if: always()
+        run: |
+          {
+            echo '## Clear Macro deployment (simulation)'
+            echo '```'
+            tail -n 60 deploy.log 2>/dev/null || echo "no output"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  deploy:
+    if: ${{ inputs.broadcast }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+
+      - name: Deploy
+        env:
+          DEPLOYER_MNEMONIC: ${{ secrets.BUILD_AGENT_MNEMONIC }}
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+        run: |
+          set -o pipefail
+          ARGS=(--broadcast)
+          if [ "${{ inputs.verify }}" = "true" ]; then
+            ARGS+=(--verify)
+          fi
+          ./contracts/script/deploy-clear-macro.sh "${ARGS[@]}" "${{ inputs.network }}" | tee deploy.log
+
+      # The broadcast records are gitignored, so the workflow artifact is the durable record of
+      # what was deployed with which constructor args. Uploaded even if verification failed.
+      - name: Upload broadcast records
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: clear-macro-broadcast-${{ inputs.network }}-${{ github.run_id }}
+          path: contracts/broadcast/DeployDashboardClearMacro.s.sol/*/run-latest.json
+          if-no-files-found: warn
+
+      - name: Job summary
+        if: always()
+        run: |
+          {
+            echo '## Clear Macro deployment (broadcast)'
+            echo '```'
+            tail -n 60 deploy.log 2>/dev/null || echo "no output"
+            echo '```'
+            echo 'Next: wire the printed macroAddress into src/features/network/networks.ts'
+            echo 'and extend the lineage comment in src/features/clearMacro/dashboardClearMacro.ts.'
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -11,7 +11,6 @@ import {
   useTheme,
 } from "@mui/material";
 import { memo } from "react";
-import NotificationsBell from "../../components/NotificationsBell/NotificationsBell";
 import useBodyScrolled from "../../hooks/useBodyScrolled";
 import ImpersonationChip from "../impersonation/ImpersonationChip";
 import { useImpersonation } from "../impersonation/ImpersonationContext";
@@ -126,10 +125,6 @@ export default memo(function TopBar() {
             onChange={onNetworkChange}
             placeholder={"Select Network"}
           />
-          {/* 
-            // Notifications hidden until a source of notifications is added.
-          <NotificationsBell /> 
-          */}
           <TransactionBell />
         </Stack>
       </Stack>

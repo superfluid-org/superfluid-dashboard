@@ -110,7 +110,6 @@ Feature: Export Stream Data page test cases
 
   Scenario: Users address auto-filled if wallet is connected
     Given "Dashboard Page" is open with "john" connected on "opsepolia"
-    And User opens the navigation more menu
-    And User clicks on the "export" button in the more menu
+    And User clicks on the "export" navigation button
     #John address
     And "0x46Bdc58eDF8837841A1eBb944e0cb53afCf627d2" is selected for the export

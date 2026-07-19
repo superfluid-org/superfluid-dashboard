@@ -1,16 +1,22 @@
 import AppsRoundedIcon from "@mui/icons-material/AppsRounded";
 import ArrowRightAltRoundedIcon from "@mui/icons-material/ArrowRightAltRounded";
+import AssessmentOutlinedIcon from "@mui/icons-material/AssessmentOutlined";
 import AutoAwesomeMosaicRoundedIcon from "@mui/icons-material/AutoAwesomeMosaicRounded";
+import AutoModeOutlinedIcon from "@mui/icons-material/AutoModeOutlined";
 import AutoStoriesOutlinedIcon from "@mui/icons-material/AutoStoriesOutlined";
 import ControlPointDuplicateOutlinedIcon from "@mui/icons-material/ControlPointDuplicateOutlined";
 import HistoryRoundedIcon from "@mui/icons-material/HistoryRounded";
-import LockClockRoundedIcon from "@mui/icons-material/LockClockRounded";
+import LockClockOutlinedIcon from "@mui/icons-material/LockClockOutlined";
+import FactCheckOutlinedIcon from "@mui/icons-material/FactCheckOutlined";
 import LooksRoundedIcon from "@mui/icons-material/LooksRounded";
-import SettingsIcon from "@mui/icons-material/Settings";
 import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
+import ReceiptLongRoundedIcon from "@mui/icons-material/ReceiptLongRounded";
+import SportsEsportsRoundedIcon from "@mui/icons-material/SportsEsportsRounded";
 import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
 import {
+  alpha,
   Box,
+  Divider,
   IconButton,
   List,
   ListItemButton,
@@ -26,12 +32,14 @@ import {
 } from "@mui/material";
 import Image from "next/legacy/image";
 import { useRouter } from "next/router";
-import { FC, memo, useCallback } from "react";
+import { FC, memo, ReactNode, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import ThemeChanger from "../theme/ThemeChanger";
 import ConnectWallet from "../wallet/ConnectWallet";
 import { useLayoutContext } from "./LayoutContext";
-import MoreNavigationItem from "./MoreNavigationItem";
+import { useMinigame } from "../minigame/MinigameContext";
+import { useVisibleAddress } from "../wallet/VisibleAddressContext";
+import SocialLinks from "./SocialLinks";
 import Link from "../common/Link";
 import packageJson from "../../../package.json";
 
@@ -44,6 +52,8 @@ interface NavigationItemProps {
   active: boolean;
   icon: typeof SvgIcon;
   isExternal?: true;
+  chip?: ReactNode;
+  dense?: boolean;
   onClick?: () => void;
 }
 
@@ -54,6 +64,8 @@ const NavigationItem: FC<NavigationItemProps> = ({
   active,
   icon: Icon,
   isExternal,
+  chip,
+  dense,
   onClick,
 }) => {
   const theme = useTheme();
@@ -68,15 +80,38 @@ const NavigationItem: FC<NavigationItemProps> = ({
           easing: theme.transitions.easing.easeOut,
           duration: theme.transitions.duration.short,
         }),
+        "&.Mui-selected": {
+          backgroundColor: alpha(theme.palette.primary.main, 0.08),
+        },
+        "&.Mui-selected:hover": {
+          backgroundColor: alpha(theme.palette.primary.main, 0.12),
+        },
+        ...(dense && { minHeight: 40, py: 0.5 }),
       }}
       selected={active}
       onClick={onClick}
       {...(isExternal && { target: "_blank" })}
       >
-        <ListItemIcon>
-          <Icon />
+        {/* Dense icons are 20px in a 24px-wide slot (ml 2px + mr 18px), so labels
+            share the same x-coordinate as the 24px-icon tier above. */}
+        <ListItemIcon sx={dense ? { ml: 0.25, mr: 2.25 } : undefined}>
+          <Icon fontSize={dense ? "small" : "medium"} />
         </ListItemIcon>
-        <ListItemText data-cy={id} primary={<>{title} {isExternal && <OpenInNewRoundedIcon fontSize="inherit" />}</>} />
+        <ListItemText
+          data-cy={id}
+          primary={title}
+          primaryTypographyProps={dense ? { variant: "body2" } : undefined}
+        />
+        {(chip || isExternal) && (
+          <Stack direction="row" alignItems="center" gap={0.75}>
+            {chip}
+            {isExternal && (
+              <OpenInNewRoundedIcon
+                sx={{ fontSize: 16, color: "text.disabled" }}
+              />
+            )}
+          </Stack>
+        )}
       </ListItemButton>
     );
   };
@@ -86,6 +121,12 @@ export default memo(function NavigationDrawer() {
   const isBelowLg = useMediaQuery(theme.breakpoints.down("lg"));
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const { navigationDrawerOpen, setNavigationDrawerOpen } = useLayoutContext();
+  const { visibleAddress } = useVisibleAddress();
+  const { getUrl: getMinigameUrl } = useMinigame();
+
+  const reporterUrl = visibleAddress
+    ? `https://reporter.superfluid.org/?account=${visibleAddress}`
+    : "https://reporter.superfluid.org/";
 
   const localMajorVersion = packageJson.version.split('.')[0];
 
@@ -238,24 +279,6 @@ export default memo(function NavigationDrawer() {
         />
 
         <NavigationItem
-          id="nav-history"
-          title="Activity History"
-          href="/history"
-          onClick={closeNavigationDrawer}
-          active={isActiveRoute("/history")}
-          icon={HistoryRoundedIcon}
-        />
-
-        <NavigationItem
-          id="nav-address-book"
-          title="Address Book"
-          href="/address-book"
-          onClick={closeNavigationDrawer}
-          active={isActiveRoute("/address-book")}
-          icon={AutoStoriesOutlinedIcon}
-        />
-
-        <NavigationItem
           id="nav-vesting"
           title="Vesting"
           href="/vesting"
@@ -265,26 +288,34 @@ export default memo(function NavigationDrawer() {
             "/vesting/create",
             "/vesting/[_network]/[_id]"
           )}
-          icon={LockClockRoundedIcon}
+          icon={LockClockOutlinedIcon}
         />
 
         <NavigationItem
-          id="nav-settings"
-          title="Settings"
-          href="/settings"
+          id="nav-auto-wrap"
+          title="Auto-Wrap"
+          href="/auto-wrap"
           onClick={closeNavigationDrawer}
-          active={isActiveRoute("/settings")}
-          icon={SettingsIcon}
+          active={isActiveRoute("/auto-wrap")}
+          icon={AutoModeOutlinedIcon}
         />
 
         <NavigationItem
-          id="nav-ecosystem"
-          title="Ecosystem"
-          href="https://www.superfluid.finance/ecosystem"
+          id="nav-approvals"
+          title="Approvals"
+          href="/approvals"
           onClick={closeNavigationDrawer}
-          active={false}
-          icon={AppsRoundedIcon}
-          isExternal
+          active={isActiveRoute("/approvals")}
+          icon={FactCheckOutlinedIcon}
+        />
+
+        <NavigationItem
+          id="nav-history"
+          title="Activity History"
+          href="/history"
+          onClick={closeNavigationDrawer}
+          active={isActiveRoute("/history")}
+          icon={HistoryRoundedIcon}
         />
 
       </Stack>
@@ -292,50 +323,103 @@ export default memo(function NavigationDrawer() {
       <Stack justifyContent="flex-end" sx={{ flex: 1 }}>
         <Stack
           sx={{ my: 2, px: 2, color: theme.palette.text.secondary }}
-          gap={1}
+          gap={0.5}
         >
-          <ThemeChanger />
-          <MoreNavigationItem />
-          {isOutOfSync && remoteMajorVersion ? (
-            <IconButton
-              onClick={handleRefresh}
-              title={`Newer version v${remoteMajorVersion} available. Click to refresh.`}
-              sx={{
-                mt: 0.5,
-                py: theme.spacing(0.5),
-                px: theme.spacing(2),
-                borderRadius: theme.shape.borderRadius,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: theme.spacing(0.5),
-                color: 'inherit',
-                width: 'fit-content',
-                alignSelf: 'center',
-              }}
-            >
-              <Typography variant="body2" component="span">
+          <NavigationItem
+            id="nav-address-book"
+            title="Address Book"
+            href="/address-book"
+            onClick={closeNavigationDrawer}
+            active={isActiveRoute("/address-book")}
+            icon={AutoStoriesOutlinedIcon}
+            dense
+          />
+          <NavigationItem
+            id="nav-export"
+            title="Export Stream Data"
+            href="/accounting"
+            onClick={closeNavigationDrawer}
+            active={isActiveRoute("/accounting")}
+            icon={AssessmentOutlinedIcon}
+            dense
+          />
+          <NavigationItem
+            id="nav-reporter"
+            title="Superfluid Reporter"
+            href={reporterUrl}
+            onClick={closeNavigationDrawer}
+            active={false}
+            icon={ReceiptLongRoundedIcon}
+            isExternal
+            dense
+          />
+          <NavigationItem
+            id="nav-superfluid-runner"
+            title="Superfluid Runner"
+            href={getMinigameUrl().toString()}
+            onClick={closeNavigationDrawer}
+            active={false}
+            icon={SportsEsportsRoundedIcon}
+            isExternal
+            dense
+          />
+          <NavigationItem
+            id="nav-ecosystem"
+            title="Ecosystem"
+            href="https://superfluid.org/ecosystem"
+            onClick={closeNavigationDrawer}
+            active={false}
+            icon={AppsRoundedIcon}
+            isExternal
+            dense
+          />
+          <Divider sx={{ mt: 1, opacity: 0.6 }} />
+          <Stack
+            direction="row"
+            alignItems="center"
+            gap={0.75}
+            sx={{ mt: 0.5, pl: 1.5 }}
+          >
+            <SocialLinks />
+            <Typography variant="body2" component="span">
+              ·
+            </Typography>
+            {isOutOfSync && remoteMajorVersion ? (
+              <IconButton
+                onClick={handleRefresh}
+                title={`Newer version v${remoteMajorVersion} available. Click to refresh.`}
+                sx={{
+                  p: 0.5,
+                  borderRadius: theme.shape.borderRadius,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: theme.spacing(0.5),
+                  color: 'inherit',
+                }}
+              >
+                <Typography variant="body2" component="span">
+                  v{localMajorVersion}
+                </Typography>
+                <WarningAmberRoundedIcon
+                  fontSize="small"
+                  sx={{ color: theme.palette.warning.main }}
+                />
+              </IconButton>
+            ) : (
+              <Typography
+                variant="body2"
+                title={`The current Dashboard version is v${localMajorVersion}.`}
+              >
                 v{localMajorVersion}
               </Typography>
-              <WarningAmberRoundedIcon
-                fontSize="small"
-                sx={{ color: theme.palette.warning.main }}
-              />
-            </IconButton>
-          ) : (
-            <Typography
-              variant="body2"
-              sx={{
-                textAlign: "center",
-                mt: 0.5,
-                py: theme.spacing(0.5),
-                px: theme.spacing(2),
-              }}
-              title={`The current Dashboard version is v${localMajorVersion}.`}
-            >
-              v{localMajorVersion}
-            </Typography>
-          )}
+            )}
+            {/* mr aligns the icon's right edge with the dense rows' trailing
+                ↗ icons: 16px container padding + 12px here + 4px IconButton
+                padding = the arrows' 32px inset from the drawer edge. */}
+            <Box sx={{ ml: "auto", mr: 1.5 }}>
+              <ThemeChanger />
+            </Box>
+          </Stack>
         </Stack>
       </Stack>
     </SwipeableDrawer>

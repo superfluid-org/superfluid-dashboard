@@ -516,18 +516,6 @@ export class BasePage {
     return Number((timestamp.valueOf() / 1000).toFixed());
   }
 
-  static getNotificationDateString(date: Date) {
-    return date.toLocaleString('en-US', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-      timeZone: 'UTC',
-    });
-  }
-
   static generateNewWallet() {
     const privateKey = generatePrivateKey();
     const account = privateKeyToAccount(privateKey);

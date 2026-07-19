@@ -145,9 +145,11 @@ export function appActionSubOperation(params: {
   appAddress: Address;
   callData: Hex;
   title: TransactionTitle;
+  clearMacro?: ClearMacroAction;
 }): SubOperation {
   return {
     title: params.title,
+    clearMacro: params.clearMacro,
     operation: prepareOperation({
       operationType: OPERATION_TYPE.CALL_APP_ACTION,
       target: params.appAddress,

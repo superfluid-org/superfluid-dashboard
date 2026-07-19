@@ -1,5 +1,4 @@
 import {
-  Typography,
   Container,
   Stack,
 } from "@mui/material";
@@ -11,7 +10,7 @@ import { TokenAccessTables } from "../features/tokenAccess/TokenAccessTables";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 
 
-const SettingsPage: NextPage = () => {
+const ApprovalsPage: NextPage = () => {
   const { address } = useAccount();
   const { visibleAddress } = useVisibleAddress();
 
@@ -20,21 +19,12 @@ const SettingsPage: NextPage = () => {
       {!address ? (
         <NoWalletConnected />
       ) : (
-        <>
-          <Typography component="h1" variant="h4" mb="16px" ml="4px">
-            Settings
-          </Typography>
-          <Stack direction="column" gap={"30px"}>
-            {/* 
-            // Notifications hidden until a source of notifications is added.
-            <NotificationSettings /> 
-            */}
-            {visibleAddress && <TokenAccessTables key={visibleAddress} />}
-          </Stack>
-        </>
+        <Stack direction="column" gap={"30px"}>
+          {visibleAddress && <TokenAccessTables key={visibleAddress} />}
+        </Stack>
       )}
     </Container>
   );
 };
 
-export default withStaticSEO({ title: "Settings | Superfluid" }, SettingsPage);
+export default withStaticSEO({ title: "Approvals | Superfluid" }, ApprovalsPage);

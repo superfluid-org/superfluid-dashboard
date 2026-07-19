@@ -3,18 +3,24 @@ import { createSelector, createSlice } from "@reduxjs/toolkit";
 import { CurrencyCode } from "../../utils/currencyUtils";
 import { RootState } from "../redux/store";
 import {MinigameCosmetics} from "../minigame/MinigameContext";
+import type { ClearMacroPaymentMode } from "../clearMacro/executeClearMacro";
 
 export interface AppSettingsState {
   currencyCode: CurrencyCode;
   lastSuperfluidRunnerCosmetics: MinigameCosmetics;
   /** Execute eligible writes gaslessly through the Clear Macro relay (EIP-712 signature only). */
   clearMacroEnabled: boolean;
+  /** How the Clear Macro relay fee is funded (the relay chip is the only writer). */
+  clearMacroPaymentMode: ClearMacroPaymentMode;
 }
 
+// No redux-persist migration needed for new keys: missing keys rehydrate from this
+// initialState (same as `clearMacroEnabled`), and `applySettings` merges partials.
 const initialState: AppSettingsState = {
   currencyCode: CurrencyCode.USD,
   lastSuperfluidRunnerCosmetics: 1,
   clearMacroEnabled: false,
+  clearMacroPaymentMode: "usdcx-direct",
 };
 
 const appSettingsSlice = createSlice({

@@ -1,0 +1,35 @@
+name: Contracts
+
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review, synchronize]
+    paths:
+      - "contracts/**"
+      - ".gitmodules"
+      - ".github/workflows/contracts.yml"
+  push:
+    branches: [master]
+    paths:
+      - "contracts/**"
+      - ".gitmodules"
+      - ".github/workflows/contracts.yml"
+
+jobs:
+  forge-contracts:
+    if: ${{ !github.event.pull_request.draft }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+
+      - name: Build contracts
+        run: forge build --root contracts
+
+      - name: Contract tests
+        run: forge test --root contracts -vv

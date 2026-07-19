@@ -2,11 +2,12 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import { allNetworks, findNetworkOrThrow } from "../features/network/networks";
 import { subgraphApi } from "../features/redux/store";
 import { getSuperTokenType, getUnderlyingTokenType } from "../features/redux/endpoints/adHocSubgraphEndpoints";
-import { NATIVE_ASSET_ADDRESS, SuperTokenMinimal, SuperTokenPair, TokenMinimal, TokenType, UnderlyingTokenMinimal } from "../features/redux/endpoints/tokenTypes";
+import { isSuper, isUnderlying, NATIVE_ASSET_ADDRESS, SuperTokenMinimal, SuperTokenPair, TokenMinimal, TokenType, UnderlyingTokenMinimal } from "../features/redux/endpoints/tokenTypes";
 import { SuperTokenExtensions, TokenInfo } from "@superfluid-finance/tokenlist"
 import { useMemo } from "react";
 import { memoize } from 'lodash';
 import { extendedSuperTokenList } from "../tokenlist";
+import { isDefined } from "../utils/ensureDefined";
 
 export const useTokenQuery = <T extends boolean = false>(input: {
     chainId: number;
@@ -78,6 +79,11 @@ export const useTokenQuery = <T extends boolean = false>(input: {
     }, [returnCandidate, inputParsed.onlySuperToken]);
 }
 
+const tokenListVersionKey = () => {
+    const version = extendedSuperTokenList().version;
+    return `${version.major}.${version.minor}.${version.patch}`;
+}
+
 export const findTokenFromTokenList = memoize((input: { chainId: number, address: string }): TokenMinimal | undefined => {
     if (!input.address || !input.chainId) {
         return undefined;
@@ -94,33 +100,45 @@ export const findTokenFromTokenList = memoize((input: { chainId: number, address
     if (tokenListToken) {
         return mapTokenListTokenToTokenMinimal(tokenListToken);
     }
-}, ({ chainId, address }) => `${chainId}-${address?.toLowerCase()}-${extendedSuperTokenList().version}`);
+}, ({ chainId, address }) => `${chainId}-${address?.toLowerCase()}-${tokenListVersionKey()}`);
 
 export const getTokensFromTokenList = memoize((chainId: number) => {
     return extendedSuperTokenList().tokens.filter(x => x.chainId === chainId).map(mapTokenListTokenToTokenMinimal);
-}, (chainId) => `${chainId}-${extendedSuperTokenList().version}`);
+}, (chainId) => `${chainId}-${tokenListVersionKey()}`);
 
 export const getSuperTokensFromTokenList = memoize((chainId: number, onlyWrappable?: boolean) => {
-    return getTokensFromTokenList(chainId).filter(x => x.isSuperToken).filter(x => onlyWrappable ? x.type === TokenType.WrapperSuperToken || x.type === TokenType.NativeAssetSuperToken : true);
-}, (chainId) => `${chainId}-${extendedSuperTokenList().version}`);
+    return getTokensFromTokenList(chainId).filter(isSuper).filter(x => onlyWrappable ? x.type === TokenType.WrapperSuperToken || x.type === TokenType.NativeAssetSuperToken : true);
+}, (chainId, onlyWrappable) => `${chainId}-${Boolean(onlyWrappable)}-${tokenListVersionKey()}`);
 
-export const getTokenPairsFromTokenList = memoize((chainId: number) => {
+export const getTokenPairsFromTokenList = memoize((chainId: number): SuperTokenPair[] => {
     return getSuperTokensFromTokenList(chainId, true /* onlyWrappable */)
         .map(superToken => {
             if (superToken.type === TokenType.NativeAssetSuperToken) {
                 const network = findNetworkOrThrow(allNetworks, chainId);
-                return ({
+                return {
                     superToken,
                     underlyingToken: network.nativeCurrency
-                }) as SuperTokenPair;
+                };
             }
 
-            return ({
+            if (!superToken.underlyingAddress) {
+                console.warn(`Skipping wrap pair for super token ${superToken.symbol} (${superToken.address}) on chain ${chainId}: no underlying address.`);
+                return undefined;
+            }
+
+            const underlyingToken = findTokenFromTokenList({ chainId, address: superToken.underlyingAddress });
+            if (!underlyingToken || !isUnderlying(underlyingToken)) {
+                console.warn(`Skipping wrap pair for super token ${superToken.symbol} (${superToken.address}) on chain ${chainId}: underlying token ${superToken.underlyingAddress} not resolvable from the token list.`);
+                return undefined;
+            }
+
+            return {
                 superToken,
-                underlyingToken: findTokenFromTokenList({ chainId, address: superToken.underlyingAddress! })!
-            }) as SuperTokenPair;
-        });
-}, (chainId) => `${chainId}-${extendedSuperTokenList().version}`);
+                underlyingToken
+            };
+        })
+        .filter(isDefined);
+}, (chainId) => `${chainId}-${tokenListVersionKey()}`);
 
 export const mapTokenListTokenToTokenMinimal = (tokenListToken: TokenInfo & SuperTokenExtensions) => {
     const superTokenInfo = tokenListToken.extensions?.superTokenInfo;

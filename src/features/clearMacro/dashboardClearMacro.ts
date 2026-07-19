@@ -1,351 +1,35 @@
-// `Address` is imported as type-only so this module stays loadable under Node's native
-// type stripping (scripts/clearmacro-relay-replay.mjs imports the ABI from here).
 import { type Address, stringToHex } from "viem";
 
 /**
- * DashboardClearMacro on Optimism Sepolia (0x77232a2a953b570D1fEE1FE16b1902299fe7b898).
- * The contract is unverified and its ABI is not shipped in @sfpro/sdk, so it is embedded
- * here (cross-checked against the deployed runtime bytecode's selector table; see
- * docs/plans/clear-macro-relay-integration.md).
+ * DashboardClearMacro ABI, generated from the Foundry project in `contracts/`
+ * (regenerate with `pnpm contracts:abi`). The deployed OP Sepolia instance
+ * (0xEde7e7d71AE56af5CcF8f36952f9bb85FB16fC2d, set in networks.ts) is the five-arg
+ * fee-charging macro from contracts/script/DeployDashboardClearMacro.s.sol —
+ * fee token fUSDCx 0x131780640eDF9830099AaC2203229073D6D2FE69, base fee 0.1,
+ * fee receiver 0x74cD5673dF7efC148067Ecab494A19a46b0a3167 (a fresh empty address, so
+ * arriving fees are visible as its whole balance) — so every action AND the fee reads
+ * (`previewRelayFee`/`feeToken`/`baseFee`) are live on-chain. Fees are charged in
+ * units of the base fee: 1 per relayed action plus 2 per reserved keeper execution
+ * (each scheduled start/stop date), so a new schedule costs 0.3–0.5 while plain
+ * actions stay at 0.1, and `previewRelayFee` quotes the exact fee for the encoded
+ * action alongside the worst-case max. The build keeps the combined DeleteFlow (also
+ * removes the signer's flow schedule row — see docs/plans/clear-macro-combined-delete.md)
+ * and ScheduleFlow's immediate-start mode (startDate 0 + positive rate = create the
+ * flow now, schedule only the stop).
+ * The same build is deployed on Base mainnet at
+ * 0x7043E0B26F221470289d771Ef3139460623D073b (deliberately not wired up in
+ * networks.ts until the full production release) — fee token USDCx
+ * 0xD04383398dD2426297da660F9CCA3d439AF9ce1b, base fee 0.1, fee receiver the
+ * Superfluid DAO Safe 0xac808840f02c47C05507f48165d2222FF28EF4e1; deployed unverified
+ * for testing (verify later with `pnpm contracts:deploy --verify base-mainnet`).
+ * (It replaced 0xEeFC8492f24898289E65Ee06dE7B8A19F30832a5 — same features at base fee
+ * 0.01 charged flat per relayed action — which replaced
+ * 0xa35C9faC83e1673e6f1221979e2843Dea4812e78 (immediate-start, no combined DeleteFlow),
+ * before that same-code 0x0725db8cf32CDefa1e822CB336ca5caf4cbE69FD paying fees to the
+ * deployer, 0x576d1274Ef1E4e1f6093ffC1188c8D32411dDD65, and originally the feeless
+ * two-arg 0xa7AA0ff51Bf4a20A1E3516cFEa2C1aD44561a411.)
  */
-export const dashboardClearMacroAbi = [
-  {
-    type: "constructor",
-    stateMutability: "nonpayable",
-    inputs: [{ name: "host", internalType: "contract ISuperfluid", type: "address" }],
-  },
-  { type: "error", name: "InvalidPeriod", inputs: [] },
-  {
-    type: "error",
-    name: "StringsInsufficientHexLength",
-    inputs: [
-      { name: "value", internalType: "uint256", type: "uint256" },
-      { name: "length", internalType: "uint256", type: "uint256" },
-    ],
-  },
-  {
-    type: "error",
-    name: "UnknownActionId",
-    inputs: [{ name: "actionId", internalType: "uint8", type: "uint8" }],
-  },
-  { type: "error", name: "UnsupportedLanguage", inputs: [] },
-  {
-    type: "function",
-    name: "buildBatchOperations",
-    stateMutability: "view",
-    inputs: [
-      { name: "host", internalType: "contract ISuperfluid", type: "address" },
-      { name: "actionParams", internalType: "bytes", type: "bytes" },
-      { name: "account", internalType: "address", type: "address" },
-    ],
-    outputs: [
-      {
-        name: "",
-        internalType: "struct ISuperfluid.Operation[]",
-        type: "tuple[]",
-        components: [
-          { name: "operationType", internalType: "uint32", type: "uint32" },
-          { name: "target", internalType: "address", type: "address" },
-          { name: "data", internalType: "bytes", type: "bytes" },
-        ],
-      },
-    ],
-  },
-  {
-    type: "function",
-    name: "describeApprove",
-    stateMutability: "view",
-    inputs: [
-      { name: "lang", internalType: "bytes32", type: "bytes32" },
-      {
-        name: "p",
-        internalType: "struct DashboardClearMacro.ApproveParams",
-        type: "tuple",
-        components: [
-          { name: "superToken", internalType: "contract ISuperToken", type: "address" },
-          { name: "spender", internalType: "address", type: "address" },
-          { name: "amount", internalType: "uint256", type: "uint256" },
-        ],
-      },
-    ],
-    outputs: [{ name: "", internalType: "string", type: "string" }],
-  },
-  {
-    type: "function",
-    name: "describeCreateFlow",
-    stateMutability: "view",
-    inputs: [
-      { name: "lang", internalType: "bytes32", type: "bytes32" },
-      {
-        name: "p",
-        internalType: "struct DashboardClearMacro.CreateFlowParams",
-        type: "tuple",
-        components: [
-          { name: "superToken", internalType: "contract ISuperToken", type: "address" },
-          { name: "receiver", internalType: "address", type: "address" },
-          { name: "flowRate", internalType: "int96", type: "int96" },
-        ],
-      },
-    ],
-    outputs: [{ name: "", internalType: "string", type: "string" }],
-  },
-  {
-    type: "function",
-    name: "describeDeleteFlow",
-    stateMutability: "view",
-    inputs: [
-      { name: "lang", internalType: "bytes32", type: "bytes32" },
-      {
-        name: "p",
-        internalType: "struct DashboardClearMacro.DeleteFlowParams",
-        type: "tuple",
-        components: [
-          { name: "superToken", internalType: "contract ISuperToken", type: "address" },
-          { name: "sender", internalType: "address", type: "address" },
-          { name: "receiver", internalType: "address", type: "address" },
-        ],
-      },
-    ],
-    outputs: [{ name: "", internalType: "string", type: "string" }],
-  },
-  {
-    type: "function",
-    name: "describeDowngrade",
-    stateMutability: "view",
-    inputs: [
-      { name: "lang", internalType: "bytes32", type: "bytes32" },
-      {
-        name: "p",
-        internalType: "struct DashboardClearMacro.DowngradeParams",
-        type: "tuple",
-        components: [
-          { name: "superToken", internalType: "contract ISuperToken", type: "address" },
-          { name: "amount", internalType: "uint256", type: "uint256" },
-        ],
-      },
-    ],
-    outputs: [{ name: "", internalType: "string", type: "string" }],
-  },
-  {
-    type: "function",
-    name: "describeTransfer",
-    stateMutability: "view",
-    inputs: [
-      { name: "lang", internalType: "bytes32", type: "bytes32" },
-      {
-        name: "p",
-        internalType: "struct DashboardClearMacro.TransferParams",
-        type: "tuple",
-        components: [
-          { name: "superToken", internalType: "contract ISuperToken", type: "address" },
-          { name: "receiver", internalType: "address", type: "address" },
-          { name: "amount", internalType: "uint256", type: "uint256" },
-        ],
-      },
-    ],
-    outputs: [{ name: "", internalType: "string", type: "string" }],
-  },
-  {
-    type: "function",
-    name: "describeUpdateFlow",
-    stateMutability: "view",
-    inputs: [
-      { name: "lang", internalType: "bytes32", type: "bytes32" },
-      {
-        name: "p",
-        internalType: "struct DashboardClearMacro.UpdateFlowParams",
-        type: "tuple",
-        components: [
-          { name: "superToken", internalType: "contract ISuperToken", type: "address" },
-          { name: "receiver", internalType: "address", type: "address" },
-          { name: "flowRate", internalType: "int96", type: "int96" },
-        ],
-      },
-    ],
-    outputs: [{ name: "", internalType: "string", type: "string" }],
-  },
-  {
-    type: "function",
-    name: "describeUpgrade",
-    stateMutability: "view",
-    inputs: [
-      { name: "lang", internalType: "bytes32", type: "bytes32" },
-      {
-        name: "p",
-        internalType: "struct DashboardClearMacro.UpgradeParams",
-        type: "tuple",
-        components: [
-          { name: "superToken", internalType: "contract ISuperToken", type: "address" },
-          { name: "amount", internalType: "uint256", type: "uint256" },
-        ],
-      },
-    ],
-    outputs: [{ name: "", internalType: "string", type: "string" }],
-  },
-  {
-    type: "function",
-    name: "encodeApprove",
-    stateMutability: "pure",
-    inputs: [
-      { name: "lang", internalType: "bytes32", type: "bytes32" },
-      {
-        name: "p",
-        internalType: "struct DashboardClearMacro.ApproveParams",
-        type: "tuple",
-        components: [
-          { name: "superToken", internalType: "contract ISuperToken", type: "address" },
-          { name: "spender", internalType: "address", type: "address" },
-          { name: "amount", internalType: "uint256", type: "uint256" },
-        ],
-      },
-    ],
-    outputs: [{ name: "actionParams", internalType: "bytes", type: "bytes" }],
-  },
-  {
-    type: "function",
-    name: "encodeCreateFlow",
-    stateMutability: "pure",
-    inputs: [
-      { name: "lang", internalType: "bytes32", type: "bytes32" },
-      {
-        name: "p",
-        internalType: "struct DashboardClearMacro.CreateFlowParams",
-        type: "tuple",
-        components: [
-          { name: "superToken", internalType: "contract ISuperToken", type: "address" },
-          { name: "receiver", internalType: "address", type: "address" },
-          { name: "flowRate", internalType: "int96", type: "int96" },
-        ],
-      },
-    ],
-    outputs: [{ name: "actionParams", internalType: "bytes", type: "bytes" }],
-  },
-  {
-    type: "function",
-    name: "encodeDeleteFlow",
-    stateMutability: "pure",
-    inputs: [
-      { name: "lang", internalType: "bytes32", type: "bytes32" },
-      {
-        name: "p",
-        internalType: "struct DashboardClearMacro.DeleteFlowParams",
-        type: "tuple",
-        components: [
-          { name: "superToken", internalType: "contract ISuperToken", type: "address" },
-          { name: "sender", internalType: "address", type: "address" },
-          { name: "receiver", internalType: "address", type: "address" },
-        ],
-      },
-    ],
-    outputs: [{ name: "actionParams", internalType: "bytes", type: "bytes" }],
-  },
-  {
-    type: "function",
-    name: "encodeDowngrade",
-    stateMutability: "pure",
-    inputs: [
-      { name: "lang", internalType: "bytes32", type: "bytes32" },
-      {
-        name: "p",
-        internalType: "struct DashboardClearMacro.DowngradeParams",
-        type: "tuple",
-        components: [
-          { name: "superToken", internalType: "contract ISuperToken", type: "address" },
-          { name: "amount", internalType: "uint256", type: "uint256" },
-        ],
-      },
-    ],
-    outputs: [{ name: "actionParams", internalType: "bytes", type: "bytes" }],
-  },
-  {
-    type: "function",
-    name: "encodeTransfer",
-    stateMutability: "pure",
-    inputs: [
-      { name: "lang", internalType: "bytes32", type: "bytes32" },
-      {
-        name: "p",
-        internalType: "struct DashboardClearMacro.TransferParams",
-        type: "tuple",
-        components: [
-          { name: "superToken", internalType: "contract ISuperToken", type: "address" },
-          { name: "receiver", internalType: "address", type: "address" },
-          { name: "amount", internalType: "uint256", type: "uint256" },
-        ],
-      },
-    ],
-    outputs: [{ name: "actionParams", internalType: "bytes", type: "bytes" }],
-  },
-  {
-    type: "function",
-    name: "encodeUpdateFlow",
-    stateMutability: "pure",
-    inputs: [
-      { name: "lang", internalType: "bytes32", type: "bytes32" },
-      {
-        name: "p",
-        internalType: "struct DashboardClearMacro.UpdateFlowParams",
-        type: "tuple",
-        components: [
-          { name: "superToken", internalType: "contract ISuperToken", type: "address" },
-          { name: "receiver", internalType: "address", type: "address" },
-          { name: "flowRate", internalType: "int96", type: "int96" },
-        ],
-      },
-    ],
-    outputs: [{ name: "actionParams", internalType: "bytes", type: "bytes" }],
-  },
-  {
-    type: "function",
-    name: "encodeUpgrade",
-    stateMutability: "pure",
-    inputs: [
-      { name: "lang", internalType: "bytes32", type: "bytes32" },
-      {
-        name: "p",
-        internalType: "struct DashboardClearMacro.UpgradeParams",
-        type: "tuple",
-        components: [
-          { name: "superToken", internalType: "contract ISuperToken", type: "address" },
-          { name: "amount", internalType: "uint256", type: "uint256" },
-        ],
-      },
-    ],
-    outputs: [{ name: "actionParams", internalType: "bytes", type: "bytes" }],
-  },
-  {
-    type: "function",
-    name: "getActionStructHash",
-    stateMutability: "view",
-    inputs: [{ name: "actionParams", internalType: "bytes", type: "bytes" }],
-    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
-  },
-  {
-    type: "function",
-    name: "getActionTypeDefinition",
-    stateMutability: "view",
-    inputs: [{ name: "encodedPayload", internalType: "bytes", type: "bytes" }],
-    outputs: [{ name: "", internalType: "string", type: "string" }],
-  },
-  {
-    type: "function",
-    name: "getPrimaryTypeName",
-    stateMutability: "view",
-    inputs: [{ name: "encodedPayload", internalType: "bytes", type: "bytes" }],
-    outputs: [{ name: "", internalType: "string", type: "string" }],
-  },
-  {
-    type: "function",
-    name: "postCheck",
-    stateMutability: "view",
-    inputs: [
-      { name: "host", internalType: "contract ISuperfluid", type: "address" },
-      { name: "actionParams", internalType: "bytes", type: "bytes" },
-      { name: "account", internalType: "address", type: "address" },
-    ],
-    outputs: [],
-  },
-] as const;
+export { dashboardClearMacroAbi } from "./dashboardClearMacroAbi.generated";
 
 /** The macro's `lang` argument — bytes32("en"). */
 export const CLEAR_MACRO_LANG = stringToHex("en", { size: 32 });
@@ -358,7 +42,16 @@ export type ClearMacroAction =
   | { kind: "downgrade"; superToken: Address; amount: bigint }
   | { kind: "createFlow"; superToken: Address; receiver: Address; flowRate: bigint }
   | { kind: "updateFlow"; superToken: Address; receiver: Address; flowRate: bigint }
-  | { kind: "deleteFlow"; superToken: Address; sender: Address; receiver: Address };
+  | { kind: "deleteFlow"; superToken: Address; sender: Address; receiver: Address }
+  | {
+      kind: "scheduleFlow";
+      superToken: Address;
+      receiver: Address;
+      startDate: number;
+      flowRate: bigint;
+      endDate: number;
+    }
+  | { kind: "deleteFlowSchedule"; superToken: Address; receiver: Address };
 
 export type ClearMacroActionKind = ClearMacroAction["kind"];
 
@@ -433,6 +126,24 @@ export function getActionCallInfo(action: ClearMacroAction): {
           sender: action.sender,
           receiver: action.receiver,
         },
+      };
+    case "scheduleFlow":
+      return {
+        encodeFunctionName: "encodeScheduleFlow",
+        describeFunctionName: "describeScheduleFlow",
+        tuple: {
+          superToken: action.superToken,
+          receiver: action.receiver,
+          startDate: action.startDate,
+          flowRate: action.flowRate,
+          endDate: action.endDate,
+        },
+      };
+    case "deleteFlowSchedule":
+      return {
+        encodeFunctionName: "encodeDeleteFlowSchedule",
+        describeFunctionName: "describeDeleteFlowSchedule",
+        tuple: { superToken: action.superToken, receiver: action.receiver },
       };
   }
 }

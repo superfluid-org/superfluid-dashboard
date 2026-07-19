@@ -37,6 +37,7 @@ const PREVIEW_FLOW_RATE = '[data-cy=preview-flow-rate]';
 const PREVIEW_RECEIVER = '[data-cy=preview-receiver]';
 const PREVIEW_ENDS_ON = '[data-cy=preview-ends-on]';
 const PREVIEW_UPFRONT_BUFFER = '[data-cy=preview-upfront-buffer]';
+const BUFFER_WARNING = '[data-cy=buffer-warning]';
 const BUFFER_WARNING_AMOUNT =
   '[data-cy=buffer-warning] span [data-cy=token-amount]';
 const PROTECT_YOUR_BUFFER_ERROR = '[data-cy=protect-your-buffer-error]';
@@ -387,6 +388,16 @@ export class SendPage extends BasePage {
     this.click(GO_TO_TOKENS_PAGE_BUTTON);
   }
 
+  // The form resets once the transaction is broadcasted, which must also clear the
+  // buffer warning latch — assertable even while the success dialog is still open.
+  static validateNoBufferWarning() {
+    this.doesNotExist(BUFFER_WARNING);
+  }
+
+  static validateBufferWarningIsVisible() {
+    this.isVisible(BUFFER_WARNING);
+  }
+
   static validateRestoredTransaction(
     amount: string,
     token: string,
@@ -619,11 +630,11 @@ export class SendPage extends BasePage {
       ALLOWLIST_MESSAGE,
       'If you want to set start and end dates for your streams,'
     );
-    this.containsText(ALLOWLIST_LINK, 'Apply for access');
+    this.containsText(ALLOWLIST_LINK, 'Contact us for access');
     this.hasAttributeWithValue(
       ALLOWLIST_LINK,
       'href',
-      'https://use.superfluid.finance/schedulestreams'
+      'https://superfluid.org/contact'
     );
   }
 

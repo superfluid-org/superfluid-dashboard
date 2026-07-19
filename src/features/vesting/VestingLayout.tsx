@@ -11,6 +11,7 @@ import { vestingSupportedNetworks } from "../network/networks";
 import ReduxPersistGate from "../redux/ReduxPersistGate";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import SimpleVestingHeader from "./SimpleVestingHeader";
+import { ALLOWLIST_CONTACT_URL } from "../../utils/constants";
 
 const VESTING_SUPPORTED_NETWORK_IDS = vestingSupportedNetworks.map(
   (network) => network.id
@@ -101,15 +102,15 @@ const NotConnectedCard = () => {
       </Box>
 
       <Typography color="text.secondary" textAlign="center">
-        Want to Vest tokens? Apply for the access code{" "}
+        Want to Vest tokens?{" "}
         <Link
           data-cy="vesting-form-link"
-          href="https://use.superfluid.finance/vesting"
+          href={ALLOWLIST_CONTACT_URL}
           target="_blank"
         >
-          here
-        </Link>
-        .
+          Contact us
+        </Link>{" "}
+        for access.
       </Typography>
     </Paper>
   );
