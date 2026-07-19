@@ -20,6 +20,8 @@ import {
   clearMacroForwarderAddress,
   superTokenAbi,
 } from "@sfpro/sdk/abi";
+import { cfaAbi, cfaAddress } from "@sfpro/sdk/abi/core";
+import { getContractAddress } from "../transactions/operations";
 import { RelayPhase } from "../../MutationResult";
 import { findTokenFromTokenList } from "../../hooks/useTokenQuery";
 import { TokenType } from "../redux/endpoints/tokenTypes";
@@ -233,6 +235,96 @@ async function readRelayFeeQuote(
     throw new ClearMacroNotEligibleError("Relay fee preview failed.", {
       cause: error,
     });
+  }
+}
+
+/**
+ * The CFA deposit ("buffer") the batch takes from the signer's Super Token balance, read from
+ * the protocol itself rather than re-deriving the buffer math. Only consulted when the action
+ * moves the FEE token: the deposit lands in the batch BEFORE the appended fee transfer, so the
+ * two compete for one balance and a batch that cannot cover both reverts AFTER the signature
+ * is spent.
+ *
+ * Zero for every action that opens no flow in this batch — notably a purely future-dated
+ * schedule, which reserves nothing until the keeper fires (the deposit is taken then, from
+ * whatever balance exists at that point; out of scope for a pre-signature gate).
+ *
+ * `updateFlow` is charged only the DELTA, because the existing flow's deposit is already
+ * posted. A rate decrease refunds instead, and the clamp at zero deliberately declines to
+ * credit that refund — under-crediting keeps the guard conservative.
+ *
+ * KNOWN BOUND: `getDepositRequiredForFlowRate` returns the BASE deposit. A receiver that is a
+ * Super App can consume app credit in its callback, which adds to the sender's locked deposit,
+ * so a flow to such a receiver is still undercounted here (and the `updateFlow` delta is
+ * likewise approximate, since the stored deposit already includes previously consumed credit).
+ * Costing that exactly would mean simulating the batch. This stays a gate rather than a
+ * guarantee: it converts the common insufficient-balance case into a pre-signature error, and
+ * leaves the Super App case failing the way it did before — as a relay revert that moves no
+ * funds.
+ */
+async function getFlowBufferCost(
+  wagmiConfig: Config,
+  args: { chainId: number; signerAddress: Address; action: ClearMacroAction }
+): Promise<bigint> {
+  const { chainId, signerAddress, action } = args;
+
+  let flowRate: bigint;
+  let receiver: Address;
+  let isUpdate = false;
+  if (action.kind === "createFlow") {
+    ({ flowRate, receiver } = action);
+  } else if (action.kind === "updateFlow") {
+    ({ flowRate, receiver } = action);
+    isUpdate = true;
+  } else if (
+    action.kind === "scheduleFlow" &&
+    action.startDate === 0 &&
+    action.flowRate > 0n
+  ) {
+    // Immediate start: this batch opens the flow now and schedules only the stop.
+    ({ flowRate, receiver } = action);
+  } else {
+    return 0n;
+  }
+  if (flowRate <= 0n) return 0n;
+
+  // Fails OPEN. This refines the fee guard rather than being it, and it runs after the
+  // signature-free assembly boundary, so a transient RPC blip must not turn an optional
+  // gasless action into a hard preparation failure. Reporting zero restores exactly the
+  // pre-refinement behaviour: the base fee is still guarded, and an underfunded batch fails
+  // as a relay revert that moves no funds.
+  try {
+    const cfa = getContractAddress(cfaAddress, chainId, "CFAv1");
+    const required = (await readContract(wagmiConfig, {
+      chainId,
+      abi: cfaAbi,
+      address: cfa,
+      functionName: "getDepositRequiredForFlowRate",
+      args: [action.superToken, flowRate],
+    } as Parameters<typeof readContract>[1])) as bigint;
+
+    if (!isUpdate) return required;
+
+    const [, , existingDeposit] = (await readContract(wagmiConfig, {
+      chainId,
+      abi: cfaAbi,
+      address: cfa,
+      functionName: "getFlow",
+      args: [action.superToken, signerAddress, receiver],
+    } as Parameters<typeof readContract>[1])) as readonly [
+      bigint,
+      bigint,
+      bigint,
+      bigint,
+    ];
+
+    return required > existingDeposit ? required - existingDeposit : 0n;
+  } catch (error) {
+    console.warn(
+      "Clear Macro flow-buffer read failed; guarding the relay fee without it.",
+      error
+    );
+    return 0n;
   }
 }
 
@@ -683,13 +775,21 @@ export async function executeClearMacro(
 
       // Same-fee-token adjustment: the action itself can move the fee token within the same
       // batch BEFORE the appended fee transfer — `upgrade` mints it (relaxes the check),
-      // `transfer`/`downgrade` spend it (tightens it). A gate, not a guarantee: streams/
-      // deposits can still shift the real transferable balance by execution time.
+      // `transfer`/`downgrade` spend it (tightens it), and a flow-opening action posts a CFA
+      // deposit that spends it too (`getFlowBufferCost`, zero for everything else). Still a
+      // gate, not a guarantee: an unrelated stream can drain the balance between this read
+      // and relay execution.
       let effective = availableBalance;
       if (action.superToken.toLowerCase() === feeToken.toLowerCase()) {
         if (action.kind === "upgrade") effective += action.amount;
         else if (action.kind === "transfer" || action.kind === "downgrade")
           effective -= action.amount;
+        else
+          effective -= await getFlowBufferCost(wagmiConfig, {
+            chainId,
+            signerAddress,
+            action,
+          });
       }
 
       if (effective < requiredFee) {
