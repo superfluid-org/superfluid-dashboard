@@ -58,12 +58,12 @@ export const dashboardClearMacroAbi = [
         "internalType": "contract ISuperfluid"
       },
       {
-        "name": "params",
+        "name": "actionParams",
         "type": "bytes",
         "internalType": "bytes"
       },
       {
-        "name": "msgSender",
+        "name": "account",
         "type": "address",
         "internalType": "address"
       }
@@ -840,7 +840,7 @@ export const dashboardClearMacroAbi = [
     "name": "getActionStructHash",
     "inputs": [
       {
-        "name": "params",
+        "name": "actionParams",
         "type": "bytes",
         "internalType": "bytes"
       }
@@ -859,7 +859,7 @@ export const dashboardClearMacroAbi = [
     "name": "getActionTypeDefinition",
     "inputs": [
       {
-        "name": "params",
+        "name": "encodedPayload",
         "type": "bytes",
         "internalType": "bytes"
       }
@@ -878,7 +878,7 @@ export const dashboardClearMacroAbi = [
     "name": "getPrimaryTypeName",
     "inputs": [
       {
-        "name": "params",
+        "name": "encodedPayload",
         "type": "bytes",
         "internalType": "bytes"
       }
@@ -902,12 +902,12 @@ export const dashboardClearMacroAbi = [
         "internalType": "contract ISuperfluid"
       },
       {
-        "name": "params",
+        "name": "actionParams",
         "type": "bytes",
         "internalType": "bytes"
       },
       {
-        "name": "msgSender",
+        "name": "account",
         "type": "address",
         "internalType": "address"
       }
@@ -957,6 +957,11 @@ export const dashboardClearMacroAbi = [
   {
     "type": "error",
     "name": "FeeNotRepresentable",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "FeeTooHigh",
     "inputs": []
   },
   {

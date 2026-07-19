@@ -45,7 +45,7 @@ Schedule Flow notes: `startDate = 0` schedules a stop only (requires `flowRate =
 
 ## Clone and dependencies
 
-Remappings expect the Superfluid protocol monorepo (and nested libs) under `contracts/lib/`. The submodule tracks `2026-03-permit2_and_macro` because ClearMacro is not yet available on the protocol monorepo `dev` branch. After cloning the dashboard repo:
+Remappings expect the Superfluid protocol monorepo (and nested libs) under `contracts/lib/`. The submodule is pinned to the `ethereum-contracts@v1.15.2` tag (an ancestor of `dev`, which is what `.gitmodules` tracks for `git submodule update --remote`). ClearMacro has landed on `dev`, so the earlier `2026-03-permit2_and_macro` feature-branch pin is no longer needed. After cloning the dashboard repo:
 
 ```bash
 git submodule update --init --recursive

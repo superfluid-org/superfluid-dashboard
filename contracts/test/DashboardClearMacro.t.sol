@@ -1131,7 +1131,7 @@ contract DashboardClearMacroTest is DashboardClearMacroTestBase {
 
         vm.expectRevert(
             abi.encodeWithSelector(
-                ClearMacroForwarderV1.OutsideValidityWindow.selector, block.timestamp, validBefore, validAfter
+                ClearMacroForwarderV1.OutsideValidityWindow.selector, block.timestamp, validAfter, validBefore
             )
         );
         forwarder.runMacro(dashboardClearMacro, encodedPayload, signer.addr, sig);
@@ -1145,7 +1145,7 @@ contract DashboardClearMacroTest is DashboardClearMacroTestBase {
         vm.warp(validBefore + 1);
         vm.expectRevert(
             abi.encodeWithSelector(
-                ClearMacroForwarderV1.OutsideValidityWindow.selector, validBefore + 1, validBefore, uint256(0)
+                ClearMacroForwarderV1.OutsideValidityWindow.selector, validBefore + 1, uint256(0), validBefore
             )
         );
         forwarder.runMacro(dashboardClearMacro, encodedPayload, signer.addr, sig);
