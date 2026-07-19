@@ -27,6 +27,8 @@ import {
 import { useTokenPairsQuery } from "./useTokenPairsQuery";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { CommonFormEffects } from "../common/CommonFormEffects";
+import { useClearMacroFeeFacts } from "../clearMacro/useClearMacroFeeFacts";
+import { ClearMacroFeeEffects } from "../clearMacro/ClearMacroFeeEffects";
 
 export type WrappingForm = {
   type: RestorationType.Wrap | RestorationType.Unwrap;
@@ -67,6 +69,13 @@ const WrappingFormProvider: FC<
   const tokenPairsQuery = useTokenPairsQuery({
     network,
   });
+
+  // The relay appends its fee to the same batch as the action, so when the token being moved
+  // IS the fee token they compete for one balance. Enforcing that HERE rather than only when
+  // MAX is pressed is what makes it robust: validation re-runs, so enabling gasless after
+  // choosing an amount, switching token, or the fee resolving late all surface the error
+  // instead of baking a stale amount into the form.
+  const feeFacts = useClearMacroFeeFacts(network);
 
   const formSchema = useMemo(
     () =>
@@ -146,6 +155,25 @@ The chain ID was: ${network.id}`);
               });
             }
 
+            // Paying the relay fee with USDC pulls it from the SAME underlying balance the
+            // wrap spends, so both must fit.
+            if (
+              feeFacts.couldPayFromUnderlying &&
+              feeFacts.feeUnderlyingWei != null &&
+              feeFacts.feeUnderlyingToken?.toLowerCase() ===
+                underlyingTokenAddress.toLowerCase() &&
+              underlyingBalanceBigNumber.lt(
+                wrapAmountBigNumber.add(feeFacts.feeUnderlyingWei.toString())
+              )
+            ) {
+              handleHigherOrderValidationError({
+                message: `Leave ${formatUnits(
+                  feeFacts.feeUnderlyingWei.toString(),
+                  underlyingToken.decimals
+                )} ${underlyingToken.symbol} for the gasless transaction fee, or turn off gasless sending.`,
+              });
+            }
+
             const isNativeAsset =
               underlyingTokenAddress === NATIVE_ASSET_ADDRESS;
             if (isNativeAsset) {
@@ -197,6 +225,26 @@ The chain ID was: ${network.id}`);
                 });
               }
 
+              // The appended fee transfer spends the same Super Token this unwrap drains, so
+              // unwrapping the whole balance would leave nothing to pay it with. Super Tokens
+              // are always 18 decimals, matching `feeWei`.
+              if (
+                feeFacts.couldPayFromSuperToken &&
+                feeFacts.feeWei != null &&
+                feeFacts.feeToken?.toLowerCase() ===
+                  superTokenAddress.toLowerCase() &&
+                currentBalanceBigNumber.lt(
+                  amountBigNumber.add(feeFacts.feeWei.toString())
+                )
+              ) {
+                handleHigherOrderValidationError({
+                  message: `Leave ${formatUnits(
+                    feeFacts.feeWei.toString(),
+                    18
+                  )} of this token for the gasless transaction fee, or turn off gasless sending.`,
+                });
+              }
+
               if (flowRateBigNumber.isNegative()) {
                 const dateWhenBalanceCritical = new Date(
                   calculateMaybeCriticalAtTimestamp({
@@ -229,7 +277,7 @@ The chain ID was: ${network.id}`);
 
         return true;
       }),
-    [network, visibleAddress, tokenPairsQuery.data, isEOA]
+    [network, visibleAddress, tokenPairsQuery.data, isEOA, feeFacts]
   );
 
   const networkDefaultTokenPair = getNetworkDefaultTokenPairs(network)[0];
@@ -314,6 +362,7 @@ The chain ID was: ${network.id}`);
     <FormProvider {...formMethods}>
       {children}
       <CommonFormEffects />
+      <ClearMacroFeeEffects fingerprint={feeFacts.fingerprint} />
     </FormProvider>
   ) : null;
 };

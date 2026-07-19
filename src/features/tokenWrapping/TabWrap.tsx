@@ -42,6 +42,7 @@ import { ValidWrappingForm, WrappingForm } from "./WrappingFormProvider";
 import { useTokenQuery } from "../../hooks/useTokenQuery";
 import { useTokenPairsQuery } from "./useTokenPairsQuery";
 import { ClearMacroRelayOption } from "../clearMacro/ClearMacroRelayOption";
+import { useClearMacroFeeFacts } from "../clearMacro/useClearMacroFeeFacts";
 
 const underlyingIbAlluoTokenOverrides = [
   // StIbAlluoEth
@@ -162,6 +163,24 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
     !formState.isValid ||
     isApproveAllowanceVisible ||
     allowanceQuery.isLoading;
+
+  const relayChipActionKind =
+    isUnderlyingBlockchainNativeAsset || isApproveAllowanceVisible
+      ? undefined
+      : ("upgrade" as const);
+
+  // Best-effort convenience only: leave the relay fee's USDC share behind so MAX lands on a
+  // submittable amount. Correctness is the form's fee validation, which re-runs — notably
+  // through the wrapper-approval window, where an amount chosen now is still the amount
+  // submitted after the approval clears.
+  const feeFacts = useClearMacroFeeFacts(network);
+  const feeReservationWei =
+    feeFacts.couldPayFromUnderlying &&
+    feeFacts.feeUnderlyingWei != null &&
+    feeFacts.feeUnderlyingToken?.toLowerCase() ===
+      tokenPair?.underlyingTokenAddress.toLowerCase()
+      ? feeFacts.feeUnderlyingWei
+      : 0n;
 
   const amountInputRef = useRef<HTMLInputElement>(undefined!);
 
@@ -321,9 +340,17 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                       variant="textContained"
                       size="xxs"
                       onClick={() => {
+                        const maxBalance =
+                          BigNumber.from(underlyingBalance).sub(
+                            BigNumber.from(feeReservationWei.toString())
+                          );
                         return onChange(
                           formatUnits(
-                            underlyingBalance,
+                            // A balance at or below the fee has no relayable maximum; clamp
+                            // rather than offer a negative the form would reject.
+                            maxBalance.isNegative()
+                              ? BigNumber.from(0)
+                              : maxBalance,
                             underlyingToken.decimals
                           ) as WrappingForm["data"]["amountDecimal"]
                         );
@@ -587,11 +614,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
             </TransactionBoundary>
           </Stack>
           <ClearMacroRelayOption
-            actionKind={
-              isUnderlyingBlockchainNativeAsset || isApproveAllowanceVisible
-                ? undefined
-                : "upgrade"
-            }
+            actionKind={relayChipActionKind}
             network={network}
           />
         </ConnectionBoundary>

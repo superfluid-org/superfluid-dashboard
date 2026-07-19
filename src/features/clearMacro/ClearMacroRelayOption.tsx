@@ -151,6 +151,7 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
     setPaymentMode,
     canPayWithUsdc,
     isCapabilitiesPending,
+    isCapabilitiesUnresolved,
     usdcxBalanceWei,
     usdcBalanceWei,
     usdcxShortfall,
@@ -211,10 +212,19 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
 
   const underlyingSymbol = fee.underlyingSymbol ?? "USDC";
   const isUsdcSelected = paymentMode === "usdc-permit2";
-  // Keep a persisted USDC selection visible (disabled) while the capabilities fetch is
-  // still pending: the executor resolves capabilities independently, so a fast click in
-  // that window can already take the Permit2 path — the chip must not hide the active mode.
+  // Keep a persisted USDC selection visible while capabilities are UNRESOLVED — pending, or
+  // errored and therefore retryable by the executor. Two reasons: the executor resolves
+  // capabilities independently, so a fast click in that window can already take the Permit2
+  // path; and the fee validation conservatively assumes BOTH payment paths are live while
+  // unresolved, so hiding the selector would leave a user unable to positively choose
+  // direct payment and clear a full-balance rejection they cannot otherwise escape.
   const isUsdcSelectionTentative =
+    isUsdcSelected && isCapabilitiesUnresolved && fee.underlyingAddress != null;
+  // Locking the chips is only defensible while the answer is genuinely IN FLIGHT. An errored
+  // capabilities fetch can be terminal, and the fee validation assumes both payment paths are
+  // live while unresolved — so leaving the chips locked there would strand the user with a
+  // full-balance rejection and no way to positively choose direct payment and clear it.
+  const isPaymentSelectionLocked =
     isUsdcSelected && isCapabilitiesPending && fee.underlyingAddress != null;
   const showPaymentSelector =
     isRelayEnabled &&
@@ -330,7 +340,7 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
                   : null
               }
               insufficient={usdcxShortfall}
-              disabled={isUsdcSelectionTentative}
+              disabled={isPaymentSelectionLocked}
               dataCy="clear-macro-pay-with-usdcx"
               onSelect={() => setPaymentMode("usdcx-direct")}
             />
@@ -343,7 +353,7 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
                   : null
               }
               insufficient={usdcInsufficient}
-              disabled={isUsdcSelectionTentative}
+              disabled={isPaymentSelectionLocked}
               dataCy="clear-macro-pay-with-usdc"
               onSelect={() => setPaymentMode("usdc-permit2")}
             />

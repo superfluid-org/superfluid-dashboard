@@ -44,6 +44,15 @@ export interface ClearMacroUsdcFeePayment {
    * window — the executor resolves capabilities independently and could already honor it.
    */
   isCapabilitiesPending: boolean;
+  /**
+   * Permit2 support has NOT been positively ruled out: the fetch is still in flight, or it
+   * failed and told us nothing. Failed capability fetches are evicted from the module cache,
+   * so the executor's independent `getCapabilities()` can still succeed and pick Permit2 —
+   * which makes an error state tentative, not a settled "unsupported". Callers sizing a
+   * reservation must treat it as such; `canPayWithUsdc === false` alone cannot distinguish
+   * "unsupported" from "unknown".
+   */
+  isCapabilitiesUnresolved: boolean;
   /** The signer's fee token (USDCx) available balance — the executor's exact read. */
   usdcxBalanceWei?: bigint;
   /** The signer's underlying (USDC) balance. */
@@ -73,8 +82,11 @@ export function useClearMacroUsdcFeePayment(
   const fee = useRelayFeeDisclosure(network, actionKind, scheduleAction);
   const paymentMode = useClearMacroPaymentMode();
 
-  const { data: capabilities, isPending: isCapabilitiesPending } =
-    useRelayCapabilities();
+  const {
+    data: capabilities,
+    isPending: isCapabilitiesPending,
+    isError: isCapabilitiesError,
+  } = useRelayCapabilities();
   const canPayWithUsdc = Boolean(
     capabilities &&
       chainSupportsPermit2(capabilities, network.id) &&
@@ -148,6 +160,7 @@ export function useClearMacroUsdcFeePayment(
     setPaymentMode,
     canPayWithUsdc,
     isCapabilitiesPending,
+    isCapabilitiesUnresolved: isCapabilitiesPending || isCapabilitiesError,
     usdcxBalanceWei,
     usdcBalanceWei,
     usdcxShortfall,
