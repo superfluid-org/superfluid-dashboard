@@ -4,24 +4,37 @@ import { type Address, stringToHex } from "viem";
  * DashboardClearMacro ABI, generated from the Foundry project in `contracts/`
  * (regenerate with `pnpm contracts:abi`).
  *
- * Deployed and Etherscan-verified on four networks from master 28aa6ab2, all wired up in
- * networks.ts. Executable bytecode confirmed byte-identical across all four (19,879 bytes;
- * compare by masking the artifact's `immutableReferences` spans and truncating before the CBOR
- * metadata block, whose offset is `len(code) - 2 - <the big-endian length in the last 2 bytes>`
- * — NOT by the trailing metadata hash, which is not reproducible across CI runs, see
+ * Deployed and Etherscan-verified on nine networks, all wired up in networks.ts. That is every
+ * deployable network: the macro's constructor takes a FlowScheduler, so the nine are exactly the
+ * networks with a non-undefined `flowSchedulerContractAddress`, matching the chain table in
+ * contracts/script/DeployDashboardClearMacro.s.sol one-for-one.
+ *
+ * The first four below were built from master 28aa6ab2, the last five from master 599755ed — two
+ * builds, same 19,879-byte executable size. Executable bytecode was confirmed byte-identical
+ * across the original four (compare by masking the artifact's `immutableReferences` spans and
+ * truncating before the CBOR metadata block, whose offset is
+ * `len(code) - 2 - <the big-endian length in the last 2 bytes>` — NOT by the trailing metadata
+ * hash, which is not reproducible across CI runs, see
  * docs/plans/clear-macro-multi-network-deploy.md):
  *
  *   optimism-sepolia 0x96ec6a06fb72c8C3e42E9DD3ae3525e7847078c3  fee token fUSDCx 0x131780640EDf9830099AAc2203229073d6D2FE69
  *   base-mainnet     0xC04FE9940e460457B75C3Aa4871bF142E0f49744  fee token USDCx  0xD04383398dD2426297da660F9CCA3d439AF9ce1b
  *   arbitrum-one     0x3BDd82FFbCcB9DBD0c233Ecd950642edbF60D667  fee token USDCx  0xFc55F2854e74b4f42D01a6d3DAAC4c52D9dfdcFf
  *   optimism-mainnet 0x4D11B0b59948d81EEAaF667CCDaA212f824949d4  fee token USDCx  0x35Adeb0638EB192755B6E52544650603Fe65A006
+ *   bsc-mainnet      0x53d00397f03147A9bD9c40443A105A82780deAF1  fee token USDCx  0x0419e1fA3671754F77EC7D5416219A5f9A08B530
+ *   xdai-mainnet     0x7786Da9DEC051b1CE13AA5d6701f6D2655D01De6  fee token USDCx  0x1234756ccf0660E866305289267211823Ae86eEc
+ *   avalanche-c      0x02CF8483b15eb1211235D8bb5041BE5024Ef657F  fee token USDCx  0x288398F314D472B82C44855F3f6fF20b633c2A97
+ *   polygon-mainnet  0x478A32945F569FB3c14B72080c9e6f9AcEAAAc7D  fee token USDCx  0x07b24BBD834c1c546EcE89fF95f71D9F13a2eBD1
+ *   eth-mainnet      0x1bBc06F00b9F5964eb8F7ED044e15C8dE13368bE  fee token USDCx  0x1BA8603DA702602A8657980e825A6DAa03Dee93a
  *
- * All four are the five-arg fee-charging macro from
+ * All nine are the five-arg fee-charging macro from
  * contracts/script/DeployDashboardClearMacro.s.sol at base fee 0.1, paying the Superfluid DAO
  * Safe 0xac808840f02c47C05507f48165d2222FF28EF4e1. NOTE: that Safe has no code yet on
- * optimism-mainnet, arbitrum-one and optimism-sepolia — fees accrue to it there from the moment
- * each address is wired up, and are only retrievable once the Safe is deployed at that address on
- * those chains. Deploying it is an open follow-up.
+ * optimism-mainnet, arbitrum-one, optimism-sepolia, bsc-mainnet, xdai-mainnet, polygon-mainnet
+ * and avalanche-c — fees accrue to it there from the moment each address is wired up, and are
+ * only retrievable once the Safe is deployed at that address on those chains. Deploying it is an
+ * open follow-up. eth-mainnet is the exception: the Safe is live there, so its fees are
+ * retrievable immediately.
  *
  * Every action AND the fee reads (`previewRelayFee`/`feeToken`/`baseFee`) are live on-chain. Fees
  * are charged in units of the base fee: 1 per relayed action plus 2 per reserved keeper execution

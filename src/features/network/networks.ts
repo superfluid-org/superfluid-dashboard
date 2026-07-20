@@ -214,6 +214,9 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.gnosis,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.gnosis,
+    dashboardClearMacro: {
+      macroAddress: "0x7786Da9DEC051b1CE13AA5d6701f6D2655D01De6",
+    },
     vestingContractAddress: {
       v1: {
         address: vestingContractAddresses_v1.gnosis,
@@ -269,6 +272,9 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.polygon,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.polygon,
+    dashboardClearMacro: {
+      macroAddress: "0x478A32945F569FB3c14B72080c9e6f9AcEAAAc7D",
+    },
     vestingContractAddress: {
       v1: {
         address: vestingContractAddresses_v1.polygon,
@@ -501,6 +507,9 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.avalancheC,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.avalancheC,
+    dashboardClearMacro: {
+      macroAddress: "0x02CF8483b15eb1211235D8bb5041BE5024Ef657F",
+    },
     vestingContractAddress: {
       v1: {
         address: vestingContractAddresses_v1.avalancheC,
@@ -560,6 +569,9 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.bnbSmartChain,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.bnbSmartChain,
+    dashboardClearMacro: {
+      macroAddress: "0x53d00397f03147A9bD9c40443A105A82780deAF1",
+    },
     vestingContractAddress: {
       v1: {
         address: vestingContractAddresses_v1.bnbSmartChain,
@@ -615,6 +627,9 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.ethereum,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.ethereum,
+    dashboardClearMacro: {
+      macroAddress: "0x1bBc06F00b9F5964eb8F7ED044e15C8dE13368bE",
+    },
     vestingContractAddress: {
       v1: {
         address: vestingContractAddresses_v1.ethereum,
