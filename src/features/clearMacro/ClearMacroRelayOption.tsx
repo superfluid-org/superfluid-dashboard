@@ -12,6 +12,8 @@ import { alpha } from "@mui/material/styles";
 import { FC, useEffect } from "react";
 import { formatUnits, Hex } from "viem";
 import { useWaitForTransactionReceipt } from "wagmi";
+import { CLEAR_MACRO_LEARN_MORE_URL } from "../../utils/constants";
+import Link from "../common/Link";
 import TooltipWithIcon from "../common/TooltipWithIcon";
 import { Network } from "../network/networks";
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
@@ -49,6 +51,33 @@ const formatBalance = (wei: bigint, decimals: number) =>
   Number(formatUnits(wei, decimals)).toLocaleString(undefined, {
     maximumFractionDigits: 2,
   });
+
+/**
+ * The "Powered by Clear Macro." attribution that closes both help tooltips, with the
+ * product name linking out to the public explainer. MUI tooltips are interactive by
+ * default, so the link stays reachable while the pointer travels into the tooltip —
+ * do not add `disableInteractive` to the tooltips carrying this.
+ */
+const PoweredByClearMacro: FC = () => (
+  <>
+    {" "}
+    Powered by{" "}
+    <Link
+      data-cy="clear-macro-learn-more-link"
+      href={CLEAR_MACRO_LEARN_MORE_URL}
+      target="_blank"
+      rel="noopener noreferrer"
+      color="inherit"
+      sx={{ textDecoration: "underline" }}
+    >
+      Clear Macro
+    </Link>
+    .
+  </>
+);
+
+/** Touch users need time to travel from the info icon into the tooltip to tap the link. */
+const LINK_TOOLTIP_PROPS = { leaveTouchDelay: 10000 } as const;
 
 const feeChipSx = {
   height: 20,
@@ -203,7 +232,17 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
           >
             Gasless transactions aren&apos;t available for this wallet type
           </Typography>
-          <TooltipWithIcon title="Gasless transactions currently only support regular wallet accounts. Transactions from this wallet are sent the normal way instead." />
+          <TooltipWithIcon
+            TooltipProps={LINK_TOOLTIP_PROPS}
+            title={
+              <>
+                Gasless transactions currently only support regular wallet
+                accounts. Transactions from this wallet are sent the normal way
+                instead.
+                <PoweredByClearMacro />
+              </>
+            }
+          />
         </Paper>
       );
     }
@@ -235,7 +274,7 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
   // While a schedule quote is loading/unquotable the text is the worst-case placeholder,
   // so the sentence must not read as an exact, already-quoted amount.
   const isFeePlaceholder = actionKind === "scheduleFlow" && !fee.isQuoteExact;
-  const tooltip = fee.feeAvailable
+  const tooltipText = fee.feeAvailable
     ? `You sign a message instead of paying gas. The transaction is submitted for you and the network fee is covered. A ${isFeePlaceholder ? `service fee of ${fee.feeText}` : `${fee.feeText} service fee`} is charged only if it succeeds.` +
       (actionKind === "scheduleFlow"
         ? isFeePlaceholder
@@ -244,9 +283,8 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
         : "") +
       (canPayWithUsdc
         ? ` You can pay the fee with ${fee.feeSymbol} or with ${underlyingSymbol}, which is converted automatically as part of the same transaction (after a one-time ${underlyingSymbol} approval).`
-        : "") +
-      " Powered by Clear Macro."
-    : "You sign a message instead of paying gas. The transaction is submitted for you and the network fee is covered. Powered by Clear Macro.";
+        : "")
+    : "You sign a message instead of paying gas. The transaction is submitted for you and the network fee is covered.";
 
   const showRelayRequiredWarning = Boolean(relayRequired) && !isRelayEnabled;
 
@@ -311,7 +349,15 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
             </Typography>
           )}
         </Stack>
-        <TooltipWithIcon title={tooltip} />
+        <TooltipWithIcon
+          TooltipProps={LINK_TOOLTIP_PROPS}
+          title={
+            <>
+              {tooltipText}
+              <PoweredByClearMacro />
+            </>
+          }
+        />
       </Stack>
 
       {showPaymentSelector && (
