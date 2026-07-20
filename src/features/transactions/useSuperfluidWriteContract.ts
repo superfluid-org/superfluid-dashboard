@@ -9,7 +9,6 @@ import {
 import * as Sentry from "@sentry/react";
 import { useConfig } from "wagmi";
 import { getPublicClient, simulateContract, writeContract } from "@wagmi/core";
-import { clearMacroForwarderAddress } from "@sfpro/sdk/abi";
 import { TransactionInfo, TransactionTitle } from "@superfluid-finance/sdk-redux";
 import { reduxPersistor, useAppDispatch } from "../redux/store";
 import { useAccount } from "@/hooks/useAccount";
@@ -29,6 +28,7 @@ import {
   useClearMacroPaymentMode,
 } from "../settings/appSettingsHooks";
 import { ClearMacroAction } from "../clearMacro/dashboardClearMacro";
+import { isClearMacroSupportedOnNetwork } from "../clearMacro/useClearMacroEligibility";
 import {
   ClearMacroInsufficientFeeError,
   ClearMacroNotEligibleError,
@@ -233,10 +233,12 @@ export function useSuperfluidWriteContract() {
         isEOA === true &&
         visibleAddress?.toLowerCase() === address.toLowerCase() &&
         !isSmartWallet &&
-        network.dashboardClearMacro &&
-        clearMacroForwarderAddress[
-          params.chainId as keyof typeof clearMacroForwarderAddress
-        ]
+        // Same predicate the UI eligibility hook uses (network is derived from
+        // `params.chainId` above, so this covers the forwarder check too) — it also
+        // carries the NEXT_PUBLIC_DISABLE_CLEAR_MACRO kill switch, so the gate the
+        // user sees and the gate that executes cannot drift.
+        isClearMacroSupportedOnNetwork(network) &&
+        network.dashboardClearMacro
       ) {
         const clearMacroAction = params.clearMacro;
         // Set once the relay accepts the signed payload — from here the execution exists and an

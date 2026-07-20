@@ -12,6 +12,7 @@ import {
   dashboardClearMacroAbi,
 } from "./dashboardClearMacro";
 import { feeToUnderlyingUnitsCeil } from "./permit2";
+import { isClearMacroSupportedOnNetwork } from "./useClearMacroEligibility";
 
 /** Super Tokens are always 18 decimals, so the fee (in the fee Super Token) formats with 18. */
 const FEE_TOKEN_DECIMALS = 18;
@@ -64,7 +65,11 @@ export function useRelayFeeDisclosure(
   actionKind: ClearMacroActionKind | undefined,
   scheduleAction?: ScheduleFlowQuoteAction
 ): RelayFeeDisclosure {
-  const macroAddress = network.dashboardClearMacro?.macroAddress;
+  // Via the support predicate so the kill switch also stops the macro's fee reads —
+  // with the relay off the quote is never used, and every read below is gated on this.
+  const macroAddress = isClearMacroSupportedOnNetwork(network)
+    ? network.dashboardClearMacro?.macroAddress
+    : undefined;
   const { address } = useAccount();
 
   const { data } = useReadContracts({
