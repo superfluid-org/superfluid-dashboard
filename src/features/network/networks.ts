@@ -376,6 +376,9 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.optimism,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.optimism,
+    dashboardClearMacro: {
+      macroAddress: "0x4D11B0b59948d81EEAaF667CCDaA212f824949d4",
+    },
     vestingContractAddress: {
       v1: {
         address: vestingContractAddresses_v1.optimism,
@@ -436,6 +439,9 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.arbitrum,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.arbitrum,
+    dashboardClearMacro: {
+      macroAddress: "0x3BDd82FFbCcB9DBD0c233Ecd950642edbF60D667",
+    },
     vestingContractAddress: {
       v1: {
         address: vestingContractAddresses_v1.arbitrum,
@@ -810,6 +816,9 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.base,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.base,
+    dashboardClearMacro: {
+      macroAddress: "0xC04FE9940e460457B75C3Aa4871bF142E0f49744",
+    },
   },
   baseSepolia: {
     ...chain.baseSepolia,
@@ -984,7 +993,7 @@ export const networkDefinition = {
     flowSchedulerContractAddress: flowSchedulerContractAddresses.optimismSepolia,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.optimismSepolia,
     dashboardClearMacro: {
-      macroAddress: "0xEde7e7d71AE56af5CcF8f36952f9bb85FB16fC2d",
+      macroAddress: "0x96ec6a06fb72c8C3e42E9DD3ae3525e7847078c3",
     },
   },
 } as const satisfies Record<string, Network>;

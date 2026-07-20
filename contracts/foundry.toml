@@ -8,6 +8,16 @@ evm_version = "cancun"
 optimizer = true
 optimizer_runs = 200
 
+# Remappings are declared exhaustively and auto-detection is OFF. Forge otherwise discovers extra
+# remappings by walking the nested submodule tree under lib/superfluid-protocol-monorepo/lib/, and
+# although none of them affect codegen, they land in the compiler metadata — so any variation in
+# what the walk finds changes the metadata IPFS hash embedded in the deployed bytecode. That
+# actually happened: the arbitrum-one deploy of DashboardClearMacro got a different metadata hash
+# than base/optimism/optimism-sepolia despite identical source, commit and executable bytecode.
+# See docs/plans/clear-macro-multi-network-deploy.md. Adding a dependency now needs its remapping
+# added here by hand.
+auto_detect_remappings = false
+
 remappings = [
     "@superfluid-finance/ethereum-contracts/=lib/superfluid-protocol-monorepo/packages/ethereum-contracts/",
     "@superfluid-finance/solidity-semantic-money/=lib/superfluid-protocol-monorepo/packages/solidity-semantic-money/",
