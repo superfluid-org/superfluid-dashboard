@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import { clearMacroForwarderAddress } from "@sfpro/sdk/abi";
 import { useAccount } from "@/hooks/useAccount";
+import config from "@/utils/config";
 import { Network } from "../network/networks";
 import { applySettings } from "../settings/appSettings.slice";
 import { useClearMacroEnabled } from "../settings/appSettingsHooks";
@@ -9,6 +10,11 @@ import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { ClearMacroActionKind } from "./dashboardClearMacro";
 
 export function isClearMacroSupportedOnNetwork(network: Network): boolean {
+  // Deployment-wide kill switch (NEXT_PUBLIC_DISABLE_CLEAR_MACRO). Checked here so
+  // every consumer — the UI eligibility hook, the send form's forced-relay scheduling
+  // and allowlist bypass, and the executor gate — goes dark together.
+  if (config.isClearMacroDisabled) return false;
+
   return Boolean(
     network.dashboardClearMacro &&
       clearMacroForwarderAddress[

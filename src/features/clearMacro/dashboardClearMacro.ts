@@ -2,32 +2,47 @@ import { type Address, stringToHex } from "viem";
 
 /**
  * DashboardClearMacro ABI, generated from the Foundry project in `contracts/`
- * (regenerate with `pnpm contracts:abi`). The deployed OP Sepolia instance
- * (0xEde7e7d71AE56af5CcF8f36952f9bb85FB16fC2d, set in networks.ts) is the five-arg
- * fee-charging macro from contracts/script/DeployDashboardClearMacro.s.sol —
- * fee token fUSDCx 0x131780640eDF9830099AaC2203229073D6D2FE69, base fee 0.1,
- * fee receiver 0x74cD5673dF7efC148067Ecab494A19a46b0a3167 (a fresh empty address, so
- * arriving fees are visible as its whole balance) — so every action AND the fee reads
- * (`previewRelayFee`/`feeToken`/`baseFee`) are live on-chain. Fees are charged in
- * units of the base fee: 1 per relayed action plus 2 per reserved keeper execution
- * (each scheduled start/stop date), so a new schedule costs 0.3–0.5 while plain
- * actions stay at 0.1, and `previewRelayFee` quotes the exact fee for the encoded
- * action alongside the worst-case max. The build keeps the combined DeleteFlow (also
- * removes the signer's flow schedule row — see docs/plans/clear-macro-combined-delete.md)
- * and ScheduleFlow's immediate-start mode (startDate 0 + positive rate = create the
- * flow now, schedule only the stop).
- * The same build is deployed on Base mainnet at
- * 0x7043E0B26F221470289d771Ef3139460623D073b (deliberately not wired up in
- * networks.ts until the full production release) — fee token USDCx
- * 0xD04383398dD2426297da660F9CCA3d439AF9ce1b, base fee 0.1, fee receiver the
- * Superfluid DAO Safe 0xac808840f02c47C05507f48165d2222FF28EF4e1; deployed unverified
- * for testing (verify later with `pnpm contracts:deploy --verify base-mainnet`).
- * (It replaced 0xEeFC8492f24898289E65Ee06dE7B8A19F30832a5 — same features at base fee
- * 0.01 charged flat per relayed action — which replaced
- * 0xa35C9faC83e1673e6f1221979e2843Dea4812e78 (immediate-start, no combined DeleteFlow),
- * before that same-code 0x0725db8cf32CDefa1e822CB336ca5caf4cbE69FD paying fees to the
- * deployer, 0x576d1274Ef1E4e1f6093ffC1188c8D32411dDD65, and originally the feeless
- * two-arg 0xa7AA0ff51Bf4a20A1E3516cFEa2C1aD44561a411.)
+ * (regenerate with `pnpm contracts:abi`).
+ *
+ * Deployed and Etherscan-verified on four networks from master 28aa6ab2, all wired up in
+ * networks.ts. Executable bytecode confirmed byte-identical across all four (19,879 bytes;
+ * compare by masking the artifact's `immutableReferences` spans and truncating before the CBOR
+ * metadata block, whose offset is `len(code) - 2 - <the big-endian length in the last 2 bytes>`
+ * — NOT by the trailing metadata hash, which is not reproducible across CI runs, see
+ * docs/plans/clear-macro-multi-network-deploy.md):
+ *
+ *   optimism-sepolia 0x96ec6a06fb72c8C3e42E9DD3ae3525e7847078c3  fee token fUSDCx 0x131780640EDf9830099AAc2203229073d6D2FE69
+ *   base-mainnet     0xC04FE9940e460457B75C3Aa4871bF142E0f49744  fee token USDCx  0xD04383398dD2426297da660F9CCA3d439AF9ce1b
+ *   arbitrum-one     0x3BDd82FFbCcB9DBD0c233Ecd950642edbF60D667  fee token USDCx  0xFc55F2854e74b4f42D01a6d3DAAC4c52D9dfdcFf
+ *   optimism-mainnet 0x4D11B0b59948d81EEAaF667CCDaA212f824949d4  fee token USDCx  0x35Adeb0638EB192755B6E52544650603Fe65A006
+ *
+ * All four are the five-arg fee-charging macro from
+ * contracts/script/DeployDashboardClearMacro.s.sol at base fee 0.1, paying the Superfluid DAO
+ * Safe 0xac808840f02c47C05507f48165d2222FF28EF4e1. NOTE: that Safe has no code yet on
+ * optimism-mainnet, arbitrum-one and optimism-sepolia — fees accrue to it there from the moment
+ * each address is wired up, and are only retrievable once the Safe is deployed at that address on
+ * those chains. Deploying it is an open follow-up.
+ *
+ * Every action AND the fee reads (`previewRelayFee`/`feeToken`/`baseFee`) are live on-chain. Fees
+ * are charged in units of the base fee: 1 per relayed action plus 2 per reserved keeper execution
+ * (each scheduled start/stop date), so a new schedule costs 0.3–0.5 while plain actions stay at
+ * 0.1, and `previewRelayFee` quotes the exact fee for the encoded action alongside the worst-case
+ * max. The build keeps the combined DeleteFlow (also removes the signer's flow schedule row — see
+ * docs/plans/clear-macro-combined-delete.md) and ScheduleFlow's immediate-start mode (startDate 0
+ * + positive rate = create the flow now, schedule only the stop).
+ *
+ * Superseded instances, newest first. The first two are a distinct earlier build (19,852 bytes)
+ * — same features, but not the code above:
+ *   0xEde7e7d71AE56af5CcF8f36952f9bb85FB16fC2d (op-sepolia) paid fees to a fresh empty address,
+ *     0x74cD5673dF7efC148067Ecab494A19a46b0a3167, so arriving fees showed as its whole balance;
+ *   0x7043E0B26F221470289d771Ef3139460623D073b (base) same build, left unverified and never wired
+ *     up — history, not a pending verification task;
+ *   0xEeFC8492f24898289E65Ee06dE7B8A19F30832a5 — same features at base fee 0.01 charged flat per
+ *     relayed action; which replaced
+ *   0xa35C9faC83e1673e6f1221979e2843Dea4812e78 (immediate-start, no combined DeleteFlow);
+ *   0x0725db8cf32CDefa1e822CB336ca5caf4cbE69FD same code, paying fees to the deployer;
+ *   0x576d1274Ef1E4e1f6093ffC1188c8D32411dDD65;
+ *   0xa7AA0ff51Bf4a20A1E3516cFEa2C1aD44561a411 — the original feeless two-arg macro.
  */
 export { dashboardClearMacroAbi } from "./dashboardClearMacroAbi.generated";
 

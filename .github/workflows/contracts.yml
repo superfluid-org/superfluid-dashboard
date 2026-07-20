@@ -25,8 +25,12 @@ jobs:
         with:
           submodules: recursive
 
+      # Pinned so CI matches the toolchain deployments are built with; see
+      # docs/plans/clear-macro-multi-network-deploy.md on build reproducibility.
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: v1.7.1
 
       - name: Build contracts
         run: forge build --root contracts

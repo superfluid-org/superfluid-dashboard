@@ -5,6 +5,11 @@ name: Deploy Clear Macro
 # contracts/script/DeployDashboardClearMacro.s.sol; the only inputs CI supplies are the target
 # network(s) and the deployer credentials.
 #
+# Three mutually exclusive modes, selected by the inputs:
+#   broadcast=true             -> deploy job:   broadcast, then verify as a separate step
+#   broadcast=false, no run_id -> simulate job: dry run only
+#   broadcast=false, run_id=N  -> verify job:   re-verify the deployment recorded by run N
+#
 # Required secrets (for broadcast runs):
 #   BUILD_AGENT_MNEMONIC  org secret; BIP-39 mnemonic of the deployer; the account at derivation
 #                         index 0 is used (expected 0xd15d5d0f5b1b56a4daef75cfe108cb825e97d015,
@@ -15,6 +20,10 @@ name: Deploy Clear Macro
 # Security model: anyone with repo write access can dispatch a broadcast — deliberate, no approval
 # gate. A deployed macro is inert until its address lands in src/features/network/networks.ts via
 # a reviewed PR, so dashboard code review is the effective gate for user-facing impact.
+#
+# The deploy is a plain CREATE, so re-dispatching a broadcast deploys a SECOND contract at a new
+# address rather than resuming — it is never the right response to a failed verification. Use the
+# verify-only mode (run_id) for that.
 
 on:
   workflow_dispatch:
@@ -40,9 +49,14 @@ on:
         type: boolean
         default: false
       verify:
-        description: "Verify on the explorer after broadcast"
+        description: "Verify on the explorer after broadcast (broadcast runs only)"
         type: boolean
         default: true
+      run_id:
+        description: "Verify-only: re-verify the deployment from this run id (leave empty to simulate)"
+        type: string
+        required: false
+        default: ""
 
 concurrency:
   group: deploy-clear-macro
@@ -50,22 +64,36 @@ concurrency:
 
 jobs:
   simulate:
-    if: ${{ !inputs.broadcast }}
+    if: ${{ !inputs.broadcast && !inputs.run_id }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: recursive
 
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: v1.7.1
 
       - name: Simulate deployment
+        env:
+          NETWORK: ${{ inputs.network }}
         run: |
           set -o pipefail
-          ./contracts/script/deploy-clear-macro.sh "${{ inputs.network }}" | tee deploy.log
+          forge --version
+          ./contracts/script/deploy-clear-macro.sh "$NETWORK" | tee deploy.log
+
+      # Dry runs write to a *different* path than broadcasts — note the extra dry-run/ level.
+      - name: Upload dry-run records
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: clear-macro-dryrun-${{ inputs.network }}-${{ github.run_id }}
+          path: contracts/broadcast/DeployDashboardClearMacro.s.sol/*/dry-run/run-latest.json
+          if-no-files-found: warn
 
       - name: Job summary
         if: always()
@@ -75,6 +103,8 @@ jobs:
             echo '```'
             tail -n 60 deploy.log 2>/dev/null || echo "no output"
             echo '```'
+            echo 'Simulation predicts an address for forge'"'"'s default sender, NOT the real deployer —'
+            echo 'the address a broadcast produces will differ.'
           } >> "$GITHUB_STEP_SUMMARY"
 
   deploy:
@@ -83,43 +113,146 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: recursive
 
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: v1.7.1
 
+      # Deploy and verify are deliberately separate steps: an explorer verification queue can
+      # outlast forge's retry budget long after the contract is safely deployed, and a red job
+      # invites a re-dispatch that would deploy a duplicate.
       - name: Deploy
+        id: deploy
         env:
           DEPLOYER_MNEMONIC: ${{ secrets.BUILD_AGENT_MNEMONIC }}
-          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+          NETWORK: ${{ inputs.network }}
         run: |
           set -o pipefail
-          ARGS=(--broadcast)
-          if [ "${{ inputs.verify }}" = "true" ]; then
-            ARGS+=(--verify)
-          fi
-          ./contracts/script/deploy-clear-macro.sh "${ARGS[@]}" "${{ inputs.network }}" | tee deploy.log
+          forge --version
+          ./contracts/script/deploy-clear-macro.sh --broadcast "$NETWORK" | tee deploy.log
 
       # The broadcast records are gitignored, so the workflow artifact is the durable record of
-      # what was deployed with which constructor args. Uploaded even if verification failed.
+      # what was deployed with which constructor args. Uploaded before verification runs, so the
+      # record survives even if verification hangs or the job times out.
       - name: Upload broadcast records
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: clear-macro-broadcast-${{ inputs.network }}-${{ github.run_id }}
           path: contracts/broadcast/DeployDashboardClearMacro.s.sol/*/run-latest.json
-          if-no-files-found: warn
+          # A successful deploy MUST leave records — without them there is no recovery path, so
+          # treat that as a failure. A failed deploy may legitimately have produced nothing.
+          if-no-files-found: ${{ steps.deploy.outcome == 'success' && 'error' || 'warn' }}
+
+      - name: Verify
+        id: verify
+        if: ${{ inputs.verify }}
+        continue-on-error: true
+        env:
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+          NETWORK: ${{ inputs.network }}
+        run: |
+          set -o pipefail
+          ./contracts/script/deploy-clear-macro.sh --verify "$NETWORK" | tee -a deploy.log
 
       - name: Job summary
         if: always()
         run: |
           {
             echo '## Clear Macro deployment (broadcast)'
+            echo ''
+            echo "- Deploy: ${{ steps.deploy.outcome }}"
+            echo "- Verify: ${{ inputs.verify && steps.verify.outcome || 'skipped' }}"
+            echo ''
             echo '```'
             tail -n 60 deploy.log 2>/dev/null || echo "no output"
             echo '```'
+            if [ "${{ steps.deploy.outcome }}" = "success" ] && [ "${{ steps.verify.outcome }}" = "failure" ]; then
+              echo 'Verification did not complete, but THE DEPLOYMENT SUCCEEDED. Do not re-dispatch a'
+              echo 'broadcast — that deploys a duplicate. Re-run this workflow with broadcast unchecked'
+              echo "and run_id=${{ github.run_id }} to verify only. Explorer queues often finish on their"
+              echo 'own after forge gives up, so check the explorer first.'
+            fi
             echo 'Next: wire the printed macroAddress into src/features/network/networks.ts'
             echo 'and extend the lineage comment in src/features/clearMacro/dashboardClearMacro.ts.'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # Verify-only recovery path: re-runs verification against a previous run's broadcast record,
+  # without redeploying. Limited by artifact retention (90 days by default); after that, verify
+  # manually with `forge verify-contract` and args re-derived from _defaultConfig.
+  #
+  # Caveat for deployments made BEFORE Foundry was pinned and auto_detect_remappings disabled
+  # (i.e. runs at or before 2026-07-20): those were built with a floating nightly, so recompiling
+  # them here may not reproduce their metadata even at the right commit, and verification can fail
+  # for reasons unrelated to the deployment. Deployments made after that fix reproduce reliably.
+  verify:
+    if: ${{ !inputs.broadcast && inputs.run_id }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      # Verification recompiles from source, so it must use the exact commit the deployment was
+      # built from — not whatever the dispatch ref points at now. Any source, remapping or
+      # compiler-setting change since would otherwise produce different bytecode and fail (or,
+      # worse, publish the wrong source). gh needs no checkout to resolve this.
+      - name: Resolve the source run's commit
+        id: src
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ inputs.run_id }}
+        run: |
+          set -o pipefail
+          SHA="$(gh run view "$RUN_ID" --repo "$GITHUB_REPOSITORY" --json headSha -q .headSha)"
+          [ -n "$SHA" ] || { echo "could not resolve headSha for run $RUN_ID" >&2; exit 1; }
+          echo "Verifying against $SHA (from run $RUN_ID)"
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ steps.src.outputs.sha }}
+          submodules: recursive
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: v1.7.1
+
+      # The artifact preserves its <chainId>/ directory level, so it unpacks straight into the
+      # path verify_latest() reads. Fails loudly if the artifact is missing or has expired.
+      - name: Download broadcast records from run ${{ inputs.run_id }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NETWORK: ${{ inputs.network }}
+          RUN_ID: ${{ inputs.run_id }}
+        run: |
+          set -o pipefail
+          gh run download "$RUN_ID" \
+            --repo "$GITHUB_REPOSITORY" \
+            --name "clear-macro-broadcast-$NETWORK-$RUN_ID" \
+            --dir contracts/broadcast/DeployDashboardClearMacro.s.sol/
+          find contracts/broadcast/DeployDashboardClearMacro.s.sol -name run-latest.json
+
+      - name: Verify
+        env:
+          ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+          NETWORK: ${{ inputs.network }}
+        run: |
+          set -o pipefail
+          ./contracts/script/deploy-clear-macro.sh --verify "$NETWORK" | tee verify.log
+
+      - name: Job summary
+        if: always()
+        run: |
+          {
+            echo '## Clear Macro verification (from run ${{ inputs.run_id }})'
+            echo '```'
+            tail -n 60 verify.log 2>/dev/null || echo "no output"
+            echo '```'
           } >> "$GITHUB_STEP_SUMMARY"

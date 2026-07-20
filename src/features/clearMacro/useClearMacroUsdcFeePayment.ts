@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { erc20Abi } from "viem";
 import { useReadContract } from "wagmi";
 import { useAccount } from "@/hooks/useAccount";
+import config from "@/utils/config";
 import { Network } from "../network/networks";
 import { rpcApi, useAppDispatch } from "../redux/store";
 import { applySettings } from "../settings/appSettings.slice";
@@ -28,6 +29,9 @@ export function useRelayCapabilities() {
     queryFn: () => getCapabilities(),
     staleTime: Infinity,
     retry: 1,
+    // Don't probe the relay provider at all when the kill switch is on — it is most
+    // likely flipped precisely because the provider is unhealthy.
+    enabled: !config.isClearMacroDisabled,
   });
 }
 

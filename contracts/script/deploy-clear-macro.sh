@@ -150,8 +150,11 @@ verify_latest() { # <network> <chainId>
   local verifier_args=(--chain "$chain_id" --etherscan-api-key "$ETHERSCAN_API_KEY")
 
   echo "--- Verifying $network: $address"
+  # Explorer queues regularly outlast the default --watch budget (~90s); 20x15s gives ~5 minutes.
+  # A timeout here does NOT mean verification failed — Etherscan often completes it afterwards.
   forge verify-contract "$address" src/DashboardClearMacro.sol:DashboardClearMacro \
-    --root "$REPO_ROOT/contracts" "${verifier_args[@]}" --constructor-args "$encoded_args" --watch
+    --root "$REPO_ROOT/contracts" "${verifier_args[@]}" --constructor-args "$encoded_args" \
+    --watch --retries 20 --delay 15
 }
 
 deployed_address_for() { # <chainId>; prints the checksummed address from the latest broadcast, or "-"
@@ -166,6 +169,8 @@ deployed_address_for() { # <chainId>; prints the checksummed address from the la
 }
 
 SUMMARY=()
+VERIFY_FAILURES=()
+LOOP_COMPLETED=false
 
 # Printed via an EXIT trap so a mid-run failure (e.g. one RPC down during `all`) still reports the
 # networks already broadcast — those deployments are final even though the run aborted.
@@ -173,7 +178,7 @@ print_summary() {
   local status=$?
   [[ ${#SUMMARY[@]} -gt 0 ]] || return 0
   echo
-  if [[ $status -ne 0 ]]; then
+  if [[ $status -ne 0 ]] && ! $LOOP_COMPLETED; then
     echo "RUN FAILED (exit $status) — summary below covers only the networks completed before the failure."
   fi
   echo "network | chainId | macroAddress"
@@ -221,9 +226,25 @@ for network in "${NETWORKS[@]}"; do
   fi
 
   if $VERIFY; then
-    verify_latest "$network" "$chain_id"
+    # Deliberately NOT under `set -e`: a failed verification must not abandon the remaining
+    # networks. Unlike a failed broadcast (where stopping is right — later chains are untouched
+    # and the run can be re-dispatched), verification is independent per chain and a single
+    # explorer timeout should not strand the rest. Failures are aggregated and reported at exit.
+    if ! verify_latest "$network" "$chain_id"; then
+      VERIFY_FAILURES+=("$network")
+    fi
     if ! $BROADCAST; then
       SUMMARY+=("$network|$chain_id|$(deployed_address_for "$chain_id")")
     fi
   fi
 done
+
+LOOP_COMPLETED=true
+
+if [[ ${#VERIFY_FAILURES[@]} -gt 0 ]]; then
+  echo
+  echo "VERIFICATION FAILED on: ${VERIFY_FAILURES[*]}"
+  echo "The deployments themselves are unaffected. Explorer queues often finish after forge gives"
+  echo "up — check the explorer before retrying, then re-run with --verify for those networks."
+  exit 1
+fi
