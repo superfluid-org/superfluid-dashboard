@@ -53,7 +53,7 @@ on:
         type: boolean
         default: true
       run_id:
-        description: "Verify-only: re-verify the deployment from this run id (leave empty to simulate)"
+        description: "Past run id to re-verify, no redeploy. Requires Broadcast unchecked; ignored otherwise."
         type: string
         required: false
         default: ""
