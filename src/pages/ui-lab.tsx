@@ -1055,10 +1055,13 @@ function InputSection(props: {
                 px: 2,
                 py: 1.5,
                 borderRadius: "12px",
-                borderColor: open
-                  ? theme.palette.primary.main
-                  : theme.palette.other.outline,
-                transition: theme.transitions.create("border-color"),
+                // Neutral even when active. The gasless strip can afford a
+                // primary border because it's a single slim row; the same
+                // border drawn around a tall region full of date fields puts
+                // a large green rectangle next to the green CTA, which is the
+                // colour overload this redesign set out to fix. The switch and
+                // the timer icon already carry the active state.
+                borderColor: theme.palette.other.outline,
               }
             : {}),
         })}
