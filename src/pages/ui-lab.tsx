@@ -1479,7 +1479,6 @@ function InputSection(props: {
               size="small"
               checked={open}
               onChange={(_e, v) => setSchedulingOn(v)}
-              disabled={!props.scheduling}
             />
           )}
           <TimerOutlined
@@ -1502,7 +1501,6 @@ function InputSection(props: {
               size="small"
               checked={open}
               onChange={(_e, v) => setSchedulingOn(v)}
-              disabled={!props.scheduling}
               sx={{ mr: "-6px" }}
             />
           )}
