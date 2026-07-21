@@ -2107,6 +2107,17 @@ function MockSendForm(props: {
           backgroundColor: "transparent",
           backgroundImage: "none",
         },
+        // The period selector is a standard-variant Select living inside the
+        // flow-rate field's adornment. MUI paints `.MuiSelect-select` on
+        // :focus, and that focus persists after a value is picked — so the
+        // period keeps a grey patch that the amount beside it doesn't have.
+        // It sits on the field's own surface and must never paint its own.
+        "& .MuiInputAdornment-root .MuiInputBase-root": {
+          backgroundColor: "transparent",
+        },
+        "& .MuiInputAdornment-root .MuiSelect-select": {
+          "&, &:focus, &:hover": { backgroundColor: "transparent" },
+        },
         ...inputSurfaceSx(props.inputSurface, props.inputFill)(theme),
       })}
     >
