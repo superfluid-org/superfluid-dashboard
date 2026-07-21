@@ -182,18 +182,14 @@ function notchedLabelSx(style: LabelStyleKey, color: LabelColorKey) {
     },
     "& .MuiInputLabel-root.MuiInputLabel-shrink": {
       transform: "translate(14px, -9px) scale(1)",
-      // Mask the border rather than cut it — see the legend rule below.
-      backgroundColor: "var(--lab-card-surface, #FFFFFF)",
-      paddingLeft: "4px",
-      paddingRight: "4px",
     },
-    // Collapse MUI's cut. A real TextField interrupts its own border with a
-    // <legend>, while the button pickers can only mask theirs with a painted
-    // rectangle — two mechanisms that look identical on a white card and
-    // diverge the moment the input and the card stop being the same colour
-    // (e.g. a filled input). Masking is the one both control types can do, so
-    // both use it and they cannot drift apart.
-    "& .MuiOutlinedInput-notchedOutline legend": { maxWidth: 0 },
+    // Native cutting, deliberately NOT masking. A painted mask is a solid
+    // rectangle straddling the border, so its lower half lands on the input's
+    // own fill and the card colour bleeds into the field. The legend instead
+    // interrupts the border and paints nothing, so the fill shows through
+    // beneath the text. The button pickers rebuild this same structure — see
+    // NotchedFieldset — rather than the other way round.
+    "& .MuiOutlinedInput-notchedOutline legend": font,
   };
 }
 
@@ -1011,6 +1007,102 @@ function Knob(props: { label: string; children: ReactNode }) {
 // convincingly here, they won't in the real form either.
 
 /**
+ * Reproduces MUI's NotchedOutline for controls that can't have one.
+ *
+ * The receiver and token pickers are Buttons, so they cannot carry a
+ * `<legend>`. Painting a mask behind the label instead looks identical while
+ * the input and card share a colour — but a mask is a solid rectangle sitting
+ * across the border, so once the input has its own fill the lower half of that
+ * rectangle covers it and the card colour bleeds into the field.
+ *
+ * So rather than downgrade the real inputs to masking, this upgrades the
+ * buttons to cutting: the button's own border is removed and an absolutely
+ * positioned fieldset draws it instead, with a hidden legend reserving exactly
+ * enough width to open the gap. The visible label paints no background at all
+ * and simply sits in that gap — so whatever is behind (card, fill, tint) shows
+ * through, exactly as it does on a real TextField.
+ *
+ * Known gap: the fieldset does not react to the button's hover/focus states,
+ * so its border stays static where a real input's would highlight.
+ */
+function NotchedFieldset(props: {
+  label: ReactNode;
+  labelStyle: LabelStyleKey;
+  labelColor: LabelColorKey;
+  children: ReactNode;
+}) {
+  const font = LABEL_STYLES[props.labelStyle].sx;
+  return (
+    <Box
+      sx={{
+        position: "relative",
+        // The fieldset draws the border now; the button must not draw its own
+        // or they double up a pixel apart.
+        "& .MuiButton-root": { border: "none" },
+      }}
+    >
+      {props.children}
+      <Box
+        component="fieldset"
+        aria-hidden
+        sx={(theme) => ({
+          position: "absolute",
+          inset: "-5px 0 0 0",
+          m: 0,
+          px: "8px",
+          minWidth: 0,
+          overflow: "hidden",
+          pointerEvents: "none",
+          borderRadius: "8px",
+          border: "1px solid",
+          borderColor: theme.palette.other.outline,
+        })}
+      >
+        {/* Hidden, but its width is what opens the gap — so it must carry the
+            same font metrics as the visible label or the cut mis-sizes. */}
+        <Box
+          component="legend"
+          sx={{
+            ...font,
+            float: "unset",
+            width: "auto",
+            height: 11,
+            p: 0,
+            display: "block",
+            overflow: "hidden",
+            visibility: "hidden",
+            maxWidth: "100%",
+            whiteSpace: "nowrap",
+          }}
+        >
+          <Box component="span" sx={{ px: "5px", display: "inline-block" }}>
+            {props.label}
+          </Box>
+        </Box>
+      </Box>
+      <Typography
+        component="label"
+        sx={{
+          position: "absolute",
+          top: -8,
+          left: 14,
+          lineHeight: 1.2,
+          zIndex: 1,
+          ...font,
+          color: LABEL_COLORS[props.labelColor].value,
+          // No background: the gap is already cut, so painting one is what
+          // caused the bleed in the first place.
+          pointerEvents: "none",
+          "& > *": { pointerEvents: "auto" },
+        }}
+      >
+        {props.label}
+      </Typography>
+    </Box>
+  );
+}
+
+/**
  * Wraps a control with a label, in whichever mode is active.
  *
  * `render` receives the label to hand to a native MUI input (or undefined in
@@ -1082,39 +1174,13 @@ function Field(props: {
   );
 
   const control = props.notch ? (
-    <Box sx={{ position: "relative" }}>
-      <Typography
-        component="label"
-        sx={{
-          position: "absolute",
-          // Matches the real inputs exactly: their shrunk label is translated
-          // 14px from the border box with 4px of mask padding, so the text
-          // starts at 14px. left:10 + 4px padding lands in the same place.
-          top: -8,
-          left: 10,
-          px: "4px",
-          zIndex: 1,
-          lineHeight: 1.2,
-          // The label paints over the border, so it must match the surface it
-          // sits on — the CARD, not bare paper, and the card's colour changes
-          // with the input-surface mode. The card publishes its own solid
-          // colour as a CSS variable so this stays correct without threading
-          // surface state through every Field.
-          backgroundColor: "var(--lab-card-surface, #FFFFFF)",
-          // Same font metrics the real fields get, so the two control types
-          // carry identical labels rather than merely similar ones.
-          ...LABEL_STYLES[props.labelStyle].sx,
-          color: LABEL_COLORS[props.labelColor].value,
-          // The tooltip inside stays clickable; the label text does not need
-          // to be, since these controls open a dialog on click anyway.
-          pointerEvents: "none",
-          "& > *": { pointerEvents: "auto" },
-        }}
-      >
-        {labelNode}
-      </Typography>
+    <NotchedFieldset
+      label={labelNode}
+      labelStyle={props.labelStyle}
+      labelColor={props.labelColor}
+    >
       {props.render({})}
-    </Box>
+    </NotchedFieldset>
   ) : (
     props.render({
       label: labelNode,
