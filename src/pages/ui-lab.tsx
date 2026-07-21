@@ -1981,13 +1981,19 @@ interface ConsequencesProps {
 /** A — Quiet ledger. */
 function ConsequencesLedger(props: ConsequencesProps) {
   return (
-    <Paper variant="outlined" sx={{ px: 2.5, py: 0.5, borderRadius: "12px" }}>
+    {/* overflow hidden so the wash — which has square corners — is clipped by
+        the panel's 12px radius instead of poking past it. */}
+    <Paper
+      variant="outlined"
+      sx={{ px: 2.5, py: 0.5, borderRadius: "12px", overflow: "hidden" }}
+    >
       <Stack divider={<Divider flexItem />}>
-        {/* Negative inset so the wash bleeds to the panel's edges rather than
-            floating as an inner box with its own margins. */}
+        {/* Negative inset on all three sides so the wash reaches the panel's
+            edges. `mx` alone left the Paper's own 0.5 of vertical padding
+            showing as a white strip above it. */}
         <Box
           sx={[
-            { py: 1.5, px: 2.5, mx: -2.5 },
+            { py: 1.5, px: 2.5, mx: -2.5, mt: -0.5 },
             summaryBackgroundSx,
           ]}
         >
