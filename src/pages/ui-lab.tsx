@@ -213,6 +213,24 @@ type GaslessState = keyof typeof GASLESS_STATES;
 type ToggleLayout = "left" | "right";
 
 /**
+ * How the Stream Scheduling region is marked off.
+ *
+ * Once the tinted card went away, something had to take over its job of saying
+ * "required inputs end here, optional capability starts". A rule above the row
+ * did that — but it's unpaired, so when the section is COLLAPSED it groups the
+ * toggle with everything below it rather than enclosing it; and it's a one-off,
+ * since gasless does the same semantic job with a border instead.
+ *
+ * - "none"      — spacing alone (already 3–4× the within-field gap)
+ * - "above"     — the single rule, as originally added
+ * - "bracket"   — rules above and below, so the region encloses in both states
+ * - "container" — a bordered box matching gasless, one mechanism for both
+ *                 optional toggles. Costs alignment: the box's padding insets
+ *                 the date fields from the inputs above them.
+ */
+type SchedulingFrame = "none" | "above" | "bracket" | "container";
+
+/**
  * How the flow-rate period is attached to the amount.
  *
  * "split" is what the branch does: two sibling controls in a grid, seams
@@ -322,6 +340,7 @@ const UiLab: NextPage = () => {
   const [warningStyle, setWarningStyle] = useState<WarningStyle>("tint");
   const [spacing, setSpacing] = useState<SpacingKey>("default");
   const [toggleLayout, setToggleLayout] = useState<ToggleLayout>("right");
+  const [schedulingFrame, setSchedulingFrame] = useState<SchedulingFrame>("above");
   const [unitLayout, setUnitLayout] = useState<UnitLayout>("inside");
   const [balanceLayout, setBalanceLayout] = useState<BalanceLayout>("under");
   const [rowOrder, setRowOrder] = useState<RowOrder>("rateFirst");
@@ -338,6 +357,7 @@ const UiLab: NextPage = () => {
     warningStyle,
     spacing,
     toggleLayout,
+    schedulingFrame,
     unitLayout,
     balanceLayout,
     rowOrder,
@@ -484,6 +504,20 @@ const UiLab: NextPage = () => {
               <ToggleButton value="under">Under token</ToggleButton>
               <ToggleButton value="helper">Helper row</ToggleButton>
               <ToggleButton value="inField">In field</ToggleButton>
+            </ToggleButtonGroup>
+          </Knob>
+
+          <Knob label="Scheduling frame">
+            <ToggleButtonGroup
+              exclusive
+              size="small"
+              value={schedulingFrame}
+              onChange={(_e, v) => v != null && setSchedulingFrame(v)}
+            >
+              <ToggleButton value="none">None</ToggleButton>
+              <ToggleButton value="above">Rule above</ToggleButton>
+              <ToggleButton value="bracket">Bracketed</ToggleButton>
+              <ToggleButton value="container">Container</ToggleButton>
             </ToggleButtonGroup>
           </Knob>
 
@@ -771,6 +805,7 @@ function InputSection(props: {
   labelGap: number;
   labelColor: LabelColorKey;
   toggleLayout: ToggleLayout;
+  schedulingFrame: SchedulingFrame;
   unitLayout: UnitLayout;
   balanceLayout: BalanceLayout;
   rowOrder: RowOrder;
@@ -1010,14 +1045,29 @@ function InputSection(props: {
         )}
       </Box>
 
-      {/* Scheduling: a plain toggle row with a rule above it, not a card. */}
-      <Box>
-        <Divider sx={{ mb: 2 }} />
-        {/* "right" mirrors the gasless row exactly: icon leads at the content's
-            left edge, switch lands at the far right. The two optional-capability
-            toggles then read as the same kind of control. The rule above bounds
-            the row, so the switch has an edge to land on rather than floating
-            in open card space. */}
+      <Box
+        {...(props.schedulingFrame === "container"
+          ? { component: Paper, variant: "outlined" as const }
+          : {})}
+        sx={(theme) => ({
+          ...(props.schedulingFrame === "container"
+            ? {
+                px: 2,
+                py: 1.5,
+                borderRadius: "12px",
+                borderColor: open
+                  ? theme.palette.primary.main
+                  : theme.palette.other.outline,
+                transition: theme.transitions.create("border-color"),
+              }
+            : {}),
+        })}
+      >
+        {(props.schedulingFrame === "above" ||
+          props.schedulingFrame === "bracket") && <Divider sx={{ mb: 2 }} />}
+        {/* "right" mirrors the gasless row: icon leads at the content's left
+            edge, switch lands at the far right, so the two optional-capability
+            toggles read as the same kind of control. */}
         <Stack direction="row" alignItems="center" gap={1}>
           {props.toggleLayout === "left" && (
             <Switch
@@ -1033,13 +1083,15 @@ function InputSection(props: {
               color: open ? "primary.main" : "text.secondary",
             }}
           />
-          <Typography variant="body2" sx={{ flex: 1 }}>
-            Stream Scheduling
-          </Typography>
+          <Typography variant="body2">Stream Scheduling</Typography>
+          {/* Sits against the label, matching the field tooltips in the notch.
+              Pushed to the far right it lines up with the switch instead, and
+              reads as a second control rather than a note on the label. */}
           <TooltipWithIcon
             title="Schedule start and end dates for future or fixed-duration streams"
-            IconProps={{ sx: { fontSize: 16 } }}
+            IconProps={{ sx: { fontSize: 16, display: "block" } }}
           />
+          <Box sx={{ flex: 1 }} />
           {props.toggleLayout === "right" && (
             <Switch
               size="small"
@@ -1104,6 +1156,9 @@ function InputSection(props: {
             />
           </Stack>
         </Collapse>
+        {/* Closes the region so the block reads as enclosed whether or not
+            it's expanded — the unpaired rule only groups correctly when open. */}
+        {props.schedulingFrame === "bracket" && <Divider sx={{ mt: 2 }} />}
       </Box>
     </Stack>
   );
@@ -1233,24 +1288,21 @@ function GaslessLine(props: { state: GaslessState; attached?: boolean }) {
                 : "text.secondary",
           }}
         />
-        <Typography variant="body2" sx={{ flex: 1 }}>
-          Gasless
-          {enabled && (
-            <Typography
-              component="span"
-              variant="body2"
-              color="text.secondary"
-              translate="no"
-            >
-              {" · "}
-              {feeText} fee
-            </Typography>
-          )}
-        </Typography>
+        <Typography variant="body2">Gasless</Typography>
+        {/* Against the label — matching the scheduling row and the notched
+            field tooltips — and BEFORE the fee, which comes and goes with
+            state. Trailing the fee, the icon would shift position every time
+            the strip changed state. */}
         <TooltipWithIcon
           title="You sign a message instead of paying gas. The transaction is submitted for you and the network fee is covered. A service fee is charged only if it succeeds."
-          IconProps={{ sx: { fontSize: 16 } }}
+          IconProps={{ sx: { fontSize: 16, display: "block" } }}
         />
+        {enabled && (
+          <Typography variant="body2" color="text.secondary" translate="no" noWrap>
+            · {feeText} fee
+          </Typography>
+        )}
+        <Box sx={{ flex: 1 }} />
         <Switch size="small" checked={enabled} sx={{ mr: "-6px" }} />
       </Stack>
 
@@ -1649,6 +1701,7 @@ function MockSendForm(props: {
   warningStyle: WarningStyle;
   spacing: SpacingKey;
   toggleLayout: ToggleLayout;
+  schedulingFrame: SchedulingFrame;
   unitLayout: UnitLayout;
   balanceLayout: BalanceLayout;
   rowOrder: RowOrder;
@@ -1671,6 +1724,7 @@ function MockSendForm(props: {
           labelGap={props.labelGap}
           labelColor={props.labelColor}
           toggleLayout={props.toggleLayout}
+          schedulingFrame={props.schedulingFrame}
           unitLayout={props.unitLayout}
           balanceLayout={props.balanceLayout}
           rowOrder={props.rowOrder}
