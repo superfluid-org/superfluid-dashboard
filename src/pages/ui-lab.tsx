@@ -287,12 +287,39 @@ const accentBorder = (
  */
 type InputSurface = "outlined" | "filled" | "fillOnly";
 
-const inputSurfaceSx = (surface: InputSurface) => (theme: Theme) => {
+type InputFillKey = keyof typeof INPUT_FILLS;
+
+/**
+ * How strong the input recess is, independent of whether it keeps a border.
+ *
+ * Light-mode values are the theme's own ink (#12141E) at low alpha so they
+ * stay consistent if the ink changes — except "brand", which is the updated
+ * palette's Light Grey. That one isn't a guess: brand-design.md lists #F7F8FA
+ * as the foundation grey used for "text, form fields, backgrounds, dividers",
+ * so it is the designated form-field surface.
+ *
+ * Dark mode inverts — a recess there is a light overlay, not a dark one, since
+ * the canvas is already near-black. Note these sit on top of the card's own 3%
+ * elevation overlay, so the effective step is the difference between them.
+ */
+const INPUT_FILLS = {
+  soft: { name: "Soft", note: "2% ink / 3% white", light: "rgba(18, 20, 30, 0.02)", dark: "rgba(255, 255, 255, 0.03)" },
+  brand: { name: "Brand grey", note: "#F7F8FA — palette's form-field grey", light: "#F7F8FA", dark: "rgba(255, 255, 255, 0.05)" },
+  medium: { name: "Medium", note: "4% ink / 6% white", light: "rgba(18, 20, 30, 0.04)", dark: "rgba(255, 255, 255, 0.06)" },
+  strong: { name: "Strong", note: "7% ink / 9% white", light: "rgba(18, 20, 30, 0.07)", dark: "rgba(255, 255, 255, 0.09)" },
+  // Neutral grey IS the conventional disabled fill, so a grey-filled enabled
+  // input reads as switched off. Tinting toward the theme's blue-grey
+  // (#8292AD, already the action/info hue) keeps the recess while stepping
+  // off the disabled convention — a tinted well reads as a field, a grey one
+  // reads as inert.
+  tint: { name: "Cool tint", note: "#8292AD wash — avoids the disabled look", light: "rgba(130, 146, 173, 0.10)", dark: "rgba(130, 146, 173, 0.16)" },
+};
+
+const inputSurfaceSx =
+  (surface: InputSurface, fillKey: InputFillKey) => (theme: Theme) => {
   if (surface === "outlined") return {};
-  const fill =
-    theme.palette.mode === "dark"
-      ? "rgba(255, 255, 255, 0.05)"
-      : "rgba(18, 20, 30, 0.03)";
+  const entry = INPUT_FILLS[fillKey];
+  const fill = theme.palette.mode === "dark" ? entry.dark : entry.light;
   return {
     "& .MuiOutlinedInput-root, & [class*='MuiButton-input']": {
       backgroundColor: fill,
@@ -532,6 +559,7 @@ const UiLab: NextPage = () => {
   const [ctaColor, setCtaColor] = useState<CtaColorKey>("current");
   const [activeAccent, setActiveAccent] = useState<ActiveAccent>("neutral");
   const [inputSurface, setInputSurface] = useState<InputSurface>("filled");
+  const [inputFill, setInputFill] = useState<InputFillKey>("brand");
   const [unitLayout, setUnitLayout] = useState<UnitLayout>("inside");
   const [balanceLayout, setBalanceLayout] = useState<BalanceLayout>("under");
   const [rowOrder, setRowOrder] = useState<RowOrder>("rateFirst");
@@ -553,6 +581,7 @@ const UiLab: NextPage = () => {
     ctaColor,
     activeAccent,
     inputSurface,
+    inputFill,
     unitLayout,
     balanceLayout,
     rowOrder,
@@ -712,6 +741,21 @@ const UiLab: NextPage = () => {
               {(Object.keys(CTA_COLORS) as CtaColorKey[]).map((k) => (
                 <ToggleButton key={k} value={k}>
                   {CTA_COLORS[k].name}
+                </ToggleButton>
+              ))}
+            </ToggleButtonGroup>
+          </Knob>
+
+          <Knob label={`Input fill — ${INPUT_FILLS[inputFill].note}`}>
+            <ToggleButtonGroup
+              exclusive
+              size="small"
+              value={inputFill}
+              onChange={(_e, v) => v != null && setInputFill(v)}
+            >
+              {(Object.keys(INPUT_FILLS) as InputFillKey[]).map((k) => (
+                <ToggleButton key={k} value={k}>
+                  {INPUT_FILLS[k].name}
                 </ToggleButton>
               ))}
             </ToggleButtonGroup>
@@ -1988,6 +2032,7 @@ function MockSendForm(props: {
   warningStyle: WarningStyle;
   spacing: SpacingKey;
   inputSurface: InputSurface;
+  inputFill: InputFillKey;
   toggleLayout: ToggleLayout;
   schedulingFrame: SchedulingFrame;
   buttonShape: ButtonShape;
@@ -2019,7 +2064,7 @@ function MockSendForm(props: {
           backgroundColor: "transparent",
           backgroundImage: "none",
         },
-        ...inputSurfaceSx(props.inputSurface)(theme),
+        ...inputSurfaceSx(props.inputSurface, props.inputFill)(theme),
       })}
     >
       <Stack spacing={section}>
