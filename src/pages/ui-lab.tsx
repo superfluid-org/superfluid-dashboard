@@ -34,6 +34,7 @@ import { SxProps, Theme } from "@mui/material/styles";
 import { NextPage } from "next";
 import { ReactNode, useState } from "react";
 import TooltipWithIcon from "../features/common/TooltipWithIcon";
+import { ELEVATION1_BG } from "../features/theme/theme";
 
 /**
  * Design scratchpad for the Send Stream form. Not linked from anywhere in the
@@ -269,6 +270,42 @@ const accentBorder = (
     ? theme.palette.primary.main
     : theme.palette.other.outline;
 
+/**
+ * Whether input controls sit on the card's surface or in a recessed well.
+ *
+ * "outlined" is today's: fields are defined purely by a 1px border. "filled"
+ * adds a faint recess so a field reads as something you put a value INTO, not
+ * just an outlined region — the affordance survives even when the border is
+ * low-contrast, which matters in dark mode where hairlines disappear first.
+ * "fillOnly" drops the border and lets the fill do all the work.
+ *
+ * Covers the receiver and token pickers too. They're Buttons, but they're
+ * styled as inputs and must not diverge from the fields beside them.
+ *
+ * Note the interaction with notched labels: the notch cut has to stay the CARD
+ * colour, not the fill, because the label sits ON the border between the two.
+ */
+type InputSurface = "outlined" | "filled" | "fillOnly";
+
+const inputSurfaceSx = (surface: InputSurface) => (theme: Theme) => {
+  if (surface === "outlined") return {};
+  const fill =
+    theme.palette.mode === "dark"
+      ? "rgba(255, 255, 255, 0.05)"
+      : "rgba(18, 20, 30, 0.03)";
+  return {
+    "& .MuiOutlinedInput-root, & [class*='MuiButton-input']": {
+      backgroundColor: fill,
+      ...(surface === "fillOnly"
+        ? { "& .MuiOutlinedInput-notchedOutline": { borderColor: "transparent" } }
+        : {}),
+    },
+    ...(surface === "fillOnly"
+      ? { "& [class*='MuiButton-input']": { borderColor: "transparent" } }
+      : {}),
+  };
+};
+
 type CtaColorKey = keyof typeof CTA_COLORS;
 
 /**
@@ -494,6 +531,7 @@ const UiLab: NextPage = () => {
   const [buttonShape, setButtonShape] = useState<ButtonShape>("pill");
   const [ctaColor, setCtaColor] = useState<CtaColorKey>("current");
   const [activeAccent, setActiveAccent] = useState<ActiveAccent>("neutral");
+  const [inputSurface, setInputSurface] = useState<InputSurface>("filled");
   const [unitLayout, setUnitLayout] = useState<UnitLayout>("inside");
   const [balanceLayout, setBalanceLayout] = useState<BalanceLayout>("under");
   const [rowOrder, setRowOrder] = useState<RowOrder>("rateFirst");
@@ -514,6 +552,7 @@ const UiLab: NextPage = () => {
     buttonShape,
     ctaColor,
     activeAccent,
+    inputSurface,
     unitLayout,
     balanceLayout,
     rowOrder,
@@ -675,6 +714,19 @@ const UiLab: NextPage = () => {
                   {CTA_COLORS[k].name}
                 </ToggleButton>
               ))}
+            </ToggleButtonGroup>
+          </Knob>
+
+          <Knob label="Input surface">
+            <ToggleButtonGroup
+              exclusive
+              size="small"
+              value={inputSurface}
+              onChange={(_e, v) => v != null && setInputSurface(v)}
+            >
+              <ToggleButton value="outlined">Outlined</ToggleButton>
+              <ToggleButton value="filled">Filled</ToggleButton>
+              <ToggleButton value="fillOnly">Fill only</ToggleButton>
             </ToggleButtonGroup>
           </Knob>
 
@@ -955,7 +1007,14 @@ function Field(props: {
           px: 0.5,
           zIndex: 1,
           lineHeight: 1.2,
+          // The label paints over the border, so it must match the surface it
+          // sits on — which is the CARD, not bare paper. In dark mode an
+          // elevation-1 Paper is background.paper PLUS a flat 3% white
+          // overlay, so painting background.paper alone renders visibly darker
+          // and bluer than the card behind it.
           backgroundColor: "background.paper",
+          backgroundImage: (theme: Theme) =>
+            theme.palette.mode === "dark" ? ELEVATION1_BG : "none",
           // Same font metrics the real fields get, so the two control types
           // carry identical labels rather than merely similar ones.
           ...LABEL_STYLES[props.labelStyle].sx,
@@ -1928,6 +1987,7 @@ function MockSendForm(props: {
   labelColor: LabelColorKey;
   warningStyle: WarningStyle;
   spacing: SpacingKey;
+  inputSurface: InputSurface;
   toggleLayout: ToggleLayout;
   schedulingFrame: SchedulingFrame;
   buttonShape: ButtonShape;
@@ -1945,7 +2005,23 @@ function MockSendForm(props: {
   const { edge, section } = SPACINGS[props.spacing];
 
   return (
-    <Card elevation={1} sx={{ p: `${edge}px`, width: "100%" }}>
+    <Card
+      elevation={1}
+      sx={(theme) => ({
+        p: `${edge}px`,
+        width: "100%",
+        // Outlined Papers get background.paper but NOT the elevation-1 overlay
+        // the card itself carries, so in dark mode every one of them reads
+        // darker and bluer than the surface it sits on. They are meant to be
+        // borders around the card's own surface, not separate surfaces —
+        // so let the card show through instead of repainting it.
+        "& .MuiPaper-outlined": {
+          backgroundColor: "transparent",
+          backgroundImage: "none",
+        },
+        ...inputSurfaceSx(props.inputSurface)(theme),
+      })}
+    >
       <Stack spacing={section}>
         <InputSection
           scheduling={props.scheduling}
