@@ -507,11 +507,14 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
         },
         styleOverrides: {
           root: {
-            ...theme.typography.h6,
-            color: "inherit",
+            // Form labels are annotations, not headings: body2's size at medium
+            // weight in the secondary colour, flush with the input's left edge.
+            ...theme.typography.body2,
+            fontWeight: 500,
+            color: theme.palette.text.secondary,
             display: "inline-block",
-            marginLeft: theme.spacing(1.25),
-            marginBottom: theme.spacing(0.75),
+            marginLeft: 0,
+            marginBottom: theme.spacing(1),
           },
         },
       },
@@ -557,7 +560,7 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
             // TODO: Figure out why styleOverrides.disabled is not working and replace .Mui-disabled hardcoded class.
             "&.Mui-disabled": {
               background: theme.palette.action.disabledBackground,
-              borderRadius: "10px",
+              borderRadius: "8px",
               ".MuiOutlinedInput-notchedOutline": {
                 borderColor: theme.palette.other.outline,
               },
@@ -575,7 +578,7 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
       MuiFormHelperText: {
         styleOverrides: {
           root: {
-            marginLeft: "10px",
+            marginLeft: 0,
           },
         },
       },
@@ -674,7 +677,7 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           grouped: {
             border: "none",
             ":not(:first-of-type), :not(:last-of-type)": {
-              borderRadius: "10px",
+              borderRadius: "8px",
             },
             ":not(:first-of-type)": {
               marginLeft: "4px",
@@ -876,7 +879,7 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
         },
         styleOverrides: {
           root: {
-            borderRadius: "10px",
+            borderRadius: "8px",
           },
           sizeSmall: {
             borderRadius: "6px",
@@ -1189,7 +1192,7 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
       MuiCard: {
         styleOverrides: {
           root: {
-            padding: theme.spacing(3.5),
+            padding: theme.spacing(4),
           },
         },
       },
@@ -1249,7 +1252,10 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
       },
     },
     shape: {
-      borderRadius: 10,
+      // Inputs and buttons sit a step tighter than the 12px cards/paper they
+      // live in — the softer surface reads as the container, the crisper
+      // control as the thing you act on.
+      borderRadius: 8,
     },
   };
 }

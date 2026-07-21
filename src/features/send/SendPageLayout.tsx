@@ -57,7 +57,7 @@ export default memo(function SendPageLayout({ children }: { children: PropsWithC
 
           <NetworkBadge
             network={network}
-            sx={{ position: "absolute", top: 0, right: theme.spacing(3.5) }}
+            sx={{ position: "absolute", top: 0, right: theme.spacing(4) }}
             NetworkIconProps={{
               size: 32,
               fontSize: 18,

@@ -20,7 +20,23 @@ interface AmountProps {
   roundingIndicator?: "..." | "~";
   children?: ReactNode;
   mono?: true;
+  /**
+   * Insert thousand separators into the integer part, e.g. 2891013 -> 2,891,013.
+   * Opt-in: most amounts in the app render without grouping, and some tests
+   * assert exact strings.
+   */
+  groupSeparator?: boolean;
   sx?: SxProps
+}
+
+/**
+ * Groups the integer digits of an already-formatted amount. Operates only on the
+ * leading run of digits so a "~" prefix or "..." suffix is left untouched.
+ */
+function addGroupSeparators(formatted: string) {
+  return formatted.replace(/\d+/, (digits) =>
+    digits.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+  );
 }
 
 export function formatAmount(
@@ -28,7 +44,8 @@ export function formatAmount(
   decimals?: number,
   decimalPlaces?: number,
   disableRounding?: boolean,
-  roundingIndicator?: "..." | "~"
+  roundingIndicator?: "..." | "~",
+  groupSeparator?: boolean
 ) {
   const decimal = new Decimal(utils.formatUnits(wei, decimals));
   const decimalPlacesToRoundTo =
@@ -39,11 +56,11 @@ export function formatAmount(
     : decimal.toDP(decimalPlacesToRoundTo);
   const isRounded = !decimal.equals(decimalRounded);
 
-  return `${
-    isRounded && roundingIndicator === "~" ? "~" : ""
-  }${decimalRounded.toFixed(decimalPlacesToDisplay)}${
-    isRounded && roundingIndicator === "..." ? "..." : ""
-  }`;
+  const fixed = decimalRounded.toFixed(decimalPlacesToDisplay);
+
+  return `${isRounded && roundingIndicator === "~" ? "~" : ""}${
+    groupSeparator ? addGroupSeparators(fixed) : fixed
+  }${isRounded && roundingIndicator === "..." ? "..." : ""}`;
 }
 
 // NOTE: Previously known as "EtherFormatted" & "Ether"
@@ -60,7 +77,8 @@ export default memo<AmountProps>(function Amount({
     decimals,
     props.decimalPlaces,
     disableRounding,
-    roundingIndicator
+    roundingIndicator,
+    props.groupSeparator
   );
 
   return (

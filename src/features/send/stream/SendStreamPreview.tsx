@@ -1,6 +1,6 @@
 import {
-  Alert,
-  alpha,
+  Divider,
+  Paper,
   Stack,
   Tooltip,
   Typography,
@@ -47,6 +47,8 @@ interface PreviewItemProps {
   isError?: boolean;
   oldValue?: ReactNode;
   dataCy?: string;
+  /** Renders the value with tabular numerals, as the app's tables do. */
+  numeric?: boolean;
   TypographyProps?: Partial<TypographyProps>;
 }
 
@@ -56,6 +58,7 @@ const PreviewItem: FC<PropsWithChildren<PreviewItemProps>> = ({
   oldValue,
   isError,
   dataCy,
+  numeric,
   TypographyProps = {},
 }) => {
   const theme = useTheme();
@@ -65,10 +68,11 @@ const PreviewItem: FC<PropsWithChildren<PreviewItemProps>> = ({
     <Typography
       data-cy={dataCy}
       component="span"
-      variant="body2"
+      variant={numeric ? "body2mono" : "body2"}
       fontWeight="500"
       sx={{
-        color: isError ? "red" : theme.palette.primary.main, // TODO(KK): handle colors better?
+        color: isError ? theme.palette.error.main : theme.palette.text.primary,
+        textAlign: isBelowMd ? "left" : "right",
       }}
       {...TypographyProps}
     >
@@ -80,11 +84,12 @@ const PreviewItem: FC<PropsWithChildren<PreviewItemProps>> = ({
       direction={isBelowMd ? "column" : "row"}
       alignItems={isBelowMd ? "start" : "center"}
       justifyContent="space-between"
+      gap={isBelowMd ? 0 : 2}
     >
       {isValidElement(label) ? (
         label
       ) : (
-        <Typography variant="body2" translate="yes">
+        <Typography variant="body2" color="text.secondary" translate="yes">
           {label}
         </Typography>
       )}
@@ -245,30 +250,29 @@ export const StreamingPreview: FC<StreamingPreviewProps> = ({
   );
 
   return (
-    <Alert
-      icon={false}
+    <Paper
       variant="outlined"
-      severity="success"
       sx={{
-        py: 1,
+        py: 0.5,
         px: 2.5,
-        borderColor: theme.palette.primary.main,
-        backgroundColor: alpha(theme.palette.primary.main, 0.04),
-        //TODO: This alert message rule should be looked deeper into. This should not be needed
-        ".MuiAlert-message": {
-          flex: 1,
-        },
+        borderColor: theme.palette.other.outline,
       }}
       translate="no"
     >
       <Stack
-        gap={0.5}
+        // Row rules only apply to the desktop single-column layout. Below md the
+        // rows wrap into two columns, where dividers between flex items render
+        // in the wrong places — so the wrap layout keeps its plain gap instead.
+        divider={isBelowMd ? undefined : <Divider flexItem />}
         sx={{
+          // :not(hr) so the row padding does not also apply to the dividers.
+          "> *:not(hr)": { py: 1 },
           [theme.breakpoints.down("md")]: {
             flexDirection: "row",
             flexWrap: "wrap",
             columnGap: 1,
-            "> *": {
+            "> *:not(hr)": {
+              py: 0.25,
               minWidth: `calc(50% - ${theme.spacing(1)})`,
             },
           },
@@ -281,6 +285,7 @@ export const StreamingPreview: FC<StreamingPreviewProps> = ({
         <PreviewItem
           dataCy="preview-flow-rate"
           label="Flow rate"
+          numeric
           oldValue={
             existingPrettyEtherFlowRate &&
             flowRateEtherToString(existingPrettyEtherFlowRate, token.symbol)
@@ -292,6 +297,7 @@ export const StreamingPreview: FC<StreamingPreviewProps> = ({
         <PreviewItem
           dataCy="preview-per-second"
           label="Amount per second"
+          numeric
           oldValue={
             existingFlowRate &&
             oldAmountPerSecond != newAmountPerSecond && (
@@ -308,7 +314,12 @@ export const StreamingPreview: FC<StreamingPreviewProps> = ({
         {newScheduledFlowRate.startTimestamp && (
           <PreviewItem dataCy="preview-starts-on" label="Start date">
             <Stack direction="row" alignItems="center" gap={0.5}>
-              <ScheduledStreamIcon scheduledStart />
+              <ScheduledStreamIcon
+                scheduledStart
+                IconProps={{
+                  sx: { display: "block", color: "text.secondary" },
+                }}
+              />
               {format(
                 fromUnixTime(newScheduledFlowRate.startTimestamp),
                 "P"
@@ -329,12 +340,21 @@ export const StreamingPreview: FC<StreamingPreviewProps> = ({
           <Stack direction="row" alignItems="center" gap={0.5}>
             {newEndDate ? (
               <>
-                <ScheduledStreamIcon scheduledEnd />
+                <ScheduledStreamIcon
+                  scheduledEnd
+                  IconProps={{
+                    sx: { display: "block", color: "text.secondary" },
+                  }}
+                />
                 {format(newEndDate, "P")} at {format(newEndDate, "p")}
               </>
             ) : (
               <>
-                <ActiveStreamIcon />
+                <ActiveStreamIcon
+                  IconProps={{
+                    sx: { display: "block", color: "text.secondary" },
+                  }}
+                />
                 Never
               </>
             )}
@@ -344,8 +364,9 @@ export const StreamingPreview: FC<StreamingPreviewProps> = ({
         {newBufferAmount && (
           <PreviewItem
             dataCy="preview-upfront-buffer"
+            numeric
             label={
-              <Typography variant="body2" translate="yes">
+              <Typography variant="body2" color="text.secondary" translate="yes">
                 Upfront buffer{` `}
                 <TooltipWithIcon
                   title={`A minimum buffer or ${
@@ -370,7 +391,7 @@ export const StreamingPreview: FC<StreamingPreviewProps> = ({
             dataCy="preview-balance-after-buffer"
             label="Balance after buffer"
             isError={balanceAfterBuffer.isNegative()}
-            TypographyProps={{ variant: "body2mono" }}
+            numeric
           >
             {realtimeBalance && (
               <FlowingBalance
@@ -406,6 +427,6 @@ export const StreamingPreview: FC<StreamingPreviewProps> = ({
         )}
 
       </Stack>
-    </Alert>
+    </Paper>
   );
 };

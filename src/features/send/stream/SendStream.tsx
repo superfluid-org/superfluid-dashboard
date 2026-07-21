@@ -1,15 +1,16 @@
 import { ErrorMessage } from "@hookform/error-message";
-import AddRounded from "@mui/icons-material/AddRounded";
+import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
+import TimerOutlined from "@mui/icons-material/TimerOutlined";
 import {
   Alert,
+  alpha,
   Box,
   Checkbox,
   Collapse,
-  Divider,
   FormControlLabel,
   FormGroup,
-  FormLabel,
   IconButton,
+  Paper,
   Stack,
   Switch,
   TextField,
@@ -73,6 +74,7 @@ import {
 } from "../../transactionRestoration/transactionRestorations";
 import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
 import AddressSearch from "../AddressSearch";
+import { FieldLabel } from "../FieldLabel";
 import {
   calculateTotalAmountWei,
   FlowRateInput,
@@ -353,6 +355,7 @@ export default memo(function SendStream() {
   const TotalStreamedController = (
     <TextField
       data-cy={"total-stream"}
+      id="total-stream"
       value={totalStreamedEther}
       autoComplete="off"
       onChange={(event) => {
@@ -855,7 +858,7 @@ export default memo(function SendStream() {
   const doesNetworkSupportScheduling = !!network.flowSchedulerContractAddress || network.id === networkDefinition.base.id;
 
   return (
-    <Stack spacing={2.5}>
+    <Stack spacing={3}>
       <ErrorMessage
         name="data"
         // ErrorMessage has a bug and current solution is to pass in errors via props.
@@ -870,15 +873,12 @@ export default memo(function SendStream() {
         }
       />
       <Box>
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-          sx={{ mr: 0.75 }}
+        <FieldLabel
+          htmlFor="receiver-address"
+          tooltip="Must not be an exchange address"
         >
-          <FormLabel>Receiver Wallet Address</FormLabel>
-          <TooltipWithIcon title="Must not be an exchange address" />
-        </Stack>
+          Receiver Wallet Address
+        </FieldLabel>
         <ReceiverAddressController isBelowMd={isBelowMd} />
       </Box>
       <Box
@@ -891,35 +891,76 @@ export default memo(function SendStream() {
           },
         }}
       >
-        <Stack justifyContent="stretch">
-          <FormLabel>Super Token</FormLabel>
+        {/* minWidth: 0 so the balance line below, which is allowed to overflow
+            this column, cannot stretch it and break the 1fr 2fr ratio. */}
+        <Stack justifyContent="stretch" sx={{ minWidth: 0 }}>
+          <FieldLabel htmlFor="super-token">Super Token</FieldLabel>
           <TokenController network={network} superToken={superToken} />
+          <SendBalance
+            network={network}
+            visibleAddress={visibleAddress}
+            token={superToken}
+          />
         </Stack>
         <Box>
-          <Stack
-            direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-            sx={{ mr: 0.75 }}
-          >
-            <FormLabel>Flow Rate</FormLabel>
-            <TooltipWithIcon title="Flow rate is the velocity of tokens being streamed." />
-          </Stack>
+          <FieldLabel htmlFor="flow-rate">Flow Rate</FieldLabel>
           <FlowRateController />
         </Box>
       </Box>
       {doesNetworkSupportScheduling && (
-        <>
-          <FormControlLabel
-            data-cy={"scheduling-tooltip"}
-            control={<StreamSchedulingController streamScheduling={streamScheduling} setStreamScheduling={setStreamScheduling} />}
-            label={
-              <Stack direction="row" alignItems="center" gap={0.75}>
-                Stream Scheduling
-                <TooltipWithIcon title="Schedule start and end dates for future or fixed-duration streams" />
-              </Stack>
-            }
-          />
+        // Self-contained card mirroring the gasless relay option: an optional
+        // feature that tints green while active. See ClearMacroRelayOption.tsx.
+        <Paper
+          variant="outlined"
+          data-cy="stream-scheduling-section"
+          sx={(theme) => ({
+            px: 2,
+            py: 1.5,
+            borderRadius: "12px",
+            borderColor: streamScheduling
+              ? theme.palette.primary.main
+              : theme.palette.other.outline,
+            // Very light tint (0.02) — enough to register as active without the
+            // white date pickers and input on top of it reading as muddy.
+            backgroundColor: streamScheduling
+              ? alpha(theme.palette.primary.main, 0.02)
+              : "transparent",
+            transition: theme.transitions.create([
+              "border-color",
+              "background-color",
+            ]),
+          })}
+        >
+          {/* Header row mirrors the relay card: control + label take the space,
+              the info icon is pushed to the far right. */}
+          <Stack direction="row" alignItems="center">
+            <FormControlLabel
+              data-cy={"scheduling-tooltip"}
+              // ml 0 cancels FormControlLabel's default negative inset so the
+              // switch lines up with the card's padding, as the relay's does.
+              // gap 1 matches the relay's Stack gap between switch and icon,
+              // which FormControlLabel does not otherwise reproduce.
+              sx={{ ml: 0, mr: 0, flex: 1, gap: 1 }}
+              control={<StreamSchedulingController streamScheduling={streamScheduling} setStreamScheduling={setStreamScheduling} />}
+              label={
+                <Stack direction="row" alignItems="center" gap={1}>
+                  <TimerOutlined
+                    fontSize="small"
+                    sx={{
+                      color: streamScheduling ? "primary.main" : "text.secondary",
+                    }}
+                  />
+                  <Typography variant="body2" translate="yes">
+                    Stream Scheduling
+                  </Typography>
+                </Stack>
+              }
+            />
+            <TooltipWithIcon
+              title="Schedule start and end dates for future or fixed-duration streams"
+              IconProps={{ sx: { fontSize: 16 } }}
+            />
+          </Stack>
           <Collapse
             data-cy={"scheduling-collapse"}
             in={streamScheduling}
@@ -937,29 +978,13 @@ export default memo(function SendStream() {
                 gap={2.5}
               >
                 <Stack>
-                  <Stack
-                    direction="row"
-                    alignItems="center"
-                    justifyContent="space-between"
-                    sx={{ mr: 0.75 }}
-                    flex={1}
-                  >
-                    <FormLabel>Start Date</FormLabel>
-                    <TooltipWithIcon title="The date when stream scheduler tries to start the stream." />
-                  </Stack>
+                  {/* The card's own tooltip already explains what scheduling
+                      does; per-date tooltips only restated the label. */}
+                  <FieldLabel htmlFor="start-date">Start Date</FieldLabel>
                   <StartDateController disabled={!!activeFlow} MIN_DATE={MIN_DATE} startDate={startDate} startDateMax={startDateMax} />
                 </Stack>
                 <Stack>
-                  <Stack
-                    direction="row"
-                    alignItems="center"
-                    justifyContent="space-between"
-                    sx={{ mr: 0.75 }}
-                    flex={1}
-                  >
-                    <FormLabel>End Date</FormLabel>
-                    <TooltipWithIcon title="The date when stream scheduler tries to cancel the stream." />
-                  </Stack>
+                  <FieldLabel htmlFor="end-date">End Date</FieldLabel>
                   <EndDateController MAX_DATE={MAX_DATE} endDateMin={endDateMin} endDate={endDate} />
                 </Stack>
               </Stack>
@@ -969,28 +994,20 @@ export default memo(function SendStream() {
                   ...(showAllowlistGate ? { opacity: 0.5 } : {}),
                 }}
               >
-                <Stack
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="space-between"
-                  sx={{ mr: 0.75 }}
-                  flex={1}
+                <FieldLabel
+                  htmlFor="total-stream"
+                  tooltip="The approximate amount that will be streamed until the scheduler cancels the stream."
                 >
-                  <FormLabel>Total Stream</FormLabel>
-                  <TooltipWithIcon title="The approximate amount that will be streamed until the scheduler cancels the stream." />
-                </Stack>
+                  Total Stream
+                </FieldLabel>
                 {TotalStreamedController}
               </Stack>
 
               {showAllowlistGate && <WhitelistTransparentBox />}
             </Stack>
           </Collapse>
-        </>
+        </Paper>
       )}
-
-      <SendBalance network={network} visibleAddress={visibleAddress} token={superToken} />
-
-      {(superToken && visibleAddress) && <Divider />}
 
       {!!(receiverAddress && superToken) && (
         <StreamingPreview
@@ -1130,31 +1147,61 @@ export const SendBalance = memo(function SendBalance(props: {
     <Stack
       direction="row"
       alignItems="center"
-      justifyContent="center"
-      gap={1}
+      // Sits under the token selector as a property of the selected token, so
+      // it reads left-aligned and quiet rather than as a headline figure.
+      justifyContent="flex-start"
+      // gap 0: the text pieces already carry their own spaces (Amount renders a
+      // leading space before the symbol slot), so a Stack gap double-spaced it.
+      // The wrap button supplies its own margin instead.
+      gap={0}
+      sx={(theme) => ({
+        mt: 0.75,
+        [theme.breakpoints.up("md")]: {
+          // The token column is too narrow for this line, so let it run the
+          // full width of the row instead of wrapping. The space to the right,
+          // under the flow rate input, is empty. The parent grid item sets
+          // minWidth: 0 so this overflow cannot widen the column.
+          flexWrap: "nowrap",
+          whiteSpace: "nowrap",
+        },
+        [theme.breakpoints.down("md")]: {
+          // Single-column layout — no room to overflow into, so wrap instead.
+          flexWrap: "wrap",
+        },
+      })}
     >
-      <Stack direction="row" alignItems="center" gap={0.5}>
-        <BalanceSuperToken
-          showFiat
-          data-cy={"balance"}
-          chainId={props.network.id}
-          accountAddress={props.visibleAddress}
-          tokenAddress={props.token.address}
-          symbol={props.token.symbol}
-          TypographyProps={{ variant: "h7mono" }}
-          SymbolTypographyProps={{ variant: "h7" }}
-        />
-      </Stack>
+      <BalanceSuperToken
+        groupSeparator
+        data-cy={"balance"}
+        chainId={props.network.id}
+        accountAddress={props.visibleAddress}
+        tokenAddress={props.token.address}
+        // No `symbol` — the token selector directly above already names it.
+        // No `showFiat` — the fiat value reflows as the balance streams, which
+        // moved everything after it on every tick.
+        TypographyProps={{ variant: "body2mono", color: "text.secondary" }}
+      />
       {isWrappableSuperToken && (
         <Tooltip title="Wrap more">
           <IconButton
             LinkComponent={Link}
             href={`/wrap?upgrade&token=${props.token.address}&network=${props.network.slugName}`}
             data-cy={"balance-wrap-button"}
-            color="primary"
             size="small"
+            sx={(theme) => ({
+              // AddCircleOutline is already a round outlined plus, so the button
+              // itself carries no border or background — same treatment as the
+              // token selection dialog (TokenListItem.tsx).
+              p: 0,
+              ml: 0.75,
+              backgroundColor: "transparent",
+              "&:hover": {
+                color: theme.palette.primary.main,
+                backgroundColor: "transparent",
+              },
+            })}
           >
-            <AddRounded />
+            <AddCircleOutline sx={{ fontSize: 18 }} />
           </IconButton>
         </Tooltip>
       )}
@@ -1166,7 +1213,7 @@ const BufferAlert = memo(function BufferAlert(
   props: { bufferAmount: BigNumber | undefined, superToken: SuperTokenMinimal | undefined | null }
 ) {
   return (
-    <Alert data-cy="buffer-warning" severity="error">
+    <Alert data-cy="buffer-warning" severity="warning">
       If you do not cancel this stream before your balance reaches zero,{" "}
       <b>
         you will lose your{" "}
@@ -1198,7 +1245,7 @@ const ReceiverAddressController = memo(function ReceiverAddressController(
           onChange={onChange}
           onBlur={onBlur}
           addressLength={props.isBelowMd ? "medium" : "long"}
-          ButtonProps={{ fullWidth: true }}
+          ButtonProps={{ fullWidth: true, id: "receiver-address" }}
         />
       )}
     />
@@ -1248,7 +1295,7 @@ const TokenController = memo(function TokenController(props: { network: Network,
           showUpgrade={true}
           onTokenSelect={(x) => onChange(x.address)}
           onBlur={onBlur}
-          ButtonProps={{ variant: "input" }}
+          ButtonProps={{ variant: "input", id: "super-token" }}
         />
       )}
     />
@@ -1269,6 +1316,7 @@ const FlowRateController = memo(function FlowRateController() {
       name="data.flowRate"
       render={({ field: { onChange, onBlur } }) => (
         <FlowRateInput
+          id="flow-rate"
           flowRateEther={flowRateEther}
           onChange={onChange}
           onBlur={onBlur}
@@ -1285,6 +1333,8 @@ const StreamSchedulingController = memo(function StreamSchedulingController(
 
   return (
     <Switch
+      // size small to match the gasless relay card's toggle.
+      size="small"
       checked={props.streamScheduling}
       onChange={(_event, value) => {
         if (!value) {
@@ -1317,6 +1367,7 @@ const StartDateController = memo(function StartDateController(
             slotProps={{
               textField: {
                 'data-cy': 'start-date',
+                id: 'start-date',
                 autoComplete: "off",
                 fullWidth: true,
                 onBlur,
@@ -1357,6 +1408,7 @@ const EndDateController = memo(function EndDateController(
             slotProps={{
               textField: {
                 'data-cy': 'end-date',
+                id: 'end-date',
                 autoComplete: "off",
                 fullWidth: true,
                 onBlur,

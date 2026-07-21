@@ -12,6 +12,8 @@ interface BalanceSuperTokenProps {
   tokenAddress: string;
   symbol?: string;
   showFiat?: boolean;
+  /** See Amount's `groupSeparator`. */
+  groupSeparator?: boolean;
   TypographyProps?: TypographyProps;
   FiatTypographyProps?: TypographyProps;
   SymbolTypographyProps?: TypographyProps;
@@ -23,6 +25,7 @@ export const BalanceSuperToken: FC<BalanceSuperTokenProps> = ({
   tokenAddress,
   symbol,
   showFiat = false,
+  groupSeparator,
   TypographyProps = {},
   FiatTypographyProps = {},
   SymbolTypographyProps = {},
@@ -44,12 +47,13 @@ export const BalanceSuperToken: FC<BalanceSuperTokenProps> = ({
         ) : superBalanceQuery.isUninitialized || superBalanceQuery.isLoading ? (
           ""
         ) : !superBalanceQuery.data ? (
-          <Amount wei="0" />
+          <Amount wei="0" groupSeparator={groupSeparator} />
         ) : (
           <FlowingBalance
             balance={superBalanceQuery.data.balance}
             balanceTimestamp={superBalanceQuery.data.balanceTimestamp}
             flowRate={superBalanceQuery.data.flowRate}
+            groupSeparator={groupSeparator}
           />
         )}
       </Typography>

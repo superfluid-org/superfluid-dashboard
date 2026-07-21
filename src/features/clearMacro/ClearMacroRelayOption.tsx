@@ -218,8 +218,8 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
             display: "flex",
             alignItems: "center",
             gap: 1,
-            px: 1.5,
-            py: 1,
+            px: 2,
+            py: 1.5,
             borderRadius: "12px",
           }}
         >
@@ -234,6 +234,7 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
           </Typography>
           <TooltipWithIcon
             TooltipProps={LINK_TOOLTIP_PROPS}
+            IconProps={{ sx: { fontSize: 16 } }}
             title={
               <>
                 Gasless transactions currently only support regular wallet
@@ -296,8 +297,8 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
         display: "flex",
         flexDirection: "column",
         gap: 0.75,
-        px: 1.5,
-        py: 1,
+        px: 2,
+        py: 1.5,
         borderRadius: "12px",
         borderColor: isRelayEnabled
           ? theme.palette.primary.main
@@ -305,9 +306,12 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
             ? theme.palette.warning.main
             : theme.palette.other.outline,
         backgroundColor: isRelayEnabled
-          ? alpha(theme.palette.primary.main, 0.04)
+          ? // Very light (0.02), matching the stream scheduling card.
+            alpha(theme.palette.primary.main, 0.02)
           : showRelayRequiredWarning
-            ? alpha(theme.palette.warning.main, 0.05)
+            ? // The warning keeps a stronger tint: it is pulling attention,
+              // not just reporting a setting.
+              alpha(theme.palette.warning.main, 0.05)
             : "transparent",
         transition: theme.transitions.create([
           "border-color",
@@ -327,30 +331,12 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
           fontSize="small"
           sx={{ color: isRelayEnabled ? "primary.main" : "text.secondary" }}
         />
-        <Stack sx={{ flex: 1 }}>
-          <Typography variant="body2" translate="yes">
-            Gasless transaction
-          </Typography>
-          {fee.feeAvailable && (
-            <Typography variant="caption" color="text.secondary" translate="no">
-              Service fee: {fee.feeText}
-            </Typography>
-          )}
-          {showRelayRequiredWarning && (
-            <Typography
-              data-cy="clear-macro-relay-required"
-              variant="caption"
-              color="error.main"
-              translate="yes"
-              sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
-            >
-              <ErrorOutlineRoundedIcon sx={{ fontSize: 14 }} />
-              Turn this on to schedule streams on {network.name}.
-            </Typography>
-          )}
-        </Stack>
+        <Typography variant="body2" translate="yes" sx={{ flex: 1 }}>
+          Gasless transaction
+        </Typography>
         <TooltipWithIcon
           TooltipProps={LINK_TOOLTIP_PROPS}
+          IconProps={{ sx: { fontSize: 16 } }}
           title={
             <>
               {tooltipText}
@@ -359,6 +345,27 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
           }
         />
       </Stack>
+
+      {/* Fee and warning live outside the header row so that showing or hiding
+          them cannot change the row's height, which would shift the switch,
+          icon and title. Only relevant once on — no fee is charged when off. */}
+      {isRelayEnabled && fee.feeAvailable && (
+        <Typography variant="caption" color="text.secondary" translate="no">
+          Service fee: {fee.feeText}
+        </Typography>
+      )}
+      {showRelayRequiredWarning && (
+        <Typography
+          data-cy="clear-macro-relay-required"
+          variant="caption"
+          color="error.main"
+          translate="yes"
+          sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
+        >
+          <ErrorOutlineRoundedIcon sx={{ fontSize: 14 }} />
+          Turn this on to schedule streams on {network.name}.
+        </Typography>
+      )}
 
       {showPaymentSelector && (
         <Stack gap={1} data-cy="clear-macro-payment-selector">
