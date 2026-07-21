@@ -34,7 +34,6 @@ import { SxProps, Theme } from "@mui/material/styles";
 import { NextPage } from "next";
 import { ReactNode, useState } from "react";
 import TooltipWithIcon from "../features/common/TooltipWithIcon";
-import { ELEVATION1_BG } from "../features/theme/theme";
 
 /**
  * Design scratchpad for the Send Stream form. Not linked from anywhere in the
@@ -285,7 +284,23 @@ const accentBorder = (
  * Note the interaction with notched labels: the notch cut has to stay the CARD
  * colour, not the fill, because the label sits ON the border between the two.
  */
-type InputSurface = "outlined" | "filled" | "fillOnly";
+type InputSurface = "outlined" | "filled" | "fillOnly" | "raised";
+
+/**
+ * The card's own surface, as a solid colour.
+ *
+ * Exposed as a CSS variable so the emulated notch label can mask the border
+ * with whatever the card actually is, without threading surface state through
+ * every Field. In dark mode this is background.paper (#151619) already blended
+ * with the elevation-1 overlay (3% white) rather than the raw token, because
+ * the label needs one solid colour, not a colour plus a gradient.
+ */
+const cardSurface = (theme: Theme, surface: InputSurface) => {
+  if (theme.palette.mode === "dark") {
+    return surface === "raised" ? "#151619" : "#1C1D20";
+  }
+  return surface === "raised" ? "#F7F8FA" : "#FFFFFF";
+};
 
 type InputFillKey = keyof typeof INPUT_FILLS;
 
@@ -317,9 +332,24 @@ const INPUT_FILLS = {
 
 const inputSurfaceSx =
   (surface: InputSurface, fillKey: InputFillKey) => (theme: Theme) => {
+  const dark = theme.palette.mode === "dark";
+
+  // Inverted: the CARD carries the tint and the inputs sit on top of it. White
+  // never reads as disabled, and it leaves grey free to actually mean disabled
+  // — which the recessed version spends on enabled fields.
+  if (surface === "raised") {
+    return {
+      backgroundColor: cardSurface(theme, "raised"),
+      backgroundImage: "none",
+      "& .MuiOutlinedInput-root, & [class*='MuiButton-input']": {
+        backgroundColor: dark ? "rgba(255, 255, 255, 0.06)" : "#FFFFFF",
+      },
+    };
+  }
+
   if (surface === "outlined") return {};
   const entry = INPUT_FILLS[fillKey];
-  const fill = theme.palette.mode === "dark" ? entry.dark : entry.light;
+  const fill = dark ? entry.dark : entry.light;
   return {
     "& .MuiOutlinedInput-root, & [class*='MuiButton-input']": {
       backgroundColor: fill,
@@ -771,6 +801,7 @@ const UiLab: NextPage = () => {
               <ToggleButton value="outlined">Outlined</ToggleButton>
               <ToggleButton value="filled">Filled</ToggleButton>
               <ToggleButton value="fillOnly">Fill only</ToggleButton>
+              <ToggleButton value="raised">Raised</ToggleButton>
             </ToggleButtonGroup>
           </Knob>
 
@@ -1052,13 +1083,11 @@ function Field(props: {
           zIndex: 1,
           lineHeight: 1.2,
           // The label paints over the border, so it must match the surface it
-          // sits on — which is the CARD, not bare paper. In dark mode an
-          // elevation-1 Paper is background.paper PLUS a flat 3% white
-          // overlay, so painting background.paper alone renders visibly darker
-          // and bluer than the card behind it.
-          backgroundColor: "background.paper",
-          backgroundImage: (theme: Theme) =>
-            theme.palette.mode === "dark" ? ELEVATION1_BG : "none",
+          // sits on — the CARD, not bare paper, and the card's colour changes
+          // with the input-surface mode. The card publishes its own solid
+          // colour as a CSS variable so this stays correct without threading
+          // surface state through every Field.
+          backgroundColor: "var(--lab-card-surface, #FFFFFF)",
           // Same font metrics the real fields get, so the two control types
           // carry identical labels rather than merely similar ones.
           ...LABEL_STYLES[props.labelStyle].sx,
@@ -2055,6 +2084,7 @@ function MockSendForm(props: {
       sx={(theme) => ({
         p: `${edge}px`,
         width: "100%",
+        "--lab-card-surface": cardSurface(theme, props.inputSurface),
         // Outlined Papers get background.paper but NOT the elevation-1 overlay
         // the card itself carries, so in dark mode every one of them reads
         // darker and bluer than the surface it sits on. They are meant to be
