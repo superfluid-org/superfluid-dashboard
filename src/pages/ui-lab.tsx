@@ -182,8 +182,18 @@ function notchedLabelSx(style: LabelStyleKey, color: LabelColorKey) {
     },
     "& .MuiInputLabel-root.MuiInputLabel-shrink": {
       transform: "translate(14px, -9px) scale(1)",
+      // Mask the border rather than cut it — see the legend rule below.
+      backgroundColor: "var(--lab-card-surface, #FFFFFF)",
+      paddingLeft: "4px",
+      paddingRight: "4px",
     },
-    "& .MuiOutlinedInput-notchedOutline legend": font,
+    // Collapse MUI's cut. A real TextField interrupts its own border with a
+    // <legend>, while the button pickers can only mask theirs with a painted
+    // rectangle — two mechanisms that look identical on a white card and
+    // diverge the moment the input and the card stop being the same colour
+    // (e.g. a filled input). Masking is the one both control types can do, so
+    // both use it and they cannot drift apart.
+    "& .MuiOutlinedInput-notchedOutline legend": { maxWidth: 0 },
   };
 }
 
@@ -1077,9 +1087,12 @@ function Field(props: {
         component="label"
         sx={{
           position: "absolute",
+          // Matches the real inputs exactly: their shrunk label is translated
+          // 14px from the border box with 4px of mask padding, so the text
+          // starts at 14px. left:10 + 4px padding lands in the same place.
           top: -8,
-          left: 9,
-          px: 0.5,
+          left: 10,
+          px: "4px",
           zIndex: 1,
           lineHeight: 1.2,
           // The label paints over the border, so it must match the surface it
