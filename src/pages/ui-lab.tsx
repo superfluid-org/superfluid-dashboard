@@ -1646,13 +1646,20 @@ function ConsequencesFooter(
         sx={{ px: 2, py: 1.5 }}
       >
         <Stack sx={{ minWidth: 0 }}>
-          <Typography variant="caption" color="text.secondary" noWrap>
-            Buffer locked{" "}
-            {/* 14px, not the default — this label is a 12px caption, so an
-                unsized icon overpowers the text it belongs to. */}
+          {/* inline-flex + centre, not inline text: an icon in a text flow
+              sits on the baseline, which leaves it low against a 12px caption.
+              Same construction as the notched field labels. 14px because the
+              default overpowers the caption it belongs to. */}
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            noWrap
+            sx={{ display: "inline-flex", alignItems: "center", gap: 0.5 }}
+          >
+            Buffer locked
             <TooltipWithIcon
               title="A deposit taken when the stream starts and returned when you cancel it manually."
-              IconProps={{ sx: { fontSize: 14 } }}
+              IconProps={{ sx: { fontSize: 14, display: "block" } }}
             />
           </Typography>
           <Typography variant="body2mono" fontWeight={600} translate="no" noWrap>
