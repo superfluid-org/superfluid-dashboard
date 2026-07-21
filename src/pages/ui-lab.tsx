@@ -231,6 +231,156 @@ type ToggleLayout = "left" | "right";
 type SchedulingFrame = "none" | "above" | "bracket" | "container";
 
 /**
+ * Shape of the action buttons — the CTA and the inline approve.
+ *
+ * The theme currently runs one system: 8px on inputs and buttons alike, a step
+ * tighter than the 12px cards they sit in (see `shape` in theme.ts). "pill"
+ * breaks buttons out of that system deliberately, so radius encodes what a
+ * control IS: square-ish things you type into, round things you press. The fee
+ * chips are already pills, so there's precedent for round = act/select.
+ *
+ * Applied only to action buttons — the receiver and token pickers are Buttons
+ * too, but they behave as inputs and must keep matching the fields around them.
+ */
+type ButtonShape = "default" | "pill";
+
+const actionShapeSx = (shape: ButtonShape) =>
+  shape === "pill" ? { borderRadius: "999px" } : undefined;
+
+/**
+ * Whether an enabled optional-capability container takes the primary accent on
+ * its border, or stays neutral and lets the switch and icon carry the state.
+ *
+ * Applies to BOTH the scheduling container and the gasless strip — they're the
+ * same kind of control, so this has to be one decision rather than two.
+ *
+ * The warning border on gasless `required` is deliberately NOT covered: that
+ * one isn't decorating an active state, it's flagging a blocked submit, and it
+ * has to keep pulling attention whichever way this knob is set.
+ */
+type ActiveAccent = "primary" | "neutral";
+
+const accentBorder = (
+  theme: Theme,
+  accent: ActiveAccent,
+  active: boolean
+) =>
+  active && accent === "primary"
+    ? theme.palette.primary.main
+    : theme.palette.other.outline;
+
+type CtaColorKey = keyof typeof CTA_COLORS;
+
+/**
+ * Candidate surfaces for the primary CTA, with measured WCAG contrast against
+ * their own label colour.
+ *
+ * `#10BB35` is the app's current primary. It sits in the mid-luminance dead
+ * zone where NEITHER white nor black text is legible — 2.6:1 with white, which
+ * fails even the 3:1 UI-component floor. That, rather than taste, is why it
+ * has never worked as a button colour.
+ *
+ * The updated brand palette (see the superfluid skill's brand-design.md) ships
+ * two greens at opposite ends instead, so each has a text colour that works:
+ * Rich Green for white-label surfaces, Primary Green for black-label ones.
+ *
+ * Blue and near-black free green entirely for semantics (streaming, positive,
+ * success), which no green CTA can do — but note the brand guide designates
+ * blue a sparing accent, so blue-as-primary contradicts it.
+ */
+const CTA_COLORS = {
+  current: {
+    name: "Green (current)",
+    note: "#10BB35 · white · 2.6:1 — fails AA",
+    bg: "#10BB35",
+    fg: "#FFFFFF",
+    hover: "#0B8225",
+  },
+  rich: {
+    name: "Rich Green",
+    note: "#0A6643 · white · 7.0:1 — new palette",
+    bg: "#0A6643",
+    fg: "#FFFFFF",
+    hover: "#084F34",
+  },
+  lime: {
+    name: "Lime + black",
+    note: "#86EE1E · black · 13.5:1 — new palette, as used today",
+    bg: "#86EE1E",
+    fg: "#080909",
+    hover: "#77D51B",
+  },
+  blue: {
+    name: "Blue",
+    note: "#2323FF · white · 7.6:1 — brand accent, not a designated primary",
+    bg: "#2323FF",
+    fg: "#FFFFFF",
+    hover: "#1A1ACC",
+  },
+  // Not an invented colour: a step along the brand's own Tertiary Blue →
+  // Dark Blue (#0A0A47) ramp, ~25% of the way. Same hue family, less chroma
+  // pressure at full-CTA width, and contrast improves rather than degrades.
+  blueDeep: {
+    name: "Blue (deep)",
+    note: "#1C1CD1 · white · 9.8:1 — same ramp, calmer at large area",
+    bg: "#1C1CD1",
+    fg: "#FFFFFF",
+    hover: "#15159E",
+  },
+  // The brand's Light Blue. Like the lime, it's a high-luminance surface, so
+  // it takes dark text — the pale/dark-label pairing rather than the
+  // saturated/white-label one. Softest option in the set by a wide margin.
+  bluePale: {
+    name: "Blue (pale)",
+    note: "#9EAEFF · black · 9.5:1 — brand Light Blue, dark label",
+    bg: "#9EAEFF",
+    fg: "#080909",
+    hover: "#8B9DFF",
+  },
+  // The palest blue that can still carry WHITE text. White at 4.5:1 caps the
+  // surface at relative luminance 0.183; this sits at 0.158 (5.05:1). Anything
+  // genuinely pale is far above that ceiling — Light Blue is 0.448 — so "pale
+  // AND white text" is not a colour that exists, only a lighter blue that is
+  // still fundamentally mid-tone.
+  blueMuted: {
+    name: "Blue (muted)",
+    note: "#5566CC · white · 5.05:1 — as pale as white text allows",
+    bg: "#5566CC",
+    fg: "#FFFFFF",
+    hover: "#4757B8",
+  },
+  black: {
+    name: "Near-black",
+    note: "#080909 · white · 19.9:1 — inverts in dark mode",
+    bg: "#080909",
+    fg: "#FFFFFF",
+    hover: "#2A2C2E",
+    // A near-black button on the #151619 dark-theme canvas is nearly
+    // invisible — 1.2:1 against its own background. The neutral CTA has to
+    // invert with the theme, which is exactly how Vercel/Linear handle it.
+    dark: { bg: "#F7F8FA", fg: "#080909", hover: "#E9E9E9" },
+  },
+};
+
+/**
+ * Shape + surface for the primary CTA. Theme-aware: an entry may carry a
+ * `dark` override for palettes that cannot survive both canvases with one hex.
+ */
+const ctaSx = (shape: ButtonShape, color: CtaColorKey) => (theme: Theme) => {
+  const entry = CTA_COLORS[color];
+  const c =
+    theme.palette.mode === "dark" && "dark" in entry && entry.dark
+      ? entry.dark
+      : entry;
+  return {
+    ...actionShapeSx(shape),
+    backgroundColor: c.bg,
+    color: c.fg,
+    "&:hover": { backgroundColor: c.hover },
+  };
+};
+
+/**
  * How the flow-rate period is attached to the amount.
  *
  * "split" is what the branch does: two sibling controls in a grid, seams
@@ -341,6 +491,9 @@ const UiLab: NextPage = () => {
   const [spacing, setSpacing] = useState<SpacingKey>("default");
   const [toggleLayout, setToggleLayout] = useState<ToggleLayout>("right");
   const [schedulingFrame, setSchedulingFrame] = useState<SchedulingFrame>("above");
+  const [buttonShape, setButtonShape] = useState<ButtonShape>("pill");
+  const [ctaColor, setCtaColor] = useState<CtaColorKey>("current");
+  const [activeAccent, setActiveAccent] = useState<ActiveAccent>("neutral");
   const [unitLayout, setUnitLayout] = useState<UnitLayout>("inside");
   const [balanceLayout, setBalanceLayout] = useState<BalanceLayout>("under");
   const [rowOrder, setRowOrder] = useState<RowOrder>("rateFirst");
@@ -358,6 +511,9 @@ const UiLab: NextPage = () => {
     spacing,
     toggleLayout,
     schedulingFrame,
+    buttonShape,
+    ctaColor,
+    activeAccent,
     unitLayout,
     balanceLayout,
     rowOrder,
@@ -504,6 +660,45 @@ const UiLab: NextPage = () => {
               <ToggleButton value="under">Under token</ToggleButton>
               <ToggleButton value="helper">Helper row</ToggleButton>
               <ToggleButton value="inField">In field</ToggleButton>
+            </ToggleButtonGroup>
+          </Knob>
+
+          <Knob label={`CTA colour — ${CTA_COLORS[ctaColor].note}`}>
+            <ToggleButtonGroup
+              exclusive
+              size="small"
+              value={ctaColor}
+              onChange={(_e, v) => v != null && setCtaColor(v)}
+            >
+              {(Object.keys(CTA_COLORS) as CtaColorKey[]).map((k) => (
+                <ToggleButton key={k} value={k}>
+                  {CTA_COLORS[k].name}
+                </ToggleButton>
+              ))}
+            </ToggleButtonGroup>
+          </Knob>
+
+          <Knob label="Active accent (both containers)">
+            <ToggleButtonGroup
+              exclusive
+              size="small"
+              value={activeAccent}
+              onChange={(_e, v) => v != null && setActiveAccent(v)}
+            >
+              <ToggleButton value="primary">Primary border</ToggleButton>
+              <ToggleButton value="neutral">Neutral</ToggleButton>
+            </ToggleButtonGroup>
+          </Knob>
+
+          <Knob label="Action buttons">
+            <ToggleButtonGroup
+              exclusive
+              size="small"
+              value={buttonShape}
+              onChange={(_e, v) => v != null && setButtonShape(v)}
+            >
+              <ToggleButton value="default">8px</ToggleButton>
+              <ToggleButton value="pill">Pill</ToggleButton>
             </ToggleButtonGroup>
           </Knob>
 
@@ -806,6 +1001,7 @@ function InputSection(props: {
   labelColor: LabelColorKey;
   toggleLayout: ToggleLayout;
   schedulingFrame: SchedulingFrame;
+  activeAccent: ActiveAccent;
   unitLayout: UnitLayout;
   balanceLayout: BalanceLayout;
   rowOrder: RowOrder;
@@ -1055,13 +1251,8 @@ function InputSection(props: {
                 px: 2,
                 py: 1.5,
                 borderRadius: "12px",
-                // Neutral even when active. The gasless strip can afford a
-                // primary border because it's a single slim row; the same
-                // border drawn around a tall region full of date fields puts
-                // a large green rectangle next to the green CTA, which is the
-                // colour overload this redesign set out to fix. The switch and
-                // the timer icon already carry the active state.
-                borderColor: theme.palette.other.outline,
+                borderColor: accentBorder(theme, props.activeAccent, open),
+                transition: theme.transitions.create("border-color"),
               }
             : {}),
         })}
@@ -1224,7 +1415,13 @@ function BalanceLine(props: { sx?: SxProps<Theme>; withSymbol?: boolean }) {
  * must be read first. Standalone it keeps a border; `attached` variants sit
  * inside a bordered block already and take padding only.
  */
-function GaslessLine(props: { state: GaslessState; attached?: boolean }) {
+function GaslessLine(props: {
+  state: GaslessState;
+  attached?: boolean;
+  buttonShape: ButtonShape;
+  ctaColor: CtaColorKey;
+  activeAccent: ActiveAccent;
+}) {
   const s = props.state;
   const enabled = !["off", "required", "unavailable"].includes(s);
   const usdcSelected = ["usdc", "approval", "shortUsdc"].includes(s);
@@ -1268,13 +1465,12 @@ function GaslessLine(props: { state: GaslessState; attached?: boolean }) {
           ? {}
           : {
               borderRadius: "12px",
-              // Border marks the active state; no fill tint, so the only
-              // saturated green mass on the page stays the CTA.
-              borderColor: enabled
-                ? theme.palette.primary.main
-                : s === "required"
+              // The warning state overrides the accent knob: it flags a
+              // blocked submit rather than decorating an active one.
+              borderColor:
+                s === "required"
                   ? theme.palette.warning.main
-                  : theme.palette.other.outline,
+                  : accentBorder(theme, props.activeAccent, enabled),
               transition: theme.transitions.create("border-color"),
             }),
       })}
@@ -1348,7 +1544,12 @@ function GaslessLine(props: { state: GaslessState; attached?: boolean }) {
             </Typography>
           )}
           {s === "approval" && (
-            <Button size="small" variant="outlined" fullWidth>
+            <Button
+              size="small"
+              variant="outlined"
+              fullWidth
+              sx={actionShapeSx(props.buttonShape)}
+            >
               Approve USDC (one time)
             </Button>
           )}
@@ -1452,7 +1653,7 @@ function BufferRisk(props: {
             control={<Checkbox size="small" defaultChecked />}
             label={
               <Typography variant="body2" fontWeight={500}>
-                I understand
+                I understand.
               </Typography>
             }
           />
@@ -1633,7 +1834,12 @@ function ConsequencesSentence(props: ConsequencesProps) {
  * → how it sends. The button closes it.
  */
 function ConsequencesFooter(
-  props: ConsequencesProps & { gasless: GaslessState }
+  props: ConsequencesProps & {
+    gasless: GaslessState;
+    buttonShape: ButtonShape;
+    ctaColor: CtaColorKey;
+  activeAccent: ActiveAccent;
+  }
 ) {
   return (
     <Paper variant="outlined" sx={{ borderRadius: "12px", overflow: "hidden" }}>
@@ -1690,10 +1896,17 @@ function ConsequencesFooter(
       <BufferRisk sectioned style={props.warningStyle} />
       <Divider />
 
-      <GaslessLine state={props.gasless} attached />
+      <GaslessLine state={props.gasless} attached buttonShape={props.buttonShape}
+            ctaColor={props.ctaColor}
+            activeAccent={props.activeAccent} />
 
       <Box sx={{ px: 2, pt: 0.5, pb: 2 }}>
-        <Button variant="contained" size="xl" fullWidth>
+        <Button
+          variant="contained"
+          size="xl"
+          fullWidth
+          sx={ctaSx(props.buttonShape, props.ctaColor)}
+        >
           Send Stream
         </Button>
       </Box>
@@ -1717,6 +1930,9 @@ function MockSendForm(props: {
   spacing: SpacingKey;
   toggleLayout: ToggleLayout;
   schedulingFrame: SchedulingFrame;
+  buttonShape: ButtonShape;
+  ctaColor: CtaColorKey;
+  activeAccent: ActiveAccent;
   unitLayout: UnitLayout;
   balanceLayout: BalanceLayout;
   rowOrder: RowOrder;
@@ -1740,13 +1956,20 @@ function MockSendForm(props: {
           labelColor={props.labelColor}
           toggleLayout={props.toggleLayout}
           schedulingFrame={props.schedulingFrame}
+          activeAccent={props.activeAccent}
           unitLayout={props.unitLayout}
           balanceLayout={props.balanceLayout}
           rowOrder={props.rowOrder}
         />
 
         {props.variant === "footer" ? (
-          <ConsequencesFooter {...consequences} gasless={props.gasless} />
+          <ConsequencesFooter
+            {...consequences}
+            gasless={props.gasless}
+            buttonShape={props.buttonShape}
+            ctaColor={props.ctaColor}
+            activeAccent={props.activeAccent}
+          />
         ) : (
           <>
             {props.variant === "ledger" ? (
@@ -1755,8 +1978,14 @@ function MockSendForm(props: {
               <ConsequencesSentence {...consequences} />
             )}
             <Stack gap={2}>
-              <GaslessLine state={props.gasless} />
-              <Button variant="contained" size="xl">
+              <GaslessLine state={props.gasless} buttonShape={props.buttonShape}
+            ctaColor={props.ctaColor}
+            activeAccent={props.activeAccent} />
+              <Button
+                variant="contained"
+                size="xl"
+                sx={ctaSx(props.buttonShape, props.ctaColor)}
+              >
                 Send Stream
               </Button>
             </Stack>
