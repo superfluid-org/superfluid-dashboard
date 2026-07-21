@@ -1981,8 +1981,8 @@ interface ConsequencesProps {
 /** A — Quiet ledger. */
 function ConsequencesLedger(props: ConsequencesProps) {
   return (
-    {/* overflow hidden so the wash — which has square corners — is clipped by
-        the panel's 12px radius instead of poking past it. */}
+    // overflow hidden so the wash — which has square corners — is clipped by
+    // the panel's 12px radius instead of poking past it.
     <Paper
       variant="outlined"
       sx={{ px: 2.5, py: 0.5, borderRadius: "12px", overflow: "hidden" }}
