@@ -1648,7 +1648,12 @@ function ConsequencesFooter(
         <Stack sx={{ minWidth: 0 }}>
           <Typography variant="caption" color="text.secondary" noWrap>
             Buffer locked{" "}
-            <TooltipWithIcon title="A deposit taken when the stream starts and returned when you cancel it manually." />
+            {/* 14px, not the default — this label is a 12px caption, so an
+                unsized icon overpowers the text it belongs to. */}
+            <TooltipWithIcon
+              title="A deposit taken when the stream starts and returned when you cancel it manually."
+              IconProps={{ sx: { fontSize: 14 } }}
+            />
           </Typography>
           <Typography variant="body2mono" fontWeight={600} translate="no" noWrap>
             {MOCK.buffer}
@@ -1656,7 +1661,7 @@ function ConsequencesFooter(
         </Stack>
         <Stack sx={{ minWidth: 0 }}>
           <Typography variant="caption" color="text.secondary" noWrap>
-            Balance after
+            Balance after buffer
           </Typography>
           <Typography
             variant="body2mono"
