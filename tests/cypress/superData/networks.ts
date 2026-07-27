@@ -106,7 +106,6 @@ export const superfluidRpcUrls = {
   sepolia: 'https://rpc-endpoints.superfluid.dev/eth-sepolia',
   base: 'https://rpc-endpoints.superfluid.dev/base-mainnet',
   scroll: 'https://rpc-endpoints.superfluid.dev/scroll-mainnet',
-  'scroll-sepolia': 'https://rpc-endpoints.superfluid.dev/scroll-sepolia',
   'optimism-sepolia': 'https://rpc-endpoints.superfluid.dev/optimism-sepolia',
   degenChain: 'https://rpc-endpoints.superfluid.dev/degenchain',
 };
@@ -124,7 +123,6 @@ export const networkDefinition: {
   sepolia: Network;
   base: Network;
   scroll: Network;
-  scrollSepolia: Network;
   optimismSepolia: Network;
   degenChain: Network;
 } = {
@@ -517,34 +515,6 @@ export const networkDefinition: {
       },
     },
   },
-  scrollSepolia: {
-    id: 534351,
-    name: 'Scroll Sepolia',
-    network: 'scroll-sepolia',
-    slugName: 'scrsepolia',
-    v1ShortName: 'scrsepolia',
-    testnet: true,
-    bufferTimeInMinutes: 60,
-    color: '#FFDBB0',
-    superfluidRpcUrl: superfluidRpcUrls['scroll-sepolia'],
-    subgraphUrl: 'https://scroll-sepolia.subgraph.x.superfluid.dev/',
-    getLinkForTransaction: (txHash: string): string =>
-      `https://sepolia.scrollscan.com/tx/${txHash}`,
-    getLinkForAddress: (address: string): string =>
-      `https://sepolia.scrollscan.com/tx/address/${address}`,
-    nativeCurrency: {
-      ...ensureDefined(chain.scrollSepolia.nativeCurrency),
-      address: NATIVE_ASSET_ADDRESS,
-      type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: 'ETHx',
-        address: '0x58f0A7c6c143074f5D824c2f27a85f6dA311A6FB',
-        name: 'Super ETH',
-        decimals: 18,
-      },
-    },
-  },
   optimismSepolia: {
     id: 11155420,
     name: 'OP Sepolia',
@@ -628,7 +598,6 @@ export const networks: Network[] = [
   networkDefinition.sepolia,
   networkDefinition.base,
   networkDefinition.scroll,
-  networkDefinition.scrollSepolia,
   networkDefinition.optimismSepolia,
   networkDefinition.degenChain,
 ];

@@ -623,6 +623,10 @@ export class SendPage extends BasePage {
     this.hasCSS(START_DATE_BORDER, 'border-color', 'rgb(210, 37, 37)');
   }
 
+  // Kept for the signers who can still hit the overlay -- it is bypassed only for eligible
+  // Clear Macro signers, so a non-eligible one (view mode, smart-contract wallet) still sees it.
+  // No scenario exercises that path today; adding one needs a view-mode step that can pick the
+  // network, which does not exist yet.
   static validateVisibleAllowlistMessage() {
     this.isVisible(ALLOWLIST_MESSAGE);
     this.containsText(ALLOWLIST_MESSAGE, 'You are not on the allow list.');
@@ -636,6 +640,11 @@ export class SendPage extends BasePage {
       'href',
       'https://superfluid.org/contact'
     );
+  }
+
+  static validateAllowlistMessageIsNotShown() {
+    this.doesNotExist(ALLOWLIST_MESSAGE);
+    this.doesNotExist(ALLOWLIST_LINK);
   }
 
   static validateScheduledStreamFieldsAreVisible() {
@@ -686,7 +695,6 @@ export class SendPage extends BasePage {
         'sepolia',
         'base',
         'scroll',
-        'scrsepolia',
         'opsepolia',
       ].includes(Cypress.env('network')) &&
       Cypress.env('platformNeeded')
@@ -707,7 +715,6 @@ export class SendPage extends BasePage {
         'sepolia',
         'base',
         'scroll',
-        'scrsepolia',
         'opsepolia',
         'degen',
       ].includes(Cypress.env('network')) &&
