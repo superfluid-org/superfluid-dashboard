@@ -14,7 +14,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV2";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { add } from "date-fns";
@@ -382,6 +382,8 @@ export const StartDateController = memo(function StartDateController() {
         name="data.startDate"
         render={({ field: { value, onChange, onBlur } }) => (
           <DateTimePicker
+            // See AccountingExportForm: keep the v7 field DOM for this upgrade step.
+            enableAccessibleFieldDOMStructure={false}
             slotProps={{
               textField: {
                 'data-cy': 'date-input',

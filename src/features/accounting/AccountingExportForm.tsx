@@ -12,7 +12,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV2";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { endOfMonth, startOfMonth, sub } from "date-fns";
 import { FC, useEffect, useState } from "react";
@@ -183,6 +183,10 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
                   name="data.startDate"
                   render={({ field: { value, onChange } }) => (
                     <DatePicker
+                      // X v8 defaults to the section-based accessible field DOM, which
+                      // replaces the editable <input> with a visually-hidden mirror.
+                      // Keep the v7 DOM for now; adopting the new one is its own step.
+                      enableAccessibleFieldDOMStructure={false}
                       views={["year", "month"]}
                       format={"MM/yy"}
                       minDate={MIN_DATE}
@@ -205,6 +209,7 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
                   name="data.endDate"
                   render={({ field: { value, onChange } }) => (
                     <DatePicker
+                      enableAccessibleFieldDOMStructure={false}
                       views={["year", "month"]}
                       format="MM/yy"
                       minDate={startDate || MIN_DATE}

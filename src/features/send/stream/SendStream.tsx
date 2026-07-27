@@ -18,7 +18,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV2";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { skipToken } from "@reduxjs/toolkit/query";
@@ -1314,6 +1314,8 @@ const StartDateController = memo(function StartDateController(
         name="data.startTimestamp"
         render={({ field: { onChange, onBlur } }) => (
           <DateTimePicker
+            // See AccountingExportForm: keep the v7 field DOM for this upgrade step.
+            enableAccessibleFieldDOMStructure={false}
             slotProps={{
               textField: {
                 'data-cy': 'start-date',
@@ -1354,6 +1356,8 @@ const EndDateController = memo(function EndDateController(
         name="data.endTimestamp"
         render={({ field: { onChange, onBlur } }) => (
           <DateTimePicker
+            // See AccountingExportForm: keep the v7 field DOM for this upgrade step.
+            enableAccessibleFieldDOMStructure={false}
             slotProps={{
               textField: {
                 'data-cy': 'end-date',
