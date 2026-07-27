@@ -12,7 +12,6 @@ export const chainIds = {
   base: 8453,
   baseSepolia: 84532,
   scroll: 534352,
-  scrollSepolia: 534351,
   optimismSepolia: 11155420,
   degen: 666666666,
 } as const;
@@ -158,7 +157,6 @@ export const superfluidRpcUrls = {
   base: "https://rpc-endpoints.superfluid.dev/base-mainnet",
   "base-sepolia": "https://rpc-endpoints.superfluid.dev/base-sepolia",
   scroll: "https://rpc-endpoints.superfluid.dev/scroll-mainnet",
-  "scroll-sepolia": "https://rpc-endpoints.superfluid.dev/scroll-sepolia",
   "optimism-sepolia": "https://rpc-endpoints.superfluid.dev/optimism-sepolia",
 } as const;
 

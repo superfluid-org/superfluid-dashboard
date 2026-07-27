@@ -695,7 +695,6 @@ export class SendPage extends BasePage {
         'sepolia',
         'base',
         'scroll',
-        'scrsepolia',
         'opsepolia',
       ].includes(Cypress.env('network')) &&
       Cypress.env('platformNeeded')
@@ -716,7 +715,6 @@ export class SendPage extends BasePage {
         'sepolia',
         'base',
         'scroll',
-        'scrsepolia',
         'opsepolia',
         'degen',
       ].includes(Cypress.env('network')) &&
