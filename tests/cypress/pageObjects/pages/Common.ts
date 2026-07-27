@@ -276,6 +276,16 @@ export class Common extends BasePage {
 
     cy.visit(page, {
       onBeforeLoad: (window) => {
+        // Seeded here rather than in a Before hook so it lands in the application window
+        // before redux-persist rehydrates. See the @gaslessRelayEnabled hook for why.
+        if (Cypress.env('gaslessRelayEnabled')) {
+          window.localStorage.setItem(
+            'persist:appSettings',
+            // redux-persist stores each field JSON-stringified and merges over `initialState`,
+            // so only the field under test has to be present here.
+            '{"clearMacroEnabled":"true","_persist":"{\\"version\\":1,\\"rehydrated\\":true}"}'
+          );
+        }
         try {
           const normalizedKey = (
             usedAccountPrivateKey.startsWith('0x')

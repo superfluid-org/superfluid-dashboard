@@ -86,7 +86,7 @@ Feature: Transactional rejected test cases
     And Distribution revoking dialog on "selected network" shows up
     And Transaction rejected error is shown
 
-  @platformNeeded
+  @platformNeeded @gaslessRelayEnabled
   Scenario: Creating a stream with just start date
     Given The test case is skipped if the platform is not deployed on the network
 
@@ -100,7 +100,7 @@ Feature: Transactional rejected test cases
     And Scheduled stream transaction dialogs are shown
     And Transaction rejected error is shown
 
-  @platformNeeded
+  @platformNeeded @gaslessRelayEnabled
   Scenario: Creating a stream with just end date
     Given The test case is skipped if the platform is not deployed on the network
 
@@ -114,7 +114,7 @@ Feature: Transactional rejected test cases
     And Scheduled stream transaction dialogs are shown
     And Transaction rejected error is shown
 
-  @platformNeeded
+  @platformNeeded @gaslessRelayEnabled
   Scenario: Creating a stream with start and end date
     Given The test case is skipped if the platform is not deployed on the network
 
