@@ -912,42 +912,6 @@ export const networkDefinition = {
     vestingSubgraphUrl: undefined,
     autoWrapSubgraphUrl: undefined,
   },
-  scrollSepolia: {
-    ...chain.scrollSepolia,
-    supportsGDA: getSupportsGDA(chainIds.scrollSepolia),
-    metadata: ensureDefined(
-      sfMeta.getNetworkByChainId(chainIds.scrollSepolia),
-      chainIds.scrollSepolia
-    ),
-    blockExplorers: ensureDefined(chain.scrollSepolia.blockExplorers),
-    slugName: "scrsepolia",
-    v1ShortName: "scrsepolia",
-    bufferTimeInMinutes: 60,
-    color: "#EECDA6",
-    rpcUrls: {
-      ...chain.scrollSepolia.rpcUrls,
-      superfluid: { http: [superfluidRpcUrls["scroll-sepolia"]] },
-    },
-    getLinkForTransaction: (txHash: string): string =>
-      `https://sepolia.scrollscan.com/tx/${txHash}`,
-    getLinkForAddress: (address: string): string =>
-      `https://sepolia.scrollscan.com/address/${address}`,
-    nativeCurrency: {
-      ...ensureDefined(chain.scrollSepolia.nativeCurrency),
-      address: NATIVE_ASSET_ADDRESS,
-      type: TokenType.NativeAssetUnderlyingToken,
-      superToken: ensureDefined(findNativeAssetSuperTokenFromTokenList({ chainId: chain.scrollSepolia.id, address: "0x58f0A7c6c143074f5D824c2f27a85f6dA311A6FB" })),
-      logoURI: "https://tokenlist.superfluid.org/icons/eth.svg",
-      isSuperToken: false,
-    },
-    vestingContractAddress: {
-      v1: undefined,
-      v2: undefined,
-      v3: undefined,
-    },
-    vestingSubgraphUrl: undefined,
-    autoWrapSubgraphUrl: undefined,
-  },
   optimismSepolia: {
     ...chain.optimismSepolia,
     supportsGDA: getSupportsGDA(chainIds.optimismSepolia),
@@ -1030,7 +994,6 @@ export const allNetworks: [Network, ...Network[]] = orderBy(
       networkDefinition.base,
       networkDefinition.baseSepolia,
       networkDefinition.scroll,
-      networkDefinition.scrollSepolia,
       networkDefinition.degenChain,
     ],
     (x) => x.id // Put lower ids first (Ethereum mainnet will be first)
@@ -1108,4 +1071,5 @@ export const deprecatedNetworkChainIds = [
   421613, // Arbitrum Goerli
   1442, // Polygon zkEVM Testnet
   84531, // Base Goerli
+  534351, // Scroll Sepolia
 ];
