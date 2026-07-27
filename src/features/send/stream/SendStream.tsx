@@ -30,6 +30,10 @@ import NextLink from "next/link";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import {
+  mobileTapPickerSlots,
+  mobileTapTextFieldProps,
+} from "../../../components/PickerField/mobileTapPicker";
+import {
   mapCreateTaskToScheduledStream,
   mapStreamScheduling,
 } from "../../../hooks/streamSchedulingHooks";
@@ -1316,13 +1320,14 @@ const StartDateController = memo(function StartDateController(
           <DateTimePicker
             // See AccountingExportForm: keep the v7 field DOM for this upgrade step.
             enableAccessibleFieldDOMStructure={false}
+            slots={mobileTapPickerSlots}
             slotProps={{
-              textField: {
+              textField: mobileTapTextFieldProps({
                 'data-cy': 'start-date',
                 autoComplete: "off",
                 fullWidth: true,
                 onBlur,
-              },
+              }),
             }}
             value={props.startDate}
             minDateTime={props.MIN_DATE}
@@ -1358,13 +1363,14 @@ const EndDateController = memo(function EndDateController(
           <DateTimePicker
             // See AccountingExportForm: keep the v7 field DOM for this upgrade step.
             enableAccessibleFieldDOMStructure={false}
+            slots={mobileTapPickerSlots}
             slotProps={{
-              textField: {
+              textField: mobileTapTextFieldProps({
                 'data-cy': 'end-date',
                 autoComplete: "off",
                 fullWidth: true,
                 onBlur,
-              },
+              }),
             }}
             value={props.endDate}
             minDateTime={props.endDateMin}

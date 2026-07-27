@@ -19,6 +19,10 @@ import { FC, useEffect, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import MultiAddressSearch from "../../components/AddressSearch/MultiAddressSearch";
 import CurrencySelect from "../../components/CurrencySelect/CurrencySelect";
+import {
+  mobileTapPickerSlots,
+  mobileTapTextFieldProps,
+} from "../../components/PickerField/mobileTapPicker";
 import TooltipWithIcon from "../common/TooltipWithIcon";
 import { UnitOfTime } from "../send/FlowRateInput";
 import {
@@ -195,10 +199,11 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
                       onChange={(date) =>
                         onChange(date ? startOfMonth(date) : null)
                       }
+                      slots={mobileTapPickerSlots}
                       slotProps={{
-                        textField: {
+                        textField: mobileTapTextFieldProps({
                           helperText: null,
-                        },
+                        }),
                       }}
                     />
                   )}
@@ -218,10 +223,11 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
                       onChange={(date) =>
                         onChange(date ? endOfMonth(date) : null)
                       }
+                      slots={mobileTapPickerSlots}
                       slotProps={{
-                        textField: {
+                        textField: mobileTapTextFieldProps({
                           helperText: null,
-                        },
+                        }),
                       }}
                     />
                   )}
