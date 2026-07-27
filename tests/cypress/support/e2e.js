@@ -31,9 +31,6 @@ Cypress.on("uncaught:exception", (err, runnable) => {
     err.message.includes(
       "Request failed with status code 429 Too Many Requests"
     ) ||
-    //Was originally only seen on scroll-sepolia (now removed), cannot reproduce manually.
-    //Kept until an hourly full-suite run confirms no other network hits it.
-    err.message.includes("getInitialProps") ||
     //Error popping up when loading gnosis safe custom apps page
     err.message.includes("Minified React error #418") ||
     err.message.includes("Minified React error #423") ||

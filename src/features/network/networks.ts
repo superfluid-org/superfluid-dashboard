@@ -2,7 +2,7 @@ import { isString, orderBy } from "lodash";
 import memoize from "lodash/memoize";
 import * as chain from "wagmi/chains";
 import { Chain } from "wagmi/chains";
-import ensureDefined from "../../utils/ensureDefined";
+import ensureDefined, { isDefined } from "../../utils/ensureDefined";
 import {
   NATIVE_ASSET_ADDRESS,
   NativeAsset,
@@ -1073,3 +1073,57 @@ export const deprecatedNetworkChainIds = [
   84531, // Base Goerli
   534351, // Scroll Sepolia
 ];
+
+/**
+ * Networks present in `@superfluid-finance/metadata` that the Dashboard intentionally does not
+ * support. Every entry needs a reason. This exists so that the completeness check below can stay
+ * strict: an *accidental* omission still fails loudly, while a deliberate one is documented here.
+ *
+ * Note we cannot derive this from metadata's own `isDeprecated` flag -- Scroll Sepolia is not
+ * flagged there.
+ */
+const metadataNetworkExclusions = new Map<number, string>([
+  [
+    534351,
+    "Scroll Sepolia is discontinued, and its canonical Superfluid subgraph alias was serving Optimism Sepolia data (reported upstream).",
+  ],
+]);
+
+// Fail loudly if metadata gains a network nobody added here (or if an exclusion becomes obsolete).
+// Both sides of this comparison are fixed at build time, so a violation surfaces during `next build`
+// / SSR rather than in a user's browser -- hence the console.error rather than a throw on the client.
+{
+  const unaccounted = sfMeta.networks
+    .filter(
+      ({ chainId }) =>
+        !allNetworks.some((network) => network.id === chainId) &&
+        !metadataNetworkExclusions.has(chainId)
+    )
+    .map(({ chainId, name }) => `${name} (${chainId})`);
+
+  const staleExclusions = [...metadataNetworkExclusions.keys()].filter(
+    (chainId) => !sfMeta.networks.some((network) => network.chainId === chainId)
+  );
+
+  const problems = [
+    unaccounted.length
+      ? `Superfluid metadata networks not supported by the Dashboard and not explicitly excluded: ${unaccounted.join(
+          ", "
+        )}. Add them to \`allNetworks\`, or to \`metadataNetworkExclusions\` with a reason.`
+      : undefined,
+    staleExclusions.length
+      ? `\`metadataNetworkExclusions\` lists chain ids no longer present in Superfluid metadata: ${staleExclusions.join(
+          ", "
+        )}. Drop them.`
+      : undefined,
+  ].filter(isDefined);
+
+  if (problems.length) {
+    const message = problems.join(" ");
+    if (typeof window === "undefined") {
+      throw new Error(message);
+    } else {
+      console.error(message);
+    }
+  }
+}
