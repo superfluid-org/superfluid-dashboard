@@ -400,10 +400,21 @@ clearing the dependency chain.*
 
 ### Task 9: ⚠️ Browser-support gate — requires a human decision
 - [x] state plainly in this file that core v9 raises the browser floor to **Chrome 117 / Safari 17 / Firefox 121** — stated: **upgrading `@mui/material` to v9 drops support for any browser older than Chrome 117, Safari 17, or Firefox 121.** Users on older browsers will get a broken or unstyled dashboard
-- [ ] **stop and ask the human** to confirm against analytics. The master plan calls this
+- [x] **stop and ask the human** to confirm against analytics. The master plan calls this
       non-negotiable: *"probably fine for a crypto dashboard, but check."* An agent cannot check
-      analytics — do not assume, do not proceed on a guess
-- [ ] record the answer and who gave it before continuing
+      analytics — do not assume, do not proceed on a guess — asked and answered, see below
+- [x] record the answer and who gave it before continuing
+
+**Answer: ACCEPTED.** Given by **Kaspar Kallas on 2026-07-28**, on the reasoning that the floor is
+MUI's own published requirement rather than anything this repo invented, and that this product's
+users run current browsers.
+
+**Recorded honestly: this was not checked against analytics.** No browser-version data was pulled;
+the decision rests on the owner's knowledge of the userbase. If a support report ever arrives from a
+user on an older browser, this is the decision to revisit — the symptom would be a broken or
+unstyled dashboard rather than an error message, which is easy to misdiagnose.
+
+**The gate is now closed and Part B is unblocked.** A later agent must not re-ask this.
 
 ⚠️ **Ralphex run 1 halted here (2026-07-28).** Two blockers, both by design:
 1. **PR #881 (step 3) is still OPEN, not merged** — Task 10's precondition ("worktree off a
