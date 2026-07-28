@@ -1,5 +1,8 @@
-import { TextField, TextFieldProps } from "@mui/material";
-import { usePickerContext } from "@mui/x-date-pickers";
+import {
+  PickersTextField,
+  PickersTextFieldProps,
+  usePickerContext,
+} from "@mui/x-date-pickers";
 import { FieldOwnerState } from "@mui/x-date-pickers/models";
 import { MouseEventHandler } from "react";
 
@@ -23,11 +26,12 @@ import { MouseEventHandler } from "react";
  * Desktop is untouched: the variant comes from MUI's own responsive
  * resolution, the same `desktopModeMediaQuery` the picker already used.
  *
- * NOTE: this renders `@mui/material`'s `TextField` because we still pin
- * `enableAccessibleFieldDOMStructure={false}`. When that pin is removed (it
- * has to be before MUI X v9), the base must become `PickersTextField`.
+ * The base is `PickersTextField`, the accessible (section-based) field DOM
+ * that is the only structure in MUI X v9. `readOnly` still suppresses
+ * section editing there (`useFieldSectionContentProps` sets
+ * `contentEditable: !disabled && !readOnly`).
  */
-function MobileTapTextField(props: TextFieldProps) {
+function MobileTapTextField(props: PickersTextFieldProps) {
   const { variant, triggerStatus, setOpen } = usePickerContext();
 
   const handleClick: MouseEventHandler<HTMLDivElement> = (event) => {
@@ -44,7 +48,7 @@ function MobileTapTextField(props: TextFieldProps) {
     }
   };
 
-  return <TextField {...props} onClick={handleClick} />;
+  return <PickersTextField {...props} onClick={handleClick} />;
 }
 
 export const mobileTapPickerSlots = { textField: MobileTapTextField };

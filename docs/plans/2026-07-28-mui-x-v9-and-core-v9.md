@@ -269,10 +269,32 @@ A/B run; that invariant error is the signature of a stale-server mismatch, not a
 
 ### Task 4: Remove the `enableAccessibleFieldDOMStructure={false}` pin
 - [x] remove the prop from all 5 picker instances (`AccountingExportForm.tsx` ×2, `SendStream.tsx` ×2, `CreateVestingForm.tsx` ×1) — done in Task 3: the v9 `preset-safe` codemod removes it (the prop no longer exists), kept as a real change there
-- [ ] rebase `src/components/PickerField/mobileTapPicker.tsx` off `PickersTextField` instead of `@mui/material`'s `TextField` — the pin was the only reason it used the latter
-- [ ] confirm the mobile mechanism survives: `readOnly` still suppresses editing under the accessible DOM (`useFieldSectionContentProps` sets `contentEditable: !disabled && !readOnly`), so only the base component changes
-- [ ] re-verify mobile tap-to-open by forcing the mobile variant on desktop Chrome with `desktopModeMediaQuery="@media (min-width: 100000px)"` — viewport size alone cannot do this, MUI switches on `@media (pointer: fine)`. Field tap must open `[role=dialog]`; the calendar icon must still open exactly once; desktop fields must stay editable and must **not** open on field click
-- [ ] run the verification gate
+- [x] rebase `src/components/PickerField/mobileTapPicker.tsx` off `PickersTextField` instead of `@mui/material`'s `TextField` — the pin was the only reason it used the latter
+- [x] confirm the mobile mechanism survives: `readOnly` still suppresses editing under the accessible DOM (`useFieldSectionContentProps` sets `contentEditable: !disabled && !readOnly`), so only the base component changes
+- [x] re-verify mobile tap-to-open by forcing the mobile variant on desktop Chrome with `desktopModeMediaQuery="@media (min-width: 100000px)"` — viewport size alone cannot do this, MUI switches on `@media (pointer: fine)`. Field tap must open `[role=dialog]`; the calendar icon must still open exactly once; desktop fields must stay editable and must **not** open on field click
+- [x] run the verification gate
+
+**Task 4 findings (2026-07-28):**
+
+- `MobileTapTextField` now renders `PickersTextField` (root export of `@mui/x-date-pickers`),
+  typed `PickersTextFieldProps`; `onClick` arrives via its `FormControl` root, so the tap-to-open
+  handler is unchanged. All five consumers' `slotProps.textField` payloads (`helperText`,
+  `fullWidth`, `onBlur`, `autoComplete`, `data-cy`) typecheck against the new base — no consumer
+  changes needed.
+- **Mobile mechanism verified against the production build** (`pnpm build && pnpm start`, one-off
+  Cypress spec on `/accounting`, Electron/Chromium, not committed):
+  - Desktop (real `pointer: fine`): sections render `contenteditable=true`; clicking the field
+    content opens **no** `[role=dialog]`; the calendar icon opens exactly one dialog; Esc closes it.
+  - Mobile variant (forced): **zero** `contenteditable=true` sections (the `readOnly` lever works
+    under the accessible DOM); tapping a field section opens exactly one `[role=dialog]`; the
+    calendar icon also opens exactly one dialog — no double-toggle.
+- Verification-method note: forcing the mobile variant was done by stubbing `win.matchMedia` in
+  `cy.visit`'s `onBeforeLoad` so `(pointer: fine)` never matches — equivalent to the
+  `desktopModeMediaQuery` prop trick but with zero app-code changes. CDP
+  `Emulation.setEmulatedMedia` (pointer/hover features) does **not** reach the Cypress AUT iframe —
+  the desktop variant kept rendering — so don't reach for it in Task 6 either. Also: this machine
+  has no Chrome binary; Cypress runs Electron (Chromium), same as the Task 1 baseline.
+- Gate: `pnpm typecheck`, `pnpm lint`, `pnpm build` all green.
 
 ### Task 5: Migrate the picker Cypress selectors to the section-based DOM
 - [ ] rewrite `Common.inputDateIntoField` — its `.should('be.visible')` then `.type()` cannot work against the v8+ hidden mirror input, and its `{selectall}{del}` prefix is what caused step 1's nine CI failures. Do not reintroduce that prefix
