@@ -386,8 +386,6 @@ export const StartDateController = memo(function StartDateController() {
         name="data.startDate"
         render={({ field: { value, onChange, onBlur } }) => (
           <DateTimePicker
-            // See AccountingExportForm: keep the v7 field DOM for this upgrade step.
-            enableAccessibleFieldDOMStructure={false}
             slots={mobileTapPickerSlots}
             slotProps={{
               textField: mobileTapTextFieldProps({
