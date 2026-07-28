@@ -386,10 +386,10 @@ the stale-server port-3000 trap; the pagination watch item that never fired). He
 updated to "steps 1–3 implemented".
 
 ### Task 8: Ship step 3
-- [ ] review the full diff; confirm `tests/cypress.env.json` is **not** staged
-- [ ] commit and push this ralphex worktree's branch
-- [ ] open a PR to **`master`** describing the bump, the pin removal and the selector migration, with the A/B table as evidence — follow #880's PR body as the format precedent
-- [ ] **STOP — this is the end of ralphex run 1.** Do not start Part B in this run: it needs step 3 merged and the browser gate answered (Task 9), and it ships as its own PR from a fresh worktree off updated `master`
+- [x] review the full diff; confirm `tests/cypress.env.json` is **not** staged — reviewed the whole branch diff vs `origin/master` (12 files); `cypress.env.json` is gitignored (`tests/.gitignore:7`) and appears nowhere in `git log --all`
+- [x] commit and push this ralphex worktree's branch — pushed as `origin/mui-x-v9-and-core-v9`
+- [x] open a PR to **`master`** describing the bump, the pin removal and the selector migration, with the A/B table as evidence — follow #880's PR body as the format precedent — **PR #881** (https://github.com/superfluid-org/superfluid-dashboard/pull/881)
+- [x] **STOP — this is the end of ralphex run 1.** Do not start Part B in this run: it needs step 3 merged and the browser gate answered (Task 9), and it ships as its own PR from a fresh worktree off updated `master`
 
 ---
 
