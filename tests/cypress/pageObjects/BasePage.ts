@@ -225,6 +225,27 @@ export class BasePage {
       });
   }
 
+  // MUI X v9 renders picker values as contenteditable section spans; the only
+  // <input> inside a picker field is a visually hidden mirror, which fails
+  // Cypress' actionability checks, so `.type()`/`.clear()` cannot target it.
+  // Its onChange parses a full value string instead, so set the value natively,
+  // fire an input event, and then assert the field actually accepted the value
+  // (a rejected parse would otherwise be a silent no-op).
+  static setPickersFieldValue(fieldSelector: string, value: string) {
+    this.get(fieldSelector, undefined, { timeout: 30000 }).should('be.visible');
+    this.get(`${fieldSelector} input`).then(($input) => {
+      const input = $input[0] as HTMLInputElement;
+      const autWindow = input.ownerDocument.defaultView ?? window;
+      const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+        autWindow.HTMLInputElement.prototype,
+        'value'
+      )?.set;
+      nativeInputValueSetter?.call(input, value);
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+    this.hasValue(`${fieldSelector} input`, value);
+  }
+
   static hasText(
     selector: string,
     text?: JQuery<HTMLElement> | string | string[] | number,

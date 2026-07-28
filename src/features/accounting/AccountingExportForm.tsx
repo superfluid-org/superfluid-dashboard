@@ -199,6 +199,7 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
                       slotProps={{
                         textField: mobileTapTextFieldProps({
                           helperText: null,
+                          "data-cy": "export-start-date",
                         }),
                         openPickerButton: {
                           "data-cy": "start-date-picker-button",
@@ -225,6 +226,7 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
                       slotProps={{
                         textField: mobileTapTextFieldProps({
                           helperText: null,
+                          "data-cy": "export-end-date",
                         }),
                         openPickerButton: {
                           "data-cy": "end-date-picker-button",

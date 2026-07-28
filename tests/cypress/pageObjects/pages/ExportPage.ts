@@ -9,7 +9,8 @@ const SELECTED_ADDRESSES = '[data-cy=list-selected-address]';
 const SELECTED_FORM_ADDRESSES = '[data-cy=selected-address]';
 const OK_BUTTON = '[data-cy=ok-button]';
 const SEARCH_ADDRESSES = '[data-cy=list-search-address]';
-const DATE_RANGES = '[data-cy=date-ranges] input';
+const EXPORT_START_DATE = '[data-cy=export-start-date]';
+const EXPORT_END_DATE = '[data-cy=export-end-date]';
 const PRICE_GRANULARITY = '[data-cy=price-granularity]';
 const ACCOUNTING_PERIOD = '[data-cy=accounting-period]';
 const CURRENCY_BUTTON = '[data-cy=currency-button]';
@@ -239,13 +240,14 @@ export class ExportPage extends BasePage {
   }
 
   static changeExportStartDate(date: string) {
-    this.clear(DATE_RANGES, 0);
-    this.type(DATE_RANGES, date, 0);
+    this.setPickersFieldValue(EXPORT_START_DATE, date);
   }
 
   static changeExportEndDate(date: string) {
-    //When typing the end date messes up cypress because it autofills 0s for years
-    this.click(DATE_RANGES, -1);
+    // The end date is intentionally left at its default (typing it used to
+    // auto-fill zeroes for the year); clicking the field just moves focus off
+    // the start date so its value commits.
+    this.click(EXPORT_END_DATE);
   }
 
   static enableAllPreviewColumns() {

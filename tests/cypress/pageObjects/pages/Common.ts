@@ -789,18 +789,14 @@ export class Common extends BasePage {
     const minutes = `0${newDate.getMinutes()}`.slice(-2);
     const finalFutureDate = `${month}/${day}/${year} ${hours}:${minutes}`;
 
-    // Wait for the field to be visible first (the scheduling form renders it lazily and
-    // re-renders as values change), then type the whole value in a single command rather
-    // than a separate this.clear() + type(): clearing re-renders the form and detaches the
-    // input mid-command on slower CI ("cy.clear() failed because the page updated").
-    //
-    // No {selectall}{del} prefix: MUI X v8 no longer clears the whole field on that
-    // sequence -- it only clears the section that happens to be selected (verified in both
-    // the legacy and the accessible field DOM), and on an empty field it leaves the field
-    // in a state that swallows the rest of the same type() command. Typing the full
-    // formatted value overwrites every section on its own, so the prefix is unnecessary.
-    cy.get(selector, { timeout: 30000 }).should('be.visible');
-    this.type(selector, finalFutureDate);
+    // `selector` is the picker field's data-cy container, not its input: under the
+    // MUI X v9 accessible field DOM the only <input> is a hidden mirror that cannot
+    // be typed into, so the whole value is written through it natively in a single
+    // command (see setPickersFieldValue). This also keeps the no-clear() rule from
+    // v8: clearing re-renders the scheduling form and detaches the element
+    // mid-command on slower CI, and a {selectall}{del} prefix only ever cleared one
+    // section -- writing the full formatted value overwrites every section at once.
+    this.setPickersFieldValue(selector, finalFutureDate);
   }
 
   static validateScheduledStreamRow(
