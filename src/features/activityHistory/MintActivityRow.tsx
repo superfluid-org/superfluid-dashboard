@@ -83,7 +83,6 @@ const MintActivityRow: FC<MintActivityRowProps> = ({
           />
         </ListItem>
       </TableCell>
-
       {!isBelowMd ? (
         <>
           <TableCell>
@@ -161,7 +160,12 @@ const MintActivityRow: FC<MintActivityRowProps> = ({
         </>
       ) : (
         <TableCell align="right">
-          <Stack direction="row" alignItems="center" gap={2}>
+          <Stack
+            direction="row"
+            sx={{
+              alignItems: "center",
+              gap: 2
+            }}>
             {!!(superToken && underlyingToken) && (
               <ListItemText
                 data-cy={"mobile-amount"}

@@ -95,8 +95,10 @@ const SubscriptionRevokedActivityRow: FC<
                   >
                     <Typography
                       variant="h6"
-                      color="text.primary"
                       component="span"
+                      sx={{
+                        color: "text.primary"
+                      }}
                     >
                       <AddressName
                         address={isPublisher ? subscriber : publisher}
@@ -122,7 +124,12 @@ const SubscriptionRevokedActivityRow: FC<
         </>
       ) : (
         <TableCell align="right">
-          <Stack direction="row" alignItems="center" gap={1}>
+          <Stack
+            direction="row"
+            sx={{
+              alignItems: "center",
+              gap: 1
+            }}>
             <ListItemText primary={tokenQuery.data?.symbol} />
             <TokenIcon
               isSuper

@@ -209,13 +209,22 @@ const History: NextPage = () => {
 
   return (
     <Container maxWidth="lg">
-      <Stack gap={isBelowMd ? 2.5 : 4.5}>
+      <Stack sx={{
+        gap: isBelowMd ? 2.5 : 4.5
+      }}>
         <Typography variant="h3" component="h1" translate="yes">
           Activity History
         </Typography>
 
-        <Stack gap={2.5}>
-          <Stack direction="row" justifyContent="space-between" gap={2}>
+        <Stack sx={{
+          gap: 2.5
+        }}>
+          <Stack
+            direction="row"
+            sx={{
+              justifyContent: "space-between",
+              gap: 2
+            }}>
             <AddressSearch
               address={searchedAddress}
               placeholder="Filter by address, ENS or Farcaster handle"
@@ -272,7 +281,9 @@ const History: NextPage = () => {
               onClose={closeDatePicker}
             />
           </Stack>
-          <Stack direction="row" justifyContent="space-between">
+          <Stack direction="row" sx={{
+            justifyContent: "space-between"
+          }}>
             <Button
               data-cy={"activity-filter-button"}
               variant="outlined"
@@ -322,15 +333,18 @@ const History: NextPage = () => {
             <Typography
               data-cy={"no-history-title"}
               variant={isBelowMd ? "h5" : "h4"}
-              textAlign="center"
+              sx={{
+                textAlign: "center"
+              }}
             >
               No Activity History Available
             </Typography>
             <Typography
               data-cy={"no-history-text"}
-              color="text.secondary"
-              textAlign="center"
-            >
+              sx={{
+                color: "text.secondary",
+                textAlign: "center"
+              }}>
               {!visibleAddress
                 ? `Connect wallet or view the dashboard as any address to see transactions.`
                 : `Transactions including wrapping tokens and sending streams will appear here.`}

@@ -15,36 +15,44 @@ const AutoWrapEnableDialog: FC<{
   { closeEnableAutoWrapDialog, isEnableAutoWrapDialogOpen, token, network }) => {
     const theme = useTheme();
 
-    return <ResponsiveDialog
-      data-cy={"auto-wrap-enable-dialog"}
-      open={isEnableAutoWrapDialogOpen}
-      onClose={closeEnableAutoWrapDialog}
-      PaperProps={{ sx: { borderRadius: "20px", maxWidth: 550 } }}
-      keepMounted
-    >
-      <DialogTitle>
-        <Stack alignItems={"center"} component={DialogTitle} gap={0.5} sx={{ p: 3.5 }}>
-          <Typography variant="h4">Enable Auto-Wrap</Typography>
-          <IconButton
-            aria-label="close"
-            onClick={closeEnableAutoWrapDialog}
+    return (
+      <ResponsiveDialog
+        data-cy={"auto-wrap-enable-dialog"}
+        open={isEnableAutoWrapDialogOpen}
+        onClose={closeEnableAutoWrapDialog}
+        PaperProps={{ sx: { borderRadius: "20px", maxWidth: 550 } }}
+        keepMounted
+      >
+        <DialogTitle>
+          <Stack
+            component={DialogTitle}
             sx={{
-              position: "absolute",
-              right: theme.spacing(3),
-              top: theme.spacing(3),
-            }}
-          >
-            <CloseIcon data-cy="close-icon" />
-          </IconButton>
-        </Stack>
-      </DialogTitle>
-      <DialogContent>
-        <AutoWrapEnableDialogContentSection
-          closeEnableAutoWrapDialog={closeEnableAutoWrapDialog}
-          token={token}
-          network={network} />
-      </DialogContent>
-    </ResponsiveDialog>
+              alignItems: "center",
+              gap: 0.5,
+              p: 3.5
+            }}>
+            <Typography variant="h4">Enable Auto-Wrap</Typography>
+            <IconButton
+              aria-label="close"
+              onClick={closeEnableAutoWrapDialog}
+              sx={{
+                position: "absolute",
+                right: theme.spacing(3),
+                top: theme.spacing(3),
+              }}
+            >
+              <CloseIcon data-cy="close-icon" />
+            </IconButton>
+          </Stack>
+        </DialogTitle>
+        <DialogContent>
+          <AutoWrapEnableDialogContentSection
+            closeEnableAutoWrapDialog={closeEnableAutoWrapDialog}
+            token={token}
+            network={network} />
+        </DialogContent>
+      </ResponsiveDialog>
+    );
   };
 
 export default memo(AutoWrapEnableDialog);

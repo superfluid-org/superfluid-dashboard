@@ -146,19 +146,26 @@ const TokenAccessRow: FC<Props> = ({
       {isBelowMd ? (
         <TableRow data-cy={`${superToken?.symbol}-${address}-row`}>
           <TableCell>
-            <Stack gap={2} sx={{ px: 2, py: 2 }}>
+            <Stack
+              sx={{
+                gap: 2,
+                px: 2,
+                py: 2
+              }}>
               <Stack
                 direction="row"
-                justifyContent="space-between"
-                sx={{ width: "auto" }}
-              >
+                sx={{
+                  justifyContent: "space-between",
+                  width: "auto"
+                }}>
                 <Typography variant="subtitle1">Asset</Typography>
                 <Stack
                   data-cy={"token-header"}
                   direction="row"
-                  alignItems="center"
-                  gap={2}
-                >
+                  sx={{
+                    alignItems: "center",
+                    gap: 2
+                  }}>
                   <TokenIcon
                     isSuper
                     chainId={network.id}
@@ -172,10 +179,16 @@ const TokenAccessRow: FC<Props> = ({
               </Stack>
               <Stack
                 direction="row"
-                justifyContent="space-between"
-                sx={{ width: "auto" }}
-              >
-                <Stack direction="row" gap={0.5} alignItems="center">
+                sx={{
+                  justifyContent: "space-between",
+                  width: "auto"
+                }}>
+                <Stack
+                  direction="row"
+                  sx={{
+                    gap: 0.5,
+                    alignItems: "center"
+                  }}>
                   <Typography variant="subtitle1"> Operator</Typography>
                   <TooltipWithIcon
                     title="Address that is permitted to manage your streams for a specific Super Token and network."
@@ -187,7 +200,12 @@ const TokenAccessRow: FC<Props> = ({
                     }}
                   />
                 </Stack>
-                <Stack direction="row" alignItems="center" gap={1.5}>
+                <Stack
+                  direction="row"
+                  sx={{
+                    alignItems: "center",
+                    gap: 1.5
+                  }}>
                   <AddressAvatar
                     address={address}
                     AvatarProps={{
@@ -208,10 +226,16 @@ const TokenAccessRow: FC<Props> = ({
               </Stack>
               <Stack
                 direction="row"
-                justifyContent="space-between"
-                sx={{ width: "auto" }}
-              >
-                <Stack direction="row" gap={0.5} alignItems="center">
+                sx={{
+                  justifyContent: "space-between",
+                  width: "auto"
+                }}>
+                <Stack
+                  direction="row"
+                  sx={{
+                    gap: 0.5,
+                    alignItems: "center"
+                  }}>
                   <Typography variant="subtitle1">Token Allowance</Typography>
                   <TooltipWithIcon
                     title="Defined transfer allowance cap for Super Tokens."
@@ -224,7 +248,12 @@ const TokenAccessRow: FC<Props> = ({
                   />
                 </Stack>
                 {superToken && (
-                  <Stack direction="row" alignItems="center" gap={0.5}>
+                  <Stack
+                    direction="row"
+                    sx={{
+                      alignItems: "center",
+                      gap: 0.5
+                    }}>
                     <Typography data-cy="token-allowance" variant="h6">
                       {isCloseToUnlimitedTokenAllowance(
                         initialAccess.tokenAllowanceWei
@@ -244,10 +273,16 @@ const TokenAccessRow: FC<Props> = ({
               </Stack>
               <Stack
                 direction="row"
-                justifyContent="space-between"
-                sx={{ width: "auto" }}
-              >
-                <Stack direction="row" gap={0.5} alignItems="center">
+                sx={{
+                  justifyContent: "space-between",
+                  width: "auto"
+                }}>
+                <Stack
+                  direction="row"
+                  sx={{
+                    gap: 0.5,
+                    alignItems: "center"
+                  }}>
                   <Typography variant="subtitle1">
                     Stream Permissions
                   </Typography>
@@ -270,10 +305,16 @@ const TokenAccessRow: FC<Props> = ({
               </Stack>
               <Stack
                 direction="row"
-                justifyContent="space-between"
-                sx={{ width: "auto" }}
-              >
-                <Stack direction="row" gap={0.5} alignItems="center">
+                sx={{
+                  justifyContent: "space-between",
+                  width: "auto"
+                }}>
+                <Stack
+                  direction="row"
+                  sx={{
+                    gap: 0.5,
+                    alignItems: "center"
+                  }}>
                   <Typography variant="subtitle1">Stream Allowance</Typography>
                   <TooltipWithIcon
                     title="Defined flow rate allowance cap for Super Tokens."
@@ -287,7 +328,12 @@ const TokenAccessRow: FC<Props> = ({
                 </Stack>
 
                 {superToken && (
-                  <Stack direction="row" alignItems="center" gap={0.5}>
+                  <Stack
+                    direction="row"
+                    sx={{
+                      alignItems: "center",
+                      gap: 0.5
+                    }}>
                     <Typography data-cy="flow-rate-allowance" variant="h6">
                       {isCloseToUnlimitedFlowRateAllowance(
                         initialAccess.flowRateAllowance.amountWei
@@ -309,7 +355,9 @@ const TokenAccessRow: FC<Props> = ({
                   </Stack>
                 )}
               </Stack>
-              <Stack gap={2} direction="column">
+              <Stack direction="column" sx={{
+                gap: 2
+              }}>
                 <UpsertTokenAccessButton
                   dataCy={"token-access-row-button"}
                   initialFormValues={initialFormValues}
@@ -324,9 +372,10 @@ const TokenAccessRow: FC<Props> = ({
             <Stack
               data-cy={"token-header"}
               direction="row"
-              alignItems="center"
-              gap={2}
-            >
+              sx={{
+                alignItems: "center",
+                gap: 2
+              }}>
               <TokenIcon
                 isSuper
                 chainId={network.id}
@@ -339,7 +388,12 @@ const TokenAccessRow: FC<Props> = ({
             </Stack>
           </TableCell>
           <TableCell align="left">
-            <Stack direction="row" alignItems="center" gap={1.5}>
+            <Stack
+              direction="row"
+              sx={{
+                alignItems: "center",
+                gap: 1.5
+              }}>
               <AddressAvatar
                 address={address}
                 AvatarProps={{
@@ -356,7 +410,12 @@ const TokenAccessRow: FC<Props> = ({
           </TableCell>
           <TableCell sx={{ overflowWrap: "anywhere" }} align="left">
             {superToken && (
-              <Stack direction="row" alignItems="center" gap={0.5}>
+              <Stack
+                direction="row"
+                sx={{
+                  alignItems: "center",
+                  gap: 0.5
+                }}>
                 <Typography variant="h6" data-cy="token-allowance">
                   {isCloseToUnlimitedTokenAllowance(
                     initialAccess.tokenAllowanceWei
@@ -383,7 +442,12 @@ const TokenAccessRow: FC<Props> = ({
           </TableCell>
           <TableCell align="left" sx={{ overflowWrap: "anywhere" }}>
             {superToken && (
-              <Stack direction="row" alignItems="center" gap={0.5}>
+              <Stack
+                direction="row"
+                sx={{
+                  alignItems: "center",
+                  gap: 0.5
+                }}>
                 <Typography variant="h6" data-cy="flow-rate-allowance">
                   {isCloseToUnlimitedFlowRateAllowance(
                     initialAccess.flowRateAllowance.amountWei

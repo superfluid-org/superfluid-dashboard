@@ -59,7 +59,6 @@ const IndexCreatedActivityRow: FC<IndexCreatedActivityRowProps> = ({
           />
         </ListItem>
       </TableCell>
-
       {!isBelowMd ? (
         <>
           <TableCell>
@@ -87,7 +86,12 @@ const IndexCreatedActivityRow: FC<IndexCreatedActivityRowProps> = ({
         </>
       ) : (
         <TableCell align="right">
-          <Stack direction="row" alignItems="center" gap={1}>
+          <Stack
+            direction="row"
+            sx={{
+              alignItems: "center",
+              gap: 1
+            }}>
             <ListItemText primary={tokenQuery.data?.symbol} />
             <TokenIcon
               isSuper

@@ -99,12 +99,15 @@ const TranchCell: FC<{
             {allocation?.amount ? (
                 <Stack
                     direction="row"
-                    justifyContent="space-between"
-                    alignItems="center"
-                    gap={1.5}
-                >
+                    sx={{
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        gap: 1.5
+                    }}>
                     <Amount wei={allocation.amount} disableRounding mono />
-                    <Typography variant="tooltip" color="text.secondary">
+                    <Typography variant="tooltip" sx={{
+                        color: "text.secondary"
+                    }}>
                         {tokenSymbol}
                     </Typography>
                 </Stack>
@@ -216,7 +219,9 @@ function Row(props: {
                             component="span"
                             variant="body2"
                             noWrap
-                            display="block"
+                            sx={{
+                                display: "block"
+                            }}
                         >
                             {name}
                         </Typography>
@@ -235,14 +240,18 @@ function Row(props: {
                     );
                 })}
             </TableRow>
-
             <TableRow>
                 <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={3 + displayTranchNo}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         <Box sx={{ p: 2 }}>
                             <Box sx={{ ml: 1, mt: 1 }}>
                                 <Box sx={{ display: 'flex', mb: 1 }}>
-                                    <Typography variant="body2" color="text.secondary" sx={{ width: 120 }}>
+                                    <Typography
+                                        variant="body2"
+                                        sx={{
+                                            color: "text.secondary",
+                                            width: 120
+                                        }}>
                                         Project name(s):
                                     </Typography>
                                     <Typography
@@ -253,7 +262,12 @@ function Row(props: {
                                 </Box>
 
                                 <Box sx={{ display: 'flex', mb: 1 }}>
-                                    <Typography variant="body2" color="text.secondary" sx={{ width: 120 }}>
+                                    <Typography
+                                        variant="body2"
+                                        sx={{
+                                            color: "text.secondary",
+                                            width: 120
+                                        }}>
                                         Current wallet:
                                     </Typography>
                                     <Typography
@@ -265,7 +279,12 @@ function Row(props: {
 
                                 {state.agoraEntry.wallets.length > 1 && (
                                     <Box sx={{ display: 'flex' }}>
-                                        <Typography variant="body2" color="text.secondary" sx={{ width: 120 }}>
+                                        <Typography
+                                            variant="body2"
+                                            sx={{
+                                                color: "text.secondary",
+                                                width: 120
+                                            }}>
                                             Previous wallets:
                                         </Typography>
                                         <Box>
@@ -286,7 +305,12 @@ function Row(props: {
                                 )}
 
                                 <Box sx={{ display: 'flex', mb: 1 }}>
-                                    <Typography variant="body2" color="text.secondary" sx={{ width: 120 }}>
+                                    <Typography
+                                        variant="body2"
+                                        sx={{
+                                            color: "text.secondary",
+                                            width: 120
+                                        }}>
                                         Agora total:
                                     </Typography>
                                     <Typography variant="body2">
@@ -294,7 +318,12 @@ function Row(props: {
                                     </Typography>
                                 </Box>
                                 <Box sx={{ display: 'flex', mb: 1 }}>
-                                    <Typography variant="body2" color="text.secondary" sx={{ width: 120 }}>
+                                    <Typography
+                                        variant="body2"
+                                        sx={{
+                                            color: "text.secondary",
+                                            width: 120
+                                        }}>
                                         Vesting total:
                                     </Typography>
                                     <Typography variant="body2">
@@ -306,7 +335,9 @@ function Row(props: {
                             {
                                 state.allRelevantSchedules.length > 0 && (
                                     <Box sx={{ mt: 2 }}>
-                                        <Typography variant="body2" color="text.secondary" gutterBottom>
+                                        <Typography variant="body2" gutterBottom sx={{
+                                            color: "text.secondary"
+                                        }}>
                                             Vesting schedules:
                                         </Typography>
                                         <ProjectVestingSchedulesTables project={state} />
@@ -316,7 +347,9 @@ function Row(props: {
 
                             {state.projectActions.length > 0 && (
                                 <Box sx={{ mt: 3 }}>
-                                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                                    <Typography variant="body2" gutterBottom sx={{
+                                        color: "text.secondary"
+                                    }}>
                                         Pending Actions ({state.projectActions.length}):
                                     </Typography>
                                     <ActionsList
@@ -332,7 +365,6 @@ function Row(props: {
                     </Collapse>
                 </TableCell>
             </TableRow>
-
         </>
     );
 }

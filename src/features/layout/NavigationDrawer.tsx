@@ -92,28 +92,33 @@ const NavigationItem: FC<NavigationItemProps> = ({
       onClick={onClick}
       {...(isExternal && { target: "_blank" })}
       >
-        {/* Dense icons are 20px in a 24px-wide slot (ml 2px + mr 18px), so labels
-            share the same x-coordinate as the 24px-icon tier above. */}
-        <ListItemIcon sx={dense ? { ml: 0.25, mr: 2.25 } : undefined}>
-          <Icon fontSize={dense ? "small" : "medium"} />
-        </ListItemIcon>
-        <ListItemText
-          data-cy={id}
-          primary={title}
-          primaryTypographyProps={dense ? { variant: "body2" } : undefined}
-        />
-        {(chip || isExternal) && (
-          <Stack direction="row" alignItems="center" gap={0.75}>
-            {chip}
-            {isExternal && (
-              <OpenInNewRoundedIcon
-                sx={{ fontSize: 16, color: "text.disabled" }}
-              />
-            )}
-          </Stack>
-        )}
-      </ListItemButton>
-    );
+      {/* Dense icons are 20px in a 24px-wide slot (ml 2px + mr 18px), so labels
+          share the same x-coordinate as the 24px-icon tier above. */}
+      <ListItemIcon sx={dense ? { ml: 0.25, mr: 2.25 } : undefined}>
+        <Icon fontSize={dense ? "small" : "medium"} />
+      </ListItemIcon>
+      <ListItemText
+        data-cy={id}
+        primary={title}
+        primaryTypographyProps={dense ? { variant: "body2" } : undefined}
+      />
+      {(chip || isExternal) && (
+        <Stack
+          direction="row"
+          sx={{
+            alignItems: "center",
+            gap: 0.75
+          }}>
+          {chip}
+          {isExternal && (
+            <OpenInNewRoundedIcon
+              sx={{ fontSize: 16, color: "text.disabled" }}
+            />
+          )}
+        </Stack>
+      )}
+    </ListItemButton>
+  );
   };
 
 export default memo(function NavigationDrawer() {
@@ -230,18 +235,18 @@ export default memo(function NavigationDrawer() {
           />
         </Link>
       </Toolbar>
-
       {!isBelowMd && (
         <Box sx={{ px: 2, py: 1.5 }}>
           <ConnectWallet />
         </Box>
       )}
-
       <Stack
         component={List}
-        sx={{ color: theme.palette.text.secondary, px: 2 }}
-        gap={1}
-      >
+        sx={{
+          gap: 1,
+          color: theme.palette.text.secondary,
+          px: 2
+        }}>
         <NavigationItem
           id="nav-dashboard"
           title="Dashboard"
@@ -319,12 +324,18 @@ export default memo(function NavigationDrawer() {
         />
 
       </Stack>
-
-      <Stack justifyContent="flex-end" sx={{ flex: 1 }}>
+      <Stack
+        sx={{
+          justifyContent: "flex-end",
+          flex: 1
+        }}>
         <Stack
-          sx={{ my: 2, px: 2, color: theme.palette.text.secondary }}
-          gap={0.5}
-        >
+          sx={{
+            gap: 0.5,
+            my: 2,
+            px: 2,
+            color: theme.palette.text.secondary
+          }}>
           <NavigationItem
             id="nav-address-book"
             title="Address Book"
@@ -376,10 +387,12 @@ export default memo(function NavigationDrawer() {
           <Divider sx={{ mt: 1, opacity: 0.6 }} />
           <Stack
             direction="row"
-            alignItems="center"
-            gap={0.75}
-            sx={{ mt: 0.5, pl: 1.5 }}
-          >
+            sx={{
+              alignItems: "center",
+              gap: 0.75,
+              mt: 0.5,
+              pl: 1.5
+            }}>
             <SocialLinks />
             <Typography variant="body2" component="span">
               ·

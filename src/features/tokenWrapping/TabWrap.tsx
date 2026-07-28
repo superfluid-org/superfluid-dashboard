@@ -240,7 +240,9 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
   const isListedLoading = superTokenQuery.isLoading
 
   return (
-    <Stack data-cy={"wrap-screen"} direction="column" alignItems="center">
+    <Stack data-cy={"wrap-screen"} direction="column" sx={{
+      alignItems: "center"
+    }}>
       <WrapInputCard>
         <Stack direction="row" spacing={2}>
           <Controller
@@ -305,16 +307,20 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
           />
         </Stack>
         {underlyingToken && visibleAddress && (
-          <Stack direction="row" justifyContent="space-between" gap={0.5}>
+          <Stack
+            direction="row"
+            sx={{
+              justifyContent: "space-between",
+              gap: 0.5
+            }}>
             <Typography
               variant="body2mono"
-              color="text.secondary"
               sx={{
+                color: "text.secondary",
                 flexShrink: 1,
                 overflow: "hidden",
-                textOverflow: "ellipsis",
-              }}
-            >
+                textOverflow: "ellipsis"
+              }}>
               {tokenPrice && (
                 <FiatAmount
                   wei={amountWei}
@@ -366,9 +372,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
           </Stack>
         )}
       </WrapInputCard>
-
       <SwitchWrapModeBtn onClick={onSwitchMode} />
-
       {superToken && (
         <WrapInputCard>
           <Stack direction="row" spacing={2}>
@@ -408,16 +412,17 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
           </Stack>
 
           {!!(underlyingToken && superToken && visibleAddress) && (
-            <Stack direction="row" justifyContent="space-between">
+            <Stack direction="row" sx={{
+              justifyContent: "space-between"
+            }}>
               <Typography
                 variant="body2mono"
-                color="text.secondary"
                 sx={{
+                  color: "text.secondary",
                   flexShrink: 1,
                   overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}
-              >
+                  textOverflow: "ellipsis"
+                }}>
                 {tokenPrice && (
                   <FiatAmount
                     wei={amountWei}
@@ -436,14 +441,20 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
           )}
         </WrapInputCard>
       )}
-
       {!!(superToken && underlyingToken) && (
-        <Stack direction="row" alignItems="center" gap={0.5}>
+        <Stack
+          direction="row"
+          sx={{
+            alignItems: "center",
+            gap: 0.5
+          }}>
           <Typography data-cy="token-pair" align="center" sx={{ my: 3 }}>
             {`1 ${underlyingToken.symbol} = 1 ${superToken.symbol}`}
           </Typography>
           {tokenPrice && (
-            <Typography variant="body2mono" color="text.secondary">
+            <Typography variant="body2mono" sx={{
+              color: "text.secondary"
+            }}>
               (
               <FiatAmount
                 wei={amountWei}
@@ -455,12 +466,18 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
           )}
         </Stack>
       )}
-
       {/* 2.5 matches the block rhythm around TX buttons app-wide so the relay
           strip reads as its own block; the buttons keep their tighter grouping. */}
-      <Stack gap={2.5} direction="column" sx={{ width: "100%" }}>
+      <Stack
+        direction="column"
+        sx={{
+          gap: 2.5,
+          width: "100%"
+        }}>
         <ConnectionBoundary>
-          <Stack gap={2} direction="column">
+          <Stack direction="column" sx={{
+            gap: 2
+          }}>
             <TransactionBoundary mutationResult={approveResult}>
               {({ setDialogLoadingInfo }) =>
                 isApproveAllowanceVisible && (
@@ -584,7 +601,11 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
   
                     setDialogSuccessActions(
                       <TransactionDialogActions>
-                        <Stack gap={1} sx={{ width: "100%" }}>
+                        <Stack
+                          sx={{
+                            gap: 1,
+                            width: "100%"
+                          }}>
                           <TransactionDialogButton
                             data-cy={"wrap-more-tokens-button"}
                             color="secondary"
@@ -632,15 +653,15 @@ const WrapPreview: FC<{
     <Typography
       data-cy="wrap-message"
       variant="h5"
-      color="text.secondary"
       translate="yes"
-    >
-      You are wrapping{" "}
+      sx={{
+        color: "text.secondary"
+      }}
+    >You are wrapping{" "}
       <span translate="no">
         {formatEther(amountWei)} {underlyingTokenSymbol}
-      </span>{" "}
-      to the super token <span translate="no">{superTokenSymbol}</span>.
-    </Typography>
+      </span>{" "}to the super token <span translate="no">{superTokenSymbol}</span>.
+          </Typography>
   );
 };
 
@@ -653,14 +674,14 @@ const AllowancePreview: FC<{
     <Typography
       data-cy="allowance-message"
       variant="h5"
-      color="text.secondary"
       translate="yes"
-    >
-      You are approving additional allowance of{" "}
+      sx={{
+        color: "text.secondary"
+      }}
+    >You are approving additional allowance of{" "}
       <span translate="no">
         {formatUnits(amountWei, decimals)} {tokenSymbol}
-      </span>{" "}
-      for Superfluid Protocol to use.
-    </Typography>
+      </span>{" "}for Superfluid Protocol to use.
+          </Typography>
   );
 };

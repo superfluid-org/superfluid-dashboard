@@ -149,15 +149,18 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
             )}
             <Stack
               direction="row"
-              gap={0.5}
               component="span"
-              alignItems="center"
-            >
+              sx={{
+                gap: 0.5,
+                alignItems: "center"
+              }}>
               <Box
                 component="span"
-                color={getTransactionStatusColor(transaction.status)}
                 translate="no"
                 data-cy={"tx-date"}
+                sx={{
+                  color: getTransactionStatusColor(transaction.status)
+                }}
               >
                 {`${format(transaction.timestampMs, "d MMM")} •`}
               </Box>

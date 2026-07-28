@@ -44,15 +44,21 @@ export const AutoWrapContractInfo: FC<{ network: Network }> = ({ network }) => {
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   if (!network || !network.autoWrap) return null;
   return (
-    <Stack direction="column" alignSelf={isBelowMd ? "flex-start" : "flex-end"}>
-      <Stack direction="row" gap={0.5}>
+    <Stack direction="column" sx={{
+      alignSelf: isBelowMd ? "flex-start" : "flex-end"
+    }}>
+      <Stack direction="row" sx={{
+        gap: 0.5
+      }}>
         <Typography variant={isBelowMd ? "body2" : "body1"} color="secondary">
           Auto-Wrap Manager Smart Contract
         </Typography>
         <Stack
           data-cy={`${network.slugName}-auto-wrap-manager-contract-buttons`}
           direction="row"
-          alignItems="center"
+          sx={{
+            alignItems: "center"
+          }}
         >
           <CopyIconBtn
             TooltipProps={{ placement: "top" }}
@@ -74,14 +80,18 @@ export const AutoWrapContractInfo: FC<{ network: Network }> = ({ network }) => {
           </Tooltip>
         </Stack>
       </Stack>
-      <Stack direction="row" gap={0.8}>
+      <Stack direction="row" sx={{
+        gap: 0.8
+      }}>
         <Typography variant={isBelowMd ? "body2" : "body1"} color="secondary">
           Auto-Wrap Strategy Smart Contract
         </Typography>
         <Stack
           data-cy={`${network.slugName}-auto-wrap-strategy-contract-buttons`}
           direction="row"
-          alignItems="center"
+          sx={{
+            alignItems: "center"
+          }}
         >
           <CopyIconBtn
             TooltipProps={{ placement: "top" }}
@@ -118,8 +128,10 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
     <Stack>
       <Stack
         direction={isBelowMd ? "column" : "row"}
-        justifyContent="space-between"
         spacing={1}
+        sx={{
+          justifyContent: "space-between"
+        }}
       >
         <Typography variant={isBelowMd ? "body2" : "body1"} color="secondary">
           {whitelisted ? (
@@ -134,11 +146,17 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
         </Typography>
         <Stack
           direction="column"
-          alignItems={isBelowMd ? "flex-start" : "flex-end"}
-          gap={isBelowMd ? 0.5 : 0.2}
-        >
+          sx={{
+            alignItems: isBelowMd ? "flex-start" : "flex-end",
+            gap: isBelowMd ? 0.5 : 0.2
+          }}>
           {network.vestingContractAddress.v1 && (
-            <Stack direction="row" alignItems="center" gap={0.5}>
+            <Stack
+              direction="row"
+              sx={{
+                alignItems: "center",
+                gap: 0.5
+              }}>
               <Typography
                 variant={isBelowMd ? "body2" : "body1"}
                 color="secondary"
@@ -148,7 +166,9 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
               <Stack
                 data-cy="vesting-contract-buttons"
                 direction="row"
-                alignItems="center"
+                sx={{
+                  alignItems: "center"
+                }}
               >
                 <CopyIconBtn
                   TooltipProps={{ placement: "top" }}
@@ -174,7 +194,12 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
             </Stack>
           )}
           {network.vestingContractAddress.v2 && (
-            <Stack direction="row" alignItems="center" gap={0.5}>
+            <Stack
+              direction="row"
+              sx={{
+                alignItems: "center",
+                gap: 0.5
+              }}>
               <Typography
                 variant={isBelowMd ? "body2" : "body1"}
                 color="secondary"
@@ -184,7 +209,9 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
               <Stack
                 data-cy="vesting-v3-contract-buttons"
                 direction="row"
-                alignItems="center"
+                sx={{
+                  alignItems: "center"
+                }}
               >
                 <CopyIconBtn
                   TooltipProps={{ placement: "top" }}
@@ -210,7 +237,12 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
             </Stack>
           )}
           {network.vestingContractAddress.v3 && (
-            <Stack direction="row" alignItems="center" gap={0.5}>
+            <Stack
+              direction="row"
+              sx={{
+                alignItems: "center",
+                gap: 0.5
+              }}>
               <Typography
                 variant={isBelowMd ? "body2" : "body1"}
                 color="secondary"
@@ -220,7 +252,9 @@ const ExecutionWhitelistInfo: FC<ExecutionWhitelistInfoProps> = ({
               <Stack
                 data-cy="vesting-v3-contract-buttons"
                 direction="row"
-                alignItems="center"
+                sx={{
+                  alignItems: "center"
+                }}
               >
                 <CopyIconBtn
                   TooltipProps={{ placement: "top" }}
@@ -337,15 +371,19 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({ }) => {
 
   return (
     <Stack
-      gap={3.5}
       direction={
         receivedVestingSchedules.length === 0 &&
           mappedSentVestingSchedules.length > 0
           ? "column-reverse"
           : "column"
       }
+      sx={{
+        gap: 3.5
+      }}
     >
-      <Stack gap={2}>
+      <Stack sx={{
+        gap: 2
+      }}>
         <Typography variant="h6">
           {vestingSchedulesLoading ? (
             <Skeleton width="200px" />
@@ -369,9 +407,12 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({ }) => {
           />
         )}
       </Stack>
-
-      <Stack gap={3.5}>
-        <Stack gap={2}>
+      <Stack sx={{
+        gap: 3.5
+      }}>
+        <Stack sx={{
+          gap: 2
+        }}>
           <Typography variant="h6">
             {vestingSchedulesLoading ? (
               <Skeleton width="200px" />
@@ -380,7 +421,9 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({ }) => {
             )}
           </Typography>
           {vestingSchedulesLoading || mappedSentVestingSchedules.length > 0 ? (
-            <Stack gap={isBelowMd ? 0 : 3.5}>
+            <Stack sx={{
+              gap: isBelowMd ? 0 : 3.5
+            }}>
               <AggregatedVestingSchedules
                 vestingSchedules={notDeletedSentVestingSchedules}
                 network={network}
@@ -401,7 +444,9 @@ const VestingScheduleTables: FC<VestingScheduleTablesProps> = ({ }) => {
           )}
         </Stack>
 
-        <Stack gap={2}>
+        <Stack sx={{
+          gap: 2
+        }}>
           {vestingSchedulesLoading ? (
             <Skeleton width="200px" />
           ) : (

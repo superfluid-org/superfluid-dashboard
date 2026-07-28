@@ -112,22 +112,29 @@ const CreateVestingForm = memo(function CreateVestingForm(props: {
     !isAutoWrapAllowanceSufficient;
 
   return (
-    <Stack component={"form"} gap={4}>
-      <Stack gap={2.5}>
+    <Stack component={"form"} sx={{
+      gap: 4
+    }}>
+      <Stack sx={{
+        gap: 2.5
+      }}>
         <ValidationSummary />
         <FormGroup>
           <Stack
             direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-          >
+            sx={{
+              alignItems: "center",
+              justifyContent: "space-between"
+            }}>
             <FormLabel>{VestingFormLabels.Receiver}</FormLabel>
             <TooltipWithIcon title="Must not be an exchange address" />
           </Stack>
           <ReceiverController isBelowMd={isBelowMd} />
         </FormGroup>
 
-        <Stack data-cy="claim-switch-and-tooltip" direction="row" alignItems="center">
+        <Stack data-cy="claim-switch-and-tooltip" direction="row" sx={{
+          alignItems: "center"
+        }}>
           <ClaimController />
           <TooltipWithIcon title={VestingTooltips.Claim} />
         </Stack>
@@ -159,9 +166,10 @@ const CreateVestingForm = memo(function CreateVestingForm(props: {
           <FormGroup>
             <Stack
               direction="row"
-              alignItems="center"
-              justifyContent="space-between"
-            >
+              sx={{
+                alignItems: "center",
+                justifyContent: "space-between"
+              }}>
               <FormLabel>{VestingFormLabels.TotalVestedAmount}</FormLabel>
               <TooltipWithIcon title="Set the total amount to be vested" />
             </Stack>
@@ -171,9 +179,10 @@ const CreateVestingForm = memo(function CreateVestingForm(props: {
           <FormGroup>
             <Stack
               direction="row"
-              alignItems="center"
-              justifyContent="space-between"
-            >
+              sx={{
+                alignItems: "center",
+                justifyContent: "space-between"
+              }}>
               <FormLabel>{VestingFormLabels.TotalVestingPeriod}</FormLabel>
               <TooltipWithIcon title="Set the total length of time for vesting" />
             </Stack>
@@ -181,7 +190,9 @@ const CreateVestingForm = memo(function CreateVestingForm(props: {
           </FormGroup>
         </Box>
 
-        <Stack direction="row" alignItems="center">
+        <Stack direction="row" sx={{
+          alignItems: "center"
+        }}>
           <CliffEnabledController />
           <TooltipWithIcon title="Set the cliff date and amount to be granted." />
         </Stack>
@@ -197,9 +208,10 @@ const CreateVestingForm = memo(function CreateVestingForm(props: {
             <FormGroup>
               <Stack
                 direction="row"
-                alignItems="center"
-                justifyContent="space-between"
-              >
+                sx={{
+                  alignItems: "center",
+                  justifyContent: "space-between"
+                }}>
                 <FormLabel>{VestingFormLabels.CliffAmount}</FormLabel>
                 <TooltipWithIcon title="Set the amount to be vested at the cliff" />
               </Stack>
@@ -209,9 +221,10 @@ const CreateVestingForm = memo(function CreateVestingForm(props: {
             <FormGroup>
               <Stack
                 direction="row"
-                alignItems="center"
-                justifyContent="space-between"
-              >
+                sx={{
+                  alignItems: "center",
+                  justifyContent: "space-between"
+                }}>
                 <FormLabel>{VestingFormLabels.CliffPeriod}</FormLabel>
                 <TooltipWithIcon title="Set the time until the cliff from the start date" />
               </Stack>
@@ -221,7 +234,9 @@ const CreateVestingForm = memo(function CreateVestingForm(props: {
         )}
 
         {isAutoWrapInputVisible && (
-          <Stack data-cy="auto-wrap-switch-and-tooltip" direction="row" alignItems="center">
+          <Stack data-cy="auto-wrap-switch-and-tooltip" direction="row" sx={{
+            alignItems: "center"
+          }}>
             <AutoWrapController />
             <TooltipWithIcon title={VestingTooltips.AutoWrap} />
           </Stack>
@@ -266,7 +281,6 @@ const CreateVestingForm = memo(function CreateVestingForm(props: {
           </Alert>
         )}
       </Stack>
-
       <PreviewButton setView={setView} />
     </Stack>
   );
@@ -345,7 +359,9 @@ const VestingAmountController = memo(function VestingAmountController(props: {
           onBlur={onBlur}
           InputProps={{
             endAdornment: (
-              <Typography component="span" color={"text.secondary"}>
+              <Typography component="span" sx={{
+                color: "text.secondary"
+              }}>
                 {props.token?.symbol ?? ""}
               </Typography>
             ),
@@ -422,7 +438,9 @@ const CliffAmountController = memo(function CliffAmountController(props: {
           onBlur={onBlur}
           InputProps={{
             endAdornment: (
-              <Typography component="span" color={"text.secondary"}>
+              <Typography component="span" sx={{
+                color: "text.secondary"
+              }}>
                 {props.token?.symbol ?? ""}
               </Typography>
             ),

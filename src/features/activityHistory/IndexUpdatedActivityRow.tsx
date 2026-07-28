@@ -177,7 +177,12 @@ const IndexUpdatedActivityRow: FC<IndexUpdatedActivityRowProps> = ({
         </>
       ) : (
         <TableCell align="right">
-          <Stack direction="row" alignItems="center" gap={1}>
+          <Stack
+            direction="row"
+            sx={{
+              alignItems: "center",
+              gap: 1
+            }}>
             <ListItemText
               primary={
                 <>

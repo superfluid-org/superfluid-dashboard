@@ -45,10 +45,14 @@ const PoolMemberRow: FC<Props> = ({
 
     return (
         <TableRow>
-
             {/* Pool ID (the sender, basically) */}
             <TableCell>
-                <Stack direction="row" alignItems="center" gap={1.5}>
+                <Stack
+                    direction="row"
+                    sx={{
+                        alignItems: "center",
+                        gap: 1.5
+                    }}>
                     {pool ? (
                         <>
                             <AddressAvatar
@@ -78,7 +82,6 @@ const PoolMemberRow: FC<Props> = ({
                 </Stack>
             </TableCell>
             {/* --- */}
-
             <TableCell>
                 {/* Use FIAT price here as well? */}
                 {totalAmountReceived && (
@@ -87,7 +90,6 @@ const PoolMemberRow: FC<Props> = ({
                     </Typography>
                 )}
             </TableCell>
-
             <TableCell>
                 {totalAmountReceived && (
                     <Typography data-cy={"flow-rate"} variant="body2mono">
@@ -98,9 +100,7 @@ const PoolMemberRow: FC<Props> = ({
                     </Typography>
                 )}
             </TableCell>
-
             <TableCell><PoolMemberStatus poolMember={poolMember} /></TableCell>
-
             <TableCell>
                 <ConnectionBoundary expectedNetwork={network}>
                     {() => (
@@ -111,7 +111,6 @@ const PoolMemberRow: FC<Props> = ({
                     )}
                 </ConnectionBoundary>
             </TableCell>
-
         </TableRow>
     );
 };

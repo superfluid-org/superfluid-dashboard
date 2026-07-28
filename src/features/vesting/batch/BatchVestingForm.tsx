@@ -32,8 +32,12 @@ export function BatchVestingForm(props: {
     const [cliffEnabled, schedules] = watch(["data.cliffEnabled", "data.schedules"]);
 
     return (
-        <Stack component={"form"} gap={4}>
-            <Stack gap={2.5}>
+        <Stack component={"form"} sx={{
+            gap: 4
+        }}>
+            <Stack sx={{
+                gap: 2.5
+            }}>
                 <ValidationSummary />
 
                 <FormGroup>
@@ -48,17 +52,22 @@ export function BatchVestingForm(props: {
                 <FormGroup>
                     <Stack
                         direction="row"
-                        alignItems="center"
-                        justifyContent="space-between"
-                    >
+                        sx={{
+                            alignItems: "center",
+                            justifyContent: "space-between"
+                        }}>
                         <FormLabel>{VestingFormLabels.TotalVestingPeriod}</FormLabel>
                         <TooltipWithIcon title="Set the total length of time for vesting" />
                     </Stack>
                     <VestingPeriodController network={network} />
                 </FormGroup>
 
-                <Stack gap={2}>
-                    <Stack direction="row" alignItems="center">
+                <Stack sx={{
+                    gap: 2
+                }}>
+                    <Stack direction="row" sx={{
+                        alignItems: "center"
+                    }}>
                         <CliffEnabledController />
                         <TooltipWithIcon title="Set the cliff date and amount to be granted." />
                     </Stack>
@@ -67,9 +76,10 @@ export function BatchVestingForm(props: {
                         <FormGroup>
                             <Stack
                                 direction="row"
-                                alignItems="center"
-                                justifyContent="space-between"
-                            >
+                                sx={{
+                                    alignItems: "center",
+                                    justifyContent: "space-between"
+                                }}>
                                 <FormLabel>{VestingFormLabels.CliffPeriod}</FormLabel>
                                 <TooltipWithIcon title="Set the time until the cliff from the start date" />
                             </Stack>
@@ -78,22 +88,23 @@ export function BatchVestingForm(props: {
                     )}
                 </Stack>
 
-                <Stack data-cy="claim-switch-and-tooltip" direction="row" alignItems="center">
+                <Stack data-cy="claim-switch-and-tooltip" direction="row" sx={{
+                    alignItems: "center"
+                }}>
                     <ClaimController />
                     <TooltipWithIcon title={VestingTooltips.Claim} />
                 </Stack>
 
             </Stack>
-
-
             {schedules.length > 0 && (
                 <FormGroup>
                     <FormLabel>{VestingFormLabels.Receivers}</FormLabel>
                     <BatchReceiversTable token={token} schedules={schedules} />
                 </FormGroup>
             )}
-
-            <Stack gap={1}>
+            <Stack sx={{
+                gap: 1
+            }}>
                 {schedules.length > 0 && <PreviewButton setView={setView} />}
                 <FileController />
                 {
@@ -110,7 +121,7 @@ export function BatchVestingForm(props: {
                 }
             </Stack>
         </Stack>
-    )
+    );
 }
 
 const CliffEnabledController = memo(function CliffEnabledController() {

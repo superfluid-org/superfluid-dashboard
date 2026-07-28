@@ -60,7 +60,9 @@ const AutoWrapAddTokenForm: FC<{
           <CloseIcon data-cy="close-icon" />
         </IconButton>
       </Stack>
-      <Stack gap={3} component={DialogContent}>
+      <Stack component={DialogContent} sx={{
+        gap: 3
+      }}>
         <Grid
           direction={isBelowMd ? "column" : "row"}
           gap={isBelowMd ? 2 : 0}
@@ -109,7 +111,7 @@ const AutoWrapAddTokenForm: FC<{
               />
             </FormGroup>
           </Grid>
-          <Grid gap={2}>
+          <Grid sx={{ gap: 2 }}>
             <FormGroup>
               <FormLabel>Token</FormLabel>
               <Controller

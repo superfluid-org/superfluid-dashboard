@@ -144,7 +144,6 @@ const FlowUpdatedActivityRow: FC<FlowUpdatedActivityRowProps> = ({
           />
         </ListItem>
       </TableCell>
-
       {!isBelowMd ? (
         <>
           <TableCell>
@@ -221,8 +220,10 @@ const FlowUpdatedActivityRow: FC<FlowUpdatedActivityRowProps> = ({
                     <Typography
                       data-cy="address-to-copy"
                       variant="h6"
-                      color="text.primary"
                       component="span"
+                      sx={{
+                        color: "text.primary"
+                      }}
                     >
                       <AddressName address={isOutgoing ? receiver : sender} />
                     </Typography>
@@ -237,7 +238,12 @@ const FlowUpdatedActivityRow: FC<FlowUpdatedActivityRowProps> = ({
             </ListItem>
           </TableCell>
           <TableCell sx={{ position: "relative" }}>
-            <Stack direction="row" alignItems="center" gap={0.5}>
+            <Stack
+              direction="row"
+              sx={{
+                alignItems: "center",
+                gap: 0.5
+              }}>
               <TxHashLink txHash={transactionHash} network={network} />
               {stream && (
                 <IconButton
@@ -260,7 +266,12 @@ const FlowUpdatedActivityRow: FC<FlowUpdatedActivityRowProps> = ({
         </>
       ) : (
         <TableCell align="right">
-          <Stack direction="row" alignItems="center" gap={1}>
+          <Stack
+            direction="row"
+            sx={{
+              alignItems: "center",
+              gap: 1
+            }}>
             <ListItemText
               primary={
                 <Amount wei={BigNumber.from(flowRate).mul(UnitOfTime.Month)} />

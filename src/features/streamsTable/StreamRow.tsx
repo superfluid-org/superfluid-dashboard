@@ -76,7 +76,12 @@ export const StreamRowLoading = () => {
   return (
     <TableRow>
       <TableCell>
-        <Stack direction="row" alignItems="center" gap={1.5}>
+        <Stack
+          direction="row"
+          sx={{
+            alignItems: "center",
+            gap: 1.5
+          }}>
           <Skeleton variant="circular" width={24} height={24} />
           <Skeleton
             variant="circular"
@@ -112,7 +117,9 @@ export const StreamRowLoading = () => {
         </>
       ) : (
         <TableCell>
-          <Stack alignItems="end">
+          <Stack sx={{
+            alignItems: "end"
+          }}>
             <Skeleton width={60} />
             <Skeleton width={30} />
           </Stack>
@@ -192,7 +199,12 @@ const StreamRow: FC<StreamRowProps> = ({
   return (
     <TableRow hover data-cy={"stream-row"}>
       <TableCell {...tableCellProps}>
-        <Stack direction="row" alignItems="center" gap={1.5}>
+        <Stack
+          direction="row"
+          sx={{
+            alignItems: "center",
+            gap: 1.5
+          }}>
           {isOutgoing ? (
             <ArrowForwardIcon data-cy="stream-outgoing-icon" />
           ) : (
@@ -212,7 +224,6 @@ const StreamRow: FC<StreamRowProps> = ({
           </AddressCopyTooltip>
         </Stack>
       </TableCell>
-
       {!isBelowMd ? (
         <>
           <TableCell {...tableCellProps}>
@@ -291,15 +302,15 @@ const StreamRow: FC<StreamRowProps> = ({
           />
         </TableCell>
       )}
-
       {!isBelowMd && (
         <TableCell align="right">
           <Stack
             direction="row"
-            alignItems="center"
-            justifyContent="end"
-            gap={1}
-          >
+            sx={{
+              alignItems: "center",
+              justifyContent: "end",
+              gap: 1
+            }}>
             {isPending && (
               <>
                 <CircularProgress color="warning" size="16px" />

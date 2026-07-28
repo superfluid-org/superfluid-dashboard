@@ -30,7 +30,12 @@ export const TransferEventLoadingRow = () => {
   return (
     <TableRow>
       <TableCell>
-        <Stack direction="row" alignItems="center" gap={1.5}>
+        <Stack
+          direction="row"
+          sx={{
+            alignItems: "center",
+            gap: 1.5
+          }}>
           <Skeleton variant="circular" width={24} height={24} />
           <Skeleton
             variant="circular"
@@ -54,7 +59,9 @@ export const TransferEventLoadingRow = () => {
         </>
       ) : (
         <TableCell>
-          <Stack alignItems="end">
+          <Stack sx={{
+            alignItems: "end"
+          }}>
             <Skeleton width={80} />
             <Skeleton width={60} />
           </Stack>
@@ -89,7 +96,12 @@ const TransferEventRow: FC<TransferEventRowProps> = ({
   return (
     <TableRow data-cy={"transfer-row"}>
       <TableCell data-cy={"sender-receiver-address"}>
-        <Stack direction="row" alignItems="center" gap={1.5}>
+        <Stack
+          direction="row"
+          sx={{
+            alignItems: "center",
+            gap: 1.5
+          }}>
           {isOutgoing ? (
             <ArrowForwardIcon data-cy="transfer-outgoing-icon" />
           ) : (

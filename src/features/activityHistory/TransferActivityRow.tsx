@@ -132,8 +132,10 @@ const TransferActivityRow: FC<TransferActivityRowProps> = ({
                   <AddressCopyTooltip address={isOutgoing ? to : from}>
                     <Typography
                       variant="h6"
-                      color="text.primary"
                       component="span"
+                      sx={{
+                        color: "text.primary"
+                      }}
                     >
                       <AddressName address={isOutgoing ? to : from} />
                     </Typography>
@@ -157,7 +159,12 @@ const TransferActivityRow: FC<TransferActivityRowProps> = ({
         </>
       ) : (
         <TableCell align="right">
-          <Stack direction="row" alignItems="center" gap={2}>
+          <Stack
+            direction="row"
+            sx={{
+              alignItems: "center",
+              gap: 2
+            }}>
             {tokenQuery.data && (
               <ListItemText
                 data-cy={"mobile-amount"}

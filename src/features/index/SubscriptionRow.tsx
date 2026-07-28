@@ -42,7 +42,12 @@ export const SubscriptionLoadingRow = () => {
       {!isBelowMd ? (
         <>
           <TableCell>
-            <Stack direction="row" alignItems="center" gap={1.5}>
+            <Stack
+              direction="row"
+              sx={{
+                alignItems: "center",
+                gap: 1.5
+              }}>
               <Skeleton
                 variant="circular"
                 width={24}
@@ -69,7 +74,12 @@ export const SubscriptionLoadingRow = () => {
       ) : (
         <>
           <TableCell>
-            <Stack direction="row" alignItems="center" gap={1.5}>
+            <Stack
+              direction="row"
+              sx={{
+                alignItems: "center",
+                gap: 1.5
+              }}>
               <Skeleton
                 variant="circular"
                 width={24}
@@ -83,7 +93,9 @@ export const SubscriptionLoadingRow = () => {
             </Stack>
           </TableCell>
           <TableCell>
-            <Stack alignItems="end">
+            <Stack sx={{
+              alignItems: "end"
+            }}>
               <Skeleton width={60} />
               <Skeleton width={40} />
             </Stack>
@@ -152,7 +164,12 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
   return (
     <TableRow data-cy={"distribution-row"}>
       <TableCell>
-        <Stack direction="row" alignItems="center" gap={1.5}>
+        <Stack
+          direction="row"
+          sx={{
+            alignItems: "center",
+            gap: 1.5
+          }}>
           <AddressAvatar
             address={subscription.publisher}
             AvatarProps={{
@@ -178,7 +195,6 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
           />
         </Stack>
       </TableCell>
-
       {!isBelowMd ? (
         <>
           <TableCell>
@@ -226,7 +242,6 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
           />
         </TableCell>
       )}
-
       <TableCell>
         <ConnectionBoundary expectedNetwork={network}>
           {({ isConnected, isCorrectNetwork, expectedNetwork }) => (
@@ -275,8 +290,10 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
                                   <Typography
                                     data-cy={"approve-index-message"}
                                     variant="h5"
-                                    color="text.secondary"
                                     translate="yes"
+                                    sx={{
+                                      color: "text.secondary"
+                                    }}
                                   >
                                     You are approving an index subscription.
                                   </Typography>
@@ -351,8 +368,10 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
                                   <Typography
                                     data-cy={"revoke-message"}
                                     variant="h5"
-                                    color="text.secondary"
                                     translate="yes"
+                                    sx={{
+                                      color: "text.secondary"
+                                    }}
                                   >
                                     You are revoking approval of an index
                                     subscription.

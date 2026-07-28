@@ -397,7 +397,12 @@ export default memo(function SendStream() {
       InputProps={{
         startAdornment: <>≈&nbsp;</>,
         endAdornment: (
-          <Stack direction="row" gap={0.75} sx={{ ml: 0.5 }}>
+          <Stack
+            direction="row"
+            sx={{
+              gap: 0.75,
+              ml: 0.5
+            }}>
             <TokenIcon isSuper size={24} chainId={network.id} tokenAddress={superToken?.address} />
             <Typography variant="h6" component="span">
               {superToken?.symbol ?? ""}
@@ -709,7 +714,9 @@ export default memo(function SendStream() {
               .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
 
             setDialogLoadingInfo(
-              <Typography variant="h5" color="text.secondary" translate="yes">
+              <Typography variant="h5" translate="yes" sx={{
+                color: "text.secondary"
+              }}>
                 You are{" "}
                 {isModifying ? "modifying" : "sending"} a{" "}
                 {startTimestamp || endTimestamp ? "scheduled" : ""} stream.
@@ -739,7 +746,11 @@ export default memo(function SendStream() {
             } else {
               setDialogSuccessActions(
                 <TransactionDialogActions>
-                  <Stack gap={1} sx={{ width: "100%" }}>
+                  <Stack
+                    sx={{
+                      gap: 1,
+                      width: "100%"
+                    }}>
                     <TransactionDialogButton
                       data-cy={"send-more-streams-button"}
                       color="secondary"
@@ -794,7 +805,9 @@ export default memo(function SendStream() {
               }
 
               setDialogLoadingInfo(
-                <Typography variant="h5" color="text.secondary" translate="yes">
+                <Typography variant="h5" translate="yes" sx={{
+                  color: "text.secondary"
+                }}>
                   You are canceling a stream.
                 </Typography>
               );
@@ -876,10 +889,11 @@ export default memo(function SendStream() {
       <Box>
         <Stack
           direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-          sx={{ mr: 0.75 }}
-        >
+          sx={{
+            alignItems: "center",
+            justifyContent: "space-between",
+            mr: 0.75
+          }}>
           <FormLabel>Receiver Wallet Address</FormLabel>
           <TooltipWithIcon title="Must not be an exchange address" />
         </Stack>
@@ -895,17 +909,20 @@ export default memo(function SendStream() {
           },
         }}
       >
-        <Stack justifyContent="stretch">
+        <Stack sx={{
+          justifyContent: "stretch"
+        }}>
           <FormLabel>Super Token</FormLabel>
           <TokenController network={network} superToken={superToken} />
         </Stack>
         <Box>
           <Stack
             direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-            sx={{ mr: 0.75 }}
-          >
+            sx={{
+              alignItems: "center",
+              justifyContent: "space-between",
+              mr: 0.75
+            }}>
             <FormLabel>Flow Rate</FormLabel>
             <TooltipWithIcon title="Flow rate is the velocity of tokens being streamed." />
           </Stack>
@@ -918,7 +935,12 @@ export default memo(function SendStream() {
             data-cy={"scheduling-tooltip"}
             control={<StreamSchedulingController streamScheduling={streamScheduling} setStreamScheduling={setStreamScheduling} />}
             label={
-              <Stack direction="row" alignItems="center" gap={0.75}>
+              <Stack
+                direction="row"
+                sx={{
+                  alignItems: "center",
+                  gap: 0.75
+                }}>
                 Stream Scheduling
                 <TooltipWithIcon title="Schedule start and end dates for future or fixed-duration streams" />
               </Stack>
@@ -931,23 +953,29 @@ export default memo(function SendStream() {
             unmountOnExit
             sx={{ mx: -0.5, marginTop: "0 !important", overflow: "hidden" }}
           >
-            <Stack gap={2.5} sx={{ position: "relative", p: 0.5, pt: 3 }}>
+            <Stack
+              sx={{
+                gap: 2.5,
+                position: "relative",
+                p: 0.5,
+                pt: 3
+              }}>
               <Stack
                 sx={{
+                  gap: 2.5,
                   display: "grid",
                   gridTemplateColumns: "1fr 1fr",
-                  ...(showAllowlistGate ? { opacity: 0.5 } : {}),
-                }}
-                gap={2.5}
-              >
+                  ...(showAllowlistGate ? { opacity: 0.5 } : {})
+                }}>
                 <Stack>
                   <Stack
                     direction="row"
-                    alignItems="center"
-                    justifyContent="space-between"
-                    sx={{ mr: 0.75 }}
-                    flex={1}
-                  >
+                    sx={{
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      flex: 1,
+                      mr: 0.75
+                    }}>
                     <FormLabel>Start Date</FormLabel>
                     <TooltipWithIcon title="The date when stream scheduler tries to start the stream." />
                   </Stack>
@@ -956,11 +984,12 @@ export default memo(function SendStream() {
                 <Stack>
                   <Stack
                     direction="row"
-                    alignItems="center"
-                    justifyContent="space-between"
-                    sx={{ mr: 0.75 }}
-                    flex={1}
-                  >
+                    sx={{
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      flex: 1,
+                      mr: 0.75
+                    }}>
                     <FormLabel>End Date</FormLabel>
                     <TooltipWithIcon title="The date when stream scheduler tries to cancel the stream." />
                   </Stack>
@@ -975,11 +1004,12 @@ export default memo(function SendStream() {
               >
                 <Stack
                   direction="row"
-                  alignItems="center"
-                  justifyContent="space-between"
-                  sx={{ mr: 0.75 }}
-                  flex={1}
-                >
+                  sx={{
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    flex: 1,
+                    mr: 0.75
+                  }}>
                   <FormLabel>Total Stream</FormLabel>
                   <TooltipWithIcon title="The approximate amount that will be streamed until the scheduler cancels the stream." />
                 </Stack>
@@ -991,11 +1021,8 @@ export default memo(function SendStream() {
           </Collapse>
         </>
       )}
-
       <SendBalance network={network} visibleAddress={visibleAddress} token={superToken} />
-
       {(superToken && visibleAddress) && <Divider />}
-
       {!!(receiverAddress && superToken) && (
         <StreamingPreview
           receiver={receiverAddress}
@@ -1009,9 +1036,7 @@ export default memo(function SendStream() {
           oldEndDate={existingEndDate}
         />
       )}
-
       {showBufferAlert && <BufferAlert bufferAmount={bufferAmount} superToken={superToken} />}
-
       <ConnectionBoundary>
         <ConnectionBoundaryButton
           ButtonProps={{
@@ -1022,8 +1047,12 @@ export default memo(function SendStream() {
         >
           {/* 2.5 matches the form's block rhythm (root Stack spacing) so the relay
               strip reads as its own block; the inner 1 keeps the button group tight. */}
-          <Stack gap={2.5}>
-            <Stack gap={1}>
+          <Stack sx={{
+            gap: 2.5
+          }}>
+            <Stack sx={{
+              gap: 1
+            }}>
               {isCombinedEditBlocked && (
                 // The chip is hidden in this state (no macro action exists for the batch),
                 // so this alert is the only explanation for the disabled button.
@@ -1042,9 +1071,11 @@ export default memo(function SendStream() {
                 <Typography
                   data-cy="clear-macro-classification-pending"
                   variant="caption"
-                  color="text.secondary"
-                  textAlign="center"
                   translate="yes"
+                  sx={{
+                    color: "text.secondary",
+                    textAlign: "center",
+                  }}
                 >
                   Checking wallet compatibility…
                 </Typography>
@@ -1133,11 +1164,17 @@ export const SendBalance = memo(function SendBalance(props: {
   return (
     <Stack
       direction="row"
-      alignItems="center"
-      justifyContent="center"
-      gap={1}
-    >
-      <Stack direction="row" alignItems="center" gap={0.5}>
+      sx={{
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 1
+      }}>
+      <Stack
+        direction="row"
+        sx={{
+          alignItems: "center",
+          gap: 0.5
+        }}>
         <BalanceSuperToken
           showFiat
           data-cy={"balance"}

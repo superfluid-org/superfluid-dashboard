@@ -129,16 +129,35 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
   return (
     <TableRow onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} >
       <TableCell sx={{ pl: onStarClick ? 1 : 4 }}>
-        <Stack direction="row" alignItems="center" gap={1}>
+        <Stack
+          direction="row"
+          sx={{
+            alignItems: "center",
+            gap: 1
+          }}>
           {onStarClick &&
-            <Stack alignItems="center" justifyContent="center" onMouseEnter={() => setIsHoveringStar(true)} onMouseLeave={() => setIsHoveringStar(false)} onClick={onStarClick} sx={{ cursor: 'pointer', opacity: isHovering || isStarred ? 1 : 0 }}>
+            <Stack
+              onMouseEnter={() => setIsHoveringStar(true)}
+              onMouseLeave={() => setIsHoveringStar(false)}
+              onClick={onStarClick}
+              sx={{
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: 'pointer',
+                opacity: isHovering || isStarred ? 1 : 0
+              }}>
               {isHoveringStar || isStarred ?
                 <Star color="primary" sx={{ width: 20, height: 20, cursor: 'pointer' }} />
                 : <StarBorder color="primary" sx={{ width: 20, height: 20 }} />
               }
             </Stack>
           }
-          <Stack direction="row" alignItems="center" gap={1.5}>
+          <Stack
+            direction="row"
+            sx={{
+              alignItems: "center",
+              gap: 1.5
+            }}>
             <AddressAvatar
               address={address}
               AvatarProps={{
@@ -206,14 +225,14 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
           </Stack>
         </Stack>
       </TableCell>
-
       <TableCell data-cy={"actual-address"}>
         <Stack direction="column">
           <Stack
             direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-          >
+            sx={{
+              alignItems: "center",
+              justifyContent: "space-between"
+            }}>
             <WideTooltip arrow title={address}>
               <Typography variant="body1">{shortenHex(address, 6)} </Typography>
             </WideTooltip>
@@ -264,7 +283,6 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
           )}
         </Stack>
       </TableCell>
-
       <TableCell>
         <Box
           data-cy="networks"
@@ -291,7 +309,6 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
           )}
         </Box>
       </TableCell>
-
       <TableCell data-cy={"active-streams"}>
         {!!visibleAddress ? (
           <>

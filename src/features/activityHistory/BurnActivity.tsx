@@ -79,7 +79,6 @@ const BurnActivity: FC<BurnActivityProps> = ({
           />
         </ListItem>
       </TableCell>
-
       {!isBelowMd ? (
         <>
           <TableCell>
@@ -155,7 +154,12 @@ const BurnActivity: FC<BurnActivityProps> = ({
       ) : (
         <TableCell align="right">
           {!!(superToken && underlyingToken) && (
-            <Stack direction="row" alignItems="center" gap={2}>
+            <Stack
+              direction="row"
+              sx={{
+                alignItems: "center",
+                gap: 2
+              }}>
               <ListItemText
                 data-cy={"mobile-amount"}
                 primary={

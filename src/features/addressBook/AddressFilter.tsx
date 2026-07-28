@@ -76,7 +76,6 @@ const AddressFilter: FC<AddressFilterProps> = ({
       >
         {addressesFilter.length > 0 ? "Selected Addresses" : "All Addresses"}
       </Button>
-
       <Popover
         open={!!anchorEl}
         anchorEl={anchorEl}
@@ -101,7 +100,13 @@ const AddressFilter: FC<AddressFilterProps> = ({
           />
 
           {addressesFilter.length > 0 && (
-            <Stack gap={1} direction="row" flexWrap="wrap" sx={{ pt: 2.5 }}>
+            <Stack
+              direction="row"
+              sx={{
+                gap: 1,
+                flexWrap: "wrap",
+                pt: 2.5
+              }}>
               {addressesFilter.map((address) => (
                 <Chip
                   data-cy={"address-chip"}

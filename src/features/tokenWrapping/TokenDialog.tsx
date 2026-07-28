@@ -193,10 +193,11 @@ export default memo(function TokenDialog({
           {isTokensFetching && (
             <Stack
               direction="row"
-              justifyContent="center"
-              alignItems="center"
               spacing={2}
-            >
+              sx={{
+                justifyContent: "center",
+                alignItems: "center"
+              }}>
               <CircularProgress />
             </Stack>
           )}
@@ -206,11 +207,12 @@ export default memo(function TokenDialog({
               data-cy={"token-search-no-results"}
               component={ListItem}
               direction="row"
-              justifyContent="center"
-              alignItems="center"
               spacing={2}
               translate="yes"
-            >
+              sx={{
+                justifyContent: "center",
+                alignItems: "center"
+              }}>
               Could not find any tokens. :(
             </Stack>
           )}

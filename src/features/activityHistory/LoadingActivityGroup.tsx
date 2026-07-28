@@ -85,10 +85,11 @@ export const LoadingActivityRow = () => {
         <TableCell align="right">
           <Stack
             direction="row"
-            alignItems="center"
-            justifyContent="end"
-            gap={2}
-          >
+            sx={{
+              alignItems: "center",
+              justifyContent: "end",
+              gap: 2
+            }}>
             <ListItemText
               primary={<Skeleton width="60px" />}
               secondary={<Skeleton width="40px" />}

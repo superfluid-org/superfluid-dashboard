@@ -99,9 +99,13 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
       }}
     >
       <Stack spacing={2.5}>
-        <Stack gap={1}>
+        <Stack sx={{
+          gap: 1
+        }}>
           <Typography variant="h5">Export Stream Data</Typography>
-          <Typography variant="body1" color="text.secondary">
+          <Typography variant="body1" sx={{
+            color: "text.secondary"
+          }}>
             Download a .csv file containing all relevant streaming data for use
             in external bookkeeping systems
           </Typography>
@@ -124,10 +128,11 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
         <Stack>
           <Stack
             direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-            sx={{ mr: 0.75 }}
-          >
+            sx={{
+              alignItems: "center",
+              justifyContent: "space-between",
+              mr: 0.75
+            }}>
             <FormLabel>View for addresses</FormLabel>
             <TooltipWithIcon title="The address(es) you’re getting accounting data for." />
           </Stack>
@@ -152,10 +157,11 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
         <Stack>
           <Stack
             direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-            sx={{ mr: 0.75 }}
-          >
+            sx={{
+              alignItems: "center",
+              justifyContent: "space-between",
+              mr: 0.75
+            }}>
             <FormLabel>Counterparty addresses (optional)</FormLabel>
             <TooltipWithIcon title="Must not be an exchange address. If no addresses are selected, all counterparties will be fetched." />
           </Stack>
@@ -177,11 +183,21 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
           />
         </Stack>
 
-        <Stack direction="row" gap={2} alignItems="center" flex={1}>
-          <Stack flex={1}>
+        <Stack
+          direction="row"
+          sx={{
+            gap: 2,
+            alignItems: "center",
+            flex: 1
+          }}>
+          <Stack sx={{
+            flex: 1
+          }}>
             <FormLabel>Date Range</FormLabel>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
-              <Stack data-cy="date-ranges" direction="row" gap={1}>
+              <Stack data-cy="date-ranges" direction="row" sx={{
+                gap: 1
+              }}>
                 <Controller
                   control={control}
                   name="data.startDate"
@@ -239,7 +255,9 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
             </LocalizationProvider>
           </Stack>
 
-          <Stack flex={1}>
+          <Stack sx={{
+            flex: 1
+          }}>
             <FormLabel>Price Granularity</FormLabel>
             <Controller
               control={control}
@@ -267,13 +285,22 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
           </Stack>
         </Stack>
 
-        <Stack direction="row" gap={2} alignItems="center" flex={1}>
-          <Stack flex={1}>
+        <Stack
+          direction="row"
+          sx={{
+            gap: 2,
+            alignItems: "center",
+            flex: 1
+          }}>
+          <Stack sx={{
+            flex: 1
+          }}>
             <Stack
               direction="row"
-              alignItems="center"
-              justifyContent="space-between"
-            >
+              sx={{
+                alignItems: "center",
+                justifyContent: "space-between"
+              }}>
               <FormLabel>Accounting Period</FormLabel>
             </Stack>
             <Controller
@@ -295,7 +322,9 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
             />
           </Stack>
 
-          <Stack flex={1}>
+          <Stack sx={{
+            flex: 1
+          }}>
             <FormLabel>Fiat Conversion</FormLabel>
             <Controller
               control={control}

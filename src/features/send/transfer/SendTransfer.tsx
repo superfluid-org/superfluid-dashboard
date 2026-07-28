@@ -81,7 +81,9 @@ export default memo(function SendTransfer() {
           }
 
           setDialogLoadingInfo(
-            <Typography variant="h5" color="text.secondary" translate="yes">
+            <Typography variant="h5" translate="yes" sx={{
+              color: "text.secondary"
+            }}>
               You are sending {amountEther} {superToken?.symbol} to {receiverAddress}.
             </Typography>
           );
@@ -144,10 +146,11 @@ export default memo(function SendTransfer() {
       <Box>
         <Stack
           direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-          sx={{ mr: 0.75 }}
-        >
+          sx={{
+            alignItems: "center",
+            justifyContent: "space-between",
+            mr: 0.75
+          }}>
           <FormLabel>Receiver Wallet Address</FormLabel>
           <TooltipWithIcon title="Must not be an exchange address" />
         </Stack>
@@ -163,20 +166,21 @@ export default memo(function SendTransfer() {
           },
         }}
       >
-        <Stack justifyContent="stretch">
+        <Stack sx={{
+          justifyContent: "stretch"
+        }}>
           <FormLabel>Super Token</FormLabel>
           <TokenController network={network} superToken={superToken} />
         </Stack>
-        <Stack justifyContent="stretch">
+        <Stack sx={{
+          justifyContent: "stretch"
+        }}>
           <FormLabel>Amount</FormLabel>
           <AmountController superToken={superToken} />
         </Stack>
       </Box>
-
       <SendBalance network={network} visibleAddress={visibleAddress} token={superToken} />
-
       {(superToken && visibleAddress) && <Divider />}
-
       <ConnectionBoundary>
         <ConnectionBoundaryButton
           ButtonProps={{
@@ -186,13 +190,14 @@ export default memo(function SendTransfer() {
           }}
         >
           {/* 2.5 matches the form's block rhythm so the relay strip reads as its own block. */}
-          <Stack gap={2.5}>
+          <Stack sx={{
+            gap: 2.5
+          }}>
             {SendTransactionBoundary}
             <ClearMacroRelayOption actionKind="transfer" network={network} />
           </Stack>
         </ConnectionBoundaryButton>
       </ConnectionBoundary>
-
     </Stack>
   );
 });
@@ -267,7 +272,9 @@ const AmountController = memo(function AmountController(props: {
           placeholder="0.0"
           InputProps={{
             endAdornment: (
-              <Typography component="span" color={"text.secondary"}>
+              <Typography component="span" sx={{
+                color: "text.secondary"
+              }}>
                 {props.superToken?.symbol ?? ""}
               </Typography>
             ),

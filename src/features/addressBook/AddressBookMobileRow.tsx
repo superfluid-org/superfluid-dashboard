@@ -43,7 +43,12 @@ const AddressBookMobileRow: FC<AddressBookMobileRowProps> = ({
   return (
     <TableRow>
       <TableCell>
-        <Stack direction="row" alignItems="center" gap={1.5}>
+        <Stack
+          direction="row"
+          sx={{
+            alignItems: "center",
+            gap: 1.5
+          }}>
           <AddressAvatar
             address={address}
             AvatarProps={{

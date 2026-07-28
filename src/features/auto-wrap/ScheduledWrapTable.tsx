@@ -126,12 +126,22 @@ const ScheduledWrapTable: FC<TokenSnapshotTableProps> = ({
             {!isBelowMd && (
               <TableRow>
                 <TableCell width="200">
-                  <Stack direction="row" gap={0.5} alignItems="center">
+                  <Stack
+                    direction="row"
+                    sx={{
+                      gap: 0.5,
+                      alignItems: "center"
+                    }}>
                     Asset
                   </Stack>
                 </TableCell>
                 <TableCell width="300">
-                  <Stack direction="row" gap={0.5} alignItems="center">
+                  <Stack
+                    direction="row"
+                    sx={{
+                      gap: 0.5,
+                      alignItems: "center"
+                    }}>
                     Underlying Token Allowance
                     <TooltipWithIcon
                       title="The allowance cap you’ve set up for the underlying ERC-20 tokens."
@@ -145,7 +155,12 @@ const ScheduledWrapTable: FC<TokenSnapshotTableProps> = ({
                   </Stack>
                 </TableCell>
                 <TableCell width="300">
-                  <Stack direction="row" gap={0.5} alignItems="center">
+                  <Stack
+                    direction="row"
+                    sx={{
+                      gap: 0.5,
+                      alignItems: "center"
+                    }}>
                     Lower Limit
                     <TooltipWithIcon
                       title="The amount of time left until your stream hits zero at which an automatic top up should be triggered."
@@ -159,7 +174,12 @@ const ScheduledWrapTable: FC<TokenSnapshotTableProps> = ({
                   </Stack>
                 </TableCell>
                 <TableCell width="300">
-                  <Stack direction="row" gap={0.5} alignItems="center">
+                  <Stack
+                    direction="row"
+                    sx={{
+                      gap: 0.5,
+                      alignItems: "center"
+                    }}>
                     Upper Limit
                     <TooltipWithIcon
                       title="The amount of time worth of streaming that the wrapped tokens will cover."

@@ -128,8 +128,10 @@ const LiquidatedActivityRow: FC<LiquidatedActivityRowProps> = ({
                       <AddressCopyTooltip address={isOutgoing ? receiver : sender}>
                         <Typography
                           variant="h6"
-                          color="text.primary"
                           component="span"
+                          sx={{
+                            color: "text.primary"
+                          }}
                         >
                           <AddressName address={isOutgoing ? receiver : sender} />
                         </Typography>
@@ -155,7 +157,12 @@ const LiquidatedActivityRow: FC<LiquidatedActivityRowProps> = ({
         </>
       ) : (
         <TableCell align="right">
-          <Stack direction="row" alignItems="center" justifyContent="end">
+          <Stack
+            direction="row"
+            sx={{
+              alignItems: "center",
+              justifyContent: "end"
+            }}>
             <TokenIcon
               isSuper
               chainId={network.id}

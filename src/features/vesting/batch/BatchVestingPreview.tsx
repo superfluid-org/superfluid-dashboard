@@ -96,7 +96,9 @@ const BatchVestingPreview: FC<BatchVestingPreviewProps> = ({
     const [previousUrl, setPreviousUrl] = useState<string | null>(null);
 
     return (
-        <Stack gap={3}>
+        <Stack sx={{
+            gap: 3
+        }}>
             <Box sx={{ my: 2 }}>
                 <VestingScheduleGraph
                     startDate={startDate}
@@ -106,15 +108,25 @@ const BatchVestingPreview: FC<BatchVestingPreviewProps> = ({
                     totalAmount={parseEtherOrZero(totalAmountEther)}
                 />
             </Box>
-
-            <Stack gap={2} sx={{ mb: 2 }}>
+            <Stack
+                sx={{
+                    gap: 2,
+                    mb: 2
+                }}>
                 <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
 
                     <Stack>
-                        <Typography color="text.secondary">
+                        <Typography sx={{
+                            color: "text.secondary"
+                        }}>
                             {VestingFormLabels.Network}
                         </Typography>
-                        <Stack direction="row" alignItems="center" gap={1}>
+                        <Stack
+                            direction="row"
+                            sx={{
+                                alignItems: "center",
+                                gap: 1
+                            }}>
                             <NetworkIcon size={28} network={network} />
                             <Typography>{network.name}</Typography>
                         </Stack>
@@ -123,26 +135,39 @@ const BatchVestingPreview: FC<BatchVestingPreviewProps> = ({
 
                 <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
                     <Stack>
-                        <Typography color="text.secondary">
+                        <Typography sx={{
+                            color: "text.secondary"
+                        }}>
                             {VestingFormLabels.SuperToken}
                         </Typography>
-                        <Stack direction="row" alignItems="center" gap={1}>
+                        <Stack
+                            direction="row"
+                            sx={{
+                                alignItems: "center",
+                                gap: 1
+                            }}>
                             <TokenIcon isSuper chainId={network.id} tokenAddress={token.address} size={28} />
                             <Typography>{token.symbol}</Typography>
                         </Stack>
                     </Stack>
                     <Stack>
-                        <Typography color="text.secondary">
+                        <Typography sx={{
+                            color: "text.secondary"
+                        }}>
                             {VestingFormLabels.VestingStartDate}
                         </Typography>
-                        <Typography data-cy="preview-start-date" color="text.primary">
+                        <Typography data-cy="preview-start-date" sx={{
+                            color: "text.primary"
+                        }}>
                             {format(startDate, "LLLL d, yyyy")}
                         </Typography>
                     </Stack>
                 </Box>
                 <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
                     <Stack>
-                        <Typography color="text.secondary">
+                        <Typography sx={{
+                            color: "text.secondary"
+                        }}>
                             {VestingFormLabels.TotalVestedAmount}
                         </Typography>
                         <Typography data-cy={"preview-total-amount"}>
@@ -151,10 +176,14 @@ const BatchVestingPreview: FC<BatchVestingPreviewProps> = ({
                     </Stack>
 
                     <Stack>
-                        <Typography color="text.secondary">
+                        <Typography sx={{
+                            color: "text.secondary"
+                        }}>
                             {VestingFormLabels.TotalVestingPeriod}
                         </Typography>
-                        <Typography data-cy="preview-total-period" color="text.primary">
+                        <Typography data-cy="preview-total-period" sx={{
+                            color: "text.primary"
+                        }}>
                             {vestingPeriod.numerator}{" "}
                             {timeUnitWordMap[vestingPeriod.denominator]} (
                             {format(endDate, "LLLL d, yyyy")})
@@ -165,7 +194,9 @@ const BatchVestingPreview: FC<BatchVestingPreviewProps> = ({
                 {cliffEnabled && cliffDate && (
                     <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
                         <Stack>
-                            <Typography color="text.secondary">
+                            <Typography sx={{
+                                color: "text.secondary"
+                            }}>
                                 {VestingFormLabels.CliffAmount}
                             </Typography>
                             <Typography data-cy={"preview-cliff-amount"}>
@@ -174,10 +205,14 @@ const BatchVestingPreview: FC<BatchVestingPreviewProps> = ({
                         </Stack>
 
                         <Stack>
-                            <Typography color="text.secondary">
+                            <Typography sx={{
+                                color: "text.secondary"
+                            }}>
                                 {VestingFormLabels.CliffPeriod}
                             </Typography>
-                            <Typography data-cy="preview-cliff-period" color="text.primary">
+                            <Typography data-cy="preview-cliff-period" sx={{
+                                color: "text.primary"
+                            }}>
                                 {cliffPeriod.numerator}{" "}
                                 {timeUnitWordMap[cliffPeriod.denominator]} (
                                 {format(cliffDate, "LLLL d, yyyy")})
@@ -190,7 +225,9 @@ const BatchVestingPreview: FC<BatchVestingPreviewProps> = ({
                     claimingDates && (
                         <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
                             <Stack>
-                                <Typography color="text.secondary">
+                                <Typography sx={{
+                                    color: "text.secondary"
+                                }}>
                                     {VestingFormLabels.ClaimingStartAt}
                                 </Typography>
                                 <Typography data-cy={"claiming-start-at"}>
@@ -199,10 +236,14 @@ const BatchVestingPreview: FC<BatchVestingPreviewProps> = ({
                             </Stack>
 
                             <Stack>
-                                <Typography color="text.secondary">
+                                <Typography sx={{
+                                    color: "text.secondary"
+                                }}>
                                     {VestingFormLabels.ClaimingEndAt}
                                 </Typography>
-                                <Typography data-cy="claiming-end-at" color="text.primary">
+                                <Typography data-cy="claiming-end-at" sx={{
+                                    color: "text.primary"
+                                }}>
                                     {format(claimingDates.claimingEndAt, "LLLL d, yyyy")}
                                 </Typography>
                             </Stack>
@@ -211,15 +252,17 @@ const BatchVestingPreview: FC<BatchVestingPreviewProps> = ({
                 }
 
                 <Stack>
-                    <Typography color="text.secondary">
+                    <Typography sx={{
+                        color: "text.secondary"
+                    }}>
                         {VestingFormLabels.Receivers}
                     </Typography>
                     <BatchReceiversTable schedules={schedules} token={token} />
                 </Stack>
             </Stack>
-
-
-            <Stack gap={1}>
+            <Stack sx={{
+                gap: 1
+            }}>
                 <BatchVestingTransactionSection token={token} setView={setView} />
 
                 <FormGroup>
