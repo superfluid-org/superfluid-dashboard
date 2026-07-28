@@ -370,10 +370,20 @@ A/B run; that invariant error is the signature of a stale-server mismatch, not a
   text. DataGrid column-menu interactions in ExportPage's 4 passing scenarios behaved normally.
 
 ### Task 7: Bring `docs/plans/mui-v6-to-v9-upgrade.md` up to date
-- [ ] add the missing **§Step 2 outcome** section — reconstruct from PR #880's body, which is currently the *only* record of that step (no session file was written)
-- [ ] add the `{selectall}{del}` finding to §Step 1 outcome — the plan still does not record it, and it is the most reusable lesson in the project
-- [ ] add a **§Step 3 outcome** section: what shipped, what was verified and how, and every place this plan's prose turned out to be wrong
-- [ ] resolve the two §Open questions if Task 2 answered them
+- [x] add the missing **§Step 2 outcome** section — reconstruct from PR #880's body, which is currently the *only* record of that step (no session file was written)
+- [x] add the `{selectall}{del}` finding to §Step 1 outcome — the plan still does not record it, and it is the most reusable lesson in the project
+- [x] add a **§Step 3 outcome** section: what shipped, what was verified and how, and every place this plan's prose turned out to be wrong
+- [x] resolve the two §Open questions if Task 2 answered them — "can v6 skip v7" marked resolved-as-moot (step 2 shipped via the v7 stop, which X v9's `^7.3.0` peer made load-bearing anyway); the Emotion SSR question stays explicitly open, assigned to step 4 (Task 2 did not touch that surface)
+
+**Task 7 findings (2026-07-28):** §Step 2 outcome reconstructed from PR #880's body (merge
+`91b99ec5`) — versions/lab co-bump, Grid → `GridLegacy` pins, `createPalette` augmentation move,
+the 45-icon `data-testid` production gate and the 214/21/identical A/B. §Step 1 outcome gained the
+`{selectall}{del}` lesson (Cypress `{selectall}` is not a Ctrl+A keydown; write the full formatted
+value instead — still true in v9 per the Task 2 source read). §Step 3 outcome records the 9.10.1
+bump, pin removal, `PickersTextField` rebase, hidden-mirror-input selector strategy, the 82/15→14
+A/B, and four prose corrections (END_DATE needed no change; codemod noise recurred identically;
+the stale-server port-3000 trap; the pagination watch item that never fired). Header "Not started"
+updated to "steps 1–3 implemented".
 
 ### Task 8: Ship step 3
 - [ ] review the full diff; confirm `tests/cypress.env.json` is **not** staged

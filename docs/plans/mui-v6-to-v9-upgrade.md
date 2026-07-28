@@ -1,6 +1,7 @@
 # MUI v6 → v9 upgrade
 
-> Forward-looking ticket (researched 2026-07-21, **re-verified 2026-07-27**). Not started. Scope
+> Forward-looking ticket (researched 2026-07-21, **re-verified 2026-07-27**). Steps 1–3 are now
+> implemented — see §Step 1/2/3 outcome; only step 4 (core v7 → v9, the bundle dedup) remains. Scope
 > estimate: **2–4 focused weeks**, most of it concentrated in `src/features/theme/theme.ts` and the
 > Cypress page objects. Decomposes into four **separately mergeable, order-dependent** stages
 > (§Sequencing) — step 4 is the real project. The 2–4 week figure predates two offsetting
@@ -256,6 +257,21 @@ reports* Cypress scenario passes unchanged.
    change mobile behaviour too. Restoring v7 properly means deriving it from the same desktop media
    query, or splitting into explicit Desktop/Mobile variants.
 
+### The `{selectall}{del}` lesson (recorded 2026-07-28 — the most reusable finding of step 1)
+Step 1's nine CI-job failure was caused by the `{selectall}{del}` prefix in
+`Common.inputDateIntoField`. Cypress's `{selectall}` is a **selection command, not a real
+Ctrl/Cmd+A keydown** — against a picker field it does not put the field into a state where `{del}`
+clears the whole value, so the subsequent `type()` of the new date landed on top of residual
+content and produced garbage values. The fix that shipped was to **drop the prefix entirely and
+type the full formatted value** — the pickers parse a complete value string and replace what is
+there, so no explicit clearing step is needed. This stayed true in v9's accessible section DOM
+(verified against the 9.10.1 source in step 3): v9 handles a *real* Ctrl+A keydown
+(`setSelectedSections('all')`, then `Delete` calls `clearValue()`), but Cypress `{selectall}`
+still is not one, so `{del}` would clear at most the active section — the exact step-1 failure
+mode. **Never reintroduce the prefix; always write the full formatted value.** Side effect for
+real users, in both DOM modes: "select all, delete" does not clear a picker field. Upstream
+behaviour, not introduced by this work; nobody has decided whether to care.
+
 ### Codemod: budget for reverting most of its output
 `npx @mui/x-codemod@latest v8.0.0/preset-safe src/` touched **9 files; only 4 changes were real**.
 Reverted: a 620-line reformat of `VestingScheduleTable.tsx` that `git diff -w --ignore-blank-lines`
@@ -269,6 +285,106 @@ An earlier draft of the step-1 report flagged `AccountingExportPreview`'s `autoH
 in v8. **It is not.** `@mui/x-data-grid@8.29.1` `models/props/DataGridProps.d.ts` contains **zero**
 `@deprecated` tags, `autoHeight`'s JSDoc is a plain recommendation, there is no runtime deprecation
 warning, and the prop is actively consumed by `useGridDimensions` and `propValidation`. No action.
+
+## Step 2 outcome — implemented 2026-07-28
+
+Merged as [PR #880](https://github.com/superfluid-org/superfluid-dashboard/pull/880), merge commit
+`91b99ec5`. *(Reconstructed 2026-07-28 from the PR body — no session file was written for step 2;
+the PR body was the only record.)*
+
+**What shipped.** Core landed on **7.3.11** — the minimum that makes step 3 legal (X v9 peers on
+`^7.3.0 || ^9.0.0`; there is no core v8). All pins exact per the standing rule: `material` /
+`icons-material` / `system` / `utils` → `7.3.11`, `lab` → `7.0.1-beta.25` (lab peers on `^7.3.11`,
+so lab and core must move together). MUI X stayed on 8.29.x, date-fns on v2 — neither forced.
+**No user-visible change by design**, and **no dedup**: verified that `pnpm dedupe` touches nothing
+MUI at this stage, because Li-Fi hard-requires v9 and dedupe cannot merge across majors.
+
+**Grid.** v7 renames old `Grid` → `GridLegacy` and promotes `Grid2` → `Grid`. `ActionsList` (the
+only `Grid2` user) moved to the real v7 `Grid`. `UpsertTokenAccessForm` and
+`AutoWrapAddTokenDialogSection` were **pinned to `GridLegacy`**: their container-with-non-`item`
+markup type-checks clean against the new `Grid` but would lay out differently — the one place a
+bare import flip is a silent layout change rather than a compile error. Their dialogs (Approvals →
+*Add Permissions*, Auto-wrap → *Add Token*) have no automated layout coverage; a reviewer was asked
+to eyeball them, and step 4 must re-check them.
+
+**Theme.** The palette augmentation moved to `@mui/material/styles` — mandatory, not cleanup: v7's
+`exports` map resolves `"./*"` → `"./*/index.d.ts"`, making `@mui/material/styles/createPalette`
+unresolvable (`TS2664`) even though the `.d.ts` still ships.
+
+**E2E selectors — the substantial part, and step 2's headline lesson.** v7 gates the default icon
+`data-testid` behind `NODE_ENV !== 'production'`, and CI runs Cypress against a deployed
+**production** build — so all **45 icon selectors across 13 page objects** would have broken in CI
+while passing against `pnpm dev`. The gate lives in `@mui/material/utils/createSvgIcon`, which the
+X packages re-export, putting DataGrid column-menu and picker-calendar icons in scope too. Replaced
+with app-owned `data-cy` hooks (or MUI public slot classes / ARIA labels where MUI renders the icon
+itself). **Convention established: new e2e selectors must add an explicit `data-cy`** — production
+icons no longer carry a free `data-testid`. This is also what forced the A/B-against-production-
+build discipline every later step inherits: the dev server by construction cannot observe this
+failure class.
+
+**Verification.** Full local Cypress A/B against production builds on both sides: 214 tests,
+21 failing before, **21 failing after, identical failure names** (all pre-existing fixture drift).
+Production-DOM probe showed icon `data-testid` count going 20 → 0 between builds. `pnpm typecheck`,
+`pnpm lint`, `pnpm build` green; app graph entirely on 7.3.11 with Li-Fi's 9.2.0 still isolated.
+`VestingPage.FORWARD_BUTTON` documented as a dead probe and deliberately left non-matching.
+
+## Step 3 outcome — implemented 2026-07-28
+
+Branch `mui-x-v9-and-core-v9` (ralphex run 1; PR to `master` at ship time). Executable plan and
+full findings: `docs/plans/2026-07-28-mui-x-v9-and-core-v9.md` (Tasks 1–8).
+
+**What shipped.**
+- `@mui/x-data-grid` and `@mui/x-date-pickers` `^8.29.x` → **exact `9.10.1`**, no caret. Lockfile
+  resolves a single X major, peering on the installed core 7.3.11.
+- The five `enableAccessibleFieldDOMStructure={false}` pins removed (`AccountingExportForm.tsx` ×2,
+  `SendStream.tsx` ×2, `CreateVestingForm.tsx` ×1). **Mandatory, as this plan suspected but had not
+  verified**: the 9.10.1 source warns at runtime that the prop *"has been removed. The accessible
+  DOM structure is now the default and only option."*
+- `src/components/PickerField/mobileTapPicker.tsx` rebased from `@mui/material`'s `TextField` onto
+  `PickersTextField`, exactly as §Step 1 outcome item 2 predicted: `readOnly` still suppresses
+  section editing (`useFieldSectionContentProps` sets `contentEditable: !disabled && !readOnly`),
+  so only the base component changed. `onClick` arrives via the `FormControl` root; all five
+  consumers' `slotProps.textField` payloads typechecked unchanged.
+- Picker Cypress selectors migrated to the section-based accessible DOM. The load-bearing change:
+  under the accessible DOM the only `<input>` is a **visually hidden mirror**, so `.type()` /
+  `.clear()` fail Cypress actionability. New `BasePage.setPickersFieldValue` writes the full
+  formatted value into the hidden mirror via the native `HTMLInputElement.prototype.value` setter
+  plus a bubbling `input` event (the v9-supported autofill path), then asserts the value round-
+  tripped so a rejected parse cannot pass silently. `Common.inputDateIntoField` now takes the field
+  **container** selector and delegates to it — no `{selectall}{del}`, no `clear()`.
+  `ExportPage.DATE_RANGES` (a Stack indexed 0/-1) replaced with app-owned
+  `data-cy="export-start-date"` / `"export-end-date"` hooks per the step-2 convention;
+  `VestingPage.DATE_INPUT` dropped its ` input` suffix.
+
+**Verified, and how.** `pnpm typecheck` / `pnpm lint` / `pnpm build` green. Mobile tap-to-open
+re-verified against a production build by stubbing `win.matchMedia` in Cypress so `(pointer: fine)`
+never matches (equivalent to the `desktopModeMediaQuery` trick, zero app-code changes; note CDP
+`Emulation.setEmulatedMedia` does **not** reach the Cypress AUT iframe — don't reach for it):
+forced-mobile fields render zero `contenteditable` sections and open exactly one `[role=dialog]`
+on tap; desktop fields stay editable and do not open on field click. Cypress A/B against
+production builds, all six Export/Send/Vesting specs **in one run** (the step-1 lesson): 82 tests,
+baseline 15 failing → after 14 failing, every failing name inside the baseline set ("Modifying a
+stream with just end date" now passes). Strictly smaller — the bar met.
+
+**Where this plan's prose was wrong or incomplete, for the record:**
+- *"The prop is reported removed in X v9… unverified"* — now verified true against the published
+  tarball. The removal is a runtime warning + no-op, so shipping the pin into v9 would have been
+  noisy but not broken.
+- The step-3 selector list over-predicted one site: **`SendPage.END_DATE` needed no code change** —
+  `START_DATE`/`END_DATE` were already container selectors, and the `` `${END_DATE} input` ``
+  value assertion reads the hidden mirror, whose `value` is the same formatted string the helper
+  writes. Only `Common.inputDateIntoField`, `VestingPage.DATE_INPUT` and `ExportPage.DATE_RANGES`
+  changed.
+- The codemod warning proved out a second time, same failure modes: `v9.0.0/preset-safe` touched
+  8 files, and the only real changes were the five pin removals; the rest was reprint noise
+  including — again — comment relocation in `viemTransactionErrors.ts`, a file with no MUI content.
+- One step-1 operational trap recurred twice: an orphaned `next start` holding port 3000 serves a
+  stale build over fresh `.next` chunks and produces Next.js "hard navigate to same URL" invariant
+  errors that look like app breakage. Check `lsof -iTCP:3000 -sTCP:LISTEN` before every A/B run.
+- Watch item that did **not** fire: v9's DataGrid formats pagination numbers by default
+  (`paginationDisplayedRows`); no Cypress assertion reads that caption today. DataGrid v8→v9
+  otherwise required nothing here — both DataGrid sites (`AccountingExportPreview.tsx`, the
+  `MuiDataGrid` theme overrides) were already v9-correct, `autoHeight` unchanged.
 
 ## Date-fns — not a forced co-bump (corrected 2026-07-27)
 
@@ -335,11 +451,16 @@ there is appetite, and revert those three imports to `AdapterDateFns` at that po
 only in 9.1.2 two weeks later); a caret range would have pulled it in. 9.2.0 is past it.
 
 ## Open questions to resolve before step 4
-- Is the Pages Router `extractCriticalToChunks` SSR pattern (`src/pages/_document.tsx` +
-  `src/features/theme/createEmotionCache.ts`) still **documented** for v9? `@mui/material-nextjs@9`
-  peer deps still include `@emotion/server`, which is suggestive but not proof. Verify at
-  https://mui.com/material-ui/integrations/nextjs/ .
-- Can v6 skip v7 entirely, or is the v7 stop mandatory? Unconfirmed.
+- **Still open:** Is the Pages Router `extractCriticalToChunks` SSR pattern
+  (`src/pages/_document.tsx` + `src/features/theme/createEmotionCache.ts`) still **documented** for
+  v9? `@mui/material-nextjs@9` peer deps still include `@emotion/server`, which is suggestive but
+  not proof. Verify at https://mui.com/material-ui/integrations/nextjs/ . Step 3 did not touch this
+  surface; it belongs to step 4's checklist.
+- ~~Can v6 skip v7 entirely, or is the v7 stop mandatory?~~ **Resolved 2026-07-28 — moot.** Step 2
+  shipped via the v7 stop, and for this repo's chosen sequencing (X to v9 *before* core to v9) the
+  stop was load-bearing anyway: X v9 peers on `^7.3.0 || ^9.0.0`, so core had to reach ≥ 7.3 for
+  step 3 to be legal at all. Whether a hypothetical direct 6 → 9 core jump works was never tested
+  and no longer matters here.
 
 ## Recommendation
 Do steps 1–3 in order to clear the dependency chain, without committing to step 4. Defer step 4 and
