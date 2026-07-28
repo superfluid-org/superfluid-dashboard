@@ -10,8 +10,8 @@ before starting and keep it updated as you go — it is what carries this projec
 |---|---|---|
 | 1 | MUI X v7 → v8 | merged, PR #878 → `8d1d7e43` |
 | 2 | core v6 → v7 (landed 7.3.11) | merged, PR #880 → `91b99ec5` |
-| **3** | **MUI X v8 → v9** | **this plan, part A** |
-| **4** | **core v7 → v9** | **this plan, part B** |
+| 3 | MUI X v8 → v9 (landed 9.10.1) | **merged**, PR #881 → `f46d58d4` — this plan, Part A, done |
+| **4** | **core v7 → v9** | **this plan, Part B — the remaining work** |
 
 **Problem it solves.** The repo ships **two full copies of Material UI** — ours plus
 `@mui/material@9.2.0` pulled in by `@lifi/wallet-management`. Deduplicating one out of the bundle is
@@ -44,9 +44,13 @@ step 3 rewrites the picker DOM that step 4's selector sweep then builds on.
 
 ## Context (from discovery)
 
-**Current versions on `master` at `91b99ec5`:** `@mui/material` / `icons-material` / `system` / `utils` at
-`7.3.11` (pinned exact), `@mui/lab` at `7.0.1-beta.25`, `@mui/x-data-grid` `^8.29.1`,
-`@mui/x-date-pickers` `^8.29.0`, `date-fns` v2.30.0, React 19, Next 16 (Pages Router).
+**Current versions on `master` at `f46d58d4`** (i.e. what Part B starts from): `@mui/material` /
+`icons-material` / `system` / `utils` at `7.3.11` (pinned exact), `@mui/lab` at `7.0.1-beta.25`,
+`@mui/x-data-grid` and `@mui/x-date-pickers` at **`9.10.1`** (pinned exact, landed by step 3),
+`date-fns` v2.30.0, React 19, Next 16 (Pages Router). App version `65.0.0`.
+
+*(The `^8.29.x` X versions named elsewhere in this file describe the pre-step-3 state and are
+history, not the current tree. Verify against `package.json`, not against this prose.)*
 
 **Published targets (verified 2026-07-28):** `@mui/x-data-grid` and `@mui/x-date-pickers` are both
 at **9.10.1** `latest`, peering on `@mui/material ^7.3.0 || ^9.0.0` — satisfied by 7.3.11, which is
