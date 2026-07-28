@@ -63,7 +63,7 @@ const BurnActivity: FC<BurnActivityProps> = ({
     <TableRow data-cy={`${network.slugName}-row`}>
       <TableCell>
         <ListItem sx={{ p: 0 }}>
-          <ActivityIcon icon={SwapVertIcon} />
+          <ActivityIcon icon={SwapVertIcon} dataCy="activity-wrap-unwrap-icon" />
           <ListItemText
             data-cy={"activity"}
             primary={"Unwrap"}

@@ -34,7 +34,7 @@ const AutoWrapEnableDialog: FC<{
               top: theme.spacing(3),
             }}
           >
-            <CloseIcon />
+            <CloseIcon data-cy="close-icon" />
           </IconButton>
         </Stack>
       </DialogTitle>

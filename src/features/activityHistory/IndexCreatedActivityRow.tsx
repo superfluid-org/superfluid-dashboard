@@ -43,7 +43,7 @@ const IndexCreatedActivityRow: FC<IndexCreatedActivityRowProps> = ({
     <TableRow>
       <TableCell>
         <ListItem sx={{ p: 0 }}>
-          <ActivityIcon icon={AddRoundedIcon} />
+          <ActivityIcon icon={AddRoundedIcon} dataCy="activity-index-created-icon" />
           <ListItemText
             data-cy={"activity"}
             primary="Index Created"

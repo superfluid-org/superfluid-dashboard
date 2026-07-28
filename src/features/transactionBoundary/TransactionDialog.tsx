@@ -310,7 +310,7 @@ export const TransactionDialogTitle: FC<PropsWithChildren> = ({ children }) => {
           top: theme.spacing(3),
         }}
       >
-        <CloseIcon />
+        <CloseIcon data-cy="close-icon" />
       </IconButton>
     </Stack>
   );

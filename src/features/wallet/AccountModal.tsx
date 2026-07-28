@@ -97,7 +97,7 @@ const AccountModal: FC<AccountModalProps> = ({ open, onClose }) => {
               sx={{ position: "absolute", right: 20, top: 24 }}
               color="inherit"
             >
-              <CloseRoundedIcon />
+              <CloseRoundedIcon data-cy="close-rounded-icon" />
             </IconButton>
           </DialogTitle>
           {address && (

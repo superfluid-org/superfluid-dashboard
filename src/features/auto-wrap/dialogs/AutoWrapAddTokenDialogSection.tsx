@@ -3,7 +3,9 @@ import ResponsiveDialog from "../../common/ResponsiveDialog";
 import {
   DialogContent,
   DialogTitle,
-  Grid,
+  // See UpsertTokenAccessForm — legacy Grid markup, kept on GridLegacy so the
+  // v7 Grid rename cannot silently change this dialog's layout.
+  GridLegacy as Grid,
   IconButton,
   Stack,
   Typography,
@@ -55,7 +57,7 @@ const AutoWrapAddTokenForm: FC<{
             top: theme.spacing(3),
           }}
         >
-          <CloseIcon />
+          <CloseIcon data-cy="close-icon" />
         </IconButton>
       </Stack>
       <Stack gap={3} component={DialogContent}>

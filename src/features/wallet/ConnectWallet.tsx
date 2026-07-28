@@ -67,7 +67,7 @@ const AccountInfo: FC<AccountInfoProps> = ({
     />
     {isImpersonating && (
       <IconButton onClick={stopImpersonation} color="warning" size="small">
-        <CloseRoundedIcon color="warning" />
+        <CloseRoundedIcon data-cy="close-rounded-icon" color="warning" />
       </IconButton>
     )}
   </ListItem>
@@ -96,7 +96,7 @@ const MobileAccountInfo: FC<AccountInfoProps> = ({
     <AddressName address={address} />
     {isImpersonating && (
       <IconButton onClick={stopImpersonation}>
-        <CloseRoundedIcon />
+        <CloseRoundedIcon data-cy="close-rounded-icon" />
       </IconButton>
     )}
   </Button>

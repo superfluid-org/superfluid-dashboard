@@ -63,7 +63,11 @@ interface PaletteOtherColors {
   intercom: string;
 }
 
-declare module "@mui/material/styles/createPalette" {
+// Material UI v7's `exports` map resolves "./*" to "./*/index.js", so the old
+// two-level "@mui/material/styles/createPalette" specifier no longer resolves
+// even though the .d.ts still ships. Palette/PaletteOptions are re-exported
+// from "@mui/material/styles", which is the supported augmentation target.
+declare module "@mui/material/styles" {
   interface Palette {
     other: PaletteOtherColors;
   }

@@ -49,7 +49,7 @@ const SubscriptionRevokedActivityRow: FC<
     <TableRow>
       <TableCell>
         <ListItem sx={{ p: 0 }}>
-          <ActivityIcon icon={NotInterestedRoundedIcon} />
+          <ActivityIcon icon={NotInterestedRoundedIcon} dataCy="activity-subscription-rejected-icon" />
           <ListItemText
             data-cy={"activity"}
             primary="Subscription Rejected"

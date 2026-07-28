@@ -109,7 +109,7 @@ export default memo(function MultiAddressSearch({
                 onClick={removeAddress(address)}
                 size="small"
               >
-                <CloseRoundedIcon />
+                <CloseRoundedIcon data-cy="close-rounded-icon" />
               </IconButton>
             </ListItemButton>
           ))}

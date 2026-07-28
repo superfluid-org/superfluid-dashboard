@@ -73,13 +73,16 @@ const AddressCopyTooltip: FC<AddressCopyTooltipProps> = ({
           ) : (
             <>
               <Typography variant="tooltip">{checksumAddress}</Typography>
-              <ContentCopyRoundedIcon sx={{ fontSize: "16px" }} />
+              <ContentCopyRoundedIcon
+                data-cy="address-copy-icon"
+                sx={{ fontSize: "16px" }}
+              />
             </>
           )}
         </Stack>
       }
       placement="top"
-      componentsProps={{ tooltip: { sx: { maxWidth: "none" } } }}
+      slotProps={{ tooltip: { sx: { maxWidth: "none" } } }}
       onOpen={onOpen}
       onClose={onClose}
     >

@@ -30,7 +30,7 @@ const BalanceCriticalIndicator: FC<BalanceCriticalIndicatorProps> = ({
     <Tooltip
       arrow
       placement="top"
-      componentsProps={{
+      slotProps={{
         tooltip: { sx: { px: 1.5, py: 1, maxWidth: "260px" } },
       }}
       title={

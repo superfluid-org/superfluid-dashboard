@@ -193,7 +193,11 @@ const StreamRow: FC<StreamRowProps> = ({
     <TableRow hover data-cy={"stream-row"}>
       <TableCell {...tableCellProps}>
         <Stack direction="row" alignItems="center" gap={1.5}>
-          {isOutgoing ? <ArrowForwardIcon /> : <ArrowBackIcon />}
+          {isOutgoing ? (
+            <ArrowForwardIcon data-cy="stream-outgoing-icon" />
+          ) : (
+            <ArrowBackIcon data-cy="stream-incoming-icon" />
+          )}
           <AddressAvatar
             address={isOutgoing ? receiver : sender}
             AvatarProps={{

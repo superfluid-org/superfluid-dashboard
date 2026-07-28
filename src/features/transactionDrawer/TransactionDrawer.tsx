@@ -61,7 +61,7 @@ export default memo(function TransactionDrawer() {
     >
       <DrawerHeader>
         <IconButton color="inherit" onClick={closeDrawer}>
-          <CloseIcon />
+          <CloseIcon data-cy="close-icon" />
         </IconButton>
         <Typography variant="h5" sx={{ m: 1 }}>
           Transactions

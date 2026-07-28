@@ -90,7 +90,11 @@ const TransferEventRow: FC<TransferEventRowProps> = ({
     <TableRow data-cy={"transfer-row"}>
       <TableCell data-cy={"sender-receiver-address"}>
         <Stack direction="row" alignItems="center" gap={1.5}>
-          {isOutgoing ? <ArrowForwardIcon /> : <ArrowBackIcon />}
+          {isOutgoing ? (
+            <ArrowForwardIcon data-cy="transfer-outgoing-icon" />
+          ) : (
+            <ArrowBackIcon data-cy="transfer-incoming-icon" />
+          )}
           <AddressAvatar
             address={isOutgoing ? to : from}
             AvatarProps={{

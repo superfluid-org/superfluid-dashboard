@@ -175,7 +175,7 @@ export default memo(function TokenDialog({
             top: theme.spacing(3),
           }}
         >
-          <CloseIcon />
+          <CloseIcon data-cy="close-icon" />
         </IconButton>
         <TextField
           data-cy="token-search-input"
