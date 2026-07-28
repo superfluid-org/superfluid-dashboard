@@ -429,11 +429,46 @@ unstyled dashboard rather than an error message, which is easy to misdiagnose.
    ralphex run 2 for Tasks 9–18.
 
 ### Task 10: Bump core to v9
-- [ ] confirm this is **ralphex run 2**, in a worktree off a `master` that already contains merged step 3 — if step 3's PR is not merged, mark ⚠️ and stop
-- [ ] capture a fresh production-build Cypress baseline, as in Task 1 — Part A's baseline is stale by now
-- [ ] set `@mui/material`, `@mui/system`, `@mui/icons-material`, `@mui/utils` to **exact 9.2.0** (past the broken 9.1.0); co-bump `@mui/lab` to the version peering on core 9
-- [ ] `pnpm install`; expect a large volume of type errors — that is normal and is what Tasks 11–13 clear
-- [ ] record the initial `pnpm typecheck` error count in this file as the burn-down number
+- [x] confirm this is **ralphex run 2**, in a worktree off a `master` that already contains merged step 3 — confirmed: `f46d58d4` (merged PR #881) is an ancestor of HEAD, X packages at 9.10.1
+- [x] capture a fresh production-build Cypress baseline, as in Task 1 — done, table below
+- [x] set `@mui/material`, `@mui/system`, `@mui/icons-material`, `@mui/utils` to **exact 9.2.0** (past the broken 9.1.0); co-bump `@mui/lab` to the version peering on core 9 — lab pinned exact `9.0.0-beta.6` (`latest`, peers on `@mui/material ^9.2.0`; its `@mui/material-pigment-css` peer is optional, not installed)
+- [x] `pnpm install`; expect a large volume of type errors — that is normal and is what Tasks 11–13 clear
+- [x] record the initial `pnpm typecheck` error count in this file as the burn-down number — **508 errors**
+
+**Task 10 findings (2026-07-29):**
+
+- **Run-2 precondition held.** Worktree branch is off a `master` containing merged step 3
+  (`f46d58d4` ancestor of HEAD; core was at 7.3.11, X at 9.10.1 before this task).
+- **The Task 1 stale-server trap fired a third time**: an orphaned `node` (old `next start`) held
+  port 3000 before the baseline run. Killed it first; `lsof -iTCP:3000 -sTCP:LISTEN` before every
+  A/B remains mandatory.
+- **Fresh Cypress baseline** (production `pnpm build && pnpm start` at pre-bump versions, all six
+  specs in one run, network=opsepolia) — identical to the Task 6 close-out, 82/68/14:
+
+  | spec | tests | passing | failing |
+  |---|---|---|---|
+  | ExportPage | 12 | 4 | **8** |
+  | SendPage | 21 | 16 | **5** |
+  | VestingPageOne | 16 | 15 | **1** |
+  | VestingPageTwo | 19 | 19 | 0 |
+  | VestingPageThree | 13 | 13 | 0 |
+  | VestingPageV2 | 1 | 1 | 0 |
+  | **total** | **82** | **68** | **14** |
+
+  Failing names all in the known-unrelated set: ExportPage — price granularity/accounting periods
+  examples #1–#4, multiple addresses export, counterparty export, date range, CSV export; SendPage —
+  stream tables (just start date / start+end / end date), modifying a streams start date, modifying
+  a stream with start and end date (not started yet); VestingPageOne — change network button.
+  ("Modifying a stream with just end date" passes, as at the end of Part A.)
+- **Versions set** (all exact, no caret): `@mui/material` / `system` / `icons-material` / `utils`
+  → `9.2.0`; `@mui/lab` → `9.0.0-beta.6`. `pnpm install` clean (only the pre-existing
+  graphql-tools/lens unmet-peer noise).
+- **Dedup preview:** `pnpm-lock.yaml` now resolves a **single** `@mui/material` major — only
+  `9.2.0` appears; the former 7.3.11 entry is gone and `@lifi/wallet-management`'s 9.x peer
+  converges on our copy. Task 15 confirms formally.
+- **Burn-down number: 508 `tsc` errors.** Dominant shapes match Tasks 11–13's predictions:
+  `PaperProps`/`MenuProps`/`primaryTypographyProps` removals (TS2322/TS2559/TS2769 on
+  Dialog/Popover/Menu/ListItemText) and system-prop attributes no longer on component types.
 
 ### Task 11: System props → `sx`
 - [ ] run `npx @mui/codemod@latest v9.0.0/system-props src/`
