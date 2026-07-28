@@ -399,11 +399,19 @@ updated to "steps 1–3 implemented".
 clearing the dependency chain.*
 
 ### Task 9: ⚠️ Browser-support gate — requires a human decision
-- [ ] state plainly in this file that core v9 raises the browser floor to **Chrome 117 / Safari 17 / Firefox 121**
+- [x] state plainly in this file that core v9 raises the browser floor to **Chrome 117 / Safari 17 / Firefox 121** — stated: **upgrading `@mui/material` to v9 drops support for any browser older than Chrome 117, Safari 17, or Firefox 121.** Users on older browsers will get a broken or unstyled dashboard
 - [ ] **stop and ask the human** to confirm against analytics. The master plan calls this
       non-negotiable: *"probably fine for a crypto dashboard, but check."* An agent cannot check
       analytics — do not assume, do not proceed on a guess
 - [ ] record the answer and who gave it before continuing
+
+⚠️ **Ralphex run 1 halted here (2026-07-28).** Two blockers, both by design:
+1. **PR #881 (step 3) is still OPEN, not merged** — Task 10's precondition ("worktree off a
+   `master` that already contains merged step 3") fails, and Task 8 marks this commit as the end
+   of run 1. Part B must ship from a fresh worktree via a second ralphex run.
+2. **The analytics check needs a human.** Confirm the Chrome 117 / Safari 17 / Firefox 121 floor
+   against real usage data, record the answer and who gave it above, then merge #881 and start
+   ralphex run 2 for Tasks 9–18.
 
 ### Task 10: Bump core to v9
 - [ ] confirm this is **ralphex run 2**, in a worktree off a `master` that already contains merged step 3 — if step 3's PR is not merged, mark ⚠️ and stop
