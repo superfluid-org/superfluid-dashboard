@@ -237,14 +237,38 @@ A/B run; that invariant error is the signature of a stale-server mismatch, not a
   the base-component swap.
 
 ### Task 3: Bump MUI X to v9
-- [ ] set `@mui/x-data-grid` and `@mui/x-date-pickers` to the **exact** v9 version (9.10.1 unless Task 2 found newer), no caret
-- [ ] `pnpm install`; confirm the app graph resolves to a single X major
-- [ ] run `npx @mui/x-codemod@latest v9.0.0/preset-safe src/`, then `git diff -w --ignore-blank-lines` and **revert everything that is not a real change**
-- [ ] review the 2 DataGrid sites (`AccountingExportPreview.tsx` + the other) against the v8→v9 DataGrid migration guide — note `autoHeight` is **not** deprecated, that was a false finding
-- [ ] run the verification gate (typecheck, lint, build)
+- [x] set `@mui/x-data-grid` and `@mui/x-date-pickers` to the **exact** v9 version (9.10.1 unless Task 2 found newer), no caret
+- [x] `pnpm install`; confirm the app graph resolves to a single X major
+- [x] run `npx @mui/x-codemod@latest v9.0.0/preset-safe src/`, then `git diff -w --ignore-blank-lines` and **revert everything that is not a real change**
+- [x] review the 2 DataGrid sites (`AccountingExportPreview.tsx` + the other) against the v8→v9 DataGrid migration guide — note `autoHeight` is **not** deprecated, that was a false finding
+- [x] run the verification gate (typecheck, lint, build)
+
+**Task 3 findings (2026-07-28):**
+
+- Pinned both X packages to exact `9.10.1` (still `latest`); lockfile resolves a **single** X major,
+  both peering on the installed core 7.3.11.
+- **Codemod: 8 files "ok", only 1 real change class.** The only genuine edits were the five
+  `enableAccessibleFieldDOMStructure={false}` removals (Task 4's first checkbox — the codemod does
+  it as part of `preset-safe` since the prop no longer exists in v9). Everything else was noise,
+  reverted wholesale: comment relocation in `viemTransactionErrors.ts` (a file with **no MUI
+  content** — same failure mode as the v8 codemod), no-op paren-wrapping in `_document.tsx` and
+  `AutoWrapEnableDialogContentSection.tsx`, a semicolon in `DefaultActivityRow.tsx`, JSX text
+  mangling (`&apos;` → `'`, broken indentation) in `SendStream.tsx`, and a whitespace-only reprint
+  of `VestingScheduleTable.tsx`. Reverted all of it and hand-applied the five prop removals cleanly.
+- **DataGrid v8→v9 review: nothing applies.** Both DataGrid sites are `AccountingExportPreview.tsx`
+  and the `MuiDataGrid` theme overrides in `theme.ts` (+ the `themeAugmentation` type import) — no
+  other file imports `@mui/x-data-grid`. The v9 guide's breaking changes are: `experimentalFeatures`
+  charts flag (Premium-only), `filterPanelColumns` locale key rename (unused), and
+  `virtualScrollerContent` DOM moves (no selector in `src/` or `tests/` touches it). `autoHeight`
+  unchanged, kept. The existing `if (gridApiContext.current)` guard and v8-signature `valueGetter`s
+  are already v9-correct.
+- ➕ **Task 6 watch item:** v9 formats pagination numbers by default (`paginationDisplayedRows`).
+  No Cypress assertion reads the pagination caption today (`ExportPage.ts` only uses
+  `.MuiDataGrid-cell` / header / panel tokens, all unchanged in v9), but if a new failure mentions
+  row-count text, this is the first suspect.
 
 ### Task 4: Remove the `enableAccessibleFieldDOMStructure={false}` pin
-- [ ] remove the prop from all 5 picker instances (`AccountingExportForm.tsx` ×2, `SendStream.tsx` ×2, `CreateVestingForm.tsx` ×1)
+- [x] remove the prop from all 5 picker instances (`AccountingExportForm.tsx` ×2, `SendStream.tsx` ×2, `CreateVestingForm.tsx` ×1) — done in Task 3: the v9 `preset-safe` codemod removes it (the prop no longer exists), kept as a real change there
 - [ ] rebase `src/components/PickerField/mobileTapPicker.tsx` off `PickersTextField` instead of `@mui/material`'s `TextField` — the pin was the only reason it used the latter
 - [ ] confirm the mobile mechanism survives: `readOnly` still suppresses editing under the accessible DOM (`useFieldSectionContentProps` sets `contentEditable: !disabled && !readOnly`), so only the base component changes
 - [ ] re-verify mobile tap-to-open by forcing the mobile variant on desktop Chrome with `desktopModeMediaQuery="@media (min-width: 100000px)"` — viewport size alone cannot do this, MUI switches on `@media (pointer: fine)`. Field tap must open `[role=dialog]`; the calendar icon must still open exactly once; desktop fields must stay editable and must **not** open on field click
