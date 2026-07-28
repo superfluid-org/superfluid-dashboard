@@ -183,11 +183,58 @@ chunks — `pnpm start` had died on EADDRINUSE. Check `lsof -iTCP:3000 -sTCP:LIS
 A/B run; that invariant error is the signature of a stale-server mismatch, not an app bug.
 
 ### Task 2: Verify the step-3 premise before changing anything
-- [ ] confirm `enableAccessibleFieldDOMStructure` is actually **removed** in X v9 — check the installed v9 package source and the official v8→v9 migration guide, not the plan's prose (the master plan flags this as *unverified*)
-- [ ] confirm `@mui/x-data-grid@9` and `@mui/x-date-pickers@9` peer ranges against the installed core 7.3.11
-- [ ] re-inventory the picker-driven Cypress selectors against the current tree: `ExportPage.ts` `DATE_RANGES`, `VestingPage.ts` `DATE_INPUT`, `SendPage.ts` `END_DATE` + ``hasValue(`${END_DATE} input`)``, and `Common.inputDateIntoField` — counts were measured 2026-07-27 and may have drifted
-- [ ] check whether v9 changes the `{selectall}{del}` field-clearing behaviour that broke step 1
-- [ ] record findings in this file; if the premise is wrong, mark ⚠️ and **stop for a human** rather than working around it
+- [x] confirm `enableAccessibleFieldDOMStructure` is actually **removed** in X v9 — check the installed v9 package source and the official v8→v9 migration guide, not the plan's prose (the master plan flags this as *unverified*)
+- [x] confirm `@mui/x-data-grid@9` and `@mui/x-date-pickers@9` peer ranges against the installed core 7.3.11
+- [x] re-inventory the picker-driven Cypress selectors against the current tree: `ExportPage.ts` `DATE_RANGES`, `VestingPage.ts` `DATE_INPUT`, `SendPage.ts` `END_DATE` + ``hasValue(`${END_DATE} input`)``, and `Common.inputDateIntoField` — counts were measured 2026-07-27 and may have drifted
+- [x] check whether v9 changes the `{selectall}{del}` field-clearing behaviour that broke step 1
+- [x] record findings in this file; if the premise is wrong, mark ⚠️ and **stop for a human** rather than working around it
+
+**Task 2 findings (2026-07-28, verified against the published `@mui/x-date-pickers@9.10.1` tarball, not prose):**
+
+- **Premise CONFIRMED — proceed.** `enableAccessibleFieldDOMStructure` is removed in v9. The
+  v9.10.1 source (`internals/hooks/useField/useField.mjs`) warns at runtime if the prop is passed:
+  *"The `enableAccessibleFieldDOMStructure` prop has been removed. The accessible DOM structure is
+  now the default and only option."*, pointing at
+  https://mui.com/x/migration/migration-pickers-v8/ . So Task 4's pin removal is mandatory, not
+  optional — the prop is a no-op plus a console warning in v9.
+- **Peer ranges OK.** Both `@mui/x-data-grid@9.10.1` and `@mui/x-date-pickers@9.10.1` peer on
+  `@mui/material ^7.3.0 || ^9.0.0` and `@mui/system ^7.3.0 || ^9.0.0` — satisfied by the installed
+  7.3.11. `date-fns ^2.25.0 || ^3.2.0 || ^4.0.0` still admits our 2.30.0. React `^17 || ^18 || ^19`
+  fine. **9.10.1 is still `latest`** — Task 3 pins exactly that.
+- **Selector inventory (re-measured, no drift in kind, exact sites):**
+  - `ExportPage.ts:12` `DATE_RANGES = '[data-cy=date-ranges] input'` — used at :242 `clear()`,
+    :243 `type()`, :248 `click()`. Targets a real editable `<input>` today (the ×2 pinned legacy
+    fields in `AccountingExportForm.tsx`); under the v9 accessible DOM the only `<input>` is the
+    **hidden mirror input** (no visibility, value-string only, `useFieldHiddenInputProps`), so
+    `clear`/`type` against it will fail the actionability check. `[data-cy=date-ranges]` is a
+    `Stack` wrapping both range fields (`AccountingExportForm.tsx:184`), indexed 0 / -1.
+  - `VestingPage.ts:21` `DATE_INPUT = '[data-cy=date-input] input'` — used at :277 via
+    `Common.inputDateIntoField`. `data-cy` lives on the picker's textField slot
+    (`CreateVestingForm.tsx:394`).
+  - `SendPage.ts:71` `END_DATE = '[data-cy=end-date]'` (+ `END_DATE_BORDER` `fieldset` at :72,
+    `isVisible` :652, ``hasValue(`${END_DATE} input`)`` :688) and `START_DATE = '[data-cy=start-date]'`
+    at :69 (+ `fieldset` border at :70) — both fed through `Common.inputDateIntoField` (:611, :615).
+    The :688 value assertion reads the **hidden input's** value string in the accessible DOM — the
+    hidden input's `value` is the formatted value string, so the assertion may keep working, but the
+    format is `getHiddenInputValueFromSections`, which must be checked against the typed format.
+  - `Common.ts:775` `inputDateIntoField` — `.should('be.visible')` at :802 then `this.type()` at
+    :803. Both break against a hidden mirror input; needs the Task 5 rewrite (likely: type into the
+    section spans, or set the hidden input via `.invoke('val')` + input event, or drive sections by
+    keyboard).
+  - **No `.Mui*` picker class tokens anywhere in `tests/`** (grep for `MuiPickers|MuiDateCalendar|
+    MuiClock|MuiMultiSection|PickersDay|MuiCalendar` is empty) — the picker selector surface is
+    exactly the `data-cy` hooks plus `input` descendants above. Nothing else to sweep in Task 5.
+- **`{selectall}{del}` in v9:** unchanged risk profile; do **not** reintroduce the prefix. v9's
+  accessible field handles a *real* Ctrl/Cmd+A keydown (`useFieldRootProps.mjs`: `setSelectedSections('all')`)
+  and `Delete` with all-selected calls `clearValue()` — but Cypress `{selectall}` is not a Ctrl+A
+  keydown (it's a selection command), so it still selects nothing meaningful in the section DOM, and
+  `{del}` then clears at most the active section, exactly the step-1 failure mode. The current
+  prefix-free `inputDateIntoField` approach (type the full formatted value) remains correct in
+  spirit; only its target element must change (Task 5).
+- **Task 4 premise also re-confirmed in v9 source:** `useFieldSectionContentProps.mjs:157` sets
+  `contentEditable: !isContainerEditable && !disabled && !readOnly` — `readOnly` still suppresses
+  section editing under the accessible DOM, so the mobile tap-to-open mechanism survives with only
+  the base-component swap.
 
 ### Task 3: Bump MUI X to v9
 - [ ] set `@mui/x-data-grid` and `@mui/x-date-pickers` to the **exact** v9 version (9.10.1 unless Task 2 found newer), no caret
