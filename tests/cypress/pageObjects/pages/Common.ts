@@ -790,12 +790,17 @@ export class Common extends BasePage {
     const finalFutureDate = `${month}/${day}/${year} ${hours}:${minutes}`;
 
     // Wait for the field to be visible first (the scheduling form renders it lazily and
-    // re-renders as values change), then overwrite it in a single type command
-    // ({selectall}{del} then the date) rather than a separate this.clear() + type():
-    // clearing re-renders the form and detaches the input mid-command on slower CI
-    // ("cy.clear() failed because the page updated").
+    // re-renders as values change), then type the whole value in a single command rather
+    // than a separate this.clear() + type(): clearing re-renders the form and detaches the
+    // input mid-command on slower CI ("cy.clear() failed because the page updated").
+    //
+    // No {selectall}{del} prefix: MUI X v8 no longer clears the whole field on that
+    // sequence -- it only clears the section that happens to be selected (verified in both
+    // the legacy and the accessible field DOM), and on an empty field it leaves the field
+    // in a state that swallows the rest of the same type() command. Typing the full
+    // formatted value overwrites every section on its own, so the prefix is unnecessary.
     cy.get(selector, { timeout: 30000 }).should('be.visible');
-    this.type(selector, `{selectall}{del}${finalFutureDate}`);
+    this.type(selector, finalFutureDate);
   }
 
   static validateScheduledStreamRow(

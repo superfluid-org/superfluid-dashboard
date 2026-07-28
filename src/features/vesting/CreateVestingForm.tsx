@@ -14,12 +14,16 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV2";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { add } from "date-fns";
 import { memo, useMemo } from "react";
 import { Controller, useFormContext } from "react-hook-form";
+import {
+  mobileTapPickerSlots,
+  mobileTapTextFieldProps,
+} from "../../components/PickerField/mobileTapPicker";
 import { inputPropsForEtherAmount } from "../../utils/inputPropsForEtherAmount";
 import TooltipWithIcon from "../common/TooltipWithIcon";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
@@ -382,12 +386,15 @@ export const StartDateController = memo(function StartDateController() {
         name="data.startDate"
         render={({ field: { value, onChange, onBlur } }) => (
           <DateTimePicker
+            // See AccountingExportForm: keep the v7 field DOM for this upgrade step.
+            enableAccessibleFieldDOMStructure={false}
+            slots={mobileTapPickerSlots}
             slotProps={{
-              textField: {
+              textField: mobileTapTextFieldProps({
                 'data-cy': 'date-input',
                 fullWidth: true,
                 onBlur,
-              },
+              }),
             }}
             value={value}
             ampm={false}
