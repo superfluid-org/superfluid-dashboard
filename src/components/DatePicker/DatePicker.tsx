@@ -132,12 +132,14 @@ const DatePicker: FC<DatePickerProps> = ({
       open={!!anchorEl}
       anchorEl={anchorEl}
       onClose={onClose}
-      PaperProps={{
-        square: true,
-        sx: { py: 2, px: 3, mt: theme.spacing(1.5) },
-      }}
       transformOrigin={{ horizontal: "right", vertical: "top" }}
       anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+      slotProps={{
+        paper: {
+          square: true,
+          sx: { py: 2, px: 3, mt: theme.spacing(1.5) },
+        }
+      }}
     >
       <Stack
         direction="row"

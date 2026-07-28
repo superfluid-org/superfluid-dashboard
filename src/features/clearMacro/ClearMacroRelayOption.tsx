@@ -327,7 +327,9 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
           size="small"
           checked={isRelayEnabled}
           onChange={(_event, checked) => setRelayEnabled(checked)}
-          inputProps={{ "aria-label": "Toggle gasless transactions" }}
+          slotProps={{
+            input: { "aria-label": "Toggle gasless transactions" }
+          }}
         />
         <BoltRoundedIcon
           fontSize="small"

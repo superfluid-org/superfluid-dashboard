@@ -357,14 +357,16 @@ const VestingAmountController = memo(function VestingAmountController(props: {
           value={value}
           onChange={onChange}
           onBlur={onBlur}
-          InputProps={{
-            endAdornment: (
-              <Typography component="span" sx={{
-                color: "text.secondary"
-              }}>
-                {props.token?.symbol ?? ""}
-              </Typography>
-            ),
+          slotProps={{
+            input: {
+              endAdornment: (
+                <Typography component="span" sx={{
+                  color: "text.secondary"
+                }}>
+                  {props.token?.symbol ?? ""}
+                </Typography>
+              ),
+            }
           }}
         />
       )}
@@ -436,17 +438,20 @@ const CliffAmountController = memo(function CliffAmountController(props: {
           value={value}
           onChange={onChange}
           onBlur={onBlur}
-          InputProps={{
-            endAdornment: (
-              <Typography component="span" sx={{
-                color: "text.secondary"
-              }}>
-                {props.token?.symbol ?? ""}
-              </Typography>
-            ),
-          }}
-          inputProps={{
-            ...inputPropsForEtherAmount,
+          slotProps={{
+            input: {
+              endAdornment: (
+                <Typography component="span" sx={{
+                  color: "text.secondary"
+                }}>
+                  {props.token?.symbol ?? ""}
+                </Typography>
+              ),
+            },
+
+            htmlInput: {
+              ...inputPropsForEtherAmount,
+            }
           }} />
       )} />
   );
@@ -478,14 +483,16 @@ export const CliffPeriodController = memo(function CliffPeriodController(props: 
               denominator: value.denominator,
             })}
             onBlur={onBlur}
-            InputProps={{
-              sx: {
-                borderTopRightRadius: 0,
-                borderBottomRightRadius: 0,
-              },
-            }}
             type="number"
-            inputMode="numeric" />
+            inputMode="numeric"
+            slotProps={{
+              input: {
+                sx: {
+                  borderTopRightRadius: 0,
+                  borderBottomRightRadius: 0,
+                },
+              }
+            }} />
           <Select
             data-cy={"cliff-period-unit"}
             value={value.denominator}
@@ -550,14 +557,16 @@ export const VestingPeriodController = memo(function VestingPeriodController(pro
                 });
               }}
               onBlur={onBlur}
-              InputProps={{
-                sx: {
-                  borderTopRightRadius: 0,
-                  borderBottomRightRadius: 0,
-                },
-              }}
               type="number"
-              inputMode="numeric" />
+              inputMode="numeric"
+              slotProps={{
+                input: {
+                  sx: {
+                    borderTopRightRadius: 0,
+                    borderBottomRightRadius: 0,
+                  },
+                }
+              }} />
             <Select
               data-cy={"total-period-unit"}
               value={value.denominator}

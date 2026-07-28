@@ -270,19 +270,21 @@ const AmountController = memo(function AmountController(props: {
           autoComplete="off"
           autoCorrect="off"
           placeholder="0.0"
-          InputProps={{
-            endAdornment: (
-              <Typography component="span" sx={{
-                color: "text.secondary"
-              }}>
-                {props.superToken?.symbol ?? ""}
-              </Typography>
-            ),
-          }}
-          inputProps={{
-            ...inputPropsForEtherAmount,
-          }}
-        />
+          slotProps={{
+            input: {
+              endAdornment: (
+                <Typography component="span" sx={{
+                  color: "text.secondary"
+                }}>
+                  {props.superToken?.symbol ?? ""}
+                </Typography>
+              ),
+            },
+
+            htmlInput: {
+              ...inputPropsForEtherAmount,
+            }
+          }} />
       )}
     />
   );

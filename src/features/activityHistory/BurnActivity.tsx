@@ -68,15 +68,17 @@ const BurnActivity: FC<BurnActivityProps> = ({
             data-cy={"activity"}
             primary={"Unwrap"}
             secondary={format(timestamp * 1000, dateFormat)}
-            primaryTypographyProps={{
-              translate: "yes",
-              variant: isBelowMd ? "h7" : "h6",
-            }}
-            secondaryTypographyProps={{
-              variant: "body2mono",
-              color: "text.secondary",
-            }}
-          />
+            slotProps={{
+              primary: {
+                translate: "yes",
+                variant: isBelowMd ? "h7" : "h6",
+              },
+
+              secondary: {
+                variant: "body2mono",
+                color: "text.secondary",
+              }
+            }} />
         </ListItem>
       </TableCell>
       {!isBelowMd ? (
@@ -102,14 +104,16 @@ const BurnActivity: FC<BurnActivityProps> = ({
                   secondary={
                     tokenPrice && <FiatAmount price={tokenPrice} wei={amount} />
                   }
-                  primaryTypographyProps={{
-                    variant: "h6mono",
-                  }}
-                  secondaryTypographyProps={{
-                    variant: "body2mono",
-                    color: "text.secondary",
-                  }}
-                />
+                  slotProps={{
+                    primary: {
+                      variant: "h6mono",
+                    },
+
+                    secondary: {
+                      variant: "body2mono",
+                      color: "text.secondary",
+                    }
+                  }} />
               </ListItem>
             )}
           </TableCell>
@@ -132,14 +136,16 @@ const BurnActivity: FC<BurnActivityProps> = ({
                   secondary={
                     tokenPrice && <FiatAmount price={tokenPrice} wei={amount} />
                   }
-                  primaryTypographyProps={{
-                    variant: "h6mono",
-                  }}
-                  secondaryTypographyProps={{
-                    variant: "body2mono",
-                    color: "text.secondary",
-                  }}
-                />
+                  slotProps={{
+                    primary: {
+                      variant: "h6mono",
+                    },
+
+                    secondary: {
+                      variant: "body2mono",
+                      color: "text.secondary",
+                    }
+                  }} />
               </ListItem>
             )}
           </TableCell>
@@ -172,9 +178,10 @@ const BurnActivity: FC<BurnActivityProps> = ({
                     -<Amount wei={amount}> {superToken.symbol}</Amount>
                   </>
                 }
-                primaryTypographyProps={{ variant: "h7mono" }}
-                secondaryTypographyProps={{ variant: "body2mono" }}
-              />
+                slotProps={{
+                  primary: { variant: "h7mono" },
+                  secondary: { variant: "body2mono" }
+                }} />
               <TokenIcon
                 chainId={network.id}
                 tokenAddress={underlyingToken.address}

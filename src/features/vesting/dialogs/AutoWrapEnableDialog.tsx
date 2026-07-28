@@ -20,7 +20,7 @@ const AutoWrapEnableDialog: FC<{
         data-cy={"auto-wrap-enable-dialog"}
         open={isEnableAutoWrapDialogOpen}
         onClose={closeEnableAutoWrapDialog}
-        PaperProps={{ sx: { borderRadius: "20px", maxWidth: 550 } }}
+        slotProps={{ paper: { sx: { borderRadius: "20px", maxWidth: 550 } } }}
         keepMounted
       >
         <DialogTitle>

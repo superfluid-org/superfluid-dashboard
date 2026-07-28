@@ -991,8 +991,10 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
       },
       MuiListItemText: {
         defaultProps: {
-          primaryTypographyProps: {
-            variant: "h6",
+          slotProps: {
+            primary: {
+              variant: "h6",
+            }
           },
         },
         styleOverrides: {
@@ -1037,22 +1039,28 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           PaperProps: {
             square: true,
           },
-          TransitionProps: {
-            timeout: theme.transitions.duration.shorter,
-            easing: theme.transitions.easing.easeInOut,
+          slotProps: {
+            transition: {
+              timeout: theme.transitions.duration.shorter,
+              easing: theme.transitions.easing.easeInOut,
+            }
           },
         },
       },
       MuiPopover: {
         defaultProps: {
           elevation: 2,
-          PaperProps: {
-            square: true,
-          },
-          TransitionProps: {
-            timeout: theme.transitions.duration.shorter,
-            easing: theme.transitions.easing.easeInOut,
-          },
+
+          slotProps: {
+            paper: {
+              square: true,
+            },
+
+            transition: {
+              timeout: theme.transitions.duration.shorter,
+              easing: theme.transitions.easing.easeInOut,
+            }
+          }
         },
       },
       MuiMenuItem: {
@@ -1170,8 +1178,10 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
       },
       MuiTooltip: {
         defaultProps: {
-          PopperProps: {
-            translate: "yes",
+          slotProps: {
+            popper: {
+              translate: "yes",
+            }
           },
         },
         styleOverrides: {
@@ -1199,8 +1209,10 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
       },
       MuiCardHeader: {
         defaultProps: {
-          subheaderTypographyProps: {
-            variant: "body2",
+          slotProps: {
+            subheader: {
+              variant: "body2",
+            }
           },
         },
         styleOverrides: {

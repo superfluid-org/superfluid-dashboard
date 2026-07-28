@@ -90,15 +90,17 @@ const IndexUpdatedActivityRow: FC<IndexUpdatedActivityRowProps> = ({
             data-cy={"activity"}
             primary="Send Distribution"
             secondary={format(timestamp * 1000, dateFormat)}
-            primaryTypographyProps={{
-              variant: isBelowMd ? "h7" : "h6",
-              translate: "yes",
-            }}
-            secondaryTypographyProps={{
-              variant: "body2mono",
-              color: "text.secondary",
-            }}
-          />
+            slotProps={{
+              primary: {
+                variant: isBelowMd ? "h7" : "h6",
+                translate: "yes",
+              },
+
+              secondary: {
+                variant: "body2mono",
+                color: "text.secondary",
+              }
+            }} />
         </ListItem>
       </TableCell>
       {!isBelowMd ? (
@@ -124,15 +126,17 @@ const IndexUpdatedActivityRow: FC<IndexUpdatedActivityRowProps> = ({
                     {tokenQuery.data?.symbol}
                   </>
                 }
-                primaryTypographyProps={{
-                  variant: "h6mono",
-                  color: "error",
-                }}
-                secondaryTypographyProps={{
-                  variant: "body2mono",
-                  color: "text.secondary",
-                }}
-              />
+                slotProps={{
+                  primary: {
+                    variant: "h6mono",
+                    color: "error",
+                  },
+
+                  secondary: {
+                    variant: "body2mono",
+                    color: "text.secondary",
+                  }
+                }} />
             </ListItem>
           </TableCell>
           <TableCell>
@@ -155,16 +159,18 @@ const IndexUpdatedActivityRow: FC<IndexUpdatedActivityRowProps> = ({
                     {tokenQuery.data?.symbol}
                   </>
                 }
-                primaryTypographyProps={{
-                  variant: "h6",
-                  color: "text.primary",
-                }}
-                secondaryTypographyProps={{
-                  variant: "body2",
-                  color: "text.secondary",
-                }}
                 sx={{ ml: 6.5 }}
-              />
+                slotProps={{
+                  primary: {
+                    variant: "h6",
+                    color: "text.primary",
+                  },
+
+                  secondary: {
+                    variant: "body2",
+                    color: "text.secondary",
+                  }
+                }} />
             </ListItem>
           </TableCell>
           <TableCell sx={{ position: "relative" }}>
@@ -191,15 +197,17 @@ const IndexUpdatedActivityRow: FC<IndexUpdatedActivityRowProps> = ({
                 </>
               }
               secondary={tokenQuery.data?.symbol || ""}
-              primaryTypographyProps={{
-                variant: "h6mono",
-                color: "error",
-              }}
-              secondaryTypographyProps={{
-                variant: "body2mono",
-                color: "text.secondary",
-              }}
-            />
+              slotProps={{
+                primary: {
+                  variant: "h6mono",
+                  color: "error",
+                },
+
+                secondary: {
+                  variant: "body2mono",
+                  color: "text.secondary",
+                }
+              }} />
             <TokenIcon
               isSuper
               chainId={network.id}

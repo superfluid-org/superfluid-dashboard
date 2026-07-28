@@ -100,7 +100,9 @@ const NavigationItem: FC<NavigationItemProps> = ({
       <ListItemText
         data-cy={id}
         primary={title}
-        primaryTypographyProps={dense ? { variant: "body2" } : undefined}
+        slotProps={{
+          primary: dense ? { variant: "body2" } : undefined
+        }}
       />
       {(chip || isExternal) && (
         <Stack
@@ -191,23 +193,25 @@ export default memo(function NavigationDrawer() {
       disableDiscovery={true}
       disableSwipeToOpen={true}
       hidden={isBelowLg && !navigationDrawerOpen}
-      PaperProps={{
-        sx: {
-          width: menuDrawerWidth,
-          borderRadius: 0,
-          borderLeft: 0,
-          borderTop: 0,
-          borderBottom: 0,
-        },
-        style: {
-          pointerEvents:
-            isBelowLg && !navigationDrawerOpen ? "none" : "initial",
-        }
-      }}
       sx={{ width: menuDrawerWidth }}
       onClose={closeNavigationDrawer}
       onOpen={openNavigationDrawer}
       translate="yes"
+      slotProps={{
+        paper: {
+          sx: {
+            width: menuDrawerWidth,
+            borderRadius: 0,
+            borderLeft: 0,
+            borderTop: 0,
+            borderBottom: 0,
+          },
+          style: {
+            pointerEvents:
+              isBelowLg && !navigationDrawerOpen ? "none" : "initial",
+          }
+        }
+      }}
     >
       <Toolbar
         sx={{

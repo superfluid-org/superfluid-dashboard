@@ -48,15 +48,17 @@ const IndexCreatedActivityRow: FC<IndexCreatedActivityRowProps> = ({
             data-cy={"activity"}
             primary="Index Created"
             secondary={format(timestamp * 1000, dateFormat)}
-            primaryTypographyProps={{
-              variant: isBelowMd ? "h7" : "h6",
-              translate: "yes",
-            }}
-            secondaryTypographyProps={{
-              variant: "body2mono",
-              color: "text.secondary",
-            }}
-          />
+            slotProps={{
+              primary: {
+                variant: isBelowMd ? "h7" : "h6",
+                translate: "yes",
+              },
+
+              secondary: {
+                variant: "body2mono",
+                color: "text.secondary",
+              }
+            }} />
         </ListItem>
       </TableCell>
       {!isBelowMd ? (

@@ -87,11 +87,13 @@ export const TransactionDialog: FC<TransactionDialogProps> = ({
           closeDialog();
         }
       }}
-      PaperProps={{
-        // overflow hidden: the paper never scrolls itself (DialogContent does), and its
-        // default overflow-y: auto would flash a scrollbar whenever an entrance/ripple
-        // transform momentarily extends the scrollable overflow past the paper's edge.
-        sx: { borderRadius: "20px", maxHeight: "100%", overflow: "hidden" },
+      slotProps={{
+        paper: {
+          // overflow hidden: the paper never scrolls itself (DialogContent does), and its
+          // default overflow-y: auto would flash a scrollbar whenever an entrance/ripple
+          // transform momentarily extends the scrollable overflow past the paper's edge.
+          sx: { borderRadius: "20px", maxHeight: "100%", overflow: "hidden" },
+        },
       }}
       translate="yes"
     >

@@ -71,7 +71,9 @@ const PoolMemberRow: FC<Props> = ({
                                         </span>
                                     </AddressCopyTooltip>
                                 }
-                                primaryTypographyProps={{ variant: "h7" }}
+                                slotProps={{
+                                    primary: { variant: "h7" }
+                                }}
                             />
                         </>
                     ) : (<>

@@ -84,7 +84,7 @@ const AccountModal: FC<AccountModalProps> = ({ open, onClose }) => {
       data-cy="account-modal"
       open={open}
       onClose={handleClose}
-      PaperProps={{ sx: { width: 500 } }}
+      slotProps={{ paper: { sx: { width: 500 } } }}
     >
       {!addressSearchOpen ? (
         <>

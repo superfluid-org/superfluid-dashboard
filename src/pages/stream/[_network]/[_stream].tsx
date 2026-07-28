@@ -136,7 +136,9 @@ const StreamAccountCard: FC<StreamAccountCardProps> = ({
           data-cy={"sender-and-receiver"}
           primary={<AddressName address={address} />}
           secondary={!!ensName && shortenHex(addressChecksummed, 4)}
-          primaryTypographyProps={{ variant: isBelowMd ? "h7" : "h6" }}
+          slotProps={{
+            primary: { variant: isBelowMd ? "h7" : "h6" }
+          }}
         />
 
         {!isBelowMd && (

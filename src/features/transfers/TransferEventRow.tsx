@@ -128,7 +128,9 @@ const TransferEventRow: FC<TransferEventRowProps> = ({
             secondary={
               isBelowMd ? format(timestamp * 1000, "d MMM. yyyy") : undefined
             }
-            primaryTypographyProps={{ variant: "h7mono" }}
+            slotProps={{
+              primary: { variant: "h7mono" }
+            }}
           />
         )}
       </TableCell>

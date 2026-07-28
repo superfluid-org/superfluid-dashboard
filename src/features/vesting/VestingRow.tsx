@@ -199,9 +199,10 @@ const VestingRow: FC<VestingRowProps> = ({
               data-cy={"start-end-dates"}
               primary={format(fromUnixTime(startDate), "LLL d, yyyy HH:mm")}
               secondary={format(fromUnixTime(endDate), "LLL d, yyyy HH:mm")}
-              primaryTypographyProps={{ variant: "body2" }}
-              secondaryTypographyProps={{ color: "text.primary" }}
-            />
+              slotProps={{
+                primary: { variant: "body2" },
+                secondary: { color: "text.primary" }
+              }} />
           </TableCell>
           <TableCell sx={{ pl: 0 }}>
             {VestingStatusOrPendingProgress}

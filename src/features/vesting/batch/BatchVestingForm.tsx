@@ -190,7 +190,7 @@ const FileController = memo(function FileController() {
                             {...field}
                             style={{ display: 'none' }}
                             inputRef={fileInputRef}
-                            inputProps={{ accept: ".csv" }}
+                            slotProps={{ input: { accept: ".csv" } }}
                             value={""}
                             onChange={async (event: React.ChangeEvent<HTMLInputElement>) => {
                                 const file = event.target.files?.[0] ?? null;

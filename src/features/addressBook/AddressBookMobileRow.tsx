@@ -59,7 +59,9 @@ const AddressBookMobileRow: FC<AddressBookMobileRowProps> = ({
           <ListItemText
             primary={<AddressName address={address} length="short" />}
             secondary={!!name && shortenHex(address, 4)}
-            primaryTypographyProps={{ variant: "h6" }}
+            slotProps={{
+              primary: { variant: "h6" }
+            }}
           />
         </Stack>
       </TableCell>

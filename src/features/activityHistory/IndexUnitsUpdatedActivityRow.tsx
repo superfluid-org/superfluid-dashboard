@@ -102,14 +102,16 @@ const IndexUnitsUpdatedActivityRow: FC<IndexUnitsUpdatedActivityRowProps> = ({
             data-cy={"activity"}
             primary="Subscription Updated"
             secondary={format(timestamp * 1000, dateFormat)}
-            primaryTypographyProps={{
-              variant: isBelowMd ? "h7" : "h6",
-            }}
-            secondaryTypographyProps={{
-              variant: "body2mono",
-              color: "text.secondary",
-            }}
-          />
+            slotProps={{
+              primary: {
+                variant: isBelowMd ? "h7" : "h6",
+              },
+
+              secondary: {
+                variant: "body2mono",
+                color: "text.secondary",
+              }
+            }} />
         </ListItem>
       </TableCell>
       {!isBelowMd ? (
@@ -129,15 +131,17 @@ const IndexUnitsUpdatedActivityRow: FC<IndexUnitsUpdatedActivityRowProps> = ({
                 data-cy={"amount"}
                 primary={unitsPercentageString}
                 secondary={unitsDiffString}
-                primaryTypographyProps={{
-                  variant: "h6mono",
-                }}
-                secondaryTypographyProps={{
-                  variant: "body2mono",
-                  color: "text.secondary",
-                  translate: "yes",
-                }}
-              />
+                slotProps={{
+                  primary: {
+                    variant: "h6mono",
+                  },
+
+                  secondary: {
+                    variant: "body2mono",
+                    color: "text.secondary",
+                    translate: "yes",
+                  }
+                }} />
             </ListItem>
           </TableCell>
           <TableCell>
@@ -165,10 +169,12 @@ const IndexUnitsUpdatedActivityRow: FC<IndexUnitsUpdatedActivityRowProps> = ({
                     </Typography>
                   </AddressCopyTooltip>
                 }
-                primaryTypographyProps={{
-                  variant: "body2",
-                  color: "text.secondary",
-                  translate: "yes",
+                slotProps={{
+                  primary: {
+                    variant: "body2",
+                    color: "text.secondary",
+                    translate: "yes",
+                  }
                 }}
               />
             </ListItem>
@@ -192,15 +198,17 @@ const IndexUnitsUpdatedActivityRow: FC<IndexUnitsUpdatedActivityRowProps> = ({
             <ListItemText
               primary={unitsPercentageString}
               secondary={unitsDiffString}
-              primaryTypographyProps={{
-                variant: "h6mono",
-              }}
-              secondaryTypographyProps={{
-                variant: "body2mono",
-                color: "text.secondary",
-                translate: "yes",
-              }}
-            />
+              slotProps={{
+                primary: {
+                  variant: "h6mono",
+                },
+
+                secondary: {
+                  variant: "body2mono",
+                  color: "text.secondary",
+                  translate: "yes",
+                }
+              }} />
             <TokenIcon
               isSuper
               chainId={network.id}

@@ -297,9 +297,10 @@ const StreamRow: FC<StreamRowProps> = ({
                 "-"
               )
             }
-            primaryTypographyProps={{ variant: "h7mono" }}
-            secondaryTypographyProps={{ variant: "body2mono" }}
-          />
+            slotProps={{
+              primary: { variant: "h7mono" },
+              secondary: { variant: "body2mono" }
+            }} />
         </TableCell>
       )}
       {!isBelowMd && (

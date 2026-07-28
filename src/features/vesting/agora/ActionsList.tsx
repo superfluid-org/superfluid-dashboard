@@ -66,7 +66,9 @@ export const ActionsList: FC<{
                                 indeterminate={selected.length > 0 && selected.length < actions.length}
                                 checked={actions.length > 0 && selected.length === actions.length}
                                 onChange={handleSelectAllClick}
-                                inputProps={{ 'aria-label': 'select all actions' }}
+                                slotProps={{
+                                    input: { 'aria-label': 'select all actions' }
+                                }}
                             />
                         </TableCell>
                         <TableCell>Action Type</TableCell>
@@ -90,8 +92,10 @@ export const ActionsList: FC<{
                                     <Checkbox
                                         size="small"
                                         checked={action.selected}
-                                        inputProps={{ 'aria-labelledby': `action-${index}` }}
                                         onClick={() => handleClick(action)}
+                                        slotProps={{
+                                            input: { 'aria-labelledby': `action-${index}` }
+                                        }}
                                     />
                                 </TableCell>
                                 <TableCell>

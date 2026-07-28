@@ -161,7 +161,7 @@ export default memo(function TokenDialog({
     <ResponsiveDialog
       open={open}
       onClose={onClose}
-      PaperProps={{ sx: { borderRadius: "20px", maxWidth: 500 } }}
+      slotProps={{ paper: { sx: { borderRadius: "20px", maxWidth: 500 } } }}
     >
       <DialogTitle sx={{ p: 3 }}>
         <Typography variant="h4" sx={{ mb: 3 }} translate="yes">

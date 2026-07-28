@@ -258,11 +258,13 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                 value={amountDecimal}
                 onChange={onChange}
                 onBlur={onBlur}
-                inputProps={{
-                  ...inputPropsForEtherAmount,
-                  sx: {
-                    ...theme.typography.largeInput,
-                    p: 0,
+                slotProps={{
+                  input: {
+                    ...inputPropsForEtherAmount,
+                    sx: {
+                      ...theme.typography.largeInput,
+                      p: 0,
+                    },
                   },
                 }}
                 sx={{ background: "transparent" }}
@@ -383,10 +385,12 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
               disableUnderline
               placeholder="0.0"
               value={amountDecimal}
-              inputProps={{
-                sx: {
-                  ...theme.typography.largeInput,
-                  p: 0,
+              slotProps={{
+                input: {
+                  sx: {
+                    ...theme.typography.largeInput,
+                    p: 0,
+                  },
                 },
               }}
               sx={{ background: "transparent" }}

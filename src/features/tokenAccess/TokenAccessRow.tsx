@@ -65,8 +65,10 @@ export const UpsertTokenAccessButton: FC<{
       <ResponsiveDialog
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
-        PaperProps={{
-          sx: { borderRadius: "20px", maxHeight: "100%", maxWidth: 500 },
+        slotProps={{
+          paper: {
+            sx: { borderRadius: "20px", maxHeight: "100%", maxWidth: 500 },
+          },
         }}
         translate="yes"
       >

@@ -191,7 +191,9 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
                 ? format(subscription.updatedAtTimestamp * 1000, "d MMM. yyyy")
                 : undefined
             }
-            primaryTypographyProps={{ variant: "h7" }}
+            slotProps={{
+              primary: { variant: "h7" }
+            }}
           />
         </Stack>
       </TableCell>
@@ -232,14 +234,16 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
                 <span>Awaiting Approval</span>
               )
             }
-            primaryTypographyProps={{ variant: "h7mono" }}
-            secondaryTypographyProps={{
-              variant: "body2",
-              translate: "yes",
-              color: subscription.approved ? "primary" : "warning.main",
-              sx: { whiteSpace: "pre" },
-            }}
-          />
+            slotProps={{
+              primary: { variant: "h7mono" },
+
+              secondary: {
+                variant: "body2",
+                translate: "yes",
+                color: subscription.approved ? "primary" : "warning.main",
+                sx: { whiteSpace: "pre" },
+              }
+            }} />
         </TableCell>
       )}
       <TableCell>

@@ -557,7 +557,7 @@ export default memo(function AddressSearchDialog({
       data-cy={"receiver-dialog"}
       open={open}
       onClose={handleClose}
-      PaperProps={{ sx: { borderRadius: "20px", maxWidth: 550 } }}
+      slotProps={{ paper: { sx: { borderRadius: "20px", maxWidth: 550 } } }}
     >
       <AddressSearchDialogContent
         open={open}

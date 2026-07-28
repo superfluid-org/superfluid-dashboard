@@ -59,9 +59,11 @@ const CurrencySelectMenu: FC<CurrencySelectMenuProps> = ({
       onClose={onClose}
       transformOrigin={{ horizontal: "left", vertical: "bottom" }}
       anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
-      PaperProps={{
-        sx: { px: theme.spacing(3), py: theme.spacing(1.5) },
-        square: true,
+      slotProps={{
+        paper: {
+          sx: { px: theme.spacing(3), py: theme.spacing(1.5) },
+          square: true,
+        },
       }}
       {...PopoverProps}
     >

@@ -66,15 +66,17 @@ const IndexDistributionClaimedRow: FC<IndexDistributionClaimedRowProps> = ({
             data-cy={"activity"}
             primary="Distribution Claimed"
             secondary={format(timestamp * 1000, dateFormat)}
-            primaryTypographyProps={{
-              variant: isBelowMd ? "h7" : "h6",
-              translate: "yes",
-            }}
-            secondaryTypographyProps={{
-              variant: "body2mono",
-              color: "text.secondary",
-            }}
-          />
+            slotProps={{
+              primary: {
+                variant: isBelowMd ? "h7" : "h6",
+                translate: "yes",
+              },
+
+              secondary: {
+                variant: "body2mono",
+                color: "text.secondary",
+              }
+            }} />
         </ListItem>
       </TableCell>
       {!isBelowMd ? (
@@ -99,9 +101,11 @@ const IndexDistributionClaimedRow: FC<IndexDistributionClaimedRowProps> = ({
                     {tokenQuery.data?.symbol}
                   </>
                 }
-                primaryTypographyProps={{
-                  variant: "h6mono",
-                  color: "primary",
+                slotProps={{
+                  primary: {
+                    variant: "h6mono",
+                    color: "primary",
+                  }
                 }}
               />
             </ListItem>
@@ -132,10 +136,12 @@ const IndexDistributionClaimedRow: FC<IndexDistributionClaimedRowProps> = ({
                     </Typography>
                   </AddressCopyTooltip>
                 }
-                primaryTypographyProps={{
-                  variant: "body2",
-                  color: "text.secondary",
-                  translate: "yes",
+                slotProps={{
+                  primary: {
+                    variant: "body2",
+                    color: "text.secondary",
+                    translate: "yes",
+                  }
                 }}
               />
             </ListItem>
@@ -163,9 +169,11 @@ const IndexDistributionClaimedRow: FC<IndexDistributionClaimedRowProps> = ({
                 </>
               }
               secondary={tokenQuery.data?.symbol || ""}
-              primaryTypographyProps={{
-                variant: "h6mono",
-                color: "primary",
+              slotProps={{
+                primary: {
+                  variant: "h6mono",
+                  color: "primary",
+                }
               }}
             />
             <TokenIcon

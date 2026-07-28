@@ -73,15 +73,17 @@ const TransferActivityRow: FC<TransferActivityRowProps> = ({
             data-cy={"activity"}
             primary={isOutgoing ? "Send Transfer" : "Receive Transfer"}
             secondary={format(timestamp * 1000, dateFormat)}
-            primaryTypographyProps={{
-              translate: "yes",
-              variant: isBelowMd ? "h7" : "h6",
-            }}
-            secondaryTypographyProps={{
-              variant: "body2mono",
-              color: "text.secondary",
-            }}
-          />
+            slotProps={{
+              primary: {
+                translate: "yes",
+                variant: isBelowMd ? "h7" : "h6",
+              },
+
+              secondary: {
+                variant: "body2mono",
+                color: "text.secondary",
+              }
+            }} />
         </ListItem>
       </TableCell>
       {!isBelowMd ? (
@@ -109,14 +111,16 @@ const TransferActivityRow: FC<TransferActivityRowProps> = ({
                   secondary={
                     tokenPrice && <FiatAmount price={tokenPrice} wei={value} />
                   }
-                  primaryTypographyProps={{
-                    variant: "h6mono",
-                  }}
-                  secondaryTypographyProps={{
-                    variant: "body2mono",
-                    color: "text.secondary",
-                  }}
-                />
+                  slotProps={{
+                    primary: {
+                      variant: "h6mono",
+                    },
+
+                    secondary: {
+                      variant: "body2mono",
+                      color: "text.secondary",
+                    }
+                  }} />
               )}
             </ListItem>
           </TableCell>
@@ -141,10 +145,12 @@ const TransferActivityRow: FC<TransferActivityRowProps> = ({
                     </Typography>
                   </AddressCopyTooltip>
                 }
-                primaryTypographyProps={{
-                  translate: "yes",
-                  variant: "body2",
-                  color: "text.secondary",
+                slotProps={{
+                  primary: {
+                    translate: "yes",
+                    variant: "body2",
+                    color: "text.secondary",
+                  }
                 }}
               />
             </ListItem>
@@ -174,9 +180,10 @@ const TransferActivityRow: FC<TransferActivityRowProps> = ({
                     {tokenQuery.data.symbol}
                   </Amount>
                 }
-                primaryTypographyProps={{ variant: "h7mono" }}
-                secondaryTypographyProps={{ variant: "body2mono" }}
-              />
+                slotProps={{
+                  primary: { variant: "h7mono" },
+                  secondary: { variant: "body2mono" }
+                }} />
             )}
             <TokenIcon
               isSuper

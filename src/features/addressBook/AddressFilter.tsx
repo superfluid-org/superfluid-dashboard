@@ -80,13 +80,15 @@ const AddressFilter: FC<AddressFilterProps> = ({
         open={!!anchorEl}
         anchorEl={anchorEl}
         onClose={closeMenu}
-        PaperProps={{
-          square: true,
-          elevation: 2,
-          sx: { mt: theme.spacing(1.5), maxWidth: "370px", width: "100%" },
-        }}
         transformOrigin={{ horizontal: "left", vertical: "top" }}
         anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
+        slotProps={{
+          paper: {
+            square: true,
+            elevation: 2,
+            sx: { mt: theme.spacing(1.5), maxWidth: "370px", width: "100%" },
+          }
+        }}
       >
         <Box sx={{ p: 3 }}>
           <TextField

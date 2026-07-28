@@ -40,25 +40,27 @@ export default memo(function TransactionDrawer() {
       disableDiscovery={true}
       disableSwipeToOpen={true}
       transitionDuration={theme.transitions.duration.standard}
-      SlideProps={{
-        easing: theme.transitions.easing.easeInOut,
-      }}
-      PaperProps={{
-        sx: {
-          width: transactionDrawerWidth,
-          borderRight: 0,
-          borderTop: 0,
-          borderBottom: 0,
-        },
-        style: {
-          pointerEvents:
-            isBelowMd && !transactionDrawerOpen ? "none" : "initial",
-        },
-      }}
       onOpen={openDrawer}
       onClose={closeDrawer}
       translate="yes"
-    >
+      slotProps={{
+        paper: {
+          sx: {
+            width: transactionDrawerWidth,
+            borderRight: 0,
+            borderTop: 0,
+            borderBottom: 0,
+          },
+          style: {
+            pointerEvents:
+              isBelowMd && !transactionDrawerOpen ? "none" : "initial",
+          },
+        },
+
+        transition: {
+          easing: theme.transitions.easing.easeInOut,
+        }
+      }}>
       <DrawerHeader>
         <IconButton color="inherit" onClick={closeDrawer}>
           <CloseIcon data-cy="close-icon" />
@@ -67,9 +69,7 @@ export default memo(function TransactionDrawer() {
           Transactions
         </Typography>
       </DrawerHeader>
-
       <Divider />
-
       <ReduxPersistGate>
         <TransactionList />
       </ReduxPersistGate>

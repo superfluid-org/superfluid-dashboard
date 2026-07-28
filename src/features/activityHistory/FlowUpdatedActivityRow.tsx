@@ -133,15 +133,17 @@ const FlowUpdatedActivityRow: FC<FlowUpdatedActivityRowProps> = ({
             data-cy={"activity"}
             primary={title}
             secondary={format(timestamp * 1000, dateFormat)}
-            primaryTypographyProps={{
-              translate: "yes",
-              variant: isBelowMd ? "h7" : "h6",
-            }}
-            secondaryTypographyProps={{
-              variant: "body2mono",
-              color: "text.secondary",
-            }}
-          />
+            slotProps={{
+              primary: {
+                translate: "yes",
+                variant: isBelowMd ? "h7" : "h6",
+              },
+
+              secondary: {
+                variant: "body2mono",
+                color: "text.secondary",
+              }
+            }} />
         </ListItem>
       </TableCell>
       {!isBelowMd ? (
@@ -197,14 +199,16 @@ const FlowUpdatedActivityRow: FC<FlowUpdatedActivityRowProps> = ({
                     </FiatAmount>
                   ))
                 }
-                primaryTypographyProps={{
-                  variant: "h6mono",
-                }}
-                secondaryTypographyProps={{
-                  variant: "body2mono",
-                  color: "text.secondary",
-                }}
-              />
+                slotProps={{
+                  primary: {
+                    variant: "h6mono",
+                  },
+
+                  secondary: {
+                    variant: "body2mono",
+                    color: "text.secondary",
+                  }
+                }} />
             </ListItem>
           </TableCell>
           <TableCell>
@@ -229,10 +233,12 @@ const FlowUpdatedActivityRow: FC<FlowUpdatedActivityRowProps> = ({
                     </Typography>
                   </AddressCopyTooltip>
                 }
-                primaryTypographyProps={{
-                  translate: "yes",
-                  variant: "body2",
-                  color: "text.secondary",
+                slotProps={{
+                  primary: {
+                    translate: "yes",
+                    variant: "body2",
+                    color: "text.secondary",
+                  }
                 }}
               />
             </ListItem>
@@ -279,19 +285,16 @@ const FlowUpdatedActivityRow: FC<FlowUpdatedActivityRowProps> = ({
               secondary={
                 tokenQuery.data ? `${tokenQuery.data.symbol}/mo` : "/mo"
               }
-              /**
-               * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
-               * This is just used to make table row look better
-               */
-              // secondary="$12.59"
-              primaryTypographyProps={{
-                variant: "h6mono",
-              }}
-              secondaryTypographyProps={{
-                variant: "body2mono",
-                color: "text.secondary",
-              }}
-            />
+              slotProps={{
+                primary: {
+                  variant: "h6mono",
+                },
+
+                secondary: {
+                  variant: "body2mono",
+                  color: "text.secondary",
+                }
+              }} />
             <TokenIcon
               isSuper
               chainId={network.id}

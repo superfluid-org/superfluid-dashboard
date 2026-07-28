@@ -394,21 +394,23 @@ export default memo(function SendStream() {
 
         setTotalStreamedEther(newValue);
       }}
-      InputProps={{
-        startAdornment: <>≈&nbsp;</>,
-        endAdornment: (
-          <Stack
-            direction="row"
-            sx={{
-              gap: 0.75,
-              ml: 0.5
-            }}>
-            <TokenIcon isSuper size={24} chainId={network.id} tokenAddress={superToken?.address} />
-            <Typography variant="h6" component="span">
-              {superToken?.symbol ?? ""}
-            </Typography>
-          </Stack>
-        ),
+      slotProps={{
+        input: {
+          startAdornment: <>≈&nbsp;</>,
+          endAdornment: (
+            <Stack
+              direction="row"
+              sx={{
+                gap: 0.75,
+                ml: 0.5
+              }}>
+              <TokenIcon isSuper size={24} chainId={network.id} tokenAddress={superToken?.address} />
+              <Typography variant="h6" component="span">
+                {superToken?.symbol ?? ""}
+              </Typography>
+            </Stack>
+          ),
+        }
       }}
     />
   );

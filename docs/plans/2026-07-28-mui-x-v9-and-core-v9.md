@@ -507,10 +507,44 @@ unstyled dashboard rather than an error message, which is easy to misdiagnose.
   type-check step on those same errors — no webpack/compile failure from the sx conversions.
 
 ### Task 12: Legacy slot props → `slotProps`
-- [ ] convert the ~**141** direct JSX assignments: `primaryTypographyProps` ×61 (28 files) and `secondaryTypographyProps` ×38 (19 files) → `slotProps.primary` / `slotProps.secondary`; `PaperProps` ×18; `inputProps` ×12; `InputProps` ×9; `componentsProps` ×2; `MenuProps` ×1
-- [ ] note there are **no** direct JSX `InputLabelProps` / `TransitionProps` in `src` — those names appear only in a local type and in theme defaults; do not chase them
-- [ ] re-measure before trusting these counts (measured 2026-07-27); an earlier estimate of "75" omitted `ListItemText` entirely and was ~2× off
-- [ ] run the verification gate
+- [x] convert the ~**141** direct JSX assignments: `primaryTypographyProps` ×61 (28 files) and `secondaryTypographyProps` ×38 (19 files) → `slotProps.primary` / `slotProps.secondary`; `PaperProps` ×18; `inputProps` ×12; `InputProps` ×9; `componentsProps` ×2; `MenuProps` ×1 — all converted; see findings for the codemod/hand split
+- [x] note there are **no** direct JSX `InputLabelProps` / `TransitionProps` in `src` — confirmed by re-measure: 0 of each
+- [x] re-measure before trusting these counts (measured 2026-07-27) — re-measured 2026-07-29: 61/38/18 matched exactly; `InputProps` 9 → **7**, `componentsProps` 2 → **0** (already gone), `inputProps` 12, `MenuProps` 1
+- [x] run the verification gate — typecheck 102 → **7** (all Task 13 scope: GridLegacy ×2, theme.ts ×5), lint green, build fails only at its type-check step on those same 7; Cypress A/B becomes meaningful at the Task 13 gate
+
+**Task 12 findings (2026-07-29):**
+
+- Ran `npx @mui/codemod@latest deprecations/all src/` — 44 files "ok". It fully handled the
+  ListItemText typography props, `InputProps` → `slotProps.input`, `inputProps` →
+  `slotProps.htmlInput` on TextFields, and (unexpectedly) three Task-13-scope items, **kept**
+  because the conversions are correct and behavior-preserving: `theme.ts`
+  `MuiListItemText.primaryTypographyProps` / Menu+Popover `TransitionProps` / Tooltip
+  `PopperProps` / CardHeader `subheaderTypographyProps` → `slotProps.*`; `TokenIcon.tsx`
+  `imgProps` → `slotProps.img`; `TransactionDrawer.tsx` `SlideProps`/`PaperProps` →
+  `slotProps.transition`/`.paper`. Task 13's list shrinks accordingly (theme 552/1039 `PaperProps`
+  under Menu defaults, 725/901/931 removed style keys, and GridLegacy remain).
+- **Codemod noise, third run, same three files**: reverted `viemTransactionErrors.ts` (comment
+  relocation, no MUI content), `_document.tsx` (function paren-wrap),
+  `AutoWrapEnableDialogContentSection.tsx` (JSX paren-wrap).
+- **`SendStream.tsx` mangled a third time**, hand-fixed: `&apos;` flattened to `'` and JSX text
+  indentation destroyed in the combined-edit `Alert` and classification-pending `Typography`,
+  plus paren-wraps — identical to the Task 3 and Task 11 failure modes.
+- **Silent skips hand-converted** (12 JSX `PaperProps` + 6 `inputProps` + 1 `MenuProps`): the
+  codemod does not convert Dialog/Menu JSX `PaperProps` at all — 4 `Menu`s
+  (`StreamActiveFilter`, `NetworkSelectionFilter`, `SelectNetwork`, `ActivityTypeFilter`) and
+  8 `ResponsiveDialog`s (`TokenAccessRow`, `AutoWrapEnableDialog`, `AccountModal`,
+  `AutoWrapAddTokenDialogSection`, `TransactionDialog`, `FaucetDialog`, `TokenDialog`,
+  `AddressSearchDialog`) → `slotProps.paper`. `Input` (InputBase) `inputProps` →
+  `slotProps.input` in `TabWrap` ×2, `TabUnwrap` ×2, `BatchVestingForm` (csv `accept`),
+  `AddressBookRow`. `NetworkSelect.tsx`'s `Select` `MenuProps` constant: nested `PaperProps` →
+  `slotProps.paper` (v9 `Select` keeps `MenuProps` itself; only the nested key is removed).
+- **One precedence fix**: in `CurrencySelectMenu.tsx` the codemod moved `{...PopoverProps}`
+  *before* the new `slotProps`, silently flipping caller-override precedence; restored the
+  spread to last position. (The only caller passes just transform/anchorOrigin, so no behavior
+  change either way.)
+- Leftover-inputProps note: v9 still *types* `inputProps`/`InputProps` on `Input`/`TextField`
+  (deprecated, not removed), so the silent skips produced **no** tsc errors — they were found by
+  grep, not by the compiler. The grep sweep is what makes this task complete, not typecheck.
 
 ### Task 13: Theme and removed component APIs
 - [ ] remove the override keys deleted in v9 from `src/features/theme/theme.ts`: `MuiButton.outlinedSecondary` (~:724), Chip `avatarMedium` / `iconMedium` / `deleteIconMedium` (~:900-906), combined Alert `standard*` (~:930-939), `MuiListItemText.primaryTypographyProps` (~:991-996), Menu/Popover `PaperProps` + `TransitionProps` defaults (~:1033-1054), Tooltip `PopperProps` (~:1170-1174), CardHeader `subheaderTypographyProps` (~:1199-1203) — line numbers are from 2026-07-27, locate by key not by line

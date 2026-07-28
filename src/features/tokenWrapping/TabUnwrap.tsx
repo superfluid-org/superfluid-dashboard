@@ -159,10 +159,12 @@ export const TabUnwrap = memo(function TabUnwrap(props: TabUnwrapProps) {
               disableUnderline
               placeholder="0.0"
               value={amount}
-              inputProps={{
-                sx: {
-                  ...theme.typography.largeInput,
-                  p: 0,
+              slotProps={{
+                input: {
+                  sx: {
+                    ...theme.typography.largeInput,
+                    p: 0,
+                  },
                 },
               }}
               sx={{ background: "transparent" }}
@@ -347,11 +349,13 @@ const UnwrapInputController = memo(function UnwrapInputController() {
           value={amount}
           onChange={onChange}
           onBlur={onBlur}
-          inputProps={{
-            ...inputPropsForEtherAmount,
-            sx: {
-              ...theme.typography.largeInput,
-              p: 0,
+          slotProps={{
+            input: {
+              ...inputPropsForEtherAmount,
+              sx: {
+                ...theme.typography.largeInput,
+                p: 0,
+              },
             },
           }}
           sx={{ background: "transparent" }}

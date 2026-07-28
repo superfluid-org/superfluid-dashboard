@@ -197,7 +197,7 @@ const AutoWrapAddTokenDialogSection: FC<{
         data-cy={"auto-wrap-add-token-dialog-section"}
         open={isEnableAutoWrapDialogOpen}
         onClose={closeEnableAutoWrapDialog}
-        PaperProps={{ sx: { borderRadius: "20px", maxWidth: 479 } }}
+        slotProps={{ paper: { sx: { borderRadius: "20px", maxWidth: 479 } } }}
         keepMounted={true}
       >
         <AddTokenWrapFormProvider initialFormValues={initialFormValues}>

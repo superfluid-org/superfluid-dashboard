@@ -84,7 +84,7 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
     <ResponsiveDialog
       open
       onClose={onClose}
-      PaperProps={{ sx: { borderRadius: "20px", maxWidth: 520 } }}
+      slotProps={{ paper: { sx: { borderRadius: "20px", maxWidth: 520 } } }}
     >
       <DialogTitle sx={{ p: 4 }}>
         <Typography data-cy={"faucet-title"} variant="h4">

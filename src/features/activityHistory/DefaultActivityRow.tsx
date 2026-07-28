@@ -24,7 +24,7 @@ const DefaultActivityRow: FC<DefaultActivityRowProps> = ({
   const { name: rawName, timestamp, transactionHash } = keyEvent;
 
   const name = useMemo(() => {
-    return rawName.replace(/([A-Z])/g, ' $1').trim()
+    return rawName.replace(/([A-Z])/g, ' $1').trim();
   }, [rawName]);
 
   return (
@@ -35,14 +35,16 @@ const DefaultActivityRow: FC<DefaultActivityRowProps> = ({
           <ListItemText
             primary={name}
             secondary={format(timestamp * 1000, dateFormat)}
-            primaryTypographyProps={{
-              variant: "h6",
-            }}
-            secondaryTypographyProps={{
-              variant: "body2mono",
-              color: "text.secondary",
-            }}
-          />
+            slotProps={{
+              primary: {
+                variant: "h6",
+              },
+
+              secondary: {
+                variant: "body2mono",
+                color: "text.secondary",
+              }
+            }} />
         </ListItem>
       </TableCell>
       <TableCell>

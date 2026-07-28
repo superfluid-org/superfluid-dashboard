@@ -176,7 +176,7 @@ const AddressBookRow: FC<AddressBookRowProps> = ({
                   value={editableName}
                   onChange={onNameChange}
                   sx={{ fontWeight: 500 }}
-                  inputProps={{ sx: { p: 0 } }}
+                  slotProps={{ input: { sx: { p: 0 } } }}
                 />
               </Box>
             ) : (
