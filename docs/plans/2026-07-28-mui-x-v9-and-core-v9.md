@@ -149,11 +149,38 @@ connect step. Runs take 5–20 min; tag-filter to cut that down, e.g.
 # Part A — Step 3: MUI X v8 → v9
 
 ### Task 1: Capture the pre-change Cypress baseline
-- [ ] copy `tests/cypress.env.json` from the main checkout (path above); confirm `git check-ignore` reports it ignored
-- [ ] `pnpm install`, then `pnpm build && pnpm start`
-- [ ] run `ExportPage`, `SendPage` and `VestingPage` specs against the production build
-- [ ] record total / failing counts **and every failing scenario name** into this file under Task 1
-- [ ] confirm the recorded failures match the known-unrelated set (see "Do not chase" below); flag with ⚠️ if they do not
+- [x] copy `tests/cypress.env.json` from the main checkout (path above); confirm `git check-ignore` reports it ignored
+- [x] `pnpm install`, then `pnpm build && pnpm start`
+- [x] run `ExportPage`, `SendPage` and `VestingPage` specs against the production build
+- [x] record total / failing counts **and every failing scenario name** into this file under Task 1
+- [x] confirm the recorded failures match the known-unrelated set (see "Do not chase" below); flag with ⚠️ if they do not
+
+**Task 1 baseline (2026-07-28, production build `pnpm build && pnpm start`, unchanged code at `d1f757bc`):**
+
+| spec | tests | passing | failing |
+|---|---|---|---|
+| ExportPage | 12 | 4 | **8** |
+| SendPage | 21 | 15 | **6** |
+| VestingPageOne | 16 | 15 | **1** |
+| VestingPageTwo | 19 | 19 | 0 |
+| VestingPageThree | 13 | 13 | 0 |
+| VestingPageV2 | 1 | 1 | 0 |
+| **total** | **82** | **67** | **15** |
+
+Failing scenario names — all match the known-unrelated set (ExportPage 8, SendPage 6, VestingPageOne 1):
+- ExportPage: Changing price granularity and accounting periods (examples #1–#4); Selecting multiple
+  addresses and exporting the data; Selecting a counterparty and exporting the data; Date range of
+  the reports; Exporting and validating CSV
+- SendPage: Stream tables - stream with just start date; Stream tables - stream with start and end
+  date; Stream tables - stream with end date; Modifying a streams start date; Modifying a stream
+  with just end date; Modifying a stream with start and end date ( not started yet )
+- VestingPageOne: Change network button showing up if user is not on opsepolia
+
+Operational note: a first run produced 10/12 ExportPage and 21/21 SendPage failures (all with a
+Next.js "attempted to hard navigate to the same URL" invariant). Cause: an orphaned `next start`
+from an earlier session held port 3000 and served a stale build over the freshly rebuilt `.next`
+chunks — `pnpm start` had died on EADDRINUSE. Check `lsof -iTCP:3000 -sTCP:LISTEN` before every
+A/B run; that invariant error is the signature of a stale-server mismatch, not an app bug.
 
 ### Task 2: Verify the step-3 premise before changing anything
 - [ ] confirm `enableAccessibleFieldDOMStructure` is actually **removed** in X v9 — check the installed v9 package source and the official v8→v9 migration guide, not the plan's prose (the master plan flags this as *unverified*)
