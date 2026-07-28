@@ -187,10 +187,6 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
                   name="data.startDate"
                   render={({ field: { value, onChange } }) => (
                     <DatePicker
-                      // X v8 defaults to the section-based accessible field DOM, which
-                      // replaces the editable <input> with a visually-hidden mirror.
-                      // Keep the v7 DOM for now; adopting the new one is its own step.
-                      enableAccessibleFieldDOMStructure={false}
                       views={["year", "month"]}
                       format={"MM/yy"}
                       minDate={MIN_DATE}
@@ -203,6 +199,7 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
                       slotProps={{
                         textField: mobileTapTextFieldProps({
                           helperText: null,
+                          "data-cy": "export-start-date",
                         }),
                         openPickerButton: {
                           "data-cy": "start-date-picker-button",
@@ -217,7 +214,6 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
                   name="data.endDate"
                   render={({ field: { value, onChange } }) => (
                     <DatePicker
-                      enableAccessibleFieldDOMStructure={false}
                       views={["year", "month"]}
                       format="MM/yy"
                       minDate={startDate || MIN_DATE}
@@ -230,6 +226,7 @@ const AccountingExportForm: FC<AccountingExportFormProps> = ({ onSubmit }) => {
                       slotProps={{
                         textField: mobileTapTextFieldProps({
                           helperText: null,
+                          "data-cy": "export-end-date",
                         }),
                         openPickerButton: {
                           "data-cy": "end-date-picker-button",

@@ -1318,8 +1318,6 @@ const StartDateController = memo(function StartDateController(
         name="data.startTimestamp"
         render={({ field: { onChange, onBlur } }) => (
           <DateTimePicker
-            // See AccountingExportForm: keep the v7 field DOM for this upgrade step.
-            enableAccessibleFieldDOMStructure={false}
             slots={mobileTapPickerSlots}
             slotProps={{
               textField: mobileTapTextFieldProps({
@@ -1361,8 +1359,6 @@ const EndDateController = memo(function EndDateController(
         name="data.endTimestamp"
         render={({ field: { onChange, onBlur } }) => (
           <DateTimePicker
-            // See AccountingExportForm: keep the v7 field DOM for this upgrade step.
-            enableAccessibleFieldDOMStructure={false}
             slots={mobileTapPickerSlots}
             slotProps={{
               textField: mobileTapTextFieldProps({

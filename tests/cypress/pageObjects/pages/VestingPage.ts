@@ -18,7 +18,7 @@ const RECEIVED_TABLE = '[data-cy=received-table]';
 const FORM_ERROR = '.MuiAlert-message';
 const CREATE_VESTING_SCHEDULE_BUTTON = '[data-cy=create-schedule-button]';
 const PREVIEW_SCHEDULE_BUTTON = '[data-cy=preview-schedule-button]';
-const DATE_INPUT = '[data-cy=date-input] input';
+const DATE_INPUT = '[data-cy=date-input]';
 const CLIFF_AMOUNT_INPUT = '[data-cy=cliff-amount-input] input';
 const CLIFF_PERIOD_INPUT = '[data-cy=cliff-period-input] input';
 const CLIFF_PERIOD_UNIT = '[data-cy=cliff-period-unit]';
