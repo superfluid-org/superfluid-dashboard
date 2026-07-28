@@ -342,11 +342,32 @@ A/B run; that invariant error is the signature of a stale-server mismatch, not a
   Every failing name is in the baseline set; no new failures.
 
 ### Task 6: A/B verify step 3
-- [ ] `pnpm build && pnpm start`, re-run `ExportPage`, `SendPage` and `VestingPage` **together** — step 1 ran only `ExportPage` and that is exactly how nine CI regressions got through
-- [ ] run any spec touching the DataGrid column menu / pagination
-- [ ] compare against the Task 1 baseline: **failure set identical by name, or strictly smaller**
-- [ ] record the before/after table in this file
-- [ ] ⚠️ if any new failure appears, diagnose it before proceeding — do not carry it into step 4
+- [x] `pnpm build && pnpm start`, re-run `ExportPage`, `SendPage` and `VestingPage` **together** — step 1 ran only `ExportPage` and that is exactly how nine CI regressions got through
+- [x] run any spec touching the DataGrid column menu / pagination — `ExportPage` is the only spec touching DataGrid DOM (`COLUMN_HEADERS`, `HEADER_TRIPLE_DOTS` column menu, `data-field` header clicks); included in the run
+- [x] compare against the Task 1 baseline: **failure set identical by name, or strictly smaller** — strictly smaller (14 vs 15)
+- [x] record the before/after table in this file
+- [x] ⚠️ if any new failure appears, diagnose it before proceeding — none appeared; every failing name is in the baseline set
+
+**Task 6 findings (2026-07-28, single Cypress run of all six specs together, fresh `pnpm build && pnpm start`, port 3000 verified free beforehand):**
+
+| spec | tests | passing | failing (Task 1 baseline) |
+|---|---|---|---|
+| ExportPage | 12 | 4 | **8** (8, identical names) |
+| SendPage | 21 | 16 | **5** (6 — "Modifying a stream with just end date" passes again) |
+| VestingPageOne | 16 | 15 | **1** (1, same: Change network button) |
+| VestingPageTwo | 19 | 19 | 0 (0) |
+| VestingPageThree | 13 | 13 | 0 (0) |
+| VestingPageV2 | 1 | 1 | 0 (0) |
+| **total** | **82** | **68** | **14** (15) |
+
+- Failing names, all in the Task 1 known-unrelated set: ExportPage — price granularity/accounting
+  periods examples #1–#4, multiple addresses export, counterparty export, date range, CSV export;
+  SendPage — stream tables (just start date / start+end / end date), modifying a streams start
+  date, modifying a stream with start and end date (not started yet); VestingPageOne — change
+  network button.
+- Matches the Task 5 partial A/B exactly; running all six specs together (the step-1 lesson)
+  changed nothing. The Task 3 pagination watch item did not fire — no failure mentions row-count
+  text. DataGrid column-menu interactions in ExportPage's 4 passing scenarios behaved normally.
 
 ### Task 7: Bring `docs/plans/mui-v6-to-v9-upgrade.md` up to date
 - [ ] add the missing **§Step 2 outcome** section — reconstruct from PR #880's body, which is currently the *only* record of that step (no session file was written)
