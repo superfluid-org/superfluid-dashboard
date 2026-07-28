@@ -297,11 +297,49 @@ A/B run; that invariant error is the signature of a stale-server mismatch, not a
 - Gate: `pnpm typecheck`, `pnpm lint`, `pnpm build` all green.
 
 ### Task 5: Migrate the picker Cypress selectors to the section-based DOM
-- [ ] rewrite `Common.inputDateIntoField` — its `.should('be.visible')` then `.type()` cannot work against the v8+ hidden mirror input, and its `{selectall}{del}` prefix is what caused step 1's nine CI failures. Do not reintroduce that prefix
-- [ ] update `ExportPage.ts` `DATE_RANGES`, `VestingPage.ts` `DATE_INPUT`, `SendPage.ts` `END_DATE` and the ``${END_DATE} input`` value assertion
-- [ ] prefer app-owned `data-cy` hooks over MUI implementation details, following the convention step 2 established for icons
-- [ ] sweep for any other picker-DOM-dependent selector Task 2 surfaced
-- [ ] run the verification gate
+- [x] rewrite `Common.inputDateIntoField` — its `.should('be.visible')` then `.type()` cannot work against the v8+ hidden mirror input, and its `{selectall}{del}` prefix is what caused step 1's nine CI failures. Do not reintroduce that prefix
+- [x] update `ExportPage.ts` `DATE_RANGES`, `VestingPage.ts` `DATE_INPUT`, `SendPage.ts` `END_DATE` and the ``${END_DATE} input`` value assertion
+- [x] prefer app-owned `data-cy` hooks over MUI implementation details, following the convention step 2 established for icons
+- [x] sweep for any other picker-DOM-dependent selector Task 2 surfaced
+- [x] run the verification gate
+
+**Task 5 findings (2026-07-28):**
+
+- New `BasePage.setPickersFieldValue(fieldSelector, value)`: asserts the field container is
+  visible, then writes the full formatted value into the **hidden mirror input** via the native
+  `HTMLInputElement.prototype.value` setter + a bubbling `input` event (the mirror's `onChange`
+  parses a full value string — this is the v9-supported autofill path), then asserts
+  `hasValue(<field> input, value)` so a rejected parse cannot pass silently. `.type()`/`.clear()`
+  are impossible: the only `<input>` is visually hidden and fails Cypress actionability.
+- `Common.inputDateIntoField` now takes the field **container** selector and delegates to
+  `setPickersFieldValue`. No `{selectall}{del}` prefix, no separate `clear()` — both prior
+  failure modes stay excluded, and the whole write is one command so mid-command re-render
+  detachment can't bite.
+- Selector changes: `VestingPage.DATE_INPUT` dropped its ` input` suffix (container now);
+  `SendPage` needed **no code change** — `START_DATE`/`END_DATE` were already containers and the
+  ``${END_DATE} input`` assertions read the hidden mirror, whose value is the same formatted
+  string the helper writes. `ExportPage.DATE_RANGES` (a Stack wrapping both fields, indexed
+  0/-1) is replaced by app-owned hooks: new `data-cy="export-start-date"` / `"export-end-date"`
+  on the two `AccountingExportForm.tsx` textField slots; `changeExportEndDate` still only
+  clicks (focus-shift to commit the start date — the historical "autofills 0s" comment kept).
+- Sweep: no other picker-DOM selector exists in `tests/` (re-grepped `.Mui` picker tokens —
+  only `ExportPage.FILTER_INPUT_FIELDS`, which is DataGrid filter-panel DOM, unchanged in v9).
+- Gate: `pnpm typecheck`, `pnpm lint`, `pnpm build` green; tests-package `tsc` errors are all
+  pre-existing viem/ox `node_modules` noise, page objects compile clean.
+- **Cypress A/B against the production build** (orphaned `next start` on :3000 killed first —
+  the Task 1 trap fired again): failure set **strictly smaller** than the Task 1 baseline.
+
+  | spec | tests | passing | failing (baseline) |
+  |---|---|---|---|
+  | ExportPage | 12 | 4 | **8** (8, identical names) |
+  | SendPage | 21 | 16 | **5** (6 — "Modifying a stream with just end date" now passes) |
+  | VestingPageOne | 16 | 15 | **1** (1, same: Change network button) |
+  | VestingPageTwo | 19 | 19 | 0 (0) |
+  | VestingPageThree | 13 | 13 | 0 (0) |
+  | VestingPageV2 | 1 | 1 | 0 (0) |
+  | **total** | **82** | **68** | **14** (15) |
+
+  Every failing name is in the baseline set; no new failures.
 
 ### Task 6: A/B verify step 3
 - [ ] `pnpm build && pnpm start`, re-run `ExportPage`, `SendPage` and `VestingPage` **together** — step 1 ran only `ExportPage` and that is exactly how nine CI regressions got through
