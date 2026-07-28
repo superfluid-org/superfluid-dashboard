@@ -99,7 +99,7 @@ export const DeleteVestingTransactionButton: FC<{
               color: "error",
               size: "medium",
               fullWidth: false,
-              startIcon: <CloseRoundedIcon />,
+              startIcon: <CloseRoundedIcon data-cy="close-rounded-icon" />,
               ...ButtonProps,
             }}
             onClick={async () => {

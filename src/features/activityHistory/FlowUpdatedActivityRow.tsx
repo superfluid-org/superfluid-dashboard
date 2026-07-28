@@ -92,22 +92,27 @@ const FlowUpdatedActivityRow: FC<FlowUpdatedActivityRowProps> = ({
 
   const tokenPrice = useTokenPrice(network.id, tokenAddress);
 
-  const { title, icon } = useMemo(() => {
+  const { title, icon, iconDataCy } = useMemo(() => {
     switch (type) {
       case FlowUpdateType.Create:
         return {
           title: isOutgoing ? "Send Stream" : "Receive Stream",
           icon: isOutgoing ? ArrowForwardRoundedIcon : ArrowBackRoundedIcon,
+          iconDataCy: isOutgoing
+            ? "activity-send-icon"
+            : "activity-receive-icon",
         };
       case FlowUpdateType.Update:
         return {
           title: "Stream Updated",
           icon: EditRoundedIcon,
+          iconDataCy: "activity-stream-updated-icon",
         };
       case FlowUpdateType.Terminate:
         return {
           title: "Stream Cancelled",
           icon: CloseRoundedIcon,
+          iconDataCy: "activity-stream-cancelled-icon",
         };
     }
   }, [isOutgoing, type]);
@@ -123,7 +128,7 @@ const FlowUpdatedActivityRow: FC<FlowUpdatedActivityRowProps> = ({
     <TableRow data-cy={`${network.slugName}-row`}>
       <TableCell>
         <ListItem sx={{ p: 0 }}>
-          <ActivityIcon icon={icon} />
+          <ActivityIcon icon={icon} dataCy={iconDataCy} />
           <ListItemText
             data-cy={"activity"}
             primary={title}

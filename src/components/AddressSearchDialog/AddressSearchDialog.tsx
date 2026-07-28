@@ -267,7 +267,7 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
           </Typography>
           {onClose && (
             <IconButton onClick={onClose} sx={{ m: -0.5 }} color="inherit">
-              <CloseRoundedIcon />
+              <CloseRoundedIcon data-cy="close-rounded-icon" />
             </IconButton>
           )}
         </Stack>

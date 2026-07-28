@@ -65,7 +65,10 @@ const TransferActivityRow: FC<TransferActivityRowProps> = ({
     <TableRow data-cy={`${network.slugName}-row`}>
       <TableCell>
         <ListItem sx={{ p: 0 }}>
-          <ActivityIcon icon={isOutgoing ? ArrowForwardRoundedIcon : ArrowBackRoundedIcon} />
+          <ActivityIcon
+            icon={isOutgoing ? ArrowForwardRoundedIcon : ArrowBackRoundedIcon}
+            dataCy={isOutgoing ? "activity-send-icon" : "activity-receive-icon"}
+          />
           <ListItemText
             data-cy={"activity"}
             primary={isOutgoing ? "Send Transfer" : "Receive Transfer"}

@@ -3,7 +3,11 @@ import {
   DialogContent,
   FormGroup,
   FormLabel,
-  Grid,
+  // Material UI v7 renamed the old Grid to GridLegacy and promoted Grid2 to
+  // Grid. This markup is container-with-non-item children, which type-checks
+  // clean against the new Grid but would lay out differently, so it stays on
+  // the legacy component until it is migrated properly.
+  GridLegacy as Grid,
   Stack,
   TextField,
   Typography,

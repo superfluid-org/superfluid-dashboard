@@ -1,4 +1,4 @@
-import { Checkbox, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography, Grid, Grid2, Box } from "@mui/material";
+import { Checkbox, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography, Grid, Box } from "@mui/material";
 import { FC, ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import { formatEther } from "viem";
 import { Actions } from "../../../pages/api/agora";
@@ -180,11 +180,11 @@ const getActionDetails = (action: Actions, tokenSymbol: string | undefined) => {
             actionType = "Update Vesting Schedule";
             receiver = action.payload.receiver;
             amount = isDifference ? (
-                <Grid2 container spacing={1} alignItems="center">
-                    <Grid2 size={5} textAlign="right">{prevAmount}</Grid2>
-                    <Grid2 size={2} textAlign="center">→</Grid2>
-                    <Grid2 size={5} textAlign="left">{newAmount}</Grid2>
-                </Grid2>
+                <Grid container spacing={1} alignItems="center">
+                    <Grid size={5} textAlign="right">{prevAmount}</Grid>
+                    <Grid size={2} textAlign="center">→</Grid>
+                    <Grid size={5} textAlign="left">{newAmount}</Grid>
+                </Grid>
             ) : `${newAmount} (unchanged)`;
             toDate = new Date(action.payload.endDate * 1000);
             fromDate = new Date(action.payload.previousStartDate * 1000);

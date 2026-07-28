@@ -18,7 +18,7 @@ const NO_APPROVAL_BODY = "[data-cy=no-access-data-description]";
 const ADD_APPROVAL_GLOBAL_BUTTON = "[data-cy=add-token-access-global-button]";
 const APPROVAL_MODAL = "[data-cy=upsert-approvals-form]";
 
-const OTHER_CLOSE_TX_BUTTON = "[data-testid=CloseIcon]";
+const OTHER_CLOSE_TX_BUTTON = "[data-cy=close-icon]";
 
 const APPROVAL_MODAL_CLOSE_BUTTON =
   "[data-cy=upsert-approvals-form-close-button]";

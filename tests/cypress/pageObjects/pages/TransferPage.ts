@@ -8,7 +8,7 @@ const RECEIVER_BUTTON = '[data-cy=address-button]';
 const SELECT_TOKEN_BUTTON = '[data-cy=select-token-button]';
 const AMOUNT_INPUT = '[data-cy=amount-input]';
 const ADDRESS_DIALOG_INPUT = '[data-cy=address-dialog-input]';
-const OTHER_CLOSE_DIALOG_BUTTON = '[data-testid=CloseIcon]';
+const OTHER_CLOSE_DIALOG_BUTTON = '[data-cy=close-icon]';
 const ADDRESS_BUTTON_TEXT = '[data-cy=address-button]';
 const TOKEN_SELECT_SYMBOL = '[data-cy=token-symbol-and-name] h6';
 const PREVIEW_BALANCE = '[data-cy=balance]';

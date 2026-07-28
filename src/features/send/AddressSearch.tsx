@@ -66,7 +66,7 @@ export default memo(function AddressSearch({
               color="inherit"
               sx={{ marginLeft: "auto", marginRight: "-6px" }}
             >
-              <CloseIcon sx={{ fontSize: "22px" }} />
+              <CloseIcon data-cy="close-icon" sx={{ fontSize: "22px" }} />
             </IconButton>
           ) : (
             <KeyboardArrowDownIcon />

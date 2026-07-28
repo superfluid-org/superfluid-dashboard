@@ -31,7 +31,13 @@ const CopyBtn: FC<CopyBtnProps> = ({ label, copyText, ButtonProps = {} }) => {
     <Button
       data-cy={"address-modal-copy-button"}
       {...ButtonProps}
-      endIcon={isCopied ? <CheckOutlinedIcon /> : <ContentCopyRoundedIcon />}
+      endIcon={
+        isCopied ? (
+          <CheckOutlinedIcon data-cy="copied-checkmark-icon" />
+        ) : (
+          <ContentCopyRoundedIcon data-cy="copy-icon" />
+        )
+      }
       onClick={handleCopyClick}
     >
       {isCopied ? "Copied!" : label}

@@ -26,7 +26,7 @@ const EditDialogTitle: FC<PropsWithChildren & { dataCy?: string, onClose: () => 
           top: theme.spacing(3),
         }}
       >
-        <CloseIcon />
+        <CloseIcon data-cy="close-icon" />
       </IconButton>
     </Stack>
   );

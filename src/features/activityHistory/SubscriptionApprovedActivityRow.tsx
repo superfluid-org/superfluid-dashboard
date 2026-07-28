@@ -91,7 +91,7 @@ const SubscriptionApprovedActivityRow: FC<
     <TableRow>
       <TableCell>
         <ListItem sx={{ p: 0 }}>
-          <ActivityIcon icon={CheckRoundedIcon} />
+          <ActivityIcon icon={CheckRoundedIcon} dataCy="activity-subscription-approved-icon" />
           <ListItemText
             data-cy={"activity"}
             primary="Subscription Approved"

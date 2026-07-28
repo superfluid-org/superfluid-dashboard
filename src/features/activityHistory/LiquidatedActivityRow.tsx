@@ -63,7 +63,7 @@ const LiquidatedActivityRow: FC<LiquidatedActivityRowProps> = ({
     <TableRow data-cy={`${network.slugName}-row`}>
       <TableCell>
         <ListItem sx={{ p: 0 }}>
-          <ActivityIcon icon={PriorityHighIcon} />
+          <ActivityIcon icon={PriorityHighIcon} dataCy="activity-liquidated-icon" />
           <ListItemText
             data-cy={"activity"}
             primary={"Liquidated"}

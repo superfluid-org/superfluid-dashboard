@@ -182,7 +182,7 @@ const CancelledIndicator: FC<CancelledIndicatorProps> = ({
 
   return (
     <Stack direction="row" alignItems="center" gap={1}>
-      {!isBelowMd && <CloseIcon color="error" />}
+      {!isBelowMd && <CloseIcon data-cy="close-icon" color="error" />}
       <Typography
         data-cy={"ended-stream-message"}
         variant={isBelowMd ? "h6" : "h5"}
@@ -507,7 +507,7 @@ const StreamPageContent: FC<{
                 color="inherit"
                 onClick={navigateBack}
               >
-                <ArrowBackIcon />
+                <ArrowBackIcon data-cy="back-icon" />
               </IconButton>
             </Box>
 

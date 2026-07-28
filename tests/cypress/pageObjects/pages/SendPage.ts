@@ -18,8 +18,8 @@ const FLOW_RATE_INPUT = '[data-cy=flow-rate-input]';
 const TIME_UNIT_SELECTION_BUTTON = '[data-cy=time-unit-selection-button]';
 const AMOUNT_PER_SECOND = '[data-cy=preview-per-second]';
 const ADDRESS_DIALOG_INPUT = '[data-cy=address-dialog-input]';
-const CLOSE_DIALOG_BUTTON = '[data-testid=CloseRoundedIcon]';
-const OTHER_CLOSE_DIALOG_BUTTON = '[data-testid=CloseIcon]';
+const CLOSE_DIALOG_BUTTON = '[data-cy=close-rounded-icon]';
+const OTHER_CLOSE_DIALOG_BUTTON = '[data-cy=close-icon]';
 // ENS resolution now flows through the whois service; the dialog renders a `whois-entry`
 // (an AddressListItem) for a resolved name — primary = the resolved name, secondary = the
 // shortened address. (The legacy `ens-entry`/h6/p markup no longer exists.)
@@ -28,7 +28,7 @@ const ENS_ENTRY_NAMES = '[data-cy=whois-entry] .MuiListItemText-primary';
 const ENS_ENTRY_ADDRESS = '[data-cy=whois-entry] .MuiListItemText-secondary';
 const RECENT_ENTRIES = '[data-cy=recents-entry]';
 const RECENT_ENTRIES_ADDRESS = '[data-cy=recents-entry] h6';
-const RECEIVER_CLEAR_BUTTON = '[data-testid=CloseIcon]';
+const RECEIVER_CLEAR_BUTTON = '[data-cy=close-icon]';
 const TOKEN_SEARCH_INPUT = '[data-cy=token-search-input] input';
 const RESULTS_WRAP_BUTTONS = '[data-cy=wrap-button]';
 const STREAM_ENDS_ON = '[data-cy=preview-ends-on]';

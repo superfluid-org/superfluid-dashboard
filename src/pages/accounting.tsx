@@ -77,7 +77,7 @@ const Accounting: NextPage = () => {
             >
               <Stack direction="row" gap={2} alignItems="center">
                 <IconButton onClick={closePreview}>
-                  <ArrowBackIcon />
+                  <ArrowBackIcon data-cy="back-icon" />
                 </IconButton>
                 <Typography variant="h3" component="h1">
                   Export Preview

@@ -97,7 +97,7 @@ const IndexUnitsUpdatedActivityRow: FC<IndexUnitsUpdatedActivityRowProps> = ({
     <TableRow>
       <TableCell>
         <ListItem sx={{ p: 0 }}>
-          <ActivityIcon icon={PercentRoundedIcon} />
+          <ActivityIcon icon={PercentRoundedIcon} dataCy="activity-subscription-updated-icon" />
           <ListItemText
             data-cy={"activity"}
             primary="Subscription Updated"

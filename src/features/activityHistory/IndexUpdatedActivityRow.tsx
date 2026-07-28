@@ -81,6 +81,7 @@ const IndexUpdatedActivityRow: FC<IndexUpdatedActivityRowProps> = ({
         <ListItem sx={{ p: 0 }}>
           <ActivityIcon
             icon={CallSplitRoundedIcon}
+            dataCy="activity-distribution-icon"
             IconProps={{
               sx: { transform: `rotate(${isPublisher ? "" : "-"}90deg)` },
             }}

@@ -15,13 +15,13 @@ const ACCOUNTING_PERIOD = '[data-cy=accounting-period]';
 const CURRENCY_BUTTON = '[data-cy=currency-button]';
 const EXPORT_PREVIEW = '[data-cy=export-preview-button]';
 const COLUMN_HEADERS = '.MuiDataGrid-columnHeaderTitleContainer';
-const HEADER_TRIPLE_DOTS = '[data-testid=TripleDotsVerticalIcon]';
+const HEADER_TRIPLE_DOTS = '.MuiDataGrid-menuIconButton';
 const FILTER_OPTIONS = '[role=tooltip] li';
 const COLUMN_CHECKBOXES =
   '.MuiDataGrid-panelWrapper input.PrivateSwitchBase-input';
 const DATE_PICKER_YEAR_BUTTONS = '.MuiYearCalendar-button';
 const DATE_PICKER_MONTH_BUTTONS = '.MuiMonthCalendar-button';
-const DATE_PICKER_ICONS = '[data-testid=CalendarIcon]';
+const END_DATE_PICKER_BUTTON = '[data-cy=end-date-picker-button]';
 const EXPORT_CSV = '[data-cy=export-csv-button]';
 const AMOUNT_CELLS = '.MuiDataGrid-cell[data-field=amount]';
 const COUNTERPARTY_CELLS = '.MuiDataGrid-cell[data-field=counterparty]';
@@ -343,7 +343,10 @@ export class ExportPage extends BasePage {
   }
 
   static changeEndDateWithUI(month: string, year: string) {
-    this.click(DATE_PICKER_ICONS, -1);
+    // Was `click(CalendarIcon, -1)` — index -1 meant "the second of the two
+    // date pickers", i.e. the end date. The picker's open button now carries
+    // its own hook, so the position dependency is gone.
+    this.click(END_DATE_PICKER_BUTTON);
     cy.get(DATE_PICKER_YEAR_BUTTONS).contains(year).click();
     cy.get(DATE_PICKER_MONTH_BUTTONS).contains(month).click();
   }

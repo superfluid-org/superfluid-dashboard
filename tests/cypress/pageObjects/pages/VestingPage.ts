@@ -29,8 +29,16 @@ const TOTAL_PERIOD_UNIT = '[data-cy=total-period-unit]';
 const TOTAL_PERIOD_SELECTED_UNIT = `${TOTAL_PERIOD_UNIT} div`;
 const LOADING_SKELETONS = '[class*=MuiSkeleton]';
 const DELETE_SCHEDULE_BUTTON = '[data-cy=delete-schedule-button]';
-const FORWARD_BUTTON = '[data-testid=ArrowForwardIcon]';
-const BACK_BUTTON = '[data-testid=ArrowBackIcon]';
+// FIXME: this probe has never matched. It was `[data-testid=ArrowForwardIcon]`,
+// but nothing under src/features/vesting renders that icon — the only two
+// importers of @mui/icons-material/ArrowForward are StreamRow and
+// TransferEventRow, neither of which is on the vesting page. So the
+// `deleteScheduleIfNecessary` block it guards has always been dead code.
+// Deliberately kept non-matching here so the Material UI v7 upgrade is
+// behaviour-neutral; the real fix is to use VESTING_ROWS, which is what the
+// surrounding code actually means, but that would start running a delete flow
+// that has never run before and belongs in its own change.
+const FORWARD_BUTTON = '[data-cy=vesting-forward-icon]';
 const VESTING_ROWS = '[data-cy=vesting-row]';
 const OK_BUTTON = '[data-cy=ok-button]';
 const TX_DRAWER_BUTTON = '[data-cy=tx-drawer-button]';
@@ -517,7 +525,7 @@ export class VestingPage extends BasePage {
   static openTokenPermissionRow(token: string) {
     this.getSelectedToken(token).then((selectedToken) => {
       this.click(
-        `[data-cy="${selectedToken}-row"] [data-testid=ExpandMoreRoundedIcon]`,
+        `[data-cy="${selectedToken}-row"] [data-cy=open-icon]`,
         undefined,
         { timeout: 120000 }
       );
