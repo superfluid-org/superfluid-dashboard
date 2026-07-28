@@ -149,247 +149,58 @@ connect step. Runs take 5–20 min; tag-filter to cut that down, e.g.
 # Part A — Step 3: MUI X v8 → v9
 
 ### Task 1: Capture the pre-change Cypress baseline
-- [x] copy `tests/cypress.env.json` from the main checkout (path above); confirm `git check-ignore` reports it ignored
-- [x] `pnpm install`, then `pnpm build && pnpm start`
-- [x] run `ExportPage`, `SendPage` and `VestingPage` specs against the production build
-- [x] record total / failing counts **and every failing scenario name** into this file under Task 1
-- [x] confirm the recorded failures match the known-unrelated set (see "Do not chase" below); flag with ⚠️ if they do not
-
-**Task 1 baseline (2026-07-28, production build `pnpm build && pnpm start`, unchanged code at `d1f757bc`):**
-
-| spec | tests | passing | failing |
-|---|---|---|---|
-| ExportPage | 12 | 4 | **8** |
-| SendPage | 21 | 15 | **6** |
-| VestingPageOne | 16 | 15 | **1** |
-| VestingPageTwo | 19 | 19 | 0 |
-| VestingPageThree | 13 | 13 | 0 |
-| VestingPageV2 | 1 | 1 | 0 |
-| **total** | **82** | **67** | **15** |
-
-Failing scenario names — all match the known-unrelated set (ExportPage 8, SendPage 6, VestingPageOne 1):
-- ExportPage: Changing price granularity and accounting periods (examples #1–#4); Selecting multiple
-  addresses and exporting the data; Selecting a counterparty and exporting the data; Date range of
-  the reports; Exporting and validating CSV
-- SendPage: Stream tables - stream with just start date; Stream tables - stream with start and end
-  date; Stream tables - stream with end date; Modifying a streams start date; Modifying a stream
-  with just end date; Modifying a stream with start and end date ( not started yet )
-- VestingPageOne: Change network button showing up if user is not on opsepolia
-
-Operational note: a first run produced 10/12 ExportPage and 21/21 SendPage failures (all with a
-Next.js "attempted to hard navigate to the same URL" invariant). Cause: an orphaned `next start`
-from an earlier session held port 3000 and served a stale build over the freshly rebuilt `.next`
-chunks — `pnpm start` had died on EADDRINUSE. Check `lsof -iTCP:3000 -sTCP:LISTEN` before every
-A/B run; that invariant error is the signature of a stale-server mismatch, not an app bug.
+- [ ] copy `tests/cypress.env.json` from the main checkout (path above); confirm `git check-ignore` reports it ignored
+- [ ] `pnpm install`, then `pnpm build && pnpm start`
+- [ ] run `ExportPage`, `SendPage` and `VestingPage` specs against the production build
+- [ ] record total / failing counts **and every failing scenario name** into this file under Task 1
+- [ ] confirm the recorded failures match the known-unrelated set (see "Do not chase" below); flag with ⚠️ if they do not
 
 ### Task 2: Verify the step-3 premise before changing anything
-- [x] confirm `enableAccessibleFieldDOMStructure` is actually **removed** in X v9 — check the installed v9 package source and the official v8→v9 migration guide, not the plan's prose (the master plan flags this as *unverified*)
-- [x] confirm `@mui/x-data-grid@9` and `@mui/x-date-pickers@9` peer ranges against the installed core 7.3.11
-- [x] re-inventory the picker-driven Cypress selectors against the current tree: `ExportPage.ts` `DATE_RANGES`, `VestingPage.ts` `DATE_INPUT`, `SendPage.ts` `END_DATE` + ``hasValue(`${END_DATE} input`)``, and `Common.inputDateIntoField` — counts were measured 2026-07-27 and may have drifted
-- [x] check whether v9 changes the `{selectall}{del}` field-clearing behaviour that broke step 1
-- [x] record findings in this file; if the premise is wrong, mark ⚠️ and **stop for a human** rather than working around it
-
-**Task 2 findings (2026-07-28, verified against the published `@mui/x-date-pickers@9.10.1` tarball, not prose):**
-
-- **Premise CONFIRMED — proceed.** `enableAccessibleFieldDOMStructure` is removed in v9. The
-  v9.10.1 source (`internals/hooks/useField/useField.mjs`) warns at runtime if the prop is passed:
-  *"The `enableAccessibleFieldDOMStructure` prop has been removed. The accessible DOM structure is
-  now the default and only option."*, pointing at
-  https://mui.com/x/migration/migration-pickers-v8/ . So Task 4's pin removal is mandatory, not
-  optional — the prop is a no-op plus a console warning in v9.
-- **Peer ranges OK.** Both `@mui/x-data-grid@9.10.1` and `@mui/x-date-pickers@9.10.1` peer on
-  `@mui/material ^7.3.0 || ^9.0.0` and `@mui/system ^7.3.0 || ^9.0.0` — satisfied by the installed
-  7.3.11. `date-fns ^2.25.0 || ^3.2.0 || ^4.0.0` still admits our 2.30.0. React `^17 || ^18 || ^19`
-  fine. **9.10.1 is still `latest`** — Task 3 pins exactly that.
-- **Selector inventory (re-measured, no drift in kind, exact sites):**
-  - `ExportPage.ts:12` `DATE_RANGES = '[data-cy=date-ranges] input'` — used at :242 `clear()`,
-    :243 `type()`, :248 `click()`. Targets a real editable `<input>` today (the ×2 pinned legacy
-    fields in `AccountingExportForm.tsx`); under the v9 accessible DOM the only `<input>` is the
-    **hidden mirror input** (no visibility, value-string only, `useFieldHiddenInputProps`), so
-    `clear`/`type` against it will fail the actionability check. `[data-cy=date-ranges]` is a
-    `Stack` wrapping both range fields (`AccountingExportForm.tsx:184`), indexed 0 / -1.
-  - `VestingPage.ts:21` `DATE_INPUT = '[data-cy=date-input] input'` — used at :277 via
-    `Common.inputDateIntoField`. `data-cy` lives on the picker's textField slot
-    (`CreateVestingForm.tsx:394`).
-  - `SendPage.ts:71` `END_DATE = '[data-cy=end-date]'` (+ `END_DATE_BORDER` `fieldset` at :72,
-    `isVisible` :652, ``hasValue(`${END_DATE} input`)`` :688) and `START_DATE = '[data-cy=start-date]'`
-    at :69 (+ `fieldset` border at :70) — both fed through `Common.inputDateIntoField` (:611, :615).
-    The :688 value assertion reads the **hidden input's** value string in the accessible DOM — the
-    hidden input's `value` is the formatted value string, so the assertion may keep working, but the
-    format is `getHiddenInputValueFromSections`, which must be checked against the typed format.
-  - `Common.ts:775` `inputDateIntoField` — `.should('be.visible')` at :802 then `this.type()` at
-    :803. Both break against a hidden mirror input; needs the Task 5 rewrite (likely: type into the
-    section spans, or set the hidden input via `.invoke('val')` + input event, or drive sections by
-    keyboard).
-  - **No `.Mui*` picker class tokens anywhere in `tests/`** (grep for `MuiPickers|MuiDateCalendar|
-    MuiClock|MuiMultiSection|PickersDay|MuiCalendar` is empty) — the picker selector surface is
-    exactly the `data-cy` hooks plus `input` descendants above. Nothing else to sweep in Task 5.
-- **`{selectall}{del}` in v9:** unchanged risk profile; do **not** reintroduce the prefix. v9's
-  accessible field handles a *real* Ctrl/Cmd+A keydown (`useFieldRootProps.mjs`: `setSelectedSections('all')`)
-  and `Delete` with all-selected calls `clearValue()` — but Cypress `{selectall}` is not a Ctrl+A
-  keydown (it's a selection command), so it still selects nothing meaningful in the section DOM, and
-  `{del}` then clears at most the active section, exactly the step-1 failure mode. The current
-  prefix-free `inputDateIntoField` approach (type the full formatted value) remains correct in
-  spirit; only its target element must change (Task 5).
-- **Task 4 premise also re-confirmed in v9 source:** `useFieldSectionContentProps.mjs:157` sets
-  `contentEditable: !isContainerEditable && !disabled && !readOnly` — `readOnly` still suppresses
-  section editing under the accessible DOM, so the mobile tap-to-open mechanism survives with only
-  the base-component swap.
+- [ ] confirm `enableAccessibleFieldDOMStructure` is actually **removed** in X v9 — check the installed v9 package source and the official v8→v9 migration guide, not the plan's prose (the master plan flags this as *unverified*)
+- [ ] confirm `@mui/x-data-grid@9` and `@mui/x-date-pickers@9` peer ranges against the installed core 7.3.11
+- [ ] re-inventory the picker-driven Cypress selectors against the current tree: `ExportPage.ts` `DATE_RANGES`, `VestingPage.ts` `DATE_INPUT`, `SendPage.ts` `END_DATE` + ``hasValue(`${END_DATE} input`)``, and `Common.inputDateIntoField` — counts were measured 2026-07-27 and may have drifted
+- [ ] check whether v9 changes the `{selectall}{del}` field-clearing behaviour that broke step 1
+- [ ] record findings in this file; if the premise is wrong, mark ⚠️ and **stop for a human** rather than working around it
 
 ### Task 3: Bump MUI X to v9
-- [x] set `@mui/x-data-grid` and `@mui/x-date-pickers` to the **exact** v9 version (9.10.1 unless Task 2 found newer), no caret
-- [x] `pnpm install`; confirm the app graph resolves to a single X major
-- [x] run `npx @mui/x-codemod@latest v9.0.0/preset-safe src/`, then `git diff -w --ignore-blank-lines` and **revert everything that is not a real change**
-- [x] review the 2 DataGrid sites (`AccountingExportPreview.tsx` + the other) against the v8→v9 DataGrid migration guide — note `autoHeight` is **not** deprecated, that was a false finding
-- [x] run the verification gate (typecheck, lint, build)
-
-**Task 3 findings (2026-07-28):**
-
-- Pinned both X packages to exact `9.10.1` (still `latest`); lockfile resolves a **single** X major,
-  both peering on the installed core 7.3.11.
-- **Codemod: 8 files "ok", only 1 real change class.** The only genuine edits were the five
-  `enableAccessibleFieldDOMStructure={false}` removals (Task 4's first checkbox — the codemod does
-  it as part of `preset-safe` since the prop no longer exists in v9). Everything else was noise,
-  reverted wholesale: comment relocation in `viemTransactionErrors.ts` (a file with **no MUI
-  content** — same failure mode as the v8 codemod), no-op paren-wrapping in `_document.tsx` and
-  `AutoWrapEnableDialogContentSection.tsx`, a semicolon in `DefaultActivityRow.tsx`, JSX text
-  mangling (`&apos;` → `'`, broken indentation) in `SendStream.tsx`, and a whitespace-only reprint
-  of `VestingScheduleTable.tsx`. Reverted all of it and hand-applied the five prop removals cleanly.
-- **DataGrid v8→v9 review: nothing applies.** Both DataGrid sites are `AccountingExportPreview.tsx`
-  and the `MuiDataGrid` theme overrides in `theme.ts` (+ the `themeAugmentation` type import) — no
-  other file imports `@mui/x-data-grid`. The v9 guide's breaking changes are: `experimentalFeatures`
-  charts flag (Premium-only), `filterPanelColumns` locale key rename (unused), and
-  `virtualScrollerContent` DOM moves (no selector in `src/` or `tests/` touches it). `autoHeight`
-  unchanged, kept. The existing `if (gridApiContext.current)` guard and v8-signature `valueGetter`s
-  are already v9-correct.
-- ➕ **Task 6 watch item:** v9 formats pagination numbers by default (`paginationDisplayedRows`).
-  No Cypress assertion reads the pagination caption today (`ExportPage.ts` only uses
-  `.MuiDataGrid-cell` / header / panel tokens, all unchanged in v9), but if a new failure mentions
-  row-count text, this is the first suspect.
+- [ ] set `@mui/x-data-grid` and `@mui/x-date-pickers` to the **exact** v9 version (9.10.1 unless Task 2 found newer), no caret
+- [ ] `pnpm install`; confirm the app graph resolves to a single X major
+- [ ] run `npx @mui/x-codemod@latest v9.0.0/preset-safe src/`, then `git diff -w --ignore-blank-lines` and **revert everything that is not a real change**
+- [ ] review the 2 DataGrid sites (`AccountingExportPreview.tsx` + the other) against the v8→v9 DataGrid migration guide — note `autoHeight` is **not** deprecated, that was a false finding
+- [ ] run the verification gate (typecheck, lint, build)
 
 ### Task 4: Remove the `enableAccessibleFieldDOMStructure={false}` pin
-- [x] remove the prop from all 5 picker instances (`AccountingExportForm.tsx` ×2, `SendStream.tsx` ×2, `CreateVestingForm.tsx` ×1) — done in Task 3: the v9 `preset-safe` codemod removes it (the prop no longer exists), kept as a real change there
-- [x] rebase `src/components/PickerField/mobileTapPicker.tsx` off `PickersTextField` instead of `@mui/material`'s `TextField` — the pin was the only reason it used the latter
-- [x] confirm the mobile mechanism survives: `readOnly` still suppresses editing under the accessible DOM (`useFieldSectionContentProps` sets `contentEditable: !disabled && !readOnly`), so only the base component changes
-- [x] re-verify mobile tap-to-open by forcing the mobile variant on desktop Chrome with `desktopModeMediaQuery="@media (min-width: 100000px)"` — viewport size alone cannot do this, MUI switches on `@media (pointer: fine)`. Field tap must open `[role=dialog]`; the calendar icon must still open exactly once; desktop fields must stay editable and must **not** open on field click
-- [x] run the verification gate
-
-**Task 4 findings (2026-07-28):**
-
-- `MobileTapTextField` now renders `PickersTextField` (root export of `@mui/x-date-pickers`),
-  typed `PickersTextFieldProps`; `onClick` arrives via its `FormControl` root, so the tap-to-open
-  handler is unchanged. All five consumers' `slotProps.textField` payloads (`helperText`,
-  `fullWidth`, `onBlur`, `autoComplete`, `data-cy`) typecheck against the new base — no consumer
-  changes needed.
-- **Mobile mechanism verified against the production build** (`pnpm build && pnpm start`, one-off
-  Cypress spec on `/accounting`, Electron/Chromium, not committed):
-  - Desktop (real `pointer: fine`): sections render `contenteditable=true`; clicking the field
-    content opens **no** `[role=dialog]`; the calendar icon opens exactly one dialog; Esc closes it.
-  - Mobile variant (forced): **zero** `contenteditable=true` sections (the `readOnly` lever works
-    under the accessible DOM); tapping a field section opens exactly one `[role=dialog]`; the
-    calendar icon also opens exactly one dialog — no double-toggle.
-- Verification-method note: forcing the mobile variant was done by stubbing `win.matchMedia` in
-  `cy.visit`'s `onBeforeLoad` so `(pointer: fine)` never matches — equivalent to the
-  `desktopModeMediaQuery` prop trick but with zero app-code changes. CDP
-  `Emulation.setEmulatedMedia` (pointer/hover features) does **not** reach the Cypress AUT iframe —
-  the desktop variant kept rendering — so don't reach for it in Task 6 either. Also: this machine
-  has no Chrome binary; Cypress runs Electron (Chromium), same as the Task 1 baseline.
-- Gate: `pnpm typecheck`, `pnpm lint`, `pnpm build` all green.
+- [ ] remove the prop from all 5 picker instances (`AccountingExportForm.tsx` ×2, `SendStream.tsx` ×2, `CreateVestingForm.tsx` ×1)
+- [ ] rebase `src/components/PickerField/mobileTapPicker.tsx` off `PickersTextField` instead of `@mui/material`'s `TextField` — the pin was the only reason it used the latter
+- [ ] confirm the mobile mechanism survives: `readOnly` still suppresses editing under the accessible DOM (`useFieldSectionContentProps` sets `contentEditable: !disabled && !readOnly`), so only the base component changes
+- [ ] re-verify mobile tap-to-open by forcing the mobile variant on desktop Chrome with `desktopModeMediaQuery="@media (min-width: 100000px)"` — viewport size alone cannot do this, MUI switches on `@media (pointer: fine)`. Field tap must open `[role=dialog]`; the calendar icon must still open exactly once; desktop fields must stay editable and must **not** open on field click
+- [ ] run the verification gate
 
 ### Task 5: Migrate the picker Cypress selectors to the section-based DOM
-- [x] rewrite `Common.inputDateIntoField` — its `.should('be.visible')` then `.type()` cannot work against the v8+ hidden mirror input, and its `{selectall}{del}` prefix is what caused step 1's nine CI failures. Do not reintroduce that prefix
-- [x] update `ExportPage.ts` `DATE_RANGES`, `VestingPage.ts` `DATE_INPUT`, `SendPage.ts` `END_DATE` and the ``${END_DATE} input`` value assertion
-- [x] prefer app-owned `data-cy` hooks over MUI implementation details, following the convention step 2 established for icons
-- [x] sweep for any other picker-DOM-dependent selector Task 2 surfaced
-- [x] run the verification gate
-
-**Task 5 findings (2026-07-28):**
-
-- New `BasePage.setPickersFieldValue(fieldSelector, value)`: asserts the field container is
-  visible, then writes the full formatted value into the **hidden mirror input** via the native
-  `HTMLInputElement.prototype.value` setter + a bubbling `input` event (the mirror's `onChange`
-  parses a full value string — this is the v9-supported autofill path), then asserts
-  `hasValue(<field> input, value)` so a rejected parse cannot pass silently. `.type()`/`.clear()`
-  are impossible: the only `<input>` is visually hidden and fails Cypress actionability.
-- `Common.inputDateIntoField` now takes the field **container** selector and delegates to
-  `setPickersFieldValue`. No `{selectall}{del}` prefix, no separate `clear()` — both prior
-  failure modes stay excluded, and the whole write is one command so mid-command re-render
-  detachment can't bite.
-- Selector changes: `VestingPage.DATE_INPUT` dropped its ` input` suffix (container now);
-  `SendPage` needed **no code change** — `START_DATE`/`END_DATE` were already containers and the
-  ``${END_DATE} input`` assertions read the hidden mirror, whose value is the same formatted
-  string the helper writes. `ExportPage.DATE_RANGES` (a Stack wrapping both fields, indexed
-  0/-1) is replaced by app-owned hooks: new `data-cy="export-start-date"` / `"export-end-date"`
-  on the two `AccountingExportForm.tsx` textField slots; `changeExportEndDate` still only
-  clicks (focus-shift to commit the start date — the historical "autofills 0s" comment kept).
-- Sweep: no other picker-DOM selector exists in `tests/` (re-grepped `.Mui` picker tokens —
-  only `ExportPage.FILTER_INPUT_FIELDS`, which is DataGrid filter-panel DOM, unchanged in v9).
-- Gate: `pnpm typecheck`, `pnpm lint`, `pnpm build` green; tests-package `tsc` errors are all
-  pre-existing viem/ox `node_modules` noise, page objects compile clean.
-- **Cypress A/B against the production build** (orphaned `next start` on :3000 killed first —
-  the Task 1 trap fired again): failure set **strictly smaller** than the Task 1 baseline.
-
-  | spec | tests | passing | failing (baseline) |
-  |---|---|---|---|
-  | ExportPage | 12 | 4 | **8** (8, identical names) |
-  | SendPage | 21 | 16 | **5** (6 — "Modifying a stream with just end date" now passes) |
-  | VestingPageOne | 16 | 15 | **1** (1, same: Change network button) |
-  | VestingPageTwo | 19 | 19 | 0 (0) |
-  | VestingPageThree | 13 | 13 | 0 (0) |
-  | VestingPageV2 | 1 | 1 | 0 (0) |
-  | **total** | **82** | **68** | **14** (15) |
-
-  Every failing name is in the baseline set; no new failures.
+- [ ] rewrite `Common.inputDateIntoField` — its `.should('be.visible')` then `.type()` cannot work against the v8+ hidden mirror input, and its `{selectall}{del}` prefix is what caused step 1's nine CI failures. Do not reintroduce that prefix
+- [ ] update `ExportPage.ts` `DATE_RANGES`, `VestingPage.ts` `DATE_INPUT`, `SendPage.ts` `END_DATE` and the ``${END_DATE} input`` value assertion
+- [ ] prefer app-owned `data-cy` hooks over MUI implementation details, following the convention step 2 established for icons
+- [ ] sweep for any other picker-DOM-dependent selector Task 2 surfaced
+- [ ] run the verification gate
 
 ### Task 6: A/B verify step 3
-- [x] `pnpm build && pnpm start`, re-run `ExportPage`, `SendPage` and `VestingPage` **together** — step 1 ran only `ExportPage` and that is exactly how nine CI regressions got through
-- [x] run any spec touching the DataGrid column menu / pagination — `ExportPage` is the only spec touching DataGrid DOM (`COLUMN_HEADERS`, `HEADER_TRIPLE_DOTS` column menu, `data-field` header clicks); included in the run
-- [x] compare against the Task 1 baseline: **failure set identical by name, or strictly smaller** — strictly smaller (14 vs 15)
-- [x] record the before/after table in this file
-- [x] ⚠️ if any new failure appears, diagnose it before proceeding — none appeared; every failing name is in the baseline set
-
-**Task 6 findings (2026-07-28, single Cypress run of all six specs together, fresh `pnpm build && pnpm start`, port 3000 verified free beforehand):**
-
-| spec | tests | passing | failing (Task 1 baseline) |
-|---|---|---|---|
-| ExportPage | 12 | 4 | **8** (8, identical names) |
-| SendPage | 21 | 16 | **5** (6 — "Modifying a stream with just end date" passes again) |
-| VestingPageOne | 16 | 15 | **1** (1, same: Change network button) |
-| VestingPageTwo | 19 | 19 | 0 (0) |
-| VestingPageThree | 13 | 13 | 0 (0) |
-| VestingPageV2 | 1 | 1 | 0 (0) |
-| **total** | **82** | **68** | **14** (15) |
-
-- Failing names, all in the Task 1 known-unrelated set: ExportPage — price granularity/accounting
-  periods examples #1–#4, multiple addresses export, counterparty export, date range, CSV export;
-  SendPage — stream tables (just start date / start+end / end date), modifying a streams start
-  date, modifying a stream with start and end date (not started yet); VestingPageOne — change
-  network button.
-- Matches the Task 5 partial A/B exactly; running all six specs together (the step-1 lesson)
-  changed nothing. The Task 3 pagination watch item did not fire — no failure mentions row-count
-  text. DataGrid column-menu interactions in ExportPage's 4 passing scenarios behaved normally.
+- [ ] `pnpm build && pnpm start`, re-run `ExportPage`, `SendPage` and `VestingPage` **together** — step 1 ran only `ExportPage` and that is exactly how nine CI regressions got through
+- [ ] run any spec touching the DataGrid column menu / pagination
+- [ ] compare against the Task 1 baseline: **failure set identical by name, or strictly smaller**
+- [ ] record the before/after table in this file
+- [ ] ⚠️ if any new failure appears, diagnose it before proceeding — do not carry it into step 4
 
 ### Task 7: Bring `docs/plans/mui-v6-to-v9-upgrade.md` up to date
-- [x] add the missing **§Step 2 outcome** section — reconstruct from PR #880's body, which is currently the *only* record of that step (no session file was written)
-- [x] add the `{selectall}{del}` finding to §Step 1 outcome — the plan still does not record it, and it is the most reusable lesson in the project
-- [x] add a **§Step 3 outcome** section: what shipped, what was verified and how, and every place this plan's prose turned out to be wrong
-- [x] resolve the two §Open questions if Task 2 answered them — "can v6 skip v7" marked resolved-as-moot (step 2 shipped via the v7 stop, which X v9's `^7.3.0` peer made load-bearing anyway); the Emotion SSR question stays explicitly open, assigned to step 4 (Task 2 did not touch that surface)
-
-**Task 7 findings (2026-07-28):** §Step 2 outcome reconstructed from PR #880's body (merge
-`91b99ec5`) — versions/lab co-bump, Grid → `GridLegacy` pins, `createPalette` augmentation move,
-the 45-icon `data-testid` production gate and the 214/21/identical A/B. §Step 1 outcome gained the
-`{selectall}{del}` lesson (Cypress `{selectall}` is not a Ctrl+A keydown; write the full formatted
-value instead — still true in v9 per the Task 2 source read). §Step 3 outcome records the 9.10.1
-bump, pin removal, `PickersTextField` rebase, hidden-mirror-input selector strategy, the 82/15→14
-A/B, and four prose corrections (END_DATE needed no change; codemod noise recurred identically;
-the stale-server port-3000 trap; the pagination watch item that never fired). Header "Not started"
-updated to "steps 1–3 implemented".
+- [ ] add the missing **§Step 2 outcome** section — reconstruct from PR #880's body, which is currently the *only* record of that step (no session file was written)
+- [ ] add the `{selectall}{del}` finding to §Step 1 outcome — the plan still does not record it, and it is the most reusable lesson in the project
+- [ ] add a **§Step 3 outcome** section: what shipped, what was verified and how, and every place this plan's prose turned out to be wrong
+- [ ] resolve the two §Open questions if Task 2 answered them
 
 ### Task 8: Ship step 3
-- [x] review the full diff; confirm `tests/cypress.env.json` is **not** staged — reviewed the whole branch diff vs `origin/master` (12 files); `cypress.env.json` is gitignored (`tests/.gitignore:7`) and appears nowhere in `git log --all`
-- [x] commit and push this ralphex worktree's branch — pushed as `origin/mui-x-v9-and-core-v9`
-- [x] open a PR to **`master`** describing the bump, the pin removal and the selector migration, with the A/B table as evidence — follow #880's PR body as the format precedent — **PR #881** (https://github.com/superfluid-org/superfluid-dashboard/pull/881)
-- [x] **STOP — this is the end of ralphex run 1.** Do not start Part B in this run: it needs step 3 merged and the browser gate answered (Task 9), and it ships as its own PR from a fresh worktree off updated `master`
+- [ ] review the full diff; confirm `tests/cypress.env.json` is **not** staged
+- [ ] commit and push this ralphex worktree's branch
+- [ ] open a PR to **`master`** describing the bump, the pin removal and the selector migration, with the A/B table as evidence — follow #880's PR body as the format precedent
+- [ ] **STOP — this is the end of ralphex run 1.** Do not start Part B in this run: it needs step 3 merged and the browser gate answered (Task 9), and it ships as its own PR from a fresh worktree off updated `master`
 
 ---
 
@@ -399,30 +210,11 @@ updated to "steps 1–3 implemented".
 clearing the dependency chain.*
 
 ### Task 9: ⚠️ Browser-support gate — requires a human decision
-- [x] state plainly in this file that core v9 raises the browser floor to **Chrome 117 / Safari 17 / Firefox 121** — stated: **upgrading `@mui/material` to v9 drops support for any browser older than Chrome 117, Safari 17, or Firefox 121.** Users on older browsers will get a broken or unstyled dashboard
-- [x] **stop and ask the human** to confirm against analytics. The master plan calls this
+- [ ] state plainly in this file that core v9 raises the browser floor to **Chrome 117 / Safari 17 / Firefox 121**
+- [ ] **stop and ask the human** to confirm against analytics. The master plan calls this
       non-negotiable: *"probably fine for a crypto dashboard, but check."* An agent cannot check
-      analytics — do not assume, do not proceed on a guess — asked and answered, see below
-- [x] record the answer and who gave it before continuing
-
-**Answer: ACCEPTED.** Given by **Kaspar Kallas on 2026-07-28**, on the reasoning that the floor is
-MUI's own published requirement rather than anything this repo invented, and that this product's
-users run current browsers.
-
-**Recorded honestly: this was not checked against analytics.** No browser-version data was pulled;
-the decision rests on the owner's knowledge of the userbase. If a support report ever arrives from a
-user on an older browser, this is the decision to revisit — the symptom would be a broken or
-unstyled dashboard rather than an error message, which is easy to misdiagnose.
-
-**The gate is now closed and Part B is unblocked.** A later agent must not re-ask this.
-
-⚠️ **Ralphex run 1 halted here (2026-07-28).** Two blockers, both by design:
-1. **PR #881 (step 3) is still OPEN, not merged** — Task 10's precondition ("worktree off a
-   `master` that already contains merged step 3") fails, and Task 8 marks this commit as the end
-   of run 1. Part B must ship from a fresh worktree via a second ralphex run.
-2. **The analytics check needs a human.** Confirm the Chrome 117 / Safari 17 / Firefox 121 floor
-   against real usage data, record the answer and who gave it above, then merge #881 and start
-   ralphex run 2 for Tasks 9–18.
+      analytics — do not assume, do not proceed on a guess
+- [ ] record the answer and who gave it before continuing
 
 ### Task 10: Bump core to v9
 - [ ] confirm this is **ralphex run 2**, in a worktree off a `master` that already contains merged step 3 — if step 3's PR is not merged, mark ⚠️ and stop
