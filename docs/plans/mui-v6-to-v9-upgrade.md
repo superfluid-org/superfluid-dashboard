@@ -314,8 +314,9 @@ markup type-checks clean against the new `Grid` but would lay out differently �
 bare import flip is a silent layout change rather than a compile error. Their dialogs (Approvals →
 *Add Permissions*, Auto-wrap → *Add Token*) have no automated layout coverage; a reviewer was asked
 to eyeball them, and step 4 must re-check them. *(Step 4 postscript: the pin could not survive —
-`@mui/material@9.2.0` removes the `GridLegacy` export entirely, so step 4 migrated both dialogs to
-the v9 `Grid` after all, with a production-build rendered check. See §Step 4 outcome.)*
+`@mui/material@9.2.0` removes the `GridLegacy` export entirely, so step 4 rebuilt both dialogs
+with `Stack`/`Box` flex layout (no Grid), with a production-build rendered check. See §Step 4
+outcome.)*
 
 **Theme.** The palette augmentation moved to `@mui/material/styles` — mandatory, not cleanup: v7's
 `exports` map resolves `"./*"` → `"./*/index.d.ts"`, making `@mui/material/styles/createPalette`
@@ -430,7 +431,8 @@ decision to revisit; the symptom will not be an error message.
   `standard`, `slotProps.paper` for the Menu/Select defaults), not dropped. `cssVariables` was left
   untouched, per §Top risk.
 - ➕ **Unanticipated: `GridLegacy` is removed from `@mui/material@9.2.0`'s exports** (TS2305). The
-  two dialogs step 2 pinned to it had to migrate to the v9 `Grid` (`size={{...}}`) after all.
+  two dialogs step 2 pinned to it had to migrate off it after all — rebuilt with `Stack`/`Box`
+  flex layout (no Grid; `flexWrap: "wrap"` preserves the old container's wrapping).
   Rendered check in a production build: both dialogs' Network/Token columns visible, sharing a row
   on desktop, stacking at a 390 px mobile viewport.
 - **Cypress class-token sweep: zero changes.** 47 `.Mui*`/`PrivateSwitchBase` usages across 10 page

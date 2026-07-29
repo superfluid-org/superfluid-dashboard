@@ -86,7 +86,7 @@ When working with:
 - **New Features**: Create a new directory in `src/features/`
 - **API Integration**: Add new endpoints to existing RTK Query slices or create new ones
 - **Smart Contracts**: Use ABIs/addresses from `@sfpro/sdk`; for contracts it lacks, define the ABI inline (viem `const`-asserted) in the consuming feature or ask whether it belongs in the SDK
-- **UI Components**: Use Material-UI components and follow existing patterns in `src/components/`
+- **UI Components**: Use Material-UI components and follow existing patterns in `src/components/`. Style via `sx` (v9 removed component system props like `gap`/`alignItems` on `Stack`/`Typography`) and use `slotProps.*` — never legacy `PaperProps`/`inputProps`/`*TypographyProps` (some deprecated props still type-check, so the compiler won't flag them)
 
 ### Notes
 - Advanced features available via `window.superfluid_dashboard.advanced` (see README)

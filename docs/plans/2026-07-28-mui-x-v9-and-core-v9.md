@@ -550,7 +550,7 @@ unstyled dashboard rather than an error message, which is easy to misdiagnose.
 - [x] remove the override keys deleted in v9 from `src/features/theme/theme.ts`: `MuiButton.outlinedSecondary` (~:724), Chip `avatarMedium` / `iconMedium` / `deleteIconMedium` (~:900-906), combined Alert `standard*` (~:930-939), `MuiListItemText.primaryTypographyProps` (~:991-996), Menu/Popover `PaperProps` + `TransitionProps` defaults (~:1033-1054), Tooltip `PopperProps` (~:1170-1174), CardHeader `subheaderTypographyProps` (~:1199-1203) — done, behavior-preserving (variants / class-selector nesting / `slotProps.*`), not dropped; see findings
 - [x] replace removed component props: `Avatar` `imgProps` at `token/TokenIcon.tsx:151-159`; `Drawer` `SlideProps` + `PaperProps` at `transactionDrawer/TransactionDrawer.tsx:36-46` — both already converted by Task 12's `deprecations/all` codemod (`slotProps.img`, `slotProps.transition`/`.paper`), verified gone by grep
 - [x] rename the removed duplicate icon export `AddCircleOutline` → `AddCircleOutlined` at `pages/ui-lab.tsx`, `tokenWrapping/TokenListItem.tsx`, `send/stream/SendStream.tsx` — note `pages/ui-lab.tsx` no longer exists (Task 11 finding); `SendStream.tsx` has no such import either; only `TokenListItem.tsx` needed it, and the correct rename is **`AddCircleOutlineOutlined`** (the outline glyph), not `AddCircleOutlined` (the filled glyph) as the plan prose claimed
-- [x] ➕ migrate the two `GridLegacy` dialogs off `GridLegacy` — the export is **removed** in `@mui/material@9.2.0` (TS2305), discovered in Task 11: `tokenAccess/dialog/UpsertTokenAccessForm.tsx` and `auto-wrap/dialogs/AutoWrapAddTokenDialogSection.tsx` — migrated to the v9 `Grid` (`size={{...}}` API). Task 16's rendered check of these dialogs becomes even more important
+- [x] ➕ migrate the two `GridLegacy` dialogs off `GridLegacy` — the export is **removed** in `@mui/material@9.2.0` (TS2305), discovered in Task 11: `tokenAccess/dialog/UpsertTokenAccessForm.tsx` and `auto-wrap/dialogs/AutoWrapAddTokenDialogSection.tsx` — rebuilt with `Stack`/`Box` flex layout (no Grid at all; `flexWrap: "wrap"` preserves the GridLegacy container's wrapping). Task 16's rendered check of these dialogs becomes even more important
 - [x] **do not** switch to the CSS-variables theme — `cssVariables` defaults to false and is not forced; `getModeStyleCB`, the separate `LIGHT_THEME`/`DARK_THEME` objects and `palette.mode` all keep working unchanged — not switched
 - [x] run the verification gate — typecheck **7 → 0** (burn-down 508 → 0 complete), lint green, production build green, Cypress A/B below
 
@@ -571,8 +571,9 @@ unstyled dashboard rather than an error message, which is easy to misdiagnose.
   `AddCircleOutlineOutlined` — `AddCircleOutlined` is the *filled* circle-plus glyph. The plan
   prose (and master plan) had this wrong; `TokenListItem.tsx` imports
   `@mui/icons-material/AddCircleOutlineOutlined` under the local name `AddCircleOutline`.
-- GridLegacy dialogs now use v9 `Grid` with the `size` prop; their `gap` system props had
-  already moved to `sx` in Task 11.
+- GridLegacy dialogs were rebuilt with `Stack`/`Box` flex layout (not the v9 `Grid` — no Grid
+  remains in either file; `flexWrap: "wrap"` on the container Stack preserves the old Grid
+  container's wrapping); their `gap` system props had already moved to `sx` in Task 11.
 - **Cypress A/B (production `pnpm build && pnpm start`, all six specs one run, port 3000
   verified free): 82 / 68 / 14 — failure set identical by name to the Task 10 baseline.**
   ExportPage 8 (price granularity #1–#4, multiple addresses, counterparty, date range, CSV),
@@ -701,8 +702,8 @@ unstyled dashboard rather than an error message, which is easy to misdiagnose.
   (`GridLegacyDialogsOneOff.feature` + step definitions) opened both migrated dialogs — Approvals →
   *Add Permissions* (alice/polygon) and Auto-wrap → *Add Token* (john/opsepolia) — and asserted the
   Network and Token selector columns are visible, share a row on desktop (tops within 5 px), and
-  stack vertically at a 390×844 mobile viewport. Both dialogs render their v9 `Grid size={{...}}`
-  layout correctly in the production build. Per the Task 4 precedent the one-off files were **not
+  stack vertically at a 390×844 mobile viewport. Both dialogs render their `Stack`/`Box` flex
+  layout (the Task 13 GridLegacy replacement) correctly in the production build. Per the Task 4 precedent the one-off files were **not
   committed** (CI's UI group runs without `--spec`, so a committed root-level feature would join the
   CI spec set); deleted after the run.
 - **Operational:** the stale-run trap has a new variant — two overlapping Cypress runs left over
@@ -794,9 +795,9 @@ calls `preventDefault`, which is what prevents a double-toggle.
   against real analytics. This is Task 9 and it is a hard gate.
 
 **Manual verification**
-- The two `GridLegacy` dialogs — Approvals → *Add Permissions*, Auto-wrap → *Add Token*. Nothing
-  automated covers their layout; step 2's PR asked a reviewer to eyeball them and step 4 changes the
-  surface again.
+- The two former-`GridLegacy` dialogs — Approvals → *Add Permissions*, Auto-wrap → *Add Token*.
+  Step 4's one-off rendered check passed (2/2) but was deliberately not committed, so no committed
+  automated coverage exists for their layout.
 - Mobile picker behaviour on a **real touch device**. The forced-media-query trick reproduces it on
   desktop Chrome, which is enough to catch regressions but is not the real thing.
 - `DateTimePicker` desktop confirmation UX. Since v8 it requires an explicit Cancel/OK action bar on
@@ -807,6 +808,21 @@ calls `preventDefault`, which is what prevents a double-toggle.
 - `{selectall}{del}` no longer clears a picker field **for real users**, in both DOM modes. Upstream
   v8 behaviour, not introduced by this work. "Select all, delete" is a reasonable user action and
   nobody has decided whether to care.
+
+**Known test-suite debt (pre-existing, surfaced by this migration's review)**
+- **The 20 pre-existing Cypress failures blind the A/B gate exactly where it matters most.**
+  ExportPage (the page object densest in `MuiDataGrid-*`/picker-calendar selectors) has 8 of 12
+  tests failing pre-existing; a *new* regression inside an already-failing test is invisible to
+  "failure set identical by name". Fixing or quarantining these 20 would make the suite green and
+  turn every future MUI bump's gate into simply "any failure = regression".
+- **The theme re-expressions (Task 13) have zero style assertions anywhere.** A typo in a
+  hand-written class selector (e.g. `MuiAlert-colorSucess`) silently drops the style with every
+  test green. A cheap smoke asserting computed style on one Alert per severity (border-left-color)
+  would cover the riskiest hand-translation.
+- **Two `@skip` BridgePage scenarios are pinned to permanently-dead selectors**
+  (`[data-testid=WarningAmberRoundedIcon]` etc. in `tests/cypress/pageObjects/pages/BridgePage.ts`)
+  — MUI emits icon `data-testid` only in non-production builds, so they can never pass if
+  unskipped. Delete or rewrite against stable attributes.
 
 **Separate projects, deliberately excluded**
 - **CSS-variables theme.** Genuinely worthwhile — SSR-safe theming, no flash-of-wrong-theme, mode
