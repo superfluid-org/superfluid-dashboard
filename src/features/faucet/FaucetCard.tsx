@@ -60,7 +60,7 @@ const FaucetCard: FC = () => {
 
             secondary: {
               variant: "body1",
-              color: "text.primary",
+              color: "textPrimary",
             }
           }} />
         {isBelowMd && <ClaimTokensBtn />}

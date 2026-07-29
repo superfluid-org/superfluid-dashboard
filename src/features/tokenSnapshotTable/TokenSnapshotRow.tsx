@@ -196,7 +196,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
 
                 secondary: {
                   variant: "body2mono",
-                  color: "text.secondary",
+                  color: "textSecondary",
                 }
               }} />
           </ListItem>
@@ -239,7 +239,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
 
                     secondary: {
                       variant: "body2mono",
-                      color: "text.secondary",
+                      color: "textSecondary",
                     }
                   }} />
               </ListItem>
@@ -277,7 +277,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
 
                     secondary: {
                       variant: "body2mono",
-                      color: "text.secondary",
+                      color: "textSecondary",
                     }
                   }} />
               ) : (
@@ -361,7 +361,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
 
                   secondary: {
                     variant: "body2mono",
-                    color: "text.secondary",
+                    color: "textSecondary",
                   }
                 }} />
             </ListItem>

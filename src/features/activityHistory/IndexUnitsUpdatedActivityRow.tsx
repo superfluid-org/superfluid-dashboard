@@ -109,7 +109,7 @@ const IndexUnitsUpdatedActivityRow: FC<IndexUnitsUpdatedActivityRowProps> = ({
 
               secondary: {
                 variant: "body2mono",
-                color: "text.secondary",
+                color: "textSecondary",
               }
             }} />
         </ListItem>
@@ -138,7 +138,7 @@ const IndexUnitsUpdatedActivityRow: FC<IndexUnitsUpdatedActivityRowProps> = ({
 
                   secondary: {
                     variant: "body2mono",
-                    color: "text.secondary",
+                    color: "textSecondary",
                     translate: "yes",
                   }
                 }} />
@@ -172,7 +172,7 @@ const IndexUnitsUpdatedActivityRow: FC<IndexUnitsUpdatedActivityRowProps> = ({
                 slotProps={{
                   primary: {
                     variant: "body2",
-                    color: "text.secondary",
+                    color: "textSecondary",
                     translate: "yes",
                   }
                 }}
@@ -205,7 +205,7 @@ const IndexUnitsUpdatedActivityRow: FC<IndexUnitsUpdatedActivityRowProps> = ({
 
                 secondary: {
                   variant: "body2mono",
-                  color: "text.secondary",
+                  color: "textSecondary",
                   translate: "yes",
                 }
               }} />

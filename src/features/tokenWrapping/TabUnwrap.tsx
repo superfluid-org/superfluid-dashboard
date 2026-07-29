@@ -133,7 +133,7 @@ export const TabUnwrap = memo(function TabUnwrap(props: TabUnwrapProps) {
                 chainId={network.id}
                 accountAddress={visibleAddress}
                 tokenAddress={tokenPair.superTokenAddress}
-                TypographyProps={{ color: "text.secondary" }}
+                TypographyProps={{ color: "textSecondary" }}
               />
               {realtimeBalance && (
                 <MaxAmountController

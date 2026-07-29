@@ -439,7 +439,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                 chainId={network.id}
                 accountAddress={visibleAddress}
                 tokenAddress={superToken.address}
-                TypographyProps={{ color: "text.secondary" }}
+                TypographyProps={{ color: "textSecondary" }}
               />
             </Stack>
           )}

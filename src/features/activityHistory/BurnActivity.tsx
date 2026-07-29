@@ -76,7 +76,7 @@ const BurnActivity: FC<BurnActivityProps> = ({
 
               secondary: {
                 variant: "body2mono",
-                color: "text.secondary",
+                color: "textSecondary",
               }
             }} />
         </ListItem>
@@ -111,7 +111,7 @@ const BurnActivity: FC<BurnActivityProps> = ({
 
                     secondary: {
                       variant: "body2mono",
-                      color: "text.secondary",
+                      color: "textSecondary",
                     }
                   }} />
               </ListItem>
@@ -143,7 +143,7 @@ const BurnActivity: FC<BurnActivityProps> = ({
 
                     secondary: {
                       variant: "body2mono",
-                      color: "text.secondary",
+                      color: "textSecondary",
                     }
                   }} />
               </ListItem>

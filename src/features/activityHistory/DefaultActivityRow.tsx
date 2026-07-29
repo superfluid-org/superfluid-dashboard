@@ -42,7 +42,7 @@ const DefaultActivityRow: FC<DefaultActivityRowProps> = ({
 
               secondary: {
                 variant: "body2mono",
-                color: "text.secondary",
+                color: "textSecondary",
               }
             }} />
         </ListItem>

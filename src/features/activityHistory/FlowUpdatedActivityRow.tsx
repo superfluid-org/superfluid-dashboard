@@ -141,7 +141,7 @@ const FlowUpdatedActivityRow: FC<FlowUpdatedActivityRowProps> = ({
 
               secondary: {
                 variant: "body2mono",
-                color: "text.secondary",
+                color: "textSecondary",
               }
             }} />
         </ListItem>
@@ -206,7 +206,7 @@ const FlowUpdatedActivityRow: FC<FlowUpdatedActivityRowProps> = ({
 
                   secondary: {
                     variant: "body2mono",
-                    color: "text.secondary",
+                    color: "textSecondary",
                   }
                 }} />
             </ListItem>
@@ -237,7 +237,7 @@ const FlowUpdatedActivityRow: FC<FlowUpdatedActivityRowProps> = ({
                   primary: {
                     translate: "yes",
                     variant: "body2",
-                    color: "text.secondary",
+                    color: "textSecondary",
                   }
                 }}
               />
@@ -292,7 +292,7 @@ const FlowUpdatedActivityRow: FC<FlowUpdatedActivityRowProps> = ({
 
                 secondary: {
                   variant: "body2mono",
-                  color: "text.secondary",
+                  color: "textSecondary",
                 }
               }} />
             <TokenIcon

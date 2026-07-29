@@ -80,7 +80,7 @@ const MintActivityRow: FC<MintActivityRowProps> = ({
 
               secondary: {
                 variant: "body2mono",
-                color: "text.secondary",
+                color: "textSecondary",
               }
             }} />
         </ListItem>
@@ -115,7 +115,7 @@ const MintActivityRow: FC<MintActivityRowProps> = ({
 
                     secondary: {
                       variant: "body2mono",
-                      color: "text.secondary",
+                      color: "textSecondary",
                     }
                   }} />
               )}
@@ -150,7 +150,7 @@ const MintActivityRow: FC<MintActivityRowProps> = ({
 
                     secondary: {
                       variant: "body2mono",
-                      color: "text.secondary",
+                      color: "textSecondary",
                     }
                   }} />
               )}

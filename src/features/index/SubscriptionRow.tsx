@@ -208,7 +208,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
             <Typography
               data-cy={"status"}
               variant="body2"
-              color={subscription.approved ? "primary" : "warning.main"}
+              color={subscription.approved ? "primary" : "warning"}
               translate="yes"
             >
               {subscription.approved ? (
@@ -240,7 +240,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
               secondary: {
                 variant: "body2",
                 translate: "yes",
-                color: subscription.approved ? "primary" : "warning.main",
+                color: subscription.approved ? "primary" : "warning",
                 sx: { whiteSpace: "pre" },
               }
             }} />

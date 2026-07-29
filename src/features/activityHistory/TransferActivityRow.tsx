@@ -81,7 +81,7 @@ const TransferActivityRow: FC<TransferActivityRowProps> = ({
 
               secondary: {
                 variant: "body2mono",
-                color: "text.secondary",
+                color: "textSecondary",
               }
             }} />
         </ListItem>
@@ -118,7 +118,7 @@ const TransferActivityRow: FC<TransferActivityRowProps> = ({
 
                     secondary: {
                       variant: "body2mono",
-                      color: "text.secondary",
+                      color: "textSecondary",
                     }
                   }} />
               )}
@@ -149,7 +149,7 @@ const TransferActivityRow: FC<TransferActivityRowProps> = ({
                   primary: {
                     translate: "yes",
                     variant: "body2",
-                    color: "text.secondary",
+                    color: "textSecondary",
                   }
                 }}
               />

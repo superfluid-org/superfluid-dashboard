@@ -201,7 +201,7 @@ const VestingRow: FC<VestingRowProps> = ({
               secondary={format(fromUnixTime(endDate), "LLL d, yyyy HH:mm")}
               slotProps={{
                 primary: { variant: "body2" },
-                secondary: { color: "text.primary" }
+                secondary: { color: "textPrimary" }
               }} />
           </TableCell>
           <TableCell sx={{ pl: 0 }}>

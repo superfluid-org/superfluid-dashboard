@@ -98,7 +98,7 @@ const IndexUpdatedActivityRow: FC<IndexUpdatedActivityRowProps> = ({
 
               secondary: {
                 variant: "body2mono",
-                color: "text.secondary",
+                color: "textSecondary",
               }
             }} />
         </ListItem>
@@ -134,7 +134,7 @@ const IndexUpdatedActivityRow: FC<IndexUpdatedActivityRowProps> = ({
 
                   secondary: {
                     variant: "body2mono",
-                    color: "text.secondary",
+                    color: "textSecondary",
                   }
                 }} />
             </ListItem>
@@ -163,12 +163,12 @@ const IndexUpdatedActivityRow: FC<IndexUpdatedActivityRowProps> = ({
                 slotProps={{
                   primary: {
                     variant: "h6",
-                    color: "text.primary",
+                    color: "textPrimary",
                   },
 
                   secondary: {
                     variant: "body2",
-                    color: "text.secondary",
+                    color: "textSecondary",
                   }
                 }} />
             </ListItem>
@@ -205,7 +205,7 @@ const IndexUpdatedActivityRow: FC<IndexUpdatedActivityRowProps> = ({
 
                 secondary: {
                   variant: "body2mono",
-                  color: "text.secondary",
+                  color: "textSecondary",
                 }
               }} />
             <TokenIcon

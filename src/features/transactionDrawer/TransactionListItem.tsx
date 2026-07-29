@@ -126,7 +126,7 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
                         slotProps={{
                           primary: {
                             variant: "body2",
-                            color: "text.secondary",
+                            color: "textSecondary",
                           }
                         }}
                         sx={{ my: 0.25 }}

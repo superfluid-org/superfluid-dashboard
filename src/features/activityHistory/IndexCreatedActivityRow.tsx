@@ -56,7 +56,7 @@ const IndexCreatedActivityRow: FC<IndexCreatedActivityRowProps> = ({
 
               secondary: {
                 variant: "body2mono",
-                color: "text.secondary",
+                color: "textSecondary",
               }
             }} />
         </ListItem>

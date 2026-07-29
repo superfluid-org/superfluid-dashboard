@@ -76,7 +76,7 @@ const LiquidatedActivityRow: FC<LiquidatedActivityRowProps> = ({
 
               secondary: {
                 variant: "body2mono",
-                color: "text.secondary",
+                color: "textSecondary",
               }
             }} />
         </ListItem>
@@ -105,7 +105,7 @@ const LiquidatedActivityRow: FC<LiquidatedActivityRowProps> = ({
 
                   secondary: {
                     variant: "body2mono",
-                    color: "text.secondary",
+                    color: "textSecondary",
                   }
                 }} />
             </ListItem>
@@ -140,7 +140,7 @@ const LiquidatedActivityRow: FC<LiquidatedActivityRowProps> = ({
                       primary: {
                         translate: "yes",
                         variant: "body2mono",
-                        color: "text.secondary",
+                        color: "textSecondary",
                       }
                     }}
                   />

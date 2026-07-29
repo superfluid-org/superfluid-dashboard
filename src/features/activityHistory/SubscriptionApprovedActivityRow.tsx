@@ -104,7 +104,7 @@ const SubscriptionApprovedActivityRow: FC<
 
               secondary: {
                 variant: "body2mono",
-                color: "text.secondary",
+                color: "textSecondary",
               }
             }} />
         </ListItem>
@@ -174,7 +174,7 @@ const SubscriptionApprovedActivityRow: FC<
                 slotProps={{
                   primary: {
                     variant: "body2",
-                    color: "text.secondary",
+                    color: "textSecondary",
                     translate: "yes",
                   }
                 }}

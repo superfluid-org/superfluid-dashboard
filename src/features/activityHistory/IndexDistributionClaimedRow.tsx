@@ -74,7 +74,7 @@ const IndexDistributionClaimedRow: FC<IndexDistributionClaimedRowProps> = ({
 
               secondary: {
                 variant: "body2mono",
-                color: "text.secondary",
+                color: "textSecondary",
               }
             }} />
         </ListItem>
@@ -139,7 +139,7 @@ const IndexDistributionClaimedRow: FC<IndexDistributionClaimedRowProps> = ({
                 slotProps={{
                   primary: {
                     variant: "body2",
-                    color: "text.secondary",
+                    color: "textSecondary",
                     translate: "yes",
                   }
                 }}
