@@ -21,6 +21,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - `pnpm cypress open` - Open Cypress test runner
   - `pnpm cypress run --env network=opsepolia` - Run tests for specific network
   - Test files use Cucumber/Gherkin syntax (`.feature` files)
+  - New e2e selectors must use explicit `data-cy` hooks on app-owned elements — MUI icons do not carry `data-testid` in production builds (which is what CI tests against), and MUI class tokens are implementation details
 
 ## Architecture Overview
 
@@ -30,7 +31,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Redux Toolkit** with RTK Query for state management and API calls
 - **Wagmi v2** for Web3 wallet connections
 - **Ethers v5** for legacy Web3 interactions involving @superfluid-finance/sdk-core & @superfluid-finance/sdk-redux
-- **Material-UI v6** for UI components
+- **Material-UI v9** for UI components (exact-pinned versions, never `^` — see `docs/plans/mui-v6-to-v9-upgrade.md`)
 - **Emotion** for CSS-in-JS styling
 
 ### Key Architectural Patterns

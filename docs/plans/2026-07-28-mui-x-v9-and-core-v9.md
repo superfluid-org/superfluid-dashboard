@@ -726,10 +726,10 @@ explicitly out of scope (stays v2). Verification commands: `grep '"@mui/' packag
 `node -p "require('date-fns/package.json').version"`, plus the full gate.
 
 ### Task 18: [Final] Documentation and ship
-- [ ] add **§Step 4 outcome** to `docs/plans/mui-v6-to-v9-upgrade.md`, and mark the overall migration complete
-- [ ] correct every place the master plan turned out to be wrong — it has been wrong at least once per step, and recording that is what makes the next migration cheaper
-- [ ] update `README.md` / `AGENTS.md` if any convention changed (e.g. the step-2 rule that new e2e selectors must add an explicit `data-cy`, since MUI icons no longer carry a free `data-testid` in production)
-- [ ] commit, push, open the step-4 PR to **`master`** with the A/B table and the dedup evidence
+- [x] add **§Step 4 outcome** to `docs/plans/mui-v6-to-v9-upgrade.md`, and mark the overall migration complete — added; header now reads "MIGRATION COMPLETE (2026-07-29)"
+- [x] correct every place the master plan turned out to be wrong — corrected in place: the §Sequencing step-4 icon rename (wrong glyph, wrong file list), the §Step 2 "dedupe cannot merge across majors" framing (postscript: install-time convergence made dedupe moot), the §Step 2 GridLegacy pin (postscript: v9 removes the export), and the Emotion SSR open question (resolved empirically — custom pattern shipped unchanged and works under v9; doc status not re-verified, `@mui/material-nextjs` still not installed)
+- [x] update `README.md` / `AGENTS.md` if any convention changed — no `AGENTS.md` exists and `README.md` makes no MUI-version claims; `CLAUDE.md` (the agent-docs equivalent) updated: Material-UI v6 → v9 with the exact-pin rule, plus the step-2 `data-cy` e2e-selector convention under Testing
+- [x] commit, push, open the step-4 PR to **`master`** with the A/B table and the dedup evidence — see findings below
 
 ---
 
