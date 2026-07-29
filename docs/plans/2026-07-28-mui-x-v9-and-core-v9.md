@@ -622,10 +622,38 @@ unstyled dashboard rather than an error message, which is easy to misdiagnose.
   page tables", live-data drift). No new failure; no token-shaped miss anywhere.
 
 ### Task 15: Confirm the dedup actually happened
-- [ ] verify `pnpm-lock.yaml` no longer resolves two `@mui/material` majors — the `@lifi/wallet-management` copy at 9.x should now converge with ours
-- [ ] run `pnpm dedupe` and confirm it collapses the duplicate (it could not before: `dedupe` cannot merge across majors, which is why steps 1–3 delivered no dedup)
-- [ ] record the before/after bundle impact in this file
-- [ ] ⚠️ if the copies do **not** converge, say so explicitly — the migration's headline justification would then be unrealised and the human needs to know
+- [x] verify `pnpm-lock.yaml` no longer resolves two `@mui/material` majors — confirmed: the lockfile contains exactly one `@mui/material@9.2.0` entry, `@lifi/wallet-management`'s dependency resolves to it, and `node_modules/.pnpm` holds a single physical copy that LiFi's `require.resolve` lands on
+- [x] run `pnpm dedupe` and confirm it collapses the duplicate — it found **zero** MUI changes (the convergence happened at install time in Task 10, as a resolver consequence of the major bump); its only finding was an unrelated `reselect 5.1.1 → 5.2.0` collapse, applied
+- [x] record the before/after bundle impact in this file — table below
+- [x] ⚠️ if the copies do **not** converge, say so explicitly — they converge; see findings
+
+**Task 15 findings (2026-07-29):**
+
+- **The dedup is real and complete.** On `master` (`f46d58d4`, pre-bump), a frozen-lockfile install
+  materialises **two** `@mui/material` copies in `node_modules/.pnpm` — `7.3.11` (ours) and `9.2.0`
+  (LiFi's). On this branch there is exactly **one** (`9.2.0`), every `@mui/*` package resolves to a
+  single version (`material`/`system`/`icons-material`/`utils`/`private-theming` 9.2.0,
+  `styled-engine` 9.1.1, `lab` 9.0.0-beta.6, X 9.10.1), and
+  `require.resolve('@mui/material', { paths: [@lifi/wallet-management] })` lands on our copy.
+- **`pnpm dedupe` had nothing MUI-shaped to do** — the plan's premise ("dedupe cannot merge across
+  majors") resolved itself: once our range admitted 9.x, pnpm converged both consumers at install
+  time. Applied its one unrelated finding (`reselect 5.1.1 → 5.2.0`, RTK transitive, 4-line
+  lockfile diff), then re-ran the full gate on the deduped lockfile.
+- **Bundle impact** (`pnpm build`, Next 16 webpack, all emitted `.next/static` JS — Next 16 no
+  longer prints per-route size tables; both sides built the same day on the same machine,
+  `master` via `pnpm install --frozen-lockfile` at `f46d58d4`):
+
+  | build | JS files | raw JS | gzip JS |
+  |---|---|---|---|
+  | `master` (core 7.3.11 + LiFi's MUI 9.2.0) | 269 | 14,935,880 B (14.24 MB) | 4,006,284 B (3.82 MB) |
+  | this branch (single MUI 9.2.0) | 269 | 14,683,747 B (14.00 MB) | 3,928,688 B (3.75 MB) |
+  | **delta** | 0 | **−252,133 B (−1.7%)** | **−77,596 B (−1.9%)** |
+
+  The modest headline number is expected: the duplicated copy sat mostly in the lazily-loaded LiFi
+  widget chunks, so the win concentrates there rather than in first-load JS, and the delta also
+  folds in core v9's own size changes. The structural win — one MUI copy in the graph, one theme
+  context, no risk of cross-copy `styled` mismatches — is fully realised.
+- Gate after dedupe: `pnpm typecheck`, `pnpm lint`, `pnpm build` all green.
 
 ### Task 16: Full A/B verification of step 4
 - [ ] `pnpm build && pnpm start`; run the **full** Cypress suite, not a subset
