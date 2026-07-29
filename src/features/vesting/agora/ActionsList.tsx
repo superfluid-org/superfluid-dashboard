@@ -46,7 +46,11 @@ export const ActionsList: FC<{
     }, [selectAction, deselectAction, actions])
 
     if (actions.length === 0) {
-        return <Typography variant="body2" color="text.secondary">No actions needed</Typography>;
+        return (
+            <Typography variant="body2" sx={{
+                color: "text.secondary"
+            }}>No actions needed</Typography>
+        );
     }
 
     return (
@@ -62,7 +66,9 @@ export const ActionsList: FC<{
                                 indeterminate={selected.length > 0 && selected.length < actions.length}
                                 checked={actions.length > 0 && selected.length === actions.length}
                                 onChange={handleSelectAllClick}
-                                inputProps={{ 'aria-label': 'select all actions' }}
+                                slotProps={{
+                                    input: { 'aria-label': 'select all actions' }
+                                }}
                             />
                         </TableCell>
                         <TableCell>Action Type</TableCell>
@@ -86,8 +92,10 @@ export const ActionsList: FC<{
                                     <Checkbox
                                         size="small"
                                         checked={action.selected}
-                                        inputProps={{ 'aria-labelledby': `action-${index}` }}
                                         onClick={() => handleClick(action)}
+                                        slotProps={{
+                                            input: { 'aria-labelledby': `action-${index}` }
+                                        }}
                                     />
                                 </TableCell>
                                 <TableCell>
@@ -180,10 +188,18 @@ const getActionDetails = (action: Actions, tokenSymbol: string | undefined) => {
             actionType = "Update Vesting Schedule";
             receiver = action.payload.receiver;
             amount = isDifference ? (
-                <Grid container spacing={1} alignItems="center">
-                    <Grid size={5} textAlign="right">{prevAmount}</Grid>
-                    <Grid size={2} textAlign="center">→</Grid>
-                    <Grid size={5} textAlign="left">{newAmount}</Grid>
+                <Grid container spacing={1} sx={{
+                    alignItems: "center"
+                }}>
+                    <Grid size={5} sx={{
+                        textAlign: "right"
+                    }}>{prevAmount}</Grid>
+                    <Grid size={2} sx={{
+                        textAlign: "center"
+                    }}>→</Grid>
+                    <Grid size={5} sx={{
+                        textAlign: "left"
+                    }}>{newAmount}</Grid>
                 </Grid>
             ) : `${newAmount} (unchanged)`;
             toDate = new Date(action.payload.endDate * 1000);

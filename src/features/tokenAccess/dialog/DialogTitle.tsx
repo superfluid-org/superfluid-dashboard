@@ -12,9 +12,10 @@ const EditDialogTitle: FC<PropsWithChildren & { dataCy?: string, onClose: () => 
   return (
     <Stack
       component={DialogTitle}
-      gap={0.5}
-      sx={{ p: 3.5 }}
-    >
+      sx={{
+        gap: 0.5,
+        p: 3.5
+      }}>
       {children}
       <IconButton
         aria-label="close"

@@ -80,7 +80,6 @@ export default memo(function MultiAddressSearch({
         </Button>
         {helperText && <FormHelperText>{helperText}</FormHelperText>}
       </FormGroup>
-
       {addresses.length > 0 && (
         <List>
           {addresses.map((address) => (
@@ -102,7 +101,9 @@ export default memo(function MultiAddressSearch({
                 primary={
                   <AddressName address={address} length={addressLength} />
                 }
-                primaryTypographyProps={{ variant: "h7" }}
+                slotProps={{
+                  primary: { variant: "h7" }
+                }}
               />
               <IconButton
                 data-cy="remove-address-btn"
@@ -115,7 +116,6 @@ export default memo(function MultiAddressSearch({
           ))}
         </List>
       )}
-
       <AddressSearchDialog
         disableAutoselect
         showSelected

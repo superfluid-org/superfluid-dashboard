@@ -19,7 +19,9 @@ const ApprovalsPage: NextPage = () => {
       {!address ? (
         <NoWalletConnected />
       ) : (
-        <Stack direction="column" gap={"30px"}>
+        <Stack direction="column" sx={{
+          gap: "30px"
+        }}>
           {visibleAddress && <TokenAccessTables key={visibleAddress} />}
         </Stack>
       )}

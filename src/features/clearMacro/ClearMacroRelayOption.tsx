@@ -226,10 +226,11 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
           <BoltRoundedIcon fontSize="small" sx={{ color: "text.disabled" }} />
           <Typography
             variant="body2"
-            color="text.secondary"
             translate="yes"
-            sx={{ flex: 1 }}
-          >
+            sx={{
+              color: "text.secondary",
+              flex: 1
+            }}>
             Gasless transactions aren&apos;t available for this wallet type
           </Typography>
           <TooltipWithIcon
@@ -315,13 +316,20 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
         ]),
       })}
     >
-      <Stack direction="row" alignItems="center" gap={1}>
+      <Stack
+        direction="row"
+        sx={{
+          alignItems: "center",
+          gap: 1
+        }}>
         <Switch
           data-cy="clear-macro-relay-switch"
           size="small"
           checked={isRelayEnabled}
           onChange={(_event, checked) => setRelayEnabled(checked)}
-          inputProps={{ "aria-label": "Toggle gasless transactions" }}
+          slotProps={{
+            input: { "aria-label": "Toggle gasless transactions" }
+          }}
         />
         <BoltRoundedIcon
           fontSize="small"
@@ -332,7 +340,9 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
             Gasless transaction
           </Typography>
           {fee.feeAvailable && (
-            <Typography variant="caption" color="text.secondary" translate="no">
+            <Typography variant="caption" translate="no" sx={{
+              color: "text.secondary"
+            }}>
               Service fee: {fee.feeText}
             </Typography>
           )}
@@ -340,10 +350,13 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
             <Typography
               data-cy="clear-macro-relay-required"
               variant="caption"
-              color="error.main"
               translate="yes"
-              sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
-            >
+              sx={{
+                color: "error.main",
+                display: "flex",
+                alignItems: "center",
+                gap: 0.5
+              }}>
               <ErrorOutlineRoundedIcon sx={{ fontSize: 14 }} />
               Turn this on to schedule streams on {network.name}.
             </Typography>
@@ -359,22 +372,25 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
           }
         />
       </Stack>
-
       {showPaymentSelector && (
-        <Stack gap={1} data-cy="clear-macro-payment-selector">
+        <Stack data-cy="clear-macro-payment-selector" sx={{
+          gap: 1
+        }}>
           <Stack
             direction="row"
-            alignItems="center"
-            gap={0.75}
             role="group"
             aria-label="Fee payment token"
-          >
+            sx={{
+              alignItems: "center",
+              gap: 0.75
+            }}>
             <Typography
               variant="caption"
-              color="text.secondary"
               translate="yes"
-              sx={{ whiteSpace: "nowrap" }}
-            >
+              sx={{
+                color: "text.secondary",
+                whiteSpace: "nowrap"
+              }}>
               Pay fee with
             </Typography>
             <FeeTokenChip
@@ -433,8 +449,10 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
                       setDialogLoadingInfo(
                         <Typography
                           variant="h5"
-                          color="text.secondary"
                           translate="yes"
+                          sx={{
+                            color: "text.secondary"
+                          }}
                         >
                           You&apos;re granting a one-time unlimited{" "}
                           <span translate="no">{underlyingSymbol}</span>{" "}

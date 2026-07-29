@@ -1,11 +1,9 @@
 import { FC, memo, useMemo } from "react";
 import ResponsiveDialog from "../../common/ResponsiveDialog";
 import {
+  Box,
   DialogContent,
   DialogTitle,
-  // See UpsertTokenAccessForm — legacy Grid markup, kept on GridLegacy so the
-  // v7 Grid rename cannot silently change this dialog's layout.
-  GridLegacy as Grid,
   IconButton,
   Stack,
   Typography,
@@ -60,14 +58,18 @@ const AutoWrapAddTokenForm: FC<{
           <CloseIcon data-cy="close-icon" />
         </IconButton>
       </Stack>
-      <Stack gap={3} component={DialogContent}>
-        <Grid
+      <Stack component={DialogContent} sx={{
+        gap: 3
+      }}>
+        <Stack
           direction={isBelowMd ? "column" : "row"}
-          gap={isBelowMd ? 2 : 0}
-          container
-          justifyContent={"space-between"}
+          sx={{
+            gap: isBelowMd ? 2 : 0,
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+          }}
         >
-          <Grid>
+          <Box>
             <FormGroup>
               <FormLabel>Network</FormLabel>
               <Controller
@@ -108,8 +110,8 @@ const AutoWrapAddTokenForm: FC<{
                 )}
               />
             </FormGroup>
-          </Grid>
-          <Grid gap={2}>
+          </Box>
+          <Box>
             <FormGroup>
               <FormLabel>Token</FormLabel>
               <Controller
@@ -142,8 +144,8 @@ const AutoWrapAddTokenForm: FC<{
                 )}
               />
             </FormGroup>
-          </Grid>
-        </Grid>
+          </Box>
+        </Stack>
         {token ? (
           <ConnectionBoundary expectedNetwork={network}>
             <AutoWrapEnableDialogContentSection
@@ -195,7 +197,7 @@ const AutoWrapAddTokenDialogSection: FC<{
         data-cy={"auto-wrap-add-token-dialog-section"}
         open={isEnableAutoWrapDialogOpen}
         onClose={closeEnableAutoWrapDialog}
-        PaperProps={{ sx: { borderRadius: "20px", maxWidth: 479 } }}
+        slotProps={{ paper: { sx: { borderRadius: "20px", maxWidth: 479 } } }}
         keepMounted={true}
       >
         <AddTokenWrapFormProvider initialFormValues={initialFormValues}>

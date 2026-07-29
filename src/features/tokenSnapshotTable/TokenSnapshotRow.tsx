@@ -188,15 +188,17 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                   <FiatAmount wei={1} decimals={0} price={tokenPrice} />
                 )
               }
-              primaryTypographyProps={{
-                variant: "h6",
-                sx: !tokenPrice ? { lineHeight: "44px" } : {},
-              }}
-              secondaryTypographyProps={{
-                variant: "body2mono",
-                color: "text.secondary",
-              }}
-            />
+              slotProps={{
+                primary: {
+                  variant: "h6",
+                  sx: !tokenPrice ? { lineHeight: "44px" } : {},
+                },
+
+                secondary: {
+                  variant: "body2mono",
+                  color: "textSecondary",
+                }
+              }} />
           </ListItem>
         </TableCell>
 
@@ -232,12 +234,14 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                       />
                     )
                   }
-                  primaryTypographyProps={{ variant: "h6mono" }}
-                  secondaryTypographyProps={{
-                    variant: "body2mono",
-                    color: "text.secondary",
-                  }}
-                />
+                  slotProps={{
+                    primary: { variant: "h6mono" },
+
+                    secondary: {
+                      variant: "body2mono",
+                      color: "textSecondary",
+                    }
+                  }} />
               </ListItem>
             </TableCell>
 
@@ -268,12 +272,14 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                       <></>
                     )
                   }
-                  primaryTypographyProps={{ variant: "body2mono" }}
-                  secondaryTypographyProps={{
-                    variant: "body2mono",
-                    color: "text.secondary",
-                  }}
-                />
+                  slotProps={{
+                    primary: { variant: "body2mono" },
+
+                    secondary: {
+                      variant: "body2mono",
+                      color: "textSecondary",
+                    }
+                  }} />
               ) : (
                 <Typography data-cy={"net-flow-value"}>{"-"}</Typography>
               )}
@@ -350,12 +356,14 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                     "-"
                   )
                 }
-                primaryTypographyProps={{ variant: "h7mono" }}
-                secondaryTypographyProps={{
-                  variant: "body2mono",
-                  color: "text.secondary",
-                }}
-              />
+                slotProps={{
+                  primary: { variant: "h7mono" },
+
+                  secondary: {
+                    variant: "body2mono",
+                    color: "textSecondary",
+                  }
+                }} />
             </ListItem>
           </TableCell>
         )}

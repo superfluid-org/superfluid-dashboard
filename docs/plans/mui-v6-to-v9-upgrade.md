@@ -1,9 +1,10 @@
 # MUI v6 → v9 upgrade
 
-> Forward-looking ticket (researched 2026-07-21, **re-verified 2026-07-27**). Steps 1–3 are now
-> implemented — see §Step 1/2/3 outcome; only step 4 (core v7 → v9, the bundle dedup) remains. Scope
-> estimate: **2–4 focused weeks**, most of it concentrated in `src/features/theme/theme.ts` and the
-> Cypress page objects. Decomposes into four **separately mergeable, order-dependent** stages
+> Forward-looking ticket (researched 2026-07-21, **re-verified 2026-07-27**). **MIGRATION COMPLETE
+> (2026-07-29): all four steps are implemented** — see §Step 1/2/3/4 outcome. The whole graph is on
+> MUI 9 and the bundle dedup — the project's stated purpose — is realised (§Step 4 outcome). Scope
+> estimate was **2–4 focused weeks**, most of it concentrated in `src/features/theme/theme.ts` and
+> the Cypress page objects. Decomposes into four **separately mergeable, order-dependent** stages
 > (§Sequencing) — step 4 is the real project. The 2–4 week figure predates two offsetting
 > corrections: the forced CSS-variable theme rewrite was **removed** from scope (§Top risk), while
 > step 1/2 functional and Cypress work was **added**. Re-estimate before committing.
@@ -172,8 +173,12 @@ not a benefit of steps 1–3.
    an explicit deprecated-API / theme-override pass — the removed `theme.ts` override keys listed in
    §Costs, plus removed component props (`Avatar` `imgProps` at `token/TokenIcon.tsx:151-159`,
    `Drawer` `SlideProps`+`PaperProps` at `transactionDrawer/TransactionDrawer.tsx:36-46`), and the
-   removed duplicate icon export **`AddCircleOutline` → `AddCircleOutlined`** at
-   `pages/ui-lab.tsx:1`, `tokenWrapping/TokenListItem.tsx:1`, `send/stream/SendStream.tsx:2`.
+   removed duplicate icon export ~~**`AddCircleOutline` → `AddCircleOutlined`** at
+   `pages/ui-lab.tsx:1`, `tokenWrapping/TokenListItem.tsx:1`, `send/stream/SendStream.tsx:2`~~ —
+   **wrong on both counts, see §Step 4 outcome**: the correct rename is
+   **`AddCircleOutlineOutlined`** (`AddCircleOutlined` is the *filled* glyph), and only
+   `TokenListItem.tsx` needed it (`ui-lab.tsx` was deleted from `master` before step 4;
+   `SendStream.tsx` had no such import).
 
 ## Step 1 outcome — implemented 2026-07-27
 
@@ -298,6 +303,9 @@ the PR body was the only record.)*
 so lab and core must move together). MUI X stayed on 8.29.x, date-fns on v2 — neither forced.
 **No user-visible change by design**, and **no dedup**: verified that `pnpm dedupe` touches nothing
 MUI at this stage, because Li-Fi hard-requires v9 and dedupe cannot merge across majors.
+*(Step 4 postscript: the "dedupe cannot merge across majors" framing was true then but turned out
+to be beside the point — once our own range admitted 9.x, pnpm converged both consumers at install
+time and no dedupe step was ever needed. See §Step 4 outcome.)*
 
 **Grid.** v7 renames old `Grid` → `GridLegacy` and promotes `Grid2` → `Grid`. `ActionsList` (the
 only `Grid2` user) moved to the real v7 `Grid`. `UpsertTokenAccessForm` and
@@ -305,7 +313,10 @@ only `Grid2` user) moved to the real v7 `Grid`. `UpsertTokenAccessForm` and
 markup type-checks clean against the new `Grid` but would lay out differently — the one place a
 bare import flip is a silent layout change rather than a compile error. Their dialogs (Approvals →
 *Add Permissions*, Auto-wrap → *Add Token*) have no automated layout coverage; a reviewer was asked
-to eyeball them, and step 4 must re-check them.
+to eyeball them, and step 4 must re-check them. *(Step 4 postscript: the pin could not survive —
+`@mui/material@9.2.0` removes the `GridLegacy` export entirely, so step 4 rebuilt both dialogs
+with `Stack`/`Box` flex layout (no Grid), with a production-build rendered check. See §Step 4
+outcome.)*
 
 **Theme.** The palette augmentation moved to `@mui/material/styles` — mandatory, not cleanup: v7's
 `exports` map resolves `"./*"` → `"./*/index.d.ts"`, making `@mui/material/styles/createPalette`
@@ -386,6 +397,81 @@ stream with just end date" now passes). Strictly smaller — the bar met.
   otherwise required nothing here — both DataGrid sites (`AccountingExportPreview.tsx`, the
   `MuiDataGrid` theme overrides) were already v9-correct, `autoHeight` unchanged.
 
+## Step 4 outcome — implemented 2026-07-29
+
+Branch `mui-x-v9-and-core-v9` (ralphex run 2; PR to `master` at ship time). Executable plan and
+full findings: `docs/plans/2026-07-28-mui-x-v9-and-core-v9.md` (Tasks 9–18). **This completes the
+migration: the whole graph is on MUI 9 and the dedup — the project's stated purpose — is
+realised.**
+
+**The gate.** The browser-support floor (Chrome 117 / Safari 17 / Firefox 121) was **accepted by
+Kaspar Kallas on 2026-07-28** — on knowledge of the userbase, explicitly *not* checked against
+analytics. If a broken/unstyled-dashboard report from an older browser ever arrives, that is the
+decision to revisit; the symptom will not be an error message.
+
+**What shipped.**
+- `@mui/material` / `system` / `icons-material` / `utils` 7.3.11 → **exact 9.2.0** (past the broken
+  9.1.0); `@mui/lab` → **exact 9.0.0-beta.6** (peers on `^9.2.0`). Burn-down: **508 tsc errors → 0**
+  across three passes (system props → slot props → theme/removed APIs).
+- **System props → `sx`** — `v9.0.0/system-props` codemod touched 131 files, 127 kept real
+  conversions. Its silent-skip bug (#48269) has a shape worth recording for next time: it ignores
+  system props on polymorphic `component={Stack}` hosts (`OnboardingCards`,
+  `TokenSnapshotEmptyCard`, the stream page) and on `<Grid gap>` — all found by grep and
+  hand-converted.
+- **Legacy slot props → `slotProps`** — `deprecations/all` codemod plus hand conversion of what it
+  skips entirely: Dialog/Menu JSX `PaperProps` ×12, InputBase `inputProps` ×6, the nested
+  `MenuProps.PaperProps` in `Select`. One codemod-introduced **precedence flip** caught in review —
+  it moved a `{...spread}` before the new `slotProps` in `CurrencySelectMenu`, silently changing
+  caller-override order. And a trap: v9 still *types* `inputProps`/`InputProps` (deprecated, not
+  removed), so silent skips produce **no tsc error** — the grep sweep completes the task, not the
+  compiler.
+- **Theme + removed APIs** — every v9-removed override key was re-expressed with a supported
+  mechanism carrying the identical styles (a `variants` entry for `outlinedSecondary`,
+  `& .MuiChip-*` nesting for the medium-size Chip keys, `&.MuiAlert-color*` selectors under
+  `standard`, `slotProps.paper` for the Menu/Select defaults), not dropped. `cssVariables` was left
+  untouched, per §Top risk.
+- ➕ **Unanticipated: `GridLegacy` is removed from `@mui/material@9.2.0`'s exports** (TS2305). The
+  two dialogs step 2 pinned to it had to migrate off it after all — rebuilt with `Stack`/`Box`
+  flex layout (no Grid; `flexWrap: "wrap"` preserves the old container's wrapping).
+  Rendered check in a production build: both dialogs' Network/Token columns visible, sharing a row
+  on desktop, stacking at a 390 px mobile viewport.
+- **Cypress class-token sweep: zero changes.** 47 `.Mui*`/`PrivateSwitchBase` usages across 10 page
+  objects, each verified against the installed packages' `generateUtilityClasses` sources (class
+  strings never appear as literals — don't grep the package for them). The headline
+  `.MuiButton-textPrimary` variant+color split has **zero occurrences** in `tests/`.
+
+**The dedup.** On `master`, a frozen-lockfile install materialises two physical `@mui/material`
+copies (our 7.3.11 + LiFi's 9.2.0); on this branch exactly **one** (9.2.0), with
+`require.resolve('@mui/material')` from `@lifi/wallet-management` landing on our copy. `pnpm
+dedupe` had nothing MUI-shaped to do — pnpm converged both consumers at install time once our
+range admitted 9.x. Bundle: **−252 KB raw / −78 KB gzip** total emitted JS (−1.7 % / −1.9 %). The
+modest headline is expected — the duplicate sat mostly in lazily-loaded LiFi widget chunks; the
+structural win (one MUI copy, one theme context, no cross-copy `styled` mismatch risk) is the
+point.
+
+**Verification.** Full 22-spec Cypress suite against a production build: **216 tests / 196
+passing / 20 failing — every failing name pre-existing known-unrelated**; the six-spec pre-bump
+baseline (82/14) reproduced identically by name, and all transactional specs
+(Send/Transfer/Wrap/Distribution) passed against opsepolia on core v9. `pnpm typecheck` /
+`pnpm lint` / `pnpm build` green; all seven `@mui/*` pins exact; `date-fns` untouched at v2 with
+the three `AdapterDateFnsV2` imports intact.
+
+**Where this plan's prose was wrong (step-4 edition):**
+- The icon rename: the removed `AddCircleOutline`'s real equivalent is
+  **`AddCircleOutlineOutlined`** — `AddCircleOutlined`, as §Sequencing step 4 claimed, is the
+  *filled* glyph. Only `TokenListItem.tsx` needed it; `pages/ui-lab.tsx` (also the predicted worst
+  system-props file at 58 attributes) was deleted from `master` before step 4 started.
+- Step 2's `GridLegacy` pin was a deferral, not an endpoint — v9 removes the export (above).
+- `Avatar` `imgProps` and `Drawer` `SlideProps`/`PaperProps` needed no hand edits — the
+  `deprecations/all` codemod converted both correctly.
+- §Open questions' Emotion SSR item resolved empirically — see there.
+
+**Operational lessons, third and fourth confirmations:** the codemods mangle the *same files every
+run* — `viemTransactionErrors.ts` (comment relocation, a file with no MUI content) and
+`SendStream.tsx` (JSX text/`&apos;` mangling) were hit identically by three separate codemod
+invocations across steps 3–4; diff them first. The stale-server trap gained a variant: before
+trusting an A/B log, check `ps` for competing `cypress run` processes, not just port 3000.
+
 ## Date-fns — not a forced co-bump (corrected 2026-07-27)
 
 An earlier revision of this plan listed `date-fns` v2→v4 as forced by step 1. **It is not.**
@@ -451,11 +537,13 @@ there is appetite, and revert those three imports to `AdapterDateFns` at that po
 only in 9.1.2 two weeks later); a caret range would have pulled it in. 9.2.0 is past it.
 
 ## Open questions to resolve before step 4
-- **Still open:** Is the Pages Router `extractCriticalToChunks` SSR pattern
+- ~~Is the Pages Router `extractCriticalToChunks` SSR pattern
   (`src/pages/_document.tsx` + `src/features/theme/createEmotionCache.ts`) still **documented** for
-  v9? `@mui/material-nextjs@9` peer deps still include `@emotion/server`, which is suggestive but
-  not proof. Verify at https://mui.com/material-ui/integrations/nextjs/ . Step 3 did not touch this
-  surface; it belongs to step 4's checklist.
+  v9?~~ **Resolved empirically 2026-07-29:** step 4 shipped on the custom pattern **unchanged** —
+  Emotion stays the default engine in v9, the production build is green, and the full Cypress suite
+  passed against it, so the pattern *works* under v9. Whether it is still *documented* at
+  https://mui.com/material-ui/integrations/nextjs/ was not re-verified; `@mui/material-nextjs`
+  remains **not installed**, and adopting it stays a deliberate SSR decision for another day.
 - ~~Can v6 skip v7 entirely, or is the v7 stop mandatory?~~ **Resolved 2026-07-28 — moot.** Step 2
   shipped via the v7 stop, and for this repo's chosen sequencing (X to v9 *before* core to v9) the
   stop was load-bearing anyway: X v9 peers on `^7.3.0 || ^9.0.0`, so core had to reach ≥ 7.3 for

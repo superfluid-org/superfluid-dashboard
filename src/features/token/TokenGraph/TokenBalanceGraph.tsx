@@ -610,19 +610,20 @@ const BalanceGraphErrorFallback: FC<{
   isRetrying: boolean;
 }> = ({ height, onRetry, isRetrying }) => (
   <Stack
-    alignItems="center"
-    justifyContent="center"
     spacing={1}
     sx={{
+      alignItems: "center",
+      justifyContent: "center",
       height: `${height}px`,
       width: "100%",
       borderRadius: 1,
       border: (theme) => `1px dashed ${theme.palette.divider}`,
       px: 2,
-      textAlign: "center",
-    }}
-  >
-    <Typography variant="body2" color="text.secondary">
+      textAlign: "center"
+    }}>
+    <Typography variant="body2" sx={{
+      color: "text.secondary"
+    }}>
       Couldn&apos;t load balance history.
     </Typography>
     <Button

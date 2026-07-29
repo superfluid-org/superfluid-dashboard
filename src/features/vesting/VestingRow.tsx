@@ -142,7 +142,12 @@ const VestingRow: FC<VestingRowProps> = ({
       sx={{ cursor: onClick ? "pointer" : "initial" }}
     >
       <TableCell>
-        <Stack direction="row" alignItems="center" gap={1.5}>
+        <Stack
+          direction="row"
+          sx={{
+            alignItems: "center",
+            gap: 1.5
+          }}>
           <AddressAvatar
             address={isSender ? receiver : sender}
             AvatarProps={{
@@ -163,7 +168,12 @@ const VestingRow: FC<VestingRowProps> = ({
       {!isBelowMd ? (
         <>
           <TableCell data-cy={"allocated-amount"}>
-            <Stack direction="row" alignItems="center" gap={1}>
+            <Stack
+              direction="row"
+              sx={{
+                alignItems: "center",
+                gap: 1
+              }}>
               <TokenIcon
                 isSuper
                 size={26}
@@ -189,9 +199,10 @@ const VestingRow: FC<VestingRowProps> = ({
               data-cy={"start-end-dates"}
               primary={format(fromUnixTime(startDate), "LLL d, yyyy HH:mm")}
               secondary={format(fromUnixTime(endDate), "LLL d, yyyy HH:mm")}
-              primaryTypographyProps={{ variant: "body2" }}
-              secondaryTypographyProps={{ color: "text.primary" }}
-            />
+              slotProps={{
+                primary: { variant: "body2" },
+                secondary: { color: "textPrimary" }
+              }} />
           </TableCell>
           <TableCell sx={{ pl: 0 }}>
             {VestingStatusOrPendingProgress}
@@ -232,15 +243,20 @@ const VestingRow: FC<VestingRowProps> = ({
         <TableCell align="right">
           <Stack
             direction="row"
-            alignItems="center"
-            justifyContent="end"
-            gap={1.5}
-          >
-            <Stack direction="column" alignItems="end">
+            sx={{
+              alignItems: "center",
+              justifyContent: "end",
+              gap: 1.5
+            }}>
+            <Stack direction="column" sx={{
+              alignItems: "end"
+            }}>
               <Typography variant="h6mono">
                 <VestedBalance vestingSchedule={vestingSchedule} />
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" sx={{
+                color: "text.secondary"
+              }}>
                 {superTokenQuery.data?.symbol}
               </Typography>
             </Stack>

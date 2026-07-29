@@ -64,10 +64,12 @@ const StreamActiveFilter: FC<StreamActiveFilterProps> = ({
         open={!!anchorEl}
         anchorEl={anchorEl}
         onClose={closeFilterMenu}
-        PaperProps={{
-          square: true,
-          elevation: 2,
-          sx: { mt: theme.spacing(1.5), minWidth: "260px" },
+        slotProps={{
+          paper: {
+            square: true,
+            elevation: 2,
+            sx: { mt: theme.spacing(1.5), minWidth: "260px" },
+          },
         }}
         transformOrigin={{ horizontal: "left", vertical: "top" }}
         anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
@@ -82,8 +84,10 @@ const StreamActiveFilter: FC<StreamActiveFilterProps> = ({
               <Icon sx={{ fontSize: "20px" }} />
             </ListItemIcon>
             <ListItemText
-              primaryTypographyProps={{ variant: "menuItem" }}
               translate="yes"
+              slotProps={{
+                primary: { variant: "menuItem" }
+              }}
             >
               {key}
             </ListItemText>

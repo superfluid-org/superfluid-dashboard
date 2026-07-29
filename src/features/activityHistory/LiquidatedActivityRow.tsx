@@ -68,15 +68,17 @@ const LiquidatedActivityRow: FC<LiquidatedActivityRowProps> = ({
             data-cy={"activity"}
             primary={"Liquidated"}
             secondary={format(timestamp * 1000, dateFormat)}
-            primaryTypographyProps={{
-              translate: "yes",
-              variant: isBelowMd ? "h7" : "h6",
-            }}
-            secondaryTypographyProps={{
-              variant: "body2mono",
-              color: "text.secondary",
-            }}
-          />
+            slotProps={{
+              primary: {
+                translate: "yes",
+                variant: isBelowMd ? "h7" : "h6",
+              },
+
+              secondary: {
+                variant: "body2mono",
+                color: "textSecondary",
+              }
+            }} />
         </ListItem>
       </TableCell>
       {!isBelowMd ? (
@@ -95,20 +97,17 @@ const LiquidatedActivityRow: FC<LiquidatedActivityRowProps> = ({
               <ListItemText
                 data-cy={"amount"}
                 primary={"-"}
-                /**
-                 * TODO: Remove fixed lineHeight from primaryTypographyProps after adding secondary text back
-                 * This is just used to make table row look better
-                 */
-                // secondary="$12.59"
-                primaryTypographyProps={{
-                  variant: "h6",
-                  sx: { lineHeight: "46px" },
-                }}
-                secondaryTypographyProps={{
-                  variant: "body2mono",
-                  color: "text.secondary",
-                }}
-              />
+                slotProps={{
+                  primary: {
+                    variant: "h6",
+                    sx: { lineHeight: "46px" },
+                  },
+
+                  secondary: {
+                    variant: "body2mono",
+                    color: "textSecondary",
+                  }
+                }} />
             </ListItem>
           </TableCell>
           <TableCell>
@@ -128,17 +127,21 @@ const LiquidatedActivityRow: FC<LiquidatedActivityRowProps> = ({
                       <AddressCopyTooltip address={isOutgoing ? receiver : sender}>
                         <Typography
                           variant="h6"
-                          color="text.primary"
                           component="span"
+                          sx={{
+                            color: "text.primary"
+                          }}
                         >
                           <AddressName address={isOutgoing ? receiver : sender} />
                         </Typography>
                       </AddressCopyTooltip>
                     }
-                    primaryTypographyProps={{
-                      translate: "yes",
-                      variant: "body2mono",
-                      color: "text.secondary",
+                    slotProps={{
+                      primary: {
+                        translate: "yes",
+                        variant: "body2mono",
+                        color: "textSecondary",
+                      }
                     }}
                   />
                 </ListItem>
@@ -155,7 +158,12 @@ const LiquidatedActivityRow: FC<LiquidatedActivityRowProps> = ({
         </>
       ) : (
         <TableCell align="right">
-          <Stack direction="row" alignItems="center" justifyContent="end">
+          <Stack
+            direction="row"
+            sx={{
+              alignItems: "center",
+              justifyContent: "end"
+            }}>
             <TokenIcon
               isSuper
               chainId={network.id}

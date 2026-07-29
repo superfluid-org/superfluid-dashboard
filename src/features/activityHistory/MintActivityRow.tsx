@@ -72,18 +72,19 @@ const MintActivityRow: FC<MintActivityRowProps> = ({
             data-cy={"activity"}
             primary={"Wrap"}
             secondary={format(timestamp * 1000, dateFormat)}
-            primaryTypographyProps={{
-              translate: "yes",
-              variant: isBelowMd ? "h7" : "h6",
-            }}
-            secondaryTypographyProps={{
-              variant: "body2mono",
-              color: "text.secondary",
-            }}
-          />
+            slotProps={{
+              primary: {
+                translate: "yes",
+                variant: isBelowMd ? "h7" : "h6",
+              },
+
+              secondary: {
+                variant: "body2mono",
+                color: "textSecondary",
+              }
+            }} />
         </ListItem>
       </TableCell>
-
       {!isBelowMd ? (
         <>
           <TableCell>
@@ -107,14 +108,16 @@ const MintActivityRow: FC<MintActivityRowProps> = ({
                   secondary={
                     tokenPrice && <FiatAmount price={tokenPrice} wei={amount} />
                   }
-                  primaryTypographyProps={{
-                    variant: "h6mono",
-                  }}
-                  secondaryTypographyProps={{
-                    variant: "body2mono",
-                    color: "text.secondary",
-                  }}
-                />
+                  slotProps={{
+                    primary: {
+                      variant: "h6mono",
+                    },
+
+                    secondary: {
+                      variant: "body2mono",
+                      color: "textSecondary",
+                    }
+                  }} />
               )}
             </ListItem>
           </TableCell>
@@ -140,14 +143,16 @@ const MintActivityRow: FC<MintActivityRowProps> = ({
                   secondary={
                     tokenPrice && <FiatAmount price={tokenPrice} wei={amount} />
                   }
-                  primaryTypographyProps={{
-                    variant: "h6mono",
-                  }}
-                  secondaryTypographyProps={{
-                    variant: "body2mono",
-                    color: "text.secondary",
-                  }}
-                />
+                  slotProps={{
+                    primary: {
+                      variant: "h6mono",
+                    },
+
+                    secondary: {
+                      variant: "body2mono",
+                      color: "textSecondary",
+                    }
+                  }} />
               )}
             </ListItem>
           </TableCell>
@@ -161,7 +166,12 @@ const MintActivityRow: FC<MintActivityRowProps> = ({
         </>
       ) : (
         <TableCell align="right">
-          <Stack direction="row" alignItems="center" gap={2}>
+          <Stack
+            direction="row"
+            sx={{
+              alignItems: "center",
+              gap: 2
+            }}>
             {!!(superToken && underlyingToken) && (
               <ListItemText
                 data-cy={"mobile-amount"}
@@ -175,9 +185,10 @@ const MintActivityRow: FC<MintActivityRowProps> = ({
                     -<Amount wei={amount}> {underlyingToken.symbol}</Amount>
                   </>
                 }
-                primaryTypographyProps={{ variant: "h7mono" }}
-                secondaryTypographyProps={{ variant: "body2mono" }}
-              />
+                slotProps={{
+                  primary: { variant: "h7mono" },
+                  secondary: { variant: "body2mono" }
+                }} />
             )}
             <TokenIcon
               isSuper

@@ -111,7 +111,9 @@ export const DeleteVestingTransactionButton: FC<{
                 !!activeVestingSchedule && !!activeFlow;
 
               setDialogLoadingInfo(
-                <Typography variant="h5" color="text.secondary" translate="yes">
+                <Typography variant="h5" translate="yes" sx={{
+                  color: "text.secondary"
+                }}>
                   {shouldDeleteActiveFlow
                     ? "You are canceling a stream and deleting a vesting schedule."
                     : "You are deleting a vesting schedule."}

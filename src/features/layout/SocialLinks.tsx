@@ -31,7 +31,12 @@ const SocialLinks: FC = () => {
   const theme = useTheme();
 
   return (
-    <Stack direction="row" alignItems="center" gap={0.5}>
+    <Stack
+      direction="row"
+      sx={{
+        alignItems: "center",
+        gap: 0.5
+      }}>
       <SocialLink
         dataCy="socials-website-btn"
         title="Website"

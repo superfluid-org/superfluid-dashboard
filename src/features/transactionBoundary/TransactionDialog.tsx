@@ -87,11 +87,13 @@ export const TransactionDialog: FC<TransactionDialogProps> = ({
           closeDialog();
         }
       }}
-      PaperProps={{
-        // overflow hidden: the paper never scrolls itself (DialogContent does), and its
-        // default overflow-y: auto would flash a scrollbar whenever an entrance/ripple
-        // transform momentarily extends the scrollable overflow past the paper's edge.
-        sx: { borderRadius: "20px", maxHeight: "100%", overflow: "hidden" },
+      slotProps={{
+        paper: {
+          // overflow hidden: the paper never scrolls itself (DialogContent does), and its
+          // default overflow-y: auto would flash a scrollbar whenever an entrance/ripple
+          // transform momentarily extends the scrollable overflow past the paper's edge.
+          sx: { borderRadius: "20px", maxHeight: "100%", overflow: "hidden" },
+        },
       }}
       translate="yes"
     >
@@ -145,7 +147,12 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
       <>
         <TransactionDialogTitle></TransactionDialogTitle>
         <TransactionDialogContent>
-          <Stack spacing={1} alignItems="center" textAlign="center">
+          <Stack
+            spacing={1}
+            sx={{
+              alignItems: "center",
+              textAlign: "center"
+            }}>
             <Box sx={{ pt: 3, pb: 3 }}>
               <TransactionProgressIndicator phase={loadingVisualPhase} />
             </Box>
@@ -161,8 +168,10 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
               <Typography
                 data-cy={"relay-fallback-message"}
                 variant="body2"
-                color="text.secondary"
                 translate="yes"
+                sx={{
+                  color: "text.secondary"
+                }}
               >
                 Gasless sending isn&apos;t available right now. This transaction
                 will use regular network fees.
@@ -181,7 +190,12 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
       <>
         <TransactionDialogTitle></TransactionDialogTitle>
         <TransactionDialogContent>
-          <Stack spacing={1} alignItems="center" textAlign="center">
+          <Stack
+            spacing={1}
+            sx={{
+              alignItems: "center",
+              textAlign: "center"
+            }}>
             <Box sx={{ pt: 3, pb: 1 }}>
               <TransactionProgressIndicator phase="success" />
             </Box>
@@ -189,7 +203,9 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
               <Typography
                 data-cy={"broadcasted-message"}
                 variant="h4"
-                color="text.secondary"
+                sx={{
+                  color: "text.secondary"
+                }}
               >
                 Transaction broadcasted
               </Typography>
@@ -197,8 +213,10 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
                 <Typography
                   data-cy={"relayed-message"}
                   variant="body2"
-                  color="text.secondary"
                   translate="yes"
+                  sx={{
+                    color: "text.secondary"
+                  }}
                 >
                   Sent gaslessly, no network fee paid.
                 </Typography>
@@ -231,7 +249,12 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
       <>
         <TransactionDialogTitle>Still confirming</TransactionDialogTitle>
         <TransactionDialogContent>
-          <Stack gap={2} alignItems="center" textAlign="center">
+          <Stack
+            sx={{
+              gap: 2,
+              alignItems: "center",
+              textAlign: "center"
+            }}>
             <OutlineIcon data-cy={"relay-status-unknown-icon"}>
               <HourglassEmptyRoundedIcon fontSize="large" color="primary" />
             </OutlineIcon>
@@ -242,7 +265,9 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
             >
               Your gasless transaction is still being confirmed
             </Typography>
-            <Typography variant="body2" color="text.secondary" translate="yes">
+            <Typography variant="body2" translate="yes" sx={{
+              color: "text.secondary"
+            }}>
               You signed it and we sent it to the relay, but couldn&apos;t confirm
               it within the time limit. It may still complete. We&apos;ll keep
               checking, and it will appear in your transactions if it succeeds.
@@ -252,8 +277,10 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
               <Typography
                 data-cy={"relay-status-unknown-execution-id"}
                 variant="body2"
-                color="text.secondary"
                 translate="no"
+                sx={{
+                  color: "text.secondary"
+                }}
               >
                 Execution ID: {executionId}
               </Typography>
@@ -277,7 +304,11 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
       <>
         <TransactionDialogTitle>Error</TransactionDialogTitle>
         <TransactionDialogContent>
-          <Stack gap={3} alignItems="center">
+          <Stack
+            sx={{
+              gap: 3,
+              alignItems: "center"
+            }}>
             <TransactionDialogErrorAlert mutationError={mutationResult.error} />
             <Typography variant="body2">Support ID: {supportId}</Typography>
           </Stack>

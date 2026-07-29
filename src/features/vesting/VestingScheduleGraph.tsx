@@ -44,7 +44,11 @@ export const VestingScheduleGraph: FC<VestingScheduleGraphProps> = ({
   }, [svgRef, cliffRef]);
 
   return (
-    <Stack gap={0.5} sx={{ position: "relative" }}>
+    <Stack
+      sx={{
+        gap: 0.5,
+        position: "relative"
+      }}>
       <svg
         ref={svgRef}
         xmlns="http://www.w3.org/2000/svg"
@@ -108,30 +112,39 @@ export const VestingScheduleGraph: FC<VestingScheduleGraphProps> = ({
         <Typography
           data-cy={"graph-cliff-date"}
           variant="body2"
-          color="text.disabled"
           sx={{
+            color: "text.disabled",
             position: "absolute",
             top: 0,
+
             ...(cliffLabelX > 45
               ? { right: `calc(${100 - cliffLabelX}% + 8px)` }
-              : { left: `calc(${cliffLabelX}% + 8px)` }),
-          }}
-        >
+              : { left: `calc(${cliffLabelX}% + 8px)` })
+          }}>
           Cliff: {format(cliffDate, "LLL d, yyyy HH:mm")}
         </Typography>
       )}
-      <Stack direction="row" justifyContent="space-between" sx={{ mx: 0.75 }}>
+      <Stack
+        direction="row"
+        sx={{
+          justifyContent: "space-between",
+          mx: 0.75
+        }}>
         <Typography
           data-cy={"graph-start-date"}
           variant="body2"
-          color="text.disabled"
+          sx={{
+            color: "text.disabled"
+          }}
         >
           Start: {format(startDate, "LLL d, yyyy HH:mm")}
         </Typography>
         <Typography
           data-cy={"graph-end-date"}
           variant="body2"
-          color="text.disabled"
+          sx={{
+            color: "text.disabled"
+          }}
         >
           End: {format(endDate, "LLL d, yyyy HH:mm")}
         </Typography>

@@ -22,16 +22,19 @@ const Bridge: NextPage = () => {
       maxWidth="lg"
     >
       <LiFiWidgetManager />
-      <Stack pt={6} alignItems="center">
+      <Stack
+        sx={{
+          pt: 6,
+          alignItems: "center"
+        }}>
         <Typography
+          variant="h7"
+          component="p"
+          color="secondary"
           sx={{
             maxWidth: 524,
             textAlign: "inherit",
           }}
-          variant="h7"
-          component="p"
-          color="secondary"
-          textAlign="center"
         >
           The Bridge is operated by LI.FI, and we cannot take responsibility for
           any issues. For support related to the bridge, please refer to the

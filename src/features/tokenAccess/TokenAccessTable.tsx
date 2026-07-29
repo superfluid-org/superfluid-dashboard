@@ -125,7 +125,12 @@ export function TokenAccessTable({
                 Asset
               </TableCell>
               <TableCell width="183px">
-                <Stack direction="row" gap={0.5} alignItems="center">
+                <Stack
+                  direction="row"
+                  sx={{
+                    gap: 0.5,
+                    alignItems: "center"
+                  }}>
                   Operator
                   <TooltipWithIcon
                     title="Address that is permitted to manage your streams for a specific Super Token and network."
@@ -139,7 +144,13 @@ export function TokenAccessTable({
                 </Stack>
               </TableCell>
               <TableCell width="186px">
-                <Stack width="186px" direction="row" gap={0.5} alignItems="center">
+                <Stack
+                  direction="row"
+                  sx={{
+                    width: "186px",
+                    gap: 0.5,
+                    alignItems: "center"
+                  }}>
                   Token Allowance
                   <TooltipWithIcon
                     title="Defined transfer allowance cap for Super Tokens."
@@ -153,7 +164,13 @@ export function TokenAccessTable({
                 </Stack>
               </TableCell>
               <TableCell width="190px">
-                <Stack width="190px" direction="row" gap={0.5} alignItems="center">
+                <Stack
+                  direction="row"
+                  sx={{
+                    width: "190px",
+                    gap: 0.5,
+                    alignItems: "center"
+                  }}>
                   Stream Permissions
                   <TooltipWithIcon
                     title="Actions that Operator can execute on your behalf."
@@ -167,7 +184,13 @@ export function TokenAccessTable({
                 </Stack>
               </TableCell>
               <TableCell width="232px">
-                <Stack width="232px" direction="row" gap={0.5} alignItems="center">
+                <Stack
+                  direction="row"
+                  sx={{
+                    width: "232px",
+                    gap: 0.5,
+                    alignItems: "center"
+                  }}>
                   Stream Allowance
                   <TooltipWithIcon
                     title="Defined flow rate allowance cap for Super Tokens."

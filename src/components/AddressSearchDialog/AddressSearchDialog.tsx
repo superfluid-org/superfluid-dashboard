@@ -214,7 +214,13 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
             associatedNetworks?.includes(network.id)
         )
         .map(({ address, name }) => (
-          <Stack direction="row" alignItems="center" pr={2} key={address}>
+          <Stack
+            direction="row"
+            key={address}
+            sx={{
+              alignItems: "center",
+              pr: 2
+            }}>
             <AddressListItem
               dataCy={"address-book-entry"}
               selected={addresses.includes(address)}
@@ -256,7 +262,13 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
   return (
     <>
       <DialogTitle sx={{ p: 3 }}>
-        <Stack direction="row" alignItems="center" gap={2} sx={{ mb: 3 }}>
+        <Stack
+          direction="row"
+          sx={{
+            alignItems: "center",
+            gap: 2,
+            mb: 3
+          }}>
           {onBack && (
             <IconButton onClick={onBack} sx={{ m: -0.5 }} color="inherit">
               <ArrowBackRoundedIcon />
@@ -271,7 +283,9 @@ export const AddressSearchDialogContent: FC<AddressSearchDialogProps> = ({
             </IconButton>
           )}
         </Stack>
-        <Stack direction="column" gap={1}>
+        <Stack direction="column" sx={{
+          gap: 1
+        }}>
           <Stack>
             <Typography sx={{ m: 1 }} variant="h6">
               {contractData?.isContract ? "Contract " : "Wallet"} Address
@@ -543,7 +557,7 @@ export default memo(function AddressSearchDialog({
       data-cy={"receiver-dialog"}
       open={open}
       onClose={handleClose}
-      PaperProps={{ sx: { borderRadius: "20px", maxWidth: 550 } }}
+      slotProps={{ paper: { sx: { borderRadius: "20px", maxWidth: 550 } } }}
     >
       <AddressSearchDialogContent
         open={open}

@@ -59,15 +59,14 @@ const AddressCopyTooltip: FC<AddressCopyTooltipProps> = ({
         <Stack
           ref={addressWrapperRef}
           direction="row"
-          alignItems="center"
-          justifyContent="center"
-          gap={1}
-          sx={{
-            ...(tooltipWidth && { width: tooltipWidth }),
-            ...(!isCopied && { cursor: "pointer" }),
-          }}
           onClick={!isCopied ? copyAddress : undefined}
-        >
+          sx={{
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 1,
+            ...(tooltipWidth && { width: tooltipWidth }),
+            ...(!isCopied && { cursor: "pointer" })
+          }}>
           {isCopied ? (
             <Typography variant="tooltip">Copied to clipboard!</Typography>
           ) : (

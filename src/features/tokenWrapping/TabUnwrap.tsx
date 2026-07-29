@@ -102,23 +102,29 @@ export const TabUnwrap = memo(function TabUnwrap(props: TabUnwrapProps) {
       : ("downgrade" as const);
 
   return (
-    <Stack direction="column" alignItems="center">
+    <Stack direction="column" sx={{
+      alignItems: "center"
+    }}>
       <WrapInputCard>
         <Stack direction="row" spacing={2}>
           <UnwrapInputController />
           <UnwrapTokenController network={network} superToken={superToken} />
         </Stack>
         {tokenPair && visibleAddress && (
-          <Stack direction="row" justifyContent="space-between" gap={0.5}>
+          <Stack
+            direction="row"
+            sx={{
+              justifyContent: "space-between",
+              gap: 0.5
+            }}>
             <Typography
               variant="body2mono"
-              color="text.secondary"
               sx={{
+                color: "text.secondary",
                 flexShrink: 1,
                 overflow: "hidden",
-                textOverflow: "ellipsis",
-              }}
-            >
+                textOverflow: "ellipsis"
+              }}>
               {tokenPrice && <FiatAmount wei={amountWei} price={tokenPrice} />}
             </Typography>
 
@@ -127,7 +133,7 @@ export const TabUnwrap = memo(function TabUnwrap(props: TabUnwrapProps) {
                 chainId={network.id}
                 accountAddress={visibleAddress}
                 tokenAddress={tokenPair.superTokenAddress}
-                TypographyProps={{ color: "text.secondary" }}
+                TypographyProps={{ color: "textSecondary" }}
               />
               {realtimeBalance && (
                 <MaxAmountController
@@ -142,9 +148,7 @@ export const TabUnwrap = memo(function TabUnwrap(props: TabUnwrapProps) {
           </Stack>
         )}
       </WrapInputCard>
-
       <SwitchWrapModeBtn onClick={props.onSwitchMode} />
-
       {underlyingToken && (
         <WrapInputCard>
           <Stack direction="row" spacing={2}>
@@ -155,10 +159,12 @@ export const TabUnwrap = memo(function TabUnwrap(props: TabUnwrapProps) {
               disableUnderline
               placeholder="0.0"
               value={amount}
-              inputProps={{
-                sx: {
-                  ...theme.typography.largeInput,
-                  p: 0,
+              slotProps={{
+                input: {
+                  sx: {
+                    ...theme.typography.largeInput,
+                    p: 0,
+                  },
                 },
               }}
               sx={{ background: "transparent" }}
@@ -178,16 +184,17 @@ export const TabUnwrap = memo(function TabUnwrap(props: TabUnwrapProps) {
           </Stack>
 
           {visibleAddress && (
-            <Stack direction="row" justifyContent="space-between">
+            <Stack direction="row" sx={{
+              justifyContent: "space-between"
+            }}>
               <Typography
                 variant="body2mono"
-                color="text.secondary"
                 sx={{
+                  color: "text.secondary",
                   flexShrink: 1,
                   overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}
-              >
+                  textOverflow: "ellipsis"
+                }}>
                 {tokenPrice && (
                   <FiatAmount wei={amountWei} price={tokenPrice} />
                 )}
@@ -202,24 +209,33 @@ export const TabUnwrap = memo(function TabUnwrap(props: TabUnwrapProps) {
           )}
         </WrapInputCard>
       )}
-
       {!!(superToken && underlyingToken) && (
-        <Stack direction="row" alignItems="center" gap={0.5}>
+        <Stack
+          direction="row"
+          sx={{
+            alignItems: "center",
+            gap: 0.5
+          }}>
           <Typography data-cy={"token-pair"} align="center" sx={{ my: 3 }}>
             {`1 ${superToken.symbol} = 1 ${underlyingToken.symbol}`}
           </Typography>
           {tokenPrice && (
-            <Typography variant="body2mono" color="text.secondary">
+            <Typography variant="body2mono" sx={{
+              color: "text.secondary"
+            }}>
               (<FiatAmount wei={1} decimals={0} price={tokenPrice} />)
             </Typography>
           )}
         </Stack>
       )}
-
       <ConnectionBoundary>
         {/* 2.5 matches the block rhythm around TX buttons app-wide so the relay
             strip reads as its own block rather than hugging the button. */}
-        <Stack gap={2.5} sx={{ width: "100%" }}>
+        <Stack
+          sx={{
+            gap: 2.5,
+            width: "100%"
+          }}>
           <TransactionBoundary mutationResult={unwrapResult}>
             {({ setDialogLoadingInfo, txAnalytics }) => (
               <TransactionButton
@@ -294,16 +310,16 @@ const UnwrapPreview: FC<{
     <Typography
       data-cy={"unwrap-message"}
       variant="h5"
-      color="text.secondary"
       translate="yes"
-    >
-      You are unwrapping{" "}
+      sx={{
+        color: "text.secondary"
+      }}
+    >You are unwrapping{" "}
       <span translate="no">
         {formatEther(amountWei)} {superTokenSymbol}
-      </span>{" "}
-      to the underlying token{" "}
+      </span>{" "}to the underlying token{" "}
       <span translate="no">{underlyingTokenSymbol}</span>.
-    </Typography>
+          </Typography>
   );
 };
 
@@ -333,11 +349,13 @@ const UnwrapInputController = memo(function UnwrapInputController() {
           value={amount}
           onChange={onChange}
           onBlur={onBlur}
-          inputProps={{
-            ...inputPropsForEtherAmount,
-            sx: {
-              ...theme.typography.largeInput,
-              p: 0,
+          slotProps={{
+            input: {
+              ...inputPropsForEtherAmount,
+              sx: {
+                ...theme.typography.largeInput,
+                p: 0,
+              },
             },
           }}
           sx={{ background: "transparent" }}
