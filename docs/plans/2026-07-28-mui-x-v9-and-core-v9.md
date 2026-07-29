@@ -581,10 +581,45 @@ unstyled dashboard rather than an error message, which is easy to misdiagnose.
   surface in these specs — the dedicated selector sweep is Task 14.
 
 ### Task 14: Cypress class-token sweep
-- [ ] update the **51 MUI / PrivateSwitchBase class tokens across 10 page objects**. The headline break: v9 splits `.MuiButton-textPrimary` into `.MuiButton-text.MuiButton-colorPrimary`, and the same split pattern applies across other variant+color compounds
-- [ ] this is **silent breakage** — a stale token matches nothing and reads as a missing element, not as a selector error. Grep for every `.Mui`-prefixed token in `tests/` and check each against the v9 DOM
-- [ ] prefer app-owned `data-cy` hooks where a token is load-bearing, per the step-2 convention
-- [ ] run the verification gate
+- [x] update the **51 MUI / PrivateSwitchBase class tokens across 10 page objects** — re-measured: **47 usages across 10 page objects**, and **zero needed updating**: every token still exists in the installed v9 packages, and no variant+color compound token (the `.MuiButton-textPrimary` headline break) occurs anywhere in `tests/`; see findings
+- [x] this is **silent breakage** — a stale token matches nothing and reads as a missing element, not as a selector error. Grep for every `.Mui`-prefixed token in `tests/` and check each against the v9 DOM — done: every distinct token resolved against the `generateUtilityClasses` slot lists in the installed `@mui/material@9.2.0` / X 9.10.1 sources (literal grep is useless, class strings are generated), plus a runtime pass via Cypress
+- [x] prefer app-owned `data-cy` hooks where a token is load-bearing, per the step-2 convention — no conversions made: with all tokens verified live in v9, swapping them now is churn with no motivating breakage; the convention applies to *new* selectors and to the next token that actually breaks
+- [x] run the verification gate — typecheck, lint, production build green; targeted Cypress run below (Task 13 already A/B'd Export/Send/Vesting on this identical tree)
+
+**Task 14 findings (2026-07-29):**
+
+- **Inventory: 47 `.Mui*`/`.PrivateSwitchBase-*` usages across 10 page objects** (plan's 51 was a
+  2026-07-27 measure; drift, not omission). Verification was against the installed package sources'
+  `generateUtilityClasses` calls, since class strings never appear as literals.
+- **Every token survives v9 — zero selector changes needed:**
+  - Core slot classes all present in `@mui/material@9.2.0`: `MuiButton-contained`,
+    `MuiCircularProgress-root`, `MuiListItemText-primary/-secondary`, `MuiChip-root/-deleteIcon`,
+    `MuiDialog-root`, `MuiSkeleton-root`, `MuiAlert-message`, `MuiTableRow-root`,
+    `MuiAvatar-root/-img`, `MuiTooltip-tooltip`, `MuiFormControl-root`, `MuiInputBase-root`,
+    `MuiSelect-select/-icon`, `MuiTablePagination-root/-actions`.
+  - `PrivateSwitchBase-input` still generated (`internal/switchBaseClasses.js` in 9.2.0).
+  - `MuiTypography-tooltip` (custom theme variant) still emitted — v9 Typography's
+    `useUtilityClasses` puts `ownerState.variant` in the root slot.
+  - Picker/DataGrid tokens (`MuiYearCalendar-button`, `MuiMonthCalendar-button`, all
+    `MuiDataGrid-*`) are X 9.10.1 territory, untouched by the core bump and already A/B'd in Part A.
+  - **The headline `.MuiButton-textPrimary` split has zero occurrences** — grep for any
+    variant+color compound (`text|outlined|contained|standard|filled` × color) across `tests/` is
+    empty. The Task 13 Alert `standard*` → `standard` + `color*` split likewise touches nothing:
+    tests only use `.MuiAlert-message`.
+  - `GnosisSafe.ts` tokens target the external `app.safe.global` DOM (its own MUI copy) — out of
+    scope, per Do-not-chase.
+- ➕ **Pre-existing, not a step-4 regression:** `BridgePage.ts` keeps three `[data-testid=*Icon]`
+  selectors into the LiFi widget. v9 still gates icon `data-testid` behind
+  `NODE_ENV !== 'production'` (`SvgIcon/createSvgIcon.js:18`), but LiFi already shipped its own MUI
+  9.x on `master`, so these were equally dead before the dedup. Can't add `data-cy` inside LiFi's
+  DOM; left as-is.
+- **Runtime confirmation (production `pnpm build && pnpm start`, port 3000 verified free):**
+  targeted run of the four specs whose tokens the Task 13 A/B did *not* exercise —
+  ActivityPage **28/28** (`MuiTypography-tooltip`), DashboardPage **6/6** (`MuiTablePagination-*`,
+  `MuiSelect-icon`), TransferPage **5/5** (`MuiAlert-message`, `MuiCircularProgress-root`),
+  AddressBook **27/29** — the 2 failures are exactly the known-unrelated AddressBook (2) from
+  Do-not-chase ("Address book name showing up in - Account export" / "- Dashboard page and token
+  page tables", live-data drift). No new failure; no token-shaped miss anywhere.
 
 ### Task 15: Confirm the dedup actually happened
 - [ ] verify `pnpm-lock.yaml` no longer resolves two `@mui/material` majors — the `@lifi/wallet-management` copy at 9.x should now converge with ours
