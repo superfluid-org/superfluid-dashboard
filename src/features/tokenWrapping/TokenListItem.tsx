@@ -1,4 +1,4 @@
-import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
+import AddCircleOutline from "@mui/icons-material/AddCircleOutlineOutlined";
 import {
   IconButton,
   ListItemAvatar,

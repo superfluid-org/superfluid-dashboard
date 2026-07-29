@@ -1,11 +1,9 @@
 import { FC, memo, useMemo } from "react";
 import ResponsiveDialog from "../../common/ResponsiveDialog";
 import {
+  Box,
   DialogContent,
   DialogTitle,
-  // See UpsertTokenAccessForm — legacy Grid markup, kept on GridLegacy so the
-  // v7 Grid rename cannot silently change this dialog's layout.
-  GridLegacy as Grid,
   IconButton,
   Stack,
   Typography,
@@ -63,13 +61,15 @@ const AutoWrapAddTokenForm: FC<{
       <Stack component={DialogContent} sx={{
         gap: 3
       }}>
-        <Grid
+        <Stack
           direction={isBelowMd ? "column" : "row"}
-          gap={isBelowMd ? 2 : 0}
-          container
-          justifyContent={"space-between"}
+          sx={{
+            gap: isBelowMd ? 2 : 0,
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+          }}
         >
-          <Grid>
+          <Box>
             <FormGroup>
               <FormLabel>Network</FormLabel>
               <Controller
@@ -110,8 +110,8 @@ const AutoWrapAddTokenForm: FC<{
                 )}
               />
             </FormGroup>
-          </Grid>
-          <Grid sx={{ gap: 2 }}>
+          </Box>
+          <Box>
             <FormGroup>
               <FormLabel>Token</FormLabel>
               <Controller
@@ -144,8 +144,8 @@ const AutoWrapAddTokenForm: FC<{
                 )}
               />
             </FormGroup>
-          </Grid>
-        </Grid>
+          </Box>
+        </Stack>
         {token ? (
           <ConnectionBoundary expectedNetwork={network}>
             <AutoWrapEnableDialogContentSection

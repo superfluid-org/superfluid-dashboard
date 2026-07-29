@@ -3,11 +3,6 @@ import {
   DialogContent,
   FormGroup,
   FormLabel,
-  // Material UI v7 renamed the old Grid to GridLegacy and promoted Grid2 to
-  // Grid. This markup is container-with-non-item children, which type-checks
-  // clean against the new Grid but would lay out differently, so it stays on
-  // the legacy component until it is migrated properly.
-  GridLegacy as Grid,
   Stack,
   TextField,
   Typography,
@@ -212,13 +207,15 @@ export const UpsertTokenAccessForm = memo(function UpsertTokenAccessForm(
             <Stack sx={{
               gap: 2
             }}>
-              <Grid
+              <Stack
                 direction={isBelowMd ? "column" : "row"}
-                gap={isBelowMd ? 2 : 0}
-                container
-                justifyContent={"space-between"}
+                sx={{
+                  gap: isBelowMd ? 2 : 0,
+                  justifyContent: "space-between",
+                  flexWrap: "wrap",
+                }}
               >
-                <Grid>
+                <Box>
                   <FormGroup
                     sx={{
                       ".MuiButtonBase-root": { minWidth: "200px" },
@@ -244,8 +241,8 @@ export const UpsertTokenAccessForm = memo(function UpsertTokenAccessForm(
                       )}
                     />
                   </FormGroup>
-                </Grid>
-                <Grid sx={{ gap: 2 }}>
+                </Box>
+                <Box>
                   <FormGroup>
                     <FormLabel>Token</FormLabel>
                     <Controller
@@ -278,8 +275,8 @@ export const UpsertTokenAccessForm = memo(function UpsertTokenAccessForm(
                       )}
                     />
                   </FormGroup>
-                </Grid>
-              </Grid>
+                </Box>
+              </Stack>
               <FormGroup>
                 <FormLabel>
                   <Stack
