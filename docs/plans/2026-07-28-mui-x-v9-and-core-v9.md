@@ -429,128 +429,29 @@ unstyled dashboard rather than an error message, which is easy to misdiagnose.
    ralphex run 2 for Tasks 9–18.
 
 ### Task 10: Bump core to v9
-- [x] confirm this is **ralphex run 2**, in a worktree off a `master` that already contains merged step 3 — confirmed: `f46d58d4` (merged PR #881) is an ancestor of HEAD, X packages at 9.10.1
-- [x] capture a fresh production-build Cypress baseline, as in Task 1 — done, table below
-- [x] set `@mui/material`, `@mui/system`, `@mui/icons-material`, `@mui/utils` to **exact 9.2.0** (past the broken 9.1.0); co-bump `@mui/lab` to the version peering on core 9 — lab pinned exact `9.0.0-beta.6` (`latest`, peers on `@mui/material ^9.2.0`; its `@mui/material-pigment-css` peer is optional, not installed)
-- [x] `pnpm install`; expect a large volume of type errors — that is normal and is what Tasks 11–13 clear
-- [x] record the initial `pnpm typecheck` error count in this file as the burn-down number — **508 errors**
-
-**Task 10 findings (2026-07-29):**
-
-- **Run-2 precondition held.** Worktree branch is off a `master` containing merged step 3
-  (`f46d58d4` ancestor of HEAD; core was at 7.3.11, X at 9.10.1 before this task).
-- **The Task 1 stale-server trap fired a third time**: an orphaned `node` (old `next start`) held
-  port 3000 before the baseline run. Killed it first; `lsof -iTCP:3000 -sTCP:LISTEN` before every
-  A/B remains mandatory.
-- **Fresh Cypress baseline** (production `pnpm build && pnpm start` at pre-bump versions, all six
-  specs in one run, network=opsepolia) — identical to the Task 6 close-out, 82/68/14:
-
-  | spec | tests | passing | failing |
-  |---|---|---|---|
-  | ExportPage | 12 | 4 | **8** |
-  | SendPage | 21 | 16 | **5** |
-  | VestingPageOne | 16 | 15 | **1** |
-  | VestingPageTwo | 19 | 19 | 0 |
-  | VestingPageThree | 13 | 13 | 0 |
-  | VestingPageV2 | 1 | 1 | 0 |
-  | **total** | **82** | **68** | **14** |
-
-  Failing names all in the known-unrelated set: ExportPage — price granularity/accounting periods
-  examples #1–#4, multiple addresses export, counterparty export, date range, CSV export; SendPage —
-  stream tables (just start date / start+end / end date), modifying a streams start date, modifying
-  a stream with start and end date (not started yet); VestingPageOne — change network button.
-  ("Modifying a stream with just end date" passes, as at the end of Part A.)
-- **Versions set** (all exact, no caret): `@mui/material` / `system` / `icons-material` / `utils`
-  → `9.2.0`; `@mui/lab` → `9.0.0-beta.6`. `pnpm install` clean (only the pre-existing
-  graphql-tools/lens unmet-peer noise).
-- **Dedup preview:** `pnpm-lock.yaml` now resolves a **single** `@mui/material` major — only
-  `9.2.0` appears; the former 7.3.11 entry is gone and `@lifi/wallet-management`'s 9.x peer
-  converges on our copy. Task 15 confirms formally.
-- **Burn-down number: 508 `tsc` errors.** Dominant shapes match Tasks 11–13's predictions:
-  `PaperProps`/`MenuProps`/`primaryTypographyProps` removals (TS2322/TS2559/TS2769 on
-  Dialog/Popover/Menu/ListItemText) and system-prop attributes no longer on component types.
+- [ ] confirm this is **ralphex run 2**, in a worktree off a `master` that already contains merged step 3 — if step 3's PR is not merged, mark ⚠️ and stop
+- [ ] capture a fresh production-build Cypress baseline, as in Task 1 — Part A's baseline is stale by now
+- [ ] set `@mui/material`, `@mui/system`, `@mui/icons-material`, `@mui/utils` to **exact 9.2.0** (past the broken 9.1.0); co-bump `@mui/lab` to the version peering on core 9
+- [ ] `pnpm install`; expect a large volume of type errors — that is normal and is what Tasks 11–13 clear
+- [ ] record the initial `pnpm typecheck` error count in this file as the burn-down number
 
 ### Task 11: System props → `sx`
-- [x] run `npx @mui/codemod@latest v9.0.0/system-props src/`
-- [x] **hand-diff the output.** The codemod has known silent-skip bugs (mui/material-ui#48269): it keys off import statements, misses auto-imports, and a same-named non-MUI import silently skips the whole file. Expect ~**839 attributes on 572 elements across ~129 files**; the codemod itself touched 133 files of which 4 were printer-only
-- [x] sweep manually for files the codemod skipped — the heaviest are `pages/ui-lab.tsx` (58), `pages/stream/[_network]/[_stream].tsx` (48), `tokenAccess/TokenAccessRow.tsx` (31); commonest props are `gap` (260), `alignItems` (250), `color` (160), `justifyContent` (88) — ui-lab.tsx no longer exists on this branch, see findings
-- [x] `git diff -w --ignore-blank-lines` and revert all reprint noise
-- [x] run the verification gate — typecheck 508 → 102 (all remaining errors are Task 12/13 scope), lint green, build fails only at the type-check step on those same errors; build + Cypress A/B become meaningful at the Task 13 gate
-
-**Task 11 findings (2026-07-29):**
-
-- Codemod touched 131 files. Reverted noise in 4: `viemTransactionErrors.ts` (comment relocation
-  in a file with **no MUI content** — third codemod run, third time this exact file), a paren-wrap
-  in `AutoWrapEnableDialogContentSection.tsx`, a semicolon in `DefaultActivityRow.tsx`, and a
-  function-expression paren-wrap in `_document.tsx`. **127 files keep real conversions.**
-- **Two JSX text manglings** hand-fixed in `SendStream.tsx`: the codemod flattened
-  `&apos;` → `'` and destroyed indentation inside the combined-edit `Alert` and the
-  classification-pending `Typography` (same failure mode as the X v9 codemod in Task 3).
-- **One duplicate-key bug** in `pages/bridge.tsx`: merging `textAlign="center"` into an sx that
-  already had `textAlign: "inherit"` produced a TS1117 duplicate property. Kept `"inherit"` —
-  sx always won over the system prop, so that was the rendered value.
-- **Silent skips found and hand-converted** (the codemod ignores system props on `component={Stack}`
-  polymorphic hosts): `OnboardingCards.tsx` (`CardContent`/`Paper component={Stack}`),
-  `TokenSnapshotEmptyCard.tsx` (`Card component={Stack}`),
-  `pages/stream/[_network]/[_stream].tsx` (`Paper component={Stack}`), plus `<Grid gap={2}>` in
-  the two GridLegacy dialogs (`UpsertTokenAccessForm.tsx`, `AutoWrapAddTokenDialogSection.tsx`).
-- **Stale plan prose:** `pages/ui-lab.tsx` (the predicted heaviest file, 58 attrs) does not exist
-  on this branch — it was deleted from `master` before this worktree was cut. Task 13's
-  `AddCircleOutline` list references it too; only the other two files remain.
-- ➕ **Discovered for Task 13:** `GridLegacy` is **removed from `@mui/material@9.2.0`'s exports**
-  (TS2305 in both dialog files). The plan assumed the GridLegacy dialogs would survive step 4
-  unchanged (Task 16 only asks for a rendered check); Task 13 must now migrate them to the v9
-  `Grid` (or inline the layout) before typecheck can go green.
-- Verification: `pnpm lint` green; `pnpm typecheck` **508 → 102** errors, every remaining error
-  in Task 12 scope (`*TypographyProps`/`PaperProps`/`MenuProps`/`inputProps`/`InputProps`) or
-  Task 13 scope (theme override keys, `imgProps`, GridLegacy); `pnpm build` fails only at its
-  type-check step on those same errors — no webpack/compile failure from the sx conversions.
+- [ ] run `npx @mui/codemod@latest v9.0.0/system-props src/`
+- [ ] **hand-diff the output.** The codemod has known silent-skip bugs (mui/material-ui#48269): it keys off import statements, misses auto-imports, and a same-named non-MUI import silently skips the whole file. Expect ~**839 attributes on 572 elements across ~129 files**; the codemod itself touched 133 files of which 4 were printer-only
+- [ ] sweep manually for files the codemod skipped — the heaviest are `pages/ui-lab.tsx` (58), `pages/stream/[_network]/[_stream].tsx` (48), `tokenAccess/TokenAccessRow.tsx` (31); commonest props are `gap` (260), `alignItems` (250), `color` (160), `justifyContent` (88)
+- [ ] `git diff -w --ignore-blank-lines` and revert all reprint noise
+- [ ] run the verification gate
 
 ### Task 12: Legacy slot props → `slotProps`
-- [x] convert the ~**141** direct JSX assignments: `primaryTypographyProps` ×61 (28 files) and `secondaryTypographyProps` ×38 (19 files) → `slotProps.primary` / `slotProps.secondary`; `PaperProps` ×18; `inputProps` ×12; `InputProps` ×9; `componentsProps` ×2; `MenuProps` ×1 — all converted; see findings for the codemod/hand split
-- [x] note there are **no** direct JSX `InputLabelProps` / `TransitionProps` in `src` — confirmed by re-measure: 0 of each
-- [x] re-measure before trusting these counts (measured 2026-07-27) — re-measured 2026-07-29: 61/38/18 matched exactly; `InputProps` 9 → **7**, `componentsProps` 2 → **0** (already gone), `inputProps` 12, `MenuProps` 1
-- [x] run the verification gate — typecheck 102 → **7** (all Task 13 scope: GridLegacy ×2, theme.ts ×5), lint green, build fails only at its type-check step on those same 7; Cypress A/B becomes meaningful at the Task 13 gate
-
-**Task 12 findings (2026-07-29):**
-
-- Ran `npx @mui/codemod@latest deprecations/all src/` — 44 files "ok". It fully handled the
-  ListItemText typography props, `InputProps` → `slotProps.input`, `inputProps` →
-  `slotProps.htmlInput` on TextFields, and (unexpectedly) three Task-13-scope items, **kept**
-  because the conversions are correct and behavior-preserving: `theme.ts`
-  `MuiListItemText.primaryTypographyProps` / Menu+Popover `TransitionProps` / Tooltip
-  `PopperProps` / CardHeader `subheaderTypographyProps` → `slotProps.*`; `TokenIcon.tsx`
-  `imgProps` → `slotProps.img`; `TransactionDrawer.tsx` `SlideProps`/`PaperProps` →
-  `slotProps.transition`/`.paper`. Task 13's list shrinks accordingly (theme 552/1039 `PaperProps`
-  under Menu defaults, 725/901/931 removed style keys, and GridLegacy remain).
-- **Codemod noise, third run, same three files**: reverted `viemTransactionErrors.ts` (comment
-  relocation, no MUI content), `_document.tsx` (function paren-wrap),
-  `AutoWrapEnableDialogContentSection.tsx` (JSX paren-wrap).
-- **`SendStream.tsx` mangled a third time**, hand-fixed: `&apos;` flattened to `'` and JSX text
-  indentation destroyed in the combined-edit `Alert` and classification-pending `Typography`,
-  plus paren-wraps — identical to the Task 3 and Task 11 failure modes.
-- **Silent skips hand-converted** (12 JSX `PaperProps` + 6 `inputProps` + 1 `MenuProps`): the
-  codemod does not convert Dialog/Menu JSX `PaperProps` at all — 4 `Menu`s
-  (`StreamActiveFilter`, `NetworkSelectionFilter`, `SelectNetwork`, `ActivityTypeFilter`) and
-  8 `ResponsiveDialog`s (`TokenAccessRow`, `AutoWrapEnableDialog`, `AccountModal`,
-  `AutoWrapAddTokenDialogSection`, `TransactionDialog`, `FaucetDialog`, `TokenDialog`,
-  `AddressSearchDialog`) → `slotProps.paper`. `Input` (InputBase) `inputProps` →
-  `slotProps.input` in `TabWrap` ×2, `TabUnwrap` ×2, `BatchVestingForm` (csv `accept`),
-  `AddressBookRow`. `NetworkSelect.tsx`'s `Select` `MenuProps` constant: nested `PaperProps` →
-  `slotProps.paper` (v9 `Select` keeps `MenuProps` itself; only the nested key is removed).
-- **One precedence fix**: in `CurrencySelectMenu.tsx` the codemod moved `{...PopoverProps}`
-  *before* the new `slotProps`, silently flipping caller-override precedence; restored the
-  spread to last position. (The only caller passes just transform/anchorOrigin, so no behavior
-  change either way.)
-- Leftover-inputProps note: v9 still *types* `inputProps`/`InputProps` on `Input`/`TextField`
-  (deprecated, not removed), so the silent skips produced **no** tsc errors — they were found by
-  grep, not by the compiler. The grep sweep is what makes this task complete, not typecheck.
+- [ ] convert the ~**141** direct JSX assignments: `primaryTypographyProps` ×61 (28 files) and `secondaryTypographyProps` ×38 (19 files) → `slotProps.primary` / `slotProps.secondary`; `PaperProps` ×18; `inputProps` ×12; `InputProps` ×9; `componentsProps` ×2; `MenuProps` ×1
+- [ ] note there are **no** direct JSX `InputLabelProps` / `TransitionProps` in `src` — those names appear only in a local type and in theme defaults; do not chase them
+- [ ] re-measure before trusting these counts (measured 2026-07-27); an earlier estimate of "75" omitted `ListItemText` entirely and was ~2× off
+- [ ] run the verification gate
 
 ### Task 13: Theme and removed component APIs
 - [ ] remove the override keys deleted in v9 from `src/features/theme/theme.ts`: `MuiButton.outlinedSecondary` (~:724), Chip `avatarMedium` / `iconMedium` / `deleteIconMedium` (~:900-906), combined Alert `standard*` (~:930-939), `MuiListItemText.primaryTypographyProps` (~:991-996), Menu/Popover `PaperProps` + `TransitionProps` defaults (~:1033-1054), Tooltip `PopperProps` (~:1170-1174), CardHeader `subheaderTypographyProps` (~:1199-1203) — line numbers are from 2026-07-27, locate by key not by line
 - [ ] replace removed component props: `Avatar` `imgProps` at `token/TokenIcon.tsx:151-159`; `Drawer` `SlideProps` + `PaperProps` at `transactionDrawer/TransactionDrawer.tsx:36-46`
-- [ ] rename the removed duplicate icon export `AddCircleOutline` → `AddCircleOutlined` at `pages/ui-lab.tsx`, `tokenWrapping/TokenListItem.tsx`, `send/stream/SendStream.tsx` — note `pages/ui-lab.tsx` no longer exists (Task 11 finding); only the other two remain
-- [ ] ➕ migrate the two `GridLegacy` dialogs off `GridLegacy` — the export is **removed** in `@mui/material@9.2.0` (TS2305), discovered in Task 11: `tokenAccess/dialog/UpsertTokenAccessForm.tsx` and `auto-wrap/dialogs/AutoWrapAddTokenDialogSection.tsx`. Task 16's rendered check of these dialogs becomes even more important
+- [ ] rename the removed duplicate icon export `AddCircleOutline` → `AddCircleOutlined` at `pages/ui-lab.tsx`, `tokenWrapping/TokenListItem.tsx`, `send/stream/SendStream.tsx`
 - [ ] **do not** switch to the CSS-variables theme — `cssVariables` defaults to false and is not forced; `getModeStyleCB`, the separate `LIGHT_THEME`/`DARK_THEME` objects and `palette.mode` all keep working unchanged
 - [ ] run the verification gate
 
