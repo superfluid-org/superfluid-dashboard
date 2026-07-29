@@ -712,12 +712,18 @@ unstyled dashboard rather than an error message, which is easy to misdiagnose.
   check `ps` for competing `cypress run` processes, not just port 3000.
 
 ### Task 17: Verify acceptance criteria
-- [ ] every requirement in the Overview is implemented
-- [ ] `pnpm typecheck`, `pnpm lint`, `pnpm build` all green
-- [ ] full Cypress suite A/B'd against a production build on both sides, results recorded
-- [ ] no `^` ranges on any MUI package
-- [ ] `tests/cypress.env.json` is not committed anywhere in the branch history
-- [ ] `date-fns` is still v2 and the three `AdapterDateFnsV2` imports are untouched
+- [x] every requirement in the Overview is implemented — the dedup (the plan's stated problem) is confirmed in Task 15 (single `@mui/material@9.2.0`, −252 KB raw / −78 KB gzip); X at 9.10.1 (Part A, merged PR #881); core/system/icons/utils at 9.2.0, lab at 9.0.0-beta.6 (Tasks 10–13)
+- [x] `pnpm typecheck`, `pnpm lint`, `pnpm build` all green — re-run 2026-07-29 on the final tree: all three clean
+- [x] full Cypress suite A/B'd against a production build on both sides, results recorded — Task 10 baseline (pre-bump) + Task 16 full-suite run (216/196/20, all failures pre-existing by name), both tables in this file
+- [x] no `^` ranges on any MUI package — verified: all 7 `@mui/*` entries in `package.json` are exact pins (9.2.0 ×4, 9.0.0-beta.6, 9.10.1 ×2)
+- [x] `tests/cypress.env.json` is not committed anywhere in the branch history — `git log --all --name-only -- '*cypress.env.json'` is empty; `git check-ignore` confirms it ignored
+- [x] `date-fns` is still v2 and the three `AdapterDateFnsV2` imports are untouched — installed 2.30.0 (both `package.json` and `tests/package.json` at `^2.30.0`); exactly three `AdapterDateFnsV2` imports (`AccountingExportForm.tsx`, `SendStream.tsx`, `CreateVestingForm.tsx`), none renamed
+
+**Task 17 findings (2026-07-29):** all six criteria pass with no remediation needed. The only
+caret in the dependency picture is `date-fns@^2.30.0` itself, which predates this plan and is
+explicitly out of scope (stays v2). Verification commands: `grep '"@mui/' package.json`,
+`git log --all --name-only -- '*cypress.env.json'`, `grep -rn AdapterDateFns src/`,
+`node -p "require('date-fns/package.json').version"`, plus the full gate.
 
 ### Task 18: [Final] Documentation and ship
 - [ ] add **§Step 4 outcome** to `docs/plans/mui-v6-to-v9-upgrade.md`, and mark the overall migration complete
