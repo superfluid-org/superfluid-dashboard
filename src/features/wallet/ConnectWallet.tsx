@@ -61,7 +61,7 @@ const AccountInfo: FC<AccountInfoProps> = ({
 
         secondary: {
           color: isImpersonating
-            ? "warning.main"
+            ? "warning"
             : isConnected
             ? "primary"
             : "error",
