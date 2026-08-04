@@ -43,7 +43,12 @@ const AddressBookMobileRow: FC<AddressBookMobileRowProps> = ({
   return (
     <TableRow>
       <TableCell>
-        <Stack direction="row" alignItems="center" gap={1.5}>
+        <Stack
+          direction="row"
+          sx={{
+            alignItems: "center",
+            gap: 1.5
+          }}>
           <AddressAvatar
             address={address}
             AvatarProps={{
@@ -54,7 +59,9 @@ const AddressBookMobileRow: FC<AddressBookMobileRowProps> = ({
           <ListItemText
             primary={<AddressName address={address} length="short" />}
             secondary={!!name && shortenHex(address, 4)}
-            primaryTypographyProps={{ variant: "h6" }}
+            slotProps={{
+              primary: { variant: "h6" }
+            }}
           />
         </Stack>
       </TableCell>

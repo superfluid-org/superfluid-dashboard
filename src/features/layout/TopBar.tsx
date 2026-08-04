@@ -105,16 +105,25 @@ export default memo(function TopBar() {
       position="fixed"
       elevation={0}
     >
-      <Stack component={Toolbar} direction="row" alignItems="center">
+      <Stack component={Toolbar} direction="row" sx={{
+        alignItems: "center"
+      }}>
         {isBelowLg && (
           <IconButton onClick={openNavigationDrawer} color="inherit">
             <MenuRoundedIcon />
           </IconButton>
         )}
 
-        <Box flex={1} />
+        <Box sx={{
+          flex: 1
+        }} />
 
-        <Stack direction="row" gap={isBelowMd ? 1 : 2} alignItems="center">
+        <Stack
+          direction="row"
+          sx={{
+            gap: isBelowMd ? 1 : 2,
+            alignItems: "center"
+          }}>
           {isBelowLg && !isImpersonated && (
             <ConnectWallet ButtonProps={{ size: "small" }} />
           )}

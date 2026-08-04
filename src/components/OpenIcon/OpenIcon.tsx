@@ -17,6 +17,7 @@ const OpenIcon: FC<OpenIconProps> = ({
 
   return (
     <Icon
+      data-cy="open-icon"
       sx={{
         transform: `rotate(${open ? 180 * (clockwise ? -1 : 1) : 0}deg)`,
         transition: theme.transitions.create("transform", {

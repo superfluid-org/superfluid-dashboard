@@ -1,5 +1,5 @@
 import { ErrorMessage } from "@hookform/error-message";
-import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
+import AddCircleOutline from "@mui/icons-material/AddCircleOutlineOutlined";
 import TimerOutlined from "@mui/icons-material/TimerOutlined";
 import {
   Alert,
@@ -19,7 +19,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV2";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { skipToken } from "@reduxjs/toolkit/query";
@@ -30,6 +30,10 @@ import { formatEther, parseEther } from "ethers/lib/utils";
 import NextLink from "next/link";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
+import {
+  mobileTapPickerSlots,
+  mobileTapTextFieldProps,
+} from "../../../components/PickerField/mobileTapPicker";
 import {
   mapCreateTaskToScheduledStream,
   mapStreamScheduling,
@@ -393,16 +397,23 @@ export default memo(function SendStream() {
 
         setTotalStreamedEther(newValue);
       }}
-      InputProps={{
-        startAdornment: <>≈&nbsp;</>,
-        endAdornment: (
-          <Stack direction="row" gap={0.75} sx={{ ml: 0.5 }}>
-            <TokenIcon isSuper size={24} chainId={network.id} tokenAddress={superToken?.address} />
-            <Typography variant="h6" component="span">
-              {superToken?.symbol ?? ""}
-            </Typography>
-          </Stack>
-        ),
+      slotProps={{
+        input: {
+          startAdornment: <>≈&nbsp;</>,
+          endAdornment: (
+            <Stack
+              direction="row"
+              sx={{
+                gap: 0.75,
+                ml: 0.5
+              }}>
+              <TokenIcon isSuper size={24} chainId={network.id} tokenAddress={superToken?.address} />
+              <Typography variant="h6" component="span">
+                {superToken?.symbol ?? ""}
+              </Typography>
+            </Stack>
+          ),
+        }
       }}
     />
   );
@@ -708,7 +719,9 @@ export default memo(function SendStream() {
               .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
 
             setDialogLoadingInfo(
-              <Typography variant="h5" color="text.secondary" translate="yes">
+              <Typography variant="h5" translate="yes" sx={{
+                color: "text.secondary"
+              }}>
                 You are{" "}
                 {isModifying ? "modifying" : "sending"} a{" "}
                 {startTimestamp || endTimestamp ? "scheduled" : ""} stream.
@@ -738,7 +751,11 @@ export default memo(function SendStream() {
             } else {
               setDialogSuccessActions(
                 <TransactionDialogActions>
-                  <Stack gap={1} sx={{ width: "100%" }}>
+                  <Stack
+                    sx={{
+                      gap: 1,
+                      width: "100%"
+                    }}>
                     <TransactionDialogButton
                       data-cy={"send-more-streams-button"}
                       color="secondary"
@@ -793,7 +810,9 @@ export default memo(function SendStream() {
               }
 
               setDialogLoadingInfo(
-                <Typography variant="h5" color="text.secondary" translate="yes">
+                <Typography variant="h5" translate="yes" sx={{
+                  color: "text.secondary"
+                }}>
                   You are canceling a stream.
                 </Typography>
               );
@@ -893,7 +912,7 @@ export default memo(function SendStream() {
       >
         {/* minWidth: 0 so the balance line below, which is allowed to overflow
             this column, cannot stretch it and break the 1fr 2fr ratio. */}
-        <Stack justifyContent="stretch" sx={{ minWidth: 0 }}>
+        <Stack sx={{ justifyContent: "stretch", minWidth: 0 }}>
           <FieldLabel htmlFor="super-token">Super Token</FieldLabel>
           <TokenController network={network} superToken={superToken} />
           <SendBalance
@@ -933,7 +952,7 @@ export default memo(function SendStream() {
         >
           {/* Header row mirrors the relay card: control + label take the space,
               the info icon is pushed to the far right. */}
-          <Stack direction="row" alignItems="center">
+          <Stack direction="row" sx={{ alignItems: "center" }}>
             <FormControlLabel
               data-cy={"scheduling-tooltip"}
               // ml 0 cancels FormControlLabel's default negative inset so the
@@ -943,7 +962,10 @@ export default memo(function SendStream() {
               sx={{ ml: 0, mr: 0, flex: 1, gap: 1 }}
               control={<StreamSchedulingController streamScheduling={streamScheduling} setStreamScheduling={setStreamScheduling} />}
               label={
-                <Stack direction="row" alignItems="center" gap={1}>
+                <Stack
+                  direction="row"
+                  sx={{ alignItems: "center", gap: 1 }}
+                >
                   <TimerOutlined
                     fontSize="small"
                     sx={{
@@ -968,15 +990,20 @@ export default memo(function SendStream() {
             unmountOnExit
             sx={{ mx: -0.5, marginTop: "0 !important", overflow: "hidden" }}
           >
-            <Stack gap={2.5} sx={{ position: "relative", p: 0.5, pt: 3 }}>
+            <Stack
+              sx={{
+                gap: 2.5,
+                position: "relative",
+                p: 0.5,
+                pt: 3
+              }}>
               <Stack
                 sx={{
+                  gap: 2.5,
                   display: "grid",
                   gridTemplateColumns: "1fr 1fr",
-                  ...(showAllowlistGate ? { opacity: 0.5 } : {}),
-                }}
-                gap={2.5}
-              >
+                  ...(showAllowlistGate ? { opacity: 0.5 } : {})
+                }}>
                 <Stack>
                   {/* The card's own tooltip already explains what scheduling
                       does; per-date tooltips only restated the label. */}
@@ -1008,7 +1035,6 @@ export default memo(function SendStream() {
           </Collapse>
         </Paper>
       )}
-
       {!!(receiverAddress && superToken) && (
         <StreamingPreview
           receiver={receiverAddress}
@@ -1022,9 +1048,7 @@ export default memo(function SendStream() {
           oldEndDate={existingEndDate}
         />
       )}
-
       {showBufferAlert && <BufferAlert bufferAmount={bufferAmount} superToken={superToken} />}
-
       <ConnectionBoundary>
         <ConnectionBoundaryButton
           ButtonProps={{
@@ -1035,8 +1059,12 @@ export default memo(function SendStream() {
         >
           {/* 2.5 matches the form's block rhythm (root Stack spacing) so the relay
               strip reads as its own block; the inner 1 keeps the button group tight. */}
-          <Stack gap={2.5}>
-            <Stack gap={1}>
+          <Stack sx={{
+            gap: 2.5
+          }}>
+            <Stack sx={{
+              gap: 1
+            }}>
               {isCombinedEditBlocked && (
                 // The chip is hidden in this state (no macro action exists for the batch),
                 // so this alert is the only explanation for the disabled button.
@@ -1055,9 +1083,11 @@ export default memo(function SendStream() {
                 <Typography
                   data-cy="clear-macro-classification-pending"
                   variant="caption"
-                  color="text.secondary"
-                  textAlign="center"
                   translate="yes"
+                  sx={{
+                    color: "text.secondary",
+                    textAlign: "center",
+                  }}
                 >
                   Checking wallet compatibility…
                 </Typography>
@@ -1146,15 +1176,15 @@ export const SendBalance = memo(function SendBalance(props: {
   return (
     <Stack
       direction="row"
-      alignItems="center"
-      // Sits under the token selector as a property of the selected token, so
-      // it reads left-aligned and quiet rather than as a headline figure.
-      justifyContent="flex-start"
-      // gap 0: the text pieces already carry their own spaces (Amount renders a
-      // leading space before the symbol slot), so a Stack gap double-spaced it.
-      // The wrap button supplies its own margin instead.
-      gap={0}
       sx={(theme) => ({
+        alignItems: "center",
+        // Sits under the token selector as a property of the selected token, so
+        // it reads left-aligned and quiet rather than as a headline figure.
+        justifyContent: "flex-start",
+        // gap 0: the text pieces already carry their own spaces (Amount renders
+        // a leading space before the symbol slot), so a Stack gap double-spaced
+        // it. The wrap button supplies its own margin instead.
+        gap: 0,
         mt: 0.75,
         [theme.breakpoints.up("md")]: {
           // The token column is too narrow for this line, so let it run the
@@ -1179,7 +1209,10 @@ export const SendBalance = memo(function SendBalance(props: {
         // No `symbol` — the token selector directly above already names it.
         // No `showFiat` — the fiat value reflows as the balance streams, which
         // moved everything after it on every tick.
-        TypographyProps={{ variant: "body2mono", color: "text.secondary" }}
+        TypographyProps={{
+          variant: "body2mono",
+          sx: { color: "text.secondary" },
+        }}
       />
       {isWrappableSuperToken && (
         <Tooltip title="Wrap more">
@@ -1364,14 +1397,15 @@ const StartDateController = memo(function StartDateController(
         name="data.startTimestamp"
         render={({ field: { onChange, onBlur } }) => (
           <DateTimePicker
+            slots={mobileTapPickerSlots}
             slotProps={{
-              textField: {
+              textField: mobileTapTextFieldProps({
                 'data-cy': 'start-date',
                 id: 'start-date',
                 autoComplete: "off",
                 fullWidth: true,
                 onBlur,
-              },
+              }),
             }}
             value={props.startDate}
             minDateTime={props.MIN_DATE}
@@ -1405,14 +1439,15 @@ const EndDateController = memo(function EndDateController(
         name="data.endTimestamp"
         render={({ field: { onChange, onBlur } }) => (
           <DateTimePicker
+            slots={mobileTapPickerSlots}
             slotProps={{
-              textField: {
+              textField: mobileTapTextFieldProps({
                 'data-cy': 'end-date',
                 id: 'end-date',
                 autoComplete: "off",
                 fullWidth: true,
                 onBlur,
-              },
+              }),
             }}
             value={props.endDate}
             minDateTime={props.endDateMin}

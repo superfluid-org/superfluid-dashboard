@@ -39,12 +39,20 @@ const TokenToolbarData: FC<TokenToolbarData> = ({
   name,
   isUnlisted,
 }) => (
-  <Stack data-cy={"token-header"} direction="row" alignItems="center" gap={2}>
+  <Stack
+    data-cy={"token-header"}
+    direction="row"
+    sx={{
+      alignItems: "center",
+      gap: 2
+    }}>
     <TokenIcon chainId={chainId} tokenAddress={tokenAddress} isUnlisted={isUnlisted} />
     <Typography data-cy={"token-name"} variant="h3" component="h1">
       {name}
     </Typography>
-    <Typography data-cy={"token-symbol"} variant="h4" color="text.secondary">
+    <Typography data-cy={"token-symbol"} variant="h4" sx={{
+      color: "text.secondary"
+    }}>
       {symbol}
     </Typography>
   </Stack>
@@ -93,8 +101,15 @@ const TokenToolbar: FC<TokenToolbarProps> = ({ token, network, onBack }) => {
   );
 
   return (
-    <Stack gap={3}>
-      <Stack direction="row" alignItems="center" gap={2}>
+    <Stack sx={{
+      gap: 3
+    }}>
+      <Stack
+        direction="row"
+        sx={{
+          alignItems: "center",
+          gap: 2
+        }}>
         <IconButton color="inherit" onClick={onBack}>
           <ArrowBackRoundedIcon />
         </IconButton>
@@ -119,11 +134,12 @@ const TokenToolbar: FC<TokenToolbarProps> = ({ token, network, onBack }) => {
 
         <Stack
           direction="row"
-          gap={2}
-          flex={1}
-          alignItems="center"
-          justifyContent="flex-end"
-        >
+          sx={{
+            gap: 2,
+            flex: 1,
+            alignItems: "center",
+            justifyContent: "flex-end"
+          }}>
           {!hasAddedToWallet && (
             <ConnectionBoundary expectedNetwork={network}>
               {({ isConnected }) =>
@@ -164,7 +180,6 @@ const TokenToolbar: FC<TokenToolbarProps> = ({ token, network, onBack }) => {
           )}
         </Stack>
       </Stack>
-
       {isBelowMd && (
         <TokenToolbarData
           chainId={network.id}

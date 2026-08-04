@@ -118,7 +118,12 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
         <TableHead>
           <TableRow>
             <TableCell colSpan={5}>
-              <Stack direction="row" alignItems="center" gap={1}>
+              <Stack
+                direction="row"
+                sx={{
+                  alignItems: "center",
+                  gap: 1
+                }}>
                 <Button
                   data-cy={"all-tab"}
                   variant="textContained"
@@ -147,7 +152,12 @@ const SubscriptionsTable: FC<SubscriptionsTableProps> = ({
                   Unapproved {!isLoading && ` (${unapprovedCount})`}
                 </Button>
 
-                <Stack flex={1} direction="row" justifyContent="flex-end">
+                <Stack
+                  direction="row"
+                  sx={{
+                    flex: 1,
+                    justifyContent: "flex-end"
+                  }}>
                   {/* <Button
                       variant="contained"
                       color={selectActive ? "error" : "secondary"}

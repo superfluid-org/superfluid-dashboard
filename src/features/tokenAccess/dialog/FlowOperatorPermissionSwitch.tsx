@@ -49,7 +49,9 @@ export const FlowOperatorPermissionSwitch: FC<{
     (currentPermissions & permissionValue) !== 0;
 
   const renderSwitch = (permission: Permission) => (
-    <Stack key={permission.name} direction="row" alignItems="center">
+    <Stack key={permission.name} direction="row" sx={{
+      alignItems: "center"
+    }}>
       <Switch
         data-cy={`flow-acl-permission-${permission.name}-switch`}
         color="primary"
@@ -65,7 +67,9 @@ export const FlowOperatorPermissionSwitch: FC<{
   return (
     <Stack
       direction={isBelowMd ? "column" : "row"}
-      justifyContent={"space-between"}
+      sx={{
+        justifyContent: "space-between"
+      }}
     >
       {permissions.map(renderSwitch)}
     </Stack>

@@ -8,7 +8,12 @@ export const PoolMemberRowLoading = () => {
         return (
             <TableRow>
                 <TableCell>
-                    <Stack direction="row" alignItems="center" gap={1.5}>
+                    <Stack
+                        direction="row"
+                        sx={{
+                            alignItems: "center",
+                            gap: 1.5
+                        }}>
                         <Skeleton
                             variant="circular"
                             width={24}
@@ -32,12 +37,17 @@ export const PoolMemberRowLoading = () => {
                     <Skeleton width={100} />
                 </TableCell>
             </TableRow>
-        )
+        );
     } else {
         return (
             <TableRow>
                 <TableCell>
-                    <Stack direction="row" alignItems="center" gap={1.5}>
+                    <Stack
+                        direction="row"
+                        sx={{
+                            alignItems: "center",
+                            gap: 1.5
+                        }}>
                         <Skeleton
                             variant="circular"
                             width={24}
@@ -63,6 +73,6 @@ export const PoolMemberRowLoading = () => {
                 </TableCell>
                 <TableCell></TableCell>
             </TableRow>
-        )
+        );
     }
 };

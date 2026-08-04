@@ -99,8 +99,10 @@ export const ExecuteTranchUpdateTransactionButton: FC<Props> = ({
                             setDialogLoadingInfo(
                                 <Typography
                                     variant="h5"
-                                    color="text.secondary"
                                     translate="yes"
+                                    sx={{
+                                        color: "text.secondary"
+                                    }}
                                 >
                                     You are executing a tranch update with {actionsToExecute.length} actions.
                                 </Typography>

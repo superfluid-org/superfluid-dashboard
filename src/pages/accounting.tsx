@@ -69,15 +69,23 @@ const Accounting: NextPage = () => {
           </Box>
         )}
         {showPreview && (
-          <Stack gap={4}>
+          <Stack sx={{
+            gap: 4
+          }}>
             <Stack
               direction="row"
-              alignItems="center"
-              justifyContent="space-between"
-            >
-              <Stack direction="row" gap={2} alignItems="center">
+              sx={{
+                alignItems: "center",
+                justifyContent: "space-between"
+              }}>
+              <Stack
+                direction="row"
+                sx={{
+                  gap: 2,
+                  alignItems: "center"
+                }}>
                 <IconButton onClick={closePreview}>
-                  <ArrowBackIcon />
+                  <ArrowBackIcon data-cy="back-icon" />
                 </IconButton>
                 <Typography variant="h3" component="h1">
                   Export Preview

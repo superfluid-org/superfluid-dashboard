@@ -25,7 +25,7 @@ export const PoolMemberStatus: FC<Props> = ({
         } else {
             return {
                 name: "Not Connected",
-                color: "warning.main"
+                color: "warning"
             }
         }
     }, [poolMember]);

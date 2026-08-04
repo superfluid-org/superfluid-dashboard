@@ -63,7 +63,11 @@ interface PaletteOtherColors {
   intercom: string;
 }
 
-declare module "@mui/material/styles/createPalette" {
+// Material UI v7's `exports` map resolves "./*" to "./*/index.js", so the old
+// two-level "@mui/material/styles/createPalette" specifier no longer resolves
+// even though the .d.ts still ships. Palette/PaletteOptions are re-exported
+// from "@mui/material/styles", which is the supported augmentation target.
+declare module "@mui/material/styles" {
   interface Palette {
     other: PaletteOtherColors;
   }
@@ -548,8 +552,10 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
         defaultProps: {
           translate: "yes",
           MenuProps: {
-            PaperProps: {
-              square: true,
+            slotProps: {
+              paper: {
+                square: true,
+              },
             },
           },
         },
@@ -721,25 +727,6 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           sizeMedium: {
             letterSpacing: "0.17px",
           },
-          outlinedSecondary: {
-            color: theme.palette.text.primary,
-            borderColor: theme.palette.other.outline,
-            background: theme.palette.background.paper,
-            backgroundImage: getModeStyle("none", ELEVATION1_BG),
-            "&:hover": {
-              boxShadow: theme.shadows[2],
-              ...getModeStyle(
-                {
-                  background: theme.palette.background.paper,
-                  backgroundImage: "none",
-                  borderColor: theme.palette.other.outline,
-                },
-                {
-                  backgroundImage: ELEVATION1_BG,
-                }
-              ),
-            },
-          },
           sizeSmall: {
             ...theme.typography.caption,
           },
@@ -748,6 +735,28 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           },
         },
         variants: [
+          {
+            props: { variant: "outlined", color: "secondary" },
+            style: {
+              color: theme.palette.text.primary,
+              borderColor: theme.palette.other.outline,
+              background: theme.palette.background.paper,
+              backgroundImage: getModeStyle("none", ELEVATION1_BG),
+              "&:hover": {
+                boxShadow: theme.shadows[2],
+                ...getModeStyle(
+                  {
+                    background: theme.palette.background.paper,
+                    backgroundImage: "none",
+                    borderColor: theme.palette.other.outline,
+                  },
+                  {
+                    backgroundImage: ELEVATION1_BG,
+                  }
+                ),
+              },
+            },
+          },
           {
             props: { size: "xxs" },
             style: {
@@ -896,15 +905,15 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
             paddingTop: "8px",
             paddingBottom: "8px",
             height: "auto",
-          },
-          avatarMedium: {
-            marginLeft: "12px",
-          },
-          iconMedium: {
-            marginLeft: "12px",
-          },
-          deleteIconMedium: {
-            marginRight: "12px",
+            "& .MuiChip-avatar": {
+              marginLeft: "12px",
+            },
+            "& .MuiChip-icon": {
+              marginLeft: "12px",
+            },
+            "& .MuiChip-deleteIcon": {
+              marginRight: "12px",
+            },
           },
         },
       },
@@ -926,18 +935,18 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
           standard: {
             borderRadius: 0,
             borderLeft: "3px solid",
-          },
-          standardSuccess: {
-            borderColor: theme.palette.primary.main,
-          },
-          standardError: {
-            borderColor: theme.palette.error.main,
-          },
-          standardWarning: {
-            borderColor: theme.palette.warning.main,
-          },
-          standardInfo: {
-            borderColor: theme.palette.info.main,
+            "&.MuiAlert-colorSuccess": {
+              borderColor: theme.palette.primary.main,
+            },
+            "&.MuiAlert-colorError": {
+              borderColor: theme.palette.error.main,
+            },
+            "&.MuiAlert-colorWarning": {
+              borderColor: theme.palette.warning.main,
+            },
+            "&.MuiAlert-colorInfo": {
+              borderColor: theme.palette.info.main,
+            },
           },
         },
         variants: [
@@ -990,8 +999,10 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
       },
       MuiListItemText: {
         defaultProps: {
-          primaryTypographyProps: {
-            variant: "h6",
+          slotProps: {
+            primary: {
+              variant: "h6",
+            }
           },
         },
         styleOverrides: {
@@ -1033,25 +1044,31 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
       MuiMenu: {
         defaultProps: {
           elevation: 2,
-          PaperProps: {
-            square: true,
-          },
-          TransitionProps: {
-            timeout: theme.transitions.duration.shorter,
-            easing: theme.transitions.easing.easeInOut,
+          slotProps: {
+            paper: {
+              square: true,
+            },
+            transition: {
+              timeout: theme.transitions.duration.shorter,
+              easing: theme.transitions.easing.easeInOut,
+            }
           },
         },
       },
       MuiPopover: {
         defaultProps: {
           elevation: 2,
-          PaperProps: {
-            square: true,
-          },
-          TransitionProps: {
-            timeout: theme.transitions.duration.shorter,
-            easing: theme.transitions.easing.easeInOut,
-          },
+
+          slotProps: {
+            paper: {
+              square: true,
+            },
+
+            transition: {
+              timeout: theme.transitions.duration.shorter,
+              easing: theme.transitions.easing.easeInOut,
+            }
+          }
         },
       },
       MuiMenuItem: {
@@ -1169,8 +1186,10 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
       },
       MuiTooltip: {
         defaultProps: {
-          PopperProps: {
-            translate: "yes",
+          slotProps: {
+            popper: {
+              translate: "yes",
+            }
           },
         },
         styleOverrides: {
@@ -1198,8 +1217,10 @@ export function getThemedComponents(theme: Theme): ThemeOptions {
       },
       MuiCardHeader: {
         defaultProps: {
-          subheaderTypographyProps: {
-            variant: "body2",
+          slotProps: {
+            subheader: {
+              variant: "body2",
+            }
           },
         },
         styleOverrides: {

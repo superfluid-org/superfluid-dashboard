@@ -161,7 +161,7 @@ export default memo(function TokenDialog({
     <ResponsiveDialog
       open={open}
       onClose={onClose}
-      PaperProps={{ sx: { borderRadius: "20px", maxWidth: 500 } }}
+      slotProps={{ paper: { sx: { borderRadius: "20px", maxWidth: 500 } } }}
     >
       <DialogTitle sx={{ p: 3 }}>
         <Typography variant="h4" sx={{ mb: 3 }} translate="yes">
@@ -175,7 +175,7 @@ export default memo(function TokenDialog({
             top: theme.spacing(3),
           }}
         >
-          <CloseIcon />
+          <CloseIcon data-cy="close-icon" />
         </IconButton>
         <TextField
           data-cy="token-search-input"
@@ -193,10 +193,11 @@ export default memo(function TokenDialog({
           {isTokensFetching && (
             <Stack
               direction="row"
-              justifyContent="center"
-              alignItems="center"
               spacing={2}
-            >
+              sx={{
+                justifyContent: "center",
+                alignItems: "center"
+              }}>
               <CircularProgress />
             </Stack>
           )}
@@ -206,11 +207,12 @@ export default memo(function TokenDialog({
               data-cy={"token-search-no-results"}
               component={ListItem}
               direction="row"
-              justifyContent="center"
-              alignItems="center"
               spacing={2}
               translate="yes"
-            >
+              sx={{
+                justifyContent: "center",
+                alignItems: "center"
+              }}>
               Could not find any tokens. :(
             </Stack>
           )}

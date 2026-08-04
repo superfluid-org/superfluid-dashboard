@@ -9,19 +9,20 @@ const SELECTED_ADDRESSES = '[data-cy=list-selected-address]';
 const SELECTED_FORM_ADDRESSES = '[data-cy=selected-address]';
 const OK_BUTTON = '[data-cy=ok-button]';
 const SEARCH_ADDRESSES = '[data-cy=list-search-address]';
-const DATE_RANGES = '[data-cy=date-ranges] input';
+const EXPORT_START_DATE = '[data-cy=export-start-date]';
+const EXPORT_END_DATE = '[data-cy=export-end-date]';
 const PRICE_GRANULARITY = '[data-cy=price-granularity]';
 const ACCOUNTING_PERIOD = '[data-cy=accounting-period]';
 const CURRENCY_BUTTON = '[data-cy=currency-button]';
 const EXPORT_PREVIEW = '[data-cy=export-preview-button]';
 const COLUMN_HEADERS = '.MuiDataGrid-columnHeaderTitleContainer';
-const HEADER_TRIPLE_DOTS = '[data-testid=TripleDotsVerticalIcon]';
+const HEADER_TRIPLE_DOTS = '.MuiDataGrid-menuIconButton';
 const FILTER_OPTIONS = '[role=tooltip] li';
 const COLUMN_CHECKBOXES =
   '.MuiDataGrid-panelWrapper input.PrivateSwitchBase-input';
-const DATE_PICKER_YEAR_BUTTONS = '.MuiPickersYear-yearButton';
-const DATE_PICKER_MONTH_BUTTONS = '.MuiPickersMonth-monthButton';
-const DATE_PICKER_ICONS = '[data-testid=CalendarIcon]';
+const DATE_PICKER_YEAR_BUTTONS = '.MuiYearCalendar-button';
+const DATE_PICKER_MONTH_BUTTONS = '.MuiMonthCalendar-button';
+const END_DATE_PICKER_BUTTON = '[data-cy=end-date-picker-button]';
 const EXPORT_CSV = '[data-cy=export-csv-button]';
 const AMOUNT_CELLS = '.MuiDataGrid-cell[data-field=amount]';
 const COUNTERPARTY_CELLS = '.MuiDataGrid-cell[data-field=counterparty]';
@@ -239,13 +240,14 @@ export class ExportPage extends BasePage {
   }
 
   static changeExportStartDate(date: string) {
-    this.clear(DATE_RANGES, 0);
-    this.type(DATE_RANGES, date, 0);
+    this.setPickersFieldValue(EXPORT_START_DATE, date);
   }
 
   static changeExportEndDate(date: string) {
-    //When typing the end date messes up cypress because it autofills 0s for years
-    this.click(DATE_RANGES, -1);
+    // The end date is intentionally left at its default (typing it used to
+    // auto-fill zeroes for the year); clicking the field just moves focus off
+    // the start date so its value commits.
+    this.click(EXPORT_END_DATE);
   }
 
   static enableAllPreviewColumns() {
@@ -343,7 +345,10 @@ export class ExportPage extends BasePage {
   }
 
   static changeEndDateWithUI(month: string, year: string) {
-    this.click(DATE_PICKER_ICONS, -1);
+    // Was `click(CalendarIcon, -1)` — index -1 meant "the second of the two
+    // date pickers", i.e. the end date. The picker's open button now carries
+    // its own hook, so the position dependency is gone.
+    this.click(END_DATE_PICKER_BUTTON);
     cy.get(DATE_PICKER_YEAR_BUTTONS).contains(year).click();
     cy.get(DATE_PICKER_MONTH_BUTTONS).contains(month).click();
   }

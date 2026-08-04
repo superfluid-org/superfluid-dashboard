@@ -18,11 +18,13 @@ export const FieldLabel = memo(function FieldLabel(props: {
   return (
     <Stack
       direction="row"
-      alignItems="center"
-      gap={0.5}
-      // Owns the gap to the input; FormLabel's own margin is cancelled so the
-      // row height doesn't depend on whether a tooltip is present.
-      sx={{ mb: 1 }}
+      sx={{
+        alignItems: "center",
+        gap: 0.5,
+        // Owns the gap to the input; FormLabel's own margin is cancelled so the
+        // row height doesn't depend on whether a tooltip is present.
+        mb: 1,
+      }}
     >
       <FormLabel
         htmlFor={props.htmlFor}

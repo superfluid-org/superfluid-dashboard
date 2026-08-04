@@ -69,12 +69,19 @@ const PreviewItem: FC<PropsWithChildren<PreviewItemProps>> = ({
       data-cy={dataCy}
       component="span"
       variant={numeric ? "body2mono" : "body2"}
-      fontWeight="500"
-      sx={{
-        color: isError ? theme.palette.error.main : theme.palette.text.primary,
-        textAlign: isBelowMd ? "left" : "right",
-      }}
       {...TypographyProps}
+      sx={[
+        {
+          fontWeight: "500",
+          color: isError
+            ? theme.palette.error.main
+            : theme.palette.text.primary,
+          textAlign: isBelowMd ? "left" : "right",
+        },
+        ...(Array.isArray(TypographyProps.sx)
+          ? TypographyProps.sx
+          : [TypographyProps.sx]),
+      ]}
     >
       {children}
     </Typography>
@@ -82,14 +89,20 @@ const PreviewItem: FC<PropsWithChildren<PreviewItemProps>> = ({
   return (
     <Stack
       direction={isBelowMd ? "column" : "row"}
-      alignItems={isBelowMd ? "start" : "center"}
-      justifyContent="space-between"
-      gap={isBelowMd ? 0 : 2}
+      sx={{
+        alignItems: isBelowMd ? "start" : "center",
+        justifyContent: "space-between",
+        gap: isBelowMd ? 0 : 2,
+      }}
     >
       {isValidElement(label) ? (
         label
       ) : (
-        <Typography variant="body2" color="text.secondary" translate="yes">
+        <Typography
+          variant="body2"
+          translate="yes"
+          sx={{ color: "text.secondary" }}
+        >
           {label}
         </Typography>
       )}
@@ -275,9 +288,8 @@ export const StreamingPreview: FC<StreamingPreviewProps> = ({
               py: 0.25,
               minWidth: `calc(50% - ${theme.spacing(1)})`,
             },
-          },
-        }}
-      >
+          }
+        }}>
         <PreviewItem dataCy="preview-receiver" label="Receiver">
           {isBelowMd ? shortenHex(receiver, 14) : receiver}
         </PreviewItem>
@@ -313,7 +325,10 @@ export const StreamingPreview: FC<StreamingPreviewProps> = ({
         {/* TODO: Handle start date if modifying stream */}
         {newScheduledFlowRate.startTimestamp && (
           <PreviewItem dataCy="preview-starts-on" label="Start date">
-            <Stack direction="row" alignItems="center" gap={0.5}>
+            <Stack
+              direction="row"
+              sx={{ alignItems: "center", gap: 0.5 }}
+            >
               <ScheduledStreamIcon
                 scheduledStart
                 IconProps={{
@@ -337,7 +352,12 @@ export const StreamingPreview: FC<StreamingPreviewProps> = ({
             existingFlowRate && oldEndDate != newEndDate && oldEndDateString
           }
         >
-          <Stack direction="row" alignItems="center" gap={0.5}>
+          <Stack
+            direction="row"
+            sx={{
+              alignItems: "center",
+              gap: 0.5
+            }}>
             {newEndDate ? (
               <>
                 <ScheduledStreamIcon
@@ -366,7 +386,11 @@ export const StreamingPreview: FC<StreamingPreviewProps> = ({
             dataCy="preview-upfront-buffer"
             numeric
             label={
-              <Typography variant="body2" color="text.secondary" translate="yes">
+              <Typography
+                variant="body2"
+                translate="yes"
+                sx={{ color: "text.secondary" }}
+              >
                 Upfront buffer{` `}
                 <TooltipWithIcon
                   title={`A minimum buffer or ${

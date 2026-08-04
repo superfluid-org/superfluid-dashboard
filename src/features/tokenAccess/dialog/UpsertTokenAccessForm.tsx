@@ -3,7 +3,6 @@ import {
   DialogContent,
   FormGroup,
   FormLabel,
-  Grid,
   Stack,
   TextField,
   Typography,
@@ -205,14 +204,18 @@ export const UpsertTokenAccessForm = memo(function UpsertTokenAccessForm(
             </Typography>
           </EditDialogTitle>
           <Stack data-cy="permissions-dialog" component={DialogContent} sx={{ p: 4 }}>
-            <Stack gap={2}>
-              <Grid
+            <Stack sx={{
+              gap: 2
+            }}>
+              <Stack
                 direction={isBelowMd ? "column" : "row"}
-                gap={isBelowMd ? 2 : 0}
-                container
-                justifyContent={"space-between"}
+                sx={{
+                  gap: isBelowMd ? 2 : 0,
+                  justifyContent: "space-between",
+                  flexWrap: "wrap",
+                }}
               >
-                <Grid>
+                <Box>
                   <FormGroup
                     sx={{
                       ".MuiButtonBase-root": { minWidth: "200px" },
@@ -238,8 +241,8 @@ export const UpsertTokenAccessForm = memo(function UpsertTokenAccessForm(
                       )}
                     />
                   </FormGroup>
-                </Grid>
-                <Grid gap={2}>
+                </Box>
+                <Box>
                   <FormGroup>
                     <FormLabel>Token</FormLabel>
                     <Controller
@@ -272,11 +275,16 @@ export const UpsertTokenAccessForm = memo(function UpsertTokenAccessForm(
                       )}
                     />
                   </FormGroup>
-                </Grid>
-              </Grid>
+                </Box>
+              </Stack>
               <FormGroup>
                 <FormLabel>
-                  <Stack direction="row" gap={0.5} alignItems="center">
+                  <Stack
+                    direction="row"
+                    sx={{
+                      gap: 0.5,
+                      alignItems: "center"
+                    }}>
                     Operator
                     <TooltipWithIcon
                       title="Address that is permitted to manage your streams for a specific Super Token and network."
@@ -312,7 +320,12 @@ export const UpsertTokenAccessForm = memo(function UpsertTokenAccessForm(
               </FormGroup>
               <FormGroup>
                 <FormLabel>
-                  <Stack direction="row" gap={0.5} alignItems="center">
+                  <Stack
+                    direction="row"
+                    sx={{
+                      gap: 0.5,
+                      alignItems: "center"
+                    }}>
                     Token Allowance
                     <TooltipWithIcon
                       title="Defined transfer allowance cap for Super Tokens."
@@ -347,7 +360,12 @@ export const UpsertTokenAccessForm = memo(function UpsertTokenAccessForm(
               </FormGroup>
               <FormGroup>
                 <FormLabel>
-                  <Stack direction="row" gap={0.5} alignItems="center">
+                  <Stack
+                    direction="row"
+                    sx={{
+                      gap: 0.5,
+                      alignItems: "center"
+                    }}>
                     Stream Allowance
                     <TooltipWithIcon
                       title="Defined flow rate allowance cap for Super Tokens."
@@ -382,7 +400,12 @@ export const UpsertTokenAccessForm = memo(function UpsertTokenAccessForm(
               </FormGroup>
               <FormGroup>
                 <FormLabel>
-                  <Stack direction="row" gap={0.5} alignItems="center">
+                  <Stack
+                    direction="row"
+                    sx={{
+                      gap: 0.5,
+                      alignItems: "center"
+                    }}>
                     Stream Permissions
                     <TooltipWithIcon
                       title="Actions that Operator can execute on your behalf."

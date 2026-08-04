@@ -465,7 +465,12 @@ const StreamsTable: FC<StreamsTableProps> = ({
         <TableHead translate="yes">
           <TableRow>
             <TableCell colSpan={6}>
-              <Stack direction="row" alignItems="center" gap={1}>
+              <Stack
+                direction="row"
+                sx={{
+                  alignItems: "center",
+                  gap: 1
+                }}>
                 <Button
                   variant="textContained"
                   size={isBelowMd ? "small" : "medium"}
@@ -495,7 +500,12 @@ const StreamsTable: FC<StreamsTableProps> = ({
                     `(${outgoingStreams.length})`}
                 </Button>
 
-                <Stack flex={1} direction="row" justifyContent="flex-end">
+                <Stack
+                  direction="row"
+                  sx={{
+                    flex: 1,
+                    justifyContent: "flex-end"
+                  }}>
                   {/* <Button
                       variant="contained"
                       color={selectActive ? "error" : "secondary"}

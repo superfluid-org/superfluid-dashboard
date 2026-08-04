@@ -59,13 +59,17 @@ const CurrencySelectMenu: FC<CurrencySelectMenuProps> = ({
       onClose={onClose}
       transformOrigin={{ horizontal: "left", vertical: "bottom" }}
       anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
-      PaperProps={{
-        sx: { px: theme.spacing(3), py: theme.spacing(1.5) },
-        square: true,
+      slotProps={{
+        paper: {
+          sx: { px: theme.spacing(3), py: theme.spacing(1.5) },
+          square: true,
+        },
       }}
       {...PopoverProps}
     >
-      <Typography color="text.secondary">Popular</Typography>
+      <Typography sx={{
+        color: "text.secondary"
+      }}>Popular</Typography>
       <Box
         sx={{
           display: "grid",
@@ -82,7 +86,9 @@ const CurrencySelectMenu: FC<CurrencySelectMenuProps> = ({
         ))}
       </Box>
       <Divider sx={{ my: 1 }} />
-      <Typography color="text.secondary">Fiat</Typography>
+      <Typography sx={{
+        color: "text.secondary"
+      }}>Fiat</Typography>
       <Box
         sx={{
           display: "grid",

@@ -50,7 +50,12 @@ export default memo(function WrapCard({ tabValue }: { tabValue: WrapTab }) {
           sx: { [theme.breakpoints.down("md")]: { borderRadius: 1 } },
         }}
       />
-      <Stack direction="row" gap={1} sx={{ mb: 4 }}>
+      <Stack
+        direction="row"
+        sx={{
+          gap: 1,
+          mb: 4
+        }}>
 
         <CardTabButton dataCy="wrap-toggle" isActive={tabValue === "upgrade"} onClick={handleTabChange("upgrade")} >Wrap</CardTabButton>
         <CardTabButton dataCy="unwrap-toggle" isActive={tabValue === "downgrade"} onClick={handleTabChange("downgrade")} >Unwrap</CardTabButton>

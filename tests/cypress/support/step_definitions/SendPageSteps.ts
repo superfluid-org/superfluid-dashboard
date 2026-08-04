@@ -259,6 +259,11 @@ Then(/^Allowlist message is shown$/, function () {
     SendPage.validateVisibleAllowlistMessage()
   );
 });
+Then(/^Allowlist message is not shown$/, function () {
+  SendPage.runFunctionIfPlatformIsDeployedOnNetwork(() =>
+    SendPage.validateAllowlistMessageIsNotShown()
+  );
+});
 Then(/^Scheduled stream fields are visible$/, function () {
   SendPage.runFunctionIfPlatformIsDeployedOnNetwork(() =>
     SendPage.validateScheduledStreamFieldsAreVisible()

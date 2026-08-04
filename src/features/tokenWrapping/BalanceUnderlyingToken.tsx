@@ -22,7 +22,9 @@ export const BalanceUnderlyingToken: FC<{
     <Typography
       data-cy={"underlying-balance"}
       variant="body2mono"
-      color="text.secondary"
+      sx={{
+        color: "text.secondary"
+      }}
     >
       <span translate="yes">Balance:</span>{" "}
       {error ? (

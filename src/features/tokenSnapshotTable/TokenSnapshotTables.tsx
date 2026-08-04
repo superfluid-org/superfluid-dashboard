@@ -73,11 +73,12 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
     <>
       <Stack
         direction="row"
-        alignItems="center"
-        justifyContent="space-between"
-        sx={{ mb: 2 }}
         translate="yes"
-      >
+        sx={{
+          alignItems: "center",
+          justifyContent: "space-between",
+          mb: 2
+        }}>
         <Typography variant={isBelowMd ? "h3" : "h4"} component="h1">
           Super Tokens
         </Typography>
@@ -98,15 +99,17 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
           onClose={closeNetworkSelection}
         />
       </Stack>
-
       {!hasContent && !isLoading && (
-        <Stack gap={4}>
+        <Stack sx={{
+          gap: 4
+        }}>
           <TokenSnapshotEmptyCard />
           {/* <FaucetCard /> */}
         </Stack>
       )}
-
-      <Stack gap={4}>
+      <Stack sx={{
+        gap: 4
+      }}>
         {activeNetworks.map((network) => (
           <TokenSnapshotTable
             key={network.id}

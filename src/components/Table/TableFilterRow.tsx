@@ -45,16 +45,16 @@ function TableFilterRow<T extends Key>({
       >
         <Stack
           direction="row"
-          alignItems="center"
-          gap={1}
           sx={{
+            alignItems: "center",
+            gap: 1,
             overflowX: "auto",
+
             [theme.breakpoints.down("md")]: {
               px: 2,
               py: 1,
-            },
-          }}
-        >
+            }
+          }}>
           {options.map((option) => (
             <Button
               key={option.value}

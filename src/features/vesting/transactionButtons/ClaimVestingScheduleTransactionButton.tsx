@@ -99,7 +99,9 @@ export const ClaimVestingScheduleTransactionButton: FC<{
               }}
               onClick={async () => {
                 setDialogLoadingInfo(
-                  <Typography variant="h5" color="text.secondary" translate="yes">
+                  <Typography variant="h5" translate="yes" sx={{
+                    color: "text.secondary"
+                  }}>
                     { isSender ? "You are claiming the vesting schedule on behalf of the receiver." : "You are claiming the vesting schedule."}
                   </Typography>
                 );

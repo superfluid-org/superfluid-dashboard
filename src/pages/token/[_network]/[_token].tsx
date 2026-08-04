@@ -241,7 +241,9 @@ const TokenPageContent: FC<{
 
   return (
     <TokenPageContainer tokenSymbol={tokenSymbol}>
-      <Stack gap={isBelowMd ? 3 : 4}>
+      <Stack sx={{
+        gap: isBelowMd ? 3 : 4
+      }}>
         <TokenToolbar
           token={superTokenQuery.data}
           network={network}
@@ -263,24 +265,33 @@ const TokenPageContent: FC<{
           <Stack
             data-cy={"token-container-by-graph"}
             direction="row"
-            justifyContent="space-between"
             sx={{
+              justifyContent: "space-between",
               mb: 4,
+
               [theme.breakpoints.down("md")]: {
                 mb: 0,
                 alignItems: "end",
-              },
-            }}
-          >
-            <Stack gap={0.5}>
+              }
+            }}>
+            <Stack sx={{
+              gap: 0.5
+            }}>
               <Typography
                 variant={isBelowMd ? "body2" : "body1"}
-                color="text.secondary"
                 translate="yes"
+                sx={{
+                  color: "text.secondary"
+                }}
               >
                 Balance
               </Typography>
-              <Stack direction="row" alignItems="flex-end" columnGap={1}>
+              <Stack
+                direction="row"
+                sx={{
+                  alignItems: "flex-end",
+                  columnGap: 1
+                }}>
                 <Typography data-cy={"token-balance"} variant="h3mono">
                   <FlowingBalance
                     balance={balance}
@@ -291,9 +302,10 @@ const TokenPageContent: FC<{
                 <Typography
                   data-cy={"token-symbol"}
                   variant="h5mono"
-                  color="text.secondary"
-                  sx={{ lineHeight: "30px" }}
-                >
+                  sx={{
+                    color: "text.secondary",
+                    lineHeight: "30px"
+                  }}>
                   {tokenSymbol}
                 </Typography>
               </Stack>
@@ -302,7 +314,9 @@ const TokenPageContent: FC<{
                 <Typography
                   data-cy={"token-fiat-balance"}
                   variant="h5mono"
-                  color="text.secondary"
+                  sx={{
+                    color: "text.secondary"
+                  }}
                 >
                   <FlowingFiatBalance
                     balance={balance}
@@ -312,18 +326,27 @@ const TokenPageContent: FC<{
                   />
                 </Typography>
               )}
-              <Stack direction="row" alignItems="center" gap={1}>
+              <Stack
+                direction="row"
+                sx={{
+                  alignItems: "center",
+                  gap: 1
+                }}>
                 <Typography
                   variant="body2"
-                  color="text.secondary"
                   translate="yes"
+                  sx={{
+                    color: "text.secondary"
+                  }}
                 >
                   Liquidation Date:
                 </Typography>
                 <Typography
                   data-cy={"liquidation-date"}
                   variant="h7"
-                  color="text.secondary"
+                  sx={{
+                    color: "text.secondary"
+                  }}
                 >
                   {!!maybeCriticalAtTimestamp
                     ? format(maybeCriticalAtTimestamp * 1000, "MMMM do, yyyy")
@@ -333,9 +356,10 @@ const TokenPageContent: FC<{
             </Stack>
 
             <Stack
-              alignItems={isBelowMd ? "start" : "end"}
-              justifyContent="space-between"
-            >
+              sx={{
+                alignItems: isBelowMd ? "start" : "end",
+                justifyContent: "space-between"
+              }}>
               {!isBelowMd && (
                 <TimeUnitFilter
                   activeFilter={graphFilter}
@@ -344,7 +368,9 @@ const TokenPageContent: FC<{
                 />
               )}
 
-              <Stack alignItems="end">
+              <Stack sx={{
+                alignItems: "end"
+              }}>
                 {isBelowMd && (
                   <Chip
                     size="small"
@@ -355,7 +381,9 @@ const TokenPageContent: FC<{
                     sx={{ mb: 1 }}
                   />
                 )}
-                <Stack direction="row" alignItems="center">
+                <Stack direction="row" sx={{
+                  alignItems: "center"
+                }}>
                   <Typography data-cy={"net-incoming"} variant="h5mono">
                     <Amount
                       wei={BigNumber.from(totalInflowRate).mul(
@@ -367,7 +395,9 @@ const TokenPageContent: FC<{
                   <ArrowDropUpIcon color="primary" />
                 </Stack>
 
-                <Stack direction="row" alignItems="center">
+                <Stack direction="row" sx={{
+                  alignItems: "center"
+                }}>
                   <Typography data-cy={"net-outgoing"} variant="h5mono">
                     <Amount
                       wei={BigNumber.from(totalOutflowRate).mul(
@@ -395,10 +425,11 @@ const TokenPageContent: FC<{
 
           <Stack
             direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-            sx={{ mt: 2 }}
-          >
+            sx={{
+              justifyContent: "space-between",
+              alignItems: "center",
+              mt: 2
+            }}>
             {isBelowMd ? (
               <TimeUnitFilter
                 activeFilter={graphFilter}

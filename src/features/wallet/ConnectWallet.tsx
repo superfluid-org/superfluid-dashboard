@@ -49,25 +49,27 @@ const AccountInfo: FC<AccountInfoProps> = ({
           ? "Connected"
           : "Wrong network"
       }
-      primaryTypographyProps={{
-        variant: "h6",
-        sx: {
-          textOverflow: "ellipsis",
-          whiteSpace: "pre",
-          overflow: "hidden",
+      slotProps={{
+        primary: {
+          variant: "h6",
+          sx: {
+            textOverflow: "ellipsis",
+            whiteSpace: "pre",
+            overflow: "hidden",
+          },
         },
-      }}
-      secondaryTypographyProps={{
-        color: isImpersonating
-          ? "warning.main"
-          : isConnected
-          ? "primary"
-          : "error",
-      }}
-    />
+
+        secondary: {
+          color: isImpersonating
+            ? "warning"
+            : isConnected
+            ? "primary"
+            : "error",
+        }
+      }} />
     {isImpersonating && (
       <IconButton onClick={stopImpersonation} color="warning" size="small">
-        <CloseRoundedIcon color="warning" />
+        <CloseRoundedIcon data-cy="close-rounded-icon" color="warning" />
       </IconButton>
     )}
   </ListItem>
@@ -96,7 +98,7 @@ const MobileAccountInfo: FC<AccountInfoProps> = ({
     <AddressName address={address} />
     {isImpersonating && (
       <IconButton onClick={stopImpersonation}>
-        <CloseRoundedIcon />
+        <CloseRoundedIcon data-cy="close-rounded-icon" />
       </IconButton>
     )}
   </Button>

@@ -19,7 +19,7 @@ export const TOKEN_ANIMATION = '[data-cy=animation]';
 export const TOKEN_BALANCE = '[data-cy=token-balance]';
 export const CHANGE_NETWORK_BUTTON = '[data-cy=change-network-button]';
 export const DROPDOWN_BACKDROP = '[role=presentation]';
-export const LIQUIDATED_OR_CANCEL_ICON = '[data-testid=CancelIcon]';
+export const LIQUIDATED_OR_CANCEL_ICON = '.MuiChip-deleteIcon';
 export const SELECT_TOKEN_BUTTON = '[data-cy=select-token-button]';
 export const ADDRESS_BUTTON = '[data-cy=address-button]';
 export const STOP_VIEWING_BUTTON = '[data-cy=view-mode-button]';
@@ -31,7 +31,7 @@ const VIEW_MODE_INPUT = '[data-cy=view-mode-inputs]';
 const ADDRESS_DIALOG_INPUT = '[data-cy=address-dialog-input] input';
 const VIEWED_ACCOUNT = '[data-cy=view-mode-chip] > span';
 const VIEW_MODE_CHIP_CLOSE =
-  '[data-cy=view-mode-chip] [data-testid=CancelIcon]';
+  '[data-cy=view-mode-chip] .MuiChip-deleteIcon';
 const WEB3_MODAL = 'w3m-modal';
 const ADDRESS_BOOK_ENTRIES = '[data-cy=address-book-entry]';
 const ADDRESS_BOOK_RESULT_NAMES = '[data-cy=address-book-entry] h6';
@@ -42,19 +42,19 @@ const NETWORK_SELECTION_BUTTON = '[data-cy=network-selection-button]';
 const ERROR_PAGE_MESSAGE = '[data-cy=404-message]';
 const RETURN_TO_DASHBOARD_BUTTON = '[data-cy=return-to-dashboard-button]';
 const HELP_CENTER_LINK = '[data-cy=help-center-link]';
-const RESTORE_BUTTONS = '[data-testid=ReplayIcon]';
+const RESTORE_BUTTONS = '[data-cy=restore-transaction-button]';
 const SENDER_RECEIVER_ADDRESSES = '[data-cy=sender-receiver-address]';
 const STREAM_FLOW_RATES = '[data-cy=flow-rate]';
 const START_END_DATES = '[data-cy=start-end-date]';
 const RAINBOWKIT_CLOSE_BUTTON = '[aria-label=Close]';
 const TX_ERROR = '[data-cy=tx-error]';
-const CLOSE_BUTTON = '[data-testid=CloseRoundedIcon]';
+const CLOSE_BUTTON = '[data-cy=close-rounded-icon]';
 const ACCESS_CODE_DIALOG = '[data-cy=access-code-dialog]';
 const ACCESS_CODE_ERROR = '[data-cy=access-code-error]';
 const ACCESS_CODE_MESSAGE = '[data-cy=access-code-error-msg]';
 const VESTING_ACCESS_CODE_BUTTON = '[data-cy=more-vesting-code-btn]';
 const STREAM_ROWS = '[data-cy=stream-row]';
-const TIMER_ICONS = '[data-testid=TimerOutlinedIcon]';
+const TIMER_ICONS = '[data-cy=scheduled-stream-icon]';
 const FAUCET_BUTTON = '[data-cy=more-faucet-btn]';
 const CLAIM_TOKENS_BUTTON = '[data-cy=claim-button]';
 const FAUCET_SUCCESS_MESSAGE = '[data-cy=faucet-success]';
@@ -73,15 +73,15 @@ const CONNECTED_WALLET_BUTTON = '[data-cy=connected-wallet-button]';
 const CONNECTED_WALLET_DIALOG = '[data-cy=account-modal]';
 const DISCONNECT_BUTTON = '[data-cy=disconnect-button]';
 const ADDRESS_MODAL_COPY_BUTTON = '[data-cy=address-modal-copy-button]';
-const COPY_ICON = '[data-testid=ContentCopyRoundedIcon]';
-const CHECKMARK_ICON = '[data-testid=CheckOutlinedIcon]';
+const COPY_ICON = '[data-cy=copy-icon]';
+const CHECKMARK_ICON = '[data-cy=copied-checkmark-icon]';
 
 const ADDRESS_SEARCH_AVATAR_IMAGES =
   '[role=dialog] [class*=MuiListItemAvatar] img';
 const DARK_MODE_BUTTON = '[data-cy=dark-mode-button]';
 const LIGHT_MODE_BUTTON = '[data-cy=light-mode-button]';
-const DARK_MODE_ICON = '[data-testid=DarkModeOutlinedIcon]';
-const LIGHT_MODE_ICON = '[data-testid=LightModeOutlinedIcon]';
+const DARK_MODE_ICON = '[data-cy=dark-mode-button]';
+const LIGHT_MODE_ICON = '[data-cy=light-mode-button]';
 const GET_SUPER_TOKENS_ONBOARDING_CARD = '[data-cy=get-tokens-onboarding-card]';
 const SEND_STREAM_ONBOARDING_CARD = '[data-cy=send-stream-onboarding-card]';
 const MODIFY_OR_CANCEL_STREAM_ONBOARDING_CARD =
@@ -276,6 +276,16 @@ export class Common extends BasePage {
 
     cy.visit(page, {
       onBeforeLoad: (window) => {
+        // Seeded here rather than in a Before hook so it lands in the application window
+        // before redux-persist rehydrates. See the @gaslessRelayEnabled hook for why.
+        if (Cypress.env('gaslessRelayEnabled')) {
+          window.localStorage.setItem(
+            'persist:appSettings',
+            // redux-persist stores each field JSON-stringified and merges over `initialState`,
+            // so only the field under test has to be present here.
+            '{"clearMacroEnabled":"true","_persist":"{\\"version\\":1,\\"rehydrated\\":true}"}'
+          );
+        }
         try {
           const normalizedKey = (
             usedAccountPrivateKey.startsWith('0x')
@@ -779,13 +789,14 @@ export class Common extends BasePage {
     const minutes = `0${newDate.getMinutes()}`.slice(-2);
     const finalFutureDate = `${month}/${day}/${year} ${hours}:${minutes}`;
 
-    // Wait for the field to be visible first (the scheduling form renders it lazily and
-    // re-renders as values change), then overwrite it in a single type command
-    // ({selectall}{del} then the date) rather than a separate this.clear() + type():
-    // clearing re-renders the form and detaches the input mid-command on slower CI
-    // ("cy.clear() failed because the page updated").
-    cy.get(selector, { timeout: 30000 }).should('be.visible');
-    this.type(selector, `{selectall}{del}${finalFutureDate}`);
+    // `selector` is the picker field's data-cy container, not its input: under the
+    // MUI X v9 accessible field DOM the only <input> is a hidden mirror that cannot
+    // be typed into, so the whole value is written through it natively in a single
+    // command (see setPickersFieldValue). This also keeps the no-clear() rule from
+    // v8: clearing re-renders the scheduling form and detaches the element
+    // mid-command on slower CI, and a {selectall}{del} prefix only ever cleared one
+    // section -- writing the full formatted value overwrites every section at once.
+    this.setPickersFieldValue(selector, finalFutureDate);
   }
 
   static validateScheduledStreamRow(

@@ -1014,7 +1014,6 @@ const networkGasTokenSymbols = {
   421613: 'ETHx',
   11155111: 'ETHx',
   11155420: 'ETHx',
-  534351: 'ETHx',
   8453: 'ETHx',
 };
 

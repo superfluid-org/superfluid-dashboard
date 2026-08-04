@@ -99,8 +99,10 @@ const CancelDistributionStreamButton: FC<CancelDistributionStreamButtonProps> = 
                         setDialogLoadingInfo(
                           <Typography
                             variant="h5"
-                            color="text.secondary"
                             translate="yes"
+                            sx={{
+                              color: "text.secondary"
+                            }}
                           >
                             You are canceling an outgoing distribution stream.
                           </Typography>

@@ -1,4 +1,4 @@
-import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
+import AddCircleOutline from "@mui/icons-material/AddCircleOutlineOutlined";
 import BoltRoundedIcon from "@mui/icons-material/BoltRounded";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
@@ -67,7 +67,7 @@ type VariantKey = "ledger" | "sentence" | "footer";
  * - "float"   — MUI's default: label rests inside the empty field and animates
  *               up into the notch on focus/fill. The pattern NN/g and GOV.UK
  *               argue against, because the resting label reads as a value.
- * - "notched" — label permanently in the notch (`InputLabelProps.shrink`), with
+ * - "notched" — label permanently in the notch (`slotProps.inputLabel.shrink`), with
  *               a placeholder underneath. Same look as "float" once a field has
  *               content, but it never animates and never sits where a value
  *               would, so the usability critique of floating labels doesn't
@@ -83,7 +83,7 @@ type LabelMode = "above" | "float" | "notched";
 /** What Field hands a native MUI input so it renders in the current mode. */
 type MuiFieldProps = {
   label?: ReactNode;
-  InputLabelProps?: { shrink: boolean };
+  slotProps?: { inputLabel: { shrink: boolean } };
 };
 type LabelStyleKey = keyof typeof LABEL_STYLES;
 
@@ -640,9 +640,8 @@ const UiLab: NextPage = () => {
         <Stack
           direction={{ xs: "column", md: "row" }}
           spacing={2.5}
-          alignItems={{ md: "center" }}
-          flexWrap="wrap"
           useFlexGap
+          sx={{ alignItems: { md: "center" }, flexWrap: "wrap" }}
         >
           <Knob label="Field labels">
             <ToggleButtonGroup
@@ -946,7 +945,7 @@ const UiLab: NextPage = () => {
       <Stack
         direction={{ xs: "column", lg: "row" }}
         spacing={3}
-        alignItems="flex-start"
+        sx={{ alignItems: "flex-start" }}
       >
         {shown.map((key) => (
           <Stack
@@ -1126,9 +1125,9 @@ function Field(props: {
       <Box>
         <Stack
           direction="row"
-          alignItems="center"
-          gap={0.5}
           sx={{
+            alignItems: "center",
+            gap: 0.5,
             mb: `${props.labelGap}px`,
             pl: props.labelAlign === "text" ? "14px" : 0,
           }}
@@ -1187,7 +1186,7 @@ function Field(props: {
       // The only difference between the two notch modes: pinning shrink stops
       // the label ever resting inside the field as a pseudo-value.
       ...(props.mode === "notched"
-        ? { InputLabelProps: { shrink: true } }
+        ? { slotProps: { inputLabel: { shrink: true } } }
         : {}),
     })
   );
@@ -1299,10 +1298,16 @@ function InputSection(props: {
             fullWidth
             {...p}
             defaultValue="100"
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">{periodSelect}</InputAdornment>
-              ),
+            // Spread p.slotProps rather than replacing it: `notched` mode
+            // arrives as slotProps.inputLabel, which a bare slotProps would
+            // silently drop.
+            slotProps={{
+              ...p.slotProps,
+              input: {
+                endAdornment: (
+                  <InputAdornment position="end">{periodSelect}</InputAdornment>
+                ),
+              },
             }}
           />
         ) : (
@@ -1351,33 +1356,45 @@ function InputSection(props: {
           fullWidth
           {...p}
           defaultValue="100"
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <Stack
-                  direction="row"
-                  alignItems="center"
-                  gap={0.5}
-                  divider={
-                    <Divider orientation="vertical" flexItem sx={{ my: 0.75 }} />
-                  }
-                >
-                  {/* The real TokenDialogButton carries a 24px TokenIcon, so
-                      the adornment has to swallow icon + symbol + chevron
-                      before the period selector even starts. This is the
-                      fused layout's actual weight, not a text-only version. */}
-                  <Button
-                    size="small"
-                    startIcon={<TokenIconStandIn />}
-                    endIcon={<ExpandMoreIcon />}
-                    sx={{ minWidth: 0, color: "text.primary", fontWeight: 500 }}
+          // Spread p.slotProps rather than replacing it — see the unit-inside
+          // field above.
+          slotProps={{
+            ...p.slotProps,
+            input: {
+              endAdornment: (
+                <InputAdornment position="end">
+                  <Stack
+                    direction="row"
+                    divider={
+                      <Divider
+                        orientation="vertical"
+                        flexItem
+                        sx={{ my: 0.75 }}
+                      />
+                    }
+                    sx={{ alignItems: "center", gap: 0.5 }}
                   >
-                    {MOCK.tokenSymbol}
-                  </Button>
-                  {periodSelect}
-                </Stack>
-              </InputAdornment>
-            ),
+                    {/* The real TokenDialogButton carries a 24px TokenIcon, so
+                        the adornment has to swallow icon + symbol + chevron
+                        before the period selector even starts. This is the
+                        fused layout's actual weight, not a text-only version. */}
+                    <Button
+                      size="small"
+                      startIcon={<TokenIconStandIn />}
+                      endIcon={<ExpandMoreIcon />}
+                      sx={{
+                        minWidth: 0,
+                        color: "text.primary",
+                        fontWeight: 500,
+                      }}
+                    >
+                      {MOCK.tokenSymbol}
+                    </Button>
+                    {periodSelect}
+                  </Stack>
+                </InputAdornment>
+              ),
+            },
           }}
         />
       )}
@@ -1473,7 +1490,7 @@ function InputSection(props: {
         {/* "right" mirrors the gasless row: icon leads at the content's left
             edge, switch lands at the far right, so the two optional-capability
             toggles read as the same kind of control. */}
-        <Stack direction="row" alignItems="center" gap={1}>
+        <Stack direction="row" sx={{ alignItems: "center", gap: 1 }}>
           {props.toggleLayout === "left" && (
             <Switch
               size="small"
@@ -1506,7 +1523,7 @@ function InputSection(props: {
           )}
         </Stack>
         <Collapse in={open} mountOnEnter unmountOnExit>
-          <Stack gap={2.5} sx={{ pt: 2.5 }}>
+          <Stack sx={{ gap: 2.5, pt: 2.5 }}>
             <Box
               sx={{
                 display: "grid",
@@ -1595,9 +1612,10 @@ function BalanceLine(props: { sx?: SxProps<Theme>; withSymbol?: boolean }) {
   return (
     <Stack
       direction="row"
-      alignItems="center"
-      gap={0.5}
-      sx={[{ minWidth: 0 }, ...(Array.isArray(props.sx) ? props.sx : [props.sx])]}
+      sx={[
+        { alignItems: "center", gap: 0.5, minWidth: 0 },
+        ...(Array.isArray(props.sx) ? props.sx : [props.sx]),
+      ]}
     >
       <Typography variant="body2" color="text.secondary" noWrap translate="no">
         Balance: {MOCK.balance}
@@ -1647,9 +1665,13 @@ function GaslessLine(props: {
       <Stack
         {...(props.attached ? {} : { component: Paper, variant: "outlined" })}
         direction="row"
-        alignItems="center"
-        gap={1}
-        sx={{ px: 2, py: 1.5, ...(props.attached ? {} : { borderRadius: "12px" }) }}
+        sx={{
+          alignItems: "center",
+          gap: 1,
+          px: 2,
+          py: 1.5,
+          ...(props.attached ? {} : { borderRadius: "12px" }),
+        }}
       >
         <BoltRoundedIcon fontSize="small" sx={{ color: "text.disabled" }} />
         <Typography variant="body2" color="text.secondary" sx={{ flex: 1 }}>
@@ -1666,8 +1688,8 @@ function GaslessLine(props: {
   return (
     <Stack
       {...(props.attached ? {} : { component: Paper, variant: "outlined" })}
-      gap={0.75}
       sx={(theme) => ({
+        gap: 0.75,
         px: 2,
         py: 1.5,
         ...(props.attached
@@ -1684,7 +1706,7 @@ function GaslessLine(props: {
             }),
       })}
     >
-      <Stack direction="row" alignItems="center" gap={1}>
+      <Stack direction="row" sx={{ alignItems: "center", gap: 1 }}>
         <BoltRoundedIcon
           fontSize="small"
           sx={{
@@ -1725,8 +1747,8 @@ function GaslessLine(props: {
       )}
 
       {enabled && (
-        <Stack gap={0.75} sx={{ pl: indent }}>
-          <Stack direction="row" alignItems="center" gap={0.75}>
+        <Stack sx={{ gap: 0.75, pl: indent }}>
+          <Stack direction="row" sx={{ alignItems: "center", gap: 0.75 }}>
             <Typography variant="caption" color="text.secondary" noWrap>
               Pay with
             </Typography>
@@ -1810,8 +1832,8 @@ function BufferRisk(props: {
 }) {
   return (
     <Stack
-      gap={0.25}
       sx={(theme) => ({
+        gap: 0.25,
         px: 2,
         py: 1.5,
         ...(props.style === "tint"
@@ -1829,7 +1851,7 @@ function BufferRisk(props: {
       {/* The icon is its own column; the paragraph AND the checkbox share the
           second one, so the checkbox lines up with the text above it rather
           than with the icon. */}
-      <Stack direction="row" alignItems="flex-start" gap={1}>
+      <Stack direction="row" sx={{ alignItems: "flex-start", gap: 1 }}>
         <WarningAmberRoundedIcon
           sx={{ fontSize: 18, color: "warning.main", mt: "2px" }}
         />
@@ -1840,8 +1862,8 @@ function BufferRisk(props: {
                 <Typography
                   component="span"
                   variant="body2mono"
-                  fontWeight={600}
                   translate="no"
+                  sx={{ fontWeight: 600 }}
                 >
                   {MOCK.buffer}
                 </Typography>{" "}
@@ -1850,7 +1872,11 @@ function BufferRisk(props: {
             ) : (
               <>This buffer is returned when you cancel. </>
             )}
-            <Typography component="span" variant="body2" fontWeight={600}>
+            <Typography
+              component="span"
+              variant="body2"
+              sx={{ fontWeight: 600 }}
+            >
               You lose it
             </Typography>{" "}
             if your balance runs out before you cancel the stream.
@@ -1861,7 +1887,7 @@ function BufferRisk(props: {
             sx={{ ml: "-9px", mt: 0.25 }}
             control={<Checkbox size="small" defaultChecked />}
             label={
-              <Typography variant="body2" fontWeight={500}>
+              <Typography variant="body2" sx={{ fontWeight: 500 }}>
                 I understand.
               </Typography>
             }
@@ -1897,10 +1923,9 @@ function ActionSummary(props: { full?: boolean; scheduling: boolean }) {
       <Typography
         component="span"
         variant="body2mono"
-        fontWeight={600}
         color="text.primary"
         translate="no"
-        sx={{ wordBreak: "break-all" }}
+        sx={{ fontWeight: 600, wordBreak: "break-all" }}
       >
         {props.full ? MOCK.receiver : MOCK.receiverShort}
       </Typography>
@@ -1950,19 +1975,21 @@ function Row(props: {
   return (
     <Stack
       direction="row"
-      alignItems="center"
-      justifyContent="space-between"
-      gap={2}
-      sx={{ py: 1 }}
+      sx={{
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: 2,
+        py: 1,
+      }}
     >
       <Typography variant="body2" color="text.secondary">
         {props.label}
       </Typography>
       <Typography
         variant="body2mono"
-        fontWeight={props.strong ? 600 : 500}
         color={props.error ? "error.main" : "text.primary"}
         translate="no"
+        sx={{ fontWeight: props.strong ? 600 : 500 }}
       >
         {props.value}
       </Typography>
@@ -2015,8 +2042,8 @@ function ConsequencesLedger(props: ConsequencesProps) {
 function ConsequencesSentence(props: ConsequencesProps) {
   return (
     <Stack
-      gap={1}
       sx={(theme) => ({
+        gap: 1,
         px: 2.5,
         py: 2,
         borderRadius: "12px",
@@ -2030,7 +2057,7 @@ function ConsequencesSentence(props: ConsequencesProps) {
       </Typography>
       <BufferRisk showAmount style={props.warningStyle} />
       {props.liquidationSoon && (
-        <Stack direction="row" alignItems="center" gap={0.75}>
+        <Stack direction="row" sx={{ alignItems: "center", gap: 0.75 }}>
           <WarningAmberRoundedIcon
             sx={{ fontSize: 16, color: "error.main" }}
           />
@@ -2066,8 +2093,7 @@ function ConsequencesFooter(
       <Stack
         direction="row"
         divider={<Divider flexItem orientation="vertical" />}
-        gap={2.5}
-        sx={{ px: 2, py: 1.5 }}
+        sx={{ gap: 2.5, px: 2, py: 1.5 }}
       >
         <Stack sx={{ minWidth: 0 }}>
           {/* inline-flex + centre, not inline text: an icon in a text flow
@@ -2086,7 +2112,12 @@ function ConsequencesFooter(
               IconProps={{ sx: { fontSize: 14, display: "block" } }}
             />
           </Typography>
-          <Typography variant="body2mono" fontWeight={600} translate="no" noWrap>
+          <Typography
+            variant="body2mono"
+            translate="no"
+            noWrap
+            sx={{ fontWeight: 600 }}
+          >
             {MOCK.buffer}
           </Typography>
         </Stack>
@@ -2096,10 +2127,10 @@ function ConsequencesFooter(
           </Typography>
           <Typography
             variant="body2mono"
-            fontWeight={500}
             translate="no"
             noWrap
             color={props.liquidationSoon ? "error.main" : "text.primary"}
+            sx={{ fontWeight: 500 }}
           >
             {MOCK.balanceAfterBuffer}
           </Typography>
@@ -2222,7 +2253,7 @@ function MockSendForm(props: {
             ) : (
               <ConsequencesSentence {...consequences} />
             )}
-            <Stack gap={2}>
+            <Stack sx={{ gap: 2 }}>
               <GaslessLine state={props.gasless} buttonShape={props.buttonShape}
             ctaColor={props.ctaColor}
             activeAccent={props.activeAccent} />

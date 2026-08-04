@@ -153,12 +153,6 @@ export const FlowRateInput: FC<{
             amountEther: e.currentTarget.value,
           });
         }}
-        inputProps={{
-          ...inputPropsForEtherAmount,
-        }}
-        InputProps={{
-          sx: { borderRadius: "8px 0 0 8px" },
-        }}
         sx={{
           ".MuiOutlinedInput-notchedOutline": {
             borderRadius: "8px 0 0 8px",
@@ -180,6 +174,14 @@ export const FlowRateInput: FC<{
                 borderLeftColor: "text.primary",
               },
             }),
+        }}
+        slotProps={{
+          input: {
+            sx: { borderRadius: "8px 0 0 8px" },
+          },
+          htmlInput: {
+            ...inputPropsForEtherAmount,
+          },
         }}
       />
       <Select

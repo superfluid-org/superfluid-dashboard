@@ -455,10 +455,18 @@ const AddressBook: NextPage = () => {
         disableAutoselect
         mode="addressBook"
       />
-
-      <Stack gap={isBelowMd ? 2.5 : 4.5}>
-        <Stack direction="row" gap={1.5} alignItems="center">
-          <Typography variant="h3" component="h1" flex={1} translate="yes">
+      <Stack sx={{
+        gap: isBelowMd ? 2.5 : 4.5
+      }}>
+        <Stack
+          direction="row"
+          sx={{
+            gap: 1.5,
+            alignItems: "center"
+          }}>
+          <Typography variant="h3" component="h1" translate="yes" sx={{
+            flex: 1
+          }}>
             Address Book
           </Typography>
 
@@ -496,7 +504,9 @@ const AddressBook: NextPage = () => {
               </DownloadButton>
             </>
           ) : (
-            <Stack direction="row" gap={1.5}>
+            <Stack direction="row" sx={{
+              gap: 1.5
+            }}>
               {!isDeleting && (
                 <Button
                   variant="textContained"
@@ -536,23 +546,23 @@ const AddressBook: NextPage = () => {
 
         <Stack
           direction="row"
-          justifyContent="space-between"
           sx={{
+            justifyContent: "space-between",
+
             [theme.breakpoints.down("md")]: {
               flexDirection: "column",
               gap: 2,
-            },
-          }}
-        >
+            }
+          }}>
           <Stack
             direction="row"
-            gap={1.5}
             sx={{
+              gap: 1.5,
+
               [theme.breakpoints.down("md")]: {
                 justifyContent: "space-between",
-              },
-            }}
-          >
+              }
+            }}>
             <AddressFilter
               addressesFilter={addressesFilter}
               onChange={onAddressesFilterChange}
@@ -563,7 +573,9 @@ const AddressBook: NextPage = () => {
             />
           </Stack>
           {!isBelowMd && (
-            <Stack direction="row" gap={1.5}>
+            <Stack direction="row" sx={{
+              gap: 1.5
+            }}>
               {!isDeleting && (
                 <Button
                   data-cy={"add-address-btn"}
@@ -605,15 +617,18 @@ const AddressBook: NextPage = () => {
             <Typography
               data-cy={"no-address-title"}
               variant="h4"
-              textAlign="center"
+              sx={{
+                textAlign: "center"
+              }}
             >
               No Addresses Available
             </Typography>
             <Typography
               data-cy={"no-address-message"}
-              color="text.secondary"
-              textAlign="center"
-            >
+              sx={{
+                color: "text.secondary",
+                textAlign: "center"
+              }}>
               Addresses you have transacted with or imported will appear here.
             </Typography>
           </Paper>
@@ -791,15 +806,18 @@ const AddressBook: NextPage = () => {
             <Typography
               data-cy={"no-address-title"}
               variant="h4"
-              textAlign="center"
+              sx={{
+                textAlign: "center"
+              }}
             >
               {accountAddress ? "You don't follow anyone yet" : "Connect your wallet to see your friends"}
             </Typography>
             {accountAddress && <Typography
               data-cy={"no-address-message"}
-              color="text.secondary"
-              textAlign="center"
-            >
+              sx={{
+                color: "text.secondary",
+                textAlign: "center"
+              }}>
               Follow people on <Link href="https://efp.app" target="_blank" rel="noopener noreferrer">EFP (Ethereum Follow Protocol)</Link> to see them here.
             </Typography>}
           </Paper>

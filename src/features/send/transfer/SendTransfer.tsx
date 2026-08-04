@@ -80,7 +80,9 @@ export default memo(function SendTransfer() {
           }
 
           setDialogLoadingInfo(
-            <Typography variant="h5" color="text.secondary" translate="yes">
+            <Typography variant="h5" translate="yes" sx={{
+              color: "text.secondary"
+            }}>
               You are sending {amountEther} {superToken?.symbol} to {receiverAddress}.
             </Typography>
           );
@@ -159,20 +161,17 @@ export default memo(function SendTransfer() {
           },
         }}
       >
-        <Stack justifyContent="stretch">
+        <Stack sx={{ justifyContent: "stretch" }}>
           <FieldLabel htmlFor="transfer-super-token">Super Token</FieldLabel>
           <TokenController network={network} superToken={superToken} />
         </Stack>
-        <Stack justifyContent="stretch">
+        <Stack sx={{ justifyContent: "stretch" }}>
           <FieldLabel htmlFor="transfer-amount">Amount</FieldLabel>
           <AmountController superToken={superToken} />
         </Stack>
       </Box>
-
       <SendBalance network={network} visibleAddress={visibleAddress} token={superToken} />
-
       {(superToken && visibleAddress) && <Divider />}
-
       <ConnectionBoundary>
         <ConnectionBoundaryButton
           ButtonProps={{
@@ -182,13 +181,14 @@ export default memo(function SendTransfer() {
           }}
         >
           {/* 2.5 matches the form's block rhythm so the relay strip reads as its own block. */}
-          <Stack gap={2.5}>
+          <Stack sx={{
+            gap: 2.5
+          }}>
             {SendTransactionBoundary}
             <ClearMacroRelayOption actionKind="transfer" network={network} />
           </Stack>
         </ConnectionBoundaryButton>
       </ConnectionBoundary>
-
     </Stack>
   );
 });
@@ -262,17 +262,21 @@ const AmountController = memo(function AmountController(props: {
           autoComplete="off"
           autoCorrect="off"
           placeholder="0.0"
-          InputProps={{
-            endAdornment: (
-              <Typography component="span" color={"text.secondary"}>
-                {props.superToken?.symbol ?? ""}
-              </Typography>
-            ),
-          }}
-          inputProps={{
-            ...inputPropsForEtherAmount,
-          }}
-        />
+          slotProps={{
+            input: {
+              endAdornment: (
+                <Typography component="span" sx={{
+                  color: "text.secondary"
+                }}>
+                  {props.superToken?.symbol ?? ""}
+                </Typography>
+              ),
+            },
+
+            htmlInput: {
+              ...inputPropsForEtherAmount,
+            }
+          }} />
       )}
     />
   );

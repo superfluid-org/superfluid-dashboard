@@ -45,7 +45,9 @@ const TimeUnitFilter: FC<TimeUnitFilterProps> = ({
   );
 
   return (
-    <Stack direction="row" gap={isBelowMd ? 0.25 : 0.5}>
+    <Stack direction="row" sx={{
+      gap: isBelowMd ? 0.25 : 0.5
+    }}>
       {options.map((option) => (
         <Button
           key={option}

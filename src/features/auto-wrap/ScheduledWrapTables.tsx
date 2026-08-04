@@ -107,16 +107,19 @@ const ScheduledWrapTables: FC<ScheduledWrapTablesProps> = ({ address }) => {
     <>
       <Stack
         direction="row"
-        alignItems="center"
-        justifyContent="space-between"
-        sx={{ mb: 2 }}
         translate="yes"
-      >
+        sx={{
+          alignItems: "center",
+          justifyContent: "space-between",
+          mb: 2
+        }}>
         <Typography variant={isBelowMd ? "h3" : "h4"} component="h1">
           Auto-Wrap
         </Typography>
 
-        <Stack direction={"row"} gap={1.5}>
+        <Stack direction={"row"} sx={{
+          gap: 1.5
+        }}>
           {hasContent && (
             <AutoWrapAddTokenButtonSection
               platformWhitelistedStatuses={platformWhitelistedStatuses}
@@ -149,7 +152,9 @@ const ScheduledWrapTables: FC<ScheduledWrapTablesProps> = ({ address }) => {
           platformWhitelistedStatuses={platformWhitelistedStatuses}
         />
       ) : null}
-      <Stack gap={2}>
+      <Stack sx={{
+        gap: 2
+      }}>
         {activeNetworks.map((network) => (
           <ScheduledWrapTable
             key={network.id}

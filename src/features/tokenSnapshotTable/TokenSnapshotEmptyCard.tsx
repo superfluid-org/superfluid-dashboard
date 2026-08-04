@@ -22,10 +22,8 @@ const WrapperAvatar = styled(Avatar)(({ theme }) => ({
 
 const TokenSnapshotEmptyCard = () => (
   <Card
-    sx={{ py: 5, textAlign: "center" }}
+    sx={{ py: 5, textAlign: "center", gap: 3, alignItems: "center" }}
     component={Stack}
-    gap={3}
-    alignItems="center"
     elevation={1}
   >
     <WrapperAvatar>

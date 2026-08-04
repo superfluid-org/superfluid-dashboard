@@ -36,13 +36,23 @@ const ConnectOrImpersonate: FC<ConnectOrImpersonateProps> = ({}) => {
       <ConnectWallet
         ButtonProps={{ size: isBelowMd ? "large" : "xl", fullWidth: true }}
       />
-
-      <Typography variant="h6" component="p" textAlign="center" sx={{ my: 2 }}>
+      <Typography
+        variant="h6"
+        component="p"
+        sx={{
+          textAlign: "center",
+          my: 2
+        }}>
         -or-
       </Typography>
-
       <Box>
-        <Stack data-cy="view-mode-inputs" direction="row" justifyContent="center" gap={2.5}>
+        <Stack
+          data-cy="view-mode-inputs"
+          direction="row"
+          sx={{
+            justifyContent: "center",
+            gap: 2.5
+          }}>
           <Button
             fullWidth
             variant="outlined"

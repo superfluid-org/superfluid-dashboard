@@ -59,6 +59,7 @@ const ModifyStreamButton: FC<ModifyStreamButtonProps> = ({
     >
       <span>
         <IconButton
+          data-cy={"modify-stream-button"}
           size={size}
           LinkComponent={Link}
           href={modifyStreamUrl}

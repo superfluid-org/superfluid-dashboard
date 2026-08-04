@@ -95,13 +95,17 @@ const StreamAccountCard: FC<StreamAccountCardProps> = ({
   const onMouseLeave = () => setIsHovering(false);
 
   return (
-    <Stack flex={1} gap={2}>
+    <Stack
+      sx={{
+        flex: 1,
+        gap: 2
+      }}>
       <Paper
         component={Stack}
         direction="row"
-        alignItems="center"
-        gap={isBelowMd ? 1 : 2}
         sx={{
+          alignItems: "center",
+          gap: isBelowMd ? 1 : 2,
           height: "70px",
           px: 3,
           [theme.breakpoints.down("md")]: {
@@ -132,23 +136,25 @@ const StreamAccountCard: FC<StreamAccountCardProps> = ({
           data-cy={"sender-and-receiver"}
           primary={<AddressName address={address} />}
           secondary={!!ensName && shortenHex(addressChecksummed, 4)}
-          primaryTypographyProps={{ variant: isBelowMd ? "h7" : "h6" }}
+          slotProps={{
+            primary: { variant: isBelowMd ? "h7" : "h6" }
+          }}
         />
 
         {!isBelowMd && (
           <Stack
             direction="row"
-            alignItems="center"
             sx={{
+              alignItems: "center",
               color: theme.palette.text.secondary,
               opacity: isHovering ? 1 : 0,
               pointerEvents: isHovering ? "all" : "none",
+
               transition: theme.transitions.create("opacity", {
                 easing: theme.transitions.easing.easeInOut,
                 duration: theme.transitions.duration.short,
-              }),
-            }}
-          >
+              })
+            }}>
             <CopyTooltip content={addressChecksummed} copyText="Copy address" />
             <Tooltip title="View on blockchain explorer" arrow placement="top">
               <span>
@@ -181,8 +187,13 @@ const CancelledIndicator: FC<CancelledIndicatorProps> = ({
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   return (
-    <Stack direction="row" alignItems="center" gap={1}>
-      {!isBelowMd && <CloseIcon color="error" />}
+    <Stack
+      direction="row"
+      sx={{
+        alignItems: "center",
+        gap: 1
+      }}>
+      {!isBelowMd && <CloseIcon data-cy="close-icon" color="error" />}
       <Typography
         data-cy={"ended-stream-message"}
         variant={isBelowMd ? "h6" : "h5"}
@@ -207,8 +218,15 @@ interface OverviewItemProps {
 }
 
 const OverviewItem: FC<OverviewItemProps> = ({ label, value, dataCy }) => (
-  <Stack direction="row" alignItems="center" justifyContent="space-between">
-    <Typography variant="body1" color="text.secondary" translate="yes">
+  <Stack
+    direction="row"
+    sx={{
+      alignItems: "center",
+      justifyContent: "space-between"
+    }}>
+    <Typography variant="body1" translate="yes" sx={{
+      color: "text.secondary"
+    }}>
       {label}
     </Typography>
     <Typography data-cy={dataCy} variant="h6">
@@ -484,34 +502,38 @@ const StreamPageContent: FC<{
     <SEO ogUrl={urlToShare}>
       <Container maxWidth="lg">
         <Stack
-          alignItems="center"
-          gap={3}
-          sx={{ maxWidth: "760px", margin: "0 auto" }}
-        >
+          sx={{
+            alignItems: "center",
+            gap: 3,
+            maxWidth: "760px",
+            margin: "0 auto"
+          }}>
           <Stack
-            alignItems="center"
             sx={{
+              alignItems: "center",
               display: "grid",
               gridTemplateColumns: "1fr auto 1fr",
               mb: 7,
               mt: 3,
               width: "100%",
+
               [theme.breakpoints.down("md")]: {
                 my: 0,
-              },
-            }}
-          >
+              }
+            }}>
             <Box>
               <IconButton
                 data-cy={"back-button"}
                 color="inherit"
                 onClick={navigateBack}
               >
-                <ArrowBackIcon />
+                <ArrowBackIcon data-cy="back-icon" />
               </IconButton>
             </Box>
 
-            <Box flex={1}>
+            <Box sx={{
+              flex: 1
+            }}>
               {!isBelowMd && !isActive && updatedAtTimestamp && (
                 <CancelledIndicator updatedAtTimestamp={updatedAtTimestamp} />
               )}
@@ -519,10 +541,11 @@ const StreamPageContent: FC<{
 
             <Stack
               direction="row"
-              justifyContent="flex-end"
-              gap={1}
-              alignItems="center"
-            >
+              sx={{
+                justifyContent: "flex-end",
+                gap: 1,
+                alignItems: "center"
+              }}>
               {!!visibleAddress && (
                 <>
                   {isOutgoing && (
@@ -565,7 +588,12 @@ const StreamPageContent: FC<{
             </Stack>
           </Stack>
 
-          <Stack alignItems="center" gap={1} sx={{ mb: 4 }}>
+          <Stack
+            sx={{
+              alignItems: "center",
+              gap: 1,
+              mb: 4
+            }}>
             {isBelowMd && !isActive && updatedAtTimestamp && (
               <CancelledIndicator updatedAtTimestamp={updatedAtTimestamp} />
             )}
@@ -574,7 +602,12 @@ const StreamPageContent: FC<{
               Total Amount Streamed
             </Typography>
 
-            <Stack direction="row" alignItems="center" gap={2}>
+            <Stack
+              direction="row"
+              sx={{
+                alignItems: "center",
+                gap: 2
+              }}>
               {!isBelowMd && (
                 <TokenIcon
                   isSuper
@@ -587,10 +620,11 @@ const StreamPageContent: FC<{
               )}
               <Stack
                 direction="row"
-                alignItems="end"
-                flexWrap="wrap"
-                columnGap={2}
-              >
+                sx={{
+                  alignItems: "end",
+                  flexWrap: "wrap",
+                  columnGap: 2
+                }}>
                 <Typography
                   variant={isBelowMd ? "h2mono" : "h1mono"}
                   sx={{
@@ -621,10 +655,11 @@ const StreamPageContent: FC<{
             {isBelowMd && (
               <Stack
                 direction="row"
-                alignItems="center"
-                justifyContent="center"
-                gap={1}
-              >
+                sx={{
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 1
+                }}>
                 <TokenIcon
                   isSuper
                   chainId={network.id}
@@ -644,7 +679,9 @@ const StreamPageContent: FC<{
               </Stack>
             )}
 
-            <Typography variant="h4mono" color="text.secondary">
+            <Typography variant="h4mono" sx={{
+              color: "text.secondary"
+            }}>
               {tokenPrice && (
                 <FlowingFiatBalance
                   balance={streamedUntilUpdatedAt}
@@ -657,18 +694,18 @@ const StreamPageContent: FC<{
           </Stack>
 
           <Stack
-            alignItems="center"
             sx={{
+              alignItems: "center",
               display: "grid",
               gridTemplateColumns: "1fr 88px 1fr",
               rowGap: 2,
               width: "100%",
+
               [theme.breakpoints.down("md")]: {
                 gridTemplateColumns: "1fr 32px 1fr",
                 rowGap: 1,
-              },
-            }}
-          >
+              }
+            }}>
             <Typography variant="h6" sx={{ pl: 1 }} translate="yes">
               Sender
             </Typography>
@@ -708,13 +745,24 @@ const StreamPageContent: FC<{
           </Stack>
 
           {currentFlowRate !== "0" && (
-            <Stack alignItems="center" gap={1}>
+            <Stack
+              sx={{
+                alignItems: "center",
+                gap: 1
+              }}>
               {totalToBeStreamedIfScheduled && (
-                <Stack direction="row" alignItems="center" gap={0.5}>
+                <Stack
+                  direction="row"
+                  sx={{
+                    alignItems: "center",
+                    gap: 0.5
+                  }}>
                   <Typography
                     variant="h6"
-                    color="text.secondary"
                     translate="yes"
+                    sx={{
+                      color: "text.secondary"
+                    }}
                   >
                     Total scheduled amount
                   </Typography>
@@ -726,7 +774,12 @@ const StreamPageContent: FC<{
                   </Typography>
                 </Stack>
               )}
-              <Stack direction="row" alignItems="center" gap={0.5}>
+              <Stack
+                direction="row"
+                sx={{
+                  alignItems: "center",
+                  gap: 0.5
+                }}>
                 <Typography data-cy={"amount-per-month"} variant="h6">
                   <Amount
                     wei={BigNumber.from(currentFlowRate).mul(UnitOfTime.Month)}
@@ -735,7 +788,9 @@ const StreamPageContent: FC<{
                   </Amount>
                 </Typography>
 
-                <Typography variant="h6" color="text.secondary" translate="yes">
+                <Typography variant="h6" translate="yes" sx={{
+                  color: "text.secondary"
+                }}>
                   per month
                 </Typography>
               </Stack>
@@ -744,7 +799,9 @@ const StreamPageContent: FC<{
 
           {
             scheduledStream.mostLikelyAssociatedVestingScheduleId && (
-              <Box minWidth="100%">
+              <Box sx={{
+                minWidth: "100%"
+              }}>
                 <Alert
                   data-cy="vesting-alert"
                   icon={<LockClockRoundedIcon />}
@@ -758,7 +815,12 @@ const StreamPageContent: FC<{
                       vestingScheduleId: scheduledStream.mostLikelyAssociatedVestingScheduleId,
                     })}
                   >
-                    <Typography display="inline-block" fontSize="inherit" fontWeight={500}>
+                    <Typography
+                      sx={{
+                        display: "inline-block",
+                        fontSize: "inherit",
+                        fontWeight: 500
+                      }}>
                       Click here to go to the vesting details.
                     </Typography>
                   </Link>
@@ -768,20 +830,20 @@ const StreamPageContent: FC<{
           }
 
           <Stack
-            rowGap={0.5}
-            columnGap={6}
             sx={{
+              rowGap: 0.5,
+              columnGap: 6,
               maxWidth: "740px",
               width: "100%",
               display: "grid",
               gridTemplateColumns: "1fr 1fr",
               mt: 7,
+
               [theme.breakpoints.down("md")]: {
                 gridTemplateColumns: "1fr",
                 mt: 4,
-              },
-            }}
-          >
+              }
+            }}>
             <OverviewItem
               dataCy={"start-date"}
               label="Start Date:"
@@ -811,7 +873,12 @@ const StreamPageContent: FC<{
               <OverviewItem
                 label={`End Date:`}
                 value={
-                  <Stack direction="row" alignItems="center" gap={0.5}>
+                  <Stack
+                    direction="row"
+                    sx={{
+                      alignItems: "center",
+                      gap: 0.5
+                    }}>
                     <ScheduledStreamIcon
                       scheduledStart
                       IconProps={{ fontSize: "small" }}
@@ -836,7 +903,12 @@ const StreamPageContent: FC<{
               dataCy={"network-name"}
               label="Network Name:"
               value={
-                <Stack direction="row" alignItems="center" gap={0.5}>
+                <Stack
+                  direction="row"
+                  sx={{
+                    alignItems: "center",
+                    gap: 0.5
+                  }}>
                   <NetworkIcon network={network} size={16} fontSize={12} />
                   <Typography variant="h6">{network.name}</Typography>
                 </Stack>
@@ -856,13 +928,19 @@ const StreamPageContent: FC<{
               label="Transaction Hash:"
               value={
                 streamCreationEvent && (
-                  <Stack direction="row" alignItems="center" gap={0.5}>
+                  <Stack
+                    direction="row"
+                    sx={{
+                      alignItems: "center",
+                      gap: 0.5
+                    }}>
                     {shortenHex(streamCreationEvent.transactionHash)}
                     <Stack
                       direction="row"
-                      alignItems="center"
-                      sx={{ color: theme.palette.text.secondary }}
-                    >
+                      sx={{
+                        alignItems: "center",
+                        color: theme.palette.text.secondary
+                      }}>
                       <CopyTooltip
                         content={streamCreationEvent.transactionHash}
                         copyText="Copy transaction hash"
