@@ -99,9 +99,37 @@ const allColumns = [
 ];
 
 export class ExportPage extends BasePage {
-  private static expectStreamPeriodsToMatch(actual: any, expected: any) {
-    expect(actual).to.be.an('array');
-    expect(expected).to.be.an('array');
+  /**
+   * Order rows by a stable key before comparing.
+   *
+   * The accounting API groups stream periods by the order of the `chains` query
+   * parameter, which follows the app's `mainNetworks` list, so row order is an
+   * artefact of how the request was built rather than something these scenarios
+   * assert. Comparing positionally means any reordering upstream -- or a network
+   * being added to `mainNetworks` -- fails with an unreadable
+   * "Array(17) to deeply equal Array(17)", which is exactly what happened after
+   * the fixtures were re-recorded. `id` is unique per stream period
+   * (sender-receiver-token-revision), so sorting on it is deterministic.
+   */
+  private static byId(streamPeriods: any[]) {
+    return [...streamPeriods].sort((a, b) =>
+      String(a.id).localeCompare(String(b.id))
+    );
+  }
+
+  private static expectStreamPeriodsToMatch(
+    actualUnsorted: any,
+    expectedUnsorted: any
+  ) {
+    expect(actualUnsorted).to.be.an('array');
+    expect(expectedUnsorted).to.be.an('array');
+    expect(
+      actualUnsorted.length,
+      'the API returned a different number of stream periods than the fixture records'
+    ).to.eq(expectedUnsorted.length);
+
+    const actual = this.byId(actualUnsorted);
+    const expected = this.byId(expectedUnsorted);
 
     const withoutFiat = (streamPeriods: any[]) =>
       streamPeriods.map((streamPeriod) => ({
@@ -493,8 +521,33 @@ export class ExportPage extends BasePage {
     // (addresses, hashes, ISO-ish dates, symbols). The per-row column-count
     // assertion below would fail loudly if that ever changed, rather than
     // silently mis-aligning columns.
-    const rowsOf = (content: string) =>
-      content.split(/\r?\n/).map((line) => line.split(','));
+    // Data rows are sorted before comparing, for the same reason the JSON
+    // comparison sorts by id: the export's row order follows the order the
+    // accounting API returns stream periods in, which follows the `chains`
+    // query parameter and therefore the app's `mainNetworks` list. That is not
+    // what this scenario is checking, and pinning it makes the fixture rot
+    // whenever a network is added or reordered. The header row is held in place
+    // and still compared exactly.
+    const rowsOf = (content: string) => {
+      const [header, ...dataRows] = content
+        .split(/\r?\n/)
+        .map((line) => line.split(','));
+      // Sort on the non-fiat cells only. Sorting on the whole row would fold the
+      // fiat values into the sort key, so a price re-index could reorder the rows
+      // and misalign the comparison -- turning a tolerable 0.01 drift into a
+      // cascade of unrelated cell mismatches.
+      const fiatIndices = new Set(
+        CSV_FIAT_COLUMNS.map((name) => header.indexOf(name)).filter(
+          (index) => index >= 0
+        )
+      );
+      const sortKey = (row: string[]) =>
+        row.filter((_cell, column) => !fiatIndices.has(column)).join(',');
+      return [
+        header,
+        ...dataRows.sort((a, b) => sortKey(a).localeCompare(sortKey(b))),
+      ];
+    };
     const actualRows = rowsOf(actual);
     const expectedRows = rowsOf(expected);
 
