@@ -8,6 +8,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
+import { skipToken } from "@reduxjs/toolkit/query";
 import { FC, useCallback, useMemo, useRef, useState } from "react";
 import OpenIcon from "../../components/OpenIcon/OpenIcon";
 import FaucetCard from "../faucet/FaucetCard";
@@ -16,7 +17,9 @@ import NetworkSelectionFilter from "../network/NetworkSelectionFilter";
 import TokenSnapshotEmptyCard from "./TokenSnapshotEmptyCard";
 import TokenSnapshotLoadingTable from "./TokenSnapshotLoadingTable";
 import TokenSnapshotTable from "./TokenSnapshotTable";
-import ERC20BalanceTable from "./ERC20BalanceTable";
+import { platformApi } from "../redux/platformApi/platformApi";
+import { TokenType } from "../redux/endpoints/tokenTypes";
+import { ERC20Balance } from "./useERC20Balances";
 
 export interface FetchingStatus {
   isLoading: boolean;
@@ -24,7 +27,7 @@ export interface FetchingStatus {
 }
 
 export interface NetworkFetchingStatuses {
-  [key: string]: FetchingStatus;
+  [networkId: number]: FetchingStatus;
 }
 
 interface TokenSnapshotTablesProps {
@@ -44,45 +47,75 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
   const [networkSelectionOpen, setNetworkSelectionOpen] = useState(false);
   const [showERC20s, setShowERC20s] = useState(false);
 
+  const portfolioTokensQuery = platformApi.usePortfolioTokensQuery(
+    showERC20s
+      ? {
+          address,
+          chainIds: activeNetworks.map(({ id }) => id),
+        }
+      : skipToken
+  );
+
+  const erc20BalancesByChainId = useMemo(() => {
+    const balancesByChainId: Record<number, ERC20Balance[]> = {};
+    portfolioTokensQuery.currentData?.tokens.forEach((portfolioToken) => {
+      const chainBalances =
+        balancesByChainId[portfolioToken.chainId] ||
+        (balancesByChainId[portfolioToken.chainId] = []);
+      chainBalances.push({
+        balance: portfolioToken.balance,
+        priceUsd: portfolioToken.priceUsd,
+        token: {
+          address: portfolioToken.tokenAddress,
+          decimals: portfolioToken.decimals,
+          isSuperToken: false,
+          logoURI: portfolioToken.logoURI,
+          name: portfolioToken.name,
+          symbol: portfolioToken.symbol,
+          type: TokenType.ERC20UnderlyingToken,
+        },
+      });
+    });
+    return balancesByChainId;
+  }, [portfolioTokensQuery.currentData]);
+
+  const fallbackChainIds = useMemo(
+    () =>
+      new Set(
+        portfolioTokensQuery.isError
+          ? activeNetworks.map(({ id }) => id)
+          : portfolioTokensQuery.currentData?.fallbackChainIds || []
+      ),
+    [
+      activeNetworks,
+      portfolioTokensQuery.currentData?.fallbackChainIds,
+      portfolioTokensQuery.isError,
+    ]
+  );
+
   const openNetworkSelection = () => setNetworkSelectionOpen(true);
   const closeNetworkSelection = () => setNetworkSelectionOpen(false);
 
-  const superTokenFetchingCallback = useCallback(
+  const fetchingCallback = useCallback(
     (networkId: number, fetchingStatus: FetchingStatus) =>
       setFetchingStatuses((currentStatuses) => ({
         ...currentStatuses,
-        [`super-${networkId}`]: fetchingStatus,
-      })),
-    [setFetchingStatuses]
-  );
-
-  const erc20FetchingCallback = useCallback(
-    (networkId: number, fetchingStatus: FetchingStatus) =>
-      setFetchingStatuses((currentStatuses) => ({
-        ...currentStatuses,
-        [`erc20-${networkId}`]: fetchingStatus,
+        [networkId]: fetchingStatus,
       })),
     [setFetchingStatuses]
   );
 
   const hasContent = useMemo(
-    () =>
-      activeNetworks.some(
-        ({ id }) =>
-          fetchingStatuses[`super-${id}`]?.hasContent ||
-          (showERC20s && fetchingStatuses[`erc20-${id}`]?.hasContent)
-      ),
-    [activeNetworks, fetchingStatuses, showERC20s]
+    () => activeNetworks.some(({ id }) => fetchingStatuses[id]?.hasContent),
+    [activeNetworks, fetchingStatuses]
   );
 
   const isLoading = useMemo(
     () =>
       activeNetworks.some(
-        ({ id }) =>
-          fetchingStatuses[`super-${id}`]?.isLoading !== false ||
-          (showERC20s && fetchingStatuses[`erc20-${id}`]?.isLoading !== false)
+        ({ id }) => fetchingStatuses[id]?.isLoading !== false
       ),
-    [activeNetworks, fetchingStatuses, showERC20s]
+    [activeNetworks, fetchingStatuses]
   );
 
   return (
@@ -141,18 +174,17 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
             key={network.id}
             address={address}
             network={network}
-            fetchingCallback={superTokenFetchingCallback}
+            showERC20s={showERC20s}
+            erc20Balances={erc20BalancesByChainId[network.id] || []}
+            erc20BalancesLoading={
+              showERC20s &&
+              (portfolioTokensQuery.isLoading ||
+                portfolioTokensQuery.isFetching)
+            }
+            useERC20Fallback={showERC20s && fallbackChainIds.has(network.id)}
+            fetchingCallback={fetchingCallback}
           />
         ))}
-        {showERC20s &&
-          activeNetworks.map((network) => (
-            <ERC20BalanceTable
-              key={`erc20-${network.id}`}
-              address={address}
-              network={network}
-              fetchingCallback={erc20FetchingCallback}
-            />
-          ))}
         {isLoading && <TokenSnapshotLoadingTable />}
       </Stack>
     </>

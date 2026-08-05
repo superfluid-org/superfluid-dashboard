@@ -20,16 +20,26 @@ import { subgraphApi } from "../redux/store";
 import TokenSnapshotRow from "./TokenSnapshotRow";
 import { FetchingStatus } from "./TokenSnapshotTables";
 import { EMPTY_ARRAY } from "../../utils/constants";
+import ERC20BalanceRow from "./ERC20BalanceRow";
+import useERC20Balances, { ERC20Balance } from "./useERC20Balances";
 
 interface TokenSnapshotTableProps {
   address: Address;
   network: Network;
+  showERC20s: boolean;
+  erc20Balances: ERC20Balance[];
+  erc20BalancesLoading: boolean;
+  useERC20Fallback: boolean;
   fetchingCallback: (networkId: number, fetchingStatus: FetchingStatus) => void;
 }
 
 const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
   address,
   network,
+  showERC20s,
+  erc20Balances: portfolioERC20Balances,
+  erc20BalancesLoading,
+  useERC20Fallback,
   fetchingCallback,
 }) => {
   const theme = useTheme();
@@ -45,7 +55,7 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
         },
       },
       pagination: {
-        take: Infinity
+        take: Infinity,
       },
     },
     {
@@ -74,7 +84,7 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
           },
         },
         pagination: {
-          take: Infinity
+          take: Infinity,
         },
       },
       {
@@ -92,20 +102,51 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
       }
     );
 
-  const tokenSnapshots = useMemo(
-    () =>
-      {
-        return listedTokensSnapshotsQuery.listedTokenSnapshots.concat(
-          unlistedTokensSnapshotsQuery.unlistedTokenSnapshots
-        );
-      },
-    [network, listedTokensSnapshotsQuery.data?.items?.length ?? 0, unlistedTokensSnapshotsQuery.data?.items?.length ?? 0]
-  );
+  const tokenSnapshots = useMemo(() => {
+    return listedTokensSnapshotsQuery.listedTokenSnapshots.concat(
+      unlistedTokensSnapshotsQuery.unlistedTokenSnapshots
+    );
+  }, [
+    network,
+    listedTokensSnapshotsQuery.data?.items?.length ?? 0,
+    unlistedTokensSnapshotsQuery.data?.items?.length ?? 0,
+  ]);
+
+  const {
+    tokensWithBalances: fallbackERC20Balances,
+    isLoading: fallbackERC20BalancesLoading,
+  } = useERC20Balances({
+    address,
+    network,
+    enabled: showERC20s && useERC20Fallback,
+  });
+
+  const erc20Balances = useMemo(() => {
+    const superTokenAddresses = new Set(
+      tokenSnapshots.map(({ token }) => token.toLowerCase())
+    );
+    const balances = useERC20Fallback
+      ? fallbackERC20Balances
+      : portfolioERC20Balances;
+
+    return balances.filter(
+      ({ token }) => !superTokenAddresses.has(token.address.toLowerCase())
+    );
+  }, [
+    fallbackERC20Balances,
+    portfolioERC20Balances,
+    tokenSnapshots,
+    useERC20Fallback,
+  ]);
 
   const { setCosmetics } = useMinigame();
 
-  const isLoading = listedTokensSnapshotsQuery.isLoading || unlistedTokensSnapshotsQuery.isLoading;
-  const hasContent = !!tokenSnapshots.length;
+  const isLoading =
+    listedTokensSnapshotsQuery.isLoading ||
+    unlistedTokensSnapshotsQuery.isLoading ||
+    erc20BalancesLoading ||
+    fallbackERC20BalancesLoading;
+  const hasContent = tokenSnapshots.length > 0 || erc20Balances.length > 0;
   useEffect(() => {
     fetchingCallback(network.id, {
       isLoading,
@@ -132,15 +173,11 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
     setCosmetics,
     fetchingCallback,
     isLoading,
-    hasContent
+    hasContent,
+    tokenSnapshots,
   ]);
 
-  if (
-    listedTokensSnapshotsQuery.isLoading ||
-    unlistedTokensSnapshotsQuery.isLoading ||
-    tokenSnapshots.length === 0
-  )
-    return null;
+  if (isLoading || !hasContent) return null;
 
   return (
     <TableContainer
@@ -176,7 +213,18 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
               key={snapshot.id}
               network={network}
               snapshot={snapshot}
-              lastElement={tokenSnapshots.length <= index + 1}
+              lastElement={
+                erc20Balances.length === 0 && tokenSnapshots.length <= index + 1
+              }
+            />
+          ))}
+          {erc20Balances.map(({ token, balance, priceUsd }) => (
+            <ERC20BalanceRow
+              key={token.address}
+              network={network}
+              token={token}
+              balance={balance}
+              priceUsd={priceUsd}
             />
           ))}
         </TableBody>
