@@ -65,8 +65,21 @@ the exact failure the check exists to catch. `MAX_RELATIVE` is bounded below by 
 worst-case rounding error from `getDecimalPlacesToRoundTo` (5.05e-4 at a band edge) and above by the
 tightest regression that must fail (0.9989 rendered as "1" = 1.1e-3).
 
-> **Operational action:** 9 of 13 networks hold 0, so those assertions only prove "the UI shows 0".
-> They now log `VACUOUS ASSERTION` at runtime. **Fund `0x8ac9…27e2`** to give them teeth.
+**Zero balances are fine, and funding is not required.** This scenario is a *smoke test* —
+"Smoke testing RPC and Graph in Wrap page" — that switches network, renders the page, opens the
+token selection and checks the token list populates. Asserting `Balance: 0` on an unfunded network
+still proves the app fetched and rendered a balance instead of hanging or erroring. The balance is
+the vehicle, not the goal.
+
+That is also the original intent, not an accident: in the deleted fixture, avalanche, bsc and celo
+were `0` from its first commit in **February 2023**, and base, scroll, degen and sepolia were `0`
+from the day each was added. Only six networks were ever deliberately funded — avalanche-fuji,
+gnosis, polygon, optimism, arbitrum-one, opsepolia — and that set was stable for three and a half
+years.
+
+So the run warns only when one of *those six* reads 0 (`NETWORKS_EXPECTED_TO_HOLD_A_BALANCE`), which
+is real information: polygon has since drained to exactly 0. Topping it up restores non-zero
+coverage; it is a nice-to-have, never a prerequisite for green.
 
 ### 4. Clear Macro relay fee gate — TESTS REALIGNED, wallet still unfunded
 This is **only** stream *scheduling*: exactly three scenarios — "Creating a stream with just start

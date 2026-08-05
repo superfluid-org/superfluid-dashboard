@@ -5,7 +5,7 @@ import {
   getNativeAssetBalance,
   getNativeAssetSuperTokenBalance,
   getNetworkBySlug,
-  warnIfAssertionIsVacuous,
+  warnIfExpectedBalanceIsMissing,
 } from '../../support/helpers/liveBalances';
 import { format } from 'date-fns';
 import {
@@ -590,7 +590,7 @@ export class WrapPage extends BasePage {
     this.getNativeTokenCheckContext(token, account, network).then(
       ({ accountAddress, nativeCurrency }) => {
         getNativeAssetBalance(network, accountAddress).then((balanceWei) => {
-          warnIfAssertionIsVacuous(
+          warnIfExpectedBalanceIsMissing(
             `${token} balance`,
             network,
             accountAddress,
@@ -606,7 +606,7 @@ export class WrapPage extends BasePage {
 
         getNativeAssetSuperTokenBalance(network, accountAddress).then(
           (balanceWei) => {
-            warnIfAssertionIsVacuous(
+            warnIfExpectedBalanceIsMissing(
               `${nativeCurrency.superToken.symbol} balance`,
               network,
               accountAddress,
@@ -636,7 +636,7 @@ export class WrapPage extends BasePage {
     this.getNativeTokenCheckContext(token, account, network).then(
       ({ accountAddress, nativeCurrency }) => {
         getNativeAssetBalance(network, accountAddress).then((balanceWei) => {
-          warnIfAssertionIsVacuous(
+          warnIfExpectedBalanceIsMissing(
             `${token} balance`,
             network,
             accountAddress,

@@ -162,24 +162,52 @@ export function getNativeAssetSuperTokenBalance(
 }
 
 /**
- * A balance of exactly zero makes the corresponding UI assertion true no matter
- * what the app does with a real balance, so shout about it in the run log
- * instead of letting the suite report a hollow pass. We warn rather than fail
- * because several of these networks have legitimately never been funded, and
- * failing on them would recreate the permanently-red hourly run this change is
- * meant to fix.
+ * Networks where this account is *meant* to hold a balance.
+ *
+ * A zero balance is not a defect and funding is not required for this suite to
+ * pass. The scenario is called "Smoke testing RPC and Graph in Wrap page": it
+ * switches network, renders the wrap page, opens the token selection, checks the
+ * "could not find any tokens" message is absent and the token list is populated.
+ * Asserting `Balance: 0` on an unfunded network still proves the app fetched and
+ * rendered a balance rather than hanging or erroring — which is the point of the
+ * scenario. The balance is the vehicle, not the goal.
+ *
+ * The deleted `nativeTokenBalances.json` fixture makes that intent explicit, and
+ * it was stable for three and a half years: avalanche, bsc and celo were `0`
+ * from the file's first commit in February 2023, and base, scroll, degen and
+ * sepolia were `0` from the day each was added. Only the list below was ever
+ * deliberately funded.
+ *
+ * So warn only when a network that is supposed to hold a balance reads zero.
+ * That is real information — polygon has drained to exactly 0 since the fixture
+ * was last touched. Warning on the intentional zeros would be noise that misreads
+ * a deliberate design as neglect.
  */
-export function warnIfAssertionIsVacuous(
+const NETWORKS_EXPECTED_TO_HOLD_A_BALANCE = [
+  'avalanche-fuji',
+  'gnosis',
+  'polygon',
+  'optimism',
+  'arbitrum-one',
+  'opsepolia',
+];
+
+export function warnIfExpectedBalanceIsMissing(
   label: string,
   networkSlug: string,
   accountAddress: string,
   balanceWei: BigNumber
 ) {
-  if (balanceWei.isZero()) {
+  if (
+    balanceWei.isZero() &&
+    NETWORKS_EXPECTED_TO_HOLD_A_BALANCE.includes(networkSlug)
+  ) {
     const message =
-      `VACUOUS ASSERTION: the ${label} of ${accountAddress} on ${networkSlug} is 0 on-chain, ` +
-      `so "the UI matches the chain" only proves the UI shows 0. Fund the wallet on ${networkSlug} ` +
-      `to turn this back into a real check.`;
+      `UNFUNDED: the ${label} of ${accountAddress} on ${networkSlug} reads 0 on-chain, but this ` +
+      `is a network the account is meant to hold a balance on. Nothing is broken and the ` +
+      `assertion still passes — the UI correctly shows 0 — it just no longer exercises a ` +
+      `non-zero balance. Top up if you want that coverage back, or drop ${networkSlug} from ` +
+      `NETWORKS_EXPECTED_TO_HOLD_A_BALANCE if the account is not meant to be funded there.`;
     cy.log(`⚠️ ${message}`);
     // eslint-disable-next-line no-console
     console.warn(message);
@@ -263,7 +291,7 @@ export function assertDisplayedBalanceMatchesChain(
  * chain == 0 has no usable relative bound (every fraction of 0 is 0), so it
  * falls back to `halfUnit`: "0" passes, and any materially non-zero rendering
  * still fails. Such a network is separately flagged by
- * `warnIfAssertionIsVacuous`.
+ * `warnIfExpectedBalanceIsMissing`.
  */
 export function balanceTolerance(
   chainValue: number,

@@ -2,13 +2,16 @@
 @numTestsKeptInMemory(0)
 Feature: Test cases that run indefinitely on all supported networks
 
-  # The expected balances are read live from each network's Superfluid RPC and
-  # compared with what the UI renders, so this scenario needs no wallet top-up to
-  # stay green. But on a network where the wallet holds nothing the assertion only
-  # proves the UI can render "0"; every such network logs a "VACUOUS ASSERTION"
-  # warning in the run output. Fund staticBalanceAccount
-  # (0x8ac9C6D444D12d20BC96786243Abaae8960D27e2) on those networks to turn them
-  # back into real checks.
+  # Expected balances are read live from each network's Superfluid RPC and
+  # compared with what the UI renders, so this scenario needs no wallet top-up.
+  #
+  # Most of these networks have deliberately never been funded, and that is fine:
+  # this is a smoke test of network switching, page render and the token list, so
+  # asserting "Balance: 0" still proves the app fetched and rendered a balance
+  # instead of hanging or erroring. Only the networks in
+  # NETWORKS_EXPECTED_TO_HOLD_A_BALANCE (see support/helpers/liveBalances.ts) are
+  # meant to carry funds; if one of those reads 0 the run logs an "UNFUNDED"
+  # warning. Topping it up restores non-zero coverage but is never required.
   Scenario Outline: Smoke testing RPC and Graph in Wrap page on <network>
     Given "Wrap Page" is open using view mode to look at "staticBalanceAccount"
     And User changes their network to "<network>"
