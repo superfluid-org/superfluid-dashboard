@@ -98,7 +98,7 @@ Feature: Transactional rejected test cases
     And User accepts the risk warning
     And User clicks the send transaction button
     And Scheduled stream transaction dialogs are shown
-    And Transaction rejected error is shown
+    And Transaction rejected error or the gasless relay fee gate is shown
 
   @platformNeeded @gaslessRelayEnabled
   Scenario: Creating a stream with just end date
@@ -112,7 +112,7 @@ Feature: Transactional rejected test cases
     And User accepts the risk warning
     And User clicks the send transaction button
     And Scheduled stream transaction dialogs are shown
-    And Transaction rejected error is shown
+    And Transaction rejected error or the gasless relay fee gate is shown
 
   @platformNeeded @gaslessRelayEnabled
   Scenario: Creating a stream with start and end date
@@ -127,7 +127,7 @@ Feature: Transactional rejected test cases
     And User accepts the risk warning
     And User clicks the send transaction button
     And Scheduled stream transaction dialogs are shown
-    And Transaction rejected error is shown
+    And Transaction rejected error or the gasless relay fee gate is shown
 
   # Flaky on CI
   @skip
@@ -143,4 +143,4 @@ Feature: Transactional rejected test cases
     And User accepts the risk warning
     And User clicks the send transaction button
     And Scheduled stream transaction dialogs are shown
-    And Transaction rejected error is shown
+    And Transaction rejected error or the gasless relay fee gate is shown

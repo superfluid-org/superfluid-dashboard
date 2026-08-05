@@ -48,6 +48,42 @@ const STREAM_FLOW_RATES = '[data-cy=flow-rate]';
 const START_END_DATES = '[data-cy=start-end-date]';
 const RAINBOWKIT_CLOSE_BUTTON = '[aria-label=Close]';
 const TX_ERROR = '[data-cy=tx-error]';
+const TRANSACTION_REJECTED_MESSAGE = 'Transaction Rejected';
+// The Clear Macro relay's pre-signature fee gate (`ClearMacroInsufficientFeeError` in
+// src/features/clearMacro/executeClearMacro.ts). Amounts and the fee token symbol differ
+// per action and per network, so they are captured and asserted on rather than hardcoded.
+//
+// There are two message shapes and four remedy tails, all of which are legitimate:
+//   * the Super-Token fee guard (executeClearMacro.ts:804-811)
+//       "You need <req> <sym> to pay the fee, but you have <avail> <sym>. "
+//       + "Top up <sym> to continue."                                        (relay required)
+//       + "Top up <sym>, or turn off gasless sending to pay with gas instead." (opt-in)
+//   * the Permit2 underlying-fee guard (executeClearMacro.ts:851-864), which says "cover"
+//     rather than "pay", can fold the wrap amount into the required total, and has its
+//     own two remedy tails
+//       "You need <req> <sym> to cover the fee, but you have <avail> <sym>. "
+//       "You need <req> <sym> to cover the amount you're wrapping plus the fee, but ..."
+//       + "Top up <sym>, or pay the fee with the Super Token instead."        (relay required)
+//       + "Top up <sym>, pay the fee with the Super Token instead, or turn off gasless sending."
+//
+// The symbol is a live `symbol()` read that falls back to the literal string
+// "the fee token" when the call reverts (executeClearMacro.ts:802 and :848), so the symbol
+// groups have to accept that two-space phrase as well as a normal ticker.
+// Capture groups (named groups are unavailable at this tsconfig target):
+//   1 = required fee, 2 = fee token symbol, 3 = available balance,
+//   4 = balance token symbol, 5 = the symbol the user is told to top up.
+const FEE_TOKEN_SYMBOL = String.raw`the fee token|[^\s.]+`;
+const RELAY_FEE_GATE_MESSAGE = new RegExp(
+  String.raw`^You need ([\d.]+) (${FEE_TOKEN_SYMBOL}) to ` +
+    String.raw`(?:pay the fee|cover the fee|cover the amount you're wrapping plus the fee)` +
+    String.raw`, but you have ([\d.]+) (${FEE_TOKEN_SYMBOL})\. ` +
+    String.raw`Top up (the fee token|[^\s,.]+)(?:` +
+    String.raw` to continue\.` +
+    String.raw`|, or turn off gasless sending to pay with gas instead\.` +
+    String.raw`|, or pay the fee with the Super Token instead\.` +
+    String.raw`|, pay the fee with the Super Token instead, or turn off gasless sending\.` +
+    String.raw`)$`
+);
 const CLOSE_BUTTON = '[data-cy=close-rounded-icon]';
 const ACCESS_CODE_DIALOG = '[data-cy=access-code-dialog]';
 const ACCESS_CODE_ERROR = '[data-cy=access-code-error]';
@@ -669,8 +705,110 @@ export class Common extends BasePage {
     });
     cy.get(TX_ERROR, { timeout: 60000 }).should(
       'have.text',
-      'Transaction Rejected'
+      TRANSACTION_REJECTED_MESSAGE
     );
+  }
+
+  /**
+   * For the actions that the Clear Macro gasless relay is *forced* on (scheduling a
+   * stream on a relay-enabled network): the transaction can legitimately end in one of
+   * exactly two states, and which one depends on the signing wallet's relay-fee-token
+   * balance -- something the test suite does not control.
+   *
+   *  - The wallet can cover the relay fee (or the relay is off entirely, e.g. the
+   *    `NEXT_PUBLIC_DISABLE_CLEAR_MACRO` kill switch, or a non-relay network): the
+   *    signature is requested, the rejecting HDWallet refuses it, and the dialog shows
+   *    the usual "Transaction Rejected".
+   *  - The wallet cannot cover the relay fee: the app blocks *before* asking for a
+   *    signature and explains the shortfall. That is the intended product behaviour, so
+   *    the test asserts the gate is correct and well-formed instead of failing.
+   *
+   * Anything else -- an empty alert, a different error, a malformed or nonsensical fee
+   * gate (zero required fee, or a "shortfall" where the balance already covers the fee)
+   * -- fails. This is deliberately NOT a "pass no matter what" branch.
+   *
+   * KNOWN COVERAGE HOLE -- read before trusting a green run of this assertion:
+   *
+   *  (a) The rejection branch is currently DEAD on relay-enabled networks. The signing
+   *      wallet holds 0 USDCx, so the fee gate always fires and the "Transaction
+   *      Rejected" path is never taken there. A regression in the rejection dialog
+   *      itself would therefore go unnoticed on those networks (it is still covered on
+   *      non-relay networks and whenever the kill switch is on).
+   *  (b) The fee-gate branch only checks that the message is SELF-CONSISTENT: the
+   *      numbers it asserts on are parsed out of the message itself and are never
+   *      compared against chain state. A product bug in the fee-balance read that
+   *      reported every wallet as holding 0 would produce a perfectly self-consistent
+   *      message, block every user from gasless sending, and still pass here.
+   *      (When the Permit2 variant folds a wrap amount into the required total, the
+   *      quoted "required" is deliberately more than the fee alone; that is expected.)
+   *  (c) To close both: fund the signing wallet with enough fee token to cover the
+   *      relay fee on the relay-enabled networks, then split this back into two
+   *      assertions -- an unconditional "Transaction Rejected" for the funded case, and
+   *      a separate spec that deliberately drains/uses an unfunded wallet and asserts
+   *      the gate's quoted balance against an independent on-chain read (see
+   *      cypress/support/helpers/liveBalances.ts for that read).
+   */
+  static transactionRejectedOrRelayFeeGateErrorIsShown() {
+    Cypress.once('uncaught:exception', (err) => {
+      if (err.message.includes('user rejected transaction')) {
+        return false;
+      }
+    });
+    cy.get(TX_ERROR, { timeout: 60000 })
+      .should(($alert) => {
+        const text = $alert.text().trim();
+        expect(
+          text === TRANSACTION_REJECTED_MESSAGE ||
+            RELAY_FEE_GATE_MESSAGE.test(text),
+          `The transaction dialog error should be either "${TRANSACTION_REJECTED_MESSAGE}" (wallet reached the signature prompt) ` +
+            `or a Clear Macro relay fee gate ("You need <amount> <symbol> to pay/cover the fee, but you have <amount> <symbol>. Top up ..."), ` +
+            `but it was: "${text}"`
+        ).to.equal(true);
+      })
+      .invoke('text')
+      .then((rawText: string) => {
+        const text = rawText.trim();
+
+        if (text === TRANSACTION_REJECTED_MESSAGE) {
+          cy.log(
+            'The signature prompt was reached and rejected - the relay fee was payable (or the relay was not engaged).'
+          );
+          return;
+        }
+
+        // The fee gate fired instead. Assert it actually describes a real shortfall.
+        const match = RELAY_FEE_GATE_MESSAGE.exec(text);
+        // Cannot happen - the retried assertion above already matched - but keeps the
+        // indexing below honest.
+        expect(match, `Failed to parse the relay fee gate message: "${text}"`).to
+          .not.be.null;
+        const required = (match as RegExpExecArray)[1];
+        const requiredSymbol = (match as RegExpExecArray)[2];
+        const available = (match as RegExpExecArray)[3];
+        const availableSymbol = (match as RegExpExecArray)[4];
+        const topUpSymbol = (match as RegExpExecArray)[5];
+
+        cy.log(
+          `Clear Macro relay fee gate shown: needs ${required} ${requiredSymbol}, wallet holds ${available} ${availableSymbol}.`
+        );
+
+        expect(
+          Number(required),
+          'The relay fee gate must quote a non-zero required fee'
+        ).to.be.greaterThan(0);
+        expect(
+          Number(available),
+          'The relay fee gate must only be shown when the balance is actually short of the required fee'
+        ).to.be.lessThan(Number(required));
+        expect(
+          availableSymbol,
+          'The relay fee gate must compare the balance in the same token as the fee'
+        ).to.equal(requiredSymbol);
+        expect(
+          topUpSymbol,
+          'The relay fee gate must tell the user to top up the fee token'
+        ).to.equal(requiredSymbol);
+      });
   }
 
   static validateNoEthereumMainnetShownInDropdown() {

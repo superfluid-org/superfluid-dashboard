@@ -234,6 +234,19 @@ Given(/^User waits for (\d+) seconds$/, function (seconds: number) {
 Then(/^Transaction rejected error is shown$/, function () {
   Common.transactionRejectedErrorIsShown();
 });
+// For the stream-scheduling flows, which are forced through the Clear Macro gasless relay
+// on relay-enabled networks. Wrapped in `runFunctionIfPlatformIsDeployedOnNetwork` for the
+// same reason as the scheduling steps it follows: on networks without the flow scheduler
+// the whole scheduling part of the scenario is skipped, so there is no dialog to assert.
+// See Common.transactionRejectedOrRelayFeeGateErrorIsShown for the two accepted outcomes.
+Then(
+  /^Transaction rejected error or the gasless relay fee gate is shown$/,
+  function () {
+    SendPage.runFunctionIfPlatformIsDeployedOnNetwork(() => {
+      Common.transactionRejectedOrRelayFeeGateErrorIsShown();
+    });
+  }
+);
 Then(
   /^Transaction rejected error is shown for auto-wrap or vesting transaction$/,
   function () {
