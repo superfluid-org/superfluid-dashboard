@@ -132,6 +132,41 @@ a catch-all route would join that handler chain and add proxy overhead across a 
 exactly the load profile under suspicion. Patching below the Cypress proxy leaves intercepts
 untouched. URLs are redacted for credential-looking parameters before being written to artifacts.
 
+### 7. Close-ended stream fixture — REPOINTED at a live stream
+
+The stream behind *"Scheduled stream showing correct details"* ran to completion on 2026-07-22, so
+*"The streamed amount is flowing"* could never pass again. Its sender `0x9Be85A79…` is **not one of
+the six test accounts** and its key is in neither `cypress.env.json` nor CI — that stream was
+hand-made from a personal wallet in July 2024 and was never reproducible by anyone else.
+
+Replaced with a stream between accounts the suite controls:
+
+| | |
+|---|---|
+| sender | `ongoingStreamAccount` `0xEb85888b…` (funded with 30 fTUSDx) |
+| receiver | `bob` `0x9B6157d4…` |
+| token / network | fTUSDx on OP Sepolia |
+| flow rate | `380517503805` wei/s ≈ 1 fTUSDx/month |
+| scheduled end | 2028-08-04, ~6 months before projected liquidation |
+| tx | `0xa61b769f…fa11` |
+
+`ongoingStreamAccount` was chosen over a transactional account on purpose: `john` and friends
+create, modify and cancel streams throughout `rejected-tests`, so a permanent stream from one of
+them could interfere. This account is only asserted on opsepolia for **fDAIx**, and Superfluid
+balances and liquidation dates are per-token, so an fTUSDx stream does not touch it. Dashboard
+navigation is by `data-cy={network}{token}`, not positional, so the extra token row is harmless.
+
+**Buffer and total scheduled amount are no longer pinned.** They are derived — the protocol deposit,
+and `flowRate * (endDate - startDate)` matching `totalToBeStreamedIfScheduled` in the stream details
+page — so pinning them meant re-creating the stream required recomputing them by hand, which is
+precisely why this scenario stayed red instead of being repaired. They now come from
+`CFAv1Forwarder.getFlowInfo` and `FlowScheduler.getFlowSchedule`
+(`tests/cypress/support/helpers/liveStreams.ts`), compared numerically with a tolerance capped
+against the chain value.
+
+The fixture now carries only the stream's identity, so the next person to re-create it updates four
+fields and the assertions follow.
+
 ## Still unexplained — do not assume this branch fixes it
 
 A cluster of ~12 jobs fails with pages that hang on loading skeletons forever
@@ -155,9 +190,6 @@ against one Preview deployment).
   every run sampled back to 2026-06-24. Ruled out: manifest CORS, `X-Frame-Options`/CSP, Vercel
   deployment protection (disabled). Needs driving `app.safe.global` in a real browser. **No assertion
   was weakened to make it pass.**
-- **Stream-details "Scheduled stream"** — the fixture stream on OP Sepolia ran to completion on
-  2026-07-22. **Operational action:** open a new close-ended stream from `0x9Be85A79…` with a far
-  future end date and update `streamData.json → john.opsepolia[0]`.
 - **Dashboard empty state** (`no-balance-wrap-button`) — the empty card now depends on 6 mainnet
   subgraph queries settling within 30s (the active-network list grew). All 6 respond fine on demand;
   may belong to the unexplained cluster. Not weakened.
