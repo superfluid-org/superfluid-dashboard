@@ -2,6 +2,13 @@
 @numTestsKeptInMemory(0)
 Feature: Test cases that run indefinitely on all supported networks
 
+  # The expected balances are read live from each network's Superfluid RPC and
+  # compared with what the UI renders, so this scenario needs no wallet top-up to
+  # stay green. But on a network where the wallet holds nothing the assertion only
+  # proves the UI can render "0"; every such network logs a "VACUOUS ASSERTION"
+  # warning in the run output. Fund staticBalanceAccount
+  # (0x8ac9C6D444D12d20BC96786243Abaae8960D27e2) on those networks to turn them
+  # back into real checks.
   Scenario Outline: Smoke testing RPC and Graph in Wrap page on <network>
     Given "Wrap Page" is open using view mode to look at "staticBalanceAccount"
     And User changes their network to "<network>"
