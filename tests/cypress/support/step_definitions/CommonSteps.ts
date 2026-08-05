@@ -238,15 +238,12 @@ Then(/^Transaction rejected error is shown$/, function () {
 // on relay-enabled networks. Wrapped in `runFunctionIfPlatformIsDeployedOnNetwork` for the
 // same reason as the scheduling steps it follows: on networks without the flow scheduler
 // the whole scheduling part of the scenario is skipped, so there is no dialog to assert.
-// See Common.transactionRejectedOrRelayFeeGateErrorIsShown for the two accepted outcomes.
-Then(
-  /^Transaction rejected error or the gasless relay fee gate is shown$/,
-  function () {
-    SendPage.runFunctionIfPlatformIsDeployedOnNetwork(() => {
-      Common.transactionRejectedOrRelayFeeGateErrorIsShown();
-    });
-  }
-);
+// See Common.relayFeeGateErrorIsShown.
+Then(/^The gasless relay fee gate is shown$/, function () {
+  SendPage.runFunctionIfPlatformIsDeployedOnNetwork(() => {
+    Common.relayFeeGateErrorIsShown();
+  });
+});
 Then(
   /^Transaction rejected error is shown for auto-wrap or vesting transaction$/,
   function () {

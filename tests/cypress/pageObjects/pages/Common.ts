@@ -710,76 +710,39 @@ export class Common extends BasePage {
   }
 
   /**
-   * For the actions that the Clear Macro gasless relay is *forced* on (scheduling a
-   * stream on a relay-enabled network): the transaction can legitimately end in one of
-   * exactly two states, and which one depends on the signing wallet's relay-fee-token
-   * balance -- something the test suite does not control.
+   * Assert the Clear Macro relay fee gate, unconditionally.
    *
-   *  - The wallet can cover the relay fee (or the relay is off entirely, e.g. the
-   *    `NEXT_PUBLIC_DISABLE_CLEAR_MACRO` kill switch, or a non-relay network): the
-   *    signature is requested, the rejecting HDWallet refuses it, and the dialog shows
-   *    the usual "Transaction Rejected".
-   *  - The wallet cannot cover the relay fee: the app blocks *before* asking for a
-   *    signature and explains the shortfall. That is the intended product behaviour, so
-   *    the test asserts the gate is correct and well-formed instead of failing.
+   * When a wallet cannot cover the relay fee, the app blocks *before* requesting a
+   * signature and explains the shortfall. That is intended product behaviour, and it
+   * gets its own scenario against a deliberately unfunded account rather than being
+   * folded into the rejection scenarios as an either/or -- a test that accepts two
+   * different outcomes cannot tell you which one it saw, and would have gone green if
+   * the fee gate started firing for funded wallets too.
    *
-   * Anything else -- an empty alert, a different error, a malformed or nonsensical fee
-   * gate (zero required fee, or a "shortfall" where the balance already covers the fee)
-   * -- fails. This is deliberately NOT a "pass no matter what" branch.
+   * The scenarios that exercise the signature-rejection path keep asserting
+   * `transactionRejectedErrorIsShown` strictly; their wallet is funded with the fee
+   * token so they always reach the signature prompt.
    *
-   * KNOWN COVERAGE HOLE -- read before trusting a green run of this assertion:
-   *
-   *  (a) The rejection branch is currently DEAD on relay-enabled networks. The signing
-   *      wallet holds 0 USDCx, so the fee gate always fires and the "Transaction
-   *      Rejected" path is never taken there. A regression in the rejection dialog
-   *      itself would therefore go unnoticed on those networks (it is still covered on
-   *      non-relay networks and whenever the kill switch is on).
-   *  (b) The fee-gate branch only checks that the message is SELF-CONSISTENT: the
-   *      numbers it asserts on are parsed out of the message itself and are never
-   *      compared against chain state. A product bug in the fee-balance read that
-   *      reported every wallet as holding 0 would produce a perfectly self-consistent
-   *      message, block every user from gasless sending, and still pass here.
-   *      (When the Permit2 variant folds a wrap amount into the required total, the
-   *      quoted "required" is deliberately more than the fee alone; that is expected.)
-   *  (c) To close both: fund the signing wallet with enough fee token to cover the
-   *      relay fee on the relay-enabled networks, then split this back into two
-   *      assertions -- an unconditional "Transaction Rejected" for the funded case, and
-   *      a separate spec that deliberately drains/uses an unfunded wallet and asserts
-   *      the gate's quoted balance against an independent on-chain read (see
-   *      cypress/support/helpers/liveBalances.ts for that read).
+   * Known limit, deliberately not papered over: the numbers checked here are parsed
+   * out of the message itself, so this proves the gate is well-formed and internally
+   * consistent, not that the balance it quotes is the wallet's real balance. Asserting
+   * that would need an independent on-chain read of the fee token
+   * (see cypress/support/helpers/liveBalances.ts).
    */
-  static transactionRejectedOrRelayFeeGateErrorIsShown() {
-    Cypress.once('uncaught:exception', (err) => {
-      if (err.message.includes('user rejected transaction')) {
-        return false;
-      }
-    });
+  static relayFeeGateErrorIsShown() {
     cy.get(TX_ERROR, { timeout: 60000 })
       .should(($alert) => {
         const text = $alert.text().trim();
         expect(
-          text === TRANSACTION_REJECTED_MESSAGE ||
-            RELAY_FEE_GATE_MESSAGE.test(text),
-          `The transaction dialog error should be either "${TRANSACTION_REJECTED_MESSAGE}" (wallet reached the signature prompt) ` +
-            `or a Clear Macro relay fee gate ("You need <amount> <symbol> to pay/cover the fee, but you have <amount> <symbol>. Top up ..."), ` +
-            `but it was: "${text}"`
+          RELAY_FEE_GATE_MESSAGE.test(text),
+          `Expected the Clear Macro relay fee gate ("You need <amount> <symbol> to pay/cover the fee, ` +
+            `but you have <amount> <symbol>. Top up ..."), but the dialog showed: "${text}"`
         ).to.equal(true);
       })
       .invoke('text')
       .then((rawText: string) => {
         const text = rawText.trim();
-
-        if (text === TRANSACTION_REJECTED_MESSAGE) {
-          cy.log(
-            'The signature prompt was reached and rejected - the relay fee was payable (or the relay was not engaged).'
-          );
-          return;
-        }
-
-        // The fee gate fired instead. Assert it actually describes a real shortfall.
         const match = RELAY_FEE_GATE_MESSAGE.exec(text);
-        // Cannot happen - the retried assertion above already matched - but keeps the
-        // indexing below honest.
         expect(match, `Failed to parse the relay fee gate message: "${text}"`).to
           .not.be.null;
         const required = (match as RegExpExecArray)[1];

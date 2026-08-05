@@ -98,7 +98,7 @@ Feature: Transactional rejected test cases
     And User accepts the risk warning
     And User clicks the send transaction button
     And Scheduled stream transaction dialogs are shown
-    And Transaction rejected error or the gasless relay fee gate is shown
+    And Transaction rejected error is shown
 
   @platformNeeded @gaslessRelayEnabled
   Scenario: Creating a stream with just end date
@@ -112,7 +112,7 @@ Feature: Transactional rejected test cases
     And User accepts the risk warning
     And User clicks the send transaction button
     And Scheduled stream transaction dialogs are shown
-    And Transaction rejected error or the gasless relay fee gate is shown
+    And Transaction rejected error is shown
 
   @platformNeeded @gaslessRelayEnabled
   Scenario: Creating a stream with start and end date
@@ -127,7 +127,32 @@ Feature: Transactional rejected test cases
     And User accepts the risk warning
     And User clicks the send transaction button
     And Scheduled stream transaction dialogs are shown
-    And Transaction rejected error or the gasless relay fee gate is shown
+    And Transaction rejected error is shown
+
+  # The Clear Macro gasless relay charges a fee in USDCx and blocks the action before any
+  # signature is requested when the wallet cannot cover it. That is intended product
+  # behaviour, so it gets its own scenario against a deliberately unfunded wallet rather
+  # than being folded into the rejection scenarios above as an either/or -- a test that
+  # accepts two outcomes cannot tell you which one it saw.
+  #
+  # `dan` is the unfunded wallet here: it must hold enough TokenTwox to make the send form
+  # valid, and ZERO of the relay fee token, so the run reaches the fee gate. `john`, used by
+  # the rejection scenarios above, is funded with the fee token so it reaches the signature
+  # prompt instead. Do not fund dan with the fee token, and do not schedule from john here --
+  # the two accounts are what keeps these paths distinct.
+  @platformNeeded @gaslessRelayEnabled
+  Scenario: Scheduling is blocked when the wallet cannot cover the gasless relay fee
+    Given The test case is skipped if the platform is not deployed on the network
+
+    Given Transactional account dan is connected to the dashboard on selected network
+    And User clicks on the "send" navigation button
+    And User inputs all the details to send "1" "TokenTwox" per "month" to "0x9B6157d44134b21D934468B8bf709294cB298aa7"
+    And User clicks the scheduling toggle
+    And User inputs a date "1" "year" into the future into the stream end date
+    And User accepts the risk warning
+    And User clicks the send transaction button
+    And Scheduled stream transaction dialogs are shown
+    And The gasless relay fee gate is shown
 
   # Flaky on CI
   @skip
@@ -143,4 +168,4 @@ Feature: Transactional rejected test cases
     And User accepts the risk warning
     And User clicks the send transaction button
     And Scheduled stream transaction dialogs are shown
-    And Transaction rejected error or the gasless relay fee gate is shown
+    And Transaction rejected error is shown
