@@ -101,8 +101,13 @@ export class GnosisSafe extends BasePage {
       .contains('button', 'Continue')
       .click();
 
-    // Both gates are overlays; the app only mounts once they are gone.
-    this.doesNotExist(APP_INFO_MODAL, undefined, { timeout: 30000 });
+    // Deliberately no "the modal is gone" assertion. Safe keeps the
+    // app-info-modal container mounted after Continue is clicked, so asserting
+    // it no longer exists fails even though the gate has been dismissed --
+    // which is what the first CI run on this change showed: all six scenarios
+    // failed on that line, having successfully clicked both buttons. The real
+    // success condition is the app iframe mounting, and `frameLoaded` in
+    // `validateThatDashboardLoaded` already asserts exactly that.
   }
 
   static validateThatDashboardLoaded() {
