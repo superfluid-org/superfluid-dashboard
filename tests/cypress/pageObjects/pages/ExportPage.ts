@@ -17,7 +17,8 @@ const CURRENCY_BUTTON = '[data-cy=currency-button]';
 const EXPORT_PREVIEW = '[data-cy=export-preview-button]';
 const COLUMN_HEADERS = '.MuiDataGrid-columnHeaderTitleContainer';
 const HEADER_TRIPLE_DOTS = '.MuiDataGrid-menuIconButton';
-const FILTER_OPTIONS = '[role=tooltip] li';
+const COLUMN_MENU = '.MuiDataGrid-menu';
+const FILTER_OPTIONS = `${COLUMN_MENU} li`;
 const COLUMN_CHECKBOXES =
   '.MuiDataGrid-panelWrapper input.PrivateSwitchBase-input';
 const DATE_PICKER_YEAR_BUTTONS = '.MuiYearCalendar-button';
@@ -51,6 +52,36 @@ const ApiWordMap: Record<string, string> = {
   Yearly: 'year',
 };
 
+// The accounting API's fiat values are derived from an upstream historical price
+// backfill which gets re-indexed from time to time: replaying the exact same
+// (fixed, historical) query months apart returns the same on-chain data but fiat
+// values that drift by a fraction of a percent. Comparing those exactly asserts
+// that a third-party price index has not been recomputed, which is not something
+// this suite is meant to test. Everything else in the response - ids, wei amounts,
+// timestamps, block numbers, tx hashes, token metadata, row order - is still
+// compared exactly, and the fiat values are still checked to be within 1% of the
+// recorded ones (which catches a wrong currency, wrong granularity, a missing
+// price, or a sign flip).
+const FIAT_FIELDS = [
+  'amountFiat',
+  'streamedAmountFiat',
+  'transferredAmountFiat',
+] as const;
+const FIAT_RELATIVE_TOLERANCE = 0.01;
+
+// The same three fiat values as they appear in the CSV export, by column header.
+// (The "Token amount" / "Token streamed" / "Token transferred" columns are the
+// on-chain token amounts, not fiat, and stay byte-exact.)
+const CSV_FIAT_COLUMNS = ['Amount', 'Streamed', 'Transferred'];
+
+// The CSV rounds fiat to 2 decimals, which makes a purely relative tolerance
+// useless there: a recorded "0.02" against a re-indexed "0.03" is a 50% relative
+// difference but only one cent, and a recorded "0.00" gives a tolerance of
+// exactly 0. One cent of absolute slack absorbs a price re-index crossing a
+// rounding boundary while still catching a wrong currency, wrong granularity,
+// a missing price or a sign flip.
+const CSV_FIAT_ABSOLUTE_TOLERANCE = 0.01;
+
 const allColumns = [
   'date',
   'startDate',
@@ -68,6 +99,87 @@ const allColumns = [
 ];
 
 export class ExportPage extends BasePage {
+  private static expectStreamPeriodsToMatch(actual: any, expected: any) {
+    expect(actual).to.be.an('array');
+    expect(expected).to.be.an('array');
+
+    const withoutFiat = (streamPeriods: any[]) =>
+      streamPeriods.map((streamPeriod) => ({
+        ...streamPeriod,
+        virtualPeriods: streamPeriod.virtualPeriods.map(
+          (virtualPeriod: any) => {
+            const stripped = { ...virtualPeriod };
+            FIAT_FIELDS.forEach((field) => delete stripped[field]);
+            return stripped;
+          }
+        ),
+      }));
+
+    expect(withoutFiat(actual)).to.deep.eq(withoutFiat(expected));
+
+    actual.forEach((streamPeriod: any, streamPeriodIndex: number) => {
+      streamPeriod.virtualPeriods.forEach(
+        (virtualPeriod: any, virtualPeriodIndex: number) => {
+          const expectedVirtualPeriod =
+            expected[streamPeriodIndex].virtualPeriods[virtualPeriodIndex];
+          FIAT_FIELDS.forEach((field) => {
+            const label = `${streamPeriod.id} virtual period #${virtualPeriodIndex} ${field}`;
+            // Presence is asserted BEFORE the numeric comparison. `withoutFiat`
+            // deletes these fields before the deep-equality check, so nothing
+            // else notices if the API stops returning one; and since many of the
+            // recorded values are 0, coercing a missing field to 0 would compare
+            // 0 against 0 and pass. A dropped field must fail here or nowhere.
+            const actualRaw = virtualPeriod[field];
+            const expectedRaw = expectedVirtualPeriod[field];
+            expect(
+              expectedRaw,
+              `${label}: the recorded fixture is missing this field — re-record it`
+            ).to.not.be.oneOf([undefined, null]);
+            expect(
+              actualRaw,
+              `${label}: the API response is missing this field`
+            ).to.not.be.oneOf([undefined, null]);
+
+            const actualValue = Number(actualRaw);
+            const expectedValue = Number(expectedRaw);
+            expect(
+              Number.isFinite(actualValue),
+              `${label}: the API returned a non-numeric value ${JSON.stringify(
+                actualRaw
+              )}`
+            ).to.eq(true);
+            expect(
+              Number.isFinite(expectedValue),
+              `${label}: the recorded fixture holds a non-numeric value ${JSON.stringify(
+                expectedRaw
+              )}`
+            ).to.eq(true);
+
+            expect(
+              Math.abs(actualValue - expectedValue),
+              `${label}: ${actualValue} vs recorded ${expectedValue}`
+            ).to.be.at.most(
+              Math.abs(expectedValue) * FIAT_RELATIVE_TOLERANCE
+            );
+          });
+        }
+      );
+    });
+  }
+
+  // The DataGrid column menu button is `visibility: hidden` until its column
+  // header is hovered (MUI X v9 GridRootStyles) and CSS `:hover` can't be
+  // simulated from Cypress, so it has to be force clicked. The old code force
+  // clicked it and then clicked "the first visible menu button" - which is the
+  // same button, now visible because its menu is open, so the second click
+  // toggled the menu straight back closed (and timed out with "cy.click()
+  // failed because it requires a DOM element" whenever the first click hadn't
+  // made anything visible yet). One click, then wait for the menu.
+  private static openFirstColumnMenu() {
+    this.forceClick(HEADER_TRIPLE_DOTS, 0);
+    this.isVisible(COLUMN_MENU);
+  }
+
   static searchForAccount(address: string) {
     this.clickFirstVisible(ADDRESS_BUTTONS);
     this.type(ADDRESS_INPUT, address);
@@ -145,7 +257,7 @@ export class ExportPage extends BasePage {
         req.response?.body
       );
       cy.fixture('exportData.json').then((data) => {
-        expect(req.response?.body).to.deep.eq(data[period]);
+        this.expectStreamPeriodsToMatch(req.response?.body, data[period]);
       });
     });
     this.isVisible(AMOUNT_CELLS);
@@ -170,7 +282,7 @@ export class ExportPage extends BasePage {
             req.response?.body
           );
           cy.fixture('exportData.json').then((data) => {
-            expect(req.response?.body).to.deep.eq(data[type]);
+            this.expectStreamPeriodsToMatch(req.response?.body, data[type]);
           });
         });
         this.isVisible(AMOUNT_CELLS);
@@ -186,7 +298,7 @@ export class ExportPage extends BasePage {
             req.response?.body
           );
           cy.fixture('exportData.json').then((data) => {
-            expect(req.response?.body).to.deep.eq(data[type]);
+            this.expectStreamPeriodsToMatch(req.response?.body, data[type]);
           });
         });
         cy.get(COUNTERPARTY_CELLS).each((row) => {
@@ -206,7 +318,7 @@ export class ExportPage extends BasePage {
             req.response?.body
           );
           cy.fixture('exportData.json').then((data) => {
-            expect(req.response?.body).to.deep.eq(data[type]);
+            this.expectStreamPeriodsToMatch(req.response?.body, data[type]);
           });
         });
         // The date column renders in M/D/YYYY locale format now (e.g. "1/6/2022"); assert the
@@ -256,9 +368,10 @@ export class ExportPage extends BasePage {
     //Checkboxes get magically disabled without waiting,
     //Force clicking because mouse events not triggering the three dots to appear
     cy.wait(2000);
-    this.forceClick(HEADER_TRIPLE_DOTS, 0);
-    this.clickFirstVisible(HEADER_TRIPLE_DOTS);
-    cy.get(FILTER_OPTIONS).contains('Show columns').click();
+    this.openFirstColumnMenu();
+    // MUI X renamed the column menu entry from "Show columns" to
+    // "Manage columns" (localeText `columnMenuManageColumns`).
+    cy.get(FILTER_OPTIONS).contains('Manage columns').click();
     cy.get(COLUMN_CHECKBOXES).each((checkbox) => {
       if (!checkbox.attr('checked')) {
         cy.wrap(checkbox).click();
@@ -304,8 +417,7 @@ export class ExportPage extends BasePage {
   }
 
   static addCustomFilter(column: string, operator: string, value: string) {
-    this.forceClick(HEADER_TRIPLE_DOTS, 0);
-    this.clickFirstVisible(HEADER_TRIPLE_DOTS);
+    this.openFirstColumnMenu();
     cy.get(FILTER_OPTIONS).contains('Filter').click();
     // MUI X DataGrid v7 renders the column/operator pickers as MUI <Select> components
     // (no native <select>). Open each and pick the option by its data-value (the column
@@ -358,14 +470,93 @@ export class ExportPage extends BasePage {
     this.click(EXPORT_CSV);
   }
 
+  // The CSV export carries the same third-party fiat values as the JSON one, so
+  // it has the same problem: a byte-exact comparison asserts that an upstream
+  // historical price index has not been recomputed. That is what re-broke this
+  // spec before. The fiat columns therefore get a tolerance (see
+  // CSV_FIAT_ABSOLUTE_TOLERANCE) and EVERY other column - dates, addresses, tx
+  // hashes, token metadata, the raw token amounts, the row order and the header
+  // itself - is still compared exactly, cell by cell, so a shape change is
+  // caught rather than smoothed over.
   static validateDownloadedCSV() {
-    cy.fixture('streamPeriodExportExample.csv').then((csv) => {
+    cy.fixture('streamPeriodExportExample.csv').then((csv: string) => {
       cy.readFile('cypress/downloads/Stream periods export.csv').then(
-        (downloadedCSV) => {
-          expect(csv).to.eq(downloadedCSV);
+        (downloadedCSV: string) => {
+          this.expectCSVToMatch(downloadedCSV, csv);
         }
       );
     });
+  }
+
+  private static expectCSVToMatch(actual: string, expected: string) {
+    // No quoted-field handling: this export writes no quotes or embedded commas
+    // (addresses, hashes, ISO-ish dates, symbols). The per-row column-count
+    // assertion below would fail loudly if that ever changed, rather than
+    // silently mis-aligning columns.
+    const rowsOf = (content: string) =>
+      content.split(/\r?\n/).map((line) => line.split(','));
+    const actualRows = rowsOf(actual);
+    const expectedRows = rowsOf(expected);
+
+    expect(actualRows.length, 'downloaded CSV row count').to.eq(
+      expectedRows.length
+    );
+
+    const header = expectedRows[0];
+    expect(actualRows[0], 'downloaded CSV header row').to.deep.eq(header);
+
+    const fiatColumns = CSV_FIAT_COLUMNS.map((name) => {
+      const columnIndex = header.indexOf(name);
+      expect(
+        columnIndex,
+        `the recorded CSV must contain a "${name}" column`
+      ).to.be.at.least(0);
+      return columnIndex;
+    });
+
+    for (let row = 1; row < expectedRows.length; row++) {
+      const actualCells = actualRows[row];
+      const expectedCells = expectedRows[row];
+      expect(actualCells.length, `downloaded CSV row ${row} column count`).to.eq(
+        expectedCells.length
+      );
+
+      expectedCells.forEach((expectedCell, column) => {
+        const actualCell = actualCells[column];
+        const label = `downloaded CSV row ${row}, column "${
+          header[column] ?? column
+        }"`;
+
+        if (fiatColumns.indexOf(column) === -1) {
+          expect(actualCell, label).to.eq(expectedCell);
+          return;
+        }
+
+        const actualValue = Number(actualCell);
+        const expectedValue = Number(expectedCell);
+        expect(
+          Number.isFinite(actualValue),
+          `${label}: expected a fiat number but got ${JSON.stringify(
+            actualCell
+          )}`
+        ).to.eq(true);
+        expect(
+          Number.isFinite(expectedValue),
+          `${label}: the recorded fixture holds a non-numeric fiat value ${JSON.stringify(
+            expectedCell
+          )}`
+        ).to.eq(true);
+
+        const tolerance = Math.max(
+          CSV_FIAT_ABSOLUTE_TOLERANCE,
+          Math.abs(expectedValue) * FIAT_RELATIVE_TOLERANCE
+        );
+        expect(
+          Math.abs(actualValue - expectedValue),
+          `${label}: ${actualValue} vs recorded ${expectedValue} (tolerance ${tolerance})`
+        ).to.be.at.most(tolerance);
+      });
+    }
   }
 
   static validateSelectedAddressBookEntry(nameOrAddress: string) {
