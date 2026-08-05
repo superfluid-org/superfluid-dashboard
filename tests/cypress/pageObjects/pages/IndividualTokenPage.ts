@@ -62,6 +62,15 @@ interface Transfer {
 }
 
 export class IndividualTokenPage extends BasePage {
+  // The subscription status cell only flips once the transaction is mined *and*
+  // the subgraph has re-indexed it, which regularly takes longer than
+  // `defaultCommandTimeout` (15s). The generous timeouts passed to
+  // `BasePage.hasText` below never actually applied: `hasText` attaches its
+  // assertion to a trailing `.filter(':visible')` query, and a query does not
+  // inherit the timeout given to the `cy.get()` before it - so those waits
+  // silently collapsed to the default and failed with the pre-indexing status
+  // still on screen. Doing the indexing and the visibility filtering inside a
+  // single `cy.get()` keeps the timeout attached to the assertion.
   static tokenPageIsOpen() {
     this.isVisible(LIQUIDATION_DATE);
     this.isVisible(TOKEN_GRAPH);
@@ -232,9 +241,7 @@ export class IndividualTokenPage extends BasePage {
           timeout: 60000,
         });
       }
-      this.hasText(STATUS, 'Awaiting Approval', undefined, {
-        timeout: 60000,
-      });
+      this.hasText(STATUS, 'Awaiting Approval', 0, { timeout: 60000 });
     });
   }
 
@@ -248,7 +255,7 @@ export class IndividualTokenPage extends BasePage {
           timeout: 60000,
         });
       }
-      this.hasText(STATUS, 'Approved', undefined, { timeout: 60000 });
+      this.hasText(STATUS, 'Approved', 0, { timeout: 60000 });
     });
   }
 
