@@ -9,7 +9,11 @@ import {
 
 const GNOSIS_BUTTONS = '.MuiButton-contained';
 const GNOSIS_SAFE_WALLET_OPTION = '[data-testid=wallet-selector-external-safe]';
-// Safe sets the iframe title to the app's manifest name (previously a generic "unknown").
+// Safe's own stable hooks for the two gates it shows before mounting a third-party app.
+const CONSENT_BANNER = '[data-testid=cookies-popup]';
+const APP_INFO_MODAL = '[data-testid=app-info-modal]';
+// Verified against https://app.superfluid.org/manifest.json: Safe titles the iframe with the
+// app manifest's `name`, which is exactly "Superfluid Dashboard".
 const SUPERFLUID_IFRAME = 'iframe[title="Superfluid Dashboard"]';
 const LOADING_SPINNER = '.MuiCircularProgress-root';
 const GNOSIS_WARNING_CHECKBOX = '.PrivateSwitchBase-input';
@@ -50,61 +54,55 @@ const GnosisSafeAddressesPerNetwork = {
 };
 
 export class GnosisSafe extends BasePage {
-  // Safe migrated to a new "Workspaces" UI that hides the classic Safe Apps flow behind a
-  // sign-in wall. These storage entries replicate what clicking "Use the old UI" + accepting
-  // the cookie banner + the third-party app disclaimer would set, so no modal blocks the app.
-  static seedSafeClassicView(window: Window, chainId?: number) {
-    // What the "Use the old UI" button sets - keeps us on the classic Safe Apps experience.
-    window.sessionStorage.setItem('SAFE_v2__classicViewEnabled', 'true');
-    // Pre-accept the cookie banner.
-    window.localStorage.setItem(
-      'SAFE_v2__cookies_terms',
-      JSON.stringify({
-        terms: true,
-        necessary: true,
-        updates: true,
-        analytics: true,
-        termsVersion: '1.3',
-      })
-    );
-    // Pre-accept the "third-party apps" disclaimer (keyed per chainId).
-    if (chainId !== undefined) {
-      window.localStorage.setItem(
-        'SAFE_v2__SafeApps__infoModal',
-        JSON.stringify({
-          [chainId]: { consentsAccepted: true, warningCheckedCustomApps: [] },
-        })
-      );
-    }
-  }
-
   static openSafeOnNetwork(network: string) {
-    const chainId = networksBySlug.get(network)?.id;
     cy.visit(
       `${GNOSIS_SAFE_BASEURL}apps/open?safe=${
         GnosisSafePrefixByNetworkSlug[network]
       }${GnosisSafeAddressesPerNetwork[network]}&appUrl=${Cypress.config(
         'baseUrl'
-      )}`,
-      {
-        onBeforeLoad: (window) => {
-          this.seedSafeClassicView(window, chainId);
-        },
-      }
+      )}`
     );
   }
 
-  static continueDisclaimer() {
-    // The cookie banner and disclaimer are pre-accepted via seeded storage in openSafeOnNetwork.
-    // Kept as a guarded fallback in case Safe still renders the disclaimer "Continue" button.
-    cy.get('body').then(($body) => {
-      const continueButton = $body
-        .find(GNOSIS_BUTTONS)
-        .filter((_i, el) => el.textContent?.trim() === 'Continue');
-      if (continueButton.length) {
-        cy.wrap(continueButton.first()).click();
-      }
-    });
+  /**
+   * Click through the two gates Safe puts in front of a third-party app.
+   *
+   * Safe renders both on every fresh browser profile, which is what Cypress
+   * always gives us, so both are asserted rather than probed conditionally:
+   *
+   *   1. the consent banner   -- [data-testid=cookies-popup]  -> "Accept all"
+   *   2. the disclaimer modal -- [data-testid=app-info-modal] -> "Continue"
+   *
+   * Until the app-info-modal is dismissed Safe never mounts the app iframe at
+   * all, so the old failure ("Expected to find element:
+   * iframe[title=\"Superfluid Dashboard\"], but never found it") was this modal
+   * still sitting on screen -- not a problem with the iframe or the manifest.
+   *
+   * This previously tried to pre-accept both gates by seeding storage
+   * (SAFE_v2__classicViewEnabled / SAFE_v2__cookies_terms /
+   * SAFE_v2__SafeApps__infoModal). Every one of those keys is gone: none of
+   * `classicView`, `infoModal`, `consentsAccepted`, `warningCheckedCustomApps`,
+   * `SafeApps__` or `termsVersion` appears anywhere in Safe's current bundle,
+   * so the seeding silently did nothing. The old `continueDisclaimer` fallback
+   * could not save it either -- it was a single non-retrying `cy.get('body')`
+   * probe fired immediately after `cy.visit`, long before the modal renders.
+   *
+   * Clicking the real controls is also more durable than guessing storage keys,
+   * which Safe has now renamed at least twice.
+   */
+  static dismissSafeGates() {
+    cy.get(CONSENT_BANNER, { timeout: 60000 })
+      .should('be.visible')
+      .contains('button', 'Accept all')
+      .click();
+
+    cy.get(APP_INFO_MODAL, { timeout: 60000 })
+      .should('be.visible')
+      .contains('button', 'Continue')
+      .click();
+
+    // Both gates are overlays; the app only mounts once they are gone.
+    this.doesNotExist(APP_INFO_MODAL, undefined, { timeout: 30000 });
   }
 
   static validateThatDashboardLoaded() {
@@ -135,7 +133,6 @@ export class GnosisSafe extends BasePage {
   }
 
   static openCustomAppPage(network: string) {
-    const chainId = networksBySlug.get(network)?.id;
     // The custom-apps page is reached via the `?safe=<prefix><address>` query param (the old
     // `/<prefix><address>/apps/custom` path now redirects to the welcome screen). No wallet is
     // needed - the classic Safe Apps view lets you manage custom apps in read-only mode.
@@ -143,12 +140,7 @@ export class GnosisSafe extends BasePage {
       `${GNOSIS_SAFE_BASEURL}apps/custom?safe=${
         GnosisSafePrefixByNetworkSlug[network]
       }${GnosisSafeAddressesPerNetwork[network]}`,
-      {
-        failOnStatusCode: false,
-        onBeforeLoad: (window) => {
-          this.seedSafeClassicView(window, chainId);
-        },
-      }
+      { failOnStatusCode: false }
     );
     // Always register the production dashboard URL: Safe fetches the app manifest server-side,
     // and preview deployments can be access-restricted.
