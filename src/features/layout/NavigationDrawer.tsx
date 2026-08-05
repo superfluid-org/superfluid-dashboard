@@ -253,7 +253,7 @@ export default memo(function NavigationDrawer() {
         }}>
         <NavigationItem
           id="nav-dashboard"
-          title="Dashboard"
+          title="Portfolio"
           href="/"
           onClick={closeNavigationDrawer}
           active={isActiveRoute("/", "/[_network]/token")}
