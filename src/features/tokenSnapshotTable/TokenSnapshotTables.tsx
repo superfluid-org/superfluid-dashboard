@@ -1,6 +1,8 @@
 import {
   Button,
+  FormControlLabel,
   Stack,
+  Switch,
   Typography,
   useMediaQuery,
   useTheme,
@@ -14,6 +16,7 @@ import NetworkSelectionFilter from "../network/NetworkSelectionFilter";
 import TokenSnapshotEmptyCard from "./TokenSnapshotEmptyCard";
 import TokenSnapshotLoadingTable from "./TokenSnapshotLoadingTable";
 import TokenSnapshotTable from "./TokenSnapshotTable";
+import ERC20BalanceTable from "./ERC20BalanceTable";
 
 export interface FetchingStatus {
   isLoading: boolean;
@@ -21,7 +24,7 @@ export interface FetchingStatus {
 }
 
 export interface NetworkFetchingStatuses {
-  [networkId: number]: FetchingStatus;
+  [key: string]: FetchingStatus;
 }
 
 interface TokenSnapshotTablesProps {
@@ -39,34 +42,47 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
     useState<NetworkFetchingStatuses>({});
 
   const [networkSelectionOpen, setNetworkSelectionOpen] = useState(false);
+  const [showERC20s, setShowERC20s] = useState(false);
 
   const openNetworkSelection = () => setNetworkSelectionOpen(true);
   const closeNetworkSelection = () => setNetworkSelectionOpen(false);
 
-  const fetchingCallback = useCallback(
+  const superTokenFetchingCallback = useCallback(
     (networkId: number, fetchingStatus: FetchingStatus) =>
       setFetchingStatuses((currentStatuses) => ({
         ...currentStatuses,
-        [networkId]: fetchingStatus,
+        [`super-${networkId}`]: fetchingStatus,
+      })),
+    [setFetchingStatuses]
+  );
+
+  const erc20FetchingCallback = useCallback(
+    (networkId: number, fetchingStatus: FetchingStatus) =>
+      setFetchingStatuses((currentStatuses) => ({
+        ...currentStatuses,
+        [`erc20-${networkId}`]: fetchingStatus,
       })),
     [setFetchingStatuses]
   );
 
   const hasContent = useMemo(
     () =>
-      !!activeNetworks.some(
-        (activeNetwork) => fetchingStatuses[activeNetwork.id]?.hasContent
+      activeNetworks.some(
+        ({ id }) =>
+          fetchingStatuses[`super-${id}`]?.hasContent ||
+          (showERC20s && fetchingStatuses[`erc20-${id}`]?.hasContent)
       ),
-    [activeNetworks, fetchingStatuses]
+    [activeNetworks, fetchingStatuses, showERC20s]
   );
 
   const isLoading = useMemo(
     () =>
-      !!activeNetworks.some(
-        (activeNetwork) =>
-          fetchingStatuses[activeNetwork.id]?.isLoading !== false
+      activeNetworks.some(
+        ({ id }) =>
+          fetchingStatuses[`super-${id}`]?.isLoading !== false ||
+          (showERC20s && fetchingStatuses[`erc20-${id}`]?.isLoading !== false)
       ),
-    [activeNetworks, fetchingStatuses]
+    [activeNetworks, fetchingStatuses, showERC20s]
   );
 
   return (
@@ -79,19 +95,32 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
         translate="yes"
       >
         <Typography variant={isBelowMd ? "h3" : "h4"} component="h1">
-          Super Tokens
+          Portfolio
         </Typography>
 
-        <Button
-          data-cy={"network-selection-button"}
-          ref={networkSelectionRef}
-          variant="outlined"
-          color="secondary"
-          endIcon={<OpenIcon open={networkSelectionOpen} />}
-          onClick={openNetworkSelection}
-        >
-          All networks
-        </Button>
+        <Stack direction="row" alignItems="center" gap={{ xs: 1, sm: 2 }}>
+          <FormControlLabel
+            sx={{ mr: 0 }}
+            label={isBelowMd ? "ERC-20s" : "Show ERC-20s"}
+            control={
+              <Switch
+                data-cy="show-erc20-tokens"
+                checked={showERC20s}
+                onChange={(_, checked) => setShowERC20s(checked)}
+              />
+            }
+          />
+          <Button
+            data-cy={"network-selection-button"}
+            ref={networkSelectionRef}
+            variant="outlined"
+            color="secondary"
+            endIcon={<OpenIcon open={networkSelectionOpen} />}
+            onClick={openNetworkSelection}
+          >
+            All networks
+          </Button>
+        </Stack>
         <NetworkSelectionFilter
           open={networkSelectionOpen}
           anchorEl={networkSelectionRef.current}
@@ -101,7 +130,7 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
 
       {!hasContent && !isLoading && (
         <Stack gap={4}>
-          <TokenSnapshotEmptyCard />
+          <TokenSnapshotEmptyCard includesERC20s={showERC20s} />
           {/* <FaucetCard /> */}
         </Stack>
       )}
@@ -112,9 +141,18 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
             key={network.id}
             address={address}
             network={network}
-            fetchingCallback={fetchingCallback}
+            fetchingCallback={superTokenFetchingCallback}
           />
         ))}
+        {showERC20s &&
+          activeNetworks.map((network) => (
+            <ERC20BalanceTable
+              key={`erc20-${network.id}`}
+              address={address}
+              network={network}
+              fetchingCallback={erc20FetchingCallback}
+            />
+          ))}
         {isLoading && <TokenSnapshotLoadingTable />}
       </Stack>
     </>

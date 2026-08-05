@@ -21,7 +21,6 @@ import TokenSnapshotTables from "../features/tokenSnapshotTable/TokenSnapshotTab
 import ConnectWallet from "../features/wallet/ConnectWallet";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 
-
 const ConnectView: FC = () => {
   const theme = useTheme();
   const { impersonate } = useImpersonation();
@@ -157,4 +156,4 @@ const Home: NextPage = () => {
   );
 };
 
-export default withStaticSEO({ title: "Dashboard | Superfluid" }, Home);
+export default withStaticSEO({ title: "Portfolio | Superfluid" }, Home);

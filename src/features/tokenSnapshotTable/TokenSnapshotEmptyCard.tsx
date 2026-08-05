@@ -20,7 +20,11 @@ const WrapperAvatar = styled(Avatar)(({ theme }) => ({
   background: alpha(theme.palette.primary.main, 0.08),
 }));
 
-const TokenSnapshotEmptyCard = () => (
+const TokenSnapshotEmptyCard = ({
+  includesERC20s = false,
+}: {
+  includesERC20s?: boolean;
+}) => (
   <Card
     sx={{ py: 5, textAlign: "center" }}
     component={Stack}
@@ -33,10 +37,12 @@ const TokenSnapshotEmptyCard = () => (
     </WrapperAvatar>
     <Box>
       <Typography data-cy={"no-balance-message"} variant="h5">
-        No Super Token Balance
+        {includesERC20s ? "No Token Balances" : "No Super Token Balance"}
       </Typography>
       <Typography>
-        Wrap some tokens to start streaming payments in real time.
+        {includesERC20s
+          ? "No supported ERC-20 or Super Token balances were found."
+          : "Wrap some tokens to start streaming payments in real time."}
       </Typography>
     </Box>
     <Button
