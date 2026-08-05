@@ -21,19 +21,25 @@ export const transactionByHashSelector =
 
 export const useAccountTransactionsSelector = <T,>(
   postProcess: (transactions: Array<TrackedTransaction>) => T
-): T => {
-  const accountTransactions = useAccountTransactions();
+): { transactions: T; isResolving: boolean } => {
+  const { transactions, isResolving } = useAccountTransactions();
 
   const finalTransactions = useMemo(
-    () => postProcess(accountTransactions),
-    [accountTransactions, postProcess]
+    () => postProcess(transactions),
+    [transactions, postProcess]
   );
 
-  return finalTransactions;
+  return useMemo(
+    () => ({ transactions: finalTransactions, isResolving }),
+    [finalTransactions, isResolving]
+  );
 };
 
-const useAccountTransactions = (): Array<TrackedTransaction> => {
-  const { address: accountAddress } = useAccount();
+const useAccountTransactions = (): {
+  transactions: Array<TrackedTransaction>;
+  isResolving: boolean;
+} => {
+  const { address: accountAddress, isConnecting, isReconnecting } = useAccount();
 
   const allTransactions = useAppSelector(transactionTrackerSelectors.selectAll);
 
@@ -45,7 +51,18 @@ const useAccountTransactions = (): Array<TrackedTransaction> => {
     [allTransactions, accountAddress]
   );
 
-  return accountTransactions;
+  // On a hard refresh AppKit lags behind wagmi: it reports `connecting` with no
+  // address yet. Without this flag consumers can't tell "we don't know the
+  // account yet" from "the account has no transactions", and an unresolved
+  // wallet renders as a settled empty list.
+  // (`isReconnecting` is included defensively — AppKit types the status but
+  // never actually assigns it, so `isConnecting` is what carries this today.)
+  const isResolving = !accountAddress && (isConnecting || isReconnecting);
+
+  return useMemo(
+    () => ({ transactions: accountTransactions, isResolving }),
+    [accountTransactions, isResolving]
+  );
 };
 
 export default useAccountTransactions;
