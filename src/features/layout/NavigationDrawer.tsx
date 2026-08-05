@@ -1,7 +1,6 @@
 import AppsRoundedIcon from "@mui/icons-material/AppsRounded";
 import ArrowRightAltRoundedIcon from "@mui/icons-material/ArrowRightAltRounded";
 import AssessmentOutlinedIcon from "@mui/icons-material/AssessmentOutlined";
-import AutoAwesomeMosaicRoundedIcon from "@mui/icons-material/AutoAwesomeMosaicRounded";
 import AutoModeOutlinedIcon from "@mui/icons-material/AutoModeOutlined";
 import AutoStoriesOutlinedIcon from "@mui/icons-material/AutoStoriesOutlined";
 import ControlPointDuplicateOutlinedIcon from "@mui/icons-material/ControlPointDuplicateOutlined";
@@ -10,6 +9,7 @@ import LockClockOutlinedIcon from "@mui/icons-material/LockClockOutlined";
 import FactCheckOutlinedIcon from "@mui/icons-material/FactCheckOutlined";
 import LooksRoundedIcon from "@mui/icons-material/LooksRounded";
 import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
+import PieChartOutlineRoundedIcon from "@mui/icons-material/PieChartOutlineRounded";
 import ReceiptLongRoundedIcon from "@mui/icons-material/ReceiptLongRounded";
 import SportsEsportsRoundedIcon from "@mui/icons-material/SportsEsportsRounded";
 import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
@@ -257,7 +257,7 @@ export default memo(function NavigationDrawer() {
           href="/"
           onClick={closeNavigationDrawer}
           active={isActiveRoute("/", "/[_network]/token")}
-          icon={AutoAwesomeMosaicRoundedIcon}
+          icon={PieChartOutlineRoundedIcon}
         />
 
         <NavigationItem
