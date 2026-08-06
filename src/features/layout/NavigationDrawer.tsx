@@ -203,7 +203,7 @@ export default memo(function NavigationDrawer() {
       >
         <NavigationItem
           id="nav-dashboard"
-          title="Dashboard"
+          title="Portfolio"
           href="/"
           onClick={closeNavigationDrawer}
           active={isActiveRoute("/", "/[_network]/token")}
@@ -230,7 +230,7 @@ export default memo(function NavigationDrawer() {
 
         <NavigationItem
           id="nav-bridge"
-          title="Bridge"
+          title="Swap & Bridge"
           href="/bridge"
           onClick={closeNavigationDrawer}
           active={isActiveRoute("/bridge")}

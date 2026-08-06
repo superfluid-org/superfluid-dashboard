@@ -10,7 +10,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { memo, useCallback, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import TooltipWithIcon from "../../common/TooltipWithIcon";
 import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
@@ -23,8 +23,7 @@ import AddressSearch from "../AddressSearch";
 import { PartialTransferForm, ValidTransferForm } from "./TransferFormProvider";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
-import { parseEtherOrZero } from "../../../utils/tokenUtils";
-import { useSuperTokens } from "../../../hooks/useSuperTokens";
+import { parseUnits } from "ethers/lib/utils";
 import { useTokenQuery } from "../../../hooks/useTokenQuery";
 import { SendBalance } from "../stream/SendStream";
 import { inputPropsForEtherAmount } from "../../../utils/inputPropsForEtherAmount";
@@ -32,7 +31,9 @@ import { Address } from "@superfluid-finance/sdk-core";
 import { RestorationType, SendTransferRestoration } from "../../transactionRestoration/transactionRestorations";
 import { skipToken } from "@reduxjs/toolkit/query/react";
 import { Network } from "../../network/networks";
-import { TokenMinimal } from "../../redux/endpoints/tokenTypes";
+import { isSuper, TokenMinimal } from "../../redux/endpoints/tokenTypes";
+import { BalanceUnderlyingToken } from "../../tokenWrapping/BalanceUnderlyingToken";
+import { useTransferTokens } from "./useTransferTokens";
 
 export default memo(function SendTransfer() {
   const theme = useTheme();
@@ -61,7 +62,20 @@ export default memo(function SendTransfer() {
     "data.amountEther",
   ]);
 
-  const { data: superToken } = useTokenQuery(tokenAddress ? { chainId: network.id, id: tokenAddress, onlySuperToken: true } : skipToken);
+  const { tokens, balances, isFetching: areTokensFetching } = useTransferTokens({
+    network,
+    address: visibleAddress,
+  });
+  const selectedTransferToken = useMemo(
+    () => tokens.find(({ address }) => address.toLowerCase() === tokenAddress?.toLowerCase()),
+    [tokenAddress, tokens]
+  );
+  const { data: fallbackToken } = useTokenQuery(
+    tokenAddress && !selectedTransferToken
+      ? { chainId: network.id, id: tokenAddress }
+      : skipToken
+  );
+  const token = selectedTransferToken ?? fallbackToken;
 
   const [transfer, transferResult] =
     rpcApi.useTransferMutation();
@@ -70,9 +84,10 @@ export default memo(function SendTransfer() {
   useEffect(() => {
     setIsSendDisabled(
       isValidating ||
-      !isValid
+      !isValid ||
+      !token
     );
-  }, [isValid, isValidating]);
+  }, [isValid, isValidating, token]);
 
   const SendTransactionBoundary = (
     <TransactionBoundary mutationResult={transferResult}>
@@ -81,14 +96,14 @@ export default memo(function SendTransfer() {
         disabled={isSendDisabled}
         dataCy={"transfer-button"}
         onClick={async (signer) => {
-          if (isSendDisabled) {
+          if (isSendDisabled || !token) {
             throw Error(
               `This should never happen.`);
           }
 
           setDialogLoadingInfo(
             <Typography variant="h5" color="text.secondary" translate="yes">
-              You are sending {amountEther} {superToken?.symbol} to {receiverAddress}.
+              You are sending {amountEther} {token?.symbol} to {receiverAddress}.
             </Typography>
           );
 
@@ -109,7 +124,7 @@ export default memo(function SendTransfer() {
             tokenAddress: formData.tokenAddress,
             senderAddress,
             receiverAddress: formData.receiverAddress,
-            amountWei: parseEtherOrZero(formData.amountEther).toString()
+            amountWei: parseUnits(formData.amountEther, token.decimals).toString()
           };
 
           transfer({
@@ -170,18 +185,24 @@ export default memo(function SendTransfer() {
         }}
       >
         <Stack justifyContent="stretch">
-          <FormLabel>Super Token</FormLabel>
-          <TokenController network={network} superToken={superToken} />
+          <FormLabel>Token</FormLabel>
+          <TokenController
+            network={network}
+            token={token}
+            tokens={tokens}
+            tokenBalances={balances}
+            isFetching={areTokensFetching}
+          />
         </Stack>
         <Stack justifyContent="stretch">
           <FormLabel>Amount</FormLabel>
-          <AmountController superToken={superToken} />
+          <AmountController token={token} />
         </Stack>
       </Box>
 
-      <SendBalance network={network} visibleAddress={visibleAddress} token={superToken} />
+      <TransferBalance network={network} visibleAddress={visibleAddress} token={token} />
 
-      {(superToken && visibleAddress) && <Divider />}
+      {(token && visibleAddress) && <Divider />}
 
       <ConnectionBoundary>
         <ConnectionBoundaryButton
@@ -226,10 +247,15 @@ const ReceiverAddressController = memo(function ReceiverAddressController(props:
 });
 
 const TokenController = memo(function TokenController(
-  props: { network: Network, superToken: TokenMinimal | null | undefined }
+  props: {
+    network: Network,
+    token: TokenMinimal | null | undefined,
+    tokens: TokenMinimal[],
+    tokenBalances: Record<string, string>,
+    isFetching: boolean
+  }
 ) {
   const { control } = useFormContext<PartialTransferForm>();
-  const { superTokens, isFetching } = useSuperTokens({ network: props.network });
 
   return (
     <Controller
@@ -237,10 +263,11 @@ const TokenController = memo(function TokenController(
       name="data.tokenAddress"
       render={({ field: { onChange, onBlur } }) => (
         <TokenDialogButton
-          token={props.superToken}
+          token={props.token}
           network={props.network}
-          tokens={superTokens}
-          isTokensFetching={isFetching}
+          tokens={props.tokens}
+          tokenBalances={props.tokenBalances}
+          isTokensFetching={props.isFetching}
           showUpgrade={true}
           onTokenSelect={(x) => onChange(x.address)}
           onBlur={onBlur}
@@ -252,7 +279,7 @@ const TokenController = memo(function TokenController(
 });
 
 const AmountController = memo(function AmountController(props: {
-  superToken: TokenMinimal | null | undefined
+  token: TokenMinimal | null | undefined
 }) {
   const { control } = useFormContext<PartialTransferForm>();
 
@@ -272,7 +299,7 @@ const AmountController = memo(function AmountController(props: {
           InputProps={{
             endAdornment: (
               <Typography component="span" color={"text.secondary"}>
-                {props.superToken?.symbol ?? ""}
+                {props.token?.symbol ?? ""}
               </Typography>
             ),
           }}
@@ -282,5 +309,29 @@ const AmountController = memo(function AmountController(props: {
         />
       )}
     />
+  );
+});
+
+const TransferBalance = memo(function TransferBalance(props: {
+  network: Network,
+  visibleAddress: string | undefined,
+  token: TokenMinimal | null | undefined
+}) {
+  if (!props.visibleAddress || !props.token) return null;
+
+  if (isSuper(props.token)) {
+    return <SendBalance {...props} token={props.token} />;
+  }
+
+  return (
+    <Stack direction="row" alignItems="center" justifyContent="center" gap={0.5}>
+      <BalanceUnderlyingToken
+        chainId={props.network.id}
+        accountAddress={props.visibleAddress}
+        tokenAddress={props.token.address}
+        decimals={props.token.decimals}
+      />
+      <Typography variant="h7">{props.token.symbol}</Typography>
+    </Stack>
   );
 });

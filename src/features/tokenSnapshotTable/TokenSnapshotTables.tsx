@@ -45,7 +45,7 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
     useState<NetworkFetchingStatuses>({});
 
   const [networkSelectionOpen, setNetworkSelectionOpen] = useState(false);
-  const [showERC20s, setShowERC20s] = useState(false);
+  const [showERC20s, setShowERC20s] = useState(true);
 
   const portfolioTokensQuery = platformApi.usePortfolioTokensQuery(
     showERC20s
