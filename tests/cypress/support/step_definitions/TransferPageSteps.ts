@@ -9,6 +9,17 @@ Given(
   }
 );
 
+Given(
+  /^User fills all transfer inputs with "([^"]*)" and amount "([^"]*)"$/,
+  (token: string, amount: string) => {
+    TransferPage.inputTransferDetailsWithSelectedToken(token, amount);
+  }
+);
+
+Then(/^The selected token balance in the transfer page is zero$/, () => {
+  TransferPage.validateTransferPreviewBalanceIsZero();
+});
+
 Then(/^User clicks on the wrap button in the transfer page$/, () => {
   TransferPage.clickBalancePreviewWrapButton();
 });

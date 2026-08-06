@@ -1,5 +1,9 @@
 import { After, Before } from "@badeball/cypress-cucumber-preprocessor";
 import { VestingPage } from "../../pageObjects/pages/VestingPage";
+import {
+  clearScenarioNetworkAllowlist,
+  setScenarioNetworkAllowlist,
+} from "../scenarioNetworkAllowlist";
 
 Before(() => {
   cy.log("Custom tokens set at local storage ✅");
@@ -12,6 +16,9 @@ Before(() => {
   // relay. Hooks run in definition order, so the @gaslessRelayEnabled hook re-enables it after
   // this reset for the scenarios that want it.
   Cypress.env("gaslessRelayEnabled", false);
+  // Same reasoning as above: cleared here, not in an After hook, so a scenario-scoped
+  // network allowlist cannot leak into the scenarios that follow a failure.
+  clearScenarioNetworkAllowlist();
 });
 
 Before({ tags: "@rejected" }, function () {
@@ -37,6 +44,16 @@ Before({ tags: "@platformNeeded" }, () => {
 Before({ tags: "@gaslessRelayEnabled" }, () => {
   cy.log("Clear Macro gasless relay will be enabled ✅");
   Cypress.env("gaslessRelayEnabled", true);
+});
+
+// The gasless relay fee gate can only be reached where `dan` holds enough of the stream token
+// to make the send form valid -- the form keeps submit disabled below the CFA buffer plus 24h
+// of streaming, so an empty wallet never gets as far as the fee gate. `dan` is funded on these
+// three networks only; on gnosis and avalanche it holds nothing and cannot be funded, so the
+// scenario is gated to the networks where it is actually meaningful. See the comment above the
+// scenario in RejectedStreamAndIndexTransactions.feature.
+Before({ tags: "@relayFeeGateNetworksOnly" }, () => {
+  setScenarioNetworkAllowlist(["polygon", "arbitrum-one", "optimism"]);
 });
 
 // Alias the vesting-scheduler detail query before the schedule details page loads, so the
