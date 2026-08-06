@@ -198,9 +198,15 @@ const wagmiAdapter = new WagmiAdapter({
   storage: typeof window !== "undefined" ? createStorage({ storage: window.localStorage }) : undefined,
   connectors: [
     safe({
+      // These are matched against `event.origin` of the parent frame and decide whose
+      // messages the Safe Apps SDK will trust (`PostMessageCommunicator.isValidMessage`).
+      // Anchor and escape every pattern: an unanchored `/app.safe.global$/` also admits
+      // `https://appXsafeYglobal`, and an unanchored `/gnosis-safe.io$/` also admits
+      // `https://evilgnosis-safe.io` — both attacker-registrable. Follow the shape the
+      // coinshift entry already uses.
       allowedDomains: [
-        /gnosis-safe.io$/,
-        /app.safe.global$/,
+        /^https:\/\/(?:[^\/]+\.)?gnosis-safe\.io$/,
+        /^https:\/\/(?:[^\/]+\.)?app\.safe\.global$/,
         /^https:\/\/(?:[^\/]+\.)?coinshift\.xyz$/,
         /^http:\/\/(localhost|127\.0\.0\.1):(\d+)$/,
       ],
