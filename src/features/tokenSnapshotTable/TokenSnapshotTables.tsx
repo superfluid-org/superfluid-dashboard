@@ -1,14 +1,11 @@
 import {
   Button,
-  FormControlLabel,
   Stack,
-  Switch,
   Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
-import { skipToken } from "@reduxjs/toolkit/query";
 import { FC, useCallback, useMemo, useRef, useState } from "react";
 import OpenIcon from "../../components/OpenIcon/OpenIcon";
 import FaucetCard from "../faucet/FaucetCard";
@@ -45,15 +42,12 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
     useState<NetworkFetchingStatuses>({});
 
   const [networkSelectionOpen, setNetworkSelectionOpen] = useState(false);
-  const [showERC20s, setShowERC20s] = useState(true);
 
   const portfolioTokensQuery = platformApi.usePortfolioTokensQuery(
-    showERC20s
-      ? {
-          address,
-          chainIds: activeNetworks.map(({ id }) => id),
-        }
-      : skipToken
+    {
+      address,
+      chainIds: activeNetworks.map(({ id }) => id),
+    }
   );
 
   const erc20BalancesByChainId = useMemo(() => {
@@ -132,17 +126,6 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
         </Typography>
 
         <Stack direction="row" alignItems="center" gap={{ xs: 1, sm: 2 }}>
-          <FormControlLabel
-            sx={{ mr: 0 }}
-            label={isBelowMd ? "ERC-20s" : "Show ERC-20s"}
-            control={
-              <Switch
-                data-cy="show-erc20-tokens"
-                checked={showERC20s}
-                onChange={(_, checked) => setShowERC20s(checked)}
-              />
-            }
-          />
           <Button
             data-cy={"network-selection-button"}
             ref={networkSelectionRef}
@@ -163,7 +146,7 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
 
       {!hasContent && !isLoading && (
         <Stack gap={4}>
-          <TokenSnapshotEmptyCard includesERC20s={showERC20s} />
+          <TokenSnapshotEmptyCard includesERC20s />
           {/* <FaucetCard /> */}
         </Stack>
       )}
@@ -174,14 +157,13 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
             key={network.id}
             address={address}
             network={network}
-            showERC20s={showERC20s}
+            showERC20s
             erc20Balances={erc20BalancesByChainId[network.id] || []}
             erc20BalancesLoading={
-              showERC20s &&
               (portfolioTokensQuery.isLoading ||
                 portfolioTokensQuery.isFetching)
             }
-            useERC20Fallback={showERC20s && fallbackChainIds.has(network.id)}
+            useERC20Fallback={fallbackChainIds.has(network.id)}
             fetchingCallback={fetchingCallback}
           />
         ))}

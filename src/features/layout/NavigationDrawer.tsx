@@ -5,9 +5,9 @@ import AutoStoriesOutlinedIcon from "@mui/icons-material/AutoStoriesOutlined";
 import ControlPointDuplicateOutlinedIcon from "@mui/icons-material/ControlPointDuplicateOutlined";
 import HistoryRoundedIcon from "@mui/icons-material/HistoryRounded";
 import LockClockRoundedIcon from "@mui/icons-material/LockClockRounded";
-import LooksRoundedIcon from "@mui/icons-material/LooksRounded";
 import SettingsIcon from "@mui/icons-material/Settings";
 import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
+import SwapHorizRoundedIcon from "@mui/icons-material/SwapHorizRounded";
 import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
 import {
   Box,
@@ -234,7 +234,7 @@ export default memo(function NavigationDrawer() {
           href="/bridge"
           onClick={closeNavigationDrawer}
           active={isActiveRoute("/bridge")}
-          icon={LooksRoundedIcon}
+          icon={SwapHorizRoundedIcon}
         />
 
         <NavigationItem

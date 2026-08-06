@@ -1,10 +1,17 @@
 import AccountBalanceWalletRoundedIcon from "@mui/icons-material/AccountBalanceWalletRounded";
 import AutoAwesomeRoundedIcon from "@mui/icons-material/AutoAwesomeRounded";
+import ArrowDownwardRoundedIcon from "@mui/icons-material/ArrowDownwardRounded";
+import ArrowUpwardRoundedIcon from "@mui/icons-material/ArrowUpwardRounded";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import CompareArrowsRoundedIcon from "@mui/icons-material/CompareArrowsRounded";
 import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
+import FilterAltRoundedIcon from "@mui/icons-material/FilterAltRounded";
 import HubRoundedIcon from "@mui/icons-material/HubRounded";
 import LayersRoundedIcon from "@mui/icons-material/LayersRounded";
+import RestartAltRoundedIcon from "@mui/icons-material/RestartAltRounded";
+import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
+import SendRoundedIcon from "@mui/icons-material/SendRounded";
+import SwapHorizRoundedIcon from "@mui/icons-material/SwapHorizRounded";
 import ShowChartRoundedIcon from "@mui/icons-material/ShowChartRounded";
 import ViewListRoundedIcon from "@mui/icons-material/ViewListRounded";
 import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
@@ -19,7 +26,9 @@ import {
   Divider,
   FormControlLabel,
   IconButton,
+  InputAdornment,
   LinearProgress,
+  MenuItem,
   Paper,
   Stack,
   Tab,
@@ -45,6 +54,8 @@ import withStaticSEO from "../components/SEO/withStaticSEO";
 type ConceptId = "ledger" | "streaming" | "networks";
 type ProviderName = "Alchemy" | "OKX" | "Mobula" | "DeBank" | "1inch";
 type AssetKind = "super" | "erc20" | "native";
+type ActivityFilter = "all" | "streaming" | "passive";
+type ValueFilter = "all" | "100" | "1000";
 
 interface LabAsset {
   id: string;
@@ -60,6 +71,8 @@ interface LabAsset {
   color: string;
   netFlowUsd?: number;
   netFlowLabel?: string;
+  monthlyInflowUsd?: number;
+  monthlyOutflowUsd?: number;
   activeStreams?: number;
   providers: ProviderName[];
   confidence: "high" | "medium";
@@ -127,6 +140,8 @@ const ASSETS: LabAsset[] = [
     color: "#24A148",
     netFlowUsd: 286.4,
     netFlowLabel: "+286.40 USDCx / mo",
+    monthlyInflowUsd: 512.8,
+    monthlyOutflowUsd: 226.4,
     activeStreams: 3,
     providers: PROVIDERS,
     confidence: "high",
@@ -160,6 +175,8 @@ const ASSETS: LabAsset[] = [
     color: "#F5AC37",
     netFlowUsd: -18.74,
     netFlowLabel: "−18.74 DAIx / mo",
+    monthlyInflowUsd: 41.26,
+    monthlyOutflowUsd: 60,
     activeStreams: 1,
     providers: ["Alchemy", "Mobula", "DeBank", "1inch"],
     confidence: "medium",
@@ -193,6 +210,8 @@ const ASSETS: LabAsset[] = [
     color: "#7857FF",
     netFlowUsd: 73.6,
     netFlowLabel: "+0.0202 ETHx / mo",
+    monthlyInflowUsd: 91.2,
+    monthlyOutflowUsd: 17.6,
     activeStreams: 2,
     providers: PROVIDERS,
     confidence: "high",
@@ -213,6 +232,8 @@ const ASSETS: LabAsset[] = [
     confidence: "medium",
   },
 ];
+
+const NETWORKS = [...new Set(ASSETS.map((asset) => asset.network))].sort();
 
 const DISCOVERY_TOKENS: DiscoveryToken[] = [
   { symbol: "ETH", network: "Ethereum", value: "$5,251.96", foundBy: PROVIDERS, note: "Native asset consensus" },
@@ -294,32 +315,52 @@ const StreamDetails: FC<{ asset: LabAsset }> = ({ asset }) => (
     sx={(theme) => ({
       mx: 2,
       mb: 2,
-      p: 2,
+      p: { xs: 1.5, md: 2 },
       borderRadius: 2.5,
       bgcolor: alpha(theme.palette.primary.main, 0.07),
       border: `1px solid ${alpha(theme.palette.primary.main, 0.18)}`,
     })}
   >
-    <Stack direction={{ xs: "column", md: "row" }} gap={2} divider={<Divider flexItem orientation="vertical" />}>
-      <Box sx={{ flex: 1 }}>
-        <Typography variant="caption" color="text.secondary">LIVE NET FLOW</Typography>
-        <Typography variant="body2mono" color={(asset.netFlowUsd ?? 0) >= 0 ? "primary" : "error"}>
-          {asset.netFlowLabel}
-        </Typography>
+    <Stack direction={{ xs: "column", lg: "row" }} gap={2} alignItems={{ lg: "center" }}>
+      <Box sx={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 1, flex: 1 }}>
+        <Box>
+          <Typography variant="caption" color="text.secondary">INCOMING / MO</Typography>
+          <Typography variant="body2mono" color="primary" fontWeight={750}>+${asset.monthlyInflowUsd?.toFixed(2)}</Typography>
+        </Box>
+        <Box>
+          <Typography variant="caption" color="text.secondary">OUTGOING / MO</Typography>
+          <Typography variant="body2mono" color="error" fontWeight={750}>−${asset.monthlyOutflowUsd?.toFixed(2)}</Typography>
+        </Box>
+        <Box>
+          <Typography variant="caption" color="text.secondary">NET / MO</Typography>
+          <Typography variant="body2mono" color={(asset.netFlowUsd ?? 0) >= 0 ? "primary" : "error"} fontWeight={750}>
+            {formatSignedUsd(asset.netFlowUsd ?? 0)}
+          </Typography>
+        </Box>
       </Box>
-      <Box sx={{ flex: 1 }}>
-        <Typography variant="caption" color="text.secondary">ACTIVE STREAMS</Typography>
-        <Typography variant="body2">{asset.activeStreams} streams · 2 incoming · 1 outgoing</Typography>
-      </Box>
-      <Box sx={{ flex: 1 }}>
-        <Typography variant="caption" color="text.secondary">BALANCE SAFETY</Typography>
-        <Typography variant="body2">Healthy · more than 90 days runway</Typography>
-      </Box>
+      <Divider flexItem orientation="vertical" />
+      <Stack gap={0.75} sx={{ minWidth: { lg: 330 } }}>
+        <Stack direction="row" alignItems="center" gap={1}>
+          <Avatar sx={(theme) => ({ width: 25, height: 25, bgcolor: alpha(theme.palette.primary.main, 0.14), color: "primary.main" })}>
+            <ArrowDownwardRoundedIcon sx={{ fontSize: 16 }} />
+          </Avatar>
+          <Typography variant="caption" sx={{ flex: 1 }}>From 0xA7F2…39C1</Typography>
+          <Typography variant="body2mono" color="primary">+${asset.monthlyInflowUsd?.toFixed(2)}/mo</Typography>
+        </Stack>
+        <Stack direction="row" alignItems="center" gap={1}>
+          <Avatar sx={(theme) => ({ width: 25, height: 25, bgcolor: alpha(theme.palette.error.main, 0.1), color: "error.main" })}>
+            <ArrowUpwardRoundedIcon sx={{ fontSize: 16 }} />
+          </Avatar>
+          <Typography variant="caption" sx={{ flex: 1 }}>To 0x92B4…10F4</Typography>
+          <Typography variant="body2mono" color="error">−${asset.monthlyOutflowUsd?.toFixed(2)}/mo</Typography>
+        </Stack>
+      </Stack>
+      <Button href="/send" size="small" variant="contained" startIcon={<SendRoundedIcon />}>New stream</Button>
     </Stack>
   </Box>
 );
 
-const UnifiedLedgerConcept: FC = () => {
+const UnifiedLedgerConcept: FC<{ assets: LabAsset[] }> = ({ assets }) => {
   const [openAssetId, setOpenAssetId] = useState<string | null>("usdcx-base");
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -327,7 +368,7 @@ const UnifiedLedgerConcept: FC = () => {
   if (isMobile) {
     return (
       <Stack gap={1.25}>
-        {ASSETS.map((asset) => {
+        {assets.map((asset) => {
           const open = openAssetId === asset.id;
           return (
             <Paper key={asset.id} variant="outlined" sx={{ overflow: "hidden", borderRadius: 3 }}>
@@ -335,7 +376,7 @@ const UnifiedLedgerConcept: FC = () => {
                 direction="row"
                 alignItems="center"
                 gap={1.5}
-                sx={{ p: 2 }}
+                sx={{ px: 2, pt: 2, pb: 1.25 }}
                 onClick={() => asset.kind === "super" && setOpenAssetId(open ? null : asset.id)}
               >
                 <AssetAvatar asset={asset} size={38} />
@@ -352,6 +393,19 @@ const UnifiedLedgerConcept: FC = () => {
                     {asset.netFlowUsd === undefined ? asset.balance : `${formatSignedUsd(asset.netFlowUsd)}/mo`}
                   </Typography>
                 </Box>
+                {asset.kind === "super" ? (
+                  <IconButton size="small" aria-label={`Show ${asset.symbol} streams`}>
+                    <ExpandMoreRoundedIcon sx={{ transform: open ? "rotate(180deg)" : "none", transition: "transform 160ms" }} />
+                  </IconButton>
+                ) : null}
+              </Stack>
+              <Stack direction="row" gap={1} sx={{ px: 2, pb: 1.5 }} onClick={(event) => event.stopPropagation()}>
+                {asset.kind === "super" ? (
+                  <Button href="/send" size="small" variant="contained" startIcon={<SendRoundedIcon />}>Stream</Button>
+                ) : asset.kind === "erc20" ? (
+                  <Button href="/wrap?upgrade" size="small" variant="text">Wrap to stream</Button>
+                ) : null}
+                <Button href="/transfer" size="small" variant="outlined" startIcon={<SwapHorizRoundedIcon />}>Transfer</Button>
               </Stack>
               <Collapse in={open} unmountOnExit><StreamDetails asset={asset} /></Collapse>
             </Paper>
@@ -362,20 +416,18 @@ const UnifiedLedgerConcept: FC = () => {
   }
 
   return (
-    <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 3, overflow: "hidden" }}>
-      <Table>
+    <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 3, maxWidth: "100%", overflowX: "auto" }}>
+      <Table sx={{ minWidth: 940 }}>
         <TableHead>
           <TableRow>
             <TableCell>Asset</TableCell>
-            <TableCell>Balance</TableCell>
-            <TableCell>Value</TableCell>
-            <TableCell>Streaming</TableCell>
-            <TableCell>Data confidence</TableCell>
-            <TableCell width={56} />
+            <TableCell>Portfolio balance</TableCell>
+            <TableCell>Monthly flow</TableCell>
+            <TableCell align="right">Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {ASSETS.map((asset) => {
+          {assets.map((asset) => {
             const open = openAssetId === asset.id;
             return (
               <Fragment key={asset.id}>
@@ -389,37 +441,47 @@ const UnifiedLedgerConcept: FC = () => {
                           <TypeChip kind={asset.kind} />
                         </Stack>
                         <Typography variant="body2" color="text.secondary">{asset.name} · {asset.network}</Typography>
+                        <Box sx={{ mt: 0.5 }}><ProviderEvidence asset={asset} compact /></Box>
                       </Box>
                     </Stack>
                   </TableCell>
                   <TableCell>
-                    <Typography variant="body2mono" fontWeight={700}>{asset.balance}</Typography>
-                    <Typography variant="caption" color="text.secondary">{asset.priceLabel} each</Typography>
+                    <Typography variant="body2mono" fontWeight={750}>{asset.valueLabel}</Typography>
+                    <Typography variant="caption" color="text.secondary">{asset.balance} {asset.symbol} · {asset.priceLabel}</Typography>
                   </TableCell>
-                  <TableCell><Typography variant="body2mono" fontWeight={750}>{asset.valueLabel}</Typography></TableCell>
                   <TableCell>
                     {asset.netFlowUsd === undefined ? (
-                      <Typography variant="body2" color="text.secondary">Not streamable</Typography>
+                      <Typography variant="body2" color="text.secondary">No active streams</Typography>
                     ) : (
-                      <Stack>
-                        <Typography variant="body2mono" color={asset.netFlowUsd >= 0 ? "primary" : "error"}>
-                          {formatSignedUsd(asset.netFlowUsd)} / mo
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">{asset.activeStreams} active streams</Typography>
+                      <Stack direction="row" alignItems="center" justifyContent="space-between" gap={1}>
+                        <Box>
+                          <Typography variant="body2mono" color={asset.netFlowUsd >= 0 ? "primary" : "error"}>
+                            {formatSignedUsd(asset.netFlowUsd)} / mo
+                          </Typography>
+                          <Stack direction="row" alignItems="center" gap={0.75}>
+                            <Box sx={{ width: 6, height: 6, borderRadius: "50%", bgcolor: "primary.main" }} />
+                            <Typography variant="caption" color="text.secondary">{asset.activeStreams} active streams</Typography>
+                          </Stack>
+                        </Box>
+                        <IconButton size="small" onClick={() => setOpenAssetId(open ? null : asset.id)} aria-label={`Show ${asset.symbol} streams`}>
+                          <ExpandMoreRoundedIcon sx={{ transform: open ? "rotate(180deg)" : "none", transition: "transform 160ms" }} />
+                        </IconButton>
                       </Stack>
                     )}
                   </TableCell>
-                  <TableCell><ProviderEvidence asset={asset} /></TableCell>
-                  <TableCell>
-                    {asset.kind === "super" ? (
-                      <IconButton onClick={() => setOpenAssetId(open ? null : asset.id)} aria-label={`Show ${asset.symbol} streams`}>
-                        <ExpandMoreRoundedIcon sx={{ transform: open ? "rotate(180deg)" : "none", transition: "transform 160ms" }} />
-                      </IconButton>
-                    ) : null}
+                  <TableCell align="right">
+                    <Stack direction="row" gap={0.75} justifyContent="flex-end">
+                      {asset.kind === "super" ? (
+                        <Button href="/send" size="small" variant="contained" startIcon={<SendRoundedIcon />}>Stream</Button>
+                      ) : asset.kind === "erc20" ? (
+                        <Button href="/wrap?upgrade" size="small" variant="text">Wrap</Button>
+                      ) : null}
+                      <Button href="/transfer" size="small" variant="outlined" startIcon={<SwapHorizRoundedIcon />}>Transfer</Button>
+                    </Stack>
                   </TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell colSpan={6} sx={{ p: 0, border: open ? undefined : 0 }}>
+                  <TableCell colSpan={4} sx={{ p: 0, border: open ? undefined : 0 }}>
                     <Collapse in={open} unmountOnExit><StreamDetails asset={asset} /></Collapse>
                   </TableCell>
                 </TableRow>
@@ -432,8 +494,8 @@ const UnifiedLedgerConcept: FC = () => {
   );
 };
 
-const StreamingFocusConcept: FC = () => {
-  const streamingAssets = ASSETS.filter((asset) => asset.kind === "super");
+const StreamingFocusConcept: FC<{ assets: LabAsset[] }> = ({ assets }) => {
+  const streamingAssets = assets.filter((asset) => asset.kind === "super");
   return (
     <Stack gap={3}>
       <Box>
@@ -459,6 +521,15 @@ const StreamingFocusConcept: FC = () => {
               <Typography variant="body2mono" color={(asset.netFlowUsd ?? 0) >= 0 ? "primary" : "error"}>
                 {formatSignedUsd(asset.netFlowUsd ?? 0)} / month
               </Typography>
+              <Divider sx={{ my: 1.5 }} />
+              <Stack direction="row" justifyContent="space-between">
+                <Typography variant="caption" color="primary">+${asset.monthlyInflowUsd?.toFixed(2)} in</Typography>
+                <Typography variant="caption" color="error">−${asset.monthlyOutflowUsd?.toFixed(2)} out</Typography>
+              </Stack>
+              <Stack direction="row" gap={1} sx={{ mt: 1.5 }}>
+                <Button href="/send" size="small" variant="contained" startIcon={<SendRoundedIcon />}>Stream</Button>
+                <Button href="/transfer" size="small" variant="outlined">Transfer</Button>
+              </Stack>
             </Paper>
           ))}
         </Box>
@@ -474,7 +545,7 @@ const StreamingFocusConcept: FC = () => {
         </Box>
         <Divider />
         <Stack divider={<Divider flexItem />}>
-          {ASSETS.map((asset) => (
+          {assets.map((asset) => (
             <Stack key={asset.id} direction="row" alignItems="center" gap={1.5} sx={{ px: 2.5, py: 1.4 }}>
               <AssetAvatar asset={asset} size={34} />
               <Box sx={{ minWidth: 0, flex: 1 }}>
@@ -491,6 +562,11 @@ const StreamingFocusConcept: FC = () => {
                   <Typography variant="caption" color={asset.netFlowUsd >= 0 ? "primary" : "error"}>{formatSignedUsd(asset.netFlowUsd)}/mo</Typography>
                 ) : null}
               </Box>
+              <Tooltip title="Transfer">
+                <IconButton href="/transfer" size="small" color="primary" aria-label={`Transfer ${asset.symbol}`}>
+                  <SwapHorizRoundedIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
             </Stack>
           ))}
         </Stack>
@@ -499,12 +575,12 @@ const StreamingFocusConcept: FC = () => {
   );
 };
 
-const NetworkStackConcept: FC = () => {
+const NetworkStackConcept: FC<{ assets: LabAsset[] }> = ({ assets }) => {
   const groupedAssets = useMemo(() => {
     const groups = new Map<string, LabAsset[]>();
-    ASSETS.forEach((asset) => groups.set(asset.network, [...(groups.get(asset.network) ?? []), asset]));
+    assets.forEach((asset) => groups.set(asset.network, [...(groups.get(asset.network) ?? []), asset]));
     return [...groups.entries()];
-  }, []);
+  }, [assets]);
 
   return (
     <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", lg: "repeat(2, minmax(0, 1fr))" }, gap: 2 }}>
@@ -551,19 +627,10 @@ const NetworkStackConcept: FC = () => {
 const PortfolioHero: FC = () => (
   <Paper
     variant="outlined"
-    sx={(theme) => ({
-      position: "relative",
-      overflow: "hidden",
-      p: { xs: 2.5, md: 3.5 },
-      borderRadius: 4,
-      color: theme.palette.mode === "dark" ? "common.white" : "#102019",
-      background: theme.palette.mode === "dark"
-        ? `radial-gradient(circle at 82% 12%, ${alpha(theme.palette.primary.main, 0.28)}, transparent 34%), #101713`
-        : "radial-gradient(circle at 82% 12%, rgba(128,255,151,.72), transparent 34%), linear-gradient(135deg, #efffec, #fbfcf8 64%)",
-    })}
+    sx={{ overflow: "hidden", borderRadius: 3 }}
   >
-    <Stack direction={{ xs: "column", md: "row" }} alignItems={{ md: "flex-end" }} justifyContent="space-between" gap={3}>
-      <Box>
+    <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1.08fr 1fr" } }}>
+      <Box sx={{ p: { xs: 2.5, md: 3.5 } }}>
         <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1.5 }}>
           <AccountBalanceWalletRoundedIcon color="primary" />
           <Typography variant="overline" fontWeight={800} letterSpacing="0.12em">TOTAL PORTFOLIO VALUE</Typography>
@@ -575,22 +642,53 @@ const PortfolioHero: FC = () => (
           <Chip label="+$218.42 · 24h" size="small" color="success" />
           <Typography variant="body2" color="text.secondary">98.6% price coverage</Typography>
         </Stack>
+        <Stack direction="row" gap={1} sx={{ mt: 3 }}>
+          <Button href="/send" variant="contained" startIcon={<SendRoundedIcon />}>New stream</Button>
+          <Button href="/transfer" variant="outlined" startIcon={<SwapHorizRoundedIcon />}>Transfer</Button>
+        </Stack>
       </Box>
-      <Stack direction="row" gap={{ xs: 3, md: 5 }}>
-        <Box>
-          <Typography variant="caption" color="text.secondary">NET STREAM</Typography>
-          <Typography variant="h6" color="primary">+$341.26/mo</Typography>
+      <Box sx={(theme) => ({ p: { xs: 2.5, md: 3.5 }, bgcolor: alpha(theme.palette.primary.main, 0.045), borderLeft: { md: `1px solid ${theme.palette.divider}` }, borderTop: { xs: `1px solid ${theme.palette.divider}`, md: 0 } })}>
+        <Stack direction="row" alignItems="center" justifyContent="space-between">
+          <Box>
+            <Typography variant="overline" color="text.secondary">STREAMING THIS MONTH</Typography>
+            <Typography variant="h5" sx={{ mt: 0.25 }}>6 active streams</Typography>
+          </Box>
+          <Chip label="Net positive" color="success" size="small" variant="outlined" />
+        </Stack>
+        <Box sx={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 1.5, mt: 3 }}>
+          <Box>
+            <Stack direction="row" alignItems="center" gap={0.5}>
+              <ArrowDownwardRoundedIcon color="primary" sx={{ fontSize: 17 }} />
+              <Typography variant="caption" color="text.secondary">INCOMING</Typography>
+            </Stack>
+            <Typography variant="h6" color="primary">+$645.26</Typography>
+            <Typography variant="caption" color="text.secondary">per month</Typography>
+          </Box>
+          <Box>
+            <Stack direction="row" alignItems="center" gap={0.5}>
+              <ArrowUpwardRoundedIcon color="error" sx={{ fontSize: 17 }} />
+              <Typography variant="caption" color="text.secondary">OUTGOING</Typography>
+            </Stack>
+            <Typography variant="h6" color="error">−$304.00</Typography>
+            <Typography variant="caption" color="text.secondary">per month</Typography>
+          </Box>
+          <Box>
+            <Typography variant="caption" color="text.secondary">NET FLOW</Typography>
+            <Typography variant="h6" color="primary">+$341.26</Typography>
+            <Typography variant="caption" color="text.secondary">per month</Typography>
+          </Box>
         </Box>
-        <Box>
-          <Typography variant="caption" color="text.secondary">ACTIVE STREAMS</Typography>
-          <Typography variant="h6">6</Typography>
+        <Box sx={{ mt: 3 }}>
+          <Stack direction="row" justifyContent="space-between" sx={{ mb: 0.75 }}>
+            <Typography variant="caption" color="text.secondary">Incoming vs outgoing volume</Typography>
+            <Typography variant="caption" fontWeight={750}>68% incoming</Typography>
+          </Stack>
+          <Box sx={(theme) => ({ height: 7, borderRadius: 8, overflow: "hidden", bgcolor: alpha(theme.palette.error.main, 0.18) })}>
+            <Box sx={{ width: "68%", height: "100%", borderRadius: 8, bgcolor: "primary.main" }} />
+          </Box>
         </Box>
-        <Box>
-          <Typography variant="caption" color="text.secondary">ASSETS</Typography>
-          <Typography variant="h6">8</Typography>
-        </Box>
-      </Stack>
-    </Stack>
+      </Box>
+    </Box>
   </Paper>
 );
 
@@ -747,8 +845,114 @@ const ProviderComparisonPanel: FC = () => {
   );
 };
 
+interface PortfolioFilterBarProps {
+  query: string;
+  kind: AssetKind | "all";
+  activity: ActivityFilter;
+  network: string;
+  minimumValue: ValueFilter;
+  resultCount: number;
+  resultValue: number;
+  onQueryChange: (value: string) => void;
+  onKindChange: (value: AssetKind | "all") => void;
+  onActivityChange: (value: ActivityFilter) => void;
+  onNetworkChange: (value: string) => void;
+  onMinimumValueChange: (value: ValueFilter) => void;
+  onReset: () => void;
+}
+
+const PortfolioFilterBar: FC<PortfolioFilterBarProps> = ({
+  query,
+  kind,
+  activity,
+  network,
+  minimumValue,
+  resultCount,
+  resultValue,
+  onQueryChange,
+  onKindChange,
+  onActivityChange,
+  onNetworkChange,
+  onMinimumValueChange,
+  onReset,
+}) => (
+  <Paper variant="outlined" sx={{ p: { xs: 2, md: 2.5 }, borderRadius: 3 }}>
+    <Stack direction={{ xs: "column", md: "row" }} alignItems={{ md: "center" }} justifyContent="space-between" gap={1.5}>
+      <Stack direction="row" alignItems="center" gap={1}>
+        <FilterAltRoundedIcon color="primary" />
+        <Box>
+          <Typography fontWeight={800}>Filter the portfolio</Typography>
+          <Typography variant="caption" color="text.secondary">Find an asset, isolate streaming activity, or remove small positions.</Typography>
+        </Box>
+      </Stack>
+      <Stack direction="row" alignItems="center" gap={1.5}>
+        <Box sx={{ textAlign: { md: "right" } }}>
+          <Typography variant="caption" color="text.secondary">SHOWING {resultCount} OF {ASSETS.length}</Typography>
+          <Typography variant="body2mono" fontWeight={750}>${resultValue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Typography>
+        </Box>
+        <Tooltip title="Reset filters">
+          <IconButton onClick={onReset} aria-label="Reset portfolio filters">
+            <RestartAltRoundedIcon />
+          </IconButton>
+        </Tooltip>
+      </Stack>
+    </Stack>
+
+    <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1.4fr 1fr 1fr" }, gap: 1.25, mt: 2 }}>
+      <TextField
+        size="small"
+        label="Search assets"
+        value={query}
+        onChange={(event) => onQueryChange(event.target.value)}
+        placeholder="USDC, Ether…"
+        InputProps={{
+          startAdornment: <InputAdornment position="start"><SearchRoundedIcon fontSize="small" /></InputAdornment>,
+        }}
+      />
+      <TextField select size="small" label="Network" value={network} onChange={(event) => onNetworkChange(event.target.value)}>
+        <MenuItem value="all">All networks</MenuItem>
+        {NETWORKS.map((networkOption) => <MenuItem key={networkOption} value={networkOption}>{networkOption}</MenuItem>)}
+      </TextField>
+      <TextField select size="small" label="Minimum position" value={minimumValue} onChange={(event) => onMinimumValueChange(event.target.value as ValueFilter)}>
+        <MenuItem value="all">Any value</MenuItem>
+        <MenuItem value="100">$100+</MenuItem>
+        <MenuItem value="1000">$1,000+</MenuItem>
+      </TextField>
+    </Box>
+
+    <Divider sx={{ my: 2 }} />
+    <Stack direction={{ xs: "column", lg: "row" }} gap={1.25} alignItems={{ lg: "center" }} flexWrap="wrap">
+      <Typography variant="caption" color="text.secondary" fontWeight={750} sx={{ minWidth: 66 }}>ASSET TYPE</Typography>
+      <ToggleButtonGroup
+        size="small"
+        exclusive
+        value={kind}
+        onChange={(_, value) => value && onKindChange(value)}
+        sx={{ flexWrap: "wrap" }}
+      >
+        <ToggleButton value="all">All</ToggleButton>
+        <ToggleButton value="super">Super Tokens</ToggleButton>
+        <ToggleButton value="erc20">ERC-20</ToggleButton>
+        <ToggleButton value="native">Native</ToggleButton>
+      </ToggleButtonGroup>
+      <Typography variant="caption" color="text.secondary" fontWeight={750} sx={{ minWidth: 66, ml: { lg: 2 } }}>ACTIVITY</Typography>
+      <ToggleButtonGroup
+        size="small"
+        exclusive
+        value={activity}
+        onChange={(_, value) => value && onActivityChange(value)}
+        sx={{ flexWrap: "wrap" }}
+      >
+        <ToggleButton value="all">Any</ToggleButton>
+        <ToggleButton value="streaming">Streaming now</ToggleButton>
+        <ToggleButton value="passive">No active streams</ToggleButton>
+      </ToggleButtonGroup>
+    </Stack>
+  </Paper>
+);
+
 const conceptMeta: Record<ConceptId, { label: string; description: string; icon: typeof ViewListRoundedIcon }> = {
-  ledger: { label: "A · Unified ledger", description: "One sortable list; stream rows expand in place.", icon: ViewListRoundedIcon },
+  ledger: { label: "A · Stream-aware portfolio", description: "Balances, monthly flows and direct actions in one dashboard-native table.", icon: ViewListRoundedIcon },
   streaming: { label: "B · Streaming first", description: "Streaming activity gets a dedicated band above holdings.", icon: ShowChartRoundedIcon },
   networks: { label: "C · Network stacks", description: "Preserves chain grouping in denser portfolio cards.", icon: LayersRoundedIcon },
 };
@@ -757,10 +961,43 @@ const PortfolioLab: NextPage = () => {
   const [section, setSection] = useState<"designs" | "providers">("designs");
   const [concept, setConcept] = useState<ConceptId>("ledger");
   const [chosenConcept, setChosenConcept] = useState<ConceptId | null>(null);
+  const [assetQuery, setAssetQuery] = useState("");
+  const [assetKind, setAssetKind] = useState<AssetKind | "all">("all");
+  const [assetActivity, setAssetActivity] = useState<ActivityFilter>("all");
+  const [assetNetwork, setAssetNetwork] = useState("all");
+  const [minimumValue, setMinimumValue] = useState<ValueFilter>("all");
   const ActiveConceptIcon = conceptMeta[concept].icon;
+  const filteredAssets = useMemo(() => {
+    const normalizedQuery = assetQuery.trim().toLowerCase();
+    const valueFloor = minimumValue === "all" ? 0 : Number(minimumValue);
+
+    return ASSETS.filter((asset) => {
+      const matchesQuery = normalizedQuery.length === 0 || `${asset.symbol} ${asset.name}`.toLowerCase().includes(normalizedQuery);
+      const matchesKind = assetKind === "all" || asset.kind === assetKind;
+      const matchesNetwork = assetNetwork === "all" || asset.network === assetNetwork;
+      const hasActiveStreams = (asset.activeStreams ?? 0) > 0;
+      const matchesActivity = assetActivity === "all" || (assetActivity === "streaming" ? hasActiveStreams : !hasActiveStreams);
+      return matchesQuery && matchesKind && matchesNetwork && matchesActivity && asset.value >= valueFloor;
+    });
+  }, [assetActivity, assetKind, assetNetwork, assetQuery, minimumValue]);
+  const filteredValue = filteredAssets.reduce((total, asset) => total + asset.value, 0);
+
+  const resetFilters = () => {
+    setAssetQuery("");
+    setAssetKind("all");
+    setAssetActivity("all");
+    setAssetNetwork("all");
+    setMinimumValue("all");
+  };
 
   return (
-    <Container maxWidth="lg">
+    <Container
+      maxWidth="lg"
+      sx={{
+        minWidth: 0,
+        maxWidth: { lg: "min(1200px, calc(100vw - 260px)) !important" },
+      }}
+    >
       <Stack gap={3.5}>
         <Stack direction={{ xs: "column", md: "row" }} alignItems={{ md: "flex-end" }} justifyContent="space-between" gap={2}>
           <Box>
@@ -770,7 +1007,7 @@ const PortfolioLab: NextPage = () => {
             </Stack>
             <Typography variant="h3" component="h1">Portfolio design lab</Typography>
             <Typography color="text.secondary" sx={{ mt: 1, maxWidth: 740 }}>
-              Compare three ways to combine arbitrary wallet assets with Superfluid’s live streaming state, then inspect how a multi-provider discovery harness would explain token coverage.
+              A dashboard-native exploration of wallet balances and live streaming state, with direct actions for starting streams, transferring assets and wrapping ERC-20s.
             </Typography>
           </Box>
           {chosenConcept ? <Chip color="success" icon={<CheckCircleRoundedIcon />} label={`Current pick: ${conceptMeta[chosenConcept].label}`} /> : null}
@@ -788,6 +1025,22 @@ const PortfolioLab: NextPage = () => {
         ) : (
           <Stack gap={3}>
             <PortfolioHero />
+
+            <PortfolioFilterBar
+              query={assetQuery}
+              kind={assetKind}
+              activity={assetActivity}
+              network={assetNetwork}
+              minimumValue={minimumValue}
+              resultCount={filteredAssets.length}
+              resultValue={filteredValue}
+              onQueryChange={setAssetQuery}
+              onKindChange={setAssetKind}
+              onActivityChange={setAssetActivity}
+              onNetworkChange={setAssetNetwork}
+              onMinimumValueChange={setMinimumValue}
+              onReset={resetFilters}
+            />
 
             <Paper variant="outlined" sx={{ p: 1, borderRadius: 3 }}>
               <ToggleButtonGroup
@@ -825,7 +1078,20 @@ const PortfolioLab: NextPage = () => {
               </Button>
             </Stack>
 
-            {concept === "ledger" ? <UnifiedLedgerConcept /> : concept === "streaming" ? <StreamingFocusConcept /> : <NetworkStackConcept />}
+            {filteredAssets.length === 0 ? (
+              <Paper variant="outlined" sx={{ p: 5, borderRadius: 3, textAlign: "center" }}>
+                <SearchRoundedIcon color="disabled" sx={{ fontSize: 42 }} />
+                <Typography variant="h6" sx={{ mt: 1 }}>No assets match these filters</Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>Try another token name, lower the value floor, or reset the filters.</Typography>
+                <Button variant="outlined" startIcon={<RestartAltRoundedIcon />} onClick={resetFilters}>Reset filters</Button>
+              </Paper>
+            ) : concept === "ledger" ? (
+              <UnifiedLedgerConcept assets={filteredAssets} />
+            ) : concept === "streaming" ? (
+              <StreamingFocusConcept assets={filteredAssets} />
+            ) : (
+              <NetworkStackConcept assets={filteredAssets} />
+            )}
 
             <Paper variant="outlined" sx={{ p: 2.5, borderRadius: 3 }}>
               <Typography fontWeight={800}>Rules shared by every concept</Typography>
