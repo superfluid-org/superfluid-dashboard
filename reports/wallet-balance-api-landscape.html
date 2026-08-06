@@ -1,0 +1,2177 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <meta
+      name="description"
+      content="A researched comparison of wallet balance and portfolio APIs for the Superfluid Dashboard."
+    />
+    <title>Wallet Balance APIs — Market Scan 2026</title>
+    <style>
+      :root {
+        --ink: #12221c;
+        --muted: #617068;
+        --paper: #f5f2e9;
+        --paper-deep: #e9e4d7;
+        --card: rgba(255, 253, 247, 0.88);
+        --line: rgba(18, 34, 28, 0.16);
+        --green: #0e7c59;
+        --green-dark: #07553e;
+        --mint: #bdf7d4;
+        --lime: #d9ff70;
+        --yellow: #f6c54d;
+        --coral: #ee735d;
+        --blue: #4d78ff;
+        --shadow: 0 20px 70px rgba(31, 51, 42, 0.11);
+        --radius: 22px;
+        --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+        --sans: "Avenir Next", Avenir, "Segoe UI", sans-serif;
+        --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at 12% 5%, rgba(189, 247, 212, 0.56), transparent 27rem),
+          radial-gradient(circle at 90% 14%, rgba(217, 255, 112, 0.35), transparent 25rem),
+          var(--paper);
+        font-family: var(--sans);
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      body::before {
+        position: fixed;
+        z-index: -1;
+        inset: 0;
+        content: "";
+        opacity: 0.24;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.84' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.13'/%3E%3C/svg%3E");
+        pointer-events: none;
+      }
+
+      a {
+        color: var(--green-dark);
+        text-decoration-thickness: 1px;
+        text-underline-offset: 3px;
+      }
+
+      a:hover {
+        color: var(--green);
+      }
+
+      button,
+      input {
+        font: inherit;
+      }
+
+      .shell {
+        width: min(1180px, calc(100% - 40px));
+        margin: 0 auto;
+      }
+
+      .topbar {
+        position: sticky;
+        z-index: 20;
+        top: 0;
+        border-bottom: 1px solid var(--line);
+        background: rgba(245, 242, 233, 0.86);
+        backdrop-filter: blur(18px);
+      }
+
+      .topbar-inner {
+        display: flex;
+        min-height: 62px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--ink);
+        font-family: var(--mono);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-decoration: none;
+        text-transform: uppercase;
+      }
+
+      .brand-mark {
+        display: grid;
+        width: 28px;
+        height: 28px;
+        place-items: center;
+        border-radius: 50%;
+        background: var(--ink);
+        color: var(--lime);
+        font-size: 15px;
+      }
+
+      nav {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+
+      nav a {
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 650;
+        text-decoration: none;
+      }
+
+      nav a:hover {
+        color: var(--ink);
+      }
+
+      .hero {
+        position: relative;
+        display: grid;
+        min-height: 610px;
+        align-items: end;
+        padding: 96px 0 76px;
+        overflow: hidden;
+      }
+
+      .hero-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.52fr) minmax(280px, 0.68fr);
+        align-items: end;
+        gap: 64px;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        margin-bottom: 26px;
+        font-family: var(--mono);
+        font-size: 12px;
+        font-weight: 750;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+      }
+
+      .eyebrow::before {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: var(--green);
+        box-shadow: 0 0 0 6px rgba(14, 124, 89, 0.12);
+        content: "";
+      }
+
+      h1,
+      h2,
+      h3 {
+        margin: 0;
+        font-family: var(--serif);
+        font-weight: 500;
+        letter-spacing: -0.035em;
+        line-height: 0.98;
+      }
+
+      h1 {
+        max-width: 820px;
+        font-size: clamp(58px, 8.6vw, 116px);
+      }
+
+      h1 em {
+        color: var(--green);
+        font-weight: 400;
+      }
+
+      .hero-copy {
+        max-width: 720px;
+        margin: 32px 0 0;
+        color: #405047;
+        font-size: clamp(18px, 2vw, 23px);
+        line-height: 1.45;
+      }
+
+      .issue-card {
+        position: relative;
+        padding: 28px;
+        border: 1px solid var(--ink);
+        border-radius: 50% 50% 22px 22px;
+        background: var(--lime);
+        box-shadow: 12px 12px 0 var(--ink);
+        transform: rotate(1.5deg);
+      }
+
+      .issue-card .kicker {
+        margin-top: 20px;
+        font-family: var(--mono);
+        font-size: 11px;
+        font-weight: 750;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .issue-card strong {
+        display: block;
+        margin: 10px 0 40px;
+        font-family: var(--serif);
+        font-size: 37px;
+        font-weight: 500;
+        letter-spacing: -0.04em;
+        line-height: 1.02;
+      }
+
+      .issue-card small {
+        display: block;
+        padding-top: 14px;
+        border-top: 1px solid rgba(18, 34, 28, 0.4);
+        font-family: var(--mono);
+        font-size: 11px;
+        line-height: 1.5;
+      }
+
+      .ticker {
+        overflow: hidden;
+        border-block: 1px solid var(--ink);
+        background: var(--ink);
+        color: var(--paper);
+      }
+
+      .ticker-track {
+        display: flex;
+        width: max-content;
+        gap: 34px;
+        padding: 13px 0;
+        font-family: var(--mono);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        animation: ticker 30s linear infinite;
+      }
+
+      .ticker-track span::after {
+        margin-left: 34px;
+        color: var(--lime);
+        content: "◆";
+      }
+
+      @keyframes ticker {
+        to {
+          transform: translateX(-50%);
+        }
+      }
+
+      main section {
+        padding: 96px 0;
+        scroll-margin-top: 72px;
+      }
+
+      .section-head {
+        display: grid;
+        grid-template-columns: 0.7fr 1.3fr;
+        align-items: start;
+        gap: 60px;
+        margin-bottom: 46px;
+      }
+
+      .section-no {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-family: var(--mono);
+        font-size: 11px;
+        font-weight: 750;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+      }
+
+      .section-no::after {
+        width: 72px;
+        height: 1px;
+        background: var(--ink);
+        content: "";
+      }
+
+      h2 {
+        font-size: clamp(43px, 5vw, 70px);
+      }
+
+      .section-intro {
+        max-width: 760px;
+        margin: 20px 0 0;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .recommendation {
+        position: relative;
+        display: grid;
+        grid-template-columns: minmax(0, 1.45fr) minmax(260px, 0.55fr);
+        gap: 40px;
+        padding: clamp(32px, 5vw, 60px);
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: var(--radius);
+        background: var(--ink);
+        color: var(--paper);
+        box-shadow: var(--shadow);
+      }
+
+      .recommendation::after {
+        position: absolute;
+        right: -90px;
+        bottom: -150px;
+        width: 360px;
+        height: 360px;
+        border: 80px solid rgba(217, 255, 112, 0.85);
+        border-radius: 50%;
+        content: "";
+      }
+
+      .recommendation > * {
+        position: relative;
+        z-index: 1;
+      }
+
+      .recommendation .label {
+        display: inline-flex;
+        padding: 7px 11px;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 999px;
+        color: var(--mint);
+        font-family: var(--mono);
+        font-size: 11px;
+        font-weight: 750;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .recommendation h3 {
+        max-width: 740px;
+        margin: 24px 0;
+        font-size: clamp(38px, 5vw, 67px);
+        line-height: 1;
+      }
+
+      .recommendation p {
+        max-width: 760px;
+        margin: 0;
+        color: rgba(245, 242, 233, 0.78);
+        font-size: 17px;
+      }
+
+      .verdict-list {
+        display: grid;
+        align-content: center;
+        gap: 12px;
+      }
+
+      .verdict-item {
+        padding: 17px 18px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.06);
+        backdrop-filter: blur(8px);
+      }
+
+      .verdict-item b {
+        display: block;
+        color: var(--lime);
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+      }
+
+      .verdict-item span {
+        display: block;
+        margin-top: 5px;
+        font-size: 14px;
+      }
+
+      .metric-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-top: 18px;
+      }
+
+      .metric {
+        min-height: 160px;
+        padding: 22px;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: var(--card);
+      }
+
+      .metric strong {
+        display: block;
+        font-family: var(--serif);
+        font-size: 44px;
+        font-weight: 500;
+        letter-spacing: -0.04em;
+        line-height: 1;
+      }
+
+      .metric span {
+        display: block;
+        margin-top: 13px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .metric.green {
+        border-color: transparent;
+        background: var(--mint);
+      }
+
+      .metric.lime {
+        border-color: transparent;
+        background: var(--lime);
+      }
+
+      .insight-strip {
+        display: grid;
+        grid-template-columns: 52px 1fr;
+        gap: 18px;
+        margin-top: 18px;
+        padding: 22px;
+        border-left: 4px solid var(--yellow);
+        background: rgba(246, 197, 77, 0.13);
+      }
+
+      .insight-strip .icon {
+        display: grid;
+        width: 44px;
+        height: 44px;
+        place-items: center;
+        border-radius: 50%;
+        background: var(--yellow);
+        font-family: var(--serif);
+        font-size: 26px;
+      }
+
+      .insight-strip p {
+        margin: 0;
+        font-size: 15px;
+      }
+
+      .insight-strip strong {
+        color: #5f4300;
+      }
+
+      .filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 0 0 18px;
+      }
+
+      .filter-button,
+      .scope-button {
+        padding: 9px 14px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: transparent;
+        color: var(--muted);
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .filter-button:hover,
+      .filter-button.active,
+      .scope-button:hover,
+      .scope-button.active {
+        border-color: var(--ink);
+        background: var(--ink);
+        color: var(--paper);
+      }
+
+      .table-shell {
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--card);
+        box-shadow: 0 10px 30px rgba(31, 51, 42, 0.05);
+      }
+
+      table {
+        width: 100%;
+        min-width: 1040px;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        padding: 20px 17px;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        background: rgba(233, 228, 215, 0.52);
+        color: var(--muted);
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      td {
+        font-size: 13px;
+      }
+
+      tr:last-child td {
+        border-bottom: 0;
+      }
+
+      tbody tr:hover {
+        background: rgba(189, 247, 212, 0.15);
+      }
+
+      .provider-name {
+        min-width: 118px;
+      }
+
+      .provider-name strong {
+        display: block;
+        font-family: var(--serif);
+        font-size: 21px;
+        font-weight: 600;
+      }
+
+      .provider-name span {
+        color: var(--muted);
+        font-family: var(--mono);
+        font-size: 10px;
+        text-transform: uppercase;
+      }
+
+      .yes,
+      .partial,
+      .no {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 700;
+      }
+
+      .yes::before,
+      .partial::before,
+      .no::before {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        content: "";
+      }
+
+      .yes::before {
+        background: var(--green);
+      }
+
+      .partial::before {
+        background: var(--yellow);
+      }
+
+      .no::before {
+        background: var(--coral);
+      }
+
+      .tag {
+        display: inline-block;
+        margin-top: 7px;
+        padding: 4px 7px;
+        border-radius: 6px;
+        background: var(--paper-deep);
+        color: #415047;
+        font-family: var(--mono);
+        font-size: 9px;
+        font-weight: 750;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .cost {
+        color: var(--green-dark);
+        font-family: var(--mono);
+        font-size: 12px;
+        font-weight: 750;
+      }
+
+      .table-note {
+        margin: 12px 4px 0;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .lab {
+        overflow: hidden;
+        border: 1px solid var(--ink);
+        border-radius: var(--radius);
+        background: var(--ink);
+        color: var(--paper);
+        box-shadow: var(--shadow);
+      }
+
+      .lab-controls {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 44px;
+        padding: 38px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+      }
+
+      .control-label {
+        display: block;
+        margin-bottom: 12px;
+        color: var(--mint);
+        font-family: var(--mono);
+        font-size: 10px;
+        font-weight: 750;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+      }
+
+      .volume-row {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .volume-row input[type="range"] {
+        width: 100%;
+        accent-color: var(--lime);
+      }
+
+      .volume-value {
+        width: 112px;
+        color: var(--lime);
+        font-family: var(--serif);
+        font-size: 31px;
+        letter-spacing: -0.04em;
+        text-align: right;
+      }
+
+      .scope-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .lab .scope-button {
+        border-color: rgba(255, 255, 255, 0.22);
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      .lab .scope-button.active,
+      .lab .scope-button:hover {
+        border-color: var(--lime);
+        background: var(--lime);
+        color: var(--ink);
+      }
+
+      .lab-results {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .cost-card {
+        position: relative;
+        min-height: 222px;
+        padding: 26px;
+        border-right: 1px solid rgba(255, 255, 255, 0.12);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      }
+
+      .cost-card:nth-child(3n) {
+        border-right: 0;
+      }
+
+      .cost-card:nth-child(n + 7) {
+        border-bottom: 0;
+      }
+
+      .cost-card .rank {
+        color: rgba(255, 255, 255, 0.42);
+        font-family: var(--mono);
+        font-size: 10px;
+      }
+
+      .cost-card h3 {
+        margin: 15px 0 20px;
+        font-family: var(--sans);
+        font-size: 18px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+      }
+
+      .cost-card .amount {
+        color: var(--lime);
+        font-family: var(--serif);
+        font-size: 36px;
+        letter-spacing: -0.04em;
+        line-height: 1;
+      }
+
+      .cost-card .detail {
+        margin-top: 13px;
+        color: rgba(245, 242, 233, 0.63);
+        font-size: 11px;
+        line-height: 1.45;
+      }
+
+      .lab-foot {
+        padding: 16px 38px;
+        background: var(--lime);
+        color: var(--ink);
+        font-size: 12px;
+      }
+
+      .provider-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .provider-card {
+        display: flex;
+        min-height: 420px;
+        flex-direction: column;
+        padding: 30px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--card);
+        transition: transform 180ms ease, box-shadow 180ms ease;
+      }
+
+      .provider-card:hover {
+        box-shadow: var(--shadow);
+        transform: translateY(-3px);
+      }
+
+      .provider-card.featured {
+        border-color: var(--green);
+        background: linear-gradient(145deg, rgba(189, 247, 212, 0.7), rgba(255, 253, 247, 0.92));
+      }
+
+      .card-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+      }
+
+      .card-top h3 {
+        font-size: 36px;
+      }
+
+      .score {
+        display: grid;
+        width: 58px;
+        height: 58px;
+        flex: 0 0 auto;
+        place-items: center;
+        border: 1px solid var(--ink);
+        border-radius: 50%;
+        font-family: var(--mono);
+        font-size: 12px;
+        font-weight: 750;
+      }
+
+      .card-deck {
+        margin: 18px 0 22px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .facts {
+        display: grid;
+        gap: 0;
+        margin: 0;
+      }
+
+      .fact {
+        display: grid;
+        grid-template-columns: 112px 1fr;
+        gap: 14px;
+        padding: 11px 0;
+        border-top: 1px solid var(--line);
+        font-size: 12px;
+      }
+
+      .fact dt {
+        color: var(--muted);
+        font-family: var(--mono);
+        font-size: 9px;
+        font-weight: 750;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .fact dd {
+        margin: 0;
+      }
+
+      .watchout {
+        margin-top: auto;
+        padding: 14px 16px;
+        border-radius: 12px;
+        background: rgba(238, 115, 93, 0.1);
+        color: #713026;
+        font-size: 12px;
+      }
+
+      .watchout strong {
+        font-family: var(--mono);
+        font-size: 9px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .source-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 13px;
+        margin-top: 18px;
+        font-family: var(--mono);
+        font-size: 10px;
+      }
+
+      .extended-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .extended-card {
+        display: flex;
+        min-height: 360px;
+        flex-direction: column;
+        padding: 26px;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: var(--card);
+      }
+
+      .extended-card.priority {
+        border-color: var(--green);
+        background: linear-gradient(145deg, rgba(189, 247, 212, 0.55), rgba(255, 253, 247, 0.94));
+      }
+
+      .extended-card .extended-kicker {
+        color: var(--green);
+        font-family: var(--mono);
+        font-size: 9px;
+        font-weight: 750;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .extended-card h3 {
+        margin: 15px 0 12px;
+        font-size: 30px;
+      }
+
+      .extended-card > p {
+        margin: 0 0 20px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .extended-facts {
+        display: grid;
+        gap: 0;
+        margin: auto 0 0;
+      }
+
+      .extended-fact {
+        padding: 10px 0;
+        border-top: 1px solid var(--line);
+        font-size: 12px;
+      }
+
+      .extended-fact b {
+        display: block;
+        margin-bottom: 3px;
+        color: var(--muted);
+        font-family: var(--mono);
+        font-size: 8px;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+      }
+
+      .screened-out {
+        display: grid;
+        grid-template-columns: 170px 1fr;
+        gap: 30px;
+        margin-top: 18px;
+        padding: 26px;
+        border: 1px solid var(--ink);
+        border-radius: 18px;
+        background: var(--ink);
+        color: white;
+      }
+
+      .screened-out h3 {
+        margin: 0;
+        color: var(--lime);
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .screened-list {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px 28px;
+      }
+
+      .screened-list p {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 12px;
+      }
+
+      .screened-list strong {
+        color: white;
+      }
+
+      .architecture {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0;
+        overflow: hidden;
+        border: 1px solid var(--ink);
+        border-radius: var(--radius);
+      }
+
+      .architecture-step {
+        position: relative;
+        min-height: 260px;
+        padding: 26px;
+        border-right: 1px solid var(--ink);
+        background: var(--card);
+      }
+
+      .architecture-step:last-child {
+        border-right: 0;
+        background: var(--mint);
+      }
+
+      .architecture-step .step-no {
+        font-family: var(--mono);
+        font-size: 10px;
+        font-weight: 750;
+      }
+
+      .architecture-step h3 {
+        margin: 58px 0 13px;
+        font-family: var(--sans);
+        font-size: 19px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+      }
+
+      .architecture-step p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .architecture-step:not(:last-child)::after {
+        position: absolute;
+        z-index: 2;
+        top: 27px;
+        right: -13px;
+        display: grid;
+        width: 25px;
+        height: 25px;
+        place-items: center;
+        border: 1px solid var(--ink);
+        border-radius: 50%;
+        background: var(--paper);
+        content: "→";
+        font-size: 12px;
+      }
+
+      .decision-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 18px;
+        margin-top: 18px;
+      }
+
+      .decision-card {
+        padding: 26px;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: var(--card);
+      }
+
+      .decision-card b {
+        display: block;
+        color: var(--green);
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .decision-card h3 {
+        margin: 13px 0;
+        font-family: var(--sans);
+        font-size: 19px;
+        font-weight: 750;
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+      }
+
+      .decision-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .method-grid {
+        display: grid;
+        grid-template-columns: 0.8fr 1.2fr;
+        gap: 60px;
+      }
+
+      .method-grid h3 {
+        font-size: 38px;
+      }
+
+      .method-grid p,
+      .method-grid li {
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .method-grid ul {
+        margin: 20px 0 0;
+        padding-left: 20px;
+      }
+
+      .sources {
+        display: grid;
+        gap: 8px;
+        margin-top: 24px;
+      }
+
+      .source-row {
+        display: grid;
+        grid-template-columns: 110px 1fr;
+        gap: 15px;
+        padding: 12px 0;
+        border-top: 1px solid var(--line);
+        font-size: 12px;
+      }
+
+      .source-row strong {
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      footer {
+        margin-top: 40px;
+        padding: 40px 0 56px;
+        border-top: 1px solid var(--ink);
+      }
+
+      .footer-grid {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 30px;
+      }
+
+      .footer-grid strong {
+        display: block;
+        max-width: 660px;
+        font-family: var(--serif);
+        font-size: 33px;
+        font-weight: 500;
+        letter-spacing: -0.035em;
+        line-height: 1.1;
+      }
+
+      .footer-grid span {
+        color: var(--muted);
+        font-family: var(--mono);
+        font-size: 10px;
+      }
+
+      .hidden-row {
+        display: none;
+      }
+
+      @media (max-width: 900px) {
+        nav {
+          display: none;
+        }
+
+        .hero-grid,
+        .section-head,
+        .recommendation,
+        .method-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .hero-grid {
+          gap: 50px;
+        }
+
+        .issue-card {
+          width: min(370px, calc(100% - 14px));
+        }
+
+        .metric-grid,
+        .architecture {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .lab-results,
+        .extended-grid,
+        .decision-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .cost-card:nth-child(3n) {
+          border-right: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .cost-card:nth-child(2n) {
+          border-right: 0;
+        }
+
+        .cost-card:nth-child(n + 7) {
+          border-bottom: 0;
+        }
+
+        .screened-out {
+          grid-template-columns: 1fr;
+        }
+
+        .architecture-step:nth-child(2) {
+          border-right: 0;
+        }
+
+        .architecture-step:nth-child(-n + 2) {
+          border-bottom: 1px solid var(--ink);
+        }
+      }
+
+      @media (max-width: 640px) {
+        .shell {
+          width: min(100% - 24px, 1180px);
+        }
+
+        .hero {
+          min-height: auto;
+          padding: 76px 0 58px;
+        }
+
+        h1 {
+          font-size: clamp(52px, 19vw, 80px);
+        }
+
+        main section {
+          padding: 70px 0;
+        }
+
+        .metric-grid,
+        .provider-grid,
+        .extended-grid,
+        .lab-controls,
+        .lab-results,
+        .architecture,
+        .decision-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .screened-list {
+          grid-template-columns: 1fr;
+        }
+
+        .cost-card,
+        .cost-card:nth-child(3n),
+        .cost-card:nth-child(2n) {
+          border-right: 0;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .cost-card:nth-child(n + 7) {
+          border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .cost-card:last-child {
+          border-bottom: 0;
+        }
+
+        .architecture-step,
+        .architecture-step:nth-child(2) {
+          border-right: 0;
+          border-bottom: 1px solid var(--ink);
+        }
+
+        .architecture-step:last-child {
+          border-bottom: 0;
+        }
+
+        .architecture-step:not(:last-child)::after {
+          top: auto;
+          right: 25px;
+          bottom: -13px;
+          content: "↓";
+        }
+
+        .source-row,
+        .fact {
+          grid-template-columns: 1fr;
+          gap: 4px;
+        }
+
+        .footer-grid {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+      }
+
+      @media print {
+        .topbar,
+        .ticker,
+        .filters,
+        .lab-controls {
+          display: none;
+        }
+
+        body {
+          background: white;
+        }
+
+        body::before {
+          display: none;
+        }
+
+        main section {
+          padding: 40px 0;
+        }
+
+        .provider-card,
+        .recommendation,
+        .lab {
+          break-inside: avoid;
+          box-shadow: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="shell topbar-inner">
+        <a class="brand" href="#top">
+          <span class="brand-mark">S</span>
+          <span>Superfluid · Research Desk</span>
+        </a>
+        <nav aria-label="Report sections">
+          <a href="#verdict">Verdict</a>
+          <a href="#comparison">Comparison</a>
+          <a href="#cost-lab">Cost lab</a>
+          <a href="#providers">Providers</a>
+          <a href="#extended">Extended field</a>
+          <a href="#sources">Sources</a>
+        </nav>
+      </div>
+    </header>
+
+    <div id="top" class="hero">
+      <div class="shell hero-grid">
+        <div>
+          <div class="eyebrow">Market scan · 06 August 2026</div>
+          <h1>Wallet balance <em>APIs</em></h1>
+          <p class="hero-copy">
+            Who can discover arbitrary ERC-20 holdings, enrich them with live prices,
+            survive spam tokens, and do it at a price that makes sense for the Superfluid
+            Dashboard?
+          </p>
+        </div>
+        <aside class="issue-card" aria-label="Report scope">
+          <div class="kicker">Decision brief 01</div>
+          <strong>Seven fully modeled. Six more screened.</strong>
+          <small>
+            Official documentation and public pricing only. Estimates exclude taxes,
+            pagination outliers, negotiated discounts, and enterprise contracts.
+          </small>
+        </aside>
+      </div>
+    </div>
+
+    <div class="ticker" aria-hidden="true">
+      <div class="ticker-track">
+        <span>Balances</span><span>Prices</span><span>Metadata</span><span>Spam controls</span><span>Multi-chain</span><span>Pagination</span><span>Rate limits</span><span>Balances</span><span>Prices</span><span>Metadata</span><span>Spam controls</span><span>Multi-chain</span><span>Pagination</span><span>Rate limits</span>
+      </div>
+    </div>
+
+    <main>
+      <section id="verdict">
+        <div class="shell">
+          <div class="section-head">
+            <div class="section-no">01 · Executive verdict</div>
+            <div>
+              <h2>Keep the integration. Improve the operating model.</h2>
+              <p class="section-intro">
+                Alchemy remains the best near-term choice because the adapter is already live,
+                the enriched response matches the table, and the free/PAYG economics are unusually
+                forgiving. The strongest reason to switch would be better token safety—not price.
+              </p>
+            </div>
+          </div>
+
+          <div class="recommendation">
+            <div>
+              <span class="label">Recommendation · Stay on Alchemy</span>
+              <h3>Use Alchemy as the portfolio indexer; keep Superfluid data authoritative.</h3>
+              <p>
+                Merge priced ERC-20 holdings from the Portfolio API with protocol-native Super Token
+                data exactly as the dashboard does today. Add short server-side caching and request
+                coalescing before considering a provider migration. Revisit Moralis if scam/spam
+                protection becomes a product requirement, or Ankr if raw cost becomes the sole driver.
+                Run OKX and Mobula against the same wallet corpus before making that decision—their
+                published balance APIs are stronger than the original shortlist reflected.
+              </p>
+            </div>
+            <div class="verdict-list">
+              <div class="verdict-item">
+                <b>Best now</b>
+                <span>Alchemy · lowest switching cost</span>
+              </div>
+              <div class="verdict-item">
+                <b>Missed challenger</b>
+                <span>OKX · priced balances + risk flag across 130+ chains</span>
+              </div>
+              <div class="verdict-item">
+                <b>Safety benchmark</b>
+                <span>Moralis · spam, verification &amp; security score</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="metric-grid">
+            <div class="metric green">
+              <strong>2</strong>
+              <span>Alchemy first-page calls per full mainnet refresh in the current adapter</span>
+            </div>
+            <div class="metric">
+              <strong>720 CU</strong>
+              <span>Minimum Alchemy cost per dashboard-wide refresh, before pagination</span>
+            </div>
+            <div class="metric lime">
+              <strong>≈41.7k</strong>
+              <span>Dashboard-wide refreshes that fit inside Alchemy’s 30M CU free tier</span>
+            </div>
+            <div class="metric">
+              <strong>$16.20</strong>
+              <span>Alchemy PAYG equivalent for 50k full refreshes at $0.45/M CU</span>
+            </div>
+          </div>
+
+          <div class="insight-strip">
+            <div class="icon">!</div>
+            <p>
+              <strong>A token list is not a balance API.</strong> Uniswap-style token lists curate
+              known contract metadata; they do not discover everything a wallet owns or calculate
+              balances. They are useful as a trust signal and logo fallback, not as the portfolio
+              data source.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="comparison">
+        <div class="shell">
+          <div class="section-head">
+            <div class="section-no">02 · Market map</div>
+            <div>
+              <h2>Seven fully modeled routes, with very different trade-offs.</h2>
+              <p class="section-intro">
+                The table focuses on the exact job: return fungible wallet holdings with metadata
+                and USD prices. “Multi-chain” means several networks can be queried in one request,
+                not merely that the vendor supports several chains. A second-pass screen of six
+                additional providers appears below rather than mixing unverified cost assumptions
+                into this calculator.
+              </p>
+            </div>
+          </div>
+
+          <div class="filters" aria-label="Filter providers">
+            <button class="filter-button active" data-filter="all">All providers</button>
+            <button class="filter-button" data-filter="onecall">One-call priced</button>
+            <button class="filter-button" data-filter="safety">Safety signals</button>
+            <button class="filter-button" data-filter="broad">Broadest chains</button>
+            <button class="filter-button" data-filter="budget">Budget-first</button>
+          </div>
+
+          <div class="table-shell">
+            <table>
+              <thead>
+                <tr>
+                  <th>Provider</th>
+                  <th>Priced holdings</th>
+                  <th>True multi-chain call</th>
+                  <th>Coverage</th>
+                  <th>Spam / safety</th>
+                  <th>Public entry price</th>
+                  <th>50k full refreshes*</th>
+                </tr>
+              </thead>
+              <tbody id="provider-table">
+                <tr data-groups="onecall broad">
+                  <td class="provider-name"><strong>Alchemy</strong><span>Portfolio API</span></td>
+                  <td><span class="yes">Yes</span><br />Balance, metadata and price</td>
+                  <td><span class="yes">Yes</span><br />Multiple wallets + networks</td>
+                  <td>Ethereum, Solana + 30 EVM chains</td>
+                  <td><span class="partial">Indirect</span><br />Price/value filtering; no documented spam field</td>
+                  <td>30M CU free; PAYG $0.45/M CU</td>
+                  <td><span class="cost">$16.20 PAYG</span><br />36M CU in current adapter</td>
+                </tr>
+                <tr data-groups="onecall safety broad">
+                  <td class="provider-name"><strong>Moralis</strong><span>Wallet API</span></td>
+                  <td><span class="yes">Yes</span><br />USD value + 24h movement</td>
+                  <td><span class="yes">Yes</span><br />Universal wallet endpoint</td>
+                  <td>30+ EVM; broader universal APIs</td>
+                  <td><span class="yes">Strong</span><br />Spam, verified contract, security score</td>
+                  <td>40k CU/day free; Pro $199/mo annual</td>
+                  <td><span class="cost">$199 / month</span><br />Pro tier; 5M CU if fixed at 100/call</td>
+                </tr>
+                <tr data-groups="onecall safety broad">
+                  <td class="provider-name"><strong>GoldRush</strong><span>by Covalent</span></td>
+                  <td><span class="yes">Yes</span><br />Fiat quote, metadata, 24h values</td>
+                  <td><span class="yes">Yes</span><br />Up to 10 EVM chains</td>
+                  <td>100+ overall; EVM, Bitcoin, Solana</td>
+                  <td><span class="yes">Included</span><br /><code>is_spam</code> in balance schema</td>
+                  <td>14-day trial; $10 hobby; $250 production</td>
+                  <td><span class="cost">$250 / month</span><br />125k of 300k included credits</td>
+                </tr>
+                <tr data-groups="onecall broad">
+                  <td class="provider-name"><strong>Zerion</strong><span>Wallet API</span></td>
+                  <td><span class="yes">Yes</span><br />Portfolio, positions, prices, PnL</td>
+                  <td><span class="yes">Yes</span><br />All EVM + Solana in one call</td>
+                  <td>40+ blockchains; 8,000+ DeFi protocols</td>
+                  <td><span class="partial">Curated</span><br />UI-ready positions; no cited security score</td>
+                  <td>Prototype tier free; Builder $149/mo</td>
+                  <td><span class="cost">$149 / month</span><br />Within 250k requests</td>
+                </tr>
+                <tr data-groups="onecall safety broad">
+                  <td class="provider-name"><strong>DeBank</strong><span>Cloud OpenAPI</span></td>
+                  <td><span class="yes">Yes</span><br />Balance, metadata and USD price</td>
+                  <td><span class="yes">Yes</span><br />All supported chains in one call</td>
+                  <td>Dynamic EVM chain catalog via Chain API</td>
+                  <td><span class="yes">Good</span><br /><code>is_core</code>, verification and display fields</td>
+                  <td>1M units / 200 USDC; Pro 100 RPS</td>
+                  <td><span class="partial">Cost not public</span><br />Token-list units shown in Cloud dashboard</td>
+                </tr>
+                <tr data-groups="onecall budget">
+                  <td class="provider-name"><strong>Ankr</strong><span>Advanced API</span></td>
+                  <td><span class="yes">Yes</span><br />Balance, token price, total USD</td>
+                  <td><span class="yes">Yes</span><br />Blockchain array</td>
+                  <td>18 EVM mainnets + testnets in Token API</td>
+                  <td><span class="yes">Whitelist</span><br />CoinGecko-listed only by default</td>
+                  <td>200M credits free; PAYG starts at $10</td>
+                  <td><span class="cost">Free quota fits</span><br />PAYG equivalent $3.50</td>
+                </tr>
+                <tr data-groups="budget">
+                  <td class="provider-name"><strong>Chainbase</strong><span>Balance API</span></td>
+                  <td><span class="yes">ERC-20 yes</span><br />Current USD price in response</td>
+                  <td><span class="no">No</span><br />One chain per request; native separate</td>
+                  <td>9 listed EVM networks</td>
+                  <td><span class="partial">Limited</span><br />No spam flag in cited schema</td>
+                  <td>200k credits free; Developer $99/mo</td>
+                  <td><span class="cost">$99 / month</span><br />Estimated 0.5M–2.5M credits</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="table-note">
+            * Scenario: 50,000 monthly portfolio refreshes across the dashboard’s 10
+            Alchemy-mapped mainnets, first page only. Provider plans are not feature-equivalent.
+            Moralis multi-chain CU behavior should be confirmed in the account console; DeBank’s
+            public rate is 200 USDC per million units, but the token-list endpoint’s unit charge is
+            dashboard-only; Chainbase publishes a 1–5 credit range for Web3 methods rather than a
+            captured endpoint-specific cost.
+          </p>
+
+          <div class="insight-strip">
+            <div class="icon">↗</div>
+            <p>
+              <strong>QuickNode is an access route, not a distinct portfolio engine in this comparison.</strong>
+              Its core platform is excellent RPC infrastructure, while its wallet portfolio offering is
+              the GoldRush add-on. GoldRush advertises that route from $50/month, so compare the add-on
+              contract—not QuickNode RPC credits—to Alchemy Portfolio API economics.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="cost-lab">
+        <div class="shell">
+          <div class="section-head">
+            <div class="section-no">03 · Cost lab</div>
+            <div>
+              <h2>Move the volume. Watch plan floors take over.</h2>
+              <p class="section-intro">
+                Usage-priced APIs stay exceptionally cheap; subscription APIs buy richer wallet
+                semantics, support, and predictable capacity. Change the refresh volume and scope
+                below to see public-plan estimates.
+              </p>
+            </div>
+          </div>
+
+          <div class="lab">
+            <div class="lab-controls">
+              <div>
+                <label class="control-label" for="volume">Portfolio refreshes / month</label>
+                <div class="volume-row">
+                  <input id="volume" type="range" min="1000" max="500000" step="1000" value="50000" />
+                  <output class="volume-value" id="volume-value" for="volume">50k</output>
+                </div>
+              </div>
+              <div>
+                <span class="control-label">Refresh scope</span>
+                <div class="scope-buttons">
+                  <button class="scope-button" data-scope="single">One chain</button>
+                  <button class="scope-button active" data-scope="dashboard">10 mapped mainnets</button>
+                </div>
+              </div>
+            </div>
+            <div class="lab-results" id="lab-results" aria-live="polite"></div>
+            <div class="lab-foot">
+              Planning estimates, not quotes. “Free” means the modeled usage fits the public quota;
+              production-use restrictions and burst rate limits still apply. Pagination adds another
+              metered request/page for most providers.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="providers">
+        <div class="shell">
+          <div class="section-head">
+            <div class="section-no">04 · Provider briefs</div>
+            <div>
+              <h2>What each service is really selling.</h2>
+              <p class="section-intro">
+                The APIs overlap on balances, but their product centers differ: infrastructure,
+                wallet intelligence, historical data, DeFi positions, or inexpensive multi-chain RPC.
+              </p>
+            </div>
+          </div>
+
+          <div class="provider-grid">
+            <article class="provider-card featured">
+              <div class="card-top">
+                <div>
+                  <span class="tag">Recommended now</span>
+                  <h3>Alchemy</h3>
+                </div>
+                <div class="score">9.0</div>
+              </div>
+              <p class="card-deck">
+                A production-grade data and node platform whose Portfolio API returns native,
+                ERC-20 and SPL holdings with optional metadata and prices for several wallets and
+                networks at once.
+              </p>
+              <dl class="facts">
+                <div class="fact"><dt>Endpoint</dt><dd><code>assets/tokens/by-address</code></dd></div>
+                <div class="fact"><dt>Meter</dt><dd>360 CU per request/page; balance-only variant is 200 CU</dd></div>
+                <div class="fact"><dt>Pricing</dt><dd>30M CU free; PAYG $0.45/M through 300M, then $0.40/M</dd></div>
+                <div class="fact"><dt>Best at</dt><dd>Low-friction portfolio tables, multi-chain requests, broad platform tooling</dd></div>
+              </dl>
+              <div class="watchout"><strong>Watch</strong><br />No explicit spam/security field is documented in the cited token response. Pagination can multiply the 360 CU charge for airdrop-heavy wallets.</div>
+              <div class="source-links">
+                <a href="https://www.alchemy.com/docs/data/portfolio-apis/portfolio-api-endpoints/portfolio-api-endpoints/get-tokens-by-address">API</a>
+                <a href="https://www.alchemy.com/docs/reference/compute-unit-costs">CU costs</a>
+                <a href="https://www.alchemy.com/docs/reference/pricing-plans">Pricing</a>
+              </div>
+            </article>
+
+            <article class="provider-card">
+              <div class="card-top">
+                <div>
+                  <span class="tag">Safety leader</span>
+                  <h3>Moralis</h3>
+                </div>
+                <div class="score">8.7</div>
+              </div>
+              <p class="card-deck">
+                A wallet-intelligence API with the most table-ready safety payload in this set:
+                price, USD value, 24h movement, spam status, contract verification, portfolio share,
+                and a security score.
+              </p>
+              <dl class="facts">
+                <div class="fact"><dt>Endpoint</dt><dd><code>/v1/wallets/{address}/tokens</code> for multi-chain holdings</dd></div>
+                <div class="fact"><dt>Meter</dt><dd>Official EVM CU table lists priced wallet token balances at 100 CU</dd></div>
+                <div class="fact"><dt>Pricing</dt><dd>40k CU/day free; Pro $199/mo annual with 100M CU; Business $490</dd></div>
+                <div class="fact"><dt>Best at</dt><dd>Consumer wallets where scam filtering and readable enrichment matter</dd></div>
+              </dl>
+              <div class="watchout"><strong>Watch</strong><br />The new universal endpoint and the older named CU method do not map perfectly in public docs. Confirm whether multi-chain scope changes CU cost before signing a plan.</div>
+              <div class="source-links">
+                <a href="https://docs.moralis.com/data-api/evm/wallet/token-balances">API</a>
+                <a href="https://docs.moralis.com/data-api/pricing">CU costs</a>
+                <a href="https://developers.moralis.com/pricing/">Pricing</a>
+              </div>
+            </article>
+
+            <article class="provider-card">
+              <div class="card-top">
+                <div>
+                  <span class="tag">Coverage leader</span>
+                  <h3>GoldRush</h3>
+                </div>
+                <div class="score">8.4</div>
+              </div>
+              <p class="card-deck">
+                Covalent’s renamed data platform is built as a wallet data layer: current and
+                historical balances, fiat prices, spam labels, decoded activity, approvals and PnL
+                across a very broad chain catalog.
+              </p>
+              <dl class="facts">
+                <div class="fact"><dt>Endpoint</dt><dd>Single-chain balance call or 10-chain balance aggregation</dd></div>
+                <div class="fact"><dt>Meter</dt><dd>1 credit single-chain; 2.5 first page multi-chain; 1 subsequent page</dd></div>
+                <div class="fact"><dt>Pricing</dt><dd>14-day trial; $10 hobby plan; $250 production plan with 300k credits</dd></div>
+                <div class="fact"><dt>Best at</dt><dd>Historical portfolio views and products spanning non-EVM ecosystems</dd></div>
+              </dl>
+              <div class="watchout"><strong>Watch</strong><br />There is no durable production free tier. The $10 plan explicitly excludes commercial apps and workloads over 100k credits/month.</div>
+              <div class="source-links">
+                <a href="https://goldrush.dev/docs/api-reference/foundational-api/cross-chain/get-allchains-balances">API</a>
+                <a href="https://goldrush.dev/docs/skills/goldrush-foundational-api/references/workflows">Credit costs</a>
+                <a href="https://goldrush.dev/pricing/">Pricing</a>
+              </div>
+            </article>
+
+            <article class="provider-card">
+              <div class="card-top">
+                <div>
+                  <span class="tag">Wallet depth</span>
+                  <h3>Zerion</h3>
+                </div>
+                <div class="score">8.2</div>
+              </div>
+              <p class="card-deck">
+                A wallet-first API that goes beyond loose token balances into normalized positions,
+                DeFi protocol exposure, portfolio changes, transaction history, and PnL—all designed
+                to render directly in user interfaces.
+              </p>
+              <dl class="facts">
+                <div class="fact"><dt>Endpoint</dt><dd>Portfolio overview plus fungible position endpoints</dd></div>
+                <div class="fact"><dt>Meter</dt><dd>Request-count plans; one request can cover all EVM + Solana</dd></div>
+                <div class="fact"><dt>Pricing</dt><dd>Free prototype tier; $149/250k; $499/1M; $999/2.5M requests</dd></div>
+                <div class="fact"><dt>Best at</dt><dd>Feature-rich consumer portfolio products and DeFi-aware experiences</dd></div>
+              </dl>
+              <div class="watchout"><strong>Watch</strong><br />The official pricing page currently contradicts its own FAQ on free quota/RPS (2k/day &amp; 3 RPS versus 3k/day &amp; 2 RPS). Treat free capacity as provisional.</div>
+              <div class="source-links">
+                <a href="https://developers.zerion.io/api-reference/wallets/get-wallet-portfolio">API</a>
+                <a href="https://www.zerion.io/api">Pricing</a>
+                <a href="https://developers.zerion.io/endpoints-and-schema">Schema</a>
+              </div>
+            </article>
+
+            <article class="provider-card">
+              <div class="card-top">
+                <div>
+                  <span class="tag">DeFi depth</span>
+                  <h3>DeBank</h3>
+                </div>
+                <div class="score">8.6</div>
+              </div>
+              <p class="card-deck">
+                DeBank’s all-chain token endpoint returns wallet balances, raw amounts, prices,
+                logos, optimized symbols and token-quality fields in one response. The same API
+                family can add protocol positions, approvals, NFTs and portfolio history later.
+              </p>
+              <dl class="facts">
+                <div class="fact"><dt>Endpoint</dt><dd><code>/v1/user/all_token_list</code> with optional chain filters</dd></div>
+                <div class="fact"><dt>Meter</dt><dd>Endpoint-specific units shown in Cloud; public base rate is 1M units / 200 USDC</dd></div>
+                <div class="fact"><dt>Pricing</dt><dd>Usage-based; Pro permits 100 requests/second; no public free allowance found</dd></div>
+                <div class="fact"><dt>Best at</dt><dd>DeFi-aware EVM portfolios that may grow into positions and approvals</dd></div>
+              </dl>
+              <div class="watchout"><strong>Watch</strong><br />DeBank does not publish the token-list unit charge on its public pricing page, so exact volume economics require a Cloud account quote. Its aggregated protocol-position data is usually refreshed within one minute but carries a documented 12-hour worst case.</div>
+              <div class="source-links">
+                <a href="https://docs.cloud.debank.com/en/readme/api-pro-reference/user">API</a>
+                <a href="https://open.debank.com/">Unit pricing</a>
+                <a href="https://docs.cloud.debank.com/en/readme/open-api">Rate limits</a>
+              </div>
+            </article>
+
+            <article class="provider-card">
+              <div class="card-top">
+                <div>
+                  <span class="tag">Price leader</span>
+                  <h3>Ankr</h3>
+                </div>
+                <div class="score">8.0</div>
+              </div>
+              <p class="card-deck">
+                An enriched JSON-RPC method returns balances, prices, thumbnails, per-token USD value
+                and total wallet USD value across a blockchain array. Its transparent per-request
+                price is the lowest in this comparison.
+              </p>
+              <dl class="facts">
+                <div class="fact"><dt>Endpoint</dt><dd><code>ankr_getAccountBalance</code></dd></div>
+                <div class="fact"><dt>Meter</dt><dd>700 API credits / $0.00007 per request</dd></div>
+                <div class="fact"><dt>Pricing</dt><dd>200M credits monthly free; PAYG premium starts with a $10 deposit</dd></div>
+                <div class="fact"><dt>Best at</dt><dd>Low-cost EVM balance aggregation with simple whitelisting</dd></div>
+              </dl>
+              <div class="watchout"><strong>Watch</strong><br />Free Advanced API is limited to 30 requests/minute. The Token API docs call it a Premium feature while the pricing page includes Advanced API on Freemium—test account access first.</div>
+              <div class="source-links">
+                <a href="https://www.ankr.com/docs/advanced-api/token-methods/">API</a>
+                <a href="https://www.ankr.com/docs/advanced-api/pricing/">Method cost</a>
+                <a href="https://www.ankr.com/rpc/pricing/">Plans</a>
+              </div>
+            </article>
+
+            <article class="provider-card">
+              <div class="card-top">
+                <div>
+                  <span class="tag">Budget platform</span>
+                  <h3>Chainbase</h3>
+                </div>
+                <div class="score">7.1</div>
+              </div>
+              <p class="card-deck">
+                A straightforward per-chain REST API. The ERC-20 balance response already contains
+                names, symbols, logos and current USD price, but native balances are separate and
+                multi-chain fan-out remains application work.
+              </p>
+              <dl class="facts">
+                <div class="fact"><dt>Endpoint</dt><dd><code>/v1/account/tokens</code> per chain</dd></div>
+                <div class="fact"><dt>Meter</dt><dd>Web3 methods cost 1–5 credits; SQL queries cost 100</dd></div>
+                <div class="fact"><dt>Pricing</dt><dd>200k credits free; Developer $99 with 10M; extra 100k/$1</dd></div>
+                <div class="fact"><dt>Best at</dt><dd>Teams that also want SQL/data-cloud tooling and can own aggregation</dd></div>
+              </dl>
+              <div class="watchout"><strong>Watch</strong><br />Nine listed networks, per-chain pagination, native balance separation, and no spam field in the cited response make it more plumbing than the current Alchemy integration.</div>
+              <div class="source-links">
+                <a href="https://docs.chainbase.com/api-reference/web3-api/balance/token-balances/get-erc20-token-balances">API</a>
+                <a href="https://docs.chainbase.com/resources/platform/features/api/web3-api">Coverage</a>
+                <a href="https://platform.chainbase.com/pricing">Pricing</a>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="extended">
+        <div class="shell">
+          <div class="section-head">
+            <div class="section-no">05 · Extended field</div>
+            <div>
+              <h2>Six more providers deserve a place on the map.</h2>
+              <p class="section-intro">
+                Three are immediate bake-off candidates; three are credible when the product expands
+                into deeper analytics, history, or streaming. They are screened here without forcing
+                unlike meters into the primary cost calculator.
+              </p>
+            </div>
+          </div>
+
+          <div class="extended-grid">
+            <article class="extended-card priority">
+              <span class="extended-kicker">Must benchmark · strongest omission</span>
+              <h3>OKX OnchainOS</h3>
+              <p>Its Balance API is unusually close to the dashboard’s exact need: arbitrary-address holdings with current prices and an explicit risk-token flag across a very broad chain catalog.</p>
+              <div class="extended-facts">
+                <div class="extended-fact"><b>Payload</b>Native, ERC-20 and SPL balances, token price, raw balance and <code>isRiskToken</code></div>
+                <div class="extended-fact"><b>Coverage</b>130+ chains through one integration; supported-chain endpoint is queryable</div>
+                <div class="extended-fact"><b>Public price</b>Balance endpoints are listed as free in the official API fee table</div>
+              </div>
+              <div class="source-links">
+                <a href="https://web3.okx.com/onchainos/dev-docs/wallet/balance-api-overview">Overview</a>
+                <a href="https://web3.okx.com/onchainos/dev-docs/wallet/balance-api-all-token-balances">Balances</a>
+                <a href="https://web3.okx.com/onchainos/dev-docs/market/market-api-fee">Pricing</a>
+              </div>
+            </article>
+
+            <article class="extended-card priority">
+              <span class="extended-kicker">Must benchmark · enrichment</span>
+              <h3>Mobula</h3>
+              <p>A portfolio-shaped response with cross-chain aggregation, prices, liquidity, allocation, PnL options and unusually detailed token-security fields.</p>
+              <div class="extended-facts">
+                <div class="extended-fact"><b>Payload</b>Holdings and USD value plus taxes, blacklist, mint, liquidity and pausable signals</div>
+                <div class="extended-fact"><b>Coverage</b>Nine premium chains by default; <code>fetchAllChains=true</code> widens the scan</div>
+                <div class="extended-fact"><b>Public price</b>10k credits free; $50/125k; $400/1.25M; portfolio costs 1 credit per chain</div>
+              </div>
+              <div class="source-links">
+                <a href="https://docs.mobula.io/rest-api-reference/endpoint/wallet-portfolio">Portfolio API</a>
+                <a href="https://docs.mobula.io/pricing">Pricing</a>
+              </div>
+            </article>
+
+            <article class="extended-card priority">
+              <span class="extended-kicker">Must benchmark · DeFi suite</span>
+              <h3>1inch Business</h3>
+              <p>The newer Portfolio v5 API returns token snapshots, DeFi positions, total value, PnL and history, while the same subscription also includes swap and balance infrastructure.</p>
+              <div class="extended-facts">
+                <div class="extended-fact"><b>Payload</b>Cross-chain token snapshots and USD totals; multiple wallet addresses can be aggregated</div>
+                <div class="extended-fact"><b>Coverage</b>Major EVM networks plus Solana; optional <code>chain_id</code> filtering</div>
+                <div class="extended-fact"><b>Public price</b>100k calls/month free at 60 req/min; Startup from $149/month annually</div>
+              </div>
+              <div class="source-links">
+                <a href="https://business.1inch.com/portal/documentation/apis/portfolio/quick-start">Portfolio API</a>
+                <a href="https://business.1inch.com/portal/documentation/apis/balance/introduction">Balance API</a>
+                <a href="https://business.1inch.com/pricing">Pricing</a>
+              </div>
+            </article>
+
+            <article class="extended-card">
+              <span class="extended-kicker">Broader fit · wallet intelligence</span>
+              <h3>Nansen</h3>
+              <p>More expensive than a basic indexer, but compelling when cross-chain balances need spam filtering, entity labels, historical holdings and proprietary wallet intelligence.</p>
+              <div class="extended-facts">
+                <div class="extended-fact"><b>Payload</b>Token amount, price, USD value and chain; <code>hide_spam_token</code> defaults true</div>
+                <div class="extended-fact"><b>Coverage</b><code>chain: all</code> across 26 enumerated EVM and non-EVM networks</div>
+                <div class="extended-fact"><b>Public price</b>Pro $49/month annually + usage; $100 buys 100k foundational calls</div>
+              </div>
+              <div class="source-links">
+                <a href="https://docs.nansen.ai/api/profiler/address-current-balances">Balances</a>
+                <a href="https://docs.nansen.ai/credits-and-pricing-guide">Pricing</a>
+              </div>
+            </article>
+
+            <article class="extended-card">
+              <span class="extended-kicker">Broader fit · analytics &amp; streams</span>
+              <h3>Bitquery</h3>
+              <p>A GraphQL-first portfolio and blockchain data platform for teams that also need PnL, point-in-time balances, live streams and a queryable on-chain warehouse.</p>
+              <div class="extended-facts">
+                <div class="extended-fact"><b>Payload</b>Native, ERC-20, SPL and TRC-20 holdings with USD value; PnL and NFTs available</div>
+                <div class="extended-fact"><b>Coverage</b>Nine core chains self-service; 40+ chains on Enterprise</div>
+                <div class="extended-fact"><b>Public price</b>Commercial Pro $79/month annually; 1M points ≈200k calls; 90 req/min</div>
+              </div>
+              <div class="source-links">
+                <a href="https://bitquery.io/products/portfolio-360">Portfolio 360</a>
+                <a href="https://bitquery.io/pricing">Pricing</a>
+              </div>
+            </article>
+
+            <article class="extended-card">
+              <span class="extended-kicker">Broader fit · open data surface</span>
+              <h3>Pinax Token API</h3>
+              <p>The Token API built with The Graph exposes fast REST balance rows with USD value and broad chain infrastructure, but it remains a per-network query rather than a true all-chain portfolio call.</p>
+              <div class="extended-facts">
+                <div class="extended-fact"><b>Payload</b>Token amount, metadata and USD value, plus transfers, holders and NFT endpoints</div>
+                <div class="extended-fact"><b>Coverage</b>Provider advertises 70+ Token API chains; each balance request selects a network</div>
+                <div class="extended-fact"><b>Public price</b>Free API key and 100 req/s advertised; monthly allowance is not stated publicly</div>
+              </div>
+              <div class="source-links">
+                <a href="https://pinax.network/products/api">Product</a>
+                <a href="https://thegraph.com/docs/en/token-api/faq/">Token API FAQ</a>
+              </div>
+            </article>
+          </div>
+
+          <div class="screened-out">
+            <h3>Found, but not shortlisted</h3>
+            <div class="screened-list">
+              <p><strong>Dune Sim API:</strong> an excellent technical fit, but Alchemy’s migration notice states that Sim shut down on 01 August 2026. Do not start a new integration.</p>
+              <p><strong>Allium:</strong> strong real-time wallet infrastructure, but its public machine-payment balance call is $0.03 and price enrichment is a separate product path.</p>
+              <p><strong>Zapper API:</strong> relevant DeFi balance coverage, but current self-service documentation and pricing are fragmented; treat it as a sales-led option.</p>
+              <p><strong>Coinbase Prime / CDP:</strong> useful for wallets managed inside Coinbase products, not arbitrary external-address discovery for this dashboard.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="implementation">
+        <div class="shell">
+          <div class="section-head">
+            <div class="section-no">06 · Dashboard fit</div>
+            <div>
+              <h2>A durable data path for one combined table.</h2>
+              <p class="section-intro">
+                Treat the external service as discovery and enrichment. Superfluid’s own sources
+                should continue to define Super Token semantics and live protocol state.
+              </p>
+            </div>
+          </div>
+
+          <div class="architecture" aria-label="Recommended data flow">
+            <div class="architecture-step">
+              <span class="step-no">01 / INPUT</span>
+              <h3>Connected wallet + active network set</h3>
+              <p>Normalize the address and send the selected chain IDs to the server route.</p>
+            </div>
+            <div class="architecture-step">
+              <span class="step-no">02 / DISCOVERY</span>
+              <h3>Alchemy Portfolio API</h3>
+              <p>Fetch non-zero ERC-20 balances with metadata and USD price; exhaust pages safely.</p>
+            </div>
+            <div class="architecture-step">
+              <span class="step-no">03 / AUTHORITY</span>
+              <h3>Superfluid protocol data</h3>
+              <p>Fetch Super Token snapshots separately so streamed balances remain precise.</p>
+            </div>
+            <div class="architecture-step">
+              <span class="step-no">04 / VIEW MODEL</span>
+              <h3>One portfolio table</h3>
+              <p>Deduplicate, label token type, sort by network and value, then render together.</p>
+            </div>
+          </div>
+
+          <div class="decision-grid">
+            <div class="decision-card">
+              <b>Do next</b>
+              <h3>Add a 30–60 second server cache.</h3>
+              <p>Key by normalized wallet + sorted network set. Coalesce simultaneous requests to stop duplicate CU spend during rerenders and tab activity.</p>
+            </div>
+            <div class="decision-card">
+              <b>Measure</b>
+              <h3>Log pages, tokens and CU estimates.</h3>
+              <p>Record page count and response time without addresses. The long tail of spam-heavy wallets—not average users—will determine real cost.</p>
+            </div>
+            <div class="decision-card">
+              <b>Challenger test</b>
+              <h3>Benchmark OKX and Mobula now.</h3>
+              <p>Replay 50 representative wallets, scoring missing prices, risk-token false positives, latency, pagination and exact Superfluid-chain coverage before deepening the Alchemy dependency.</p>
+            </div>
+          </div>
+
+          <div class="insight-strip">
+            <div class="icon">✓</div>
+            <p>
+              <strong>The current adapter already makes several sound choices:</strong> the Alchemy key
+              stays server-side; duplicate tokens are collapsed; unpriced dust is excluded unless it
+              appears in the maintained Super Token list; unsupported chains fall back to direct
+              balance reads; and the UI merges ERC-20 rows into the existing per-network tables.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="sources">
+        <div class="shell">
+          <div class="section-head">
+            <div class="section-no">07 · Method &amp; sources</div>
+            <div>
+              <h2>What was compared—and what still needs a live bake-off.</h2>
+            </div>
+          </div>
+
+          <div class="method-grid">
+            <div>
+              <h3>Method</h3>
+              <p>
+                Research was limited to official product pages, API references, and public pricing
+                pages checked on 06 August 2026. Scores are editorial and weighted toward the
+                Superfluid Dashboard’s current needs: enriched ERC-20 discovery, multi-chain
+                efficiency, safe rendering, predictable pricing, and implementation effort.
+              </p>
+              <ul>
+                <li>Cost models assume one first page unless noted.</li>
+                <li>Alchemy’s dashboard estimate is based on the current five-network chunks and 10 mapped mainnets.</li>
+                <li>Annual-billing prices are labeled; taxes and negotiated discounts are excluded.</li>
+                <li>Feature claims are based on documented schemas, not vendor marketing alone.</li>
+                <li>The primary table contains fully modeled routes; the extended field is a qualification screen, not a normalized quote.</li>
+              </ul>
+            </div>
+            <div>
+              <h3>Primary sources</h3>
+              <div class="sources">
+                <div class="source-row"><strong>Alchemy</strong><span><a href="https://www.alchemy.com/docs/data/portfolio-apis/portfolio-api-endpoints/portfolio-api-endpoints/get-tokens-by-address">Tokens by Wallet</a> · <a href="https://www.alchemy.com/docs/reference/compute-unit-costs">Compute unit costs</a> · <a href="https://www.alchemy.com/docs/reference/pricing-plans">Pricing plans</a> · <a href="https://www.alchemy.com/docs/reference/prices-api-faq">Price coverage FAQ</a></span></div>
+                <div class="source-row"><strong>Moralis</strong><span><a href="https://docs.moralis.com/data-api/evm/wallet/token-balances">Multi-chain token balances</a> · <a href="https://docs.moralis.com/data-api/pricing">Data API CU costs</a> · <a href="https://developers.moralis.com/pricing/">Plans</a></span></div>
+                <div class="source-row"><strong>GoldRush</strong><span><a href="https://goldrush.dev/docs/api-reference/foundational-api/cross-chain/get-allchains-balances">Multi-chain balances</a> · <a href="https://goldrush.dev/docs/skills/goldrush-foundational-api/references/workflows">Workflow credit costs</a> · <a href="https://goldrush.dev/pricing/">Plans</a> · <a href="https://goldrush.dev/solutions/wallets-portfolio/">Wallet solution</a></span></div>
+                <div class="source-row"><strong>Zerion</strong><span><a href="https://developers.zerion.io/api-reference/wallets/get-wallet-portfolio">Portfolio endpoint</a> · <a href="https://developers.zerion.io/endpoints-and-schema">Endpoint schema</a> · <a href="https://www.zerion.io/api">Plans and coverage</a></span></div>
+                <div class="source-row"><strong>DeBank</strong><span><a href="https://docs.cloud.debank.com/en/readme/api-pro-reference/user">All-chain token and portfolio APIs</a> · <a href="https://open.debank.com/">Unit pricing</a> · <a href="https://docs.cloud.debank.com/en/readme/open-api">Keys and rate limits</a> · <a href="https://docs.cloud.debank.com/en/readme/api-pro-reference/chain">Supported-chain API</a></span></div>
+                <div class="source-row"><strong>OKX</strong><span><a href="https://web3.okx.com/onchainos/dev-docs/wallet/balance-api-overview">Balance API overview</a> · <a href="https://web3.okx.com/onchainos/dev-docs/wallet/balance-api-all-token-balances">All token balances</a> · <a href="https://web3.okx.com/onchainos/dev-docs/market/market-api-fee">API fee table</a></span></div>
+                <div class="source-row"><strong>Mobula</strong><span><a href="https://docs.mobula.io/rest-api-reference/endpoint/wallet-portfolio">Wallet portfolio</a> · <a href="https://docs.mobula.io/pricing">Credits and plans</a></span></div>
+                <div class="source-row"><strong>1inch</strong><span><a href="https://business.1inch.com/portal/documentation/apis/portfolio/quick-start">Portfolio API v5</a> · <a href="https://business.1inch.com/portal/documentation/apis/balance/introduction">Balance API</a> · <a href="https://business.1inch.com/pricing">Plans</a></span></div>
+                <div class="source-row"><strong>Nansen</strong><span><a href="https://docs.nansen.ai/api/profiler/address-current-balances">Current balances</a> · <a href="https://docs.nansen.ai/credits-and-pricing-guide">Credits and pricing</a></span></div>
+                <div class="source-row"><strong>Bitquery</strong><span><a href="https://bitquery.io/products/portfolio-360">Portfolio 360</a> · <a href="https://docs.bitquery.io/docs/blockchain/Ethereum/balances/transaction-balance-tracker/token-balance-api/">Balance schema</a> · <a href="https://bitquery.io/pricing">Plans</a></span></div>
+                <div class="source-row"><strong>Pinax</strong><span><a href="https://pinax.network/products/api">Token API product and coverage</a> · <a href="https://thegraph.com/docs/en/token-api/faq/">Token API FAQ</a></span></div>
+                <div class="source-row"><strong>Ankr</strong><span><a href="https://www.ankr.com/docs/advanced-api/token-methods/">Token API</a> · <a href="https://www.ankr.com/docs/advanced-api/pricing/">Per-method prices</a> · <a href="https://www.ankr.com/rpc/pricing/">Plan limits</a></span></div>
+                <div class="source-row"><strong>Chainbase</strong><span><a href="https://docs.chainbase.com/api-reference/web3-api/balance/token-balances/get-erc20-token-balances">ERC-20 balances</a> · <a href="https://docs.chainbase.com/resources/platform/features/api/web3-api">Chains/features</a> · <a href="https://platform.chainbase.com/pricing">Plans</a></span></div>
+                <div class="source-row"><strong>QuickNode</strong><span><a href="https://www.quicknode.com/pricing">Core platform plans</a> · <a href="https://goldrush.dev/pricing/">GoldRush marketplace route</a></span></div>
+                <div class="source-row"><strong>Screen-outs</strong><span><a href="https://www.alchemy.com/blog/migrating-from-sim-to-alchemy-data-apis">Dune Sim retirement notice</a> · <a href="https://docs.allium.so/ai/machine-payments/endpoints-pricing">Allium endpoint pricing</a> · <a href="https://zapper.fi/docs/api-pricing-and-info.pdf">Zapper pricing terms</a> · <a href="https://docs.cdp.coinbase.com/api-reference/prime-api/rest-api/balances/list-onchain-wallet-balances">Coinbase Prime balances</a></span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="shell footer-grid">
+        <strong>Recommendation: keep Alchemy, instrument the long tail, and let real wallet data—not plan-page anxiety—trigger the next migration.</strong>
+        <span>Research snapshot · 2026-08-06<br />Superfluid Dashboard / support-erc20</span>
+      </div>
+    </footer>
+
+    <script>
+      const tableRows = [...document.querySelectorAll("#provider-table tr")];
+      const filterButtons = [...document.querySelectorAll(".filter-button")];
+
+      filterButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          filterButtons.forEach((candidate) => candidate.classList.remove("active"));
+          button.classList.add("active");
+          const filter = button.dataset.filter;
+          tableRows.forEach((row) => {
+            const groups = (row.dataset.groups || "").split(" ");
+            row.classList.toggle("hidden-row", filter !== "all" && !groups.includes(filter));
+          });
+        });
+      });
+
+      const volumeInput = document.querySelector("#volume");
+      const volumeValue = document.querySelector("#volume-value");
+      const results = document.querySelector("#lab-results");
+      const scopeButtons = [...document.querySelectorAll(".scope-button")];
+      let scope = "dashboard";
+
+      const compact = (value) =>
+        new Intl.NumberFormat("en-US", {
+          notation: value >= 1000 ? "compact" : "standard",
+          maximumFractionDigits: 1,
+        }).format(value);
+
+      const money = (value) =>
+        new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD",
+          minimumFractionDigits: value < 100 ? 2 : 0,
+          maximumFractionDigits: value < 100 ? 2 : 0,
+        }).format(value);
+
+      const alchemyPayg = (cu) => {
+        const firstBand = Math.min(cu, 300000000) * 0.45 / 1000000;
+        const secondBand = Math.max(cu - 300000000, 0) * 0.40 / 1000000;
+        return firstBand + secondBand;
+      };
+
+      function costCards(refreshes, selectedScope) {
+        const isDashboard = selectedScope === "dashboard";
+        const alchemyCalls = refreshes * (isDashboard ? 2 : 1);
+        const alchemyCu = alchemyCalls * 360;
+        const alchemyFree = alchemyCu <= 30000000;
+
+        const moralisCu = refreshes * 100;
+        let moralisAmount = "Custom";
+        let moralisDetail = `${compact(moralisCu)} CU · confirm universal endpoint metering`;
+        if (refreshes <= 12000) {
+          moralisAmount = "Free fits";
+          moralisDetail = "Assumes usage is spread at ≤400 priced calls/day";
+        } else if (refreshes <= 1000000) {
+          moralisAmount = "$199 / mo";
+          moralisDetail = `${compact(moralisCu)} CU · Pro price requires annual billing`;
+        } else if (refreshes <= 5000000) {
+          moralisAmount = "$490 / mo";
+          moralisDetail = `${compact(moralisCu)} CU · Business price requires annual billing`;
+        }
+
+        const ankrCredits = refreshes * 700;
+        const ankrFree = ankrCredits <= 200000000;
+
+        const goldrushCredits = refreshes * (isDashboard ? 2.5 : 1);
+        const goldrushCost = goldrushCredits <= 300000
+          ? 250
+          : 250 + (goldrushCredits - 300000) * 0.00077;
+
+        let zerionAmount = "Custom";
+        let zerionDetail = `${compact(refreshes)} requests · above public Growth allowance`;
+        if (refreshes <= 250000) {
+          zerionAmount = "$149 / mo";
+          zerionDetail = `${compact(refreshes)} of 250k Builder requests`;
+        } else if (refreshes <= 1000000) {
+          zerionAmount = "$499 / mo";
+          zerionDetail = `${compact(refreshes)} of 1M Startup requests`;
+        } else if (refreshes <= 2500000) {
+          zerionAmount = "$999 / mo";
+          zerionDetail = `${compact(refreshes)} of 2.5M Growth requests`;
+        }
+
+        const chainbaseCalls = refreshes * (isDashboard ? 10 : 1);
+        const chainbaseLow = chainbaseCalls;
+        const chainbaseHigh = chainbaseCalls * 5;
+        let chainbaseAmount = "$99 / mo";
+        if (chainbaseHigh <= 200000) chainbaseAmount = "Free fits";
+        if (chainbaseLow > 10000000) chainbaseAmount = "Extra / custom";
+
+        return [
+          {
+            name: "Alchemy",
+            amount: alchemyFree ? "Free fits" : money(alchemyPayg(alchemyCu)),
+            detail: `${compact(alchemyCu)} CU · ${compact(alchemyCalls)} metered page calls${alchemyFree ? " · PAYG equivalent " + money(alchemyPayg(alchemyCu)) : " PAYG"}`,
+          },
+          { name: "Moralis", amount: moralisAmount, detail: moralisDetail },
+          {
+            name: "Ankr",
+            amount: ankrFree ? "Free fits" : money(refreshes * 0.00007),
+            detail: `${compact(ankrCredits)} credits · PAYG equivalent ${money(refreshes * 0.00007)} · free limit 30 req/min`,
+          },
+          {
+            name: "GoldRush",
+            amount: money(goldrushCost) + " / mo",
+            detail: `${compact(goldrushCredits)} credits · production plan + flex overage if required`,
+          },
+          { name: "Zerion", amount: zerionAmount, detail: zerionDetail },
+          {
+            name: "DeBank",
+            amount: "Cost not public",
+            detail: `${compact(refreshes)} ${isDashboard ? "all-chain" : "single-chain"} token calls · $200 / 1M units · endpoint unit charge is dashboard-only`,
+          },
+          {
+            name: "Chainbase",
+            amount: chainbaseAmount,
+            detail: `${compact(chainbaseLow)}–${compact(chainbaseHigh)} credits · one ERC-20 call per chain`,
+          },
+        ];
+      }
+
+      function renderLab() {
+        const refreshes = Number(volumeInput.value);
+        volumeValue.textContent = compact(refreshes);
+        results.innerHTML = costCards(refreshes, scope)
+          .map(
+            (item, index) => `
+              <article class="cost-card">
+                <span class="rank">0${index + 1}</span>
+                <h3>${item.name}</h3>
+                <div class="amount">${item.amount}</div>
+                <div class="detail">${item.detail}</div>
+              </article>
+            `
+          )
+          .join("");
+      }
+
+      volumeInput.addEventListener("input", renderLab);
+      scopeButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          scope = button.dataset.scope;
+          scopeButtons.forEach((candidate) => candidate.classList.toggle("active", candidate === button));
+          renderLab();
+        });
+      });
+
+      renderLab();
+    </script>
+  </body>
+</html>

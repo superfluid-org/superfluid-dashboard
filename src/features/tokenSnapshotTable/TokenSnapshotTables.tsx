@@ -1,10 +1,10 @@
+import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
 import {
-  Box,
   Button,
-  Chip,
   Paper,
   Skeleton,
   Stack,
+  Tooltip,
   Typography,
   useMediaQuery,
   useTheme,
@@ -22,10 +22,7 @@ import TokenSnapshotTable from "./TokenSnapshotTable";
 import { platformApi } from "../redux/platformApi/platformApi";
 import { TokenType } from "../redux/endpoints/tokenTypes";
 import { ERC20Balance } from "./useERC20Balances";
-import { PortfolioToken } from "../portfolio/portfolioTokens";
 import { useAppCurrency } from "../settings/appSettingsHooks";
-import tokenPriceApi from "../tokenPrice/tokenPriceApi.slice";
-import { Currency } from "../../utils/currencyUtils";
 
 export interface FetchingStatus {
   isLoading: boolean;
@@ -36,106 +33,80 @@ export interface NetworkFetchingStatuses {
   [networkId: number]: FetchingStatus;
 }
 
+export interface PortfolioValueEntry {
+  symbol: string;
+  hasBalance: boolean;
+  hasPrice: boolean;
+  value?: string;
+}
+
+export type PortfolioValueCallback = (
+  id: string,
+  entry: PortfolioValueEntry | undefined
+) => void;
+
 interface TokenSnapshotTablesProps {
   address: Address;
 }
 
 interface PortfolioTotalCardProps {
-  tokens: PortfolioToken[];
+  entries: PortfolioValueEntry[];
   loading: boolean;
-  unavailable: boolean;
-  fallbackNetworkCount: number;
 }
 
 const PortfolioTotalCard: FC<PortfolioTotalCardProps> = ({
-  tokens,
+  entries,
   loading,
-  unavailable,
-  fallbackNetworkCount,
 }) => {
   const currency = useAppCurrency();
-  const exchangeRates = tokenPriceApi.useGetUSDExchangeRateQuery();
-  const pricedTokens = tokens.filter(
-    (token): token is PortfolioToken & { valueUsd: number } =>
-      token.valueUsd !== undefined
-  );
-  const totalUsd = pricedTokens.reduce(
-    (total, token) => total.plus(token.valueUsd),
+  const total = entries.reduce(
+    (currentTotal, entry) =>
+      entry.value ? currentTotal.plus(entry.value) : currentTotal,
     new Decimal(0)
   );
-  const exchangeRate =
-    currency === Currency.USD
-      ? 1
-      : exchangeRates.currentData?.[currency.toString()];
-  const formattedTotal = exchangeRate
-    ? currency.format(totalUsd.mul(exchangeRate).toFixed(2))
-    : undefined;
-  const pricedNetworkCount = new Set(
-    pricedTokens.map(({ chainId }) => chainId)
-  ).size;
-  const coverage = tokens.length
-    ? Math.round((pricedTokens.length / tokens.length) * 100)
-    : 0;
+  const missingPriceSymbols = [
+    ...new Set(
+      entries
+        .filter(({ hasBalance, hasPrice }) => hasBalance && !hasPrice)
+        .map(({ symbol }) => symbol)
+    ),
+  ];
+  const formattedTotal = currency.format(total.toFixed(2));
 
   return (
     <Paper
       variant="outlined"
-      sx={{ p: { xs: 2.5, md: 3 }, mb: 4, borderRadius: 3 }}
+      sx={{ px: { xs: 2.5, md: 3 }, py: 2.5, mb: 4, borderRadius: 3 }}
     >
-      <Stack
-        direction={{ xs: "column", md: "row" }}
-        alignItems={{ md: "flex-end" }}
-        justifyContent="space-between"
-        gap={3}
-      >
-        <Box>
-          <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 1 }}>
-            <Typography variant="overline" color="text.secondary">
-              Estimated portfolio value
-            </Typography>
-            {fallbackNetworkCount > 0 ? (
-              <Chip
-                size="small"
-                color="warning"
-                variant="outlined"
-                label="Partial coverage"
-              />
-            ) : null}
-          </Stack>
-          {loading && tokens.length === 0 ? (
-            <Skeleton width={220} height={52} />
-          ) : unavailable || !formattedTotal ? (
-            <Typography variant="h3">—</Typography>
-          ) : (
+      <Stack gap={0.5} alignItems="flex-start">
+        <Typography variant="overline" color="text.secondary">
+          Portfolio balance
+        </Typography>
+        {loading && entries.length === 0 ? (
+          <Skeleton width={220} height={52} />
+        ) : (
+          <Stack direction="row" alignItems="center" gap={1}>
             <Typography variant="h3" data-cy="portfolio-total-value">
               {formattedTotal}
             </Typography>
-          )}
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.75 }}>
-            Based on priced assets returned by the portfolio provider
-          </Typography>
-        </Box>
-
-        <Stack direction="row" gap={{ xs: 4, md: 6 }}>
-          <Box>
-            <Typography variant="caption" color="text.secondary">
-              PRICED ASSETS
-            </Typography>
-            <Typography variant="h6">{pricedTokens.length}</Typography>
-          </Box>
-          <Box>
-            <Typography variant="caption" color="text.secondary">
-              COVERAGE
-            </Typography>
-            <Typography variant="h6">{coverage}%</Typography>
-          </Box>
-          <Box>
-            <Typography variant="caption" color="text.secondary">
-              NETWORKS
-            </Typography>
-            <Typography variant="h6">{pricedNetworkCount}</Typography>
-          </Box>
-        </Stack>
+            {missingPriceSymbols.length > 0 ? (
+              <Tooltip
+                arrow
+                title={`No price was found for ${missingPriceSymbols.join(
+                  ", "
+                )}. ${
+                  missingPriceSymbols.length === 1 ? "It is" : "They are"
+                } not included in the total.`}
+              >
+                <WarningAmberRoundedIcon
+                  color="warning"
+                  sx={{ fontSize: 19 }}
+                  data-cy="portfolio-missing-price-warning"
+                />
+              </Tooltip>
+            ) : null}
+          </Stack>
+        )}
       </Stack>
     </Paper>
   );
@@ -152,13 +123,14 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
     useState<NetworkFetchingStatuses>({});
 
   const [networkSelectionOpen, setNetworkSelectionOpen] = useState(false);
+  const [portfolioValues, setPortfolioValues] = useState<
+    Record<string, PortfolioValueEntry>
+  >({});
 
-  const portfolioTokensQuery = platformApi.usePortfolioTokensQuery(
-    {
-      address,
-      chainIds: activeNetworks.map(({ id }) => id),
-    }
-  );
+  const portfolioTokensQuery = platformApi.usePortfolioTokensQuery({
+    address,
+    chainIds: activeNetworks.map(({ id }) => id),
+  });
 
   const erc20BalancesByChainId = useMemo(() => {
     const balancesByChainId: Record<number, ERC20Balance[]> = {};
@@ -202,11 +174,46 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
 
   const fetchingCallback = useCallback(
     (networkId: number, fetchingStatus: FetchingStatus) =>
-      setFetchingStatuses((currentStatuses) => ({
-        ...currentStatuses,
-        [networkId]: fetchingStatus,
-      })),
+      setFetchingStatuses((currentStatuses) => {
+        const currentStatus = currentStatuses[networkId];
+        if (
+          currentStatus?.isLoading === fetchingStatus.isLoading &&
+          currentStatus.hasContent === fetchingStatus.hasContent
+        ) {
+          return currentStatuses;
+        }
+
+        return {
+          ...currentStatuses,
+          [networkId]: fetchingStatus,
+        };
+      }),
     [setFetchingStatuses]
+  );
+
+  const portfolioValueCallback = useCallback<PortfolioValueCallback>(
+    (id, entry) =>
+      setPortfolioValues((currentValues) => {
+        if (!entry) {
+          if (!(id in currentValues)) return currentValues;
+          const nextValues = { ...currentValues };
+          delete nextValues[id];
+          return nextValues;
+        }
+
+        const currentEntry = currentValues[id];
+        if (
+          currentEntry?.symbol === entry.symbol &&
+          currentEntry.hasBalance === entry.hasBalance &&
+          currentEntry.hasPrice === entry.hasPrice &&
+          currentEntry.value === entry.value
+        ) {
+          return currentValues;
+        }
+
+        return { ...currentValues, [id]: entry };
+      }),
+    []
   );
 
   const hasContent = useMemo(
@@ -255,10 +262,8 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
       </Stack>
 
       <PortfolioTotalCard
-        tokens={portfolioTokensQuery.currentData?.tokens ?? []}
-        loading={portfolioTokensQuery.isLoading}
-        unavailable={portfolioTokensQuery.isError}
-        fallbackNetworkCount={fallbackChainIds.size}
+        entries={Object.values(portfolioValues)}
+        loading={isLoading}
       />
 
       {!hasContent && !isLoading && (
@@ -276,11 +281,11 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
             network={network}
             erc20Balances={erc20BalancesByChainId[network.id] || []}
             erc20BalancesLoading={
-              (portfolioTokensQuery.isLoading ||
-                portfolioTokensQuery.isFetching)
+              portfolioTokensQuery.isLoading || portfolioTokensQuery.isFetching
             }
             useERC20Fallback={fallbackChainIds.has(network.id)}
             fetchingCallback={fetchingCallback}
+            portfolioValueCallback={portfolioValueCallback}
           />
         ))}
         {isLoading && <TokenSnapshotLoadingTable />}

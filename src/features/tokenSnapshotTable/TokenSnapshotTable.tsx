@@ -18,7 +18,7 @@ import { useMinigame } from "../minigame/MinigameContext";
 import { Network } from "../network/networks";
 import { subgraphApi } from "../redux/store";
 import TokenSnapshotRow from "./TokenSnapshotRow";
-import { FetchingStatus } from "./TokenSnapshotTables";
+import { FetchingStatus, PortfolioValueCallback } from "./TokenSnapshotTables";
 import { EMPTY_ARRAY } from "../../utils/constants";
 import ERC20BalanceRow from "./ERC20BalanceRow";
 import useERC20Balances, { ERC20Balance } from "./useERC20Balances";
@@ -30,6 +30,7 @@ interface TokenSnapshotTableProps {
   erc20BalancesLoading: boolean;
   useERC20Fallback: boolean;
   fetchingCallback: (networkId: number, fetchingStatus: FetchingStatus) => void;
+  portfolioValueCallback: PortfolioValueCallback;
 }
 
 const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
@@ -39,6 +40,7 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
   erc20BalancesLoading,
   useERC20Fallback,
   fetchingCallback,
+  portfolioValueCallback,
 }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
@@ -100,15 +102,24 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
       }
     );
 
-  const tokenSnapshots = useMemo(() => {
-    return listedTokensSnapshotsQuery.listedTokenSnapshots.concat(
-      unlistedTokensSnapshotsQuery.unlistedTokenSnapshots
-    );
-  }, [
-    network,
-    listedTokensSnapshotsQuery.data?.items?.length ?? 0,
-    unlistedTokensSnapshotsQuery.data?.items?.length ?? 0,
-  ]);
+  const listedTokenSnapshots = listedTokensSnapshotsQuery.listedTokenSnapshots;
+  const unlistedTokenSnapshots =
+    unlistedTokensSnapshotsQuery.unlistedTokenSnapshots;
+  const tokenSnapshots = useMemo(
+    () => listedTokenSnapshots.concat(unlistedTokenSnapshots),
+    [listedTokenSnapshots, unlistedTokenSnapshots]
+  );
+  const portfolioPriceUsdByAddress = useMemo(
+    () =>
+      new Map(
+        portfolioERC20Balances.flatMap(({ token, priceUsd }) =>
+          priceUsd === undefined
+            ? []
+            : [[token.address.toLowerCase(), priceUsd] as const]
+        )
+      ),
+    [portfolioERC20Balances]
+  );
 
   const {
     tokensWithBalances: fallbackERC20Balances,
@@ -192,16 +203,16 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
         },
       }}
     >
-      <Table>
+      <Table sx={{ tableLayout: { xs: "auto", md: "fixed" } }}>
         <TableHead>
           <NetworkHeadingRow colSpan={5} network={network} />
           {!isBelowMd && (
             <TableRow>
-              <TableCell width="200">Asset</TableCell>
-              <TableCell>Balance</TableCell>
-              <TableCell width="300">Net Flow Rate</TableCell>
-              <TableCell width="260">Actions</TableCell>
-              <TableCell width="120" align="center"></TableCell>
+              <TableCell width="24%">Asset</TableCell>
+              <TableCell width="17%">Balance</TableCell>
+              <TableCell width="23%">Net Flow Rate</TableCell>
+              <TableCell width="28%">Actions</TableCell>
+              <TableCell width="8%" align="center"></TableCell>
             </TableRow>
           )}
         </TableHead>
@@ -211,6 +222,10 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
               key={snapshot.id}
               network={network}
               snapshot={snapshot}
+              priceUsd={portfolioPriceUsdByAddress.get(
+                snapshot.token.toLowerCase()
+              )}
+              portfolioValueCallback={portfolioValueCallback}
               lastElement={
                 erc20Balances.length === 0 && tokenSnapshots.length <= index + 1
               }
@@ -219,10 +234,12 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
           {erc20Balances.map(({ token, balance, priceUsd }) => (
             <ERC20BalanceRow
               key={token.address}
+              address={address}
               network={network}
               token={token}
               balance={balance}
               priceUsd={priceUsd}
+              portfolioValueCallback={portfolioValueCallback}
             />
           ))}
         </TableBody>

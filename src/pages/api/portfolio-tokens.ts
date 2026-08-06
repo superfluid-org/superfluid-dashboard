@@ -9,9 +9,11 @@ import {
 } from "../../features/portfolio/portfolioTokens";
 
 const ALCHEMY_PORTFOLIO_URL = "https://api.g.alchemy.com/data/v1";
+const LIFI_TOKENS_URL = "https://li.quest/v1/tokens";
 const MAX_NETWORKS_PER_REQUEST = 5;
 const MAX_PAGES_PER_REQUEST = 50;
 const MIN_PORTFOLIO_VALUE_USD = 0.01;
+const LIFI_PRICE_CACHE_TTL_MS = 5 * 60 * 1000;
 
 export const config = {
   maxDuration: 60,
@@ -78,6 +80,24 @@ interface AlchemyResponse {
   };
 }
 
+interface LifiToken {
+  address: string;
+  chainId: number;
+  priceUSD?: string;
+}
+
+interface LifiTokensResponse {
+  tokens?: Record<string, LifiToken[]>;
+}
+
+interface LifiPriceCache {
+  cacheKey: string;
+  expiresAt: number;
+  prices: Map<string, number>;
+}
+
+let lifiPriceCache: LifiPriceCache | undefined;
+
 const chunk = <T>(items: T[], size: number): T[][] => {
   const chunks: T[][] = [];
   for (let index = 0; index < items.length; index += size) {
@@ -94,7 +114,54 @@ const hasBalance = (balance: string): boolean => {
   }
 };
 
-const mapToken = (token: AlchemyToken): PortfolioToken | null => {
+const getLifiPrices = async (
+  chainIds: number[]
+): Promise<Map<string, number>> => {
+  const cacheKey = [...chainIds]
+    .sort((first, second) => first - second)
+    .join(",");
+  if (
+    lifiPriceCache?.cacheKey === cacheKey &&
+    lifiPriceCache.expiresAt > Date.now()
+  ) {
+    return lifiPriceCache.prices;
+  }
+
+  const requestUrl = new URL(LIFI_TOKENS_URL);
+  requestUrl.searchParams.set("chains", cacheKey);
+  requestUrl.searchParams.set("minPriceUSD", "0");
+  const response = await fetch(requestUrl);
+  if (!response.ok) {
+    throw new Error(`LI.FI responded with ${response.status}`);
+  }
+
+  const body = (await response.json()) as LifiTokensResponse;
+  const prices = new Map<string, number>();
+  Object.values(body.tokens ?? {}).forEach((tokens) =>
+    tokens.forEach(({ address, chainId, priceUSD }) => {
+      const parsedPrice = priceUSD ? Number(priceUSD) : undefined;
+      if (
+        parsedPrice !== undefined &&
+        Number.isFinite(parsedPrice) &&
+        parsedPrice > 0
+      ) {
+        prices.set(`${chainId}-${address.toLowerCase()}`, parsedPrice);
+      }
+    })
+  );
+
+  lifiPriceCache = {
+    cacheKey,
+    expiresAt: Date.now() + LIFI_PRICE_CACHE_TTL_MS,
+    prices,
+  };
+  return prices;
+};
+
+const mapToken = (
+  token: AlchemyToken,
+  lifiPrices: Map<string, number>
+): PortfolioToken | null => {
   const chainId = chainIdByAlchemyNetwork[token.network];
   const tokenAddress = token.tokenAddress?.toLowerCase();
   const metadata = token.tokenMetadata;
@@ -111,21 +178,26 @@ const mapToken = (token: AlchemyToken): PortfolioToken | null => {
   const priceUsd = token.tokenPrices?.find(
     ({ currency }) => currency.toLowerCase() === "usd"
   )?.value;
-  const parsedPrice = priceUsd ? Number(priceUsd) : undefined;
-  const hasPrice =
-    parsedPrice !== undefined &&
-    Number.isFinite(parsedPrice) &&
-    parsedPrice > 0;
-  const isTrusted = trustedTokenIds.has(`${chainId}-${tokenAddress}`);
-  const valueUsd = hasPrice
-    ? new Decimal(
-        utils.formatUnits(token.tokenBalance, metadata?.decimals ?? 18)
-      ).mul(parsedPrice!)
-    : undefined;
+  const parsedAlchemyPrice = priceUsd ? Number(priceUsd) : undefined;
+  const alchemyPrice =
+    parsedAlchemyPrice !== undefined &&
+    Number.isFinite(parsedAlchemyPrice) &&
+    parsedAlchemyPrice > 0
+      ? parsedAlchemyPrice
+      : undefined;
+  const tokenId = `${chainId}-${tokenAddress}`;
+  const effectivePrice = alchemyPrice ?? lifiPrices.get(tokenId);
+  const isTrusted = trustedTokenIds.has(tokenId);
+  const valueUsd =
+    effectivePrice !== undefined
+      ? new Decimal(
+          utils.formatUnits(token.tokenBalance, metadata?.decimals ?? 18)
+        ).mul(effectivePrice)
+      : undefined;
   const hasMeaningfulValue = valueUsd?.gte(MIN_PORTFOLIO_VALUE_USD) ?? false;
 
-  // Alchemy returns every non-zero airdrop, including thousands of spam
-  // tokens for some wallets. Keep meaningful holdings plus the maintained list.
+  // Alchemy returns every non-zero airdrop, including thousands of spam tokens.
+  // Keep holdings valued by either provider plus the maintained token list.
   if (!hasMeaningfulValue && !isTrusted) return null;
 
   return {
@@ -136,7 +208,7 @@ const mapToken = (token: AlchemyToken): PortfolioToken | null => {
     name: metadata?.name || "Unknown token",
     symbol: metadata?.symbol || `${tokenAddress.slice(0, 6)}…`,
     logoURI: metadata?.logo || undefined,
-    priceUsd: hasPrice ? parsedPrice : undefined,
+    priceUsd: effectivePrice,
     valueUsd: valueUsd && valueUsd.isFinite() ? valueUsd.toNumber() : undefined,
   };
 };
@@ -223,15 +295,25 @@ export default async function handler(
   );
 
   const networkChunks = chunk(supported, MAX_NETWORKS_PER_REQUEST);
-  const results = await Promise.allSettled(
-    networkChunks.map((networkChunk) =>
-      fetchNetworkChunk({
-        apiKey,
-        address,
-        networks: networkChunk.map(({ network }) => network),
-      }).then((tokens) => ({ tokens, networkChunk }))
-    )
-  );
+  const [results, lifiPrices] = await Promise.all([
+    Promise.allSettled(
+      networkChunks.map((networkChunk) =>
+        fetchNetworkChunk({
+          apiKey,
+          address,
+          networks: networkChunk.map(({ network }) => network),
+        }).then((tokens) => ({ tokens, networkChunk }))
+      )
+    ),
+    supported.length > 0
+      ? getLifiPrices(supported.map(({ chainId }) => chainId)).catch(
+          (error) => {
+            console.error("LI.FI portfolio pricing request failed", error);
+            return new Map<string, number>();
+          }
+        )
+      : Promise.resolve(new Map<string, number>()),
+  ]);
 
   const alchemyTokens: AlchemyToken[] = [];
   results.forEach((result, index) => {
@@ -247,7 +329,7 @@ export default async function handler(
 
   const tokensById = new Map<string, PortfolioToken>();
   alchemyTokens.forEach((token) => {
-    const mapped = mapToken(token);
+    const mapped = mapToken(token, lifiPrices);
     if (mapped) {
       tokensById.set(`${mapped.chainId}-${mapped.tokenAddress}`, mapped);
     }

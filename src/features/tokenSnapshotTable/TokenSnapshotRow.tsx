@@ -22,20 +22,23 @@ import {
 } from "@mui/material";
 import { AccountTokenSnapshot } from "@superfluid-finance/sdk-core";
 import { differenceInDays } from "date-fns";
-import { BigNumber } from "ethers";
+import Decimal from "decimal.js";
+import { BigNumber, utils } from "ethers";
 import { useRouter } from "next/router";
-import { FC, memo, MouseEvent, useMemo, useState } from "react";
+import { FC, memo, MouseEvent, useEffect, useMemo, useState } from "react";
 import OpenIcon from "../../components/OpenIcon/OpenIcon";
 import Link from "../common/Link";
 import { getTokenPagePath } from "../../pages/token/[_network]/[_token]";
 import { getSendPagePath } from "../../pages/send";
 import { getTransferPagePath } from "../../pages/transfer";
+import { Currency } from "../../utils/currencyUtils";
 import {
   BIG_NUMBER_ZERO,
   calculateMaybeCriticalAtTimestamp,
 } from "../../utils/tokenUtils";
 import { Network } from "../network/networks";
 import { rpcApi } from "../redux/store";
+import { useAppCurrency } from "../settings/appSettingsHooks";
 import { UnitOfTime } from "../send/FlowRateInput";
 import StreamsTable from "../streamsTable/StreamsTable";
 import Amount from "../token/Amount";
@@ -43,10 +46,12 @@ import FlowingBalance from "../token/FlowingBalance";
 import TokenIcon from "../token/TokenIcon";
 import FiatAmount from "../tokenPrice/FiatAmount";
 import FlowingFiatBalance from "../tokenPrice/FlowingFiatBalance";
+import tokenPriceApi from "../tokenPrice/tokenPriceApi.slice";
 import useTokenPrice from "../tokenPrice/useTokenPrice";
 import BalanceCriticalIndicator from "./BalanceCriticalIndicator";
 import { isDefined } from "../../utils/ensureDefined";
 import { useTokenQuery } from "../../hooks/useTokenQuery";
+import { PortfolioValueCallback } from "./TokenSnapshotTables";
 
 interface SnapshotRowProps {
   lastElement?: boolean;
@@ -57,6 +62,9 @@ const SnapshotRow = styled(TableRow, {
   shouldForwardProp: (name: string) => !["lastElement", "open"].includes(name),
 })<SnapshotRowProps>(({ lastElement, open, theme }) => ({
   cursor: "pointer",
+  "> td": {
+    py: theme.spacing(1),
+  },
   ...(lastElement && {
     td: {
       border: "none",
@@ -91,12 +99,16 @@ interface TokenSnapshotRowProps {
   network: Network;
   snapshot: ExtendedAccountTokenSnapshot;
   lastElement: boolean;
+  priceUsd?: number;
+  portfolioValueCallback: PortfolioValueCallback;
 }
 
 const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
   network,
   snapshot,
   lastElement,
+  priceUsd,
+  portfolioValueCallback,
 }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
@@ -110,13 +122,29 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
     totalInflowRate,
     totalOutflowRate,
     totalNumberOfActiveStreams,
-    totalNumberOfClosedStreams,
   } = snapshot;
 
-  const token = useTokenQuery({ chainId: network.id, id: tokenAddress, onlySuperToken: true });
+  const token = useTokenQuery({
+    chainId: network.id,
+    id: tokenAddress,
+    onlySuperToken: true,
+  });
   const tokenSymbol = token?.data?.symbol;
 
-  const tokenPrice = useTokenPrice(network.id, tokenAddress);
+  const currency = useAppCurrency();
+  const fallbackTokenPrice = useTokenPrice(
+    network.id,
+    priceUsd === undefined ? tokenAddress : undefined
+  );
+  const exchangeRates = tokenPriceApi.useGetUSDExchangeRateQuery();
+  const exchangeRate =
+    currency === Currency.USD
+      ? 1
+      : exchangeRates.currentData?.[currency.toString()];
+  const tokenPrice =
+    priceUsd !== undefined && exchangeRate !== undefined
+      ? priceUsd * exchangeRate
+      : fallbackTokenPrice;
 
   const { currentData: balanceData } = rpcApi.useRealtimeBalanceQuery({
     chainId: network.id,
@@ -124,10 +152,41 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
     tokenAddress: tokenAddress,
   });
 
-  const hasStreams =
-    totalNumberOfActiveStreams + totalNumberOfClosedStreams > 0;
+  const portfolioValueId = `${account.toLowerCase()}-${
+    network.id
+  }-${tokenAddress.toLowerCase()}`;
+  const hasBalance = balanceData
+    ? !BigNumber.from(balanceData.balance).isZero()
+    : false;
+  const portfolioValue = useMemo(
+    () =>
+      balanceData && tokenPrice !== undefined
+        ? new Decimal(utils.formatUnits(balanceData.balance, 18))
+            .mul(tokenPrice)
+            .toString()
+        : undefined,
+    [balanceData, tokenPrice]
+  );
 
-  const toggleOpen = () => hasStreams && setOpen(!open);
+  useEffect(() => {
+    portfolioValueCallback(portfolioValueId, {
+      symbol: tokenSymbol || "Unknown token",
+      hasBalance,
+      hasPrice: tokenPrice !== undefined,
+      value: portfolioValue,
+    });
+
+    return () => portfolioValueCallback(portfolioValueId, undefined);
+  }, [
+    hasBalance,
+    portfolioValue,
+    portfolioValueCallback,
+    portfolioValueId,
+    tokenPrice,
+    tokenSymbol,
+  ]);
+
+  const toggleOpen = () => setOpen((currentlyOpen) => !currentlyOpen);
 
   const openTokenPage = () =>
     router.push(
@@ -219,7 +278,10 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
         {!isBelowMd ? (
           <>
             <TableCell onClick={openTokenPage}>
-              <ListItem disablePadding sx={{ ml: criticalDate ? -4 : 0 }}>
+              <ListItem
+                disablePadding
+                sx={{ py: 0, ml: criticalDate ? -4 : 0 }}
+              >
                 {criticalDate && (
                   <ListItemIcon sx={{ mr: 1 }}>
                     <BalanceCriticalIndicator
@@ -370,7 +432,11 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
           align="center"
           sx={{
             cursor: "initial",
-            [theme.breakpoints.down("md")]: { px: 0.5, py: 1.25, whiteSpace: "nowrap" },
+            [theme.breakpoints.down("md")]: {
+              px: 0.5,
+              py: 1.25,
+              whiteSpace: "nowrap",
+            },
           }}
         >
           <Stack direction="row" justifyContent="center" gap={0.25}>
@@ -402,16 +468,17 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                 </Tooltip>
               </>
             ) : null}
-            {hasStreams ? (
+            <Tooltip title="Stream history">
               <IconButton
                 data-cy={"show-streams-button"}
                 color="inherit"
                 onClick={toggleOpen}
-                aria-label={`Show ${tokenSymbol} streams`}
+                aria-label={`Show ${tokenSymbol} stream history`}
+                aria-expanded={open}
               >
                 <OpenIcon open={open} icon={ExpandCircleDownOutlinedIcon} />
               </IconButton>
-            ) : null}
+            </Tooltip>
           </Stack>
         </TableCell>
       </SnapshotRow>
@@ -440,17 +507,31 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                 borderBottom: `1px solid ${theme.palette.divider}`,
               }}
             >
-              <Stack
-                direction="row"
-                alignItems="center"
-                gap={{ xs: 3, md: 6 }}
-                flexWrap="wrap"
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+                  alignItems: "center",
+                  width: "100%",
+                  maxWidth: 720,
+                  mx: "auto",
+                  textAlign: "center",
+                  gap: { xs: 1, md: 3 },
+                }}
               >
                 <Box>
-                  <Typography variant="caption" color="text.secondary" sx={{ display: "block" }}>
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    sx={{ display: "block" }}
+                  >
                     TOTAL INFLOW
                   </Typography>
-                  <Typography data-cy="inflow" variant="body2mono" color="primary">
+                  <Typography
+                    data-cy="inflow"
+                    variant="body2mono"
+                    color="primary"
+                  >
                     +
                     <Amount
                       wei={BigNumber.from(totalInflowRate).mul(
@@ -461,10 +542,18 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                   </Typography>
                 </Box>
                 <Box>
-                  <Typography variant="caption" color="text.secondary" sx={{ display: "block" }}>
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    sx={{ display: "block" }}
+                  >
                     TOTAL OUTFLOW
                   </Typography>
-                  <Typography data-cy="outflow" variant="body2mono" color="error">
+                  <Typography
+                    data-cy="outflow"
+                    variant="body2mono"
+                    color="error"
+                  >
                     -
                     <Amount
                       wei={BigNumber.from(totalOutflowRate).mul(
@@ -475,14 +564,18 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                   </Typography>
                 </Box>
                 <Box>
-                  <Typography variant="caption" color="text.secondary" sx={{ display: "block" }}>
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    sx={{ display: "block" }}
+                  >
                     ACTIVE STREAMS
                   </Typography>
                   <Typography variant="body2mono">
                     {totalNumberOfActiveStreams}
                   </Typography>
                 </Box>
-              </Stack>
+              </Box>
             </Box>
             <StreamsTable
               subTable
