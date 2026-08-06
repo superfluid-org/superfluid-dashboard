@@ -5,6 +5,10 @@ import {
   PortfolioTokensRequest,
   PortfolioTokensResponse,
 } from "../../portfolio/portfolioTokens";
+import {
+  ERC20TransferHistoryRequest,
+  ERC20TransferHistoryResponse,
+} from "../../portfolio/erc20TransferHistory";
 
 export type IsAccountWhitelistedApiResponse =
   /** status 200 Is User account whitelisted */ boolean;
@@ -30,6 +34,17 @@ export const platformApi = createApi({
         method: "POST",
         body,
       }),
+    }),
+    erc20TransferHistory: build.query<
+      ERC20TransferHistoryResponse,
+      ERC20TransferHistoryRequest
+    >({
+      query: (body) => ({
+        url: "/api/erc20-transfer-history",
+        method: "POST",
+        body,
+      }),
+      keepUnusedDataFor: 60,
     }),
     isAccountWhitelisted: build.query<
       IsAccountWhitelistedApiResponse,

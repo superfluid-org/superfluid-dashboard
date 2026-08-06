@@ -101,11 +101,11 @@ export class DashboardPage extends BasePage {
         flowValues.netFlowRate
       );
       this.hasText(
-        `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell] ${OUTFLOW_VALUES}`,
+        `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=flow-summary] ${OUTFLOW_VALUES}`,
         flowValues.outFlow
       );
       this.hasText(
-        `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell] ${INFLOW_VALUES}`,
+        `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=flow-summary] ${INFLOW_VALUES}`,
         flowValues.inFlow
       );
     });
@@ -307,17 +307,12 @@ export class DashboardPage extends BasePage {
     }
     if (flowValues[1]) {
       this.hasText(
-        `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell] ${INFLOW_VALUES}`,
+        `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=flow-summary] ${INFLOW_VALUES}`,
         flowValues[2]
       );
       this.hasText(
-        `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell] ${OUTFLOW_VALUES}`,
+        `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=flow-summary] ${OUTFLOW_VALUES}`,
         flowValues[1]
-      );
-    } else {
-      this.hasText(
-        `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell] ${OUTFLOW_VALUES}`,
-        flowValues
       );
     }
   }

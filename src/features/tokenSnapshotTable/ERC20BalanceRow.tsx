@@ -1,16 +1,24 @@
+import SwapHorizRoundedIcon from "@mui/icons-material/SwapHorizRounded";
 import {
+  Button,
   Chip,
+  IconButton,
   ListItem,
   ListItemAvatar,
   ListItemText,
   Stack,
   TableCell,
   TableRow,
+  Tooltip,
   Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
 import { FC, memo } from "react";
+import { getTransferPagePath } from "../../pages/transfer";
+import { getTokenPagePath } from "../../pages/token/[_network]/[_token]";
+import { useRouter } from "next/router";
+import Link from "../common/Link";
 import { Network } from "../network/networks";
 import PortfolioFiatAmount from "../portfolio/PortfolioFiatAmount";
 import Amount from "../token/Amount";
@@ -31,14 +39,23 @@ const ERC20BalanceRow: FC<ERC20BalanceRowProps> = ({
 }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+  const router = useRouter();
   const tokenPrice = useTokenPrice(
     network.id,
     priceUsd === undefined ? token.address : undefined
   );
+  const transferPath = getTransferPagePath({
+    token: token.address,
+    network: network.slugName,
+  });
+  const tokenPath = getTokenPagePath({
+    token: token.address,
+    network: network.slugName,
+  });
 
   return (
     <TableRow hover data-cy={`${token.symbol}-erc20-cell`}>
-      <TableCell>
+      <TableCell onClick={() => router.push(tokenPath)} sx={{ cursor: "pointer" }}>
         <ListItem disablePadding>
           <ListItemAvatar>
             <TokenIcon
@@ -72,7 +89,7 @@ const ERC20BalanceRow: FC<ERC20BalanceRowProps> = ({
           />
         </ListItem>
       </TableCell>
-      <TableCell>
+      <TableCell onClick={() => router.push(tokenPath)} sx={{ cursor: "pointer" }}>
         <ListItemText
           primary={<Amount wei={balance} decimals={token.decimals} />}
           secondary={
@@ -103,11 +120,34 @@ const ERC20BalanceRow: FC<ERC20BalanceRowProps> = ({
             <Typography color="text.secondary">—</Typography>
           </TableCell>
           <TableCell>
-            <Typography color="text.secondary">—</Typography>
+            <Button
+              data-cy="portfolio-transfer-button"
+              LinkComponent={Link}
+              href={transferPath}
+              size="small"
+              variant="outlined"
+              startIcon={<SwapHorizRoundedIcon />}
+            >
+              Transfer
+            </Button>
           </TableCell>
         </>
       ) : null}
-      <TableCell />
+      <TableCell align="center" sx={{ px: { xs: 0.5, md: 2 } }}>
+        {isBelowMd ? (
+          <Tooltip title="Transfer">
+            <IconButton
+              data-cy="portfolio-transfer-button"
+              LinkComponent={Link}
+              href={transferPath}
+              color="primary"
+              aria-label={`Transfer ${token.symbol}`}
+            >
+              <SwapHorizRoundedIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        ) : null}
+      </TableCell>
     </TableRow>
   );
 };

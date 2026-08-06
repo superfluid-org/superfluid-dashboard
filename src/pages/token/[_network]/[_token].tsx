@@ -20,6 +20,7 @@ import { BigNumber } from "ethers";
 import { isString } from "lodash";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
+import { skipToken } from "@reduxjs/toolkit/query";
 import { FC, PropsWithChildren, useEffect, useMemo, useState } from "react";
 import SEO from "../../../components/SEO/SEO";
 import withStaticSEO from "../../../components/SEO/withStaticSEO";
@@ -50,6 +51,10 @@ import PoolMembersTable from "../../../features/pool/PoolMembersTable";
 import { useAccount } from "@/hooks/useAccount"
 import { useTokenQuery } from "../../../hooks/useTokenQuery";
 import { BIG_NUMBER_ZERO, calculateMaybeCriticalAtTimestamp } from "../../../utils/tokenUtils";
+import { platformApi } from "../../../features/redux/platformApi/platformApi";
+import ERC20TokenPageContent, {
+  ERC20TokenPageMetadata,
+} from "../../../features/portfolio/ERC20TokenPageContent";
 
 
 export const getTokenPagePath = ({
@@ -93,17 +98,23 @@ const TokenPage: NextPage = () => {
   }, [setRouteHandled, router.isReady, router.query._token, router.query._network]);
 
   useEffect(() => {
-    if (!isReconnecting && !visibleAddress) {
+    const isImpersonationHydrating = isString(router.query.view);
+    if (
+      router.isReady &&
+      !isReconnecting &&
+      !visibleAddress &&
+      !isImpersonationHydrating
+    ) {
       router.push("/");
     }
-  }, [isReconnecting, visibleAddress]);
+  }, [isReconnecting, router, router.isReady, router.query.view, visibleAddress]);
 
   const isPageReady = routeHandled && visibleAddress;
   if (!isPageReady) return <TokenPageContainer />;
 
   if (network && tokenAddress && visibleAddress) {
     return (
-      <TokenPageContent
+      <TokenPageResolver
         key={`${tokenAddress}-${visibleAddress}`.toLowerCase()}
         network={network}
         tokenAddress={tokenAddress}
@@ -113,6 +124,80 @@ const TokenPage: NextPage = () => {
   } else {
     return <Page404 />;
   }
+};
+
+const TokenPageResolver: FC<{
+  network: Network;
+  tokenAddress: string;
+  accountAddress: string;
+}> = ({ network, tokenAddress, accountAddress }) => {
+  const tokenQuery = useTokenQuery({
+    chainId: network.id,
+    id: tokenAddress,
+  });
+  const portfolioTokensQuery = platformApi.usePortfolioTokensQuery(
+    tokenQuery.isLoading || tokenQuery.data?.isSuperToken
+      ? skipToken
+      : {
+          address: accountAddress,
+          chainIds: [network.id],
+        }
+  );
+  const portfolioToken = portfolioTokensQuery.currentData?.tokens.find(
+    ({ tokenAddress: candidateAddress }) =>
+      candidateAddress.toLowerCase() === tokenAddress.toLowerCase()
+  );
+
+  if (tokenQuery.isLoading) {
+    return <TokenPageContainer />;
+  }
+
+  if (tokenQuery.data?.isSuperToken) {
+    return (
+      <TokenPageContent
+        network={network}
+        tokenAddress={tokenAddress}
+        accountAddress={accountAddress}
+      />
+    );
+  }
+
+  if (portfolioTokensQuery.isLoading && !tokenQuery.data) {
+    return <TokenPageContainer />;
+  }
+
+  const erc20Token: ERC20TokenPageMetadata | undefined = portfolioToken
+    ? {
+        address: portfolioToken.tokenAddress,
+        name: portfolioToken.name,
+        symbol: portfolioToken.symbol,
+        decimals: portfolioToken.decimals,
+        logoURI: portfolioToken.logoURI,
+        priceUsd: portfolioToken.priceUsd,
+      }
+    : tokenQuery.data && !tokenQuery.data.isSuperToken
+      ? {
+          address: tokenQuery.data.address,
+          name: tokenQuery.data.name,
+          symbol: tokenQuery.data.symbol,
+          decimals: tokenQuery.data.decimals,
+          logoURI: tokenQuery.data.logoURI,
+        }
+      : undefined;
+
+  if (!erc20Token) {
+    return <Page404 />;
+  }
+
+  return (
+    <TokenPageContainer tokenSymbol={erc20Token.symbol}>
+      <ERC20TokenPageContent
+        network={network}
+        token={erc20Token}
+        accountAddress={accountAddress}
+      />
+    </TokenPageContainer>
+  );
 };
 
 enum TokenDetailsTabs {
@@ -464,4 +549,4 @@ const TokenPageContent: FC<{
   );
 };
 
-export default withStaticSEO({ title: "Super Token | Superfluid" }, TokenPage);
+export default withStaticSEO({ title: "Token | Superfluid" }, TokenPage);

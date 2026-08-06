@@ -26,7 +26,6 @@ import useERC20Balances, { ERC20Balance } from "./useERC20Balances";
 interface TokenSnapshotTableProps {
   address: Address;
   network: Network;
-  showERC20s: boolean;
   erc20Balances: ERC20Balance[];
   erc20BalancesLoading: boolean;
   useERC20Fallback: boolean;
@@ -36,7 +35,6 @@ interface TokenSnapshotTableProps {
 const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
   address,
   network,
-  showERC20s,
   erc20Balances: portfolioERC20Balances,
   erc20BalancesLoading,
   useERC20Fallback,
@@ -118,7 +116,7 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
   } = useERC20Balances({
     address,
     network,
-    enabled: showERC20s && useERC20Fallback,
+    enabled: useERC20Fallback,
   });
 
   const erc20Balances = useMemo(() => {
@@ -201,8 +199,8 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
             <TableRow>
               <TableCell width="200">Asset</TableCell>
               <TableCell>Balance</TableCell>
-              <TableCell width="300">Net Flow</TableCell>
-              <TableCell width="300">Inflow/Outflow</TableCell>
+              <TableCell width="300">Net Flow Rate</TableCell>
+              <TableCell width="260">Actions</TableCell>
               <TableCell width="120" align="center"></TableCell>
             </TableRow>
           )}

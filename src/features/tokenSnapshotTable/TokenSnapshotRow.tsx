@@ -1,5 +1,9 @@
 import ExpandCircleDownOutlinedIcon from "@mui/icons-material/ExpandCircleDownOutlined";
+import SendRoundedIcon from "@mui/icons-material/SendRounded";
+import SwapHorizRoundedIcon from "@mui/icons-material/SwapHorizRounded";
 import {
+  Box,
+  Button,
   Collapse,
   IconButton,
   ListItem,
@@ -11,6 +15,7 @@ import {
   styled,
   TableCell,
   TableRow,
+  Tooltip,
   Typography,
   useMediaQuery,
   useTheme,
@@ -21,7 +26,10 @@ import { BigNumber } from "ethers";
 import { useRouter } from "next/router";
 import { FC, memo, MouseEvent, useMemo, useState } from "react";
 import OpenIcon from "../../components/OpenIcon/OpenIcon";
+import Link from "../common/Link";
 import { getTokenPagePath } from "../../pages/token/[_network]/[_token]";
+import { getSendPagePath } from "../../pages/send";
+import { getTransferPagePath } from "../../pages/transfer";
 import {
   BIG_NUMBER_ZERO,
   calculateMaybeCriticalAtTimestamp,
@@ -130,6 +138,14 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
     );
 
   const stopPropagation = (e: MouseEvent) => e.stopPropagation();
+  const sendPath = getSendPagePath({
+    token: tokenAddress,
+    network: network.slugName,
+  });
+  const transferPath = getTransferPagePath({
+    token: tokenAddress,
+    network: network.slugName,
+  });
 
   const criticalDate = useMemo(() => {
     if (!balanceData) {
@@ -279,39 +295,29 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
               )}
             </TableCell>
 
-            <TableCell onClick={openTokenPage}>
-              {totalNumberOfActiveStreams > 0 ? (
-                <Stack>
-                  <Typography
-                    data-cy={"inflow"}
-                    variant="body2mono"
-                    color="primary"
-                  >
-                    +
-                    <Amount
-                      wei={BigNumber.from(totalInflowRate).mul(
-                        UnitOfTime.Month
-                      )}
-                    />
-                    /mo
-                  </Typography>
-                  <Typography
-                    data-cy={"outflow"}
-                    variant="body2mono"
-                    color="error"
-                  >
-                    -
-                    <Amount
-                      wei={BigNumber.from(totalOutflowRate).mul(
-                        UnitOfTime.Month
-                      )}
-                    />
-                    /mo
-                  </Typography>
-                </Stack>
-              ) : (
-                <Typography data-cy={"outflow"}>{"-"}</Typography>
-              )}
+            <TableCell>
+              <Stack direction="row" gap={1} onClick={stopPropagation}>
+                <Button
+                  data-cy="portfolio-stream-button"
+                  LinkComponent={Link}
+                  href={sendPath}
+                  size="small"
+                  variant="contained"
+                  startIcon={<SendRoundedIcon />}
+                >
+                  Stream
+                </Button>
+                <Button
+                  data-cy="portfolio-transfer-button"
+                  LinkComponent={Link}
+                  href={transferPath}
+                  size="small"
+                  variant="outlined"
+                  startIcon={<SwapHorizRoundedIcon />}
+                >
+                  Transfer
+                </Button>
+              </Stack>
             </TableCell>
           </>
         ) : (
@@ -364,18 +370,49 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
           align="center"
           sx={{
             cursor: "initial",
-            [theme.breakpoints.down("md")]: { p: 1.25, width: "56px" },
+            [theme.breakpoints.down("md")]: { px: 0.5, py: 1.25, whiteSpace: "nowrap" },
           }}
         >
-          {hasStreams && (
-            <IconButton
-              data-cy={"show-streams-button"}
-              color="inherit"
-              onClick={toggleOpen}
-            >
-              <OpenIcon open={open} icon={ExpandCircleDownOutlinedIcon} />
-            </IconButton>
-          )}
+          <Stack direction="row" justifyContent="center" gap={0.25}>
+            {isBelowMd ? (
+              <>
+                <Tooltip title="Stream">
+                  <IconButton
+                    data-cy="portfolio-stream-button"
+                    LinkComponent={Link}
+                    href={sendPath}
+                    color="primary"
+                    onClick={stopPropagation}
+                    aria-label={`Stream ${tokenSymbol}`}
+                  >
+                    <SendRoundedIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Transfer">
+                  <IconButton
+                    data-cy="portfolio-transfer-button"
+                    LinkComponent={Link}
+                    href={transferPath}
+                    color="primary"
+                    onClick={stopPropagation}
+                    aria-label={`Transfer ${tokenSymbol}`}
+                  >
+                    <SwapHorizRoundedIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              </>
+            ) : null}
+            {hasStreams ? (
+              <IconButton
+                data-cy={"show-streams-button"}
+                color="inherit"
+                onClick={toggleOpen}
+                aria-label={`Show ${tokenSymbol} streams`}
+              >
+                <OpenIcon open={open} icon={ExpandCircleDownOutlinedIcon} />
+              </IconButton>
+            ) : null}
+          </Stack>
         </TableCell>
       </SnapshotRow>
       <TableRow
@@ -394,6 +431,59 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
             timeout={theme.transitions.duration.standard}
             unmountOnExit
           >
+            <Box
+              data-cy="flow-summary"
+              sx={{
+                px: { xs: 2, md: 3 },
+                py: 2,
+                bgcolor: "background.default",
+                borderBottom: `1px solid ${theme.palette.divider}`,
+              }}
+            >
+              <Stack
+                direction="row"
+                alignItems="center"
+                gap={{ xs: 3, md: 6 }}
+                flexWrap="wrap"
+              >
+                <Box>
+                  <Typography variant="caption" color="text.secondary" sx={{ display: "block" }}>
+                    TOTAL INFLOW
+                  </Typography>
+                  <Typography data-cy="inflow" variant="body2mono" color="primary">
+                    +
+                    <Amount
+                      wei={BigNumber.from(totalInflowRate).mul(
+                        UnitOfTime.Month
+                      )}
+                    />
+                    /mo
+                  </Typography>
+                </Box>
+                <Box>
+                  <Typography variant="caption" color="text.secondary" sx={{ display: "block" }}>
+                    TOTAL OUTFLOW
+                  </Typography>
+                  <Typography data-cy="outflow" variant="body2mono" color="error">
+                    -
+                    <Amount
+                      wei={BigNumber.from(totalOutflowRate).mul(
+                        UnitOfTime.Month
+                      )}
+                    />
+                    /mo
+                  </Typography>
+                </Box>
+                <Box>
+                  <Typography variant="caption" color="text.secondary" sx={{ display: "block" }}>
+                    ACTIVE STREAMS
+                  </Typography>
+                  <Typography variant="body2mono">
+                    {totalNumberOfActiveStreams}
+                  </Typography>
+                </Box>
+              </Stack>
+            </Box>
             <StreamsTable
               subTable
               network={network}
