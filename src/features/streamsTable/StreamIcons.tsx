@@ -33,9 +33,11 @@ export const ScheduledStreamIcon: FC<ScheduledStreamIconProps> = ({
   </StreamIconTooltip>
 );
 
-export const ActiveStreamIcon = () => (
+export const ActiveStreamIcon: FC<{ IconProps?: Partial<SvgIconProps> }> = ({
+  IconProps = {},
+}) => (
   <StreamIconTooltip title="This stream will run indefinitely.">
-    <AllInclusiveIcon sx={{ display: "block" }} />
+    <AllInclusiveIcon sx={{ display: "block" }} {...IconProps} />
   </StreamIconTooltip>
 );
 

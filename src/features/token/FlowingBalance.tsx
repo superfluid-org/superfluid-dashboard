@@ -14,6 +14,8 @@ type FlowingBalanceData =
     balanceTimestamp: number;
     flowRate: BigNumberish;
     tokenSymbol?: string;
+    /** See Amount's `groupSeparator`. */
+    groupSeparator?: boolean;
   }
 
 export type FlowingBalanceProps = FlowingBalanceData | {
@@ -38,9 +40,9 @@ export default memo(function FlowingBalance({
   );
 });
 
-const FlowingBalanceCore: FC<FlowingBalanceData> = ({ balance, balanceTimestamp, flowRate, tokenSymbol }) => {
+const FlowingBalanceCore: FC<FlowingBalanceData> = ({ balance, balanceTimestamp, flowRate, tokenSymbol, groupSeparator }) => {
   const { weiValue } = useFlowingBalance(balance, balanceTimestamp, flowRate);
   const decimalPlaces = useEtherSignificantFlowingDecimal(flowRate);
 
-  return <Amount wei={weiValue} decimalPlaces={decimalPlaces}> {tokenSymbol}</Amount>;
+  return <Amount wei={weiValue} decimalPlaces={decimalPlaces} groupSeparator={groupSeparator}> {tokenSymbol}</Amount>;
 }

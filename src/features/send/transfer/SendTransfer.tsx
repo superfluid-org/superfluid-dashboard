@@ -3,7 +3,6 @@ import {
   Alert,
   Box,
   Divider,
-  FormLabel,
   Stack,
   TextField,
   Typography,
@@ -12,13 +11,13 @@ import {
 } from "@mui/material";
 import { memo, useCallback } from "react";
 import { Controller, useFormContext } from "react-hook-form";
-import TooltipWithIcon from "../../common/TooltipWithIcon";
 import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
 import { TokenDialogButton } from "../../tokenWrapping/TokenDialogButton";
 import ConnectionBoundary from "../../transactionBoundary/ConnectionBoundary";
 import ConnectionBoundaryButton from "../../transactionBoundary/ConnectionBoundaryButton";
 import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
 import AddressSearch from "../AddressSearch";
+import { FieldLabel } from "../FieldLabel";
 import { PartialTransferForm, ValidTransferForm } from "./TransferFormProvider";
 import { useTransfer } from "./useTransfer";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
@@ -129,7 +128,7 @@ export default memo(function SendTransfer() {
   );
 
   return (
-    <Stack spacing={2.5}>
+    <Stack spacing={3}>
       <ErrorMessage
         name="data"
         // ErrorMessage has a bug and current solution is to pass in errors via props.
@@ -144,16 +143,12 @@ export default memo(function SendTransfer() {
         }
       />
       <Box>
-        <Stack
-          direction="row"
-          sx={{
-            alignItems: "center",
-            justifyContent: "space-between",
-            mr: 0.75
-          }}>
-          <FormLabel>Receiver Wallet Address</FormLabel>
-          <TooltipWithIcon title="Must not be an exchange address" />
-        </Stack>
+        <FieldLabel
+          htmlFor="transfer-receiver-address"
+          tooltip="Must not be an exchange address"
+        >
+          Receiver Wallet Address
+        </FieldLabel>
         <ReceiverAddressController isBelowMd={isBelowMd} />
       </Box>
       <Box
@@ -166,16 +161,12 @@ export default memo(function SendTransfer() {
           },
         }}
       >
-        <Stack sx={{
-          justifyContent: "stretch"
-        }}>
-          <FormLabel>Super Token</FormLabel>
+        <Stack sx={{ justifyContent: "stretch" }}>
+          <FieldLabel htmlFor="transfer-super-token">Super Token</FieldLabel>
           <TokenController network={network} superToken={superToken} />
         </Stack>
-        <Stack sx={{
-          justifyContent: "stretch"
-        }}>
-          <FormLabel>Amount</FormLabel>
+        <Stack sx={{ justifyContent: "stretch" }}>
+          <FieldLabel htmlFor="transfer-amount">Amount</FieldLabel>
           <AmountController superToken={superToken} />
         </Stack>
       </Box>
@@ -219,7 +210,7 @@ const ReceiverAddressController = memo(function ReceiverAddressController(props:
           onChange={onChange}
           onBlur={onBlur}
           addressLength={props.isBelowMd ? "medium" : "long"}
-          ButtonProps={{ fullWidth: true }}
+          ButtonProps={{ fullWidth: true, id: "transfer-receiver-address" }}
         />
       )}
     />
@@ -245,7 +236,7 @@ const TokenController = memo(function TokenController(
           showUpgrade={true}
           onTokenSelect={(x) => onChange(x.address)}
           onBlur={onBlur}
-          ButtonProps={{ variant: "input" }}
+          ButtonProps={{ variant: "input", id: "transfer-super-token" }}
         />
       )}
     />
@@ -264,6 +255,7 @@ const AmountController = memo(function AmountController(props: {
       render={({ field: { value, onChange, onBlur } }) => (
         <TextField
           data-cy={"amount-input"}
+          id="transfer-amount"
           value={value}
           onChange={onChange}
           onBlur={onBlur}

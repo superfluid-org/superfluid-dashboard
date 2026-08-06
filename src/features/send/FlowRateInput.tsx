@@ -122,7 +122,9 @@ export const FlowRateInput: FC<{
   flowRateEther: FlowRateEther;
   onChange: (flowRate: FlowRateEther) => void;
   onBlur: () => void;
-}> = ({ flowRateEther: flowRate, onChange, onBlur }) => {
+  /** Lands on the amount field, so an external label focuses that rather than the unit select. */
+  id?: string;
+}> = ({ flowRateEther: flowRate, onChange, onBlur, id }) => {
   const [flowRateFocused, setFlowRateFocused] = useState(false);
 
   const onFlowRateFocus = () => {
@@ -138,6 +140,7 @@ export const FlowRateInput: FC<{
     <Box sx={{ display: "grid", gridTemplateColumns: "6fr 4fr" }}>
       <TextField
         data-cy={"flow-rate-input"}
+        id={id}
         autoComplete="off"
         autoCorrect="off"
         placeholder="0.0"
@@ -152,7 +155,7 @@ export const FlowRateInput: FC<{
         }}
         sx={{
           ".MuiOutlinedInput-notchedOutline": {
-            borderRadius: "10px 0 0 10px",
+            borderRadius: "8px 0 0 8px",
             borderRight: 0,
           },
           "> .Mui-focused .MuiOutlinedInput-notchedOutline": {
@@ -174,13 +177,13 @@ export const FlowRateInput: FC<{
         }}
         slotProps={{
           input: {
-            sx: { borderRadius: "10px 0 0 10px" },
+            sx: { borderRadius: "8px 0 0 8px" },
           },
-
           htmlInput: {
             ...inputPropsForEtherAmount,
-          }
-        }} />
+          },
+        }}
+      />
       <Select
         data-cy={"time-unit-selection-button"}
         value={flowRate.unitOfTime}
@@ -194,7 +197,7 @@ export const FlowRateInput: FC<{
         sx={{
           marginLeft: "-1px",
           ".MuiOutlinedInput-notchedOutline": {
-            borderRadius: "0 10px 10px 0",
+            borderRadius: "0 8px 8px 0",
             ...(flowRateFocused && { borderLeft: "2px solid" }),
           },
         }}
