@@ -150,11 +150,17 @@ Feature: Transactional rejected test cases
   #
   # @relayFeeGateNetworksOnly restricts this to polygon, arbitrum-one and optimism (see
   # support/step_definitions/Hooks.ts). Excluded, deliberately:
-  #   - gnosis / avalanche: dan holds zero super tokens there and they cannot be funded, so
-  #     requirement (1) can never be met. They are also the two networks where
-  #     fixtures/rejectedCaseTokens.json maps TokenTwo onto the *same* USDCx contract the relay
-  #     charges its fee in, which would make (1) and (2) contradict each other anyway.
-  #   - bsc / ethereum / base: no flow scheduler, already skipped by @platformNeeded.
+  #   - gnosis / avalanche / bsc: dan holds zero super tokens there and they cannot be funded,
+  #     so requirement (1) can never be met. They are also the three networks where
+  #     fixtures/rejectedCaseTokens.json maps TokenTwo onto the *same* contract the relay charges
+  #     its fee in (bsc: USDC == feeToken 0x0419e1fA3671754F77EC7D5416219A5f9A08B530), which
+  #     would make (1) and (2) contradict each other anyway. Note bsc is NOT in
+  #     SendPage.skipTestIfPlatformNotAvailableOnNetwork, so before the allowlist it ran and
+  #     failed here -- @platformNeeded does not cover it.
+  #   - base: no flow scheduler, already skipped by @platformNeeded. (ethereum is commented out
+  #     of the CI matrix entirely, so it never runs either way.)
+  # Empirically confirmed by CI run 31113896040, before the allowlist landed: the scenario passed
+  # on exactly polygon, arbitrum-one and optimism and failed on gnosis, avalanche and bsc.
   # This scenario must print a pass on the three allowlisted networks -- if it reports as
   # skipped everywhere, the allowlist is broken, not the product.
   @platformNeeded @gaslessRelayEnabled @relayFeeGateNetworksOnly

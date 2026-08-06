@@ -49,9 +49,10 @@ Before({ tags: "@gaslessRelayEnabled" }, () => {
 // The gasless relay fee gate can only be reached where `dan` holds enough of the stream token
 // to make the send form valid -- the form keeps submit disabled below the CFA buffer plus 24h
 // of streaming, so an empty wallet never gets as far as the fee gate. `dan` is funded on these
-// three networks only; on gnosis and avalanche it holds nothing and cannot be funded, so the
-// scenario is gated to the networks where it is actually meaningful. See the comment above the
-// scenario in RejectedStreamAndIndexTransactions.feature.
+// three networks only; on gnosis, avalanche and bsc it holds nothing and cannot be funded, so the
+// scenario is gated to the networks where it is actually meaningful. CI run 31113896040 confirms
+// it: the scenario passed on exactly these three and failed on the other three. See the comment
+// above the scenario in RejectedStreamAndIndexTransactions.feature.
 Before({ tags: "@relayFeeGateNetworksOnly" }, () => {
   setScenarioNetworkAllowlist(["polygon", "arbitrum-one", "optimism"]);
 });
