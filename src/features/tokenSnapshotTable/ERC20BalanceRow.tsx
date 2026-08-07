@@ -1,7 +1,4 @@
-import CurrencyExchangeRoundedIcon from "@mui/icons-material/CurrencyExchangeRounded";
 import ExpandCircleDownOutlinedIcon from "@mui/icons-material/ExpandCircleDownOutlined";
-import SendRoundedIcon from "@mui/icons-material/SendRounded";
-import SwapHorizRoundedIcon from "@mui/icons-material/SwapHorizRounded";
 import {
   Box,
   Button,
@@ -18,6 +15,7 @@ import {
   TableCell,
   TableContainer,
   TableHead,
+  TablePagination,
   TableRow,
   Tooltip,
   Typography,
@@ -35,12 +33,11 @@ import { getSendPagePath } from "../../pages/send";
 import { getTokenPagePath } from "../../pages/token/[_network]/[_token]";
 import { getTokenPairsFromTokenList } from "../../hooks/useTokenQuery";
 import { Currency } from "../../utils/currencyUtils";
-import Link from "../common/Link";
 import { EmptyRow } from "../common/EmptyRow";
 import { Network } from "../network/networks";
 import PortfolioFiatAmount from "../portfolio/PortfolioFiatAmount";
 import ERC20TransferRow from "../portfolio/ERC20TransferRow";
-import { platformApi } from "../redux/platformApi/platformApi";
+import useERC20TransferHistory from "../portfolio/useERC20TransferHistory";
 import { useAppCurrency } from "../settings/appSettingsHooks";
 import Amount from "../token/Amount";
 import TokenIcon from "../token/TokenIcon";
@@ -55,7 +52,7 @@ import {
   getPortfolioRowActionStyles,
   PORTFOLIO_ROW_ACTIONS_CLASS_NAME,
 } from "./portfolioRowActionStyles";
-import PortfolioMobileActions from "./PortfolioMobileActions";
+import PortfolioTokenActions from "./PortfolioTokenActions";
 
 interface ERC20BalanceRowProps extends ERC20Balance {
   address: Address;
@@ -89,12 +86,14 @@ const ERC20BalanceUpdatesPanel: FC<{
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const [filter, setFilter] = useState(TransferFilter.All);
-  const historyQuery = platformApi.useErc20TransferHistoryQuery({
-    address,
-    tokenAddress: token.address,
-    chainId: network.id,
-  });
-  const transfers = historyQuery.currentData?.transfers ?? [];
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const { transfers, hasMore, loadMore, isLoading, isFetching, isError } =
+    useERC20TransferHistory({
+      address,
+      tokenAddress: token.address,
+      chainId: network.id,
+    });
   const lowerAddress = address.toLowerCase();
   const filteredTransfers = transfers.filter((transfer) => {
     if (filter === TransferFilter.Sent) {
@@ -111,6 +110,32 @@ const ERC20BalanceUpdatesPanel: FC<{
   const receivedCount = transfers.filter(
     (transfer) => transfer.to === lowerAddress
   ).length;
+  const visibleTransfers = filteredTransfers.slice(
+    page * rowsPerPage,
+    (page + 1) * rowsPerPage
+  );
+
+  useEffect(() => {
+    setPage(0);
+  }, [filter]);
+
+  useEffect(() => {
+    const requiredTransferCount = (page + 1) * rowsPerPage;
+    if (
+      filteredTransfers.length < requiredTransferCount &&
+      hasMore &&
+      !isFetching
+    ) {
+      loadMore();
+    }
+  }, [
+    filteredTransfers.length,
+    hasMore,
+    isFetching,
+    loadMore,
+    page,
+    rowsPerPage,
+  ]);
 
   return (
     <TableContainer
@@ -161,14 +186,17 @@ const ERC20BalanceUpdatesPanel: FC<{
                       component="span"
                       sx={{ display: { xs: "none", md: "inline" } }}
                     >
-                      {` (${count})`}
+                      {` (${count}${hasMore ? "+" : ""})`}
                     </Box>
                   </Button>
                 ))}
                 <Box sx={{ flex: 1 }} />
                 {isBelowMd ? (
-                  <PortfolioMobileActions
+                  <PortfolioTokenActions
+                    decimals={token.decimals}
+                    network={network}
                     symbol={token.symbol}
+                    tokenAddress={token.address}
                     streamPath={streamPath}
                     transferPath={transferPath}
                     wrapPath={wrapPath}
@@ -187,28 +215,45 @@ const ERC20BalanceUpdatesPanel: FC<{
           ) : null}
         </TableHead>
         <TableBody>
-          {historyQuery.isLoading ? (
+          {isLoading || (isFetching && visibleTransfers.length === 0) ? (
             <TableRow>
               <TableCell colSpan={3}>
                 <Skeleton height={46} />
               </TableCell>
             </TableRow>
-          ) : historyQuery.isError || filteredTransfers.length === 0 ? (
+          ) : (isError && transfers.length === 0) ||
+            filteredTransfers.length === 0 ? (
             <EmptyRow span={3} />
           ) : (
-            filteredTransfers
-              .slice(0, 3)
-              .map((transfer) => (
-                <ERC20TransferRow
-                  key={transfer.id}
-                  transfer={transfer}
-                  accountAddress={address}
-                  tokenDecimals={token.decimals}
-                />
-              ))
+            visibleTransfers.map((transfer) => (
+              <ERC20TransferRow
+                key={transfer.id}
+                transfer={transfer}
+                accountAddress={address}
+                tokenDecimals={token.decimals}
+              />
+            ))
           )}
         </TableBody>
       </Table>
+      {filteredTransfers.length > rowsPerPage || hasMore ? (
+        <TablePagination
+          component="div"
+          count={hasMore ? -1 : filteredTransfers.length}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          rowsPerPageOptions={[5, 10, 25]}
+          labelDisplayedRows={({ from, to, count }) =>
+            count === -1 ? `${from}–${to} of more` : `${from}–${to} of ${count}`
+          }
+          onPageChange={(_event, nextPage) => setPage(nextPage)}
+          onRowsPerPageChange={(event) => {
+            setRowsPerPage(Number.parseInt(event.target.value, 10));
+            setPage(0);
+          }}
+          sx={{ background: "transparent" }}
+        />
+      ) : null}
     </TableContainer>
   );
 };
@@ -341,7 +386,7 @@ const ERC20BalanceRow: FC<ERC20BalanceRowProps> = ({
         <TableCell
           align={isBelowMd ? "right" : "left"}
           onClick={openTokenPage}
-          sx={{ cursor: "pointer", px: { xs: 2, md: 2 } }}
+          sx={{ cursor: "pointer", px: { xs: 1, md: 2 } }}
         >
           <Box
             sx={{
@@ -393,61 +438,22 @@ const ERC20BalanceRow: FC<ERC20BalanceRowProps> = ({
               </Typography>
             </TableCell>
             <TableCell sx={{ pl: 0 }}>
-              <Stack
-                className={PORTFOLIO_ROW_ACTIONS_CLASS_NAME}
-                direction="row"
-                sx={{ gap: 0.75 }}
-              >
-                {streamPath && (
-                  <Button
-                    data-cy="portfolio-stream-button"
-                    LinkComponent={Link}
-                    href={streamPath}
-                    size="small"
-                    variant="contained"
-                    startIcon={<SendRoundedIcon />}
-                  >
-                    Stream
-                  </Button>
-                )}
-                {wrapPath && (
-                  <Button
-                    data-cy="portfolio-wrap-button"
-                    LinkComponent={Link}
-                    href={wrapPath}
-                    size="small"
-                    variant="outlined"
-                  >
-                    Wrap
-                  </Button>
-                )}
-                <Button
-                  data-cy="portfolio-transfer-button"
-                  LinkComponent={Link}
-                  href={transferPath}
-                  size="small"
-                  variant="outlined"
-                  startIcon={<SwapHorizRoundedIcon />}
-                >
-                  Transfer
-                </Button>
-                {!network.testnet && (
-                  <Button
-                    data-cy="portfolio-swap-button"
-                    LinkComponent={Link}
-                    href={swapPath}
-                    size="small"
-                    variant="outlined"
-                    startIcon={<CurrencyExchangeRoundedIcon />}
-                  >
-                    Swap
-                  </Button>
-                )}
-              </Stack>
+              <Box className={PORTFOLIO_ROW_ACTIONS_CLASS_NAME}>
+                <PortfolioTokenActions
+                  decimals={token.decimals}
+                  network={network}
+                  symbol={token.symbol}
+                  tokenAddress={token.address}
+                  streamPath={streamPath}
+                  transferPath={transferPath}
+                  wrapPath={wrapPath}
+                  swapPath={!network.testnet ? swapPath : undefined}
+                />
+              </Box>
             </TableCell>
           </>
         ) : null}
-        <TableCell align="center" sx={{ px: { xs: 2, md: 2 } }}>
+        <TableCell align="center" sx={{ px: { xs: 0, md: 2 } }}>
           <Stack
             direction="row"
             sx={{

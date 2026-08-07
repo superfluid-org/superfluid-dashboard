@@ -1,10 +1,6 @@
 import ExpandCircleDownOutlinedIcon from "@mui/icons-material/ExpandCircleDownOutlined";
-import CurrencyExchangeRoundedIcon from "@mui/icons-material/CurrencyExchangeRounded";
-import SendRoundedIcon from "@mui/icons-material/SendRounded";
-import SwapHorizRoundedIcon from "@mui/icons-material/SwapHorizRounded";
 import {
   Box,
-  Button,
   Collapse,
   IconButton,
   ListItem,
@@ -28,7 +24,6 @@ import { BigNumber, utils } from "ethers";
 import { useRouter } from "next/router";
 import { FC, memo, MouseEvent, useEffect, useMemo, useState } from "react";
 import OpenIcon from "../../components/OpenIcon/OpenIcon";
-import Link from "../common/Link";
 import { getTokenPagePath } from "../../pages/token/[_network]/[_token]";
 import { getSendPagePath } from "../../pages/send";
 import { getTransferPagePath } from "../../pages/transfer";
@@ -59,7 +54,7 @@ import {
   getPortfolioRowActionStyles,
   PORTFOLIO_ROW_ACTIONS_CLASS_NAME,
 } from "./portfolioRowActionStyles";
-import PortfolioMobileActions from "./PortfolioMobileActions";
+import PortfolioTokenActions from "./PortfolioTokenActions";
 
 interface SnapshotRowProps {
   lastElement?: boolean;
@@ -434,47 +429,18 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
             </TableCell>
 
             <TableCell sx={{ pl: 0 }}>
-              <Stack
-                className={PORTFOLIO_ROW_ACTIONS_CLASS_NAME}
-                direction="row"
-                onClick={stopPropagation}
-                sx={{
-                  gap: 0.75,
-                }}
-              >
-                <Button
-                  data-cy="portfolio-stream-button"
-                  LinkComponent={Link}
-                  href={sendPath}
-                  size="small"
-                  variant="contained"
-                  startIcon={<SendRoundedIcon />}
-                >
-                  Stream
-                </Button>
-                <Button
-                  data-cy="portfolio-transfer-button"
-                  LinkComponent={Link}
-                  href={transferPath}
-                  size="small"
-                  variant="outlined"
-                  startIcon={<SwapHorizRoundedIcon />}
-                >
-                  Transfer
-                </Button>
-                {!network.testnet && (
-                  <Button
-                    data-cy="portfolio-swap-button"
-                    LinkComponent={Link}
-                    href={swapPath}
-                    size="small"
-                    variant="outlined"
-                    startIcon={<CurrencyExchangeRoundedIcon />}
-                  >
-                    Swap
-                  </Button>
-                )}
-              </Stack>
+              <Box className={PORTFOLIO_ROW_ACTIONS_CLASS_NAME}>
+                <PortfolioTokenActions
+                  decimals={token.data?.decimals ?? 18}
+                  network={network}
+                  symbol={tokenSymbol ?? "Super Token"}
+                  tokenAddress={tokenAddress}
+                  streamPath={sendPath}
+                  transferPath={transferPath}
+                  swapPath={!network.testnet ? swapPath : undefined}
+                  onClick={stopPropagation}
+                />
+              </Box>
             </TableCell>
           </>
         ) : (
@@ -482,7 +448,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
             align="right"
             sx={{
               [theme.breakpoints.down("md")]: {
-                px: 2,
+                px: 1,
               },
             }}
             onClick={openTokenPage}
@@ -539,7 +505,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
           sx={{
             cursor: "initial",
             [theme.breakpoints.down("md")]: {
-              px: 2,
+              px: 0,
               py: 0,
               whiteSpace: "nowrap",
             },
@@ -704,8 +670,11 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
               tokenAddress={snapshot.token}
               lastElement={lastElement}
               headerActions={
-                <PortfolioMobileActions
+                <PortfolioTokenActions
+                  decimals={token.data?.decimals ?? 18}
+                  network={network}
                   symbol={tokenSymbol ?? "token"}
+                  tokenAddress={tokenAddress}
                   streamPath={sendPath}
                   transferPath={transferPath}
                   swapPath={!network.testnet ? swapPath : undefined}

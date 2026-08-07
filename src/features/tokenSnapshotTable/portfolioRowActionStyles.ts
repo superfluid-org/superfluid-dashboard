@@ -41,8 +41,12 @@ export const getPortfolioMobileRowStyles = (theme: Theme) => ({
     gridTemplateColumns: "minmax(0, 1fr) minmax(84px, auto) 40px",
     width: "100%",
     "& > td": {
+      boxSizing: "border-box",
       display: "block",
       minWidth: 0,
+    },
+    "& > td:nth-of-type(2)": {
+      px: 1,
     },
     "& > td:last-of-type": {
       width: 40,

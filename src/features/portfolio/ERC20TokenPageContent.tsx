@@ -28,6 +28,7 @@ import {
 import { FC, useEffect, useMemo, useState } from "react";
 import { useAccount } from "@/hooks/useAccount";
 import { getAddress } from "../../utils/memoizedEthersUtils";
+import { getFilteredStartDate } from "../../utils/chartUtils";
 import { getTransferPagePath } from "../../pages/transfer";
 import { getSendPagePath } from "../../pages/send";
 import { getTokenPairsFromTokenList } from "../../hooks/useTokenQuery";
@@ -39,7 +40,6 @@ import { Network } from "../network/networks";
 import { getBridgePagePath } from "../bridge/getBridgePagePath";
 import { Flag } from "../flags/flags.slice";
 import { useHasFlag } from "../flags/flagsHooks";
-import { platformApi } from "../redux/platformApi/platformApi";
 import { rpcApi } from "../redux/store";
 import Amount from "../token/Amount";
 import TokenIcon from "../token/TokenIcon";
@@ -51,10 +51,8 @@ import AddToWalletButton from "../wallet/AddToWalletButton";
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import ERC20BalanceGraph from "./ERC20BalanceGraph";
 import ERC20TransferRow from "./ERC20TransferRow";
-import {
-  ERC20TransferHistoryCursor,
-  ERC20TransferHistoryItem,
-} from "./erc20TransferHistory";
+import { TimeUnitFilterType } from "../graph/TimeUnitFilter";
+import useERC20TransferHistory from "./useERC20TransferHistory";
 
 export interface ERC20TokenPageMetadata {
   address: string;
@@ -71,6 +69,8 @@ enum TransferFilter {
   Received = "received",
 }
 
+const MAX_AUTOMATIC_HISTORY_PAGES = 50;
+
 const ERC20TokenPageContent: FC<{
   network: Network;
   token: ERC20TokenPageMetadata;
@@ -80,11 +80,7 @@ const ERC20TokenPageContent: FC<{
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
   const navigateBack = useNavigateBack();
   const [filter, setFilter] = useState(TransferFilter.All);
-  const [requestCursor, setRequestCursor] =
-    useState<ERC20TransferHistoryCursor>();
-  const [nextCursor, setNextCursor] = useState<ERC20TransferHistoryCursor>();
-  const [hasMore, setHasMore] = useState(false);
-  const [transfers, setTransfers] = useState<ERC20TransferHistoryItem[]>([]);
+  const [graphFilter, setGraphFilter] = useState(TimeUnitFilterType.Week);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const { address: connectedAccountAddress } = useAccount();
@@ -98,39 +94,78 @@ const ERC20TokenPageContent: FC<{
     network.id,
     token.priceUsd === undefined ? token.address : undefined
   );
-  const historyQuery = platformApi.useErc20TransferHistoryQuery({
+  const {
+    transfers,
+    hasMore,
+    nextCursor,
+    pagesLoaded,
+    loadMore,
+    isLoading: historyLoading,
+    isFetching: historyFetching,
+    isError: historyError,
+  } = useERC20TransferHistory({
     address: accountAddress,
     tokenAddress: token.address,
     chainId: network.id,
-    ...(requestCursor ? { cursor: requestCursor } : {}),
   });
 
-  useEffect(() => {
-    const page = historyQuery.currentData;
-    if (!page) return;
-
-    setTransfers((current) => {
-      const byId = new Map(current.map((transfer) => [transfer.id, transfer]));
-      page.transfers.forEach((transfer) => byId.set(transfer.id, transfer));
-      return [...byId.values()].sort(
-        (first, second) =>
-          Date.parse(second.timestamp) - Date.parse(first.timestamp)
-      );
-    });
-    setNextCursor(page.cursor);
-    setHasMore(page.hasMore);
-  }, [historyQuery.currentData]);
-
   const lowerAccountAddress = accountAddress.toLowerCase();
-  const { sentCount, receivedCount } = useMemo(
-    () => ({
-      sentCount: transfers.filter(({ from }) => from === lowerAccountAddress)
-        .length,
-      receivedCount: transfers.filter(({ to }) => to === lowerAccountAddress)
-        .length,
-    }),
+  const graphRangeStart = useMemo(() => {
+    if (graphFilter === TimeUnitFilterType.All) return Number.NEGATIVE_INFINITY;
+    const now = new Date();
+    return getFilteredStartDate(graphFilter, now, now).getTime();
+  }, [graphFilter]);
+  const {
+    oldestIncomingTimestamp,
+    oldestOutgoingTimestamp,
+    sentCount,
+    receivedCount,
+  } = useMemo(
+    () =>
+      transfers.reduce(
+        (metrics, transfer) => {
+          const timestamp = Date.parse(transfer.timestamp);
+          if (!Number.isFinite(timestamp)) return metrics;
+          if (transfer.to === lowerAccountAddress) {
+            metrics.receivedCount += 1;
+            metrics.oldestIncomingTimestamp = Math.min(
+              metrics.oldestIncomingTimestamp,
+              timestamp
+            );
+          }
+          if (transfer.from === lowerAccountAddress) {
+            metrics.sentCount += 1;
+            metrics.oldestOutgoingTimestamp = Math.min(
+              metrics.oldestOutgoingTimestamp,
+              timestamp
+            );
+          }
+          return metrics;
+        },
+        {
+          oldestIncomingTimestamp: Number.POSITIVE_INFINITY,
+          oldestOutgoingTimestamp: Number.POSITIVE_INFINITY,
+          sentCount: 0,
+          receivedCount: 0,
+        }
+      ),
     [lowerAccountAddress, transfers]
   );
+  const incomingHistoryLoaded =
+    nextCursor?.incoming === null || oldestIncomingTimestamp <= graphRangeStart;
+  const outgoingHistoryLoaded =
+    nextCursor?.outgoing === null || oldestOutgoingTimestamp <= graphRangeStart;
+  const graphHistoryLoaded =
+    pagesLoaded > 0 &&
+    (!hasMore ||
+      pagesLoaded >= MAX_AUTOMATIC_HISTORY_PAGES ||
+      (incomingHistoryLoaded && outgoingHistoryLoaded));
+
+  useEffect(() => {
+    if (!graphHistoryLoaded && !historyFetching) {
+      loadMore();
+    }
+  }, [graphHistoryLoaded, historyFetching, loadMore]);
 
   const filteredTransfers = useMemo(() => {
     return transfers.filter((transfer) => {
@@ -153,16 +188,15 @@ const ERC20TokenPageContent: FC<{
     if (
       filteredTransfers.length < requiredTransferCount &&
       hasMore &&
-      nextCursor &&
-      !historyQuery.isFetching
+      !historyFetching
     ) {
-      setRequestCursor(nextCursor);
+      loadMore();
     }
   }, [
     filteredTransfers.length,
     hasMore,
-    historyQuery.isFetching,
-    nextCursor,
+    historyFetching,
+    loadMore,
     page,
     rowsPerPage,
   ]);
@@ -208,6 +242,103 @@ const ERC20TokenPageContent: FC<{
         }
       : undefined
   );
+  const tokenIdentity = (
+    <Stack direction="row" sx={{ alignItems: "center", gap: 2, minWidth: 0 }}>
+      <TokenIcon
+        chainId={network.id}
+        tokenAddress={token.address}
+        logoURI={token.logoURI}
+        symbol={token.symbol}
+      />
+      <Box sx={{ minWidth: 0 }}>
+        <Stack
+          direction="row"
+          sx={{ alignItems: "baseline", gap: 1, flexWrap: "wrap" }}
+        >
+          <Typography variant={isBelowMd ? "h4" : "h3"} component="h1">
+            {token.name}
+          </Typography>
+          <Typography variant="h5" sx={{ color: "text.secondary" }}>
+            {token.symbol}
+          </Typography>
+        </Stack>
+      </Box>
+    </Stack>
+  );
+  const tokenActions = (
+    <Box
+      sx={{
+        display: "flex",
+        flexWrap: "nowrap",
+        justifyContent: "flex-end",
+        gap: 1,
+      }}
+    >
+      {!hasAddedToWallet ? (
+        <ConnectionBoundary expectedNetwork={network}>
+          {({ isConnected }) =>
+            isConnected ? (
+              <AddToWalletButton
+                token={token.address}
+                symbol={token.symbol}
+                decimals={token.decimals}
+              />
+            ) : null
+          }
+        </ConnectionBoundary>
+      ) : null}
+      {streamPath ? (
+        <Tooltip title="Stream">
+          <IconButton
+            LinkComponent={Link}
+            href={streamPath}
+            data-cy="token-stream-button"
+            aria-label={`Stream ${token.symbol}`}
+            sx={tokenActionIconButtonSx}
+          >
+            <SendRoundedIcon />
+          </IconButton>
+        </Tooltip>
+      ) : null}
+      {wrapPath ? (
+        <Tooltip title="Wrap">
+          <IconButton
+            LinkComponent={Link}
+            href={wrapPath}
+            data-cy="token-wrap-button"
+            aria-label={`Wrap ${token.symbol}`}
+            sx={tokenActionIconButtonSx}
+          >
+            <AddCircleOutlineRoundedIcon />
+          </IconButton>
+        </Tooltip>
+      ) : null}
+      <Tooltip title="Transfer">
+        <IconButton
+          LinkComponent={Link}
+          href={transferPath}
+          data-cy="token-transfer-button"
+          aria-label={`Transfer ${token.symbol}`}
+          sx={tokenActionIconButtonSx}
+        >
+          <SwapHorizRoundedIcon />
+        </IconButton>
+      </Tooltip>
+      {!network.testnet ? (
+        <Tooltip title="Swap">
+          <IconButton
+            LinkComponent={Link}
+            href={swapPath}
+            data-cy="token-swap-button"
+            aria-label={`Swap ${token.symbol}`}
+            sx={tokenActionIconButtonSx}
+          >
+            <CurrencyExchangeRoundedIcon />
+          </IconButton>
+        </Tooltip>
+      ) : null}
+    </Box>
+  );
 
   return (
     <Stack
@@ -226,113 +357,18 @@ const ERC20TokenPageContent: FC<{
           <IconButton color="inherit" onClick={navigateBack} aria-label="Back">
             <ArrowBackRoundedIcon />
           </IconButton>
-          <TokenIcon
-            chainId={network.id}
-            tokenAddress={token.address}
-            logoURI={token.logoURI}
-            symbol={token.symbol}
-          />
-          <Box sx={{ minWidth: 0 }}>
-            <Stack
-              direction="row"
-              sx={{
-                alignItems: "baseline",
-                gap: 1,
-                flexWrap: "wrap",
-              }}
-            >
-              <Typography variant={isBelowMd ? "h4" : "h3"} component="h1">
-                {token.name}
-              </Typography>
-              <Typography
-                variant="h5"
-                sx={{
-                  color: "text.secondary",
-                }}
-              >
-                {token.symbol}
-              </Typography>
-            </Stack>
-          </Box>
-          <Chip
-            size="small"
-            label={network.name}
-            avatar={<NetworkIcon network={network} size={18} fontSize={14} />}
-            sx={{ display: { xs: "none", md: "flex" } }}
-          />
+          {!isBelowMd ? tokenIdentity : null}
+          {!isBelowMd ? (
+            <Chip
+              size="small"
+              label={network.name}
+              avatar={<NetworkIcon network={network} size={18} fontSize={14} />}
+            />
+          ) : null}
+          <Box sx={{ flex: 1 }} />
+          {tokenActions}
         </Stack>
-        <Box
-          sx={{
-            display: "flex",
-            flexWrap: "wrap",
-            justifyContent: { sm: "flex-end" },
-            gap: 1,
-          }}
-        >
-          {!hasAddedToWallet ? (
-            <ConnectionBoundary expectedNetwork={network}>
-              {({ isConnected }) =>
-                isConnected ? (
-                  <AddToWalletButton
-                    token={token.address}
-                    symbol={token.symbol}
-                    decimals={token.decimals}
-                  />
-                ) : null
-              }
-            </ConnectionBoundary>
-          ) : null}
-          {streamPath ? (
-            <Tooltip title="Stream">
-              <IconButton
-                LinkComponent={Link}
-                href={streamPath}
-                data-cy="token-stream-button"
-                aria-label={`Stream ${token.symbol}`}
-                sx={tokenActionIconButtonSx}
-              >
-                <SendRoundedIcon />
-              </IconButton>
-            </Tooltip>
-          ) : null}
-          {wrapPath ? (
-            <Tooltip title="Wrap">
-              <IconButton
-                LinkComponent={Link}
-                href={wrapPath}
-                data-cy="token-wrap-button"
-                aria-label={`Wrap ${token.symbol}`}
-                sx={tokenActionIconButtonSx}
-              >
-                <AddCircleOutlineRoundedIcon />
-              </IconButton>
-            </Tooltip>
-          ) : null}
-          <Tooltip title="Transfer">
-            <IconButton
-              LinkComponent={Link}
-              href={transferPath}
-              data-cy="token-transfer-button"
-              aria-label={`Transfer ${token.symbol}`}
-              sx={tokenActionIconButtonSx}
-            >
-              <SwapHorizRoundedIcon />
-            </IconButton>
-          </Tooltip>
-          {!network.testnet ? (
-            <Tooltip title="Swap">
-              <IconButton
-                LinkComponent={Link}
-                href={swapPath}
-                data-cy="token-swap-button"
-                aria-label={`Swap ${token.symbol}`}
-                sx={tokenActionIconButtonSx}
-              >
-                <CurrencyExchangeRoundedIcon />
-              </IconButton>
-            </Tooltip>
-          ) : null}
-        </Box>
+        {isBelowMd ? tokenIdentity : null}
       </Stack>
 
       <Card sx={{ p: { xs: 2.5, md: 3 } }}>
@@ -397,14 +433,18 @@ const ERC20TokenPageContent: FC<{
             accountAddress={accountAddress}
             balance={balance}
             decimals={token.decimals}
-            loading={balanceQuery.isLoading || historyQuery.isLoading}
+            filter={graphFilter}
+            loading={
+              balanceQuery.isLoading || historyLoading || !graphHistoryLoaded
+            }
+            onFilterChange={setGraphFilter}
             symbol={token.symbol}
             transfers={transfers}
           />
         </Stack>
       </Card>
 
-      {historyQuery.isError && transfers.length === 0 ? (
+      {historyError && transfers.length === 0 ? (
         <Alert severity="error">
           Transfer history is unavailable for this token or network.
         </Alert>
@@ -462,8 +502,8 @@ const ERC20TokenPageContent: FC<{
               ) : null}
             </TableHead>
             <TableBody>
-              {(historyQuery.isLoading && transfers.length === 0) ||
-              (historyQuery.isFetching && visibleTransfers.length === 0) ? (
+              {(historyLoading && transfers.length === 0) ||
+              (historyFetching && visibleTransfers.length === 0) ? (
                 <TableRow>
                   <TableCell colSpan={3}>
                     <Skeleton height={58} />

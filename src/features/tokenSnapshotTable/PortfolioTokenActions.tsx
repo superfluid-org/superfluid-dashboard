@@ -4,32 +4,70 @@ import SendRoundedIcon from "@mui/icons-material/SendRounded";
 import SwapHorizRoundedIcon from "@mui/icons-material/SwapHorizRounded";
 import { IconButton, Stack, Tooltip } from "@mui/material";
 import { FC, MouseEvent } from "react";
+import { useAccount } from "@/hooks/useAccount";
+import { getAddress } from "../../utils/memoizedEthersUtils";
 import Link from "../common/Link";
+import { Flag } from "../flags/flags.slice";
+import { useHasFlag } from "../flags/flagsHooks";
+import { Network } from "../network/networks";
 import { tokenActionIconButtonSx } from "../token/tokenActionIconButtonStyles";
+import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
+import AddToWalletButton from "../wallet/AddToWalletButton";
 
-interface PortfolioMobileActionsProps {
+interface PortfolioTokenActionsProps {
+  decimals: number;
+  network: Network;
   streamPath?: string;
   swapPath?: string;
   symbol: string;
+  tokenAddress: string;
   transferPath: string;
   wrapPath?: string;
   onClick?: (event: MouseEvent<HTMLElement>) => void;
 }
 
-const PortfolioMobileActions: FC<PortfolioMobileActionsProps> = ({
+const PortfolioTokenActions: FC<PortfolioTokenActionsProps> = ({
+  decimals,
+  network,
   streamPath,
   swapPath,
   symbol,
+  tokenAddress,
   transferPath,
   wrapPath,
   onClick,
 }) => {
+  const { address: accountAddress } = useAccount();
+  const hasAddedToWallet = useHasFlag(
+    accountAddress
+      ? {
+          type: Flag.TokenAdded,
+          chainId: network.id,
+          token: getAddress(tokenAddress),
+          account: getAddress(accountAddress),
+        }
+      : undefined
+  );
+
   return (
     <Stack
       direction="row"
       onClick={onClick}
       sx={{ alignItems: "center", gap: 0.5, whiteSpace: "nowrap" }}
     >
+      {!hasAddedToWallet ? (
+        <ConnectionBoundary expectedNetwork={network}>
+          {({ isConnected }) =>
+            isConnected ? (
+              <AddToWalletButton
+                token={tokenAddress}
+                symbol={symbol}
+                decimals={decimals}
+              />
+            ) : null
+          }
+        </ConnectionBoundary>
+      ) : null}
       {streamPath ? (
         <Tooltip title="Stream">
           <IconButton
@@ -88,4 +126,4 @@ const PortfolioMobileActions: FC<PortfolioMobileActionsProps> = ({
   );
 };
 
-export default PortfolioMobileActions;
+export default PortfolioTokenActions;

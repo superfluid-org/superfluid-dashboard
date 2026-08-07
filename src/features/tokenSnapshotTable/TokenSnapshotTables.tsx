@@ -171,6 +171,7 @@ const PortfolioTotalCard: FC<PortfolioTotalCardProps> = ({
         py: { xs: 2, md: 2.5 },
         mb: 4,
         borderRadius: 3,
+        boxShadow: 1,
       }}
     >
       <Box

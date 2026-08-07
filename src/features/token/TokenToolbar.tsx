@@ -128,6 +128,91 @@ const TokenToolbar: FC<TokenToolbarProps> = ({ token, network, onBack }) => {
     fromChain: network.id,
     fromToken: tokenAddress,
   });
+  const tokenActions = (
+    <Box
+      sx={{
+        display: "flex",
+        flexWrap: "nowrap",
+        justifyContent: "flex-end",
+        gap: 1,
+      }}
+    >
+      {!hasAddedToWallet ? (
+        <ConnectionBoundary expectedNetwork={network}>
+          {({ isConnected }) =>
+            isConnected ? (
+              <AddToWalletButton
+                token={tokenAddress}
+                symbol={symbol}
+                decimals={decimals}
+              />
+            ) : null
+          }
+        </ConnectionBoundary>
+      ) : null}
+      <Tooltip title="Stream">
+        <IconButton
+          component={NextLink}
+          href={streamPath}
+          data-cy="token-stream-button"
+          aria-label={`Stream ${symbol}`}
+          sx={tokenActionIconButtonSx}
+        >
+          <SendRoundedIcon />
+        </IconButton>
+      </Tooltip>
+      <Tooltip title="Transfer">
+        <IconButton
+          component={NextLink}
+          href={transferPath}
+          data-cy="token-transfer-button"
+          aria-label={`Transfer ${symbol}`}
+          sx={tokenActionIconButtonSx}
+        >
+          <SwapHorizRoundedIcon />
+        </IconButton>
+      </Tooltip>
+      {!network.testnet ? (
+        <Tooltip title="Swap">
+          <IconButton
+            component={NextLink}
+            href={swapPath}
+            data-cy="token-swap-button"
+            aria-label={`Swap ${symbol}`}
+            sx={tokenActionIconButtonSx}
+          >
+            <CurrencyExchangeRoundedIcon />
+          </IconButton>
+        </Tooltip>
+      ) : null}
+      {wrappable ? (
+        <>
+          <Tooltip title="Wrap">
+            <IconButton
+              component={NextLink}
+              href={`/wrap?upgrade&token=${token.address}&network=${network.slugName}`}
+              data-cy="wrap-button"
+              aria-label={`Wrap ${symbol}`}
+              sx={tokenActionIconButtonSx}
+            >
+              <AddIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Unwrap">
+            <IconButton
+              component={NextLink}
+              href={`/wrap?downgrade&token=${token.address}&network=${network.slugName}`}
+              data-cy="unwrap-button"
+              aria-label={`Unwrap ${symbol}`}
+              sx={tokenActionIconButtonSx}
+            >
+              <RemoveIcon />
+            </IconButton>
+          </Tooltip>
+        </>
+      ) : null}
+    </Box>
+  );
 
   return (
     <Stack
@@ -163,6 +248,8 @@ const TokenToolbar: FC<TokenToolbarProps> = ({ token, network, onBack }) => {
             />
           </>
         )}
+        <Box sx={{ flex: 1 }} />
+        {tokenActions}
       </Stack>
       {isBelowMd && (
         <TokenToolbarData
@@ -173,89 +260,6 @@ const TokenToolbar: FC<TokenToolbarProps> = ({ token, network, onBack }) => {
           isUnlisted={!isListed}
         />
       )}
-      <Box
-        sx={{
-          display: "flex",
-          flexWrap: "wrap",
-          justifyContent: { sm: "flex-end" },
-          gap: 1,
-        }}
-      >
-        {!hasAddedToWallet ? (
-          <ConnectionBoundary expectedNetwork={network}>
-            {({ isConnected }) =>
-              isConnected ? (
-                <AddToWalletButton
-                  token={tokenAddress}
-                  symbol={symbol}
-                  decimals={decimals}
-                />
-              ) : null
-            }
-          </ConnectionBoundary>
-        ) : null}
-        <Tooltip title="Stream">
-          <IconButton
-            component={NextLink}
-            href={streamPath}
-            data-cy="token-stream-button"
-            aria-label={`Stream ${symbol}`}
-            sx={tokenActionIconButtonSx}
-          >
-            <SendRoundedIcon />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Transfer">
-          <IconButton
-            component={NextLink}
-            href={transferPath}
-            data-cy="token-transfer-button"
-            aria-label={`Transfer ${symbol}`}
-            sx={tokenActionIconButtonSx}
-          >
-            <SwapHorizRoundedIcon />
-          </IconButton>
-        </Tooltip>
-        {!network.testnet ? (
-          <Tooltip title="Swap">
-            <IconButton
-              component={NextLink}
-              href={swapPath}
-              data-cy="token-swap-button"
-              aria-label={`Swap ${symbol}`}
-              sx={tokenActionIconButtonSx}
-            >
-              <CurrencyExchangeRoundedIcon />
-            </IconButton>
-          </Tooltip>
-        ) : null}
-        {wrappable ? (
-          <>
-            <Tooltip title="Wrap">
-              <IconButton
-                component={NextLink}
-                href={`/wrap?upgrade&token=${token.address}&network=${network.slugName}`}
-                data-cy="wrap-button"
-                aria-label={`Wrap ${symbol}`}
-                sx={tokenActionIconButtonSx}
-              >
-                <AddIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Unwrap">
-              <IconButton
-                component={NextLink}
-                href={`/wrap?downgrade&token=${token.address}&network=${network.slugName}`}
-                data-cy="unwrap-button"
-                aria-label={`Unwrap ${symbol}`}
-                sx={tokenActionIconButtonSx}
-              >
-                <RemoveIcon />
-              </IconButton>
-            </Tooltip>
-          </>
-        ) : null}
-      </Box>
     </Stack>
   );
 };

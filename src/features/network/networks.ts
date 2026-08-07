@@ -993,6 +993,7 @@ export const allNetworks: [Network, ...Network[]] = orderBy(
       networkDefinition.sepolia,
       networkDefinition.base,
       networkDefinition.baseSepolia,
+      networkDefinition.degenChain,
       networkDefinition.scroll,
     ],
     (x) => x.id // Put lower ids first (Ethereum mainnet will be first)
@@ -1082,10 +1083,6 @@ export const deprecatedNetworkChainIds = [
  * flagged there.
  */
 const metadataNetworkExclusions = new Map<number, string>([
-  [
-    666666666,
-    "Degen Chain is disabled for the ERC-20 portfolio PR because its public RPC was preventing portfolio totals from completing.",
-  ],
   [
     534351,
     "Scroll Sepolia is discontinued, and its canonical Superfluid subgraph alias was serving Optimism Sepolia data (reported upstream).",

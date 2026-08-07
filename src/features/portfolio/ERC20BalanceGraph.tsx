@@ -1,37 +1,118 @@
-import { Skeleton, Stack, Typography, useTheme } from "@mui/material";
+import { Skeleton, Stack, useTheme } from "@mui/material";
 import { ChartOptions } from "chart.js";
+import { sub } from "date-fns";
 import { BigNumber, ethers } from "ethers";
 import { FC, useMemo } from "react";
 import LineChart, { DataPoint } from "../../components/Chart/LineChart";
-import { buildDefaultDatasetConf } from "../../utils/chartUtils";
+import {
+  buildDefaultDatasetConf,
+  getFilteredStartDate,
+} from "../../utils/chartUtils";
+import TimeUnitFilter, { TimeUnitFilterType } from "../graph/TimeUnitFilter";
 import { ERC20TransferHistoryItem } from "./erc20TransferHistory";
+
+export const ERC20_GRAPH_TIME_FILTERS = [
+  TimeUnitFilterType.Week,
+  TimeUnitFilterType.Month,
+  TimeUnitFilterType.Quarter,
+  TimeUnitFilterType.Year,
+  TimeUnitFilterType.All,
+];
 
 interface ERC20BalanceGraphProps {
   accountAddress: string;
   balance?: string;
   decimals: number;
+  filter: TimeUnitFilterType;
   loading: boolean;
+  onFilterChange: (filter: TimeUnitFilterType) => void;
   symbol: string;
   transfers: ERC20TransferHistoryItem[];
+}
+
+interface TransferGroup {
+  incoming: BigNumber;
+  outgoing: BigNumber;
+  timestamp: number;
 }
 
 const ERC20BalanceGraph: FC<ERC20BalanceGraphProps> = ({
   accountAddress,
   balance,
   decimals,
+  filter,
   loading,
+  onFilterChange,
   symbol,
   transfers,
 }) => {
   const theme = useTheme();
   const height = 190;
 
-  const dataset = useMemo<DataPoint[]>(() => {
-    if (balance === undefined || transfers.length === 0) return [];
+  const { dataset, rangeStart, rangeEnd } = useMemo(() => {
+    const now = new Date();
+    const end = now.getTime();
+    const parsedTransferTimestamps = transfers
+      .map(({ timestamp }) => Date.parse(timestamp))
+      .filter(Number.isFinite);
+    const earliestTransfer =
+      parsedTransferTimestamps.length > 0
+        ? Math.min(...parsedTransferTimestamps)
+        : sub(now, { months: 1 }).getTime();
+    const start =
+      filter === TimeUnitFilterType.All
+        ? Math.max(0, earliestTransfer - 1)
+        : getFilteredStartDate(filter, now, now).getTime();
+
+    if (balance === undefined) {
+      return { dataset: [], rangeStart: start, rangeEnd: end };
+    }
 
     const lowerAccountAddress = accountAddress.toLowerCase();
+    const groupedTransfers = new Map<number, TransferGroup>();
+
+    transfers.forEach((transfer) => {
+      const timestamp = Date.parse(transfer.timestamp);
+      if (!Number.isFinite(timestamp) || timestamp < start || timestamp > end) {
+        return;
+      }
+
+      const isIncoming = transfer.to === lowerAccountAddress;
+      const isOutgoing = transfer.from === lowerAccountAddress;
+      if (isIncoming === isOutgoing) return;
+
+      try {
+        const current = groupedTransfers.get(timestamp) ?? {
+          incoming: BigNumber.from(0),
+          outgoing: BigNumber.from(0),
+          timestamp,
+        };
+        const amount = BigNumber.from(transfer.rawValue);
+        groupedTransfers.set(timestamp, {
+          ...current,
+          incoming: isIncoming
+            ? current.incoming.add(amount)
+            : current.incoming,
+          outgoing: isOutgoing
+            ? current.outgoing.add(amount)
+            : current.outgoing,
+        });
+      } catch {
+        // Ignore malformed transfer values without dropping valid history.
+      }
+    });
+
+    const groupsDescending = [...groupedTransfers.values()].sort(
+      (first, second) => second.timestamp - first.timestamp
+    );
     let runningBalance = BigNumber.from(balance);
-    const points: DataPoint[] = [];
+    const balanceAfterTransfer = new Map<number, BigNumber>();
+
+    groupsDescending.forEach(({ incoming, outgoing, timestamp }) => {
+      balanceAfterTransfer.set(timestamp, runningBalance);
+      runningBalance = runningBalance.sub(incoming).add(outgoing);
+    });
+
     const toPoint = (x: number, value: BigNumber): DataPoint => {
       const nonNegativeValue = value.isNegative() ? BigNumber.from(0) : value;
       const formatted = ethers.utils.formatUnits(nonNegativeValue, decimals);
@@ -44,45 +125,20 @@ const ERC20BalanceGraph: FC<ERC20BalanceGraphProps> = ({
       };
     };
 
-    const groups = new Map<number, ERC20TransferHistoryItem[]>();
-    transfers.forEach((transfer) => {
-      const timestamp = Date.parse(transfer.timestamp);
-      if (!Number.isFinite(timestamp)) return;
-      const group = groups.get(timestamp) ?? [];
-      group.push(transfer);
-      groups.set(timestamp, group);
-    });
+    const points = [toPoint(start, runningBalance)];
+    [...balanceAfterTransfer.entries()]
+      .sort(
+        ([firstTimestamp], [secondTimestamp]) =>
+          firstTimestamp - secondTimestamp
+      )
+      .forEach(([timestamp, value]) => points.push(toPoint(timestamp, value)));
 
-    const timestamps = [...groups.keys()].sort((a, b) => b - a);
-    if (timestamps.length === 0) return [];
-    const latestTimestamp = timestamps[0];
-    points.push(
-      toPoint(Math.max(Date.now(), latestTimestamp + 1), runningBalance)
-    );
+    if (points[points.length - 1]?.x !== end) {
+      points.push(toPoint(end, BigNumber.from(balance)));
+    }
 
-    timestamps.forEach((timestamp) => {
-      points.push(toPoint(timestamp, runningBalance));
-
-      groups.get(timestamp)?.forEach((transfer) => {
-        const isIncoming = transfer.to === lowerAccountAddress;
-        const isOutgoing = transfer.from === lowerAccountAddress;
-        if (isIncoming === isOutgoing) return;
-
-        try {
-          const amount = BigNumber.from(transfer.rawValue);
-          runningBalance = isIncoming
-            ? runningBalance.sub(amount)
-            : runningBalance.add(amount);
-        } catch {
-          // Ignore malformed values while preserving the rest of the history.
-        }
-      });
-
-      points.push(toPoint(timestamp - 1, runningBalance));
-    });
-
-    return points.sort((a, b) => a.x - b.x);
-  }, [accountAddress, balance, decimals, symbol, transfers]);
+    return { dataset: points, rangeStart: start, rangeEnd: end };
+  }, [accountAddress, balance, decimals, filter, symbol, transfers]);
 
   const options = useMemo<ChartOptions<"line">>(
     () => ({
@@ -92,18 +148,15 @@ const ERC20BalanceGraph: FC<ERC20BalanceGraphProps> = ({
         intersect: false,
       },
       scales: {
-        x:
-          dataset.length > 1
-            ? {
-                min: dataset[0].x,
-                max: dataset[dataset.length - 1].x,
-                offset: true,
-              }
-            : { offset: true },
+        x: {
+          min: rangeStart,
+          max: rangeEnd,
+          offset: true,
+        },
         y: { beginAtZero: true },
       },
     }),
-    [dataset]
+    [rangeEnd, rangeStart]
   );
 
   const datasetsConfigCallbacks = useMemo(
@@ -111,42 +164,35 @@ const ERC20BalanceGraph: FC<ERC20BalanceGraphProps> = ({
       (context: CanvasRenderingContext2D) => ({
         ...buildDefaultDatasetConf(context, theme.palette.primary.main, height),
         label: `${symbol} balance`,
-        stepped: "after" as const,
-        tension: 0,
-        pointRadius: dataset.length <= 50 ? 3 : 0,
+        tension: 0.18,
+        spanGaps: true,
+        pointRadius: 0,
+        pointHoverRadius: 4,
       }),
     ],
-    [dataset.length, symbol, theme.palette.primary.main]
+    [symbol, theme.palette.primary.main]
   );
 
-  if (loading && balance === undefined) {
-    return <Skeleton variant="rounded" width="100%" height={height} />;
-  }
-
-  if (dataset.length === 0) {
-    return (
-      <Stack
-        sx={{
-          alignItems: "center",
-          justifyContent: "center",
-          height,
-          color: "text.secondary",
-        }}
-      >
-        <Typography variant="body2">
-          Balance history will appear after the first indexed transfer.
-        </Typography>
-      </Stack>
-    );
-  }
-
   return (
-    <LineChart
-      height={height}
-      datasets={[dataset]}
-      options={options}
-      datasetsConfigCallbacks={datasetsConfigCallbacks}
-    />
+    <Stack sx={{ gap: 1.5 }}>
+      <Stack direction="row" sx={{ justifyContent: "flex-end" }}>
+        <TimeUnitFilter
+          activeFilter={filter}
+          onChange={onFilterChange}
+          options={ERC20_GRAPH_TIME_FILTERS}
+        />
+      </Stack>
+      {loading || balance === undefined ? (
+        <Skeleton variant="rounded" width="100%" height={height} />
+      ) : (
+        <LineChart
+          height={height}
+          datasets={[dataset]}
+          options={options}
+          datasetsConfigCallbacks={datasetsConfigCallbacks}
+        />
+      )}
+    </Stack>
   );
 };
 
