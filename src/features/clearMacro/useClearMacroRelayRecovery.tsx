@@ -110,6 +110,8 @@ const PendingIntentReplayer: FC<{ intent: PendingRelayIntent }> = ({
   const dispatch = useAppDispatch();
   const startedRef = useRef(false);
 
+  const expiryMs = (intent.validBefore + GRACE_SECONDS) * 1000;
+
   useEffect(() => {
     if (startedRef.current) return;
     startedRef.current = true;
@@ -117,7 +119,32 @@ const PendingIntentReplayer: FC<{ intent: PendingRelayIntent }> = ({
     let cancelled = false;
 
     const run = async () => {
-      if (intent.replayAttempts >= MAX_INTENT_REPLAY_ATTEMPTS) return;
+      // Past its own validity window the payload can no longer land, so whatever became of the
+      // POST, the guards this intent holds are meaningless. Without this an intent whose create
+      // was never answered would hold Guard A and Guard B forever — the same
+      // never-release-on-uncertainty failure the tombstone bound exists to avoid, in the one
+      // place that has no execution id to tombstone.
+      if (Date.now() > expiryMs) {
+        dispatch(relayRecoveryActions.clearPendingIntent(intent.clientRequestId));
+        await reduxPersistor.flush();
+        return;
+      }
+      if (intent.replayAttempts >= MAX_INTENT_REPLAY_ATTEMPTS) {
+        // Out of attempts but still inside the window: keep the intent (and its guards), and
+        // say so, because the user is otherwise blocked from that action with no explanation
+        // and no record of the message hash to check in Safe.
+        toast.warning(
+          `A gasless request couldn't be confirmed with the service. If you approved it in Safe it may still go through, so this action stays blocked until ${new Date(
+            expiryMs
+          ).toLocaleString()}. Safe message: ${intent.safeMessageHash}`,
+          {
+            toastId: `relay-intent-stuck-${intent.clientRequestId}`,
+            autoClose: false,
+            position: "bottom-right",
+          }
+        );
+        return;
+      }
       dispatch(
         relayRecoveryActions.countIntentReplayAttempt(intent.clientRequestId)
       );
@@ -142,20 +169,9 @@ const PendingIntentReplayer: FC<{ intent: PendingRelayIntent }> = ({
       }
       if (cancelled) return;
 
-      if (intent.cancelRequested) {
-        try {
-          await cancelRelayExecution(execution.id);
-          dispatch(relayRecoveryActions.releaseGuard(execution.id));
-        } catch {
-          // Unknown outcome — the guard stays armed via the intent below.
-        }
-        dispatch(
-          relayRecoveryActions.clearPendingIntent(intent.clientRequestId)
-        );
-        await reduxPersistor.flush();
-        return;
-      }
-
+      // Promote FIRST, unconditionally — including when a cancel is pending. The execution now
+      // demonstrably exists, and the recovery entry is what carries its write guards and its
+      // Cancel affordance from here on. Clearing the intent without promoting would drop both.
       const display = decodeRelayIntentDisplayMeta(intent.displayMeta);
       dispatch(
         relayRecoveryActions.registerLive({
@@ -182,16 +198,41 @@ const PendingIntentReplayer: FC<{ intent: PendingRelayIntent }> = ({
             : undefined,
           actionFingerprint: intent.actionFingerprint || undefined,
           clientRequestId: intent.clientRequestId,
+          cancelRequested: intent.cancelRequested,
         })
       );
       await reduxPersistor.flush();
+
+      if (!intent.cancelRequested) return;
+
+      // A cancel was decided before this execution had an id — the whole reason the flag is
+      // durable. Carry it out now. If it does NOT succeed the entry stays exactly as it is,
+      // guards armed, and the user can retry the cancel from its pending toast; releasing on an
+      // unconfirmed cancel is the double-spend this guards against.
+      try {
+        await cancelRelayExecution(execution.id);
+        dispatch(relayRecoveryActions.releaseGuard(execution.id));
+        dispatch(relayRecoveryActions.resolveAndRemove(execution.id));
+        await reduxPersistor.flush();
+      } catch {
+        // Left armed deliberately.
+      }
     };
 
     void run();
+    // Also expire it while the tab stays open, so a long-lived session releases the guards at
+    // the same moment a reload would.
+    const timer = setTimeout(
+      () => {
+        dispatch(relayRecoveryActions.clearPendingIntent(intent.clientRequestId));
+      },
+      Math.max(0, expiryMs - Date.now())
+    );
     return () => {
       cancelled = true;
+      clearTimeout(timer);
     };
-  }, [dispatch, intent]);
+  }, [dispatch, intent, expiryMs]);
 
   return null;
 };
