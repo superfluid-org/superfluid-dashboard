@@ -3,6 +3,7 @@ import { defaultAppDescription } from '../../components/SEO/StaticSEO';
 import { allNetworks, findNetworkOrThrow } from '../network/networks';
 import appConfig from "../../utils/config";
 import { safe } from 'wagmi/connectors';
+import { SAFE_APPS_ALLOWED_DOMAINS } from './safeAppsAllowedDomains';
 import { getPublicClient, GetPublicClientReturnType } from "wagmi/actions"
 import { Address, createWalletClient } from "viem";
 
@@ -198,18 +199,9 @@ const wagmiAdapter = new WagmiAdapter({
   storage: typeof window !== "undefined" ? createStorage({ storage: window.localStorage }) : undefined,
   connectors: [
     safe({
-      // These are matched against `event.origin` of the parent frame and decide whose
-      // messages the Safe Apps SDK will trust (`PostMessageCommunicator.isValidMessage`).
-      // Anchor and escape every pattern: an unanchored `/app.safe.global$/` also admits
-      // `https://appXsafeYglobal`, and an unanchored `/gnosis-safe.io$/` also admits
-      // `https://evilgnosis-safe.io` — both attacker-registrable. Follow the shape the
-      // coinshift entry already uses.
-      allowedDomains: [
-        /^https:\/\/(?:[^\/]+\.)?gnosis-safe\.io$/,
-        /^https:\/\/(?:[^\/]+\.)?app\.safe\.global$/,
-        /^https:\/\/(?:[^\/]+\.)?coinshift\.xyz$/,
-        /^http:\/\/(localhost|127\.0\.0\.1):(\d+)$/,
-      ],
+      // Shared with the Clear Macro relay's own Safe Apps SDK instance so the two clients
+      // cannot drift — see the note in `safeAppsAllowedDomains.ts`.
+      allowedDomains: SAFE_APPS_ALLOWED_DOMAINS,
       debug: false,
       shimDisconnect: true
     }),

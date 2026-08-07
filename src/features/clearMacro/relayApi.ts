@@ -214,6 +214,25 @@ export function getCapabilities(): Promise<RelayCapabilities> {
   return promise;
 }
 
+/**
+ * Whether a provider-returned `messageLink` is safe to render as a link.
+ *
+ * Only the provider's own link is ever rendered — Safe URLs are never constructed from chain
+ * names — and even that is validated: it is persisted, so it outlives the response it came in,
+ * and a link is a user-visible navigation target. An absent or unusable link degrades to the
+ * execution id and explanatory text rather than a broken button.
+ */
+export function isRenderableMessageLink(
+  link: string | undefined
+): link is string {
+  if (!link) return false;
+  try {
+    return new URL(link).protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 /** Whether the provider accepts `clearMacroPermit2V1` (pay-with-USDC) on this chain. */
 export function chainSupportsPermit2(
   capabilities: RelayCapabilities,

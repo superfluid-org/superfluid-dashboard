@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
+import { useStore } from "react-redux";
 import {
   Abi,
   Address,
@@ -10,7 +11,7 @@ import * as Sentry from "@sentry/react";
 import { useConfig } from "wagmi";
 import { getPublicClient, simulateContract, writeContract } from "@wagmi/core";
 import { TransactionInfo, TransactionTitle } from "@superfluid-finance/sdk-redux";
-import { reduxPersistor, useAppDispatch } from "../redux/store";
+import { reduxPersistor, RootState, useAppDispatch } from "../redux/store";
 import { useAccount } from "@/hooks/useAccount";
 import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import MutationResult, { RelayPhase } from "../../MutationResult";
@@ -28,16 +29,35 @@ import {
   useClearMacroPaymentMode,
 } from "../settings/appSettingsHooks";
 import { ClearMacroAction } from "../clearMacro/dashboardClearMacro";
-import { isClearMacroSupportedOnNetwork } from "../clearMacro/useClearMacroEligibility";
+import {
+  isClearMacroSupportedOnNetwork,
+  SAFE_CONNECTOR_ID,
+} from "../clearMacro/useClearMacroEligibility";
+import { useRelayCapabilities } from "../clearMacro/useRelayCapabilities";
+import {
+  actionFingerprint,
+  isBlockedByGuards,
+} from "../clearMacro/actionFingerprint";
+import {
+  ClearMacroSafeAuthorizationFailedError,
+  ClearMacroSafeAuthorizationPendingError,
+} from "../clearMacro/executeSafeAuthorization";
 import {
   ClearMacroInsufficientFeeError,
   ClearMacroNotEligibleError,
   ClearMacroPermit2ApprovalRequiredError,
   executeClearMacro,
 } from "../clearMacro/executeClearMacro";
-import { ClearMacroRelayError } from "../clearMacro/relayApi";
 import {
+  chainSupportsSafeMessage,
+  ClearMacroRelayError,
+  isRenderableMessageLink,
+  type RelayAuthorizationMethod,
+} from "../clearMacro/relayApi";
+import {
+  encodeRelayIntentDisplayMeta,
   relayRecoveryActions,
+  selectRelayWriteGuards,
   toJsonSafe,
 } from "../clearMacro/relayRecovery.slice";
 import { trackTransaction } from "./trackTransaction";
@@ -143,12 +163,17 @@ const GAS_LIMIT_MULTIPLIER_DEN = 100n;
 export function useSuperfluidWriteContract() {
   const config = useConfig();
   const dispatch = useAppDispatch();
-  const { address } = useAccount();
+  const { address, connector } = useAccount();
   const getTransactionOverrides = useGetTransactionOverrides();
   const clearMacroEnabled = useClearMacroEnabled();
   const clearMacroPaymentMode = useClearMacroPaymentMode();
   const { isEOA, visibleAddress } = useVisibleAddress();
+  const store = useStore<RootState>();
+  const { data: relayCapabilities } = useRelayCapabilities();
   const [relayPhase, setRelayPhase] = useState<RelayPhase | undefined>();
+  const [safeAwaitingAuthorization, setSafeAwaitingAuthorization] = useState<
+    { executionId: string; validBefore: number } | undefined
+  >();
   const [relayStatusUnknown, setRelayStatusUnknown] = useState<
     { executionId: string } | undefined
   >();
@@ -163,6 +188,7 @@ export function useSuperfluidWriteContract() {
     onMutate: () => {
       setRelayPhase(undefined);
       setRelayStatusUnknown(undefined);
+      setSafeAwaitingAuthorization(undefined);
     },
     // Centralized Sentry logging for write failures. The old RTK Query write path got this from
     // the `sentryErrorLogger` Redux middleware (store.ts), which no longer sees these wagmi /
@@ -176,6 +202,16 @@ export function useSuperfluidWriteContract() {
       if (
         error instanceof ClearMacroRelayError &&
         error.code === "POLL_TIMEOUT"
+      )
+        return;
+      // A Safe authorization that is simply still open. Control flow, not a failure.
+      if (error instanceof ClearMacroSafeAuthorizationPendingError) return;
+      // The user declined in Safe, or the wallet took the on-chain signing route — both are
+      // user-side conditions the dialog explains. A hash mismatch is the one case here that IS
+      // a bug, and it reports itself where it is detected, with both hashes attached.
+      if (
+        error instanceof ClearMacroSafeAuthorizationFailedError &&
+        error.reason !== "hash-mismatch"
       )
         return;
       // A known fee-balance shortfall surfaced before signing — the dialog explains it; not a bug.
@@ -227,12 +263,46 @@ export function useSuperfluidWriteContract() {
       // (not just the gas sentinel — `isEOA` is null while still classifying the wallet).
       // `isEOA` classifies the VISIBLE address, so it only stands for the signer when
       // they are the same account (i.e. not impersonating).
+      // How this signer would authorize the digest, resolved BEFORE entering the relay branch
+      // so the no-fallback rule below can key off a settled answer. A Safe only qualifies once
+      // the provider positively confirms `safeMessageV1` for this chain — otherwise it stays
+      // ineligible and takes the ordinary paid path, which is the right outcome on a
+      // signature-only chain.
+      const authorizationMethod: RelayAuthorizationMethod | undefined =
+        isEOA === true
+          ? "signature"
+          : isEOA === false &&
+              connector?.id === SAFE_CONNECTOR_ID &&
+              relayCapabilities &&
+              chainSupportsSafeMessage(relayCapabilities, params.chainId)
+            ? "safeMessageV1"
+            : undefined;
+      const isSafeAuthorization = authorizationMethod === "safeMessageV1";
+
+      const clearMacroFingerprint = params.clearMacro
+        ? actionFingerprint(params.clearMacro)
+        : undefined;
+
+      // Guard A — nonce collision. The forwarder uses nonce key 0, so a second gasless payload
+      // for the same signer reuses the same on-chain nonce and creates competing intents that
+      // can both admit. Best-effort and per-browser: another tab, device, or Safe owner can
+      // still collide. Provider-side nonce exclusion is the intended real mechanism.
+      const activeGuards = selectRelayWriteGuards(store.getState());
+      const isGaslessBlockedByGuardA = isBlockedByGuards(
+        activeGuards,
+        { chainId: params.chainId, signerAddress: address },
+        "A"
+      );
+
       if (
         params.clearMacro &&
         clearMacroEnabled &&
-        isEOA === true &&
+        authorizationMethod !== undefined &&
+        !isGaslessBlockedByGuardA &&
         visibleAddress?.toLowerCase() === address.toLowerCase() &&
-        !isSmartWallet &&
+        // The smart-wallet gas sentinel disqualifies the EOA path but NOT a Safe — a Safe is
+        // expected to be a smart wallet, and it never reaches a self-paid estimate anyway.
+        (isSafeAuthorization || !isSmartWallet) &&
         // Same predicate the UI eligibility hook uses (network is derived from
         // `params.chainId` above, so this covers the forwarder check too) — it also
         // carries the NEXT_PUBLIC_DISABLE_CLEAR_MACRO kill switch, so the gate the
@@ -262,10 +332,53 @@ export function useSuperfluidWriteContract() {
             onPhase: setRelayPhase,
             // Persist the execution the moment the relay accepts the signed payload, BEFORE
             // polling — and flush so a closed tab / reload / poll timeout can't orphan it.
+            authorizationMethod,
+            actionFingerprint: clearMacroFingerprint,
+            // Persisted BEFORE the POST for the Safe path: the guards are armed from here, and
+            // an unanswered POST can then be replayed byte-for-byte instead of guessed at.
+            onIntentCreated: async (intent) => {
+              dispatch(
+                relayRecoveryActions.registerPendingIntent({
+                  clientRequestId: intent.clientRequestId,
+                  chainId: params.chainId,
+                  signerAddress: address,
+                  safeMessageHash: intent.safeMessageHash,
+                  validBefore: intent.validBefore,
+                  postBody: intent.postBody,
+                  actionFingerprint: clearMacroFingerprint ?? "",
+                  cancelRequested: false,
+                  actionKind: clearMacroAction.kind,
+                  createdAt: Date.now(),
+                  replayAttempts: 0,
+                  displayMeta: encodeRelayIntentDisplayMeta({
+                    title: params.title,
+                    subTransactionTitles: params.subTransactionTitles,
+                    extraData: toJsonSafe(params.extraData),
+                  }),
+                })
+              );
+              await reduxPersistor.flush();
+            },
+            onCancelRequested: async (ref) => {
+              dispatch(relayRecoveryActions.requestCancel(ref));
+              await reduxPersistor.flush();
+            },
+            onCancelConfirmed: async (executionId) => {
+              dispatch(relayRecoveryActions.releaseGuard(executionId));
+              await reduxPersistor.flush();
+            },
+            onSafeAuthorizationPending: async () => {
+              // The entry is already persisted by `onExecutionCreated`; the mutation settles
+              // through the thrown pending signal, handled in the catch below.
+            },
             onExecutionCreated: async ({
               executionId,
               validBefore,
               fallbackValidityWindowSeconds,
+              clientRequestId,
+              safeMessageHash,
+              messageLink,
+              safeThreshold,
             }) => {
               createdExecutionId = executionId;
               dispatch(
@@ -280,6 +393,18 @@ export function useSuperfluidWriteContract() {
                   extraData: toJsonSafe(params.extraData),
                   actionKind: clearMacroAction.kind,
                   createdAt: Date.now(),
+                  ...(safeMessageHash
+                    ? {
+                        authorizationType: "safeMessageV1" as const,
+                        safeMessageHash,
+                        messageLink: isRenderableMessageLink(messageLink)
+                          ? messageLink
+                          : undefined,
+                        safeThreshold,
+                        actionFingerprint: clearMacroFingerprint,
+                        clientRequestId,
+                      }
+                    : {}),
                 })
               );
               await reduxPersistor.flush();
@@ -307,7 +432,42 @@ export function useSuperfluidWriteContract() {
 
           return { hash, chainId: params.chainId };
         } catch (error) {
-          if (error instanceof ClearMacroNotEligibleError) {
+          if (
+            error instanceof ClearMacroSafeAuthorizationPendingError
+          ) {
+            // Not a failure: the execution exists and the Safe's owners are still approving
+            // it. Settle the mutation through a dedicated phase rather than fabricating a
+            // transaction hash, and hand the execution to the background poller.
+            dispatch(
+              relayRecoveryActions.handOffToRecovery(error.executionId)
+            );
+            setRelayPhase("safe-awaiting-authorization");
+            setSafeAwaitingAuthorization({
+              executionId: error.executionId,
+              validBefore: error.validBefore,
+            });
+            throw error;
+          } else if (
+            error instanceof ClearMacroSafeAuthorizationFailedError
+          ) {
+            // Positively cannot complete. The execution was cancelled if it could be — and
+            // when it could NOT be, the guards deliberately stay armed so a direct write of
+            // the same action is still blocked.
+            if (error.executionId && error.cancelConfirmed) {
+              dispatch(relayRecoveryActions.resolveAndRemove(error.executionId));
+            }
+            throw error;
+          } else if (error instanceof ClearMacroNotEligibleError) {
+            if (isSafeAuthorization) {
+              // A Safe never falls back to a paid write. Gasless→paid is not a cost detail
+              // here: it is a different multi-owner ceremony with its own co-signer round and
+              // its own gas, and the user opted into gasless explicitly. If they want the paid
+              // path they turn gasless off themselves, which goes through the guards.
+              throw new Error(
+                "This Safe's gasless transaction couldn't be prepared, so nothing was sent. Turn off the gasless option if you'd rather send it as a normal Safe transaction.",
+                { cause: error }
+              );
+            }
             if (params.clearMacroRequired) {
               // A forced write must never self-pay (the relay fee IS the payment for the
               // scheduling service) — surface a readable message instead of falling back.
@@ -373,6 +533,35 @@ export function useSuperfluidWriteContract() {
         // states, so this is a belt-and-suspenders guard — fail closed, never self-pay.
         throw new Error(
           "This change needs to be sent gaslessly. Turn on the gasless option and try again."
+        );
+      }
+
+      // Guard B — double spend. THE single enforcement point: every write that is not going
+      // through the relay passes here. While an unresolved gasless intent exists for this
+      // exact action, writing it directly could execute it twice — the relay can still run the
+      // intent, and a direct write does not consume the forwarder nonce, so `transfer`,
+      // `upgrade` and `downgrade` would move funds a second time.
+      //
+      // Releasing this requires a cancel that returned 2xx, never a timeout. Blocking on an
+      // unknown cancel outcome is the only safe default.
+      //
+      // What it catches: the escape-hatch affordance, where the action is the same object, and
+      // a hand-rebuilt identical action. What it does NOT catch: a semantically equivalent
+      // action composed differently. It is a guard, not a proof.
+      if (
+        clearMacroFingerprint &&
+        isBlockedByGuards(
+          selectRelayWriteGuards(store.getState()),
+          {
+            chainId: params.chainId,
+            signerAddress: address,
+            actionFingerprint: clearMacroFingerprint,
+          },
+          "B"
+        )
+      ) {
+        throw new Error(
+          "A gasless version of this transaction is still open and could still go through. Cancel it first — sending this now could run it twice."
         );
       }
 
@@ -449,9 +638,11 @@ export function useSuperfluidWriteContract() {
     data: mutation.data,
     relayPhase,
     relayStatusUnknown,
+    safeAwaitingAuthorization,
     reset: () => {
       setRelayPhase(undefined);
       setRelayStatusUnknown(undefined);
+      setSafeAwaitingAuthorization(undefined);
       mutation.reset();
     },
   };
