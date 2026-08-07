@@ -20,6 +20,10 @@ import "cypress-real-events";
 // Passive per-test network/console telemetry, dumped to
 // tests/cypress/results/telemetry/ when a test fails. See ./telemetry.js.
 import { recordException } from "./telemetry";
+// Seeds the app's own "hidden networks" preference so Degen Chain -- dead, and
+// serving HTTP 429 -- is switched off before redux-persist rehydrates. Imported
+// for its side effect. See ./degenExclusion.ts.
+import "./degenExclusion";
 
 Cypress.on("uncaught:exception", (err, runnable) => {
   // Record first, then fall through to the untouched ignore-list below. This

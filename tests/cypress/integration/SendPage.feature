@@ -153,7 +153,6 @@ Feature: Send Page test cases
 
   Scenario: Stream tables - stream with just start date
     Given "Dashboard Page" is open with "john" connected on "opsepolia"
-    And No loading skeletons are visible in the page
     And User clicks on "opsepolia" "fTUSDx" row
     Then The stream row to "0xD60e9B498b731370850F240E57d265eCdd97fbCd" has a flow rate of "-1" and dates to "22 Jul. 2026 01:00"
     And User clicks on "opsepolia" "fTUSDx" row
@@ -162,7 +161,6 @@ Feature: Send Page test cases
 
   Scenario: Stream tables - stream with start and end date
     Given "Dashboard Page" is open with "john" connected on "opsepolia"
-    And No loading skeletons are visible in the page
     And User clicks on "opsepolia" "fTUSDx" row
     Then The stream row to "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4" has a flow rate of "-1" and dates to "22 Jul. 2026 01:0031 Dec. 2026 23:00"
     And User clicks on "opsepolia" "fTUSDx" row
@@ -171,7 +169,6 @@ Feature: Send Page test cases
 
   Scenario: Stream tables - stream with end date
     Given "Dashboard Page" is open with "john" connected on "opsepolia"
-    And No loading skeletons are visible in the page
     And User clicks on "opsepolia" "fTUSDx" row
     Then The stream row to "0x9B6157d44134b21D934468B8bf709294cB298aa7" has a flow rate of "-1" and dates to "5 Mar. 2025 12:1031 Dec. 2026 23:00"
     And User clicks on "opsepolia" "fTUSDx" row

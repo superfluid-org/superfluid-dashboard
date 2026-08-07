@@ -415,9 +415,15 @@ Then(
 Then(/^User clears the receiver input field$/, function () {
   Common.clearReceiverField();
 });
-Then(/^No loading skeletons are visible in the page$/, function () {
-  Common.waitForSpookySkeletonsToDisapear();
-});
+// Replaces "No loading skeletons are visible in the page", which asserted that no
+// MuiSkeleton existed anywhere and therefore made every scenario wait on every
+// network. See Common.waitForNetworkTableToLoad.
+Then(
+  /^The "([^"]*)" table on "([^"]*)" has loaded$/,
+  function (tableSuffix: string, network: string) {
+    Common.waitForNetworkTableToLoad(network, tableSuffix);
+  }
+);
 
 Then(
   /^Ecosystem page navigation button leads to an external site$/,

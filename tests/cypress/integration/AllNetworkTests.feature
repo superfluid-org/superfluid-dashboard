@@ -2,6 +2,12 @@
 @numTestsKeptInMemory(0)
 Feature: Test cases that run indefinitely on all supported networks
 
+  # Degen Chain is deliberately absent from every Examples table below. It is dead,
+  # queued for removal from the Dashboard, and its public RPC answers HTTP 429, so
+  # these scenarios could only ever be red. The rest of the suite excludes it via
+  # support/degenExclusion.ts; these three outlines were the only places that
+  # exercised it directly. Do not re-add it -- remove Degen from the product first.
+  #
   # Expected balances are read live from each network's Superfluid RPC and
   # compared with what the UI renders, so this scenario needs no wallet top-up.
   #
@@ -34,7 +40,6 @@ Feature: Test cases that run indefinitely on all supported networks
       | base           | ETH   |
       | scroll         | ETH   |
       | opsepolia      | ETH   |
-      | degen          | DEGEN |
 
   Scenario Outline: Superfluid RPCS are not behind on <network>
     Given Superfluid RPCs are not more then 10 minutes behind on <network>
@@ -53,7 +58,6 @@ Feature: Test cases that run indefinitely on all supported networks
       | base           |
       | scroll         |
       | opsepolia      |
-      | degenchain     |
 
   Scenario Outline: The graph is not behind on <network>
     Given The graph is not more then 10 minutes behind on <network>
@@ -72,7 +76,6 @@ Feature: Test cases that run indefinitely on all supported networks
       | base           |
       | scroll         |
       | opsepolia      |
-      | degenchain     |
 
 
 # Mumbai down, no faucet gg

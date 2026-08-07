@@ -37,31 +37,29 @@ Feature: Approvals page test cases
     Given Address book test data is set up
 
     Given "Approvals Page" is open with "dan" connected on "opsepolia"
-    And No loading skeletons are visible in the page
     Then "fTUSDx" permission row with "john" as an operator on "opsepolia" is visible
 
   Scenario: ENS names showing up in the ACL table
     Given "Approvals Page" is open with "dan" connected on "opsepolia"
-    And No loading skeletons are visible in the page
     Then "fTUSDx" permission row with "vijay.eth" as an operator on "opsepolia" is visible
 
   Scenario: Lens names showing up in the ACL table
     Given "Approvals Page" is open with "dan" connected on "opsepolia"
-    And No loading skeletons are visible in the page
     Then "fTUSDx" permission row with "elvijs.eth" as an operator on "opsepolia" is visible
 
   Scenario: Revoked Allowances and Permissions not showing up in the table
     Given HDWallet transactions are rejected
 
     Given "Approvals Page" is open with "dan" connected on "opsepolia"
-    And No loading skeletons are visible in the page
+    # Load-bearing: the assertion below is a doesNotExist scoped inside the
+    # opsepolia table, which passes trivially if the table has not rendered yet.
+    And The "permission-and-allowances-table" table on "opsepolia" has loaded
     Then Permission row for "vijay.eth" to use "POLx" on "opsepolia" does not exist
 
   Scenario: Vesting form being auto-completed for existing permissions
     Given HDWallet transactions are rejected
 
     Given "Approvals Page" is open with "john" connected on "opsepolia"
-    And No loading skeletons are visible in the page
     And User opens the first modify permissions form on "opsepolia"
     Then The selected row token , network and operator are auto-filled in the modify form
 
@@ -71,7 +69,6 @@ Feature: Approvals page test cases
     Given HDWallet transactions are rejected
 
     Given "Auto-wrap page" is open using view mode to look at "john"
-    And No loading skeletons are visible in the page
     And User changes their network to "opsepolia"
     And User opens the first modify permissions form on "opsepolia"
     Then One stop viewing button is visible in the permissions form
@@ -83,7 +80,6 @@ Feature: Approvals page test cases
   Scenario: Change network buttons in the form
     Given "Dashboard Page" is open with "john" connected on "sepolia"
     And User clicks on the "approvals" navigation button
-    And No loading skeletons are visible in the page
     And User opens the first modify permissions form on "opsepolia"
     Then One change network is visible in the permissions form
     And User clicks the create permission toggle

@@ -103,7 +103,6 @@ const TOKEN_CHIPS = '.MuiChip-root';
 const FAUCET_CONTRACT_ADDRESS = '0x74CDF863b00789c29734F8dFd9F83423Bc55E4cE';
 const FAUCET_EXECUTION_CONTRACT_ADDRESS =
   '0x2e043853CC01ccc8275A3913B82F122C20Bc1256';
-const LOADING_SKELETONS = '.MuiSkeleton-root';
 const ADDRESS_SEARCH_DIALOG = '[data-cy=receiver-dialog]';
 const CONNECTED_WALLET_BUTTON = '[data-cy=connected-wallet-button]';
 const CONNECTED_WALLET_DIALOG = '[data-cy=account-modal]';
@@ -257,8 +256,30 @@ export class Common extends BasePage {
     this.doesNotExist(ADDRESS_DIALOG_INPUT);
     this.doesNotExist(ADDRESS_SEARCH_DIALOG);
   }
-  static waitForSpookySkeletonsToDisapear() {
-    this.doesNotExist(LOADING_SKELETONS, undefined, { timeout: 120000 });
+  /**
+   * Network-scoped settle gate. Asserts that the table belonging to the network
+   * under test has rendered.
+   *
+   * This replaces `waitForSpookySkeletonsToDisapear`, which asserted that no
+   * `.MuiSkeleton-root` existed anywhere on the page. That coupled every
+   * scenario to every network's RPC and subgraph health: in CI run 31123182886 a
+   * single Degen approvals table stuck loading failed 30 scenarios across eight
+   * rejected-test shards, none of which were about Degen, and none of which ever
+   * reached the transaction rejection they purport to cover.
+   *
+   * A positive check is also the stronger assertion. "opsepolia's table has
+   * arrived" is what the following step actually needs; "no skeleton anywhere"
+   * was the weaker, indirect form of the same statement.
+   *
+   * Only use this where the network under test is known to have rows -- the
+   * per-network tables render `null` when empty, so on an empty network this
+   * gate will (correctly, loudly) time out rather than pass.
+   */
+  static waitForNetworkTableToLoad(network: string, tableSuffix: string) {
+    let selectedNetwork = this.getSelectedNetwork(network);
+    this.exists(`[data-cy=${selectedNetwork}-${tableSuffix}]`, undefined, {
+      timeout: 60000,
+    });
   }
 
   static clickNavBarButton(button: string) {
