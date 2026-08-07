@@ -67,20 +67,6 @@ export type SafeAuthorizationFailureReason =
   /** The probe positively established that no proposal exists. */
   | "declined";
 
-/** A Safe authorization that positively cannot complete. The execution has been cancelled. */
-export class ClearMacroSafeAuthorizationFailedError extends Error {
-  constructor(
-    message: string,
-    public readonly reason: SafeAuthorizationFailureReason,
-    public readonly executionId: string | undefined,
-    /** Whether the cancel was confirmed. False means the direct write must STAY blocked. */
-    public readonly cancelConfirmed: boolean
-  ) {
-    super(message);
-    this.name = "ClearMacroSafeAuthorizationFailedError";
-  }
-}
-
 export interface SafeAuthorizationCallbacks {
   onPhase?: (phase: RelayPhase) => void;
   /** Persist the pre-POST intent. Awaited, so the caller can flush before the POST goes out. */
@@ -111,6 +97,20 @@ export interface SafeAuthorizationCallbacks {
   }) => void | Promise<void>;
   /** A cancel returned 2xx — the guards may now be released. */
   onCancelConfirmed: (executionId: string) => void | Promise<void>;
+  /**
+   * The signing request settled in a way that positively cannot complete.
+   *
+   * Reported rather than thrown: the signing promise is deliberately not awaited, so by the
+   * time it settles the mutation has usually finished and there is no error channel left. The
+   * caller surfaces this on its own (a toast), which is also the only surface that still exists
+   * once the user has closed the dialog.
+   */
+  onSigningFailed: (failure: {
+    reason: SafeAuthorizationFailureReason;
+    message: string;
+    /** False means the execution may still run, so the direct write must STAY blocked. */
+    cancelConfirmed: boolean;
+  }) => void;
 }
 
 /** How long to keep asking the Transaction Service before believing an absence. */
@@ -238,12 +238,17 @@ export async function runSafeAuthorization(
     await cancelNow();
   }
 
+  // Never awaited by the caller — and it must never reject, or it becomes an unhandled
+  // rejection long after the mutation has settled.
   const signingSettled = handleSigningOutcome({
     outcome: signingOutcome,
     chainId: args.chainId,
     safeMessageHash,
     requestCancel,
     cancelNow,
+    onSigningFailed: callbacks.onSigningFailed,
+  }).catch(() => {
+    // A failure inside the handler itself leaves the intent alone, which is the safe default.
   });
 
   return {
@@ -260,6 +265,7 @@ async function handleSigningOutcome(args: {
   safeMessageHash: Hex;
   requestCancel: () => Promise<void>;
   cancelNow: () => Promise<boolean>;
+  onSigningFailed: SafeAuthorizationCallbacks["onSigningFailed"];
 }): Promise<void> {
   const outcome = await args.outcome;
 
@@ -278,12 +284,13 @@ async function handleSigningOutcome(args: {
         `Safe message hash mismatch: wallet returned ${outcome.messageHash}, we derived ${args.safeMessageHash}.`
       )
     );
-    throw new ClearMacroSafeAuthorizationFailedError(
-      "This Safe derived a different message hash than the dashboard did, so the gasless request can't be completed. Nothing was charged.",
-      "hash-mismatch",
-      undefined,
-      cancelConfirmed
-    );
+    args.onSigningFailed({
+      reason: "hash-mismatch",
+      message:
+        "This Safe derived a different message hash than the dashboard did, so the gasless request can't be completed. Nothing was charged — you can try again.",
+      cancelConfirmed,
+    });
+    return;
   }
 
   if (outcome.kind === "on-chain") {
@@ -293,12 +300,13 @@ async function handleSigningOutcome(args: {
     // does not assume — cancelling and instructing is correct under either answer.
     await args.requestCancel();
     const cancelConfirmed = await args.cancelNow();
-    throw new ClearMacroSafeAuthorizationFailedError(
-      "This Safe signed the message on chain instead of off chain, which the gasless service can't use. Enable off-chain message signing in your Safe's settings and try again.",
-      "on-chain-signing",
-      undefined,
-      cancelConfirmed
-    );
+    args.onSigningFailed({
+      reason: "on-chain-signing",
+      message:
+        "This Safe signed the message on chain instead of off chain, which the gasless service can't use. Enable off-chain message signing in your Safe's settings and try again.",
+      cancelConfirmed,
+    });
+    return;
   }
 
   // Rejected — ambiguous. Ask the Transaction Service instead of guessing.
@@ -315,12 +323,12 @@ async function handleSigningOutcome(args: {
     // outcome; the user is offered Cancel again from the pending surface.
     return;
   }
-  throw new ClearMacroSafeAuthorizationFailedError(
-    "The gasless request was declined in Safe, so it has been cancelled. Nothing was charged.",
-    "declined",
-    undefined,
-    true
-  );
+  args.onSigningFailed({
+    reason: "declined",
+    message:
+      "The gasless request was declined in Safe, so it has been cancelled. Nothing was charged.",
+    cancelConfirmed: true,
+  });
 }
 
 /**

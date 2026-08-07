@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useStore } from "react-redux";
+import { toast } from "react-toastify";
 import {
   Abi,
   Address,
@@ -38,10 +39,7 @@ import {
   actionFingerprint,
   isBlockedByGuards,
 } from "../clearMacro/actionFingerprint";
-import {
-  ClearMacroSafeAuthorizationFailedError,
-  ClearMacroSafeAuthorizationPendingError,
-} from "../clearMacro/executeSafeAuthorization";
+import { ClearMacroSafeAuthorizationPendingError } from "../clearMacro/executeSafeAuthorization";
 import {
   ClearMacroInsufficientFeeError,
   ClearMacroNotEligibleError,
@@ -206,14 +204,6 @@ export function useSuperfluidWriteContract() {
         return;
       // A Safe authorization that is simply still open. Control flow, not a failure.
       if (error instanceof ClearMacroSafeAuthorizationPendingError) return;
-      // The user declined in Safe, or the wallet took the on-chain signing route — both are
-      // user-side conditions the dialog explains. A hash mismatch is the one case here that IS
-      // a bug, and it reports itself where it is detected, with both hashes attached.
-      if (
-        error instanceof ClearMacroSafeAuthorizationFailedError &&
-        error.reason !== "hash-mismatch"
-      )
-        return;
       // A known fee-balance shortfall surfaced before signing — the dialog explains it; not a bug.
       if (error instanceof ClearMacroInsufficientFeeError) return;
       // A missing one-time Permit2 approval, surfaced before signing — the chip offers the
@@ -367,6 +357,16 @@ export function useSuperfluidWriteContract() {
               dispatch(relayRecoveryActions.releaseGuard(executionId));
               await reduxPersistor.flush();
             },
+            // The signing promise is not awaited, so this can fire long after the mutation
+            // settled and the dialog closed. A toast is the only surface that outlives both.
+            onSigningFailed: ({ message, cancelConfirmed }) => {
+              toast.error(
+                cancelConfirmed
+                  ? message
+                  : `${message} We couldn't confirm the cancellation, so this action stays blocked until we can.`,
+                { position: "bottom-right", autoClose: false }
+              );
+            },
             onSafeAuthorizationPending: async () => {
               // The entry is already persisted by `onExecutionCreated`; the mutation settles
               // through the thrown pending signal, handled in the catch below.
@@ -447,16 +447,6 @@ export function useSuperfluidWriteContract() {
               validBefore: error.validBefore,
             });
             throw error;
-          } else if (
-            error instanceof ClearMacroSafeAuthorizationFailedError
-          ) {
-            // Positively cannot complete. The execution was cancelled if it could be — and
-            // when it could NOT be, the guards deliberately stay armed so a direct write of
-            // the same action is still blocked.
-            if (error.executionId && error.cancelConfirmed) {
-              dispatch(relayRecoveryActions.resolveAndRemove(error.executionId));
-            }
-            throw error;
           } else if (error instanceof ClearMacroNotEligibleError) {
             if (isSafeAuthorization) {
               // A Safe never falls back to a paid write. Gasless→paid is not a cost detail
@@ -531,8 +521,14 @@ export function useSuperfluidWriteContract() {
         // The caller demanded the relay but the gate above couldn't engage (toggle raced
         // off, wallet reclassified, ...). The form keeps its submit disabled in these
         // states, so this is a belt-and-suspenders guard — fail closed, never self-pay.
+        //
+        // Guard A gets its own message: "turn on the gasless option" is not the remedy when the
+        // option is already on and the real blocker is another gasless request holding the
+        // signer's forwarder nonce.
         throw new Error(
-          "This change needs to be sent gaslessly. Turn on the gasless option and try again."
+          isGaslessBlockedByGuardA
+            ? "Another gasless transaction for this account is still open. Wait for it to finish or cancel it, then try again."
+            : "This change needs to be sent gaslessly. Turn on the gasless option and try again."
         );
       }
 

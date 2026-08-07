@@ -51,6 +51,7 @@ import {
 import {
   ClearMacroSafeAuthorizationPendingError,
   runSafeAuthorization,
+  type SafeAuthorizationFailureReason,
   type SafeProposalObservation,
 } from "./executeSafeAuthorization";
 
@@ -217,6 +218,17 @@ export interface ExecuteClearMacroParams {
   }) => void | Promise<void>;
   /** A cancel returned 2xx, so the write guards may be released. */
   onCancelConfirmed?: (executionId: string) => void | Promise<void>;
+  /**
+   * The Safe signing request settled in a way that cannot complete (hash mismatch, on-chain
+   * signing, or a confirmed decline). Reported rather than thrown because the signing promise
+   * is not awaited — by the time it settles the mutation has usually finished, so the caller
+   * must surface this somewhere that outlives the dialog.
+   */
+  onSigningFailed?: (failure: {
+    reason: SafeAuthorizationFailureReason;
+    message: string;
+    cancelConfirmed: boolean;
+  }) => void;
 }
 
 /** The `security` struct signed into every ClearMacro payload (both payment modes). */
@@ -1012,6 +1024,7 @@ export async function executeClearMacro(
         onExecutionCreated: (info) => params.onExecutionCreated?.(info),
         onCancelRequested: (ref) => params.onCancelRequested?.(ref),
         onCancelConfirmed: (id) => params.onCancelConfirmed?.(id),
+        onSigningFailed: (failure) => params.onSigningFailed?.(failure),
       },
     });
 
