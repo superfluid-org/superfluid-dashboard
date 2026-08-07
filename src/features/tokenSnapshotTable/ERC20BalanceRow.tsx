@@ -50,6 +50,7 @@ import { PortfolioValueCallback } from "./TokenSnapshotTables";
 import { ERC20Balance } from "./useERC20Balances";
 import { getBridgePagePath } from "../bridge/getBridgePagePath";
 import {
+  getPortfolioMobileRowStyles,
   getPortfolioRowActionStyles,
   PORTFOLIO_ROW_ACTIONS_CLASS_NAME,
 } from "./portfolioRowActionStyles";
@@ -104,7 +105,7 @@ const ERC20BalanceUpdatesPanel: FC<{
               color: "text.secondary",
             }}
           >
-            RECENT BALANCE UPDATES
+            Recent balance updates
           </Typography>
           <Typography
             variant="body2"
@@ -365,6 +366,7 @@ const ERC20BalanceRow: FC<ERC20BalanceRowProps> = ({
         sx={{
           "> td": { py: 1 },
           ...getPortfolioRowActionStyles(theme),
+          ...getPortfolioMobileRowStyles(theme),
         }}
       >
         <TableCell onClick={openTokenPage} sx={{ cursor: "pointer" }}>
@@ -412,9 +414,21 @@ const ERC20BalanceRow: FC<ERC20BalanceRowProps> = ({
             />
           </ListItem>
         </TableCell>
-        <TableCell onClick={openTokenPage} sx={{ cursor: "pointer" }}>
-          <Box sx={{ display: "flex", alignItems: "center", minHeight: 44 }}>
+        <TableCell
+          align={isBelowMd ? "right" : "left"}
+          onClick={openTokenPage}
+          sx={{ cursor: "pointer", px: { xs: 2, md: 2 } }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: { xs: "flex-end", md: "flex-start" },
+              minHeight: 44,
+            }}
+          >
             <ListItemText
+              sx={{ minWidth: 0, textAlign: { xs: "right", md: "left" } }}
               primary={<Amount wei={balance} decimals={token.decimals} />}
               secondary={
                 priceUsd !== undefined ? (
@@ -509,11 +523,11 @@ const ERC20BalanceRow: FC<ERC20BalanceRowProps> = ({
             </TableCell>
           </>
         ) : null}
-        <TableCell align="center" sx={{ px: { xs: 0.5, md: 2 } }}>
+        <TableCell align="center" sx={{ px: { xs: 2, md: 2 } }}>
           <Stack
             direction="row"
             sx={{
-              justifyContent: "center",
+              justifyContent: { xs: "flex-end", md: "center" },
               gap: 0.25,
             }}
           >

@@ -1,6 +1,9 @@
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
-import ArrowDownwardRoundedIcon from "@mui/icons-material/ArrowDownwardRounded";
-import ArrowUpwardRoundedIcon from "@mui/icons-material/ArrowUpwardRounded";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import AddCircleOutlineRoundedIcon from "@mui/icons-material/AddCircleOutlineRounded";
+import CurrencyExchangeRoundedIcon from "@mui/icons-material/CurrencyExchangeRounded";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import SendRoundedIcon from "@mui/icons-material/SendRounded";
 import SwapHorizRoundedIcon from "@mui/icons-material/SwapHorizRounded";
 import {
   Alert,
@@ -9,8 +12,6 @@ import {
   Card,
   Chip,
   IconButton,
-  ListItem,
-  ListItemAvatar,
   ListItemText,
   Paper,
   Skeleton,
@@ -30,13 +31,15 @@ import { FC, useEffect, useMemo, useState } from "react";
 import AddressName from "../../components/AddressName/AddressName";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import { getTransferPagePath } from "../../pages/transfer";
+import { getSendPagePath } from "../../pages/send";
+import { getTokenPairsFromTokenList } from "../../hooks/useTokenQuery";
 import useNavigateBack from "../../hooks/useNavigateBack";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import { EmptyRow } from "../common/EmptyRow";
 import Link from "../common/Link";
-import TxHashLink from "../common/TxHashLink";
 import NetworkIcon from "../network/NetworkIcon";
 import { Network } from "../network/networks";
+import { getBridgePagePath } from "../bridge/getBridgePagePath";
 import { platformApi } from "../redux/platformApi/platformApi";
 import { rpcApi } from "../redux/store";
 import Amount from "../token/Amount";
@@ -64,114 +67,64 @@ enum TransferFilter {
   Received = "received",
 }
 
-const BalanceUpdateRow: FC<{
+const ERC20TransferRow: FC<{
   transfer: ERC20TransferHistoryItem;
   accountAddress: string;
   token: ERC20TokenPageMetadata;
-  network: Network;
-}> = ({ transfer, accountAddress, token, network }) => {
+}> = ({ transfer, accountAddress, token }) => {
   const isOutgoing = transfer.from === accountAddress.toLowerCase();
-  const isSelfTransfer =
-    isOutgoing && transfer.to === accountAddress.toLowerCase();
   const counterparty = isOutgoing ? transfer.to : transfer.from;
-  const directionLabel = isSelfTransfer
-    ? "Self transfer"
-    : isOutgoing
-    ? "Sent"
-    : "Received";
-  const amountPrefix = isSelfTransfer ? "" : isOutgoing ? "−" : "+";
+  const theme = useTheme();
+  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
+  const formattedDate = format(new Date(transfer.timestamp), "d MMM. yyyy");
 
   return (
-    <TableRow hover data-cy="erc20-balance-update-row">
-      <TableCell>
-        <ListItem disablePadding>
-          <ListItemAvatar>
-            <Box
-              sx={(theme) => ({
-                width: 36,
-                height: 36,
-                borderRadius: "50%",
-                display: "grid",
-                placeItems: "center",
-                color: isOutgoing ? "error.main" : "primary.main",
-                bgcolor: isOutgoing
-                  ? `${theme.palette.error.main}12`
-                  : `${theme.palette.primary.main}12`,
-              })}
-            >
-              {isOutgoing ? (
-                <ArrowUpwardRoundedIcon fontSize="small" />
-              ) : (
-                <ArrowDownwardRoundedIcon fontSize="small" />
-              )}
-            </Box>
-          </ListItemAvatar>
-          <ListItemText
-            primary={directionLabel}
-            secondary={format(
-              new Date(transfer.timestamp),
-              "d MMM yyyy, HH:mm"
-            )}
-            slotProps={{
-              primary: { variant: "h6" },
-              secondary: {
-                variant: "body2mono",
-                color: "text.secondary",
-              },
-            }}
-          />
-        </ListItem>
-      </TableCell>
-      <TableCell align="right">
-        <Typography
-          variant="h6mono"
-          color={
-            isSelfTransfer ? "text.primary" : isOutgoing ? "error" : "primary"
-          }
+    <TableRow hover data-cy="erc20-transfer-row">
+      <TableCell data-cy="sender-receiver-address">
+        <Stack
+          direction="row"
+          sx={{ alignItems: "center", gap: 1.5, minWidth: 0 }}
         >
-          {amountPrefix}
-          <Amount
-            wei={transfer.rawValue}
-            decimals={transfer.decimals ?? token.decimals}
-          >
-            {` ${token.symbol}`}
-          </Amount>
-        </Typography>
-      </TableCell>
-      <TableCell sx={{ display: { xs: "none", md: "table-cell" } }}>
-        <ListItem disablePadding>
-          <ListItemAvatar>
-            <AddressAvatar address={counterparty} />
-          </ListItemAvatar>
-          <ListItemText
-            primary={
-              isSelfTransfer ? "Same wallet" : isOutgoing ? "To" : "From"
-            }
-            secondary={
-              <AddressCopyTooltip address={counterparty}>
-                <Typography
-                  variant="body2"
-                  component="span"
-                  sx={{
-                    color: "text.primary",
-                  }}
-                >
-                  <AddressName address={counterparty} />
-                </Typography>
-              </AddressCopyTooltip>
-            }
-            slotProps={{
-              primary: { variant: "caption", color: "text.secondary" },
+          {isOutgoing ? (
+            <ArrowForwardIcon data-cy="transfer-outgoing-icon" />
+          ) : (
+            <ArrowBackIcon data-cy="transfer-incoming-icon" />
+          )}
+          <AddressAvatar
+            address={counterparty}
+            AvatarProps={{
+              sx: { width: 24, height: 24, borderRadius: "5px" },
             }}
+            BlockiesProps={{ size: 8, scale: 3 }}
           />
-        </ListItem>
+          <AddressCopyTooltip address={counterparty}>
+            <Typography variant="h7" noWrap>
+              <AddressName address={counterparty} />
+            </Typography>
+          </AddressCopyTooltip>
+        </Stack>
       </TableCell>
-      <TableCell
-        align="right"
-        sx={{ display: { xs: "none", md: "table-cell" } }}
-      >
-        <TxHashLink txHash={transfer.transactionHash} network={network} />
+      <TableCell data-cy="transfer-amount" align="right">
+        <ListItemText
+          primary={
+            <Amount
+              wei={transfer.rawValue}
+              decimals={transfer.decimals ?? token.decimals}
+            />
+          }
+          secondary={isBelowMd ? formattedDate : undefined}
+          slotProps={{
+            primary: { variant: "h7mono" },
+            secondary: {
+              variant: "body2mono",
+              color: "text.secondary",
+            },
+          }}
+        />
       </TableCell>
+      {!isBelowMd ? (
+        <TableCell data-cy="transfer-date">{formattedDate}</TableCell>
+      ) : null}
     </TableRow>
   );
 };
@@ -223,8 +176,18 @@ const ERC20TokenPageContent: FC<{
     setHasMore(page.hasMore);
   }, [historyQuery.currentData]);
 
+  const lowerAccountAddress = accountAddress.toLowerCase();
+  const { sentCount, receivedCount } = useMemo(
+    () => ({
+      sentCount: transfers.filter(({ from }) => from === lowerAccountAddress)
+        .length,
+      receivedCount: transfers.filter(({ to }) => to === lowerAccountAddress)
+        .length,
+    }),
+    [lowerAccountAddress, transfers]
+  );
+
   const filteredTransfers = useMemo(() => {
-    const lowerAccountAddress = accountAddress.toLowerCase();
     return transfers.filter((transfer) => {
       if (filter === TransferFilter.Sent) {
         return transfer.from === lowerAccountAddress;
@@ -234,11 +197,32 @@ const ERC20TokenPageContent: FC<{
       }
       return true;
     });
-  }, [accountAddress, filter, transfers]);
+  }, [filter, lowerAccountAddress, transfers]);
 
   const transferPath = getTransferPagePath({
     token: token.address,
     network: network.slugName,
+  });
+  const tokenPair = useMemo(
+    () =>
+      getTokenPairsFromTokenList(network.id).find(
+        ({ underlyingToken }) =>
+          underlyingToken.address.toLowerCase() === token.address.toLowerCase()
+      ),
+    [network.id, token.address]
+  );
+  const streamPath = tokenPair
+    ? getSendPagePath({
+        token: tokenPair.superToken.address,
+        network: network.slugName,
+      })
+    : undefined;
+  const wrapPath = tokenPair
+    ? `/wrap?upgrade&token=${tokenPair.superToken.address}&network=${network.slugName}`
+    : undefined;
+  const swapPath = getBridgePagePath({
+    fromChain: network.id,
+    fromToken: token.address,
   });
   const balance = balanceQuery.currentData?.balance;
 
@@ -248,59 +232,110 @@ const ERC20TokenPageContent: FC<{
         gap: isBelowMd ? 3 : 4,
       }}
     >
-      <Stack
-        direction="row"
-        sx={{
-          alignItems: "center",
-          gap: 2,
-        }}
-      >
-        <IconButton color="inherit" onClick={navigateBack} aria-label="Back">
-          <ArrowBackRoundedIcon />
-        </IconButton>
-        <TokenIcon
-          chainId={network.id}
-          tokenAddress={token.address}
-          logoURI={token.logoURI}
-          symbol={token.symbol}
-        />
-        <Box sx={{ minWidth: 0 }}>
-          <Stack
-            direction="row"
-            sx={{
-              alignItems: "baseline",
-              gap: 1,
-              flexWrap: "wrap",
-            }}
-          >
-            <Typography variant={isBelowMd ? "h4" : "h3"} component="h1">
-              {token.name}
-            </Typography>
-            <Typography
-              variant="h5"
+      <Stack sx={{ gap: 2 }}>
+        <Stack
+          direction="row"
+          sx={{
+            alignItems: "center",
+            gap: 2,
+          }}
+        >
+          <IconButton color="inherit" onClick={navigateBack} aria-label="Back">
+            <ArrowBackRoundedIcon />
+          </IconButton>
+          <TokenIcon
+            chainId={network.id}
+            tokenAddress={token.address}
+            logoURI={token.logoURI}
+            symbol={token.symbol}
+          />
+          <Box sx={{ minWidth: 0 }}>
+            <Stack
+              direction="row"
               sx={{
-                color: "text.secondary",
+                alignItems: "baseline",
+                gap: 1,
+                flexWrap: "wrap",
               }}
             >
-              {token.symbol}
-            </Typography>
-          </Stack>
-        </Box>
-        <Chip
-          size="small"
-          label={network.name}
-          avatar={<NetworkIcon network={network} size={18} fontSize={14} />}
-          sx={{ display: { xs: "none", md: "flex" } }}
-        />
-        <Button
-          LinkComponent={Link}
-          href={transferPath}
-          variant="contained"
-          startIcon={<SwapHorizRoundedIcon />}
-          sx={{ ml: "auto" }}
+              <Typography variant={isBelowMd ? "h4" : "h3"} component="h1">
+                {token.name}
+              </Typography>
+              <Typography
+                variant="h5"
+                sx={{
+                  color: "text.secondary",
+                }}
+              >
+                {token.symbol}
+              </Typography>
+            </Stack>
+          </Box>
+          <Chip
+            size="small"
+            label={network.name}
+            avatar={<NetworkIcon network={network} size={18} fontSize={14} />}
+            sx={{ display: { xs: "none", md: "flex" } }}
+          />
+        </Stack>
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: {
+              xs: "repeat(2, minmax(0, 1fr))",
+              sm: "repeat(4, max-content)",
+            },
+            justifyContent: { sm: "flex-end" },
+            gap: 1,
+          }}
         >
-          Transfer
-        </Button>
+          {streamPath ? (
+            <Button
+              LinkComponent={Link}
+              href={streamPath}
+              variant="contained"
+              size="small"
+              startIcon={<SendRoundedIcon />}
+              data-cy="token-stream-button"
+            >
+              Stream
+            </Button>
+          ) : null}
+          {wrapPath ? (
+            <Button
+              LinkComponent={Link}
+              href={wrapPath}
+              variant="outlined"
+              size="small"
+              startIcon={<AddCircleOutlineRoundedIcon />}
+              data-cy="token-wrap-button"
+            >
+              Wrap
+            </Button>
+          ) : null}
+          <Button
+            LinkComponent={Link}
+            href={transferPath}
+            variant={streamPath ? "outlined" : "contained"}
+            size="small"
+            startIcon={<SwapHorizRoundedIcon />}
+            data-cy="token-transfer-button"
+          >
+            Transfer
+          </Button>
+          {!network.testnet ? (
+            <Button
+              LinkComponent={Link}
+              href={swapPath}
+              variant="outlined"
+              size="small"
+              startIcon={<CurrencyExchangeRoundedIcon />}
+              data-cy="token-swap-button"
+            >
+              Swap
+            </Button>
+          ) : null}
+        </Box>
       </Stack>
 
       <Card sx={{ p: { xs: 2.5, md: 3 } }}>
@@ -375,7 +410,7 @@ const ERC20TokenPageContent: FC<{
                 color: "text.secondary",
               }}
             >
-              TOKEN TYPE
+              Token type
             </Typography>
             <Stack
               direction="row"
@@ -400,7 +435,7 @@ const ERC20TokenPageContent: FC<{
       </Card>
 
       <Box>
-        <Typography variant="h5">Balance updates</Typography>
+        <Typography variant="h5">Transfers</Typography>
         <Typography
           variant="body2"
           sx={{
@@ -425,15 +460,16 @@ const ERC20TokenPageContent: FC<{
               mx: -2,
               width: "auto",
               borderRadius: 0,
-              borderLeft: 0,
-              borderRight: 0,
+              border: "none",
+              borderBottom: `1px solid ${theme.palette.divider}`,
+              boxShadow: "none",
             },
           }}
         >
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell colSpan={4}>
+                <TableCell colSpan={3}>
                   <Stack
                     direction="row"
                     sx={{
@@ -452,10 +488,10 @@ const ERC20TokenPageContent: FC<{
                         onClick={() => setFilter(filterOption)}
                       >
                         {filterOption === TransferFilter.All
-                          ? "All"
+                          ? `All (${transfers.length})`
                           : filterOption === TransferFilter.Sent
-                          ? "Sent"
-                          : "Received"}
+                          ? `Sent (${sentCount})`
+                          : `Received (${receivedCount})`}
                       </Button>
                     ))}
                   </Stack>
@@ -463,30 +499,28 @@ const ERC20TokenPageContent: FC<{
               </TableRow>
               {!isBelowMd ? (
                 <TableRow>
-                  <TableCell>Update</TableCell>
-                  <TableCell align="right">Balance change</TableCell>
-                  <TableCell>To / From</TableCell>
-                  <TableCell align="right">Transaction</TableCell>
+                  <TableCell>To/From</TableCell>
+                  <TableCell align="right">Amount</TableCell>
+                  <TableCell>Date Sent</TableCell>
                 </TableRow>
               ) : null}
             </TableHead>
             <TableBody>
               {historyQuery.isLoading && transfers.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={4}>
+                  <TableCell colSpan={3}>
                     <Skeleton height={58} />
                   </TableCell>
                 </TableRow>
               ) : filteredTransfers.length === 0 ? (
-                <EmptyRow span={4} />
+                <EmptyRow span={3} />
               ) : (
                 filteredTransfers.map((transfer) => (
-                  <BalanceUpdateRow
+                  <ERC20TransferRow
                     key={transfer.id}
                     transfer={transfer}
                     accountAddress={accountAddress}
                     token={token}
-                    network={network}
                   />
                 ))
               )}

@@ -2,6 +2,8 @@ import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
 import {
   Box,
   Button,
+  ClickAwayListener,
+  IconButton,
   Paper,
   Skeleton,
   Stack,
@@ -58,6 +60,42 @@ interface PortfolioTotalCardProps {
   entries: PortfolioValueEntry[];
   loading: boolean;
 }
+
+const PortfolioMissingPriceWarning: FC<{ symbols: string[] }> = ({
+  symbols,
+}) => {
+  const [open, setOpen] = useState(false);
+  const message = `No price was found for ${symbols.join(", ")}. ${
+    symbols.length === 1 ? "It is" : "They are"
+  } not included in the portfolio or streaming totals.`;
+
+  return (
+    <ClickAwayListener onClickAway={() => setOpen(false)}>
+      <Box component="span" sx={{ display: "inline-flex" }}>
+        <Tooltip
+          arrow
+          open={open}
+          onOpen={() => setOpen(true)}
+          onClose={() => setOpen(false)}
+          disableTouchListener
+          title={message}
+        >
+          <IconButton
+            color="warning"
+            size="small"
+            aria-label={message}
+            aria-expanded={open}
+            onClick={() => setOpen((currentlyOpen) => !currentlyOpen)}
+            sx={{ p: 0.25 }}
+            data-cy="portfolio-missing-price-warning"
+          >
+            <WarningAmberRoundedIcon sx={{ fontSize: 19 }} />
+          </IconButton>
+        </Tooltip>
+      </Box>
+    </ClickAwayListener>
+  );
+};
 
 const PortfolioTotalCard: FC<PortfolioTotalCardProps> = ({
   entries,
@@ -151,7 +189,7 @@ const PortfolioTotalCard: FC<PortfolioTotalCardProps> = ({
           }}
         >
           <Typography
-            variant="overline"
+            variant="body2"
             sx={{
               color: "text.secondary",
             }}
@@ -162,24 +200,18 @@ const PortfolioTotalCard: FC<PortfolioTotalCardProps> = ({
             <Skeleton width={220} height={52} />
           ) : (
             <Stack direction="row" sx={{ alignItems: "center", gap: 1 }}>
-              <Typography variant="h3" data-cy="portfolio-total-value">
+              <Typography
+                variant="h3"
+                data-cy="portfolio-total-value"
+                sx={{
+                  fontSize: { xs: "2rem", sm: "3rem" },
+                  lineHeight: { xs: 1.15, sm: 1.2 },
+                }}
+              >
                 {formattedTotal}
               </Typography>
               {missingPriceSymbols.length > 0 ? (
-                <Tooltip
-                  arrow
-                  title={`No price was found for ${missingPriceSymbols.join(
-                    ", "
-                  )}. ${
-                    missingPriceSymbols.length === 1 ? "It is" : "They are"
-                  } not included in the portfolio or streaming totals.`}
-                >
-                  <WarningAmberRoundedIcon
-                    color="warning"
-                    sx={{ fontSize: 19 }}
-                    data-cy="portfolio-missing-price-warning"
-                  />
-                </Tooltip>
+                <PortfolioMissingPriceWarning symbols={missingPriceSymbols} />
               ) : null}
             </Stack>
           )}
@@ -197,7 +229,7 @@ const PortfolioTotalCard: FC<PortfolioTotalCardProps> = ({
             }}
           >
             <Typography
-              variant="overline"
+              variant="body2"
               sx={{
                 color: "text.secondary",
               }}

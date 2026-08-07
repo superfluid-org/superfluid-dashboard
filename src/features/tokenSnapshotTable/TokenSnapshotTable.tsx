@@ -205,7 +205,8 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
     >
       <Table
         sx={{
-          tableLayout: { xs: "auto", md: "fixed" },
+          tableLayout: "fixed",
+          width: "100%",
           minWidth: { md: 1040 },
         }}
       >

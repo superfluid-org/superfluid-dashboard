@@ -55,6 +55,7 @@ import { useTokenQuery } from "../../hooks/useTokenQuery";
 import { PortfolioValueCallback } from "./TokenSnapshotTables";
 import { getBridgePagePath } from "../bridge/getBridgePagePath";
 import {
+  getPortfolioMobileRowStyles,
   getPortfolioRowActionStyles,
   PORTFOLIO_ROW_ACTIONS_CLASS_NAME,
 } from "./portfolioRowActionStyles";
@@ -72,6 +73,7 @@ const SnapshotRow = styled(TableRow, {
     py: theme.spacing(1),
   },
   ...getPortfolioRowActionStyles(theme),
+  ...getPortfolioMobileRowStyles(theme),
   ...(lastElement && {
     td: {
       border: "none",
@@ -477,10 +479,17 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
         ) : (
           <TableCell
             align="right"
-            sx={{ [theme.breakpoints.down("md")]: { px: 0 } }}
+            sx={{
+              [theme.breakpoints.down("md")]: {
+                px: 2,
+              },
+            }}
             onClick={openTokenPage}
           >
-            <ListItem disablePadding sx={{ textAlign: "right" }}>
+            <ListItem
+              disablePadding
+              sx={{ textAlign: "right", justifyContent: "flex-end" }}
+            >
               {criticalDate && (
                 <ListItemIcon sx={{ mr: 1 }}>
                   <BalanceCriticalIndicator
@@ -493,6 +502,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                 </ListItemIcon>
               )}
               <ListItemText
+                sx={{ minWidth: 0, flex: "0 1 auto" }}
                 primary={
                   <FlowingBalance
                     data={balanceData ? balanceData : undefined}
@@ -528,8 +538,8 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
           sx={{
             cursor: "initial",
             [theme.breakpoints.down("md")]: {
-              px: 0.5,
-              py: 1.25,
+              px: 2,
+              py: 0,
               whiteSpace: "nowrap",
             },
           }}
@@ -537,7 +547,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
           <Stack
             direction="row"
             sx={{
-              justifyContent: "center",
+              justifyContent: { xs: "flex-end", md: "center" },
               gap: 0.25,
             }}
           >
@@ -621,7 +631,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
               data-cy="flow-summary"
               sx={{
                 px: { xs: 2, md: 3 },
-                py: 2,
+                py: { xs: 1.5, md: 2 },
                 bgcolor: "background.default",
                 borderBottom: `1px solid ${theme.palette.divider}`,
               }}
@@ -644,14 +654,24 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                     sx={{
                       color: "text.secondary",
                       display: "block",
+                      fontSize: { xs: "0.625rem", md: "0.7rem" },
+                      lineHeight: 1.2,
+                      letterSpacing: "0.04em",
                     }}
                   >
-                    TOTAL INFLOW
+                    Inflow
                   </Typography>
                   <Typography
                     data-cy="inflow"
                     variant="body2mono"
-                    color="primary"
+                    sx={{
+                      color: "primary.main",
+                      display: "block",
+                      mt: 0.5,
+                      fontSize: { xs: "0.7rem", sm: "0.8rem" },
+                      lineHeight: 1.25,
+                      overflowWrap: "anywhere",
+                    }}
                   >
                     +
                     <Amount
@@ -668,14 +688,24 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                     sx={{
                       color: "text.secondary",
                       display: "block",
+                      fontSize: { xs: "0.625rem", md: "0.7rem" },
+                      lineHeight: 1.2,
+                      letterSpacing: "0.04em",
                     }}
                   >
-                    TOTAL OUTFLOW
+                    Outflow
                   </Typography>
                   <Typography
                     data-cy="outflow"
                     variant="body2mono"
-                    color="error"
+                    sx={{
+                      color: "error.main",
+                      display: "block",
+                      mt: 0.5,
+                      fontSize: { xs: "0.7rem", sm: "0.8rem" },
+                      lineHeight: 1.25,
+                      overflowWrap: "anywhere",
+                    }}
                   >
                     -
                     <Amount
@@ -692,11 +722,22 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                     sx={{
                       color: "text.secondary",
                       display: "block",
+                      fontSize: { xs: "0.625rem", md: "0.7rem" },
+                      lineHeight: 1.2,
+                      letterSpacing: "0.04em",
                     }}
                   >
-                    ACTIVE STREAMS
+                    Active streams
                   </Typography>
-                  <Typography variant="body2mono">
+                  <Typography
+                    variant="body2mono"
+                    sx={{
+                      display: "block",
+                      mt: 0.5,
+                      fontSize: { xs: "0.7rem", sm: "0.8rem" },
+                      lineHeight: 1.25,
+                    }}
+                  >
                     {totalNumberOfActiveStreams}
                   </Typography>
                 </Box>
