@@ -133,6 +133,7 @@ const PortfolioTotalCard: FC<PortfolioTotalCardProps> = ({
   const flowMetrics = [
     {
       label: "Net flow / month",
+      mobileLabel: "Net / mo",
       value: formatSigned(monthlyNetFlow),
       color: monthlyNetFlow.gt(0)
         ? "primary.main"
@@ -143,6 +144,7 @@ const PortfolioTotalCard: FC<PortfolioTotalCardProps> = ({
     },
     {
       label: "Streaming in / month",
+      mobileLabel: "In / mo",
       value: monthlyInflow.isZero()
         ? currency.format("0.00")
         : `+${currency.format(monthlyInflow.toFixed(2))}`,
@@ -151,6 +153,7 @@ const PortfolioTotalCard: FC<PortfolioTotalCardProps> = ({
     },
     {
       label: "Streaming out / month",
+      mobileLabel: "Out / mo",
       value: monthlyOutflow.isZero()
         ? currency.format("0.00")
         : `−${currency.format(monthlyOutflow.toFixed(2))}`,
@@ -163,18 +166,21 @@ const PortfolioTotalCard: FC<PortfolioTotalCardProps> = ({
     <Paper
       aria-busy={showSkeleton}
       variant="outlined"
-      sx={{ px: { xs: 2.5, md: 3 }, py: 2.5, mb: 4, borderRadius: 3 }}
+      sx={{
+        px: { xs: 1.5, md: 3 },
+        py: { xs: 2, md: 2.5 },
+        mb: 4,
+        borderRadius: 3,
+      }}
     >
       <Box
         sx={{
           display: "grid",
           gridTemplateColumns: {
-            xs: "1fr",
-            sm: "repeat(3, minmax(0, 1fr))",
+            xs: "minmax(110px, 1.35fr) repeat(3, minmax(0, 0.75fr))",
             md: "minmax(240px, 1.35fr) repeat(3, minmax(135px, 0.75fr))",
           },
-          columnGap: { sm: 2.5, md: 3 },
-          rowGap: 2,
+          columnGap: { xs: 1, md: 3 },
           alignItems: "center",
         }}
       >
@@ -182,10 +188,6 @@ const PortfolioTotalCard: FC<PortfolioTotalCardProps> = ({
           sx={{
             gap: 0.5,
             alignItems: "flex-start",
-            gridColumn: { xs: "1", sm: "1 / -1", md: "auto" },
-            pb: { xs: 2, md: 0 },
-            borderBottom: { xs: "1px solid", md: "none" },
-            borderColor: "divider",
           }}
         >
           <Typography
@@ -194,7 +196,18 @@ const PortfolioTotalCard: FC<PortfolioTotalCardProps> = ({
               color: "text.secondary",
             }}
           >
-            Portfolio balance
+            <Box
+              component="span"
+              sx={{ display: { xs: "inline", md: "none" } }}
+            >
+              Portfolio
+            </Box>
+            <Box
+              component="span"
+              sx={{ display: { xs: "none", md: "inline" } }}
+            >
+              Portfolio balance
+            </Box>
           </Typography>
           {showSkeleton ? (
             <Skeleton width={220} height={52} />
@@ -204,8 +217,9 @@ const PortfolioTotalCard: FC<PortfolioTotalCardProps> = ({
                 variant="h3"
                 data-cy="portfolio-total-value"
                 sx={{
-                  fontSize: { xs: "2rem", sm: "3rem" },
+                  fontSize: { xs: "1.125rem", sm: "1.5rem", md: "3rem" },
                   lineHeight: { xs: 1.15, sm: 1.2 },
+                  whiteSpace: "nowrap",
                 }}
               >
                 {formattedTotal}
@@ -217,14 +231,14 @@ const PortfolioTotalCard: FC<PortfolioTotalCardProps> = ({
           )}
         </Stack>
 
-        {flowMetrics.map(({ label, value, color, dataCy }) => (
+        {flowMetrics.map(({ label, mobileLabel, value, color, dataCy }) => (
           <Stack
             key={dataCy}
             sx={{
               gap: 0.5,
               minWidth: 0,
-              pl: { md: 3 },
-              borderLeft: { md: "1px solid" },
+              pl: { xs: 1, md: 3 },
+              borderLeft: "1px solid",
               borderColor: "divider",
             }}
           >
@@ -234,7 +248,18 @@ const PortfolioTotalCard: FC<PortfolioTotalCardProps> = ({
                 color: "text.secondary",
               }}
             >
-              {label}
+              <Box
+                component="span"
+                sx={{ display: { xs: "inline", md: "none" } }}
+              >
+                {mobileLabel}
+              </Box>
+              <Box
+                component="span"
+                sx={{ display: { xs: "none", md: "inline" } }}
+              >
+                {label}
+              </Box>
             </Typography>
             {showSkeleton ? (
               <Skeleton width="72%" height={36} />
@@ -242,7 +267,11 @@ const PortfolioTotalCard: FC<PortfolioTotalCardProps> = ({
               <Typography
                 variant="h5mono"
                 data-cy={dataCy}
-                sx={{ color, whiteSpace: "nowrap" }}
+                sx={{
+                  color,
+                  whiteSpace: "nowrap",
+                  fontSize: { xs: "0.75rem", sm: "0.875rem", md: "1.5rem" },
+                }}
               >
                 {value}
               </Typography>

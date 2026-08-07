@@ -208,6 +208,20 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
           tableLayout: "fixed",
           width: "100%",
           minWidth: { md: 1040 },
+          [theme.breakpoints.down("md")]: {
+            display: "block",
+            "& > thead, & > tbody": {
+              display: "block",
+              width: "100%",
+            },
+            "& > thead > tr, & > thead > tr > th": {
+              display: "block",
+              width: "100%",
+            },
+            "& > tbody > tr": {
+              width: "100%",
+            },
+          },
         }}
       >
         <TableHead>
@@ -216,7 +230,7 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
             <TableRow>
               <TableCell width="22%">Asset</TableCell>
               <TableCell width="16%">Balance</TableCell>
-              <TableCell width="14%">Net Flow Rate</TableCell>
+              <TableCell width="14%">Net flow rate</TableCell>
               <TableCell width="40%" sx={{ pl: 0 }}>
                 Actions
               </TableCell>

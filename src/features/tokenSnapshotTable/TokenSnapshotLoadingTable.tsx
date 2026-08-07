@@ -121,7 +121,7 @@ const TokenSnapshotLoadingTable = () => {
             <TableRow>
               <TableCell width="22%">Asset</TableCell>
               <TableCell width="16%">Balance</TableCell>
-              <TableCell width="14%">Net Flow Rate</TableCell>
+              <TableCell width="14%">Net flow rate</TableCell>
               <TableCell width="40%" sx={{ pl: 0 }}>
                 Actions
               </TableCell>

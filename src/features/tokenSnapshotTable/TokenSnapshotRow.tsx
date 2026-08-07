@@ -612,7 +612,15 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
         </TableCell>
       </SnapshotRow>
       <TableRow
-        sx={{ background: "transparent", "> td:first-of-type": { padding: 0 } }}
+        sx={{
+          background: "transparent",
+          "> td:first-of-type": { padding: 0 },
+          [theme.breakpoints.down("md")]: {
+            display: "block",
+            width: "100%",
+            "> td": { display: "block", width: "100%" },
+          },
+        }}
       >
         <TableCell
           colSpan={5}
@@ -650,13 +658,10 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
               >
                 <Box>
                   <Typography
-                    variant="caption"
+                    variant="body2"
                     sx={{
                       color: "text.secondary",
                       display: "block",
-                      fontSize: { xs: "0.625rem", md: "0.7rem" },
-                      lineHeight: 1.2,
-                      letterSpacing: "0.04em",
                     }}
                   >
                     Inflow
@@ -667,7 +672,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                     sx={{
                       color: "primary.main",
                       display: "block",
-                      mt: 0.5,
+                      mt: 0.25,
                       fontSize: { xs: "0.7rem", sm: "0.8rem" },
                       lineHeight: 1.25,
                       overflowWrap: "anywhere",
@@ -684,13 +689,10 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                 </Box>
                 <Box>
                   <Typography
-                    variant="caption"
+                    variant="body2"
                     sx={{
                       color: "text.secondary",
                       display: "block",
-                      fontSize: { xs: "0.625rem", md: "0.7rem" },
-                      lineHeight: 1.2,
-                      letterSpacing: "0.04em",
                     }}
                   >
                     Outflow
@@ -701,7 +703,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                     sx={{
                       color: "error.main",
                       display: "block",
-                      mt: 0.5,
+                      mt: 0.25,
                       fontSize: { xs: "0.7rem", sm: "0.8rem" },
                       lineHeight: 1.25,
                       overflowWrap: "anywhere",
@@ -718,13 +720,10 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                 </Box>
                 <Box>
                   <Typography
-                    variant="caption"
+                    variant="body2"
                     sx={{
                       color: "text.secondary",
                       display: "block",
-                      fontSize: { xs: "0.625rem", md: "0.7rem" },
-                      lineHeight: 1.2,
-                      letterSpacing: "0.04em",
                     }}
                   >
                     Active streams
@@ -733,7 +732,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                     variant="body2mono"
                     sx={{
                       display: "block",
-                      mt: 0.5,
+                      mt: 0.25,
                       fontSize: { xs: "0.7rem", sm: "0.8rem" },
                       lineHeight: 1.25,
                     }}

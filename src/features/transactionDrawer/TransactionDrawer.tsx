@@ -42,6 +42,7 @@ export default memo(function TransactionDrawer() {
       transitionDuration={theme.transitions.duration.standard}
       onOpen={openDrawer}
       onClose={closeDrawer}
+      ModalProps={{ disableScrollLock: true }}
       translate="yes"
       slotProps={{
         paper: {
@@ -59,8 +60,9 @@ export default memo(function TransactionDrawer() {
 
         transition: {
           easing: theme.transitions.easing.easeInOut,
-        }
-      }}>
+        },
+      }}
+    >
       <DrawerHeader>
         <IconButton color="inherit" onClick={closeDrawer}>
           <CloseIcon data-cy="close-icon" />

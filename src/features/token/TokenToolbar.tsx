@@ -162,30 +162,6 @@ const TokenToolbar: FC<TokenToolbarProps> = ({ token, network, onBack }) => {
             />
           </>
         )}
-
-        <Stack
-          direction="row"
-          sx={{
-            gap: 2,
-            flex: 1,
-            alignItems: "center",
-            justifyContent: "flex-end",
-          }}
-        >
-          {!hasAddedToWallet && (
-            <ConnectionBoundary expectedNetwork={network}>
-              {({ isConnected }) =>
-                isConnected && (
-                  <AddToWalletButton
-                    token={tokenAddress}
-                    symbol={symbol}
-                    decimals={decimals}
-                  />
-                )
-              }
-            </ConnectionBoundary>
-          )}
-        </Stack>
       </Stack>
       {isBelowMd && (
         <TokenToolbarData
@@ -198,15 +174,25 @@ const TokenToolbar: FC<TokenToolbarProps> = ({ token, network, onBack }) => {
       )}
       <Box
         sx={{
-          display: "grid",
-          gridTemplateColumns: {
-            xs: "repeat(2, minmax(0, 1fr))",
-            sm: "repeat(5, max-content)",
-          },
+          display: "flex",
+          flexWrap: "wrap",
           justifyContent: { sm: "flex-end" },
           gap: 1,
         }}
       >
+        {!hasAddedToWallet ? (
+          <ConnectionBoundary expectedNetwork={network}>
+            {({ isConnected }) =>
+              isConnected ? (
+                <AddToWalletButton
+                  token={tokenAddress}
+                  symbol={symbol}
+                  decimals={decimals}
+                />
+              ) : null
+            }
+          </ConnectionBoundary>
+        ) : null}
         <Button
           component={NextLink}
           href={streamPath}

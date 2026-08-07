@@ -11,6 +11,7 @@ import {
   Button,
   Card,
   Chip,
+  Divider,
   IconButton,
   ListItemText,
   Paper,
@@ -21,6 +22,7 @@ import {
   TableCell,
   TableContainer,
   TableHead,
+  TablePagination,
   TableRow,
   Typography,
   useMediaQuery,
@@ -28,8 +30,10 @@ import {
 } from "@mui/material";
 import { format } from "date-fns";
 import { FC, useEffect, useMemo, useState } from "react";
+import { useAccount } from "@/hooks/useAccount";
 import AddressName from "../../components/AddressName/AddressName";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
+import { getAddress } from "../../utils/memoizedEthersUtils";
 import { getTransferPagePath } from "../../pages/transfer";
 import { getSendPagePath } from "../../pages/send";
 import { getTokenPairsFromTokenList } from "../../hooks/useTokenQuery";
@@ -40,6 +44,8 @@ import Link from "../common/Link";
 import NetworkIcon from "../network/NetworkIcon";
 import { Network } from "../network/networks";
 import { getBridgePagePath } from "../bridge/getBridgePagePath";
+import { Flag } from "../flags/flags.slice";
+import { useHasFlag } from "../flags/flagsHooks";
 import { platformApi } from "../redux/platformApi/platformApi";
 import { rpcApi } from "../redux/store";
 import Amount from "../token/Amount";
@@ -47,6 +53,9 @@ import TokenIcon from "../token/TokenIcon";
 import FiatAmount from "../tokenPrice/FiatAmount";
 import useTokenPrice from "../tokenPrice/useTokenPrice";
 import PortfolioFiatAmount from "./PortfolioFiatAmount";
+import AddToWalletButton from "../wallet/AddToWalletButton";
+import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
+import ERC20BalanceGraph from "./ERC20BalanceGraph";
 import {
   ERC20TransferHistoryCursor,
   ERC20TransferHistoryItem,
@@ -143,6 +152,9 @@ const ERC20TokenPageContent: FC<{
   const [nextCursor, setNextCursor] = useState<ERC20TransferHistoryCursor>();
   const [hasMore, setHasMore] = useState(false);
   const [transfers, setTransfers] = useState<ERC20TransferHistoryItem[]>([]);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const { address: connectedAccountAddress } = useAccount();
 
   const balanceQuery = rpcApi.useUnderlyingBalanceQuery({
     chainId: network.id,
@@ -199,6 +211,34 @@ const ERC20TokenPageContent: FC<{
     });
   }, [filter, lowerAccountAddress, transfers]);
 
+  useEffect(() => {
+    setPage(0);
+  }, [filter]);
+
+  useEffect(() => {
+    const requiredTransferCount = (page + 1) * rowsPerPage;
+    if (
+      filteredTransfers.length < requiredTransferCount &&
+      hasMore &&
+      nextCursor &&
+      !historyQuery.isFetching
+    ) {
+      setRequestCursor(nextCursor);
+    }
+  }, [
+    filteredTransfers.length,
+    hasMore,
+    historyQuery.isFetching,
+    nextCursor,
+    page,
+    rowsPerPage,
+  ]);
+
+  const visibleTransfers = filteredTransfers.slice(
+    page * rowsPerPage,
+    (page + 1) * rowsPerPage
+  );
+
   const transferPath = getTransferPagePath({
     token: token.address,
     network: network.slugName,
@@ -225,6 +265,16 @@ const ERC20TokenPageContent: FC<{
     fromToken: token.address,
   });
   const balance = balanceQuery.currentData?.balance;
+  const hasAddedToWallet = useHasFlag(
+    connectedAccountAddress
+      ? {
+          type: Flag.TokenAdded,
+          chainId: network.id,
+          token: getAddress(token.address),
+          account: getAddress(connectedAccountAddress),
+        }
+      : undefined
+  );
 
   return (
     <Stack
@@ -280,15 +330,25 @@ const ERC20TokenPageContent: FC<{
         </Stack>
         <Box
           sx={{
-            display: "grid",
-            gridTemplateColumns: {
-              xs: "repeat(2, minmax(0, 1fr))",
-              sm: "repeat(4, max-content)",
-            },
+            display: "flex",
+            flexWrap: "wrap",
             justifyContent: { sm: "flex-end" },
             gap: 1,
           }}
         >
+          {!hasAddedToWallet ? (
+            <ConnectionBoundary expectedNetwork={network}>
+              {({ isConnected }) =>
+                isConnected ? (
+                  <AddToWalletButton
+                    token={token.address}
+                    symbol={token.symbol}
+                    decimals={token.decimals}
+                  />
+                ) : null
+              }
+            </ConnectionBoundary>
+          ) : null}
           {streamPath ? (
             <Button
               LinkComponent={Link}
@@ -432,6 +492,22 @@ const ERC20TokenPageContent: FC<{
             </Stack>
           </Box>
         </Stack>
+        <Divider sx={{ my: 3 }} />
+        <Stack sx={{ gap: 0.25, mb: 1.5 }}>
+          <Typography variant="h6">Balance history</Typography>
+          <Typography variant="body2" sx={{ color: "text.secondary" }}>
+            Reconstructed from indexed transfers. Rebases and other non-transfer
+            balance changes are not reflected.
+          </Typography>
+        </Stack>
+        <ERC20BalanceGraph
+          accountAddress={accountAddress}
+          balance={balance}
+          decimals={token.decimals}
+          loading={balanceQuery.isLoading || historyQuery.isLoading}
+          symbol={token.symbol}
+          transfers={transfers}
+        />
       </Card>
 
       <Box>
@@ -488,10 +564,10 @@ const ERC20TokenPageContent: FC<{
                         onClick={() => setFilter(filterOption)}
                       >
                         {filterOption === TransferFilter.All
-                          ? `All (${transfers.length})`
+                          ? `All (${transfers.length}${hasMore ? "+" : ""})`
                           : filterOption === TransferFilter.Sent
-                          ? `Sent (${sentCount})`
-                          : `Received (${receivedCount})`}
+                          ? `Sent (${sentCount}${hasMore ? "+" : ""})`
+                          : `Received (${receivedCount}${hasMore ? "+" : ""})`}
                       </Button>
                     ))}
                   </Stack>
@@ -506,7 +582,8 @@ const ERC20TokenPageContent: FC<{
               ) : null}
             </TableHead>
             <TableBody>
-              {historyQuery.isLoading && transfers.length === 0 ? (
+              {(historyQuery.isLoading && transfers.length === 0) ||
+              (historyQuery.isFetching && visibleTransfers.length === 0) ? (
                 <TableRow>
                   <TableCell colSpan={3}>
                     <Skeleton height={58} />
@@ -515,7 +592,7 @@ const ERC20TokenPageContent: FC<{
               ) : filteredTransfers.length === 0 ? (
                 <EmptyRow span={3} />
               ) : (
-                filteredTransfers.map((transfer) => (
+                visibleTransfers.map((transfer) => (
                   <ERC20TransferRow
                     key={transfer.id}
                     transfer={transfer}
@@ -526,22 +603,24 @@ const ERC20TokenPageContent: FC<{
               )}
             </TableBody>
           </Table>
-          {hasMore ? (
-            <Stack
-              sx={{
-                alignItems: "center",
-                p: 2,
-                borderTop: `1px solid ${theme.palette.divider}`,
+          {filteredTransfers.length > rowsPerPage || hasMore ? (
+            <TablePagination
+              component="div"
+              count={hasMore ? -1 : filteredTransfers.length}
+              page={page}
+              rowsPerPage={rowsPerPage}
+              rowsPerPageOptions={[5, 10, 25]}
+              labelDisplayedRows={({ from, to, count }) =>
+                count === -1
+                  ? `${from}–${to} of more`
+                  : `${from}–${to} of ${count}`
+              }
+              onPageChange={(_event, nextPage) => setPage(nextPage)}
+              onRowsPerPageChange={(event) => {
+                setRowsPerPage(Number.parseInt(event.target.value, 10));
+                setPage(0);
               }}
-            >
-              <Button
-                variant="outlined"
-                disabled={historyQuery.isFetching || !nextCursor}
-                onClick={() => nextCursor && setRequestCursor(nextCursor)}
-              >
-                {historyQuery.isFetching ? "Loading…" : "Load more"}
-              </Button>
-            </Stack>
+            />
           ) : null}
         </TableContainer>
       )}

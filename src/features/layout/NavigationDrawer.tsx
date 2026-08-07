@@ -199,6 +199,7 @@ export default memo(function NavigationDrawer() {
       sx={{ width: menuDrawerWidth }}
       onClose={closeNavigationDrawer}
       onOpen={openNavigationDrawer}
+      ModalProps={{ disableScrollLock: true }}
       translate="yes"
       slotProps={{
         paper: {

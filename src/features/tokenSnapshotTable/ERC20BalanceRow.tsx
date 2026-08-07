@@ -604,7 +604,17 @@ const ERC20BalanceRow: FC<ERC20BalanceRowProps> = ({
           </Stack>
         </TableCell>
       </TableRow>
-      <TableRow sx={{ background: "transparent", "> td": { p: 0 } }}>
+      <TableRow
+        sx={{
+          background: "transparent",
+          "> td": { p: 0 },
+          [theme.breakpoints.down("md")]: {
+            display: "block",
+            width: "100%",
+            "> td": { display: "block", width: "100%", p: 0 },
+          },
+        }}
+      >
         <TableCell colSpan={5} sx={{ border: "none" }}>
           <Collapse
             data-cy={`${token.address}-balance-updates`}
