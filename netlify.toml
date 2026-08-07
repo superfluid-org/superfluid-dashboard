@@ -42,6 +42,12 @@ for = "/manifest.json"
   force = false
 
 [[redirects]]
+  from = "/portfolio"
+  to = "/"
+  status = 301
+  force = false
+
+[[redirects]]
   from = "/dashboard"
   to = "/"
   status = 301
