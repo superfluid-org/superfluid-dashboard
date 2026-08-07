@@ -114,12 +114,56 @@ const buildEndpoint = (): string | undefined => {
   return value;
 };
 
+const normalizeOrigin = (value: string | undefined): string | undefined => {
+  if (!value) return undefined;
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" || url.protocol === "http:"
+      ? url.origin
+      : undefined;
+  } catch {
+    return undefined;
+  }
+};
+
+const getRequestOrigin = (request: NextApiRequest): string | undefined => {
+  const configuredOrigin = normalizeOrigin(process.env.ANKR_REQUEST_ORIGIN);
+  if (configuredOrigin) return configuredOrigin;
+
+  const requestHost = request.headers.host;
+  const forwardedOrigin = normalizeOrigin(
+    Array.isArray(request.headers.origin)
+      ? request.headers.origin[0]
+      : request.headers.origin
+  );
+  if (
+    forwardedOrigin &&
+    (!requestHost || new URL(forwardedOrigin).host === requestHost)
+  ) {
+    return forwardedOrigin;
+  }
+
+  const vercelHost =
+    process.env.VERCEL_BRANCH_URL ||
+    process.env.VERCEL_URL ||
+    process.env.VERCEL_PROJECT_PRODUCTION_URL;
+  return normalizeOrigin(
+    vercelHost
+      ? vercelHost.includes("://")
+        ? vercelHost
+        : `https://${vercelHost}`
+      : undefined
+  );
+};
+
 const callAnkr = async <T>({
   endpoint,
+  origin,
   method,
   params,
 }: {
   endpoint: string;
+  origin?: string;
   method: string;
   params: Record<string, unknown>;
 }): Promise<T> => {
@@ -128,6 +172,7 @@ const callAnkr = async <T>({
     headers: {
       accept: "application/json",
       "content-type": "application/json",
+      ...(origin ? { origin, referer: `${origin}/` } : {}),
     },
     body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }),
     signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
@@ -207,6 +252,7 @@ export default async function handler(
   if (!endpoint) {
     return response.status(503).json({ error: "Ankr is not configured" });
   }
+  const origin = getRequestOrigin(request);
 
   const { address } = request.body as Partial<AnkrPortfolioRequest>;
   if (typeof address !== "string" || !/^0x[0-9a-fA-F]{40}$/.test(address)) {
@@ -217,6 +263,7 @@ export default async function handler(
     const [balanceResult, nftResult, interactionsResult] = await Promise.all([
       callAnkr<AnkrBalanceResult>({
         endpoint,
+        origin,
         method: "ankr_getAccountBalance",
         params: {
           blockchain: SUPPORTED_CHAINS,
@@ -227,6 +274,7 @@ export default async function handler(
       }),
       callAnkr<AnkrNftResult>({
         endpoint,
+        origin,
         method: "ankr_getNFTsByOwner",
         params: {
           blockchain: SUPPORTED_CHAINS,
@@ -239,6 +287,7 @@ export default async function handler(
       }),
       callAnkr<AnkrInteractionsResult>({
         endpoint,
+        origin,
         method: "ankr_getInteractions",
         params: { address },
       }).catch((error) => {

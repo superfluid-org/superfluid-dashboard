@@ -7,7 +7,9 @@ export interface PortfolioToken {
   symbol: string;
   logoURI?: string;
   priceUsd?: number;
+  priceUpdatedAt?: string;
   valueUsd?: number;
+  nativeToken: boolean;
 }
 
 export interface PortfolioTokensResponse {
@@ -18,4 +20,5 @@ export interface PortfolioTokensResponse {
 export interface PortfolioTokensRequest {
   address: string;
   chainIds: number[];
+  includeNativeTokens?: boolean;
 }

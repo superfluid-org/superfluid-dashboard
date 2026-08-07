@@ -4,6 +4,7 @@ import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import CollectionsRoundedIcon from "@mui/icons-material/CollectionsRounded";
 import ExploreRoundedIcon from "@mui/icons-material/ExploreRounded";
+import HistoryRoundedIcon from "@mui/icons-material/HistoryRounded";
 import HubRoundedIcon from "@mui/icons-material/HubRounded";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import LockRoundedIcon from "@mui/icons-material/LockRounded";
@@ -13,6 +14,8 @@ import SavingsRoundedIcon from "@mui/icons-material/SavingsRounded";
 import ShieldRoundedIcon from "@mui/icons-material/ShieldRounded";
 import ShowChartRoundedIcon from "@mui/icons-material/ShowChartRounded";
 import SwapHorizRoundedIcon from "@mui/icons-material/SwapHorizRounded";
+import SouthWestRoundedIcon from "@mui/icons-material/SouthWestRounded";
+import NorthEastRoundedIcon from "@mui/icons-material/NorthEastRounded";
 import VerifiedRoundedIcon from "@mui/icons-material/VerifiedRounded";
 import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
 import {
@@ -44,6 +47,7 @@ import {
 } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { utils } from "ethers";
+import { format, formatDistanceToNowStrict } from "date-fns";
 import type { NextPage } from "next";
 import NextLink from "next/link";
 import { FC, ReactNode, useMemo, useState } from "react";
@@ -59,6 +63,10 @@ import {
 } from "../features/portfolio/moralisPortfolio";
 import { PortfolioToken } from "../features/portfolio/portfolioTokens";
 import {
+  AlchemyActivityItem,
+  AlchemyNftItem,
+} from "../features/portfolio/alchemyPortfolio";
+import {
   ZerionChartPoint,
   ZerionPortfolioPosition,
 } from "../features/portfolio/zerionPortfolio";
@@ -67,6 +75,7 @@ import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 
 type ProviderId = "alchemy" | "ankr" | "moralis" | "zerion";
 type PositionFilter = "all" | "wallet" | "defi" | "staked";
+type AlchemyView = "assets" | "activity" | "collectibles";
 
 const providerOptions: Array<{
   id: ProviderId;
@@ -133,6 +142,17 @@ const formatQuantity = (value: string) => {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? quantityFormatter.format(parsed) : value;
 };
+
+const formatPriceAge = (timestamp?: string) => {
+  if (!timestamp) return undefined;
+  const date = new Date(timestamp);
+  return Number.isNaN(date.getTime())
+    ? undefined
+    : `${formatDistanceToNowStrict(date)} ago`;
+};
+
+const shortenAddress = (address: string) =>
+  `${address.slice(0, 6)}…${address.slice(-4)}`;
 
 const formatPercent = (value?: number) => {
   if (value === undefined || !Number.isFinite(value)) return "—";
@@ -792,10 +812,11 @@ const AlchemyTable: FC<{ tokens: PortfolioToken[] }> = ({ tokens }) => {
       variant="outlined"
       sx={{ borderRadius: 3, overflowX: "auto" }}
     >
-      <Table sx={{ minWidth: 720 }}>
+      <Table sx={{ minWidth: 860 }}>
         <TableHead>
           <TableRow>
             <TableCell>Asset</TableCell>
+            <TableCell>Type</TableCell>
             <TableCell>Network</TableCell>
             <TableCell align="right">Balance</TableCell>
             <TableCell align="right">Price</TableCell>
@@ -837,6 +858,14 @@ const AlchemyTable: FC<{ tokens: PortfolioToken[] }> = ({ tokens }) => {
                   </Stack>
                 </TableCell>
                 <TableCell>
+                  <Chip
+                    size="small"
+                    label={token.nativeToken ? "Native" : "ERC-20"}
+                    color={token.nativeToken ? "primary" : "default"}
+                    variant="outlined"
+                  />
+                </TableCell>
+                <TableCell>
                   <Stack direction="row" sx={{ alignItems: "center", gap: 1 }}>
                     {network?.icon ? (
                       <Avatar
@@ -854,9 +883,16 @@ const AlchemyTable: FC<{ tokens: PortfolioToken[] }> = ({ tokens }) => {
                   </Typography>
                 </TableCell>
                 <TableCell align="right">
-                  <Typography variant="body2mono" color="text.secondary">
-                    {formatUsd(token.priceUsd)}
-                  </Typography>
+                  <Stack sx={{ alignItems: "flex-end" }}>
+                    <Typography variant="body2mono" color="text.secondary">
+                      {formatUsd(token.priceUsd)}
+                    </Typography>
+                    {formatPriceAge(token.priceUpdatedAt) ? (
+                      <Typography variant="caption" color="text.secondary">
+                        {formatPriceAge(token.priceUpdatedAt)}
+                      </Typography>
+                    ) : null}
+                  </Stack>
                 </TableCell>
                 <TableCell align="right">
                   <Typography variant="body2mono" sx={{ fontWeight: 600 }}>
@@ -871,6 +907,208 @@ const AlchemyTable: FC<{ tokens: PortfolioToken[] }> = ({ tokens }) => {
     </TableContainer>
   );
 };
+
+const AlchemyActivityTable: FC<{ activity: AlchemyActivityItem[] }> = ({
+  activity,
+}) => {
+  const networksById = useMemo(
+    () => new Map(mainNetworks.map((network) => [network.id, network])),
+    []
+  );
+  return (
+    <TableContainer
+      component={Paper}
+      variant="outlined"
+      sx={{ borderRadius: 3, overflowX: "auto" }}
+    >
+      <Table sx={{ minWidth: 840 }}>
+        <TableHead>
+          <TableRow>
+            <TableCell>Activity</TableCell>
+            <TableCell>Asset</TableCell>
+            <TableCell>Network</TableCell>
+            <TableCell>Counterparty</TableCell>
+            <TableCell align="right">Transaction</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {activity.map((item) => {
+            const isSent = item.direction === "sent";
+            const network = networksById.get(item.chainId);
+            const counterparty = isSent ? item.to : item.from;
+            return (
+              <TableRow
+                hover
+                key={item.id}
+                sx={{ "&:last-child td": { borderBottom: 0 } }}
+              >
+                <TableCell>
+                  <Stack
+                    direction="row"
+                    sx={{ alignItems: "center", gap: 1.5 }}
+                  >
+                    <Box
+                      sx={(theme) => ({
+                        width: 34,
+                        height: 34,
+                        display: "grid",
+                        placeItems: "center",
+                        borderRadius: "50%",
+                        color: isSent ? "error.main" : "primary.main",
+                        bgcolor: alpha(
+                          isSent
+                            ? theme.palette.error.main
+                            : theme.palette.primary.main,
+                          0.1
+                        ),
+                      })}
+                    >
+                      {isSent ? (
+                        <NorthEastRoundedIcon fontSize="small" />
+                      ) : (
+                        <SouthWestRoundedIcon fontSize="small" />
+                      )}
+                    </Box>
+                    <Box>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        {item.direction === "self"
+                          ? "Self transfer"
+                          : isSent
+                          ? "Sent"
+                          : "Received"}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {format(new Date(item.timestamp), "d MMM yyyy, HH:mm")}
+                      </Typography>
+                    </Box>
+                  </Stack>
+                </TableCell>
+                <TableCell>
+                  <Typography variant="body2mono" sx={{ fontWeight: 600 }}>
+                    {item.value ? `${item.value} ` : ""}
+                    {item.asset}
+                  </Typography>
+                  <Chip
+                    size="small"
+                    label={item.category.toUpperCase()}
+                    variant="outlined"
+                    sx={{ mt: 0.5 }}
+                  />
+                </TableCell>
+                <TableCell>
+                  {network?.name ?? `Chain ${item.chainId}`}
+                </TableCell>
+                <TableCell>
+                  <Typography variant="body2mono">
+                    {shortenAddress(counterparty)}
+                  </Typography>
+                </TableCell>
+                <TableCell align="right">
+                  {network ? (
+                    <Link
+                      href={network.getLinkForTransaction(item.transactionHash)}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {`${item.transactionHash.slice(0, 8)}…`}
+                    </Link>
+                  ) : (
+                    `${item.transactionHash.slice(0, 8)}…`
+                  )}
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+};
+
+const AlchemyNftGrid: FC<{ nfts: AlchemyNftItem[] }> = ({ nfts }) => (
+  <Box
+    sx={{
+      display: "grid",
+      gridTemplateColumns: {
+        xs: "repeat(2, minmax(0, 1fr))",
+        md: "repeat(4, minmax(0, 1fr))",
+      },
+      gap: 2,
+    }}
+  >
+    {nfts.map((nft) => (
+      <Paper
+        key={nft.id}
+        variant="outlined"
+        sx={{
+          overflow: "hidden",
+          borderRadius: 3,
+          transition: "transform 180ms ease, border-color 180ms ease",
+          "&:hover": {
+            transform: "translateY(-3px)",
+            borderColor: "primary.main",
+          },
+        }}
+      >
+        <Box
+          sx={{
+            aspectRatio: "1 / 1",
+            bgcolor: "background.default",
+            overflow: "hidden",
+          }}
+        >
+          {nft.imageUrl ? (
+            <Box
+              component="img"
+              src={nft.imageUrl}
+              alt=""
+              loading="lazy"
+              sx={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
+          ) : (
+            <Box
+              sx={{
+                width: "100%",
+                height: "100%",
+                display: "grid",
+                placeItems: "center",
+                color: "text.secondary",
+              }}
+            >
+              <CollectionsRoundedIcon sx={{ fontSize: 40 }} />
+            </Box>
+          )}
+        </Box>
+        <Stack sx={{ p: 1.5, gap: 0.5 }}>
+          <Typography variant="body2" noWrap sx={{ fontWeight: 700 }}>
+            {nft.name}
+          </Typography>
+          <Typography variant="caption" color="text.secondary" noWrap>
+            {nft.collectionName || `#${nft.tokenId}`}
+          </Typography>
+          <Stack
+            direction="row"
+            sx={{
+              justifyContent: "space-between",
+              alignItems: "center",
+              gap: 1,
+            }}
+          >
+            <Chip
+              size="small"
+              label={chainLabel(`0x${nft.chainId.toString(16)}`)}
+            />
+            {nft.floorPrice !== undefined ? (
+              <Typography variant="caption" color="text.secondary">
+                Floor {formatQuantity(String(nft.floorPrice))}
+              </Typography>
+            ) : null}
+          </Stack>
+        </Stack>
+      </Paper>
+    ))}
+  </Box>
+);
 
 const AnkrTable: FC<{ assets: AnkrPortfolioAsset[] }> = ({ assets }) => (
   <TableContainer
@@ -1337,10 +1575,16 @@ const ProviderPortfolioPage: NextPage = () => {
   const [provider, setProvider] = useState<ProviderId>("zerion");
   const [filter, setFilter] = useState<PositionFilter>("all");
   const [search, setSearch] = useState("");
+  const [alchemyView, setAlchemyView] = useState<AlchemyView>("assets");
+  const [alchemyChainId, setAlchemyChainId] = useState<number>();
 
   const alchemyQuery = platformApi.usePortfolioTokensQuery(
     visibleAddress && provider === "alchemy"
-      ? { address: visibleAddress, chainIds: mainNetworks.map(({ id }) => id) }
+      ? {
+          address: visibleAddress,
+          chainIds: mainNetworks.map(({ id }) => id),
+          includeNativeTokens: true,
+        }
       : skipToken
   );
   const zerionQuery = platformApi.useZerionPortfolioQuery(
@@ -1356,6 +1600,35 @@ const ProviderPortfolioPage: NextPage = () => {
   const moralisQuery = platformApi.useMoralisPortfolioQuery(
     visibleAddress && provider === "moralis"
       ? { address: visibleAddress }
+      : skipToken
+  );
+  const alchemyTokens = alchemyQuery.currentData?.tokens ?? [];
+  const alchemyAvailableChainIds = useMemo(
+    () => [...new Set(alchemyTokens.map(({ chainId }) => chainId))],
+    [alchemyTokens]
+  );
+  const selectedAlchemyChainId = alchemyAvailableChainIds.includes(
+    alchemyChainId ?? -1
+  )
+    ? alchemyChainId
+    : alchemyAvailableChainIds[0];
+  const alchemyVisibleTokens = selectedAlchemyChainId
+    ? alchemyTokens.filter(({ chainId }) => chainId === selectedAlchemyChainId)
+    : alchemyTokens;
+  const alchemyActivityQuery = platformApi.useAlchemyWalletActivityQuery(
+    visibleAddress &&
+      provider === "alchemy" &&
+      alchemyView === "activity" &&
+      selectedAlchemyChainId
+      ? { address: visibleAddress, chainIds: [selectedAlchemyChainId] }
+      : skipToken
+  );
+  const alchemyNftsQuery = platformApi.useAlchemyNftsQuery(
+    visibleAddress &&
+      provider === "alchemy" &&
+      alchemyView === "collectibles" &&
+      selectedAlchemyChainId
+      ? { address: visibleAddress, chainIds: [selectedAlchemyChainId] }
       : skipToken
   );
 
@@ -1380,13 +1653,16 @@ const ProviderPortfolioPage: NextPage = () => {
     });
   }, [filter, search, zerionQuery.currentData?.positions]);
 
-  const alchemyTokens = alchemyQuery.currentData?.tokens ?? [];
   const alchemyTotal = alchemyTokens.reduce(
     (total, token) => total + (token.valueUsd ?? 0),
     0
   );
   const alchemyNetworks = new Set(alchemyTokens.map(({ chainId }) => chainId))
     .size;
+  const alchemyNativeTotal = alchemyVisibleTokens.reduce(
+    (total, token) => total + (token.nativeToken ? token.valueUsd ?? 0 : 0),
+    0
+  );
   const zerionData = zerionQuery.currentData;
   const ankrData = ankrQuery.currentData;
   const moralisData = moralisQuery.currentData;
@@ -1979,52 +2255,242 @@ const ProviderPortfolioPage: NextPage = () => {
           />
           <Paper
             variant="outlined"
-            sx={{ p: { xs: 2, md: 2.5 }, borderRadius: 3 }}
+            sx={{ borderRadius: 3, overflow: "hidden" }}
           >
+            <Tabs
+              value={alchemyView}
+              onChange={(_, value: AlchemyView) => setAlchemyView(value)}
+              variant="scrollable"
+              scrollButtons="auto"
+              sx={{ px: 1, borderBottom: 1, borderColor: "divider" }}
+            >
+              <Tab
+                value="assets"
+                icon={<AccountBalanceWalletRoundedIcon />}
+                iconPosition="start"
+                label="Assets"
+              />
+              <Tab
+                value="activity"
+                icon={<HistoryRoundedIcon />}
+                iconPosition="start"
+                label="Activity"
+              />
+              <Tab
+                value="collectibles"
+                icon={<CollectionsRoundedIcon />}
+                iconPosition="start"
+                label="Collectibles"
+              />
+            </Tabs>
             <Stack
               direction={{ xs: "column", md: "row" }}
-              sx={{ justifyContent: "space-between", gap: 2 }}
+              sx={{
+                justifyContent: "space-between",
+                alignItems: { md: "center" },
+                gap: 2,
+                p: { xs: 2, md: 2.5 },
+              }}
             >
               <Box>
-                <Typography variant="h5">ERC-20 wallet balances</Typography>
+                <Typography variant="h5">
+                  {alchemyView === "assets"
+                    ? "Liquid wallet assets"
+                    : alchemyView === "activity"
+                    ? "Wallet activity"
+                    : "Collectibles"}
+                </Typography>
                 <Typography
                   variant="body2"
                   color="text.secondary"
                   sx={{ mt: 0.5 }}
                 >
-                  The same Alchemy + LI.FI fallback pricing pipeline used by the
-                  current Portfolio page.
+                  {alchemyView === "assets"
+                    ? "Native gas assets and ERC-20 balances with price freshness from Alchemy and LI.FI fallback pricing."
+                    : alchemyView === "activity"
+                    ? "Recent incoming and outgoing native, ERC-20 and NFT transfers indexed by Alchemy."
+                    : "Spam-filtered NFT ownership and collection metadata, loaded only when requested."}
                 </Typography>
               </Box>
-              <Stack direction="row" sx={{ gap: 1, flexWrap: "wrap" }}>
-                <Chip
-                  size="small"
-                  label="Token metadata"
-                  color="primary"
-                  variant="outlined"
-                />
-                <Chip
-                  size="small"
-                  label="USD prices"
-                  color="primary"
-                  variant="outlined"
-                />
-                <Tooltip title="Protocol deposits and staking are not part of the current Alchemy dashboard request.">
+              <Stack
+                direction="row"
+                sx={{ gap: 1, flexWrap: "wrap", justifyContent: "flex-end" }}
+              >
+                {alchemyAvailableChainIds.map((chainId) => {
+                  const network = mainNetworks.find(({ id }) => id === chainId);
+                  return (
+                    <Chip
+                      key={chainId}
+                      clickable
+                      size="small"
+                      label={network?.name ?? `Chain ${chainId}`}
+                      color={
+                        selectedAlchemyChainId === chainId
+                          ? "primary"
+                          : "default"
+                      }
+                      variant={
+                        selectedAlchemyChainId === chainId
+                          ? "filled"
+                          : "outlined"
+                      }
+                      onClick={() => setAlchemyChainId(chainId)}
+                    />
+                  );
+                })}
+                {alchemyView !== "assets" ? (
                   <Chip
                     size="small"
                     icon={<InfoOutlinedIcon />}
-                    label="Wallet positions only"
+                    label="Loaded on demand"
                     variant="outlined"
                   />
-                </Tooltip>
+                ) : null}
               </Stack>
             </Stack>
           </Paper>
-          {alchemyTokens.length ? (
-            <AlchemyTable tokens={alchemyTokens} />
+
+          {alchemyView === "assets" ? (
+            <>
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: {
+                    xs: "1fr",
+                    md: "repeat(3, minmax(0, 1fr))",
+                  },
+                  gap: 2,
+                }}
+              >
+                {[
+                  {
+                    label: "Native gas value",
+                    value: formatUsd(alchemyNativeTotal),
+                    detail: `${
+                      alchemyVisibleTokens.filter(
+                        ({ nativeToken }) => nativeToken
+                      ).length
+                    } native assets`,
+                  },
+                  {
+                    label: "Priced assets",
+                    value: `${
+                      alchemyVisibleTokens.filter(
+                        ({ priceUsd }) => priceUsd !== undefined
+                      ).length
+                    }/${alchemyVisibleTokens.length}`,
+                    detail: "Alchemy first, LI.FI fallback",
+                  },
+                  {
+                    label: "Asset inventory",
+                    value: String(alchemyVisibleTokens.length),
+                    detail: "Native and ERC-20 holdings",
+                  },
+                ].map(({ label, value, detail }) => (
+                  <Paper
+                    key={label}
+                    variant="outlined"
+                    sx={{ p: 2.25, borderRadius: 3 }}
+                  >
+                    <Typography variant="overline" color="text.secondary">
+                      {label}
+                    </Typography>
+                    <Typography variant="h4mono" sx={{ color: "primary.main" }}>
+                      {value}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {detail}
+                    </Typography>
+                  </Paper>
+                ))}
+              </Box>
+              {alchemyVisibleTokens.length ? (
+                <AlchemyTable tokens={alchemyVisibleTokens} />
+              ) : (
+                <EmptyTable message="Alchemy did not return any eligible liquid balances for this wallet." />
+              )}
+            </>
+          ) : alchemyView === "activity" ? (
+            alchemyActivityQuery.isFetching &&
+            !alchemyActivityQuery.currentData ? (
+              <Paper variant="outlined" sx={{ p: 2.5, borderRadius: 3 }}>
+                <Skeleton height={64} />
+                <Skeleton height={64} />
+                <Skeleton height={64} />
+              </Paper>
+            ) : alchemyActivityQuery.isError ? (
+              <ErrorView
+                provider="alchemy"
+                message={getQueryError(alchemyActivityQuery.error)}
+                onRetry={alchemyActivityQuery.refetch}
+              />
+            ) : alchemyActivityQuery.currentData?.activity.length ? (
+              <>
+                <AlchemyActivityTable
+                  activity={alchemyActivityQuery.currentData.activity}
+                />
+                {alchemyActivityQuery.currentData.truncated ? (
+                  <Typography variant="caption" color="text.secondary">
+                    Showing the latest 25 incoming and outgoing transfers for
+                    this network.
+                  </Typography>
+                ) : null}
+              </>
+            ) : (
+              <EmptyTable message="Alchemy did not find recent activity on this network." />
+            )
+          ) : alchemyNftsQuery.isFetching && !alchemyNftsQuery.currentData ? (
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: {
+                  xs: "repeat(2, 1fr)",
+                  md: "repeat(4, 1fr)",
+                },
+                gap: 2,
+              }}
+            >
+              {Array.from({ length: 4 }).map((_, index) => (
+                <Skeleton
+                  key={index}
+                  variant="rounded"
+                  height={260}
+                  sx={{ borderRadius: 3 }}
+                />
+              ))}
+            </Box>
+          ) : alchemyNftsQuery.isError ? (
+            <ErrorView
+              provider="alchemy"
+              message={getQueryError(alchemyNftsQuery.error)}
+              onRetry={alchemyNftsQuery.refetch}
+            />
+          ) : alchemyNftsQuery.currentData?.nfts.length ? (
+            <>
+              <AlchemyNftGrid nfts={alchemyNftsQuery.currentData.nfts} />
+              {alchemyNftsQuery.currentData.truncated ? (
+                <Typography variant="caption" color="text.secondary">
+                  Showing the newest 40 spam-filtered collectibles on this
+                  network.
+                </Typography>
+              ) : null}
+            </>
           ) : (
-            <EmptyTable message="Alchemy did not return any eligible ERC-20 balances for this wallet." />
+            <EmptyTable message="Alchemy did not find any non-spam collectibles on this network." />
           )}
+
+          <Stack direction="row" sx={{ justifyContent: "flex-end" }}>
+            <Link
+              href="https://www.alchemy.com/docs/reference/portfolio-apis"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Alchemy Portfolio API docs{" "}
+              <OpenInNewRoundedIcon
+                sx={{ fontSize: 14, verticalAlign: "middle" }}
+              />
+            </Link>
+          </Stack>
         </Stack>
       ) : null}
     </Container>

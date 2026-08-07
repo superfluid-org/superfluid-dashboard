@@ -21,6 +21,16 @@ import {
   MoralisPortfolioRequest,
   MoralisPortfolioResponse,
 } from "../../portfolio/moralisPortfolio";
+import {
+  AlchemyActivityRequest,
+  AlchemyActivityResponse,
+  AlchemyNftRequest,
+  AlchemyNftResponse,
+} from "../../portfolio/alchemyPortfolio";
+import {
+  ERC20BalanceHistoryRequest,
+  ERC20BalanceHistoryResponse,
+} from "../../portfolio/erc20BalanceHistory";
 
 export type IsAccountWhitelistedApiResponse =
   /** status 200 Is User account whitelisted */ boolean;
@@ -46,6 +56,25 @@ export const platformApi = createApi({
         method: "POST",
         body,
       }),
+    }),
+    alchemyWalletActivity: build.query<
+      AlchemyActivityResponse,
+      AlchemyActivityRequest
+    >({
+      query: (body) => ({
+        url: "/api/alchemy-wallet-activity",
+        method: "POST",
+        body,
+      }),
+      keepUnusedDataFor: 120,
+    }),
+    alchemyNfts: build.query<AlchemyNftResponse, AlchemyNftRequest>({
+      query: (body) => ({
+        url: "/api/alchemy-nfts",
+        method: "POST",
+        body,
+      }),
+      keepUnusedDataFor: 300,
     }),
     zerionPortfolio: build.query<
       ZerionPortfolioResponse,
@@ -87,6 +116,17 @@ export const platformApi = createApi({
         body,
       }),
       keepUnusedDataFor: 60,
+    }),
+    erc20BalanceHistory: build.query<
+      ERC20BalanceHistoryResponse,
+      ERC20BalanceHistoryRequest
+    >({
+      query: (body) => ({
+        url: "/api/erc20-balance-history",
+        method: "POST",
+        body,
+      }),
+      keepUnusedDataFor: 120,
     }),
     isAccountWhitelisted: build.query<
       IsAccountWhitelistedApiResponse,
