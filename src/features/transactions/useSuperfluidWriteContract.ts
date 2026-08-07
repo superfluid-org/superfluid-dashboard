@@ -262,7 +262,11 @@ export function useSuperfluidWriteContract() {
             onPhase: setRelayPhase,
             // Persist the execution the moment the relay accepts the signed payload, BEFORE
             // polling — and flush so a closed tab / reload / poll timeout can't orphan it.
-            onExecutionCreated: async ({ executionId, validBefore }) => {
+            onExecutionCreated: async ({
+              executionId,
+              validBefore,
+              fallbackValidityWindowSeconds,
+            }) => {
               createdExecutionId = executionId;
               dispatch(
                 relayRecoveryActions.registerLive({
@@ -270,6 +274,7 @@ export function useSuperfluidWriteContract() {
                   chainId: params.chainId,
                   signerAddress: address,
                   validBefore,
+                  fallbackValidityWindowSeconds,
                   title: params.title,
                   subTransactionTitles: params.subTransactionTitles,
                   extraData: toJsonSafe(params.extraData),

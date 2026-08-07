@@ -155,6 +155,7 @@ const RelayRecoveryWatcher: FC<{ entry: RecoveringRelayExecution }> = ({
       relayRecoveryActions.updateState({
         executionId,
         lastKnownState: data.state,
+        lastKnownTerminal: data.terminal,
       })
     );
     if (!data.terminal) return;

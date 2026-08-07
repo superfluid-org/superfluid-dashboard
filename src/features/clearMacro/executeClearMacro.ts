@@ -141,6 +141,12 @@ export interface ExecuteClearMacroParams {
   onExecutionCreated?: (info: {
     executionId: string;
     validBefore: number;
+    /**
+     * The validity window this execution was built with, so the caller can fall back to it if
+     * the provider's echoed `validBefore` is missing or malformed. A fixed fallback would
+     * force-resolve a long-lived (Safe) execution minutes into its wait.
+     */
+    fallbackValidityWindowSeconds: number;
   }) => void | Promise<void>;
 }
 
@@ -988,6 +994,7 @@ export async function executeClearMacro(
   await params.onExecutionCreated?.({
     executionId: execution.id,
     validBefore: Number(execution.validity.validBefore),
+    fallbackValidityWindowSeconds: VALIDITY_WINDOW_IN_SECONDS,
   });
 
   const terminalExecution = await pollRelayExecutionUntilTerminal(execution.id);
