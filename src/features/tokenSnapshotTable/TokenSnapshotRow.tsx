@@ -59,6 +59,7 @@ import {
   getPortfolioRowActionStyles,
   PORTFOLIO_ROW_ACTIONS_CLASS_NAME,
 } from "./portfolioRowActionStyles";
+import PortfolioMobileActions from "./PortfolioMobileActions";
 
 interface SnapshotRowProps {
   lastElement?: boolean;
@@ -551,51 +552,6 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
               gap: 0.25,
             }}
           >
-            {isBelowMd ? (
-              <>
-                <Tooltip title="Stream">
-                  <IconButton
-                    size="small"
-                    data-cy="portfolio-stream-button"
-                    LinkComponent={Link}
-                    href={sendPath}
-                    color="primary"
-                    onClick={stopPropagation}
-                    aria-label={`Stream ${tokenSymbol}`}
-                  >
-                    <SendRoundedIcon fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Transfer">
-                  <IconButton
-                    size="small"
-                    data-cy="portfolio-transfer-button"
-                    LinkComponent={Link}
-                    href={transferPath}
-                    color="primary"
-                    onClick={stopPropagation}
-                    aria-label={`Transfer ${tokenSymbol}`}
-                  >
-                    <SwapHorizRoundedIcon fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-                {!network.testnet && (
-                  <Tooltip title="Swap">
-                    <IconButton
-                      size="small"
-                      data-cy="portfolio-swap-button"
-                      LinkComponent={Link}
-                      href={swapPath}
-                      color="primary"
-                      onClick={stopPropagation}
-                      aria-label={`Swap ${tokenSymbol}`}
-                    >
-                      <CurrencyExchangeRoundedIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                )}
-              </>
-            ) : null}
             <Tooltip title="Stream history">
               <IconButton
                 size={isBelowMd ? "small" : "medium"}
@@ -747,6 +703,14 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
               network={network}
               tokenAddress={snapshot.token}
               lastElement={lastElement}
+              headerActions={
+                <PortfolioMobileActions
+                  symbol={tokenSymbol ?? "token"}
+                  streamPath={sendPath}
+                  transferPath={transferPath}
+                  swapPath={!network.testnet ? swapPath : undefined}
+                />
+              }
             />
           </Collapse>
         </TableCell>

@@ -38,21 +38,15 @@ export const getPortfolioRowActionStyles = (theme: Theme) => {
 export const getPortfolioMobileRowStyles = (theme: Theme) => ({
   [theme.breakpoints.down("md")]: {
     display: "grid",
-    gridTemplateColumns: "minmax(0, 1fr) minmax(112px, auto)",
+    gridTemplateColumns: "minmax(0, 1fr) minmax(84px, auto) 40px",
     width: "100%",
     "& > td": {
       display: "block",
       minWidth: 0,
     },
-    "& > td:nth-of-type(1), & > td:nth-of-type(2)": {
-      borderBottom: "none",
-    },
     "& > td:last-of-type": {
-      gridColumn: "1 / -1",
-      width: "100%",
-      px: theme.spacing(2),
-      pt: 0,
-      pb: theme.spacing(1),
+      width: 40,
+      px: 0,
     },
   },
 });

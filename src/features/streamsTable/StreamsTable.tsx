@@ -16,7 +16,7 @@ import {
 import { skipToken } from "@reduxjs/toolkit/query";
 import { Address, PoolDistributor, Stream } from "@superfluid-finance/sdk-core";
 import { getUnixTime } from "date-fns";
-import { FC, memo, useCallback, useEffect, useMemo, useState } from "react";
+import { FC, memo, ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import {
   mapCreateTaskToScheduledStream,
   mapStreamScheduling,
@@ -67,6 +67,7 @@ interface StreamsTableProps {
   tokenAddress: Address;
   subTable?: boolean;
   lastElement?: boolean;
+  headerActions?: ReactNode;
 }
 
 const StreamsTable: FC<StreamsTableProps> = ({
@@ -74,6 +75,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
   tokenAddress,
   subTable,
   lastElement,
+  headerActions,
 }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
@@ -469,7 +471,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
                 direction="row"
                 sx={{
                   alignItems: "center",
-                  gap: 1
+                  gap: { xs: 0.5, md: 1 }
                 }}>
                 <Button
                   variant="textContained"
@@ -506,6 +508,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
                     flex: 1,
                     justifyContent: "flex-end"
                   }}>
+                  {subTable && isBelowMd ? headerActions : null}
                   {/* <Button
                       variant="contained"
                       color={selectActive ? "error" : "secondary"}

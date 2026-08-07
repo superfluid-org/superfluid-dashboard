@@ -210,7 +210,12 @@ const PortfolioTotalCard: FC<PortfolioTotalCardProps> = ({
             </Box>
           </Typography>
           {showSkeleton ? (
-            <Skeleton width={220} height={52} />
+            <Skeleton
+              sx={{
+                width: { xs: 96, sm: 150, md: 220 },
+                height: { xs: 26, sm: 34, md: 52 },
+              }}
+            />
           ) : (
             <Stack direction="row" sx={{ alignItems: "center", gap: 1 }}>
               <Typography
@@ -262,7 +267,12 @@ const PortfolioTotalCard: FC<PortfolioTotalCardProps> = ({
               </Box>
             </Typography>
             {showSkeleton ? (
-              <Skeleton width="72%" height={36} />
+              <Skeleton
+                sx={{
+                  width: { xs: "78%", md: "72%" },
+                  height: { xs: 22, md: 36 },
+                }}
+              />
             ) : (
               <Typography
                 variant="h5mono"

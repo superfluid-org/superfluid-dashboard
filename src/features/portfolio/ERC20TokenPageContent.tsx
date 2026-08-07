@@ -1,8 +1,6 @@
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AddCircleOutlineRoundedIcon from "@mui/icons-material/AddCircleOutlineRounded";
 import CurrencyExchangeRoundedIcon from "@mui/icons-material/CurrencyExchangeRounded";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import SendRoundedIcon from "@mui/icons-material/SendRounded";
 import SwapHorizRoundedIcon from "@mui/icons-material/SwapHorizRounded";
 import {
@@ -11,9 +9,7 @@ import {
   Button,
   Card,
   Chip,
-  Divider,
   IconButton,
-  ListItemText,
   Paper,
   Skeleton,
   Stack,
@@ -24,21 +20,18 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  Tooltip,
   Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { format } from "date-fns";
 import { FC, useEffect, useMemo, useState } from "react";
 import { useAccount } from "@/hooks/useAccount";
-import AddressName from "../../components/AddressName/AddressName";
-import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import { getAddress } from "../../utils/memoizedEthersUtils";
 import { getTransferPagePath } from "../../pages/transfer";
 import { getSendPagePath } from "../../pages/send";
 import { getTokenPairsFromTokenList } from "../../hooks/useTokenQuery";
 import useNavigateBack from "../../hooks/useNavigateBack";
-import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import { EmptyRow } from "../common/EmptyRow";
 import Link from "../common/Link";
 import NetworkIcon from "../network/NetworkIcon";
@@ -50,12 +43,14 @@ import { platformApi } from "../redux/platformApi/platformApi";
 import { rpcApi } from "../redux/store";
 import Amount from "../token/Amount";
 import TokenIcon from "../token/TokenIcon";
+import { tokenActionIconButtonSx } from "../token/tokenActionIconButtonStyles";
 import FiatAmount from "../tokenPrice/FiatAmount";
 import useTokenPrice from "../tokenPrice/useTokenPrice";
 import PortfolioFiatAmount from "./PortfolioFiatAmount";
 import AddToWalletButton from "../wallet/AddToWalletButton";
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import ERC20BalanceGraph from "./ERC20BalanceGraph";
+import ERC20TransferRow from "./ERC20TransferRow";
 import {
   ERC20TransferHistoryCursor,
   ERC20TransferHistoryItem,
@@ -75,68 +70,6 @@ enum TransferFilter {
   Sent = "sent",
   Received = "received",
 }
-
-const ERC20TransferRow: FC<{
-  transfer: ERC20TransferHistoryItem;
-  accountAddress: string;
-  token: ERC20TokenPageMetadata;
-}> = ({ transfer, accountAddress, token }) => {
-  const isOutgoing = transfer.from === accountAddress.toLowerCase();
-  const counterparty = isOutgoing ? transfer.to : transfer.from;
-  const theme = useTheme();
-  const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
-  const formattedDate = format(new Date(transfer.timestamp), "d MMM. yyyy");
-
-  return (
-    <TableRow hover data-cy="erc20-transfer-row">
-      <TableCell data-cy="sender-receiver-address">
-        <Stack
-          direction="row"
-          sx={{ alignItems: "center", gap: 1.5, minWidth: 0 }}
-        >
-          {isOutgoing ? (
-            <ArrowForwardIcon data-cy="transfer-outgoing-icon" />
-          ) : (
-            <ArrowBackIcon data-cy="transfer-incoming-icon" />
-          )}
-          <AddressAvatar
-            address={counterparty}
-            AvatarProps={{
-              sx: { width: 24, height: 24, borderRadius: "5px" },
-            }}
-            BlockiesProps={{ size: 8, scale: 3 }}
-          />
-          <AddressCopyTooltip address={counterparty}>
-            <Typography variant="h7" noWrap>
-              <AddressName address={counterparty} />
-            </Typography>
-          </AddressCopyTooltip>
-        </Stack>
-      </TableCell>
-      <TableCell data-cy="transfer-amount" align="right">
-        <ListItemText
-          primary={
-            <Amount
-              wei={transfer.rawValue}
-              decimals={transfer.decimals ?? token.decimals}
-            />
-          }
-          secondary={isBelowMd ? formattedDate : undefined}
-          slotProps={{
-            primary: { variant: "h7mono" },
-            secondary: {
-              variant: "body2mono",
-              color: "text.secondary",
-            },
-          }}
-        />
-      </TableCell>
-      {!isBelowMd ? (
-        <TableCell data-cy="transfer-date">{formattedDate}</TableCell>
-      ) : null}
-    </TableRow>
-  );
-};
 
 const ERC20TokenPageContent: FC<{
   network: Network;
@@ -350,63 +283,60 @@ const ERC20TokenPageContent: FC<{
             </ConnectionBoundary>
           ) : null}
           {streamPath ? (
-            <Button
-              LinkComponent={Link}
-              href={streamPath}
-              variant="contained"
-              size="small"
-              startIcon={<SendRoundedIcon />}
-              data-cy="token-stream-button"
-            >
-              Stream
-            </Button>
+            <Tooltip title="Stream">
+              <IconButton
+                LinkComponent={Link}
+                href={streamPath}
+                data-cy="token-stream-button"
+                aria-label={`Stream ${token.symbol}`}
+                sx={tokenActionIconButtonSx}
+              >
+                <SendRoundedIcon />
+              </IconButton>
+            </Tooltip>
           ) : null}
           {wrapPath ? (
-            <Button
-              LinkComponent={Link}
-              href={wrapPath}
-              variant="outlined"
-              size="small"
-              startIcon={<AddCircleOutlineRoundedIcon />}
-              data-cy="token-wrap-button"
-            >
-              Wrap
-            </Button>
+            <Tooltip title="Wrap">
+              <IconButton
+                LinkComponent={Link}
+                href={wrapPath}
+                data-cy="token-wrap-button"
+                aria-label={`Wrap ${token.symbol}`}
+                sx={tokenActionIconButtonSx}
+              >
+                <AddCircleOutlineRoundedIcon />
+              </IconButton>
+            </Tooltip>
           ) : null}
-          <Button
-            LinkComponent={Link}
-            href={transferPath}
-            variant={streamPath ? "outlined" : "contained"}
-            size="small"
-            startIcon={<SwapHorizRoundedIcon />}
-            data-cy="token-transfer-button"
-          >
-            Transfer
-          </Button>
-          {!network.testnet ? (
-            <Button
+          <Tooltip title="Transfer">
+            <IconButton
               LinkComponent={Link}
-              href={swapPath}
-              variant="outlined"
-              size="small"
-              startIcon={<CurrencyExchangeRoundedIcon />}
-              data-cy="token-swap-button"
+              href={transferPath}
+              data-cy="token-transfer-button"
+              aria-label={`Transfer ${token.symbol}`}
+              sx={tokenActionIconButtonSx}
             >
-              Swap
-            </Button>
+              <SwapHorizRoundedIcon />
+            </IconButton>
+          </Tooltip>
+          {!network.testnet ? (
+            <Tooltip title="Swap">
+              <IconButton
+                LinkComponent={Link}
+                href={swapPath}
+                data-cy="token-swap-button"
+                aria-label={`Swap ${token.symbol}`}
+                sx={tokenActionIconButtonSx}
+              >
+                <CurrencyExchangeRoundedIcon />
+              </IconButton>
+            </Tooltip>
           ) : null}
         </Box>
       </Stack>
 
       <Card sx={{ p: { xs: 2.5, md: 3 } }}>
-        <Stack
-          direction={{ xs: "column", md: "row" }}
-          sx={{
-            alignItems: { md: "flex-end" },
-            justifyContent: "space-between",
-            gap: 3,
-          }}
-        >
+        <Stack sx={{ gap: 3 }}>
           <Box>
             <Typography
               sx={{
@@ -463,66 +393,16 @@ const ERC20TokenPageContent: FC<{
               </Typography>
             ) : null}
           </Box>
-          <Box sx={{ textAlign: { md: "right" } }}>
-            <Typography
-              variant="caption"
-              sx={{
-                color: "text.secondary",
-              }}
-            >
-              Token type
-            </Typography>
-            <Stack
-              direction="row"
-              sx={{
-                gap: 1,
-                alignItems: "center",
-                justifyContent: { md: "flex-end" },
-              }}
-            >
-              <Chip label="ERC-20" size="small" variant="outlined" />
-              <Typography
-                variant="body2"
-                sx={{
-                  color: "text.secondary",
-                }}
-              >
-                Transfer-based history
-              </Typography>
-            </Stack>
-          </Box>
+          <ERC20BalanceGraph
+            accountAddress={accountAddress}
+            balance={balance}
+            decimals={token.decimals}
+            loading={balanceQuery.isLoading || historyQuery.isLoading}
+            symbol={token.symbol}
+            transfers={transfers}
+          />
         </Stack>
-        <Divider sx={{ my: 3 }} />
-        <Stack sx={{ gap: 0.25, mb: 1.5 }}>
-          <Typography variant="h6">Balance history</Typography>
-          <Typography variant="body2" sx={{ color: "text.secondary" }}>
-            Reconstructed from indexed transfers. Rebases and other non-transfer
-            balance changes are not reflected.
-          </Typography>
-        </Stack>
-        <ERC20BalanceGraph
-          accountAddress={accountAddress}
-          balance={balance}
-          decimals={token.decimals}
-          loading={balanceQuery.isLoading || historyQuery.isLoading}
-          symbol={token.symbol}
-          transfers={transfers}
-        />
       </Card>
-
-      <Box>
-        <Typography variant="h5">Transfers</Typography>
-        <Typography
-          variant="body2"
-          sx={{
-            color: "text.secondary",
-            mt: 0.5,
-          }}
-        >
-          Incoming and outgoing ERC-20 transfers indexed by Alchemy. Rebases and
-          other non-transfer balance changes may not appear here.
-        </Typography>
-      </Box>
 
       {historyQuery.isError && transfers.length === 0 ? (
         <Alert severity="error">
@@ -597,7 +477,7 @@ const ERC20TokenPageContent: FC<{
                     key={transfer.id}
                     transfer={transfer}
                     accountAddress={accountAddress}
-                    token={token}
+                    tokenDecimals={token.decimals}
                   />
                 ))
               )}

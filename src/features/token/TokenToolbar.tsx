@@ -6,10 +6,10 @@ import SendRoundedIcon from "@mui/icons-material/SendRounded";
 import SwapHorizRoundedIcon from "@mui/icons-material/SwapHorizRounded";
 import {
   Box,
-  Button,
   Chip,
   IconButton,
   Stack,
+  Tooltip,
   Typography,
   useMediaQuery,
   useTheme,
@@ -30,6 +30,7 @@ import TokenIcon from "./TokenIcon";
 import { getSendPagePath } from "../../pages/send";
 import { getTransferPagePath } from "../../pages/transfer";
 import { getBridgePagePath } from "../bridge/getBridgePagePath";
+import { tokenActionIconButtonSx } from "./tokenActionIconButtonStyles";
 
 interface TokenToolbarData {
   chainId: number;
@@ -193,60 +194,65 @@ const TokenToolbar: FC<TokenToolbarProps> = ({ token, network, onBack }) => {
             }
           </ConnectionBoundary>
         ) : null}
-        <Button
-          component={NextLink}
-          href={streamPath}
-          size="small"
-          variant="contained"
-          startIcon={<SendRoundedIcon />}
-          data-cy="token-stream-button"
-        >
-          Stream
-        </Button>
-        <Button
-          component={NextLink}
-          href={transferPath}
-          size="small"
-          variant="outlined"
-          startIcon={<SwapHorizRoundedIcon />}
-          data-cy="token-transfer-button"
-        >
-          Transfer
-        </Button>
-        {!network.testnet ? (
-          <Button
+        <Tooltip title="Stream">
+          <IconButton
             component={NextLink}
-            href={swapPath}
-            size="small"
-            variant="outlined"
-            startIcon={<CurrencyExchangeRoundedIcon />}
-            data-cy="token-swap-button"
+            href={streamPath}
+            data-cy="token-stream-button"
+            aria-label={`Stream ${symbol}`}
+            sx={tokenActionIconButtonSx}
           >
-            Swap
-          </Button>
+            <SendRoundedIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Transfer">
+          <IconButton
+            component={NextLink}
+            href={transferPath}
+            data-cy="token-transfer-button"
+            aria-label={`Transfer ${symbol}`}
+            sx={tokenActionIconButtonSx}
+          >
+            <SwapHorizRoundedIcon />
+          </IconButton>
+        </Tooltip>
+        {!network.testnet ? (
+          <Tooltip title="Swap">
+            <IconButton
+              component={NextLink}
+              href={swapPath}
+              data-cy="token-swap-button"
+              aria-label={`Swap ${symbol}`}
+              sx={tokenActionIconButtonSx}
+            >
+              <CurrencyExchangeRoundedIcon />
+            </IconButton>
+          </Tooltip>
         ) : null}
         {wrappable ? (
           <>
-            <Button
-              component={NextLink}
-              href={`/wrap?upgrade&token=${token.address}&network=${network.slugName}`}
-              size="small"
-              variant="outlined"
-              startIcon={<AddIcon />}
-              data-cy="wrap-button"
-            >
-              Wrap
-            </Button>
-            <Button
-              component={NextLink}
-              href={`/wrap?downgrade&token=${token.address}&network=${network.slugName}`}
-              size="small"
-              variant="outlined"
-              startIcon={<RemoveIcon />}
-              data-cy="unwrap-button"
-            >
-              Unwrap
-            </Button>
+            <Tooltip title="Wrap">
+              <IconButton
+                component={NextLink}
+                href={`/wrap?upgrade&token=${token.address}&network=${network.slugName}`}
+                data-cy="wrap-button"
+                aria-label={`Wrap ${symbol}`}
+                sx={tokenActionIconButtonSx}
+              >
+                <AddIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Unwrap">
+              <IconButton
+                component={NextLink}
+                href={`/wrap?downgrade&token=${token.address}&network=${network.slugName}`}
+                data-cy="unwrap-button"
+                aria-label={`Unwrap ${symbol}`}
+                sx={tokenActionIconButtonSx}
+              >
+                <RemoveIcon />
+              </IconButton>
+            </Tooltip>
           </>
         ) : null}
       </Box>
