@@ -1,6 +1,14 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import config from "../../../utils/config";
 import { allNetworks, findNetworkOrThrow } from "../../network/networks";
+import {
+  PortfolioTokensRequest,
+  PortfolioTokensResponse,
+} from "../../portfolio/portfolioTokens";
+import {
+  ERC20TransferHistoryRequest,
+  ERC20TransferHistoryResponse,
+} from "../../portfolio/erc20TransferHistory";
 
 export type IsAccountWhitelistedApiResponse =
   /** status 200 Is User account whitelisted */ boolean;
@@ -17,13 +25,38 @@ export const platformApi = createApi({
   refetchOnMountOrArgChange: 120,
   refetchOnReconnect: true,
   endpoints: (build) => ({
+    portfolioTokens: build.query<
+      PortfolioTokensResponse,
+      PortfolioTokensRequest
+    >({
+      query: (body) => ({
+        url: "/api/portfolio-tokens",
+        method: "POST",
+        body,
+      }),
+    }),
+    erc20TransferHistory: build.query<
+      ERC20TransferHistoryResponse,
+      ERC20TransferHistoryRequest
+    >({
+      query: (body) => ({
+        url: "/api/erc20-transfer-history",
+        method: "POST",
+        body,
+      }),
+      keepUnusedDataFor: 60,
+    }),
     isAccountWhitelisted: build.query<
       IsAccountWhitelistedApiResponse,
       IsAccountWhitelistedApiArg
     >({
       queryFn: async ({ account, chainId }) => {
         const network = findNetworkOrThrow(allNetworks, chainId);
-        const doesNetworkSupportAutomation = Boolean(network.autoWrapSubgraphUrl || network.flowSchedulerSubgraphUrl || network.vestingSubgraphUrl);
+        const doesNetworkSupportAutomation = Boolean(
+          network.autoWrapSubgraphUrl ||
+            network.flowSchedulerSubgraphUrl ||
+            network.vestingSubgraphUrl
+        );
         if (!doesNetworkSupportAutomation) {
           return { data: false };
         }
@@ -33,12 +66,15 @@ export const platformApi = createApi({
         }
 
         try {
-          const response = await fetch(`${config.allowlistApiUrl}/api/allowlist/${account}/${chainId}`);
-          const data = await response.json() as IsAccountWhitelistedApiResponse;
+          const response = await fetch(
+            `${config.allowlistApiUrl}/api/allowlist/${account}/${chainId}`
+          );
+          const data =
+            (await response.json()) as IsAccountWhitelistedApiResponse;
           return { data: data };
         } catch (error) {
           console.error("Error fetching whitelist status:", error);
-          return { data: false  };
+          return { data: false };
         }
       },
     }),

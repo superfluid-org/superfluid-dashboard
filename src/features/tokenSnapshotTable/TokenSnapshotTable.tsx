@@ -18,19 +18,29 @@ import { useMinigame } from "../minigame/MinigameContext";
 import { Network } from "../network/networks";
 import { subgraphApi } from "../redux/store";
 import TokenSnapshotRow from "./TokenSnapshotRow";
-import { FetchingStatus } from "./TokenSnapshotTables";
+import { FetchingStatus, PortfolioValueCallback } from "./TokenSnapshotTables";
 import { EMPTY_ARRAY } from "../../utils/constants";
+import ERC20BalanceRow from "./ERC20BalanceRow";
+import useERC20Balances, { ERC20Balance } from "./useERC20Balances";
 
 interface TokenSnapshotTableProps {
   address: Address;
   network: Network;
+  erc20Balances: ERC20Balance[];
+  erc20BalancesLoading: boolean;
+  useERC20Fallback: boolean;
   fetchingCallback: (networkId: number, fetchingStatus: FetchingStatus) => void;
+  portfolioValueCallback: PortfolioValueCallback;
 }
 
 const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
   address,
   network,
+  erc20Balances: portfolioERC20Balances,
+  erc20BalancesLoading,
+  useERC20Fallback,
   fetchingCallback,
+  portfolioValueCallback,
 }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
@@ -45,7 +55,7 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
         },
       },
       pagination: {
-        take: Infinity
+        take: Infinity,
       },
     },
     {
@@ -74,7 +84,7 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
           },
         },
         pagination: {
-          take: Infinity
+          take: Infinity,
         },
       },
       {
@@ -92,20 +102,60 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
       }
     );
 
+  const listedTokenSnapshots = listedTokensSnapshotsQuery.listedTokenSnapshots;
+  const unlistedTokenSnapshots =
+    unlistedTokensSnapshotsQuery.unlistedTokenSnapshots;
   const tokenSnapshots = useMemo(
-    () =>
-      {
-        return listedTokensSnapshotsQuery.listedTokenSnapshots.concat(
-          unlistedTokensSnapshotsQuery.unlistedTokenSnapshots
-        );
-      },
-    [network, listedTokensSnapshotsQuery.data?.items?.length ?? 0, unlistedTokensSnapshotsQuery.data?.items?.length ?? 0]
+    () => listedTokenSnapshots.concat(unlistedTokenSnapshots),
+    [listedTokenSnapshots, unlistedTokenSnapshots]
   );
+  const portfolioPriceUsdByAddress = useMemo(
+    () =>
+      new Map(
+        portfolioERC20Balances.flatMap(({ token, priceUsd }) =>
+          priceUsd === undefined
+            ? []
+            : [[token.address.toLowerCase(), priceUsd] as const]
+        )
+      ),
+    [portfolioERC20Balances]
+  );
+
+  const {
+    tokensWithBalances: fallbackERC20Balances,
+    isLoading: fallbackERC20BalancesLoading,
+  } = useERC20Balances({
+    address,
+    network,
+    enabled: useERC20Fallback,
+  });
+
+  const erc20Balances = useMemo(() => {
+    const superTokenAddresses = new Set(
+      tokenSnapshots.map(({ token }) => token.toLowerCase())
+    );
+    const balances = useERC20Fallback
+      ? fallbackERC20Balances
+      : portfolioERC20Balances;
+
+    return balances.filter(
+      ({ token }) => !superTokenAddresses.has(token.address.toLowerCase())
+    );
+  }, [
+    fallbackERC20Balances,
+    portfolioERC20Balances,
+    tokenSnapshots,
+    useERC20Fallback,
+  ]);
 
   const { setCosmetics } = useMinigame();
 
-  const isLoading = listedTokensSnapshotsQuery.isLoading || unlistedTokensSnapshotsQuery.isLoading;
-  const hasContent = !!tokenSnapshots.length;
+  const isLoading =
+    listedTokensSnapshotsQuery.isLoading ||
+    unlistedTokensSnapshotsQuery.isLoading ||
+    erc20BalancesLoading ||
+    fallbackERC20BalancesLoading;
+  const hasContent = tokenSnapshots.length > 0 || erc20Balances.length > 0;
   useEffect(() => {
     fetchingCallback(network.id, {
       isLoading,
@@ -132,15 +182,11 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
     setCosmetics,
     fetchingCallback,
     isLoading,
-    hasContent
+    hasContent,
+    tokenSnapshots,
   ]);
 
-  if (
-    listedTokensSnapshotsQuery.isLoading ||
-    unlistedTokensSnapshotsQuery.isLoading ||
-    tokenSnapshots.length === 0
-  )
-    return null;
+  if (isLoading || !hasContent) return null;
 
   return (
     <TableContainer
@@ -157,16 +203,37 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
         },
       }}
     >
-      <Table>
+      <Table
+        sx={{
+          tableLayout: "fixed",
+          width: "100%",
+          [theme.breakpoints.down("md")]: {
+            display: "block",
+            "& > thead, & > tbody": {
+              display: "block",
+              width: "100%",
+            },
+            "& > thead > tr, & > thead > tr > th": {
+              display: "block",
+              width: "100%",
+            },
+            "& > tbody > tr": {
+              width: "100%",
+            },
+          },
+        }}
+      >
         <TableHead>
           <NetworkHeadingRow colSpan={5} network={network} />
           {!isBelowMd && (
             <TableRow>
-              <TableCell width="200">Asset</TableCell>
-              <TableCell>Balance</TableCell>
-              <TableCell width="300">Net Flow</TableCell>
-              <TableCell width="300">Inflow/Outflow</TableCell>
-              <TableCell width="120" align="center"></TableCell>
+              <TableCell width="22%">Asset</TableCell>
+              <TableCell width="16%">Balance</TableCell>
+              <TableCell width="14%">Net flow rate</TableCell>
+              <TableCell width="40%" sx={{ pl: 0 }}>
+                Actions
+              </TableCell>
+              <TableCell width="8%" align="center"></TableCell>
             </TableRow>
           )}
         </TableHead>
@@ -176,7 +243,24 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
               key={snapshot.id}
               network={network}
               snapshot={snapshot}
-              lastElement={tokenSnapshots.length <= index + 1}
+              priceUsd={portfolioPriceUsdByAddress.get(
+                snapshot.token.toLowerCase()
+              )}
+              portfolioValueCallback={portfolioValueCallback}
+              lastElement={
+                erc20Balances.length === 0 && tokenSnapshots.length <= index + 1
+              }
+            />
+          ))}
+          {erc20Balances.map(({ token, balance, priceUsd }) => (
+            <ERC20BalanceRow
+              key={token.address}
+              address={address}
+              network={network}
+              token={token}
+              balance={balance}
+              priceUsd={priceUsd}
+              portfolioValueCallback={portfolioValueCallback}
             />
           ))}
         </TableBody>

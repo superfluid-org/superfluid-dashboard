@@ -14,19 +14,16 @@ const LiFiWidgetManager = dynamic(
   { ssr: false }
 );
 
-
 const Bridge: NextPage = () => {
   return (
-    <Container
-      data-cy={"lifi-widget"}
-      maxWidth="lg"
-    >
+    <Container data-cy={"lifi-widget"} maxWidth="lg">
       <LiFiWidgetManager />
       <Stack
         sx={{
           pt: 6,
-          alignItems: "center"
-        }}>
+          alignItems: "center",
+        }}
+      >
         <Typography
           variant="h7"
           component="p"
@@ -36,16 +33,17 @@ const Bridge: NextPage = () => {
             textAlign: "inherit",
           }}
         >
-          The Bridge is operated by LI.FI, and we cannot take responsibility for
-          any issues. For support related to the bridge, please refer to the
-          LI.FI{" "}
+          Swap &amp; Bridge is operated by LI.FI, and we cannot take
+          responsibility for any issues. For support related to the bridge,
+          please refer to the LI.FI{" "}
           <Link href="https://discord.com/invite/lifi" target="_blank">
             Discord server
-          </Link>.
+          </Link>
+          .
         </Typography>
       </Stack>
     </Container>
   );
 };
 
-export default withStaticSEO({ title: "Bridge | Superfluid" }, Bridge);
+export default withStaticSEO({ title: "Swap & Bridge | Superfluid" }, Bridge);

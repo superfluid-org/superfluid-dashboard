@@ -8,10 +8,10 @@ import ControlPointDuplicateOutlinedIcon from "@mui/icons-material/ControlPointD
 import HistoryRoundedIcon from "@mui/icons-material/HistoryRounded";
 import LockClockOutlinedIcon from "@mui/icons-material/LockClockOutlined";
 import FactCheckOutlinedIcon from "@mui/icons-material/FactCheckOutlined";
-import LooksRoundedIcon from "@mui/icons-material/LooksRounded";
 import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
 import ReceiptLongRoundedIcon from "@mui/icons-material/ReceiptLongRounded";
 import SportsEsportsRoundedIcon from "@mui/icons-material/SportsEsportsRounded";
+import SwapHorizRoundedIcon from "@mui/icons-material/SwapHorizRounded";
 import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
 import {
   alpha,
@@ -72,9 +72,9 @@ const NavigationItem: FC<NavigationItemProps> = ({
 
   return (
     <ListItemButton
-        LinkComponent={Link}
-        href={href}
-        sx={{
+      LinkComponent={Link}
+      href={href}
+      sx={{
         borderRadius: "10px",
         transition: theme.transitions.create("background-color", {
           easing: theme.transitions.easing.easeOut,
@@ -91,7 +91,7 @@ const NavigationItem: FC<NavigationItemProps> = ({
       selected={active}
       onClick={onClick}
       {...(isExternal && { target: "_blank" })}
-      >
+    >
       {/* Dense icons are 20px in a 24px-wide slot (ml 2px + mr 18px), so labels
           share the same x-coordinate as the 24px-icon tier above. */}
       <ListItemIcon sx={dense ? { ml: 0.25, mr: 2.25 } : undefined}>
@@ -101,7 +101,7 @@ const NavigationItem: FC<NavigationItemProps> = ({
         data-cy={id}
         primary={title}
         slotProps={{
-          primary: dense ? { variant: "body2" } : undefined
+          primary: dense ? { variant: "body2" } : undefined,
         }}
       />
       {(chip || isExternal) && (
@@ -109,8 +109,9 @@ const NavigationItem: FC<NavigationItemProps> = ({
           direction="row"
           sx={{
             alignItems: "center",
-            gap: 0.75
-          }}>
+            gap: 0.75,
+          }}
+        >
           {chip}
           {isExternal && (
             <OpenInNewRoundedIcon
@@ -121,7 +122,7 @@ const NavigationItem: FC<NavigationItemProps> = ({
       )}
     </ListItemButton>
   );
-  };
+};
 
 export default memo(function NavigationDrawer() {
   const theme = useTheme();
@@ -135,31 +136,33 @@ export default memo(function NavigationDrawer() {
     ? `https://reporter.superfluid.org/?account=${visibleAddress}`
     : "https://reporter.superfluid.org/";
 
-  const localMajorVersion = packageJson.version.split('.')[0];
+  const localMajorVersion = packageJson.version.split(".")[0];
 
   const fetchRemoteDashboardVersion = useCallback(async () => {
-    const response = await fetch("https://raw.githubusercontent.com/superfluid-org/superfluid-dashboard/master/package.json");
+    const response = await fetch(
+      "https://raw.githubusercontent.com/superfluid-org/superfluid-dashboard/master/package.json"
+    );
     if (!response.ok) {
-      throw new Error(`Failed to fetch remote package.json: ${response.statusText} (status: ${response.status})`);
+      throw new Error(
+        `Failed to fetch remote package.json: ${response.statusText} (status: ${response.status})`
+      );
     }
     const remotePackageData = await response.json();
     const remoteFullVersion = remotePackageData.version;
 
-    if (typeof remoteFullVersion === 'string') {
-      return remoteFullVersion.split('.')[0];
+    if (typeof remoteFullVersion === "string") {
+      return remoteFullVersion.split(".")[0];
     }
     throw new Error(`Remote version format is incorrect: ${remoteFullVersion}`);
   }, []);
 
-  const { data: remoteMajorVersionFromQuery } = useQuery<string, Error>(
-    {
-      queryKey: ['remoteDashboardVersion'],
-      queryFn: fetchRemoteDashboardVersion,
-      refetchInterval: 15 * 60 * 1000, // 15 minutes
-      staleTime: 15 * 60 * 1000,       // 15 minutes
-      refetchOnWindowFocus: true
-    }
-  );
+  const { data: remoteMajorVersionFromQuery } = useQuery<string, Error>({
+    queryKey: ["remoteDashboardVersion"],
+    queryFn: fetchRemoteDashboardVersion,
+    refetchInterval: 15 * 60 * 1000, // 15 minutes
+    staleTime: 15 * 60 * 1000, // 15 minutes
+    refetchOnWindowFocus: true,
+  });
 
   const remoteMajorVersion = remoteMajorVersionFromQuery;
   const isOutOfSync = !!(
@@ -196,6 +199,7 @@ export default memo(function NavigationDrawer() {
       sx={{ width: menuDrawerWidth }}
       onClose={closeNavigationDrawer}
       onOpen={openNavigationDrawer}
+      ModalProps={{ disableScrollLock: true }}
       translate="yes"
       slotProps={{
         paper: {
@@ -209,8 +213,8 @@ export default memo(function NavigationDrawer() {
           style: {
             pointerEvents:
               isBelowLg && !navigationDrawerOpen ? "none" : "initial",
-          }
-        }
+          },
+        },
       }}
     >
       <Toolbar
@@ -249,11 +253,12 @@ export default memo(function NavigationDrawer() {
         sx={{
           gap: 1,
           color: theme.palette.text.secondary,
-          px: 2
-        }}>
+          px: 2,
+        }}
+      >
         <NavigationItem
           id="nav-dashboard"
-          title="Dashboard"
+          title="Portfolio"
           href="/"
           onClick={closeNavigationDrawer}
           active={isActiveRoute("/", "/[_network]/token")}
@@ -280,11 +285,11 @@ export default memo(function NavigationDrawer() {
 
         <NavigationItem
           id="nav-bridge"
-          title="Bridge"
+          title="Swap & Bridge"
           href="/bridge"
           onClick={closeNavigationDrawer}
           active={isActiveRoute("/bridge")}
-          icon={LooksRoundedIcon}
+          icon={SwapHorizRoundedIcon}
         />
 
         <NavigationItem
@@ -326,20 +331,21 @@ export default memo(function NavigationDrawer() {
           active={isActiveRoute("/history")}
           icon={HistoryRoundedIcon}
         />
-
       </Stack>
       <Stack
         sx={{
           justifyContent: "flex-end",
-          flex: 1
-        }}>
+          flex: 1,
+        }}
+      >
         <Stack
           sx={{
             gap: 0.5,
             my: 2,
             px: 2,
-            color: theme.palette.text.secondary
-          }}>
+            color: theme.palette.text.secondary,
+          }}
+        >
           <NavigationItem
             id="nav-address-book"
             title="Address Book"
@@ -395,8 +401,9 @@ export default memo(function NavigationDrawer() {
               alignItems: "center",
               gap: 0.75,
               mt: 0.5,
-              pl: 1.5
-            }}>
+              pl: 1.5,
+            }}
+          >
             <SocialLinks />
             <Typography variant="body2" component="span">
               ·
@@ -408,10 +415,10 @@ export default memo(function NavigationDrawer() {
                 sx={{
                   p: 0.5,
                   borderRadius: theme.shape.borderRadius,
-                  display: 'flex',
-                  alignItems: 'center',
+                  display: "flex",
+                  alignItems: "center",
                   gap: theme.spacing(0.5),
-                  color: 'inherit',
+                  color: "inherit",
                 }}
               >
                 <Typography variant="body2" component="span">

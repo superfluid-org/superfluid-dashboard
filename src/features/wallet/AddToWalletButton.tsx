@@ -9,6 +9,7 @@ import { addTokenAddedFlag } from "../flags/flags.slice";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
 import { useConnectionBoundary } from "../transactionBoundary/ConnectionBoundary";
 import { useTokenQuery } from "../../hooks/useTokenQuery";
+import { tokenActionIconButtonSx } from "../token/tokenActionIconButtonStyles";
 
 interface AddToWalletButtonProps {
   token: Address;
@@ -82,7 +83,7 @@ const AddToWalletButton: FC<AddToWalletButtonProps> = ({
 
   return (
     <Tooltip title="Add to Wallet">
-      <IconButton data-cy={"add-to-wallet-button"} color="primary" onClick={addToWalletWithNetworkCheck}>
+      <IconButton data-cy={"add-to-wallet-button"} color="primary" onClick={addToWalletWithNetworkCheck} aria-label="Add to Wallet" sx={tokenActionIconButtonSx}>
         <AccountBalanceWalletOutlinedIcon />
       </IconButton>
     </Tooltip>

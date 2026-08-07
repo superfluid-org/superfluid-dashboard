@@ -2,14 +2,16 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { FC, PropsWithChildren, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { object, ObjectSchema, string } from "yup";
-import { testAddress, testEtherAmount } from "../../../utils/yupUtils";
+import { testAddress, testDecimalAmount } from "../../../utils/yupUtils";
 import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
 import { formRestorationOptions } from "../../transactionRestoration/transactionRestorations";
 import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
 import { CommonFormEffects } from "../../common/CommonFormEffects";
 import { rpcApi } from "../../redux/store";
 import { BigNumber } from "ethers";
-import { formatEther, parseEther } from "ethers/lib/utils";
+import { parseUnits } from "ethers/lib/utils";
+import { isSuper } from "../../redux/endpoints/tokenTypes";
+import { useTransferTokens } from "./useTransferTokens";
 
 export type ValidTransferForm = {
   data: {
@@ -41,13 +43,11 @@ export interface TransferFormProviderProps {
   initialFormValues: Partial<ValidTransferForm["data"]>;
 }
 
-const primarySchema: ObjectSchema<ValidTransferForm> = object({
-  data: object({
-    tokenAddress: string().required().test(testAddress()),
-    receiverAddress: string().required().test(testAddress()),
-    amountEther: string().required().test(testEtherAmount({ notNegative: true, notZero: true })),
-  })
-})
+const primaryDataSchema = object({
+  tokenAddress: string().required().test(testAddress()),
+  receiverAddress: string().required().test(testAddress()),
+  amountEther: string().required().test(testDecimalAmount({ notNegative: true, notZero: true })),
+});
 
 const TransferFormProvider: FC<
   PropsWithChildren<TransferFormProviderProps>
@@ -56,65 +56,88 @@ const TransferFormProvider: FC<
   const { network, stopAutoSwitchToWalletNetwork } = useExpectedNetwork();
 
   const [queryRealtimeBalance] = rpcApi.useLazyRealtimeBalanceQuery();
+  const [queryUnderlyingBalance] = rpcApi.useLazyUnderlyingBalanceQuery();
+  const { tokens } = useTransferTokens({ network, address: visibleAddress });
 
   const formSchema = useMemo(
     () =>
-      object().test(async (values, context) => {
+      object({
+        data: primaryDataSchema.test(async (values, context) => {
+          const validData = await primaryDataSchema.validate(values);
 
-        clearErrors("data");
-        await primarySchema.validate(values);
-        const validForm = values as ValidTransferForm;
+          // # Higher order validation
+          const handleHigherOrderValidationError = ({
+            message,
+          }: {
+            message: string;
+          }): never => {
+            throw context.createError({
+              path: "data",
+              message: message,
+            });
+          };
 
-        // # Higher order validation
-        const handleHigherOrderValidationError = ({
-          message,
-        }: {
-          message: string;
-        }) => {
-          setError("data", {
-            message: message,
-          });
-          throw context.createError({
-            path: "data",
-            message: message,
-          });
-        };
+          const { tokenAddress, receiverAddress, amountEther } = validData;
 
-        const { tokenAddress, receiverAddress, amountEther } =
-          validForm.data;
+          if (!visibleAddress)
+            return false;
 
-        if (!visibleAddress)
-          return false;
+          if (visibleAddress.toLowerCase() === receiverAddress.toLowerCase()) {
+            handleHigherOrderValidationError({
+              message: `You can't send to yourself.`,
+            });
+          }
 
-        if (visibleAddress.toLowerCase() === receiverAddress.toLowerCase()) {
-          handleHigherOrderValidationError({
-            message: `You can't send to yourself.`,
-          });
-        }
+          const token = tokens.find(
+            ({ address }) => address.toLowerCase() === tokenAddress.toLowerCase()
+          );
+          if (!token) {
+            return handleHigherOrderValidationError({
+              message: "Token details could not be loaded.",
+            });
+          }
 
-        const { balance } = await queryRealtimeBalance(
-          {
-            accountAddress: visibleAddress,
-            chainId: network.id,
-            tokenAddress: tokenAddress,
-          },
-          true
-        ).unwrap()
+          const amountWei: BigNumber = (() => {
+            try {
+              return parseUnits(amountEther, token.decimals);
+            } catch {
+              return handleHigherOrderValidationError({
+                message: `This token supports up to ${token.decimals} decimal places.`,
+              });
+            }
+          })();
 
-        const amountWei = parseEther(amountEther);
-        const balanceWei = BigNumber.from(balance);
+          const { balance } = isSuper(token)
+            ? await queryRealtimeBalance(
+              {
+                accountAddress: visibleAddress,
+                chainId: network.id,
+                tokenAddress,
+              },
+              true
+            ).unwrap()
+            : await queryUnderlyingBalance(
+              {
+                accountAddress: visibleAddress,
+                chainId: network.id,
+                tokenAddress,
+              },
+              true
+            ).unwrap();
+          const balanceWei = BigNumber.from(balance);
 
-        if (amountWei.gt(balanceWei)) {
-          // Note: nit-pick but we're not accounting for flowing here
+          if (amountWei.gt(balanceWei)) {
+            // Note: nit-pick but we're not accounting for flowing here
 
-          handleHigherOrderValidationError({
-            message: `You don't have enough balance for the transfer.`,
-          });
-        }
+            handleHigherOrderValidationError({
+              message: `You don't have enough balance for the transfer.`,
+            });
+          }
 
-        return true;
-      }),
-    [network, visibleAddress]
+          return true;
+        }),
+      }) as ObjectSchema<ValidTransferForm>,
+    [network, queryRealtimeBalance, queryUnderlyingBalance, tokens, visibleAddress]
   );
 
   const formMethods = useForm<PartialTransferForm, undefined, ValidTransferForm>({
@@ -123,8 +146,7 @@ const TransferFormProvider: FC<
     mode: "onChange",
   });
 
-  const { setValue, clearErrors, setError } =
-    formMethods;
+  const { setValue } = formMethods;
 
   const [isInitialized, setIsInitialized] = useState(!initialFormValues);
 
