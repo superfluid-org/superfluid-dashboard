@@ -554,14 +554,14 @@ export default memo(function SendStream() {
     endTimestamp,
   ]);
 
-  const { isAccountEligible, isRelayEnabled } = useClearMacroEligibility(
-    clearMacroActionKind,
-    network
-  );
+  const {
+    isAccountEligible,
+    isRelayEnabled,
+    isPending: isRelayEligibilityPending,
+  } = useClearMacroEligibility(clearMacroActionKind, network);
   const { address } = useAccount();
   const isSameSigner =
     !!address && visibleAddress?.toLowerCase() === address.toLowerCase();
-  const isEOAPending = isEOA === null;
 
   // Form-level mirror of the upsert hook's (timestamp-normalized) schedule push
   // conditions: does this submit create/modify/clear a FlowScheduler row? CFA-only
@@ -593,15 +593,17 @@ export default memo(function SendStream() {
   // On Clear Macro networks the relay fee pays for the scheduling service, so
   // scheduler-touching submits are forced through the relay: submit stays disabled until
   // the relay toggle is on, and macro-inexpressible combinations (e.g. rate + schedule
-  // change in one submit) are blocked with the alert below. Also held disabled while a
-  // same-signer wallet is still being classified (`isEOA === null`) so an actual EOA can
-  // never race a direct scheduler write through the brief unclassified window. Cancel is
-  // deliberately ungated — stopping an outflow is a safety action.
+  // change in one submit) are blocked with the alert below. Also held disabled while
+  // eligibility is still resolving — wallet classification (`isEOA === null`) OR, for a Safe
+  // App, the provider capability lookup that decides whether Safe authorization is available
+  // here. Either window must fail closed: an eligible signer racing a direct scheduler write
+  // through it would bypass the relay entirely, which is exactly what the force exists to
+  // prevent. Cancel is deliberately ungated — stopping an outflow is a safety action.
   const isSchedulerRelayForced = isAccountEligible && touchesScheduler;
   const isSchedulerRelayPending =
     isClearMacroSupportedOnNetwork(network) &&
     isSameSigner &&
-    isEOAPending &&
+    isRelayEligibilityPending &&
     touchesScheduler;
 
   // The submit hold above is immediate (safety), but its explanatory caption is
@@ -862,7 +864,9 @@ export default memo(function SendStream() {
   // the submit gating above stays strict.
   const isAllowlistBypassed =
     isAccountEligible ||
-    (isClearMacroSupportedOnNetwork(network) && isSameSigner && isEOAPending);
+    (isClearMacroSupportedOnNetwork(network) &&
+      isSameSigner &&
+      isRelayEligibilityPending);
   const { isPlatformWhitelisted } = useWhitelist({
     // Skips the allowlist API query entirely for bypassed users.
     accountAddress: isAllowlistBypassed ? undefined : visibleAddress,
