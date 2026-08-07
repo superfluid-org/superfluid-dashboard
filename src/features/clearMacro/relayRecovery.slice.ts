@@ -138,6 +138,16 @@ export interface RecoveringRelayExecution {
 export interface PendingRelayIntent {
   /** Generated once, pre-POST, and never regenerated — the dedup key for the replay. */
   clientRequestId: string;
+  /**
+   * `live` while the mutation that created this intent is still running its own POST;
+   * `recovering` once nothing owns it anymore.
+   *
+   * Without this the background replayer, which is always mounted and reacts the instant the
+   * intent is persisted, fires a SECOND create concurrently with the original — turning the
+   * recovery path for an unanswered POST into a duplicate request on every single run, and
+   * leaning on the provider's dedup being atomic under two concurrent identical creates.
+   */
+  ownership: RelayRecoveryOwnership;
   chainId: number;
   signerAddress: string;
   safeMessageHash: string;
@@ -205,6 +215,8 @@ export type RegisterLiveRelayExecutionPayload = Omit<
   RecoveringRelayExecution,
   "ownership" | "outcome" | "guardState"
 > & {
+  /** Defaults to `live`. Background promotion passes `recovering` — nothing owns it. */
+  ownership?: RelayRecoveryOwnership;
   /** The validity window the caller built, used only if `validBefore` is unusable. */
   fallbackValidityWindowSeconds: number;
 };
@@ -265,8 +277,17 @@ export const relayRecoverySlice = createSlice({
           entry.createdAt,
           fallbackValidityWindowSeconds
         ),
-        ownership: "live",
+        ownership: entry.ownership ?? "live",
         guardState: "active",
+        // Carry a cancel decided while the POST was in flight ONTO the entity, in the same
+        // reducer that deletes the intent holding it. Re-establishing it in a later dispatch
+        // would lose the decision if anything interrupted the two, and the whole point of the
+        // flag is that it survives exactly that.
+        cancelRequested:
+          entry.cancelRequested ??
+          (entry.clientRequestId
+            ? state.pendingIntents[entry.clientRequestId]?.cancelRequested
+            : undefined),
       };
       // `setOne`, not `upsertOne`: the payload is a complete entity, and registration is the
       // start of an execution's life, so replacing beats shallow-merging leftovers onto it.
@@ -317,6 +338,11 @@ export const relayRecoverySlice = createSlice({
     },
     clearPendingIntent: (state, action: PayloadAction<string>) => {
       delete state.pendingIntents[action.payload];
+    },
+    /** The live mutation is done with this intent without having resolved it. */
+    handIntentToRecovery: (state, action: PayloadAction<string>) => {
+      const intent = state.pendingIntents[action.payload];
+      if (intent) intent.ownership = "recovering";
     },
     /**
      * A cancel was decided. Durable, and set BEFORE the DELETE is attempted, so a cancel that
@@ -379,6 +405,11 @@ export const relayRecoverySlice = createSlice({
         .filter((id) => state.entities[id]?.ownership === "live")
         .map((id) => ({ id, changes: { ownership: "recovering" as const } }));
       if (updates.length) relayRecoveryAdapter.updateMany(asEntityState(state), updates);
+      // Same reasoning for pre-POST intents: a persisted intent that survived to this mount
+      // has no live mutation behind it, so its POST is genuinely unanswered and replayable.
+      for (const intent of Object.values(state.pendingIntents)) {
+        intent.ownership = "recovering";
+      }
     },
     /**
      * Terminal (tracked / failed / expired) — drop the entry.

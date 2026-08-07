@@ -45,6 +45,7 @@ export const SafeRelayPendingToast: FC<SafeRelayPendingToastProps> = ({
   const cancel = useCancelRelayExecution();
   const [isConfirmingCancel, setIsConfirmingCancel] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [copyFailed, setCopyFailed] = useState(false);
 
   // Confident copy only when the Transaction Service actually told us a proposal exists.
   // Otherwise the honest version: we cannot distinguish "signed and closed the modal" from
@@ -77,17 +78,30 @@ export const SafeRelayPendingToast: FC<SafeRelayPendingToastProps> = ({
         <Typography variant="caption" sx={{ color: "text.secondary" }} translate="no">
           {executionId}
         </Typography>
-        <Tooltip title={copied ? "Copied" : "Copy execution ID"}>
+        <Tooltip
+          title={
+            copyFailed
+              ? "Couldn't copy — select the ID and copy it manually"
+              : copied
+                ? "Copied"
+                : "Copy execution ID"
+          }
+        >
           <Button
             size="small"
             data-cy="safe-relay-copy-execution-id"
             aria-label="Copy execution ID"
             sx={{ minWidth: 0, p: 0.5 }}
             onClick={() => {
-              void navigator.clipboard?.writeText(executionId).then(() => {
-                setCopied(true);
-                setTimeout(() => setCopied(false), 2000);
-              });
+              // Clipboard access can be denied outright; a rejected promise here must not
+              // become an unhandled rejection just because a copy button was pressed.
+              navigator.clipboard
+                ?.writeText(executionId)
+                .then(() => {
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 2000);
+                })
+                .catch(() => setCopyFailed(true));
             }}
           >
             <ContentCopyRoundedIcon fontSize="inherit" />
@@ -131,7 +145,7 @@ export const SafeRelayPendingToast: FC<SafeRelayPendingToastProps> = ({
                 data-cy="safe-relay-cancel-confirm"
                 disabled={cancel.isPending}
                 onClick={() =>
-                  cancel.mutate({ executionId, clientRequestId })
+                  cancel.mutate({ executionId, clientRequestId, messageLink })
                 }
               >
                 {cancel.isPending ? "Cancelling…" : "Yes, cancel"}

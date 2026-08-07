@@ -1,6 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 import { reduxPersistor, useAppDispatch } from "../redux/store";
 import { cancelRelayExecution, ClearMacroRelayError } from "./relayApi";
+import { CANCELLED_SAFE_MESSAGE_NOTE } from "./relayStateCopy";
 import { relayRecoveryActions } from "./relayRecovery.slice";
 
 /** Why a cancel could not be confirmed. Both outcomes keep the direct write blocked. */
@@ -43,9 +45,12 @@ export function useCancelRelayExecution() {
     mutationFn: async ({
       executionId,
       clientRequestId,
+      messageLink,
     }: {
       executionId: string;
       clientRequestId?: string;
+      /** Provider-returned and already URL-validated; used only for the post-cancel notice. */
+      messageLink?: string;
     }) => {
       dispatch(
         relayRecoveryActions.requestCancel({ executionId, clientRequestId })
@@ -75,6 +80,17 @@ export function useCancelRelayExecution() {
         dispatch(relayRecoveryActions.clearPendingIntent(clientRequestId));
       }
       await reduxPersistor.flush();
+
+      // Cancelling stops the provider's relay only — it does NOT revoke the Safe message. The
+      // proposal stays listed and co-signers can still confirm it; harmless for this execution,
+      // but alarming to an owner watching the Safe UI, so it has to be said rather than
+      // discovered. The entry is gone by now, so this notice is the only place left to say it.
+      toast.info(
+        `Cancelled — this won't be relayed. ${CANCELLED_SAFE_MESSAGE_NOTE}${
+          messageLink ? ` Review it in Safe: ${messageLink}` : ""
+        }`,
+        { position: "bottom-right", autoClose: false }
+      );
     },
   });
 }

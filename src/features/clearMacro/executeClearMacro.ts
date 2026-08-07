@@ -41,6 +41,7 @@ import {
 } from "./permit2";
 import {
   chainSupportsPermit2,
+  chainSupportsSafeMessage,
   createRelayExecution,
   getCapabilities,
   getFinalTransactionHash,
@@ -463,6 +464,14 @@ export async function executeClearMacro(
   if (!capabilities.chains.some((chain) => chain.chainId === chainId)) {
     throw new ClearMacroNotEligibleError(
       `Relay provider does not serve chain ${chainId}.`
+    );
+  }
+  // Re-check the AUTHORIZATION method too, not just that the chain is served. The capabilities
+  // TTL exists so this read is fresh; checking only chain presence would fetch a fresh answer
+  // and then ignore the part that decides whether a Safe message can work here at all.
+  if (isSafeAuthorization && !chainSupportsSafeMessage(capabilities, chainId)) {
+    throw new ClearMacroNotEligibleError(
+      `Relay provider does not accept Safe message authorization on chain ${chainId}.`
     );
   }
   // Defensive re-check of what the chip already gated on — guards a stale persisted

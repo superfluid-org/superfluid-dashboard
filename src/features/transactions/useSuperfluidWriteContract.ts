@@ -304,6 +304,8 @@ export function useSuperfluidWriteContract() {
         // Set once the relay accepts the signed payload — from here the execution exists and an
         // error must hand off to recovery, never leave the entry stuck "live".
         let createdExecutionId: string | undefined;
+        // The pre-POST intent this run created, if any — so the catch below can hand it over.
+        let safeClientRequestId: string | undefined;
         try {
           const { hash, executionId } = await executeClearMacro(config, {
             chainId: params.chainId,
@@ -327,9 +329,13 @@ export function useSuperfluidWriteContract() {
             // Persisted BEFORE the POST for the Safe path: the guards are armed from here, and
             // an unanswered POST can then be replayed byte-for-byte instead of guessed at.
             onIntentCreated: async (intent) => {
+              safeClientRequestId = intent.clientRequestId;
               dispatch(
                 relayRecoveryActions.registerPendingIntent({
                   clientRequestId: intent.clientRequestId,
+                  // This mutation is about to POST it itself, so the background replayer must
+                  // leave it alone until nothing owns it (a reload, or the hand-off below).
+                  ownership: "live",
                   chainId: params.chainId,
                   signerAddress: address,
                   safeMessageHash: intent.safeMessageHash,
@@ -432,6 +438,14 @@ export function useSuperfluidWriteContract() {
 
           return { hash, chainId: params.chainId };
         } catch (error) {
+          // Whatever happens from here, this mutation is no longer the owner of its pre-POST
+          // intent. If one is still persisted its POST was never resolved, so hand it to the
+          // background replayer rather than leaving it inert while it holds the write guards.
+          if (safeClientRequestId) {
+            dispatch(
+              relayRecoveryActions.handIntentToRecovery(safeClientRequestId)
+            );
+          }
           if (
             error instanceof ClearMacroSafeAuthorizationPendingError
           ) {
@@ -517,6 +531,30 @@ export function useSuperfluidWriteContract() {
             throw error;
           }
         }
+      } else if (
+        // §6's point, not just its letter: a Safe that opted into gasless must NEVER silently
+        // end up in a paid multi-owner ceremony. Two ways the relay branch above declines to
+        // engage without the user choosing it:
+        //   - Guard A is holding (another gasless request owns this signer's forwarder nonce);
+        //   - the provider's capabilities have not resolved, so `authorizationMethod` is
+        //     undefined even though this IS a Safe App with gasless switched on.
+        // Both are "not yet", not "send it the expensive way". Fail closed and say which.
+        params.clearMacro &&
+        clearMacroEnabled &&
+        isEOA === false &&
+        connector?.id === SAFE_CONNECTOR_ID &&
+        visibleAddress?.toLowerCase() === address.toLowerCase() &&
+        isClearMacroSupportedOnNetwork(network) &&
+        // Only when the answer is genuinely UNRESOLVED. A settled "this chain is
+        // signature-only" is a different thing: there the ordinary paid path is correct, the
+        // UI already says gasless isn't available here, and blocking would strand the user.
+        (isGaslessBlockedByGuardA || !relayCapabilities)
+      ) {
+        throw new Error(
+          isGaslessBlockedByGuardA
+            ? "Another gasless transaction for this Safe is still open. Wait for it to finish or cancel it, then try again."
+            : "The gasless service can't be reached right now, so this Safe transaction wasn't sent. Try again in a moment, or turn off the gasless option to send it as a normal Safe transaction."
+        );
       } else if (params.clearMacroRequired) {
         // The caller demanded the relay but the gate above couldn't engage (toggle raced
         // off, wallet reclassified, ...). The form keeps its submit disabled in these

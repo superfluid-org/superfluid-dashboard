@@ -86,9 +86,14 @@ export const ClearMacroRelayRecovery: FC = () => {
 
   return (
     <>
-      {pendingIntents.map((intent) => (
-        <PendingIntentReplayer key={intent.clientRequestId} intent={intent} />
-      ))}
+      {pendingIntents
+        // Only intents nothing owns anymore. An intent whose own mutation is still running its
+        // POST must not be replayed — that would fire a duplicate concurrent create on every
+        // single Safe authorization, which is the opposite of recovering an unanswered one.
+        .filter((intent) => intent.ownership === "recovering")
+        .map((intent) => (
+          <PendingIntentReplayer key={intent.clientRequestId} intent={intent} />
+        ))}
       {recovering.map((entry) => (
         <RelayRecoveryWatcher key={entry.executionId} entry={entry} />
       ))}
@@ -109,9 +114,17 @@ const PendingIntentReplayer: FC<{ intent: PendingRelayIntent }> = ({
   intent,
 }) => {
   const dispatch = useAppDispatch();
+  const store = useStore<RootState>();
   const startedRef = useRef(false);
 
   const expiryMs = (intent.validBefore + GRACE_SECONDS) * 1000;
+  // The effect must NOT depend on the whole intent: it dispatches `countIntentReplayAttempt`,
+  // which replaces the object, which would tear down the effect mid-POST and discard the
+  // result — burning an attempt per reload without ever promoting or cancelling. Depend on the
+  // stable id, and read anything mutable back from the store when it is actually needed.
+  const { clientRequestId } = intent;
+  const intentRef = useRef(intent);
+  intentRef.current = intent;
 
   useEffect(() => {
     if (startedRef.current) return;
@@ -120,17 +133,18 @@ const PendingIntentReplayer: FC<{ intent: PendingRelayIntent }> = ({
     let cancelled = false;
 
     const run = async () => {
+      const current = intentRef.current;
       // Past its own validity window the payload can no longer land, so whatever became of the
       // POST, the guards this intent holds are meaningless. Without this an intent whose create
       // was never answered would hold Guard A and Guard B forever — the same
       // never-release-on-uncertainty failure the tombstone bound exists to avoid, in the one
       // place that has no execution id to tombstone.
       if (Date.now() > expiryMs) {
-        dispatch(relayRecoveryActions.clearPendingIntent(intent.clientRequestId));
+        dispatch(relayRecoveryActions.clearPendingIntent(clientRequestId));
         await reduxPersistor.flush();
         return;
       }
-      if (intent.replayAttempts >= MAX_INTENT_REPLAY_ATTEMPTS) {
+      if (current.replayAttempts >= MAX_INTENT_REPLAY_ATTEMPTS) {
         // Out of attempts but still inside the window: keep the intent (and its guards), and
         // say so, because the user is otherwise blocked from that action with no explanation
         // and no record of the message hash to check in Safe.
@@ -139,24 +153,29 @@ const PendingIntentReplayer: FC<{ intent: PendingRelayIntent }> = ({
             expiryMs
           ).toLocaleString()}. Safe message: ${intent.safeMessageHash}`,
           {
-            toastId: `relay-intent-stuck-${intent.clientRequestId}`,
+            toastId: `relay-intent-stuck-${clientRequestId}`,
             autoClose: false,
             position: "bottom-right",
           }
         );
         return;
       }
-      dispatch(
-        relayRecoveryActions.countIntentReplayAttempt(intent.clientRequestId)
-      );
+      dispatch(relayRecoveryActions.countIntentReplayAttempt(clientRequestId));
 
       let body: CreateRelayExecutionBody;
       try {
-        body = JSON.parse(intent.postBody) as CreateRelayExecutionBody;
+        body = JSON.parse(current.postBody) as CreateRelayExecutionBody;
       } catch {
-        // Unreplayable. Drop the intent, but only because it never became an execution: with
-        // no id there is nothing to cancel and nothing that can be double-spent through it.
-        dispatch(relayRecoveryActions.clearPendingIntent(intent.clientRequestId));
+        // Unreplayable — but NOT evidence that nothing exists. The intent is written before the
+        // POST precisely because that POST may have committed an execution whose response we
+        // lost, and the double spend runs through the provider, not through the id. So the
+        // guards stay armed until the payload can no longer land; only the expiry above clears
+        // it. Burn the attempts so the stuck-intent notice appears instead of retrying a body
+        // that will never parse.
+        for (let i = current.replayAttempts; i < MAX_INTENT_REPLAY_ATTEMPTS; i++) {
+          dispatch(relayRecoveryActions.countIntentReplayAttempt(clientRequestId));
+        }
+        await reduxPersistor.flush();
         return;
       }
 
@@ -173,38 +192,47 @@ const PendingIntentReplayer: FC<{ intent: PendingRelayIntent }> = ({
       // Promote FIRST, unconditionally — including when a cancel is pending. The execution now
       // demonstrably exists, and the recovery entry is what carries its write guards and its
       // Cancel affordance from here on. Clearing the intent without promoting would drop both.
-      const display = decodeRelayIntentDisplayMeta(intent.displayMeta);
+      const display = decodeRelayIntentDisplayMeta(current.displayMeta);
       dispatch(
         relayRecoveryActions.registerLive({
+          // Nothing owns this — it must land as `recovering` or no watcher would poll it and
+          // no pending surface would appear until some later reload happened to reclaim it.
+          ownership: "recovering",
           executionId: execution.id,
-          chainId: intent.chainId,
-          signerAddress: intent.signerAddress,
+          chainId: current.chainId,
+          signerAddress: current.signerAddress,
           validBefore: Number(execution.validity.validBefore),
           fallbackValidityWindowSeconds: Math.max(
             0,
-            intent.validBefore - Math.floor(intent.createdAt / 1000)
+            current.validBefore - Math.floor(current.createdAt / 1000)
           ),
           title: display?.title ?? "Gasless Transaction",
           subTransactionTitles: display?.subTransactionTitles,
           extraData: display?.extraData,
-          actionKind: intent.actionKind,
-          createdAt: intent.createdAt,
+          actionKind: current.actionKind,
+          createdAt: current.createdAt,
           authorizationType: "safeMessageV1",
-          safeMessageHash: intent.safeMessageHash,
+          safeMessageHash: current.safeMessageHash,
           // Validated even here: it is persisted and later rendered as a link.
           messageLink: isRenderableMessageLink(
             execution.authorization?.messageLink
           )
             ? execution.authorization?.messageLink
             : undefined,
-          actionFingerprint: intent.actionFingerprint || undefined,
-          clientRequestId: intent.clientRequestId,
-          cancelRequested: intent.cancelRequested,
+          actionFingerprint: current.actionFingerprint || undefined,
+          clientRequestId,
+          // Read back from the store, not from the render-time snapshot: a cancel may have been
+          // requested while this POST was in flight.
+          cancelRequested:
+            store.getState().relayRecovery.pendingIntents[clientRequestId]
+              ?.cancelRequested ?? current.cancelRequested,
         })
       );
       await reduxPersistor.flush();
 
-      if (!intent.cancelRequested) return;
+      const cancelWanted =
+        store.getState().relayRecovery.entities[execution.id]?.cancelRequested;
+      if (!cancelWanted) return;
 
       // A cancel was decided before this execution had an id — the whole reason the flag is
       // durable. Carry it out now. If it does NOT succeed the entry stays exactly as it is,
@@ -225,7 +253,7 @@ const PendingIntentReplayer: FC<{ intent: PendingRelayIntent }> = ({
     // the same moment a reload would.
     const timer = setTimeout(
       () => {
-        dispatch(relayRecoveryActions.clearPendingIntent(intent.clientRequestId));
+        dispatch(relayRecoveryActions.clearPendingIntent(clientRequestId));
       },
       Math.max(0, expiryMs - Date.now())
     );
@@ -233,7 +261,7 @@ const PendingIntentReplayer: FC<{ intent: PendingRelayIntent }> = ({
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [dispatch, intent, expiryMs]);
+  }, [dispatch, store, clientRequestId, expiryMs]);
 
   return null;
 };
@@ -253,6 +281,24 @@ const RelayRecoveryWatcher: FC<{ entry: RecoveringRelayExecution }> = ({
   // When the provider first became unreachable in this run, for the tombstone bound.
   const unreachableSinceRef = useRef<number | undefined>(undefined);
 
+  // How many owners have signed, for the pending copy. Fetched ONCE per mount, never polled:
+  // the Transaction Service allows about 5000 requests per 30 days per IP, and this only
+  // sharpens wording — "waiting for the other owners (1 of 3 approved)" instead of the hedged
+  // version that still has to allow for the user having declined. Its failure is invisible by
+  // design and falls back to that hedged copy.
+  const proposalQuery = useQuery({
+    queryKey: ["safeMessageProposal", entry.chainId, entry.safeMessageHash],
+    queryFn: () => getSafeMessage(entry.chainId, entry.safeMessageHash!),
+    enabled: isSafe && !isTombstoned && !!entry.safeMessageHash,
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
+    retry: false,
+  });
+  const confirmations =
+    proposalQuery.data?.status === "found"
+      ? proposalQuery.data.confirmations
+      : undefined;
+
   // The pending surface. A Safe wait gets the rich version — expiry, execution id, Review in
   // Safe, Cancel — because the old string ("still being confirmed, please don't retry") is
   // wrong on both halves for a multi-day co-signer round. A tombstoned entry shows nothing:
@@ -261,7 +307,7 @@ const RelayRecoveryWatcher: FC<{ entry: RecoveringRelayExecution }> = ({
     if (isTombstoned) return;
     const toastId = `relay-recovery-${executionId}`;
     if (isSafe) {
-      toast.info(
+      const body = (
         <SafeRelayPendingToast
           executionId={executionId}
           clientRequestId={entry.clientRequestId}
@@ -269,9 +315,20 @@ const RelayRecoveryWatcher: FC<{ entry: RecoveringRelayExecution }> = ({
           messageLink={entry.messageLink}
           threshold={entry.safeThreshold}
           confirmations={confirmations}
-        />,
-        { toastId, autoClose: false, position: "bottom-right", closeOnClick: false }
+        />
       );
+      // `toast.info` with an existing id is a NO-OP, so the confirmation count and the Safe
+      // link would never appear once they resolve. Update in place when it already exists.
+      if (toast.isActive(toastId)) {
+        toast.update(toastId, { render: body });
+      } else {
+        toast.info(body, {
+          toastId,
+          autoClose: false,
+          position: "bottom-right",
+          closeOnClick: false,
+        });
+      }
     } else {
       toast.info(
         `A gasless transaction is still being confirmed. Please don't retry. (execution ${executionId})`,
@@ -385,6 +442,11 @@ const RelayRecoveryWatcher: FC<{ entry: RecoveringRelayExecution }> = ({
       if (data?.state === "awaiting_authorization") {
         return AWAITING_AUTHORIZATION_POLL_INTERVAL_MS;
       }
+      // No data at all means we have never reached the provider in this run — most likely an
+      // outage, which the tombstone bound lets run for 24 hours. Hammering at 2s there would be
+      // tens of thousands of failing requests; back off to the awaiting-authorization cadence
+      // until something answers. A live entry that has data polls fast, as before.
+      if (!data) return AWAITING_AUTHORIZATION_POLL_INTERVAL_MS;
       return RECOVERY_POLL_INTERVAL_MS;
     },
     // A co-signer confirming happens in another tab or on another device, so returning to the

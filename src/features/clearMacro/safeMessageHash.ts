@@ -50,23 +50,34 @@ export interface SafeMessageSafeInfo {
  * Per semver, a prerelease sorts below its release (`1.3.0-rc.1` < `1.3.0`); build metadata is
  * not ordered and is ignored.
  */
-export function isSafeVersionGte(version: string, minimum: string): boolean {
-  const parse = (raw: string) => {
-    const [withoutBuild] = raw.trim().split("+");
-    const [core, ...prerelease] = withoutBuild.split("-");
-    const parts = core.split(".").map((part) => Number.parseInt(part, 10));
-    if (parts.length === 0 || parts.some((part) => !Number.isFinite(part))) {
-      return undefined;
-    }
-    return {
-      numbers: [parts[0] ?? 0, parts[1] ?? 0, parts[2] ?? 0],
-      hasPrerelease: prerelease.length > 0 && prerelease[0].length > 0,
-    };
+/**
+ * Parses a Safe version, or returns `undefined` if it is not a version at all.
+ *
+ * Strict about component shape on purpose: `parseInt` would happily read `1foo.3.0` as 1.3.0,
+ * and the Safe wallet's own `semver.gte` rejects such input rather than interpreting it.
+ */
+function parseSafeVersion(raw: string) {
+  const [withoutBuild] = raw.trim().split("+");
+  const [core, ...prerelease] = withoutBuild.split("-");
+  const parts = core.split(".");
+  if (parts.length < 2 || parts.length > 3) return undefined;
+  if (!parts.every((part) => /^\d+$/.test(part))) return undefined;
+  const numbers = parts.map((part) => Number.parseInt(part, 10));
+  return {
+    numbers: [numbers[0] ?? 0, numbers[1] ?? 0, numbers[2] ?? 0],
+    hasPrerelease: prerelease.length > 0 && prerelease[0].length > 0,
   };
+}
 
-  const left = parse(version);
-  const right = parse(minimum);
-  // An unparseable version fails closed: callers must not proceed on a guessed domain.
+export function isSafeVersionParseable(version: string): boolean {
+  return parseSafeVersion(version) !== undefined;
+}
+
+export function isSafeVersionGte(version: string, minimum: string): boolean {
+  const left = parseSafeVersion(version);
+  const right = parseSafeVersion(minimum);
+  // An unparseable version answers `false`, but callers must NOT read that as "pre-1.3.0" —
+  // `generateSafeMessageTypedData` rejects it outright before the domain is chosen.
   if (!left || !right) return false;
 
   for (let i = 0; i < 3; i++) {
@@ -130,6 +141,14 @@ export function generateSafeMessageTypedData(
 ) {
   if (!safe.version) {
     throw new Error("Cannot create a Safe message without the Safe's version.");
+  }
+  // Fail closed rather than defaulting to the legacy domain: below 1.3.0 the domain omits
+  // `chainId`, so misreading an unparseable version silently produces a hash no owner will
+  // ever sign and the provider would poll until it expired.
+  if (!isSafeVersionParseable(safe.version)) {
+    throw new Error(
+      `Cannot create a Safe message: unrecognized Safe version "${safe.version}".`
+    );
   }
   const isHandledByFallbackHandler = isSafeVersionGte(
     safe.version,
