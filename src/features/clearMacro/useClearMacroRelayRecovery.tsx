@@ -23,6 +23,7 @@ import {
   type RelayExecution,
 } from "./relayApi";
 import { describeTerminalRelayState } from "./relayStateCopy";
+import { getSafeMessage } from "./safeMessageLookup";
 import { SafeRelayPendingToast } from "./SafeRelayPendingToast";
 import {
   PendingRelayIntent,
@@ -248,6 +249,7 @@ const RelayRecoveryWatcher: FC<{ entry: RecoveringRelayExecution }> = ({
   const isTombstoned = entry.tombstonedAt != null;
   // Guards single resolution: the data effect and the deadline effect can race.
   const resolvedRef = useRef(false);
+
   // When the provider first became unreachable in this run, for the tombstone bound.
   const unreachableSinceRef = useRef<number | undefined>(undefined);
 
@@ -266,6 +268,7 @@ const RelayRecoveryWatcher: FC<{ entry: RecoveringRelayExecution }> = ({
           validBefore={entry.validBefore}
           messageLink={entry.messageLink}
           threshold={entry.safeThreshold}
+          confirmations={confirmations}
         />,
         { toastId, autoClose: false, position: "bottom-right", closeOnClick: false }
       );
@@ -284,6 +287,7 @@ const RelayRecoveryWatcher: FC<{ entry: RecoveringRelayExecution }> = ({
     entry.validBefore,
     entry.messageLink,
     entry.safeThreshold,
+    confirmations,
   ]);
 
   const resolveSucceeded = useCallback(
