@@ -84,11 +84,12 @@ describe("getSafeMessage", () => {
 
   it("requests the short-name tx-service route for the chain", async () => {
     const fetchSpy = vi.fn(
-      async () => new Response(JSON.stringify({ confirmations: [] }), { status: 200 })
+      async (_input: RequestInfo | URL, _init?: RequestInit) =>
+        new Response(JSON.stringify({ confirmations: [] }), { status: 200 })
     );
     vi.stubGlobal("fetch", fetchSpy);
     await getSafeMessage(100, HASH);
-    expect(String(fetchSpy.mock.calls[0][0])).toBe(
+    expect(String(fetchSpy.mock.calls[0]?.[0])).toBe(
       `https://api.safe.global/tx-service/gno/api/v1/messages/${HASH}/`
     );
   });
