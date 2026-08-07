@@ -1083,6 +1083,10 @@ export const deprecatedNetworkChainIds = [
  */
 const metadataNetworkExclusions = new Map<number, string>([
   [
+    666666666,
+    "Degen Chain is disabled for the ERC-20 portfolio PR because its public RPC was preventing portfolio totals from completing.",
+  ],
+  [
     534351,
     "Scroll Sepolia is discontinued, and its canonical Superfluid subgraph alias was serving Optimism Sepolia data (reported upstream).",
   ],

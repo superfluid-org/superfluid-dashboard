@@ -1,3 +1,4 @@
+import CompareArrowsRoundedIcon from "@mui/icons-material/CompareArrowsRounded";
 import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
 import {
   Box,
@@ -12,6 +13,7 @@ import {
 } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
 import Decimal from "decimal.js";
+import NextLink from "next/link";
 import { FC, useCallback, useMemo, useRef, useState } from "react";
 import OpenIcon from "../../components/OpenIcon/OpenIcon";
 import FaucetCard from "../faucet/FaucetCard";
@@ -366,6 +368,16 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
             gap: { xs: 1, sm: 2 },
           }}
         >
+          <Button
+            component={NextLink}
+            href="/portfolio-providers"
+            variant="outlined"
+            color="secondary"
+            startIcon={<CompareArrowsRoundedIcon />}
+            sx={{ display: { xs: "none", sm: "inline-flex" } }}
+          >
+            Compare APIs
+          </Button>
           <Button
             data-cy={"network-selection-button"}
             ref={networkSelectionRef}

@@ -9,6 +9,18 @@ import {
   ERC20TransferHistoryRequest,
   ERC20TransferHistoryResponse,
 } from "../../portfolio/erc20TransferHistory";
+import {
+  ZerionPortfolioRequest,
+  ZerionPortfolioResponse,
+} from "../../portfolio/zerionPortfolio";
+import {
+  AnkrPortfolioRequest,
+  AnkrPortfolioResponse,
+} from "../../portfolio/ankrPortfolio";
+import {
+  MoralisPortfolioRequest,
+  MoralisPortfolioResponse,
+} from "../../portfolio/moralisPortfolio";
 
 export type IsAccountWhitelistedApiResponse =
   /** status 200 Is User account whitelisted */ boolean;
@@ -34,6 +46,36 @@ export const platformApi = createApi({
         method: "POST",
         body,
       }),
+    }),
+    zerionPortfolio: build.query<
+      ZerionPortfolioResponse,
+      ZerionPortfolioRequest
+    >({
+      query: (body) => ({
+        url: "/api/portfolio-zerion",
+        method: "POST",
+        body,
+      }),
+      keepUnusedDataFor: 120,
+    }),
+    ankrPortfolio: build.query<AnkrPortfolioResponse, AnkrPortfolioRequest>({
+      query: (body) => ({
+        url: "/api/portfolio-ankr",
+        method: "POST",
+        body,
+      }),
+      keepUnusedDataFor: 120,
+    }),
+    moralisPortfolio: build.query<
+      MoralisPortfolioResponse,
+      MoralisPortfolioRequest
+    >({
+      query: (body) => ({
+        url: "/api/portfolio-moralis",
+        method: "POST",
+        body,
+      }),
+      keepUnusedDataFor: 120,
     }),
     erc20TransferHistory: build.query<
       ERC20TransferHistoryResponse,
