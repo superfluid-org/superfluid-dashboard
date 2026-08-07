@@ -19,6 +19,7 @@ import NorthEastRoundedIcon from "@mui/icons-material/NorthEastRounded";
 import VerifiedRoundedIcon from "@mui/icons-material/VerifiedRounded";
 import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
 import {
+  Alert,
   alpha,
   Avatar,
   Box,
@@ -76,6 +77,13 @@ import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 type ProviderId = "alchemy" | "ankr" | "moralis" | "zerion";
 type PositionFilter = "all" | "wallet" | "defi" | "staked";
 type AlchemyView = "assets" | "activity" | "collectibles";
+
+const alchemySupportedChainIds = new Set([
+  1, 10, 56, 100, 137, 8453, 42161, 42220, 43114, 534352,
+]);
+const ALCHEMY_CHAIN_IDS = mainNetworks.flatMap(({ id }) =>
+  alchemySupportedChainIds.has(id) ? [id] : []
+);
 
 const providerOptions: Array<{
   id: ProviderId;
@@ -1582,7 +1590,7 @@ const ProviderPortfolioPage: NextPage = () => {
     visibleAddress && provider === "alchemy"
       ? {
           address: visibleAddress,
-          chainIds: mainNetworks.map(({ id }) => id),
+          chainIds: ALCHEMY_CHAIN_IDS,
           includeNativeTokens: true,
         }
       : skipToken
@@ -1603,10 +1611,7 @@ const ProviderPortfolioPage: NextPage = () => {
       : skipToken
   );
   const alchemyTokens = alchemyQuery.currentData?.tokens ?? [];
-  const alchemyAvailableChainIds = useMemo(
-    () => [...new Set(alchemyTokens.map(({ chainId }) => chainId))],
-    [alchemyTokens]
-  );
+  const alchemyAvailableChainIds = ALCHEMY_CHAIN_IDS;
   const selectedAlchemyChainId = alchemyAvailableChainIds.includes(
     alchemyChainId ?? -1
   )
@@ -1616,21 +1621,39 @@ const ProviderPortfolioPage: NextPage = () => {
     ? alchemyTokens.filter(({ chainId }) => chainId === selectedAlchemyChainId)
     : alchemyTokens;
   const alchemyActivityQuery = platformApi.useAlchemyWalletActivityQuery(
-    visibleAddress &&
-      provider === "alchemy" &&
-      alchemyView === "activity" &&
-      selectedAlchemyChainId
-      ? { address: visibleAddress, chainIds: [selectedAlchemyChainId] }
+    visibleAddress && provider === "alchemy"
+      ? { address: visibleAddress, chainIds: ALCHEMY_CHAIN_IDS }
       : skipToken
   );
   const alchemyNftsQuery = platformApi.useAlchemyNftsQuery(
-    visibleAddress &&
-      provider === "alchemy" &&
-      alchemyView === "collectibles" &&
-      selectedAlchemyChainId
-      ? { address: visibleAddress, chainIds: [selectedAlchemyChainId] }
+    visibleAddress && provider === "alchemy"
+      ? { address: visibleAddress, chainIds: ALCHEMY_CHAIN_IDS }
       : skipToken
   );
+  const alchemyVisibleActivity = useMemo(
+    () =>
+      (alchemyActivityQuery.currentData?.activity ?? []).filter(
+        ({ chainId }) => chainId === selectedAlchemyChainId
+      ),
+    [alchemyActivityQuery.currentData?.activity, selectedAlchemyChainId]
+  );
+  const alchemyVisibleNfts = useMemo(
+    () =>
+      (alchemyNftsQuery.currentData?.nfts ?? []).filter(
+        ({ chainId }) => chainId === selectedAlchemyChainId
+      ),
+    [alchemyNftsQuery.currentData?.nfts, selectedAlchemyChainId]
+  );
+  const alchemyActivityFailures =
+    alchemyActivityQuery.currentData?.failures.filter(
+      ({ chainId }) => chainId === selectedAlchemyChainId
+    ) ?? [];
+  const alchemyNftFailures =
+    alchemyNftsQuery.currentData?.failures.filter(
+      ({ chainId }) => chainId === selectedAlchemyChainId
+    ) ?? [];
+  const alchemyEverythingLoading =
+    alchemyActivityQuery.isFetching || alchemyNftsQuery.isFetching;
 
   const zerionPositions = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
@@ -2308,8 +2331,8 @@ const ProviderPortfolioPage: NextPage = () => {
                   {alchemyView === "assets"
                     ? "Native gas assets and ERC-20 balances with price freshness from Alchemy and LI.FI fallback pricing."
                     : alchemyView === "activity"
-                    ? "Recent incoming and outgoing native, ERC-20 and NFT transfers indexed by Alchemy."
-                    : "Spam-filtered NFT ownership and collection metadata, loaded only when requested."}
+                    ? "Recent incoming and outgoing native, ERC-20 and NFT transfers fetched across every supported network."
+                    : "Spam-filtered NFT ownership and collection metadata fetched across every supported network."}
                 </Typography>
               </Box>
               <Stack
@@ -2338,14 +2361,23 @@ const ProviderPortfolioPage: NextPage = () => {
                     />
                   );
                 })}
-                {alchemyView !== "assets" ? (
-                  <Chip
-                    size="small"
-                    icon={<InfoOutlinedIcon />}
-                    label="Loaded on demand"
-                    variant="outlined"
-                  />
-                ) : null}
+                <Chip
+                  size="small"
+                  icon={
+                    alchemyEverythingLoading ? (
+                      <InfoOutlinedIcon />
+                    ) : (
+                      <CheckCircleRoundedIcon />
+                    )
+                  }
+                  label={
+                    alchemyEverythingLoading
+                      ? "Fetching all networks"
+                      : "All networks fetched"
+                  }
+                  color={alchemyEverythingLoading ? "default" : "primary"}
+                  variant="outlined"
+                />
               </Stack>
             </Stack>
           </Paper>
@@ -2424,20 +2456,29 @@ const ProviderPortfolioPage: NextPage = () => {
                 message={getQueryError(alchemyActivityQuery.error)}
                 onRetry={alchemyActivityQuery.refetch}
               />
-            ) : alchemyActivityQuery.currentData?.activity.length ? (
-              <>
-                <AlchemyActivityTable
-                  activity={alchemyActivityQuery.currentData.activity}
-                />
-                {alchemyActivityQuery.currentData.truncated ? (
-                  <Typography variant="caption" color="text.secondary">
-                    Showing the latest 25 incoming and outgoing transfers for
-                    this network.
-                  </Typography>
-                ) : null}
-              </>
             ) : (
-              <EmptyTable message="Alchemy did not find recent activity on this network." />
+              <>
+                {alchemyActivityFailures.length ? (
+                  <Alert severity="warning" variant="outlined">
+                    {[
+                      ...new Set(
+                        alchemyActivityFailures.map(({ message }) => message)
+                      ),
+                    ].join(" ")}
+                  </Alert>
+                ) : null}
+                {alchemyVisibleActivity.length ? (
+                  <>
+                    <AlchemyActivityTable activity={alchemyVisibleActivity} />
+                    <Typography variant="caption" color="text.secondary">
+                      Up to the latest 25 incoming and 25 outgoing transfers are
+                      fetched per network.
+                    </Typography>
+                  </>
+                ) : (
+                  <EmptyTable message="Alchemy did not return activity for this network." />
+                )}
+              </>
             )
           ) : alchemyNftsQuery.isFetching && !alchemyNftsQuery.currentData ? (
             <Box
@@ -2465,18 +2506,29 @@ const ProviderPortfolioPage: NextPage = () => {
               message={getQueryError(alchemyNftsQuery.error)}
               onRetry={alchemyNftsQuery.refetch}
             />
-          ) : alchemyNftsQuery.currentData?.nfts.length ? (
-            <>
-              <AlchemyNftGrid nfts={alchemyNftsQuery.currentData.nfts} />
-              {alchemyNftsQuery.currentData.truncated ? (
-                <Typography variant="caption" color="text.secondary">
-                  Showing the newest 40 spam-filtered collectibles on this
-                  network.
-                </Typography>
-              ) : null}
-            </>
           ) : (
-            <EmptyTable message="Alchemy did not find any non-spam collectibles on this network." />
+            <>
+              {alchemyNftFailures.length ? (
+                <Alert severity="warning" variant="outlined">
+                  {[
+                    ...new Set(
+                      alchemyNftFailures.map(({ message }) => message)
+                    ),
+                  ].join(" ")}
+                </Alert>
+              ) : null}
+              {alchemyVisibleNfts.length ? (
+                <>
+                  <AlchemyNftGrid nfts={alchemyVisibleNfts} />
+                  <Typography variant="caption" color="text.secondary">
+                    Up to the newest 40 spam-filtered collectibles are fetched
+                    per network.
+                  </Typography>
+                </>
+              ) : (
+                <EmptyTable message="Alchemy did not return non-spam collectibles for this network." />
+              )}
+            </>
           )}
 
           <Stack direction="row" sx={{ justifyContent: "flex-end" }}>

@@ -5,9 +5,13 @@ import {
   AlchemyActivityResponse,
 } from "../../features/portfolio/alchemyPortfolio";
 
-const MAX_NETWORKS = 3;
+const MAX_NETWORKS = 10;
 const MAX_TRANSFERS_PER_DIRECTION = "0x19";
 const REQUEST_TIMEOUT_MS = 30_000;
+
+export const config = {
+  maxDuration: 60,
+};
 
 const alchemyNetworkByChainId: Record<number, string> = {
   1: "eth-mainnet",
@@ -178,26 +182,62 @@ export default async function handler(
     const results = await Promise.all(
       chainIds.flatMap((chainId) => {
         const network = alchemyNetworkByChainId[chainId];
-        return (["incoming", "outgoing"] as const).map(async (direction) => ({
-          chainId,
-          ...(await fetchDirection({ apiKey, network, address, direction })),
-        }));
+        return (["incoming", "outgoing"] as const).map(async (direction) => {
+          try {
+            return {
+              status: "fulfilled" as const,
+              chainId,
+              direction,
+              ...(await fetchDirection({
+                apiKey,
+                network,
+                address,
+                direction,
+              })),
+            };
+          } catch (error) {
+            return {
+              status: "rejected" as const,
+              chainId,
+              direction,
+              message:
+                error instanceof Error
+                  ? error.message
+                  : "Alchemy activity request failed",
+            };
+          }
+        });
       })
     );
     const byId = new Map<string, AlchemyActivityItem>();
-    results.forEach(({ chainId, transfers }) =>
-      transfers.forEach((transfer) => {
+    results.forEach((result) => {
+      if (result.status !== "fulfilled") return;
+      result.transfers.forEach((transfer) => {
+        const { chainId } = result;
         const mapped = mapTransfer({ transfer, chainId, account: address });
         if (mapped) byId.set(mapped.id, mapped);
-      })
-    );
+      });
+    });
     response.setHeader("Cache-Control", "private, max-age=30");
     return response.status(200).json({
       activity: [...byId.values()].sort(
         (first, second) =>
           Date.parse(second.timestamp) - Date.parse(first.timestamp)
       ),
-      truncated: results.some(({ truncated }) => truncated),
+      truncated: results.some(
+        (result) => result.status === "fulfilled" && result.truncated
+      ),
+      failures: results.flatMap((result) =>
+        result.status === "rejected"
+          ? [
+              {
+                chainId: result.chainId,
+                operation: result.direction,
+                message: result.message,
+              },
+            ]
+          : []
+      ),
     });
   } catch (error) {
     const message =

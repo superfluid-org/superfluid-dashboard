@@ -3,6 +3,12 @@ export interface AlchemyActivityRequest {
   chainIds: number[];
 }
 
+export interface AlchemyNetworkFailure {
+  chainId: number;
+  operation?: string;
+  message: string;
+}
+
 export type AlchemyActivityDirection = "received" | "sent" | "self";
 
 export interface AlchemyActivityItem {
@@ -24,6 +30,7 @@ export interface AlchemyActivityItem {
 export interface AlchemyActivityResponse {
   activity: AlchemyActivityItem[];
   truncated: boolean;
+  failures: AlchemyNetworkFailure[];
 }
 
 export interface AlchemyNftRequest {
@@ -51,4 +58,5 @@ export interface AlchemyNftResponse {
   nfts: AlchemyNftItem[];
   totalCount: number;
   truncated: boolean;
+  failures: AlchemyNetworkFailure[];
 }
