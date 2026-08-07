@@ -84,13 +84,34 @@ const parseNumber = (value: unknown): number | undefined => {
 };
 
 const buildEndpoint = (): string | undefined => {
-  const configuredUrl = process.env.ANKR_RPC_URL;
-  if (configuredUrl) return configuredUrl;
+  const configured = process.env.ANKR_RPC_URL || process.env.ANKR_TEST_KEY;
+  if (!configured) return undefined;
 
-  const apiKey = process.env.ANKR_TEST_KEY;
-  return apiKey
-    ? `${ANKR_MULTICHAIN_URL}/${encodeURIComponent(apiKey)}`
-    : undefined;
+  const value = configured.trim();
+  if (!/^https?:\/\//i.test(value)) {
+    return `${ANKR_MULTICHAIN_URL}/${encodeURIComponent(value)}`;
+  }
+
+  try {
+    const url = new URL(value);
+    if (url.hostname !== "rpc.ankr.com") return value;
+
+    const segments = url.pathname.split("/").filter(Boolean);
+    if (segments[0] === "multichain" && segments[1]) return value;
+
+    // Ankr often supplies a chain-specific RPC URL. Advanced API methods must
+    // use the same project key on the multichain endpoint instead.
+    if (segments.length >= 2) {
+      const apiKey = segments.at(-1);
+      return apiKey
+        ? `${ANKR_MULTICHAIN_URL}/${encodeURIComponent(apiKey)}`
+        : value;
+    }
+  } catch {
+    return value;
+  }
+
+  return value;
 };
 
 const callAnkr = async <T>({
@@ -123,7 +144,7 @@ const callAnkr = async <T>({
     throw new AnkrRequestError(
       body?.error?.message || `Ankr responded with ${response.status}`,
       response.status === 401 || response.status === 403
-        ? 401
+        ? response.status
         : response.status === 429
         ? 429
         : 502

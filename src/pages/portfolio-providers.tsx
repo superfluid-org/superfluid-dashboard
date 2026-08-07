@@ -1783,13 +1783,20 @@ const ProviderPortfolioPage: NextPage = () => {
               },
               {
                 icon: <SwapHorizRoundedIcon />,
-                label: "30d realized P&L",
+                label: "All-time realized P&L",
                 value: moralisData.pnl
                   ? formatUsd(moralisData.pnl.realizedProfitUsd)
                   : "Unavailable",
                 detail: moralisData.pnl
-                  ? `${moralisData.pnl.totalTrades} Ethereum trades · realized only`
-                  : "Ethereum P&L enrichment did not return",
+                  ? `${moralisData.pnl.totalTrades} trades across ${
+                      moralisData.pnl.chainIds.length
+                    } supported networks · realized only${
+                      moralisData.optionalFeatureErrors?.pnl
+                        ? " · partial coverage"
+                        : ""
+                    }`
+                  : moralisData.optionalFeatureErrors?.pnl ??
+                    "P&L enrichment did not return",
                 color:
                   (moralisData.pnl?.realizedProfitUsd ?? 0) < 0
                     ? "error.main"
@@ -1930,8 +1937,11 @@ const ProviderPortfolioPage: NextPage = () => {
           {moralisData.optionalFeaturesUnavailable.includes("defi") ? (
             <Paper variant="outlined" sx={{ p: 2.25, borderRadius: 3 }}>
               <Typography variant="body2" color="text.secondary">
-                DeFi enrichment is unavailable for this Moralis project or plan;
-                liquid balances and trust signals are unaffected.
+                DeFi enrichment is unavailable; liquid balances and trust
+                signals are unaffected.
+                {moralisData.optionalFeatureErrors?.defi
+                  ? ` Moralis reported: ${moralisData.optionalFeatureErrors.defi}`
+                  : ""}
               </Typography>
             </Paper>
           ) : moralisData.defiPositions.length ? (

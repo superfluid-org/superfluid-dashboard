@@ -47,8 +47,8 @@ export interface MoralisDefiPosition {
 }
 
 export interface MoralisPnlSummary {
-  periodDays: 30;
-  chainId: "0x1";
+  period: "all";
+  chainIds: string[];
   totalTrades: number;
   totalTradeVolumeUsd?: number;
   realizedProfitUsd?: number;
@@ -71,4 +71,5 @@ export interface MoralisPortfolioResponse {
   tokenResultLimited: boolean;
   defiResultLimited: boolean;
   optionalFeaturesUnavailable: MoralisOptionalFeature[];
+  optionalFeatureErrors?: Partial<Record<MoralisOptionalFeature, string>>;
 }

@@ -9,6 +9,7 @@ import {
 
 const ZERION_API_URL = "https://api.zerion.io/v1";
 const REQUEST_TIMEOUT_MS = 30_000;
+const MAX_RATE_LIMIT_RETRIES = 2;
 const ALLOWED_CHART_PERIODS = new Set<ZerionChartPeriod>([
   "day",
   "week",
@@ -115,16 +116,37 @@ const readRateLimit = (headers: Headers): ZerionRateLimit | undefined => {
 
   const limit = {
     remainingSecond: read(
+      "ratelimit-org-second-remaining",
       "x-ratelimit-remaining-second",
       "x-ratelimit-remaining-secondly"
     ),
-    remainingDay: read("x-ratelimit-remaining-day"),
-    remainingMonth: read("x-ratelimit-remaining-month"),
+    remainingDay: read(
+      "ratelimit-org-day-remaining",
+      "x-ratelimit-remaining-day"
+    ),
+    remainingMonth: read(
+      "ratelimit-org-month-remaining",
+      "x-ratelimit-remaining-month"
+    ),
   };
 
   return Object.values(limit).some((value) => value !== undefined)
     ? limit
     : undefined;
+};
+
+const wait = (milliseconds: number) =>
+  new Promise<void>((resolve) => setTimeout(resolve, milliseconds));
+
+const retryDelayMs = (headers: Headers): number => {
+  const reset =
+    headers.get("ratelimit-org-second-reset") ??
+    headers.get("retry-after") ??
+    "1";
+  const seconds = Number(reset);
+  return Number.isFinite(seconds)
+    ? Math.min(Math.max(seconds * 1_000, 250), 5_000)
+    : 1_000;
 };
 
 const getErrorMessage = (body: unknown, status: number): string => {
@@ -141,31 +163,61 @@ const fetchZerion = async <T>({
 }: {
   path: string;
   apiKey: string;
-}): Promise<{ body: T; rateLimit?: ZerionRateLimit }> => {
-  const response = await fetch(`${ZERION_API_URL}${path}`, {
-    headers: {
-      accept: "application/json",
-      authorization: `Basic ${Buffer.from(`${apiKey}:`).toString("base64")}`,
-    },
-    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
-  });
+}): Promise<{
+  body: T;
+  rateLimit?: ZerionRateLimit;
+  nextRequestDelayMs?: number;
+}> => {
+  for (let attempt = 0; attempt <= MAX_RATE_LIMIT_RETRIES; attempt += 1) {
+    const response = await fetch(`${ZERION_API_URL}${path}`, {
+      headers: {
+        accept: "application/json",
+        authorization: `Basic ${Buffer.from(`${apiKey}:`).toString("base64")}`,
+      },
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+    });
 
-  let body: unknown;
-  try {
-    body = await response.json();
-  } catch {
-    body = undefined;
-  }
+    let body: unknown;
+    try {
+      body = await response.json();
+    } catch {
+      body = undefined;
+    }
 
-  if (!response.ok) {
+    if (response.ok) {
+      const rateLimit = readRateLimit(response.headers);
+      return {
+        body: body as T,
+        rateLimit,
+        nextRequestDelayMs:
+          rateLimit?.remainingSecond === 0
+            ? retryDelayMs(response.headers)
+            : undefined,
+      };
+    }
+
+    const rateLimit = readRateLimit(response.headers);
+    const quotaExhausted =
+      rateLimit?.remainingDay === 0 || rateLimit?.remainingMonth === 0;
+    if (
+      response.status === 429 &&
+      !quotaExhausted &&
+      attempt < MAX_RATE_LIMIT_RETRIES
+    ) {
+      await wait(retryDelayMs(response.headers));
+      continue;
+    }
+
     throw new ZerionRequestError(
       getErrorMessage(body, response.status),
       response.status,
-      response.headers.get("retry-after") ?? undefined
+      response.headers.get("retry-after") ??
+        response.headers.get("ratelimit-org-second-reset") ??
+        undefined
     );
   }
 
-  return { body: body as T, rateLimit: readRateLimit(response.headers) };
+  throw new ZerionRequestError("Zerion request retry limit reached", 429);
 };
 
 const mapPosition = (
@@ -243,16 +295,29 @@ export default async function handler(
     "?currency=usd&filter%5Bpositions%5D=no_filter";
 
   try {
-    const [portfolioResult, positionsResult, chartResult] = await Promise.all([
-      fetchZerion<ZerionPortfolioBody>({ path: portfolioPath, apiKey }),
-      fetchZerion<ZerionPositionBody>({ path: positionsPath, apiKey }),
-      fetchZerion<ZerionChartBody>({ path: chartPath, apiKey }).catch(
-        (error) => {
-          console.warn("Zerion portfolio chart request failed", error);
-          return undefined;
-        }
-      ),
-    ]);
+    // Zerion's free key permits one request per second. Keep these sequential so
+    // loading one portfolio does not immediately throttle its own enrichment.
+    const portfolioResult = await fetchZerion<ZerionPortfolioBody>({
+      path: portfolioPath,
+      apiKey,
+    });
+    if (portfolioResult.nextRequestDelayMs) {
+      await wait(portfolioResult.nextRequestDelayMs);
+    }
+    const positionsResult = await fetchZerion<ZerionPositionBody>({
+      path: positionsPath,
+      apiKey,
+    });
+    if (positionsResult.nextRequestDelayMs) {
+      await wait(positionsResult.nextRequestDelayMs);
+    }
+    const chartResult = await fetchZerion<ZerionChartBody>({
+      path: chartPath,
+      apiKey,
+    }).catch((error) => {
+      console.warn("Zerion portfolio chart request failed", error);
+      return undefined;
+    });
 
     const overview = portfolioResult.body.data?.attributes;
     const positions = (positionsResult.body.data ?? [])
@@ -282,7 +347,10 @@ export default async function handler(
         unavailable: !chartResult,
       },
       rateLimit:
-        positionsResult.rateLimit ?? portfolioResult.rateLimit ?? undefined,
+        chartResult?.rateLimit ??
+        positionsResult.rateLimit ??
+        portfolioResult.rateLimit ??
+        undefined,
     });
   } catch (error) {
     console.error("Zerion portfolio request failed", error);

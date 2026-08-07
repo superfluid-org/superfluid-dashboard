@@ -11,6 +11,11 @@ const MORALIS_UNIVERSAL_API_URL = "https://api.moralis.com/v1";
 const MORALIS_EVM_API_URL = "https://deep-index.moralis.io/api/v2.2";
 const REQUEST_TIMEOUT_MS = 30_000;
 const PAGE_SIZE = 100;
+const PNL_CHAINS = [
+  { slug: "eth", chainId: "0x1" },
+  { slug: "base", chainId: "0x2105" },
+  { slug: "polygon", chainId: "0x89" },
+] as const;
 
 export const config = {
   maxDuration: 60,
@@ -133,6 +138,29 @@ const fetchMoralis = async <T>(url: URL, apiKey: string): Promise<T> => {
   return body as T;
 };
 
+interface OptionalResult<T> {
+  data?: T;
+  error?: string;
+}
+
+const fetchOptionalMoralis = async <T>(
+  url: URL,
+  apiKey: string,
+  feature: string
+): Promise<OptionalResult<T>> => {
+  try {
+    return { data: await fetchMoralis<T>(url, apiKey) };
+  } catch (error) {
+    console.warn(`Moralis ${feature} request failed`, error);
+    return {
+      error:
+        error instanceof MoralisRequestError
+          ? error.message
+          : `Unable to load ${feature}`,
+    };
+  }
+};
+
 const mapAsset = (
   asset: NonNullable<MoralisTokenResult["result"]>[number],
   index: number
@@ -221,15 +249,42 @@ const mapDefiPosition = (
   };
 };
 
-const mapPnl = (result: MoralisPnlResult): MoralisPnlSummary => ({
-  periodDays: 30,
-  chainId: "0x1",
-  totalTrades: result.total_count_of_trades ?? 0,
-  totalTradeVolumeUsd: asNumber(result.total_trade_volume),
-  realizedProfitUsd: asNumber(result.total_realized_profit_usd),
-  realizedProfitPercent: asNumber(result.total_realized_profit_percentage),
-  buys: result.total_buys ?? 0,
-  sells: result.total_sells ?? 0,
+const sumNumbers = (values: Array<number | undefined>): number | undefined => {
+  const available = values.filter(
+    (value): value is number => value !== undefined
+  );
+  return available.length
+    ? available.reduce((total, value) => total + value, 0)
+    : undefined;
+};
+
+const mapPnl = (
+  results: Array<{ chainId: string; result: MoralisPnlResult }>
+): MoralisPnlSummary => ({
+  period: "all",
+  chainIds: results.map(({ chainId }) => chainId),
+  totalTrades: results.reduce(
+    (total, { result }) => total + (result.total_count_of_trades ?? 0),
+    0
+  ),
+  totalTradeVolumeUsd: sumNumbers(
+    results.map(({ result }) => asNumber(result.total_trade_volume))
+  ),
+  realizedProfitUsd: sumNumbers(
+    results.map(({ result }) => asNumber(result.total_realized_profit_usd))
+  ),
+  realizedProfitPercent:
+    results.length === 1
+      ? asNumber(results[0].result.total_realized_profit_percentage)
+      : undefined,
+  buys: results.reduce(
+    (total, { result }) => total + (result.total_buys ?? 0),
+    0
+  ),
+  sells: results.reduce(
+    (total, { result }) => total + (result.total_sells ?? 0),
+    0
+  ),
 });
 
 export default async function handler(
@@ -261,27 +316,45 @@ export default async function handler(
   const defiUrl = new URL(
     `${MORALIS_UNIVERSAL_API_URL}/wallets/${encodedAddress}/defi/positions`
   );
-  defiUrl.searchParams.set("chains", "mainnets");
   defiUrl.searchParams.set("limit", String(PAGE_SIZE));
 
-  const pnlUrl = new URL(
-    `${MORALIS_EVM_API_URL}/wallets/${encodedAddress}/profitability/summary`
-  );
-  pnlUrl.searchParams.set("chain", "eth");
-  pnlUrl.searchParams.set("days", "30");
+  const pnlUrls = PNL_CHAINS.map(({ slug, chainId }) => {
+    const url = new URL(
+      `${MORALIS_EVM_API_URL}/wallets/${encodedAddress}/profitability/summary`
+    );
+    url.searchParams.set("chain", slug);
+    url.searchParams.set("days", "all");
+    return { chainId, slug, url };
+  });
 
   try {
-    const [tokenResult, defiResult, pnlResult] = await Promise.all([
+    const [tokenResult, defiAttempt, pnlAttempts] = await Promise.all([
       fetchMoralis<MoralisTokenResult>(tokenUrl, apiKey),
-      fetchMoralis<MoralisDefiResult>(defiUrl, apiKey).catch((error) => {
-        console.warn("Moralis DeFi positions request failed", error);
-        return undefined;
-      }),
-      fetchMoralis<MoralisPnlResult>(pnlUrl, apiKey).catch((error) => {
-        console.warn("Moralis PnL request failed", error);
-        return undefined;
-      }),
+      fetchOptionalMoralis<MoralisDefiResult>(
+        defiUrl,
+        apiKey,
+        "DeFi positions"
+      ),
+      Promise.all(
+        pnlUrls.map(async ({ chainId, slug, url }) => ({
+          chainId,
+          slug,
+          ...(await fetchOptionalMoralis<MoralisPnlResult>(
+            url,
+            apiKey,
+            `${slug} P&L`
+          )),
+        }))
+      ),
     ]);
+
+    const defiResult = defiAttempt.data;
+    const pnlResults = pnlAttempts.flatMap(({ chainId, data }) =>
+      data ? [{ chainId, result: data }] : []
+    );
+    const pnlErrors = pnlAttempts.flatMap(({ slug, error }) =>
+      error ? [`${slug}: ${error}`] : []
+    );
 
     const assets = (tokenResult.result ?? [])
       .map(mapAsset)
@@ -295,7 +368,10 @@ export default async function handler(
       );
     const optionalFeaturesUnavailable: Array<"defi" | "pnl"> = [];
     if (!defiResult) optionalFeaturesUnavailable.push("defi");
-    if (!pnlResult) optionalFeaturesUnavailable.push("pnl");
+    if (!pnlResults.length) optionalFeaturesUnavailable.push("pnl");
+    const optionalFeatureErrors: Partial<Record<"defi" | "pnl", string>> = {};
+    if (defiAttempt.error) optionalFeatureErrors.defi = defiAttempt.error;
+    if (pnlErrors.length) optionalFeatureErrors.pnl = pnlErrors.join(" · ");
 
     response.setHeader("Cache-Control", "private, no-store");
     return response.status(200).json({
@@ -311,7 +387,7 @@ export default async function handler(
       ),
       assets,
       defiPositions,
-      pnl: pnlResult ? mapPnl(pnlResult) : undefined,
+      pnl: pnlResults.length ? mapPnl(pnlResults) : undefined,
       failedChains: Array.from(
         new Set([
           ...(tokenResult.meta?.failedChains ?? []),
@@ -327,6 +403,7 @@ export default async function handler(
       tokenResultLimited: Boolean(tokenResult.cursor),
       defiResultLimited: Boolean(defiResult?.cursor),
       optionalFeaturesUnavailable,
+      optionalFeatureErrors,
     });
   } catch (error) {
     if (error instanceof MoralisRequestError) {
