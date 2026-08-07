@@ -100,9 +100,16 @@ action; it does **not** catch a semantically equivalent action composed differen
 guard, not a proof.
 
 Both guards are **per-browser**: they live in redux-persist, so another tab with separate
-storage, another device, or another owner of the same Safe can still collide. Both apply only
-to Safe entries — EOA executions carry a 600s window and no fingerprint, and guarding them would
-block a normal user's direct writes for ten minutes after every gasless send.
+storage, another device, or another owner of the same Safe can still collide.
+
+Both apply only to Safe entries. EOA executions carry a 600s window and no fingerprint, and
+Guard A over them would block a normal user's direct writes for ten minutes after every gasless
+send. **Known gap, flagged rather than fixed:** the same double-spend exists in principle for an
+EOA whose relay times out and is later executed after the user re-sends the action directly —
+the window is ten minutes rather than 72 hours, but it is not zero. Guard B alone (which only
+blocks the *identical* action) would close it without the over-blocking Guard A would cause.
+That is a change to long-standing EOA behaviour and outside this plan's scope, so it is a
+decision for Kaspar, not something to slip in here.
 
 ## Releasing a guard
 
@@ -116,9 +123,10 @@ on a timeout, a deadline, a 5xx, or an unreachable provider.
 | --- | --- | --- | --- |
 | confirmed terminal | yes | yes | **yes** |
 | cancel returned 2xx | yes | yes | **yes** |
-| confirmed 404 | yes | yes | no — tombstone until `validBefore + grace` |
-| provider unreachable 24h+ | yes | yes | no — tombstone |
+| confirmed 404 | yes | yes | no — tombstone, expires at `validBefore + grace` |
+| provider unreachable 24h+ | yes | yes | no — tombstone, **does not expire** |
 | `submitted` past `validBefore` | **no** | no | no |
+| pre-POST intent, POST never answered | after 5 replays | no | no — expires at `validBefore + grace` |
 
 The 24-hour bound is the one to be careful with. An earlier design *deleted* the entry there,
 which against a 72-hour window silently reopened the exact double-spend the guards exist to
@@ -126,6 +134,14 @@ prevent. It now demotes to a passive tombstone instead.
 
 A confirmed 404 does not release either, because client scoping is unknown (unknown #2 above):
 a 404 means "not visible to us", not "does not exist".
+
+**Where this deviates from the plan, deliberately.** Plan §10.2 says both that a guard releases
+only on a positive answer and "never on a timeout", *and* that a tombstone "expires on its own
+at `validBefore + grace`". For an unreachable-provider tombstone those contradict: passing
+`validBefore` proves the payload cannot land in future, not that it never landed during the
+outage, so expiring there is releasing on a timeout. The narrower reading is implemented — a
+404 tombstone expires, an unreachable one waits for a positive answer or the explicit override.
+That is what the override is for, and it is the only remaining release path for that case.
 
 The manual override ("I've confirmed in Safe that this won't execute — release it") exists so a
 permanently dead provider cannot brick an account's direct writes forever. It is a deliberate,
@@ -149,6 +165,29 @@ completion path and the pre-POST replay path both honour it, the latter by obtai
 cancelling rather than promoting. And cancelling does **not** revoke the Safe message: co-signers
 can still confirm it, harmlessly for this execution but alarmingly for an owner watching the Safe
 UI, so the copy says so.
+
+## Pre-POST intents
+
+The intent is written before the POST, so the guards are armed before any network call can
+fail. That makes it a second thing that can hold a guard, and it needs the same discipline as an
+execution:
+
+- It carries `ownership` exactly as executions do. The background replayer is always mounted and
+  reacts the instant an intent is persisted, so without this it would fire a duplicate,
+  concurrent create on *every* Safe authorization — turning recovery-for-an-unanswered-POST into
+  a second request racing the first, and leaning on the provider's dedup being atomic under two
+  identical in-flight creates. Only unowned intents are replayed.
+- Replays are bounded (five). Hitting the bound keeps the guards and says so, with the Safe
+  message hash, rather than blocking the action silently.
+- It expires at `validBefore + grace`, where the payload can no longer land. Without that, an
+  intent whose POST was never answered would hold both guards forever — the same
+  never-release-on-uncertainty failure, in the one place that has no execution id to tombstone.
+- An unparseable persisted body is **not** treated as proof that no execution exists. The intent
+  exists precisely because the original POST may have committed; the double spend runs through
+  the provider, not through the id.
+- Promotion lands the execution as `recovering`, not `live` — nothing owns it — and carries any
+  `cancelRequested` flag across in the same reducer that deletes the intent, so an interruption
+  between the two cannot lose the cancel decision.
 
 ## Ambiguous POST failures
 
