@@ -211,9 +211,8 @@ const PortfolioTotalCard: FC<PortfolioTotalCardProps> = ({
             ) : (
               <Typography
                 variant="h5mono"
-                color={color}
                 data-cy={dataCy}
-                sx={{ whiteSpace: "nowrap" }}
+                sx={{ color, whiteSpace: "nowrap" }}
               >
                 {value}
               </Typography>
