@@ -90,7 +90,7 @@ const PortfolioTotalCard: FC<PortfolioTotalCardProps> = ({
     if (value.lt(0)) return `−${formattedAbsoluteValue}`;
     return currency.format("0.00");
   };
-  const showSkeleton = loading && entries.length === 0;
+  const showSkeleton = loading;
 
   const flowMetrics = [
     {
@@ -123,6 +123,7 @@ const PortfolioTotalCard: FC<PortfolioTotalCardProps> = ({
 
   return (
     <Paper
+      aria-busy={showSkeleton}
       variant="outlined"
       sx={{ px: { xs: 2.5, md: 3 }, py: 2.5, mb: 4, borderRadius: 3 }}
     >

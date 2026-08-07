@@ -46,7 +46,7 @@ const SnapshotRowSkeleton = () => {
           <TableCell>
             <Skeleton width={80} />
           </TableCell>
-          <TableCell>
+          <TableCell sx={{ pl: 0 }}>
             <Skeleton width={60} />
             <Skeleton width={60} />
           </TableCell>
@@ -121,8 +121,10 @@ const TokenSnapshotLoadingTable = () => {
             <TableRow>
               <TableCell width="22%">Asset</TableCell>
               <TableCell width="16%">Balance</TableCell>
-              <TableCell width="18%">Net Flow Rate</TableCell>
-              <TableCell width="36%">Actions</TableCell>
+              <TableCell width="14%">Net Flow Rate</TableCell>
+              <TableCell width="40%" sx={{ pl: 0 }}>
+                Actions
+              </TableCell>
               <TableCell width="8%" align="center"></TableCell>
             </TableRow>
           )}

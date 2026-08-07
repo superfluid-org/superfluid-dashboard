@@ -186,6 +186,8 @@ const StreamRow: FC<StreamRowProps> = ({
 
   const isActive = !isPending && !startDateScheduled && currentFlowRate !== "0";
   const isDistributionStream = !!(stream as PoolDistributionStream).pool;
+  const showFlowRate = isActive || isPending || !!startDateScheduled;
+  const flowRateColor = isOutgoing ? "error.main" : "primary.main";
 
   const tableCellProps: Partial<TableCellProps> =
     isPending || startDateScheduled || isDistributionStream
@@ -238,8 +240,12 @@ const StreamRow: FC<StreamRowProps> = ({
             </Typography>
           </TableCell>
           <TableCell {...tableCellProps}>
-            {isActive || isPending || startDateScheduled ? (
-              <Typography data-cy={"flow-rate"} variant="body2mono">
+            {showFlowRate ? (
+              <Typography
+                data-cy={"flow-rate"}
+                variant="body2mono"
+                sx={{ color: flowRateColor }}
+              >
                 {isOutgoing ? "-" : "+"}
                 <Amount
                   wei={BigNumber.from(currentFlowRate).mul(UnitOfTime.Month)}
@@ -285,7 +291,7 @@ const StreamRow: FC<StreamRowProps> = ({
               />
             }
             secondary={
-              isActive || isPending || !!startDateScheduled ? (
+              showFlowRate ? (
                 <>
                   {isOutgoing ? "-" : "+"}
                   <Amount
@@ -299,7 +305,12 @@ const StreamRow: FC<StreamRowProps> = ({
             }
             slotProps={{
               primary: { variant: "h7mono" },
-              secondary: { variant: "body2mono" }
+              secondary: {
+                variant: "body2mono",
+                sx: {
+                  color: showFlowRate ? flowRateColor : "text.secondary",
+                },
+              }
             }} />
         </TableCell>
       )}

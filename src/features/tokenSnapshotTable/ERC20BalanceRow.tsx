@@ -447,7 +447,7 @@ const ERC20BalanceRow: FC<ERC20BalanceRowProps> = ({
                 —
               </Typography>
             </TableCell>
-            <TableCell>
+            <TableCell sx={{ pl: 0 }}>
               <Stack direction="row" sx={{ gap: 0.75 }}>
                 {streamPath && (
                   <Button
@@ -467,7 +467,7 @@ const ERC20BalanceRow: FC<ERC20BalanceRowProps> = ({
                     LinkComponent={Link}
                     href={wrapPath}
                     size="small"
-                    variant="text"
+                    variant="outlined"
                   >
                     Wrap
                   </Button>
@@ -488,7 +488,7 @@ const ERC20BalanceRow: FC<ERC20BalanceRowProps> = ({
                     LinkComponent={Link}
                     href={swapPath}
                     size="small"
-                    variant="text"
+                    variant="outlined"
                     startIcon={<CurrencyExchangeRoundedIcon />}
                   >
                     Swap

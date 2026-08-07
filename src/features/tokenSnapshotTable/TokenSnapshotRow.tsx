@@ -425,7 +425,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
               )}
             </TableCell>
 
-            <TableCell>
+            <TableCell sx={{ pl: 0 }}>
               <Stack
                 direction="row"
                 onClick={stopPropagation}
@@ -459,7 +459,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                     LinkComponent={Link}
                     href={swapPath}
                     size="small"
-                    variant="text"
+                    variant="outlined"
                     startIcon={<CurrencyExchangeRoundedIcon />}
                   >
                     Swap
