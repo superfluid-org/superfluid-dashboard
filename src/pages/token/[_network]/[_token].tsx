@@ -457,13 +457,11 @@ const TokenPageContent: FC<{
                 justifyContent: "space-between",
               }}
             >
-              {!isBelowMd && (
-                <TimeUnitFilter
-                  activeFilter={graphFilter}
-                  onChange={onGraphFilterChange}
-                  options={GraphTimeUnitFilters}
-                />
-              )}
+              <TimeUnitFilter
+                activeFilter={graphFilter}
+                onChange={onGraphFilterChange}
+                options={GraphTimeUnitFilters}
+              />
 
               <Stack
                 sx={{
@@ -531,20 +529,11 @@ const TokenPageContent: FC<{
           <Stack
             direction="row"
             sx={{
-              justifyContent: "space-between",
+              justifyContent: "flex-end",
               alignItems: "center",
               mt: 2,
             }}
           >
-            {isBelowMd ? (
-              <TimeUnitFilter
-                activeFilter={graphFilter}
-                onChange={onGraphFilterChange}
-                options={GraphTimeUnitFilters}
-              />
-            ) : (
-              <Box />
-            )}
             <FormGroup>
               <FormControlLabel
                 translate="yes"

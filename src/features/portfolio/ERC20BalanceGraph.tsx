@@ -1,4 +1,4 @@
-import { Skeleton, Stack, useTheme } from "@mui/material";
+import { Skeleton, useTheme } from "@mui/material";
 import { ChartOptions } from "chart.js";
 import { sub } from "date-fns";
 import { BigNumber, ethers } from "ethers";
@@ -8,7 +8,7 @@ import {
   buildDefaultDatasetConf,
   getFilteredStartDate,
 } from "../../utils/chartUtils";
-import TimeUnitFilter, { TimeUnitFilterType } from "../graph/TimeUnitFilter";
+import { TimeUnitFilterType } from "../graph/TimeUnitFilter";
 import { ERC20TransferHistoryItem } from "./erc20TransferHistory";
 
 export const ERC20_GRAPH_TIME_FILTERS = [
@@ -25,7 +25,6 @@ interface ERC20BalanceGraphProps {
   decimals: number;
   filter: TimeUnitFilterType;
   loading: boolean;
-  onFilterChange: (filter: TimeUnitFilterType) => void;
   symbol: string;
   transfers: ERC20TransferHistoryItem[];
 }
@@ -42,7 +41,6 @@ const ERC20BalanceGraph: FC<ERC20BalanceGraphProps> = ({
   decimals,
   filter,
   loading,
-  onFilterChange,
   symbol,
   transfers,
 }) => {
@@ -173,26 +171,15 @@ const ERC20BalanceGraph: FC<ERC20BalanceGraphProps> = ({
     [symbol, theme.palette.primary.main]
   );
 
-  return (
-    <Stack sx={{ gap: 1.5 }}>
-      <Stack direction="row" sx={{ justifyContent: "flex-end" }}>
-        <TimeUnitFilter
-          activeFilter={filter}
-          onChange={onFilterChange}
-          options={ERC20_GRAPH_TIME_FILTERS}
-        />
-      </Stack>
-      {loading || balance === undefined ? (
-        <Skeleton variant="rounded" width="100%" height={height} />
-      ) : (
-        <LineChart
-          height={height}
-          datasets={[dataset]}
-          options={options}
-          datasetsConfigCallbacks={datasetsConfigCallbacks}
-        />
-      )}
-    </Stack>
+  return loading || balance === undefined ? (
+    <Skeleton variant="rounded" width="100%" height={height} />
+  ) : (
+    <LineChart
+      height={height}
+      datasets={[dataset]}
+      options={options}
+      datasetsConfigCallbacks={datasetsConfigCallbacks}
+    />
   );
 };
 

@@ -49,9 +49,11 @@ import useTokenPrice from "../tokenPrice/useTokenPrice";
 import PortfolioFiatAmount from "./PortfolioFiatAmount";
 import AddToWalletButton from "../wallet/AddToWalletButton";
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
-import ERC20BalanceGraph from "./ERC20BalanceGraph";
+import ERC20BalanceGraph, {
+  ERC20_GRAPH_TIME_FILTERS,
+} from "./ERC20BalanceGraph";
 import ERC20TransferRow from "./ERC20TransferRow";
-import { TimeUnitFilterType } from "../graph/TimeUnitFilter";
+import TimeUnitFilter, { TimeUnitFilterType } from "../graph/TimeUnitFilter";
 import useERC20TransferHistory from "./useERC20TransferHistory";
 
 export interface ERC20TokenPageMetadata {
@@ -373,62 +375,77 @@ const ERC20TokenPageContent: FC<{
 
       <Card sx={{ p: { xs: 2.5, md: 3 } }}>
         <Stack sx={{ gap: 3 }}>
-          <Box>
-            <Typography
-              sx={{
-                color: "text.secondary",
-              }}
-            >
-              Balance
-            </Typography>
-            {balanceQuery.isLoading ? (
-              <Skeleton width={220} height={54} />
-            ) : balanceQuery.isError ? (
-              <Typography variant="h3">—</Typography>
-            ) : (
-              <Stack
-                direction="row"
+          <Stack
+            direction="row"
+            sx={{
+              alignItems: "flex-start",
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+              gap: 1.5,
+            }}
+          >
+            <Box>
+              <Typography
                 sx={{
-                  alignItems: "baseline",
-                  gap: 1,
+                  color: "text.secondary",
                 }}
               >
-                <Typography variant="h3mono" data-cy="erc20-token-balance">
-                  <Amount wei={balance ?? "0"} decimals={token.decimals} />
-                </Typography>
+                Balance
+              </Typography>
+              {balanceQuery.isLoading ? (
+                <Skeleton width={220} height={54} />
+              ) : balanceQuery.isError ? (
+                <Typography variant="h3">—</Typography>
+              ) : (
+                <Stack
+                  direction="row"
+                  sx={{
+                    alignItems: "baseline",
+                    gap: 1,
+                  }}
+                >
+                  <Typography variant="h3mono" data-cy="erc20-token-balance">
+                    <Amount wei={balance ?? "0"} decimals={token.decimals} />
+                  </Typography>
+                  <Typography
+                    variant="h5mono"
+                    sx={{
+                      color: "text.secondary",
+                    }}
+                  >
+                    {token.symbol}
+                  </Typography>
+                </Stack>
+              )}
+              {balance ? (
                 <Typography
                   variant="h5mono"
                   sx={{
                     color: "text.secondary",
                   }}
                 >
-                  {token.symbol}
+                  {token.priceUsd !== undefined ? (
+                    <PortfolioFiatAmount
+                      balance={balance}
+                      decimals={token.decimals}
+                      priceUsd={token.priceUsd}
+                    />
+                  ) : fallbackTokenPrice ? (
+                    <FiatAmount
+                      wei={balance}
+                      decimals={token.decimals}
+                      price={fallbackTokenPrice}
+                    />
+                  ) : null}
                 </Typography>
-              </Stack>
-            )}
-            {balance ? (
-              <Typography
-                variant="h5mono"
-                sx={{
-                  color: "text.secondary",
-                }}
-              >
-                {token.priceUsd !== undefined ? (
-                  <PortfolioFiatAmount
-                    balance={balance}
-                    decimals={token.decimals}
-                    priceUsd={token.priceUsd}
-                  />
-                ) : fallbackTokenPrice ? (
-                  <FiatAmount
-                    wei={balance}
-                    decimals={token.decimals}
-                    price={fallbackTokenPrice}
-                  />
-                ) : null}
-              </Typography>
-            ) : null}
-          </Box>
+              ) : null}
+            </Box>
+            <TimeUnitFilter
+              activeFilter={graphFilter}
+              onChange={setGraphFilter}
+              options={ERC20_GRAPH_TIME_FILTERS}
+            />
+          </Stack>
           <ERC20BalanceGraph
             accountAddress={accountAddress}
             balance={balance}
@@ -437,7 +454,6 @@ const ERC20TokenPageContent: FC<{
             loading={
               balanceQuery.isLoading || historyLoading || !graphHistoryLoaded
             }
-            onFilterChange={setGraphFilter}
             symbol={token.symbol}
             transfers={transfers}
           />
