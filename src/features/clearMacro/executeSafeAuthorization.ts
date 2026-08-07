@@ -3,7 +3,6 @@ import type { Address, Hex } from "viem";
 import { RelayPhase } from "../../MutationResult";
 import {
   cancelRelayExecution,
-  ClearMacroRelayError,
   createRelayExecution,
   type ClearMacroV1Body,
   type RelayExecution,
@@ -353,9 +352,4 @@ async function probeForProposal(
     }
     await new Promise((resolve) => setTimeout(resolve, PROBE_INTERVAL_MS));
   }
-}
-
-/** Whether an error from the create POST left the outcome genuinely unknown. */
-export function isUnansweredRelayRequest(error: unknown): boolean {
-  return error instanceof ClearMacroRelayError && error.status === undefined;
 }

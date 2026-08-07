@@ -3,36 +3,70 @@ import { useStore } from "react-redux";
 import { useQuery } from "@tanstack/react-query";
 import { Hex } from "viem";
 import { toast } from "react-toastify";
+import { Button, Stack, Typography } from "@mui/material";
 import { transactionTrackerSelectors } from "@superfluid-finance/sdk-redux";
 import {
+  reduxPersistor,
   RootState,
   useAppDispatch,
   useAppSelector,
 } from "../redux/store";
 import { trackTransaction } from "../transactions/trackTransaction";
-import { getFinalTransactionHash, getRelayExecution } from "./relayApi";
 import {
+  cancelRelayExecution,
+  ClearMacroRelayError,
+  createRelayExecution,
+  getFinalTransactionHash,
+  getRelayExecution,
+  isRenderableMessageLink,
+  type CreateRelayExecutionBody,
+  type RelayExecution,
+} from "./relayApi";
+import { describeTerminalRelayState } from "./relayStateCopy";
+import { SafeRelayPendingToast } from "./SafeRelayPendingToast";
+import {
+  PendingRelayIntent,
   RecoveringRelayExecution,
   relayRecoveryActions,
+  selectPendingRelayIntents,
   selectRecoveringRelayExecutions,
+  decodeRelayIntentDisplayMeta,
 } from "./relayRecovery.slice";
 
 const RECOVERY_POLL_INTERVAL_MS = 2_000;
+/**
+ * Polling cadence while a Safe's owners are still approving. A co-signer round takes hours or
+ * days, so 2s would be tens of thousands of pointless requests; the interval drops back to
+ * `RECOVERY_POLL_INTERVAL_MS` the moment the state advances to `pending`/`submitted`, where
+ * things move in seconds again.
+ */
+const AWAITING_AUTHORIZATION_POLL_INTERVAL_MS = 30_000;
 /**
  * Seconds past the payload's on-chain `validBefore` that we keep polling: covers a tx already in
  * the mempool landing just after the window, plus provider status lag and client clock skew.
  * After this the forwarder rejects the payload, so it genuinely can no longer land.
  */
 const GRACE_SECONDS = 180;
+/**
+ * How long a provider outage may continue before we stop polling and stop nagging.
+ *
+ * Note what this bound does NOT do: it does not release the write guards. An earlier design
+ * deleted the entry here, which — against a 72 hour validity window — silently reopened the
+ * exact `transfer` / `upgrade` / `downgrade` double-spend the guards exist to prevent. The
+ * entry is demoted to a passive tombstone instead, and only `validBefore + grace`, a positive
+ * answer, or the user's explicit override releases it.
+ */
+const UNREACHABLE_TOMBSTONE_MS = 24 * 60 * 60 * 1000;
+/** How many times a pre-POST intent is replayed before we surface it to the user instead. */
+const MAX_INTENT_REPLAY_ATTEMPTS = 5;
 
 /**
  * App-level background poller for Clear Macro relay executions that the live write mutation
- * couldn't see through to terminal — a 120s poll timeout, a closed tab, or a reload. Mounted
- * once (post-rehydration) in `ReduxProviderCore`. On mount it claims every persisted execution
- * for recovery, then runs one `<RelayRecoveryWatcher>` per `recovering` entry which polls to
- * terminal and registers a late success via `trackTransaction`.
+ * couldn't see through to terminal — a 120s poll timeout, a closed tab, a reload, or (for a
+ * Safe) a multi-day wait for co-signers. Mounted once (post-rehydration) in `ReduxProviderCore`.
  *
- * See `docs/plans/clear-macro-relay-integration.md` ("Post-signature timeout recovery").
+ * See `docs/plans/clear-macro-relay-integration.md` ("Post-signature timeout recovery") and
+ * `docs/plans/clear-macro-safe-authorization.md`.
  */
 export const ClearMacroRelayRecovery: FC = () => {
   const dispatch = useAppDispatch();
@@ -47,14 +81,119 @@ export const ClearMacroRelayRecovery: FC = () => {
   }, [dispatch]);
 
   const recovering = useAppSelector(selectRecoveringRelayExecutions);
+  const pendingIntents = useAppSelector(selectPendingRelayIntents);
 
   return (
     <>
+      {pendingIntents.map((intent) => (
+        <PendingIntentReplayer key={intent.clientRequestId} intent={intent} />
+      ))}
       {recovering.map((entry) => (
         <RelayRecoveryWatcher key={entry.executionId} entry={entry} />
       ))}
     </>
   );
+};
+
+/**
+ * Resolves a pre-POST intent whose create request was never answered.
+ *
+ * The provider deduplicates on the signed authorization intent, so replaying the byte-identical
+ * body either returns the execution the original POST created (200) or creates it now (202).
+ * Either way the intent is promoted — UNLESS a cancel was requested in the meantime, in which
+ * case the replay exists purely to obtain the id so it can be cancelled. Promoting a cancelled
+ * intent as a healthy one is exactly the resurrection this flag prevents.
+ */
+const PendingIntentReplayer: FC<{ intent: PendingRelayIntent }> = ({
+  intent,
+}) => {
+  const dispatch = useAppDispatch();
+  const startedRef = useRef(false);
+
+  useEffect(() => {
+    if (startedRef.current) return;
+    startedRef.current = true;
+
+    let cancelled = false;
+
+    const run = async () => {
+      if (intent.replayAttempts >= MAX_INTENT_REPLAY_ATTEMPTS) return;
+      dispatch(
+        relayRecoveryActions.countIntentReplayAttempt(intent.clientRequestId)
+      );
+
+      let body: CreateRelayExecutionBody;
+      try {
+        body = JSON.parse(intent.postBody) as CreateRelayExecutionBody;
+      } catch {
+        // Unreplayable. Drop the intent, but only because it never became an execution: with
+        // no id there is nothing to cancel and nothing that can be double-spent through it.
+        dispatch(relayRecoveryActions.clearPendingIntent(intent.clientRequestId));
+        return;
+      }
+
+      let execution: RelayExecution;
+      try {
+        execution = await createRelayExecution(body);
+      } catch {
+        // Still unanswered, or refused. Leave the intent in place — it keeps the guards armed
+        // and will be retried on the next load, up to the attempt cap.
+        return;
+      }
+      if (cancelled) return;
+
+      if (intent.cancelRequested) {
+        try {
+          await cancelRelayExecution(execution.id);
+          dispatch(relayRecoveryActions.releaseGuard(execution.id));
+        } catch {
+          // Unknown outcome — the guard stays armed via the intent below.
+        }
+        dispatch(
+          relayRecoveryActions.clearPendingIntent(intent.clientRequestId)
+        );
+        await reduxPersistor.flush();
+        return;
+      }
+
+      const display = decodeRelayIntentDisplayMeta(intent.displayMeta);
+      dispatch(
+        relayRecoveryActions.registerLive({
+          executionId: execution.id,
+          chainId: intent.chainId,
+          signerAddress: intent.signerAddress,
+          validBefore: Number(execution.validity.validBefore),
+          fallbackValidityWindowSeconds: Math.max(
+            0,
+            intent.validBefore - Math.floor(intent.createdAt / 1000)
+          ),
+          title: display?.title ?? "Gasless Transaction",
+          subTransactionTitles: display?.subTransactionTitles,
+          extraData: display?.extraData,
+          actionKind: intent.actionKind,
+          createdAt: intent.createdAt,
+          authorizationType: "safeMessageV1",
+          safeMessageHash: intent.safeMessageHash,
+          // Validated even here: it is persisted and later rendered as a link.
+          messageLink: isRenderableMessageLink(
+            execution.authorization?.messageLink
+          )
+            ? execution.authorization?.messageLink
+            : undefined,
+          actionFingerprint: intent.actionFingerprint || undefined,
+          clientRequestId: intent.clientRequestId,
+        })
+      );
+      await reduxPersistor.flush();
+    };
+
+    void run();
+    return () => {
+      cancelled = true;
+    };
+  }, [dispatch, intent]);
+
+  return null;
 };
 
 const RelayRecoveryWatcher: FC<{ entry: RecoveringRelayExecution }> = ({
@@ -64,19 +203,47 @@ const RelayRecoveryWatcher: FC<{ entry: RecoveringRelayExecution }> = ({
   const store = useStore<RootState>();
   const { executionId } = entry;
   const deadlineMs = (entry.validBefore + GRACE_SECONDS) * 1000;
+  const isSafe = entry.authorizationType === "safeMessageV1";
+  const isTombstoned = entry.tombstonedAt != null;
   // Guards single resolution: the data effect and the deadline effect can race.
   const resolvedRef = useRef(false);
+  // When the provider first became unreachable in this run, for the tombstone bound.
+  const unreachableSinceRef = useRef<number | undefined>(undefined);
 
-  // Sticky "don't retry" toast while unresolved; dismissed when the entry resolves and this
-  // watcher unmounts.
+  // The pending surface. A Safe wait gets the rich version — expiry, execution id, Review in
+  // Safe, Cancel — because the old string ("still being confirmed, please don't retry") is
+  // wrong on both halves for a multi-day co-signer round. A tombstoned entry shows nothing:
+  // polling and nagging have stopped, only the guard remains.
   useEffect(() => {
+    if (isTombstoned) return;
     const toastId = `relay-recovery-${executionId}`;
-    toast.info(
-      `A gasless transaction is still being confirmed. Please don't retry. (execution ${executionId})`,
-      { toastId, autoClose: false, position: "bottom-right" }
-    );
+    if (isSafe) {
+      toast.info(
+        <SafeRelayPendingToast
+          executionId={executionId}
+          clientRequestId={entry.clientRequestId}
+          validBefore={entry.validBefore}
+          messageLink={entry.messageLink}
+          threshold={entry.safeThreshold}
+        />,
+        { toastId, autoClose: false, position: "bottom-right", closeOnClick: false }
+      );
+    } else {
+      toast.info(
+        `A gasless transaction is still being confirmed. Please don't retry. (execution ${executionId})`,
+        { toastId, autoClose: false, position: "bottom-right" }
+      );
+    }
     return () => toast.dismiss(toastId);
-  }, [executionId]);
+  }, [
+    executionId,
+    isSafe,
+    isTombstoned,
+    entry.clientRequestId,
+    entry.validBefore,
+    entry.messageLink,
+    entry.safeThreshold,
+  ]);
 
   const resolveSucceeded = useCallback(
     (hash: Hex) => {
@@ -108,6 +275,8 @@ const RelayRecoveryWatcher: FC<{ entry: RecoveringRelayExecution }> = ({
           })
         );
       }
+      // A confirmed terminal state is a positive answer, so the guards go with the entry.
+      dispatch(relayRecoveryActions.releaseGuard(executionId));
       dispatch(relayRecoveryActions.resolveAndRemove(executionId));
       toast.success("Your gasless transaction was confirmed.", {
         position: "bottom-right",
@@ -116,19 +285,47 @@ const RelayRecoveryWatcher: FC<{ entry: RecoveringRelayExecution }> = ({
     [dispatch, store, entry, executionId]
   );
 
-  const resolveUnsuccessful = useCallback(() => {
+  /**
+   * A CONFIRMED terminal state other than success. Positive knowledge, so the guards release
+   * and the entry goes — and the copy names the actual state instead of collapsing every
+   * outcome into "could not be confirmed, safe to try again", which is wrong for a cancel and
+   * misleading for a revert.
+   */
+  const resolveTerminal = useCallback(
+    (execution: RelayExecution) => {
+      if (resolvedRef.current) return;
+      resolvedRef.current = true;
+      const copy = describeTerminalRelayState(
+        execution.state,
+        execution.error?.code,
+        executionId
+      );
+      dispatch(relayRecoveryActions.releaseGuard(executionId));
+      dispatch(relayRecoveryActions.resolveAndRemove(executionId));
+      const notify = copy.severity === "error" ? toast.error : toast.info;
+      notify(`${copy.title}. ${copy.body}`, { position: "bottom-right" });
+    },
+    [dispatch, executionId]
+  );
+
+  /**
+   * Stop polling and stop nagging, but KEEP the guard. Used when the outcome is unobservable
+   * rather than known: a long provider outage, or a 404 that only tells us the execution is
+   * not visible to us. Client scoping on the provider is not established, so a 404 is not proof
+   * the execution does not exist somewhere — it stays guarded until it can no longer land.
+   */
+  const tombstone = useCallback(() => {
     if (resolvedRef.current) return;
     resolvedRef.current = true;
-    dispatch(relayRecoveryActions.resolveAndRemove(executionId));
-    toast.error(
-      `A gasless transaction could not be confirmed (execution ${executionId}). It is safe to try again.`,
-      { position: "bottom-right" }
+    dispatch(
+      relayRecoveryActions.tombstone({ executionId, at: Date.now() })
     );
   }, [dispatch, executionId]);
 
   const query = useQuery({
     queryKey: ["clearMacroRelayRecovery", executionId],
     queryFn: () => getRelayExecution(executionId),
+    enabled: !isTombstoned,
     refetchInterval: (q) => {
       if (Date.now() > deadlineMs) return false;
       const data = q.state.data;
@@ -140,9 +337,15 @@ const RelayRecoveryWatcher: FC<{ entry: RecoveringRelayExecution }> = ({
         }
         return false;
       }
+      if (data?.state === "awaiting_authorization") {
+        return AWAITING_AUTHORIZATION_POLL_INTERVAL_MS;
+      }
       return RECOVERY_POLL_INTERVAL_MS;
     },
-    refetchOnWindowFocus: false,
+    // A co-signer confirming happens in another tab or on another device, so returning to the
+    // dashboard is the strongest signal we get that something may have changed.
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
     gcTime: 0,
     retry: 2,
   });
@@ -151,6 +354,7 @@ const RelayRecoveryWatcher: FC<{ entry: RecoveringRelayExecution }> = ({
   useEffect(() => {
     const data = query.data;
     if (!data) return;
+    unreachableSinceRef.current = undefined;
     dispatch(
       relayRecoveryActions.updateState({
         executionId,
@@ -164,15 +368,53 @@ const RelayRecoveryWatcher: FC<{ entry: RecoveringRelayExecution }> = ({
       if (hash) resolveSucceeded(hash);
       // else: succeeded but no hash yet — refetchInterval keeps polling until it appears.
     } else {
-      resolveUnsuccessful();
+      resolveTerminal(data);
     }
-  }, [query.data, dispatch, executionId, resolveSucceeded, resolveUnsuccessful]);
+  }, [query.data, dispatch, executionId, resolveSucceeded, resolveTerminal]);
 
-  // Deadline: after `validBefore + grace` the payload can no longer land on-chain. Do a final GET
-  // and resolve — but only EXPIRE on a CONFIRMED non-success. If the provider is unreachable at
-  // the deadline we must NOT expire (a tx may have already landed during the outage and would be
-  // orphaned); keep retrying at a low frequency until we get a definitive answer.
+  // Errors: distinguish a CONFIRMED 404 (the execution is not visible to us and never will be)
+  // from an unreachable provider (we know nothing). Only the former stops polling promptly, and
+  // NEITHER releases a guard.
   useEffect(() => {
+    const error = query.error;
+    if (!error) return;
+    if (error instanceof ClearMacroRelayError && error.status === 404) {
+      toast.error(
+        `A gasless transaction could not be found (execution ${executionId}). If you have the ID, keep it — this action stays blocked until the request can no longer run.`,
+        { position: "bottom-right" }
+      );
+      tombstone();
+      return;
+    }
+    const now = Date.now();
+    unreachableSinceRef.current ??= now;
+    if (now - unreachableSinceRef.current > UNREACHABLE_TOMBSTONE_MS) {
+      tombstone();
+    }
+  }, [query.error, executionId, tombstone]);
+
+  // Expiry. Past `validBefore + grace` the payload can no longer land on-chain, so a tombstone's
+  // guard has become meaningless and the entry can finally go. This is the ONLY time-based
+  // release, and it is sound precisely because the deadline is the payload's own.
+  useEffect(() => {
+    const untilExpiry = deadlineMs - Date.now();
+    if (untilExpiry <= 0) {
+      if (isTombstoned) dispatch(relayRecoveryActions.resolveAndRemove(executionId));
+      return;
+    }
+    if (!isTombstoned) return;
+    const timer = setTimeout(
+      () => dispatch(relayRecoveryActions.resolveAndRemove(executionId)),
+      untilExpiry
+    );
+    return () => clearTimeout(timer);
+  }, [deadlineMs, dispatch, executionId, isTombstoned]);
+
+  // Deadline: after `validBefore + grace` do a final GET. Only a CONFIRMED answer resolves —
+  // an unreachable provider must never expire the entry, because a transaction may have landed
+  // during the outage and would be orphaned.
+  useEffect(() => {
+    if (isTombstoned) return;
     let cancelled = false;
     let timer: ReturnType<typeof setTimeout>;
     const RETRY_MS = 60_000;
@@ -192,8 +434,14 @@ const RelayRecoveryWatcher: FC<{ entry: RecoveringRelayExecution }> = ({
           timer = setTimeout(() => void runFinalCheck(), RETRY_MS);
           return;
         }
-        // Confirmed non-success past the validity window: the payload can no longer land.
-        resolveUnsuccessful();
+        if (data.terminal) {
+          resolveTerminal(data);
+          return;
+        }
+        // NOT terminal past the window — most importantly `submitted`, a transaction that may
+        // still be in the mempool. Resolving here would both lose the outcome and invite a
+        // retry that double-executes. Keep watching.
+        timer = setTimeout(() => void runFinalCheck(), RETRY_MS);
       } catch {
         // Provider unreachable — do NOT expire (would risk orphaning a landed tx). Retry later.
         if (!cancelled) timer = setTimeout(() => void runFinalCheck(), RETRY_MS);
@@ -208,7 +456,46 @@ const RelayRecoveryWatcher: FC<{ entry: RecoveringRelayExecution }> = ({
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [deadlineMs, executionId, resolveSucceeded, resolveUnsuccessful]);
+  }, [
+    deadlineMs,
+    executionId,
+    isTombstoned,
+    resolveSucceeded,
+    resolveTerminal,
+  ]);
+
+  // The manual override. A permanently unreachable provider would otherwise keep this action
+  // blocked until the window closes with nothing the user can do about it. Deliberately worded
+  // as the acknowledged risk it is: releasing while the request could still run is exactly the
+  // double-spend the guard exists to prevent.
+  useEffect(() => {
+    if (!isTombstoned || !isSafe) return;
+    const toastId = `relay-tombstone-${executionId}`;
+    toast.warning(
+      <Stack sx={{ gap: 1 }} data-cy="safe-relay-tombstone-toast">
+        <Typography variant="body2" translate="yes">
+          A gasless request can&apos;t be checked right now, so this action stays
+          blocked until it expires.
+        </Typography>
+        <Typography variant="caption" translate="no">
+          {executionId}
+        </Typography>
+        <Button
+          size="small"
+          color="warning"
+          data-cy="safe-relay-force-release"
+          onClick={() => {
+            dispatch(relayRecoveryActions.releaseGuard(executionId));
+            dispatch(relayRecoveryActions.resolveAndRemove(executionId));
+          }}
+        >
+          I&apos;ve confirmed in Safe that this won&apos;t execute — release it
+        </Button>
+      </Stack>,
+      { toastId, autoClose: false, position: "bottom-right", closeOnClick: false }
+    );
+    return () => toast.dismiss(toastId);
+  }, [dispatch, executionId, isSafe, isTombstoned]);
 
   return null;
 };

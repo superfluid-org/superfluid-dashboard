@@ -240,6 +240,75 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
     );
   }
 
+  // Also distinct from a hard error, and distinct from "status unknown" too: the relay accepted
+  // the request and the Safe's owners simply have not finished approving it. Nothing is wrong,
+  // nothing is unknown, and it can legitimately stay this way for days. Coincides with
+  // `isError` (the mutation settles through a control-flow throw), so this must precede it.
+  if (mutationResult.relayPhase === "safe-awaiting-authorization") {
+    const pending = mutationResult.safeAwaitingAuthorization;
+    return (
+      <>
+        <TransactionDialogTitle>Waiting for Safe owners</TransactionDialogTitle>
+        <TransactionDialogContent>
+          <Stack sx={{ gap: 2, alignItems: "center", textAlign: "center" }}>
+            <OutlineIcon data-cy={"safe-awaiting-authorization-icon"}>
+              <HourglassEmptyRoundedIcon fontSize="large" color="primary" />
+            </OutlineIcon>
+            <Typography
+              data-cy={"safe-awaiting-authorization-message"}
+              variant="h5"
+              translate="yes"
+            >
+              Your gasless request has been created
+            </Typography>
+            <Typography
+              variant="body2"
+              translate="yes"
+              sx={{ color: "text.secondary" }}
+            >
+              The other owners of this Safe still need to approve it. Once they
+              confirm it in Safe it will go through on its own — you can close
+              this tab. It stays open until the expiry below, and you can cancel
+              it from the notification at any time before that.
+            </Typography>
+            {pending && (
+              <Typography
+                variant="body2"
+                translate="yes"
+                sx={{ color: "text.secondary" }}
+              >
+                Open until{" "}
+                {new Date(pending.validBefore * 1000).toLocaleString(undefined, {
+                  dateStyle: "medium",
+                  timeStyle: "short",
+                })}
+                .
+              </Typography>
+            )}
+            {pending && (
+              <Typography
+                data-cy={"safe-awaiting-authorization-execution-id"}
+                variant="body2"
+                translate="no"
+                sx={{ color: "text.secondary" }}
+              >
+                Execution ID: {pending.executionId}
+              </Typography>
+            )}
+          </Stack>
+        </TransactionDialogContent>
+        <TransactionDialogActions>
+          <TransactionDialogButton
+            data-cy={"safe-awaiting-authorization-close"}
+            onClick={closeDialog}
+          >
+            Close
+          </TransactionDialogButton>
+        </TransactionDialogActions>
+      </>
+    );
+  }
+
   // Distinct from a hard error: the signed gasless payload was accepted but the 120s poll timed
   // out, so the outcome is unknown (the tx may still land). Coincides with `isError`, so this
   // branch must precede it. The background poller keeps resolving it and tracks a late success.

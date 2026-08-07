@@ -10,6 +10,17 @@ import type { RootState } from "../redux/store";
 import { ClearMacroActionKind } from "./dashboardClearMacro";
 import { RelayExecutionState } from "./relayApi";
 
+declare module "@superfluid-finance/sdk-redux" {
+  interface TransactionTitleOverrides {
+    /**
+     * Last-resort title for a recovered gasless execution whose persisted display metadata
+     * could not be read back. The execution is live and must still be promoted — losing the
+     * drawer label is far better than dropping an entry that carries the write guards.
+     */
+    "Gasless Transaction": true;
+  }
+}
+
 /** Minimal JSON value type — what may be persisted in `extraData`. */
 export type JsonValue =
   | string
