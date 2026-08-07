@@ -2,7 +2,6 @@ import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import ArrowDownwardRoundedIcon from "@mui/icons-material/ArrowDownwardRounded";
 import ArrowUpwardRoundedIcon from "@mui/icons-material/ArrowUpwardRounded";
 import SwapHorizRoundedIcon from "@mui/icons-material/SwapHorizRounded";
-import ShowChartRoundedIcon from "@mui/icons-material/ShowChartRounded";
 import {
   Alert,
   Box,
@@ -28,7 +27,6 @@ import {
 } from "@mui/material";
 import { format } from "date-fns";
 import { FC, useEffect, useMemo, useState } from "react";
-import dynamic from "next/dynamic";
 import AddressName from "../../components/AddressName/AddressName";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import { getTransferPagePath } from "../../pages/transfer";
@@ -51,14 +49,6 @@ import {
   ERC20TransferHistoryItem,
 } from "./erc20TransferHistory";
 
-const ERC20BalanceHistoryChart = dynamic(
-  () => import("./ERC20BalanceHistoryChart"),
-  {
-    ssr: false,
-    loading: () => <Skeleton variant="rounded" height={210} />,
-  }
-);
-
 export interface ERC20TokenPageMetadata {
   address: string;
   name: string;
@@ -73,15 +63,6 @@ enum TransferFilter {
   Sent = "sent",
   Received = "received",
 }
-
-const getApiError = (error: unknown): string | undefined => {
-  if (!error || typeof error !== "object") return undefined;
-  const data = "data" in error ? error.data : undefined;
-  if (data && typeof data === "object" && "error" in data) {
-    return typeof data.error === "string" ? data.error : undefined;
-  }
-  return undefined;
-};
 
 const BalanceUpdateRow: FC<{
   transfer: ERC20TransferHistoryItem;
@@ -225,31 +206,6 @@ const ERC20TokenPageContent: FC<{
     chainId: network.id,
     ...(requestCursor ? { cursor: requestCursor } : {}),
   });
-  const balanceHistorySamples = useMemo(() => {
-    const timestampsByBlock = new Map<string, string>();
-    (historyQuery.currentData?.transfers ?? []).forEach((transfer) =>
-      timestampsByBlock.set(transfer.blockNumber, transfer.timestamp)
-    );
-    return [...timestampsByBlock]
-      .sort(([first], [second]) =>
-        BigInt(first) > BigInt(second)
-          ? -1
-          : BigInt(first) < BigInt(second)
-          ? 1
-          : 0
-      )
-      .slice(0, 24)
-      .map(([blockNumber, timestamp]) => ({ blockNumber, timestamp }));
-  }, [historyQuery.currentData?.transfers]);
-  const balanceHistoryQuery = platformApi.useErc20BalanceHistoryQuery(
-    {
-      address: accountAddress,
-      tokenAddress: token.address,
-      chainId: network.id,
-      samples: balanceHistorySamples,
-    },
-    { skip: historyQuery.currentData === undefined }
-  );
 
   useEffect(() => {
     const page = historyQuery.currentData;
@@ -442,75 +398,6 @@ const ERC20TokenPageContent: FC<{
           </Box>
         </Stack>
       </Card>
-
-      <Paper variant="outlined" sx={{ p: { xs: 2, md: 3 }, borderRadius: 3 }}>
-        <Stack
-          direction={{ xs: "column", sm: "row" }}
-          sx={{
-            justifyContent: "space-between",
-            alignItems: { sm: "center" },
-            gap: 1.5,
-            mb: 2,
-          }}
-        >
-          <Box>
-            <Stack direction="row" sx={{ alignItems: "center", gap: 1 }}>
-              <ShowChartRoundedIcon color="primary" />
-              <Typography variant="h5">Onchain balance history</Typography>
-            </Stack>
-            <Typography
-              variant="body2"
-              sx={{ color: "text.secondary", mt: 0.5 }}
-            >
-              Exact ERC-20 balance snapshots at the latest transfer blocks,
-              queried from Alchemy archive state.
-            </Typography>
-          </Box>
-          <Chip
-            size="small"
-            label={`${
-              balanceHistoryQuery.currentData?.sampledTransferBlocks ?? 0
-            } sampled blocks`}
-            variant="outlined"
-          />
-        </Stack>
-        {balanceHistoryQuery.isLoading ||
-        (historyQuery.isLoading && !historyQuery.currentData) ? (
-          <Skeleton variant="rounded" height={210} />
-        ) : balanceHistoryQuery.isError ? (
-          <Alert severity="warning">
-            {getApiError(balanceHistoryQuery.error) ||
-              "Alchemy could not load historical balance snapshots for this token."}
-          </Alert>
-        ) : (balanceHistoryQuery.currentData?.points.length ?? 0) > 1 ? (
-          <ERC20BalanceHistoryChart
-            points={balanceHistoryQuery.currentData?.points ?? []}
-            decimals={token.decimals}
-            symbol={token.symbol}
-          />
-        ) : (
-          <Box
-            sx={{
-              minHeight: 150,
-              display: "grid",
-              placeItems: "center",
-              color: "text.secondary",
-            }}
-          >
-            <Typography variant="body2">
-              More transfer activity is needed to draw a balance history.
-            </Typography>
-          </Box>
-        )}
-        <Typography
-          variant="caption"
-          sx={{ display: "block", color: "text.secondary", mt: 1.5 }}
-        >
-          Snapshots are exact at sampled blocks. Periods without transfers are
-          not sampled, and the first page covers up to 25 incoming and 25
-          outgoing events.
-        </Typography>
-      </Paper>
 
       <Box>
         <Typography variant="h5">Balance updates</Typography>

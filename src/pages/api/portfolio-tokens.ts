@@ -13,7 +13,6 @@ const LIFI_TOKENS_URL = "https://li.quest/v1/tokens";
 const MAX_NETWORKS_PER_REQUEST = 5;
 const MAX_PAGES_PER_REQUEST = 50;
 const MIN_PORTFOLIO_VALUE_USD = 0.01;
-const NATIVE_TOKEN_ADDRESS = "0x0000000000000000000000000000000000000000";
 const LIFI_PRICE_CACHE_TTL_MS = 5 * 60 * 1000;
 
 export const config = {
@@ -54,27 +53,6 @@ const chainIdByAlchemyNetwork = Object.fromEntries(
 // Alchemy currently normalizes Polygon's requested network name in responses.
 chainIdByAlchemyNetwork["matic-mainnet"] = 137;
 
-const nativeMetadataByChainId: Record<
-  number,
-  { name: string; symbol: string; decimals: number }
-> = {
-  1: { name: "Ether", symbol: "ETH", decimals: 18 },
-  10: { name: "Ether", symbol: "ETH", decimals: 18 },
-  56: { name: "BNB", symbol: "BNB", decimals: 18 },
-  100: { name: "xDAI", symbol: "XDAI", decimals: 18 },
-  137: { name: "POL", symbol: "POL", decimals: 18 },
-  8453: { name: "Ether", symbol: "ETH", decimals: 18 },
-  42161: { name: "Ether", symbol: "ETH", decimals: 18 },
-  42220: { name: "Celo", symbol: "CELO", decimals: 18 },
-  43113: { name: "Avalanche", symbol: "AVAX", decimals: 18 },
-  43114: { name: "Avalanche", symbol: "AVAX", decimals: 18 },
-  84532: { name: "Ether", symbol: "ETH", decimals: 18 },
-  534351: { name: "Ether", symbol: "ETH", decimals: 18 },
-  534352: { name: "Ether", symbol: "ETH", decimals: 18 },
-  11155111: { name: "Sepolia Ether", symbol: "ETH", decimals: 18 },
-  11155420: { name: "Sepolia Ether", symbol: "ETH", decimals: 18 },
-};
-
 interface AlchemyToken {
   network: string;
   tokenAddress: string | null;
@@ -88,7 +66,6 @@ interface AlchemyToken {
   tokenPrices?: Array<{
     currency: string;
     value: string;
-    lastUpdatedAt?: string;
   }>;
   error?: string;
 }
@@ -183,31 +160,24 @@ const getLifiPrices = async (
 
 const mapToken = (
   token: AlchemyToken,
-  lifiPrices: Map<string, number>,
-  includeNativeTokens: boolean
+  lifiPrices: Map<string, number>
 ): PortfolioToken | null => {
   const chainId = chainIdByAlchemyNetwork[token.network];
-  const nativeToken = !token.tokenAddress;
-  const tokenAddress =
-    token.tokenAddress?.toLowerCase() ?? NATIVE_TOKEN_ADDRESS;
+  const tokenAddress = token.tokenAddress?.toLowerCase();
   const metadata = token.tokenMetadata;
-  const nativeMetadata = nativeToken
-    ? nativeMetadataByChainId[chainId]
-    : undefined;
 
   if (
     !chainId ||
-    (nativeToken && !includeNativeTokens) ||
+    !tokenAddress ||
     token.error ||
     !hasBalance(token.tokenBalance)
   ) {
     return null;
   }
 
-  const usdPrice = token.tokenPrices?.find(
+  const priceUsd = token.tokenPrices?.find(
     ({ currency }) => currency.toLowerCase() === "usd"
-  );
-  const priceUsd = usdPrice?.value;
+  )?.value;
   const parsedAlchemyPrice = priceUsd ? Number(priceUsd) : undefined;
   const alchemyPrice =
     parsedAlchemyPrice !== undefined &&
@@ -234,17 +204,12 @@ const mapToken = (
     chainId,
     tokenAddress,
     balance: token.tokenBalance,
-    decimals: metadata?.decimals ?? nativeMetadata?.decimals ?? 18,
-    name: metadata?.name || nativeMetadata?.name || "Unknown token",
-    symbol:
-      metadata?.symbol ||
-      nativeMetadata?.symbol ||
-      `${tokenAddress.slice(0, 6)}…`,
+    decimals: metadata?.decimals ?? 18,
+    name: metadata?.name || "Unknown token",
+    symbol: metadata?.symbol || `${tokenAddress.slice(0, 6)}…`,
     logoURI: metadata?.logo || undefined,
     priceUsd: effectivePrice,
-    priceUpdatedAt: usdPrice?.lastUpdatedAt,
     valueUsd: valueUsd && valueUsd.isFinite() ? valueUsd.toNumber() : undefined,
-    nativeToken,
   };
 };
 
@@ -252,12 +217,10 @@ const fetchNetworkChunk = async ({
   apiKey,
   address,
   networks,
-  includeNativeTokens,
 }: {
   apiKey: string;
   address: string;
   networks: string[];
-  includeNativeTokens: boolean;
 }): Promise<AlchemyToken[]> => {
   const tokens: AlchemyToken[] = [];
   let pageKey: string | undefined;
@@ -273,7 +236,7 @@ const fetchNetworkChunk = async ({
           addresses: [{ address, networks }],
           withMetadata: true,
           withPrices: true,
-          includeNativeTokens,
+          includeNativeTokens: false,
           includeErc20Tokens: true,
           ...(pageKey ? { pageKey } : {}),
         }),
@@ -312,17 +275,12 @@ export default async function handler(
     return response.status(503).json({ error: "Alchemy is not configured" });
   }
 
-  const {
-    address,
-    chainIds,
-    includeNativeTokens = false,
-  } = request.body as Partial<PortfolioTokensRequest>;
+  const { address, chainIds } = request.body as Partial<PortfolioTokensRequest>;
   if (
     typeof address !== "string" ||
     !/^0x[0-9a-fA-F]{40}$/.test(address) ||
     !Array.isArray(chainIds) ||
-    chainIds.some((chainId) => !Number.isInteger(chainId)) ||
-    typeof includeNativeTokens !== "boolean"
+    chainIds.some((chainId) => !Number.isInteger(chainId))
   ) {
     return response.status(400).json({ error: "Invalid portfolio request" });
   }
@@ -344,7 +302,6 @@ export default async function handler(
           apiKey,
           address,
           networks: networkChunk.map(({ network }) => network),
-          includeNativeTokens,
         }).then((tokens) => ({ tokens, networkChunk }))
       )
     ),
@@ -372,7 +329,7 @@ export default async function handler(
 
   const tokensById = new Map<string, PortfolioToken>();
   alchemyTokens.forEach((token) => {
-    const mapped = mapToken(token, lifiPrices, includeNativeTokens);
+    const mapped = mapToken(token, lifiPrices);
     if (mapped) {
       tokensById.set(`${mapped.chainId}-${mapped.tokenAddress}`, mapped);
     }
