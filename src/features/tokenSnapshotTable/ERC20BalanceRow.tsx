@@ -49,6 +49,10 @@ import useTokenPrice from "../tokenPrice/useTokenPrice";
 import { PortfolioValueCallback } from "./TokenSnapshotTables";
 import { ERC20Balance } from "./useERC20Balances";
 import { getBridgePagePath } from "../bridge/getBridgePagePath";
+import {
+  getPortfolioRowActionStyles,
+  PORTFOLIO_ROW_ACTIONS_CLASS_NAME,
+} from "./portfolioRowActionStyles";
 
 interface ERC20BalanceRowProps extends ERC20Balance {
   address: Address;
@@ -358,7 +362,10 @@ const ERC20BalanceRow: FC<ERC20BalanceRowProps> = ({
       <TableRow
         hover
         data-cy={`${token.symbol}-erc20-cell`}
-        sx={{ "> td": { py: 1 } }}
+        sx={{
+          "> td": { py: 1 },
+          ...getPortfolioRowActionStyles(theme),
+        }}
       >
         <TableCell onClick={openTokenPage} sx={{ cursor: "pointer" }}>
           <ListItem disablePadding sx={{ p: 0 }}>
@@ -448,7 +455,11 @@ const ERC20BalanceRow: FC<ERC20BalanceRowProps> = ({
               </Typography>
             </TableCell>
             <TableCell sx={{ pl: 0 }}>
-              <Stack direction="row" sx={{ gap: 0.75 }}>
+              <Stack
+                className={PORTFOLIO_ROW_ACTIONS_CLASS_NAME}
+                direction="row"
+                sx={{ gap: 0.75 }}
+              >
                 {streamPath && (
                   <Button
                     data-cy="portfolio-stream-button"

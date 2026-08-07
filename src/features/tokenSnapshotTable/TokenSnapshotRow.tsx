@@ -54,6 +54,10 @@ import { isDefined } from "../../utils/ensureDefined";
 import { useTokenQuery } from "../../hooks/useTokenQuery";
 import { PortfolioValueCallback } from "./TokenSnapshotTables";
 import { getBridgePagePath } from "../bridge/getBridgePagePath";
+import {
+  getPortfolioRowActionStyles,
+  PORTFOLIO_ROW_ACTIONS_CLASS_NAME,
+} from "./portfolioRowActionStyles";
 
 interface SnapshotRowProps {
   lastElement?: boolean;
@@ -67,6 +71,7 @@ const SnapshotRow = styled(TableRow, {
   "> td": {
     py: theme.spacing(1),
   },
+  ...getPortfolioRowActionStyles(theme),
   ...(lastElement && {
     td: {
       border: "none",
@@ -427,6 +432,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
 
             <TableCell sx={{ pl: 0 }}>
               <Stack
+                className={PORTFOLIO_ROW_ACTIONS_CLASS_NAME}
                 direction="row"
                 onClick={stopPropagation}
                 sx={{
