@@ -25,6 +25,7 @@ import AnimatedHeight from "../common/AnimatedHeight";
 import React from "react";
 import { useConnectionBoundary } from "./ConnectionBoundary";
 import { supportId } from "../analytics/useAppInstanceDetails";
+import { SafeRelayPendingActions } from "../clearMacro/SafeRelayPendingActions";
 
 const successRevealRise = keyframes`
   from { opacity: 0; transform: translateY(10px); }
@@ -272,28 +273,15 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
               it from the notification at any time before that.
             </Typography>
             {pending && (
-              <Typography
-                variant="body2"
-                translate="yes"
-                sx={{ color: "text.secondary" }}
-              >
-                Open until{" "}
-                {new Date(pending.validBefore * 1000).toLocaleString(undefined, {
-                  dateStyle: "medium",
-                  timeStyle: "short",
-                })}
-                .
-              </Typography>
-            )}
-            {pending && (
-              <Typography
-                data-cy={"safe-awaiting-authorization-execution-id"}
-                variant="body2"
-                translate="no"
-                sx={{ color: "text.secondary" }}
-              >
-                Execution ID: {pending.executionId}
-              </Typography>
+              // The execution id is the ONLY handle on a live intent — there is no lookup by
+              // signer — so it has to be keepable from here, not just from a notification the
+              // user may never look at.
+              <SafeRelayPendingActions
+                executionId={pending.executionId}
+                validBefore={pending.validBefore}
+                messageLink={pending.messageLink}
+                clientRequestId={pending.clientRequestId}
+              />
             )}
           </Stack>
         </TransactionDialogContent>

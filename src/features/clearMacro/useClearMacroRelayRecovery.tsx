@@ -416,13 +416,16 @@ const RelayRecoveryWatcher: FC<{ entry: RecoveringRelayExecution }> = ({
    * not visible to us. Client scoping on the provider is not established, so a 404 is not proof
    * the execution does not exist somewhere — it stays guarded until it can no longer land.
    */
-  const tombstone = useCallback(() => {
-    if (resolvedRef.current) return;
-    resolvedRef.current = true;
-    dispatch(
-      relayRecoveryActions.tombstone({ executionId, at: Date.now() })
-    );
-  }, [dispatch, executionId]);
+  const tombstone = useCallback(
+    (reason: "not-found" | "unreachable") => {
+      if (resolvedRef.current) return;
+      resolvedRef.current = true;
+      dispatch(
+        relayRecoveryActions.tombstone({ executionId, at: Date.now(), reason })
+      );
+    },
+    [dispatch, executionId]
+  );
 
   const query = useQuery({
     queryKey: ["clearMacroRelayRecovery", executionId],
@@ -490,32 +493,40 @@ const RelayRecoveryWatcher: FC<{ entry: RecoveringRelayExecution }> = ({
         `A gasless transaction could not be found (execution ${executionId}). If you have the ID, keep it — this action stays blocked until the request can no longer run.`,
         { position: "bottom-right" }
       );
-      tombstone();
+      tombstone("not-found");
       return;
     }
     const now = Date.now();
     unreachableSinceRef.current ??= now;
     if (now - unreachableSinceRef.current > UNREACHABLE_TOMBSTONE_MS) {
-      tombstone();
+      tombstone("unreachable");
     }
   }, [query.error, executionId, tombstone]);
 
-  // Expiry. Past `validBefore + grace` the payload can no longer land on-chain, so a tombstone's
-  // guard has become meaningless and the entry can finally go. This is the ONLY time-based
-  // release, and it is sound precisely because the deadline is the payload's own.
+  // Expiry, for a tombstone the provider ANSWERED about (404) — and only that one.
+  //
+  // NOTE: the plan is self-contradictory here. §10.2 says a guard releases only on a positive
+  // answer and "never on a timeout, a deadline, a 5xx, or an unreachable provider", and then
+  // says a tombstone "expires on its own at `validBefore + grace`". Those cannot both hold for
+  // an unreachable-provider tombstone: passing `validBefore` proves the payload cannot land in
+  // future, not that it never landed during the outage, so releasing there is releasing on a
+  // timeout. The narrower reading is implemented: a 404 tombstone expires (we got an answer,
+  // and the payload can no longer land), an unreachable one does not and waits for a positive
+  // answer or the user's explicit override. Flagged for Kaspar.
+  const canExpire = entry.tombstoneReason === "not-found";
   useEffect(() => {
+    if (!isTombstoned || !canExpire) return;
     const untilExpiry = deadlineMs - Date.now();
     if (untilExpiry <= 0) {
-      if (isTombstoned) dispatch(relayRecoveryActions.resolveAndRemove(executionId));
+      dispatch(relayRecoveryActions.resolveAndRemove(executionId));
       return;
     }
-    if (!isTombstoned) return;
     const timer = setTimeout(
       () => dispatch(relayRecoveryActions.resolveAndRemove(executionId)),
       untilExpiry
     );
     return () => clearTimeout(timer);
-  }, [deadlineMs, dispatch, executionId, isTombstoned]);
+  }, [deadlineMs, dispatch, executionId, isTombstoned, canExpire]);
 
   // Deadline: after `validBefore + grace` do a final GET. Only a CONFIRMED answer resolves —
   // an unreachable provider must never expire the entry, because a transaction may have landed
@@ -576,7 +587,8 @@ const RelayRecoveryWatcher: FC<{ entry: RecoveringRelayExecution }> = ({
   // as the acknowledged risk it is: releasing while the request could still run is exactly the
   // double-spend the guard exists to prevent.
   useEffect(() => {
-    if (!isTombstoned || !isSafe) return;
+    // Only the unreachable tombstone needs the override — the 404 one expires by itself.
+    if (!isTombstoned || !isSafe || canExpire) return;
     const toastId = `relay-tombstone-${executionId}`;
     toast.warning(
       <Stack sx={{ gap: 1 }} data-cy="safe-relay-tombstone-toast">
@@ -602,7 +614,7 @@ const RelayRecoveryWatcher: FC<{ entry: RecoveringRelayExecution }> = ({
       { toastId, autoClose: false, position: "bottom-right", closeOnClick: false }
     );
     return () => toast.dismiss(toastId);
-  }, [dispatch, executionId, isSafe, isTombstoned]);
+  }, [dispatch, executionId, isSafe, isTombstoned, canExpire]);
 
   return null;
 };

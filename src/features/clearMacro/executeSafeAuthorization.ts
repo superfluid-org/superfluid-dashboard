@@ -50,7 +50,9 @@ export type SafeProposalObservation =
 export class ClearMacroSafeAuthorizationPendingError extends Error {
   constructor(
     public readonly executionId: string,
-    public readonly validBefore: number
+    public readonly validBefore: number,
+    /** Provider-returned and URL-validated, so the dialog can offer Review in Safe. */
+    public readonly messageLink?: string
   ) {
     super(
       `Waiting for the Safe's owners to approve this gasless transaction (execution ${executionId}).`

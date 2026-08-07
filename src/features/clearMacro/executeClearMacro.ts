@@ -45,6 +45,7 @@ import {
   createRelayExecution,
   getCapabilities,
   getFinalTransactionHash,
+  isRenderableMessageLink,
   pollRelayExecutionUntilTerminal,
   type RelayAuthorizationMethod,
   type RelayExecution,
@@ -1053,7 +1054,10 @@ export async function executeClearMacro(
       });
       throw new ClearMacroSafeAuthorizationPendingError(
         safeResult.execution.id,
-        Number(safeResult.execution.validity.validBefore)
+        Number(safeResult.execution.validity.validBefore),
+        isRenderableMessageLink(safeResult.execution.authorization?.messageLink)
+          ? safeResult.execution.authorization?.messageLink
+          : undefined
       );
     }
 

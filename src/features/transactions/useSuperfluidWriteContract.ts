@@ -40,6 +40,7 @@ import {
   isBlockedByGuards,
 } from "../clearMacro/actionFingerprint";
 import { ClearMacroSafeAuthorizationPendingError } from "../clearMacro/executeSafeAuthorization";
+import { describeTerminalRelayState } from "../clearMacro/relayStateCopy";
 import {
   ClearMacroInsufficientFeeError,
   ClearMacroNotEligibleError,
@@ -170,7 +171,13 @@ export function useSuperfluidWriteContract() {
   const { data: relayCapabilities } = useRelayCapabilities();
   const [relayPhase, setRelayPhase] = useState<RelayPhase | undefined>();
   const [safeAwaitingAuthorization, setSafeAwaitingAuthorization] = useState<
-    { executionId: string; validBefore: number } | undefined
+    | {
+        executionId: string;
+        validBefore: number;
+        messageLink?: string;
+        clientRequestId?: string;
+      }
+    | undefined
   >();
   const [relayStatusUnknown, setRelayStatusUnknown] = useState<
     { executionId: string } | undefined
@@ -459,6 +466,8 @@ export function useSuperfluidWriteContract() {
             setSafeAwaitingAuthorization({
               executionId: error.executionId,
               validBefore: error.validBefore,
+              messageLink: error.messageLink,
+              clientRequestId: safeClientRequestId,
             });
             throw error;
           } else if (error instanceof ClearMacroNotEligibleError) {
@@ -513,9 +522,22 @@ export function useSuperfluidWriteContract() {
               }
               setRelayPhase("relay-status-unknown");
             } else if (executionId) {
-              // Terminal failure (reverted/rejected/failed/expired/...) — the normal error
-              // dialog surfaces it (the message already names the execution id). Drop the entry.
+              // Terminal failure (reverted/rejected/failed/expired/canceled). A confirmed
+              // terminal state is a positive answer, so the guards go with the entry.
+              dispatch(relayRecoveryActions.releaseGuard(executionId));
               dispatch(relayRecoveryActions.resolveAndRemove(executionId));
+              if (error.state && error.state !== "succeeded") {
+                // Render the SAME distinct copy the recovery path uses rather than the raw
+                // provider string. Collapsing a cancellation, a preflight revert and a real
+                // failure into one message is wrong in different ways for each — and telling a
+                // user it is "safe to try again" is not always true.
+                const copy = describeTerminalRelayState(
+                  error.state,
+                  error.code,
+                  executionId
+                );
+                throw new Error(`${copy.title}. ${copy.body}`, { cause: error });
+              }
             }
             throw error;
           } else {

@@ -119,10 +119,22 @@ export interface RecoveringRelayExecution {
   clientRequestId?: string;
   /**
    * Unix ms at which polling and user-facing nagging stopped while the guard stayed armed
-   * (provider unreachable for a long time, or a confirmed 404). The entry survives as a
-   * passive tombstone until `validBefore + grace`.
+   * (provider unreachable for a long time, or a confirmed 404).
    */
   tombstonedAt?: number;
+  /**
+   * Why it was tombstoned — which decides whether it may expire on its own.
+   *
+   * `not-found`: the provider ANSWERED 404. The execution is not visible to us and never will
+   * be, and past `validBefore + grace` the payload cannot land either, so the guard has nothing
+   * left to protect and expires.
+   *
+   * `unreachable`: we got no answer at all. Expiry proves the payload cannot land in FUTURE; it
+   * does not prove it never landed during the outage. Releasing on that would be releasing on a
+   * timeout, which is the one thing the guard must never do — so it holds until a positive
+   * answer or the user's explicit override.
+   */
+  tombstoneReason?: "not-found" | "unreachable";
 }
 
 /**
@@ -379,11 +391,16 @@ export const relayRecoverySlice = createSlice({
      */
     tombstone: (
       state,
-      action: PayloadAction<{ executionId: string; at: number }>
+      action: PayloadAction<{
+        executionId: string;
+        at: number;
+        reason: "not-found" | "unreachable";
+      }>
     ) => {
       const entity = state.entities[action.payload.executionId];
       if (entity && !entity.tombstonedAt) {
         entity.tombstonedAt = action.payload.at;
+        entity.tombstoneReason = action.payload.reason;
         entity.ownership = "recovering";
       }
     },

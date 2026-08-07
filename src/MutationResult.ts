@@ -45,7 +45,12 @@ export type MutationResult<T = unknown> = {
   relayStatusUnknown?: { executionId: string };
   // Set alongside relayPhase === "safe-awaiting-authorization", for the same reason as above:
   // the dialog needs the execution id and the expiry, and serialized errors drop custom fields.
-  safeAwaitingAuthorization?: { executionId: string; validBefore: number };
+  safeAwaitingAuthorization?: {
+    executionId: string;
+    validBefore: number;
+    messageLink?: string;
+    clientRequestId?: string;
+  };
 
   reset: () => void; // A method to manually unsubscribe from the mutation call and reset the result to the uninitialized state
 };
