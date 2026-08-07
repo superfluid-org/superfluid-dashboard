@@ -1,3 +1,4 @@
+import BoltRoundedIcon from "@mui/icons-material/BoltRounded";
 import LaunchRoundedIcon from "@mui/icons-material/LaunchRounded";
 import {
   Box,
@@ -78,6 +79,7 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
 
   const subTransactionTitles: TransactionTitle[] =
     (transaction.extraData.subTransactionTitles as TransactionTitle[]) ?? [];
+  const isRelayed = Boolean(transaction.extraData.clearMacroExecutionId);
   const [expand, setExpand] = useState(false);
 
   const groupedSubTransactionTitles = map(
@@ -124,7 +126,7 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
                         slotProps={{
                           primary: {
                             variant: "body2",
-                            color: "text.secondary",
+                            color: "textSecondary",
                           }
                         }}
                         sx={{ my: 0.25 }}
@@ -147,15 +149,18 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
             )}
             <Stack
               direction="row"
-              gap={0.5}
               component="span"
-              alignItems="center"
-            >
+              sx={{
+                gap: 0.5,
+                alignItems: "center"
+              }}>
               <Box
                 component="span"
-                color={getTransactionStatusColor(transaction.status)}
                 translate="no"
                 data-cy={"tx-date"}
+                sx={{
+                  color: getTransactionStatusColor(transaction.status)
+                }}
               >
                 {`${format(transaction.timestampMs, "d MMM")} •`}
               </Box>
@@ -179,6 +184,18 @@ const TransactionListItem: FC<{ transaction: TrackedTransaction }> = ({
                       <LaunchRoundedIcon />
                     </IconButton>
                   </span>
+                </Tooltip>
+              )}
+              {isRelayed && (
+                <Tooltip
+                  title="Sent gaslessly, no network fee paid"
+                  arrow
+                  placement="top"
+                >
+                  <BoltRoundedIcon
+                    data-cy="tx-relayed-icon"
+                    sx={{ fontSize: 16, color: "text.secondary" }}
+                  />
                 </Tooltip>
               )}
             </Stack>

@@ -138,7 +138,12 @@ const TransferEventsTable: FC<TransferEventsTableProps> = ({
         <TableHead>
           <TableRow>
             <TableCell colSpan={5}>
-              <Stack direction="row" alignItems="center" gap={1}>
+              <Stack
+                direction="row"
+                sx={{
+                  alignItems: "center",
+                  gap: 1
+                }}>
                 <Button
                   data-cy={"all-tab"}
                   variant="textContained"

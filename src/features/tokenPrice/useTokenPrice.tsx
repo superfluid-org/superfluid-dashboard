@@ -2,6 +2,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import { Address } from "@superfluid-finance/sdk-core";
 import { useMemo } from "react";
 import { Currency } from "../../utils/currencyUtils";
+import { allNetworks } from "../network/networks";
 import { useAppCurrency } from "../settings/appSettingsHooks";
 import tokenPriceApi from "./tokenPriceApi.slice";
 
@@ -9,11 +10,6 @@ const useTokenPrice = (chainId: number, token?: Address) => {
   const currency = useAppCurrency();
 
   const exchangeRatesResponse = tokenPriceApi.useGetUSDExchangeRateQuery();
-  const supportedNetworksQuery = tokenPriceApi.useGetSupportedChainIdsQuery();
-
-  const isChainSupported = (supportedNetworksQuery.data || []).includes(
-    chainId
-  );
 
   // TODO: Contact Vijay if you want to remove this.
   const shouldBeDisabledTokenOnOP = useMemo(
@@ -23,17 +19,25 @@ const useTokenPrice = (chainId: number, token?: Address) => {
     [chainId, token]
   );
 
-  const tokenPriceResponse = tokenPriceApi.useGetTokenDataQuery(
-    isChainSupported && !shouldBeDisabledTokenOnOP && token
-      ? {
-          token,
-          chainId,
-        }
-      : skipToken
+  const isTestnet = allNetworks.some((n) => n.id === chainId && n.testnet);
+
+  const queryArg =
+    !shouldBeDisabledTokenOnOP && !isTestnet && token ? { token, chainId } : undefined;
+
+  const cmsPriceResponse = tokenPriceApi.useGetTokenPriceQuery(
+    queryArg ?? skipToken
+  );
+
+  const needsFallback = queryArg && cmsPriceResponse.isError;
+
+  const fallbackPriceResponse = tokenPriceApi.useGetTokenPriceFallbackQuery(
+    needsFallback ? queryArg : skipToken
   );
 
   return useMemo(() => {
-    const price = tokenPriceResponse.currentData?.price;
+    const price =
+      cmsPriceResponse.currentData?.price ??
+      fallbackPriceResponse.currentData?.price;
 
     if (price) {
       if (currency === Currency.USD) return price;
@@ -45,7 +49,12 @@ const useTokenPrice = (chainId: number, token?: Address) => {
     }
 
     return undefined;
-  }, [currency, tokenPriceResponse.currentData, exchangeRatesResponse.currentData]);
+  }, [
+    currency,
+    cmsPriceResponse.currentData,
+    fallbackPriceResponse.currentData,
+    exchangeRatesResponse.currentData,
+  ]);
 };
 
 export default useTokenPrice;

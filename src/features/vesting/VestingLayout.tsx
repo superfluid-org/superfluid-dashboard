@@ -11,6 +11,7 @@ import { vestingSupportedNetworks } from "../network/networks";
 import ReduxPersistGate from "../redux/ReduxPersistGate";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import SimpleVestingHeader from "./SimpleVestingHeader";
+import { ALLOWLIST_CONTACT_URL } from "../../utils/constants";
 
 const VESTING_SUPPORTED_NETWORK_IDS = vestingSupportedNetworks.map(
   (network) => network.id
@@ -61,11 +62,17 @@ const VestingNotSupportedCard = () => {
       <Typography
         data-cy={"not-supported-network-msg"}
         variant={isBelowMd ? "h5" : "h4"}
-        textAlign="center"
+        sx={{
+          textAlign: "center"
+        }}
       >
         This network is not supported.
       </Typography>
-      <Typography color="text.secondary" textAlign="center">
+      <Typography
+        sx={{
+          color: "text.secondary",
+          textAlign: "center"
+        }}>
         Change your network to {NetworkSwitchLinks}
       </Typography>
     </Paper>
@@ -89,27 +96,35 @@ const NotConnectedCard = () => {
         },
       }}
     >
-      <Typography variant={isBelowMd ? "h5" : "h4"} textAlign="center">
+      <Typography variant={isBelowMd ? "h5" : "h4"} sx={{
+        textAlign: "center"
+      }}>
         No Vesting Schedules Available
       </Typography>
-      <Typography color="text.secondary" textAlign="center">
+      <Typography
+        sx={{
+          color: "text.secondary",
+          textAlign: "center"
+        }}>
         Received and Sent Vesting Schedules will appear here.
       </Typography>
-
       <Box sx={{ maxWidth: 400, width: "100%", mx: "auto", mt: 4, mb: 3 }}>
         <ConnectOrImpersonate />
       </Box>
-
-      <Typography color="text.secondary" textAlign="center">
-        Want to Vest tokens? Apply for the access code{" "}
+      <Typography
+        sx={{
+          color: "text.secondary",
+          textAlign: "center"
+        }}>
+        Want to Vest tokens?{" "}
         <Link
           data-cy="vesting-form-link"
-          href="https://use.superfluid.finance/vesting"
+          href={ALLOWLIST_CONTACT_URL}
           target="_blank"
         >
-          here
-        </Link>
-        .
+          Contact us
+        </Link>{" "}
+        for access.
       </Typography>
     </Paper>
   );

@@ -9,9 +9,7 @@ const readOnlyFrameworks = allNetworks.map((network) => {
   const networkFromMetadata = superfluidMetadata.getNetworkByChainId(
     network.id
   );
-  const subgraphEndpoint = network.id === 10
-    ? "https://api.goldsky.com/api/public/project_clsnd6xsoma5j012qepvucfpp/subgraphs/protocol-v1-optimism-mainnet/2.2.3/gn"
-    : networkFromMetadata
+  const subgraphEndpoint = networkFromMetadata
       ? `https://${networkFromMetadata.name}.subgraph.x.superfluid.dev`
       : undefined;
   return {

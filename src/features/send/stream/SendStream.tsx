@@ -18,7 +18,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV2";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { skipToken } from "@reduxjs/toolkit/query";
@@ -30,11 +30,16 @@ import NextLink from "next/link";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import {
+  mobileTapPickerSlots,
+  mobileTapTextFieldProps,
+} from "../../../components/PickerField/mobileTapPicker";
+import {
   mapCreateTaskToScheduledStream,
   mapStreamScheduling,
 } from "../../../hooks/streamSchedulingHooks";
 import { getTokenPagePath } from "../../../pages/token/[_network]/[_token]";
 import { CreateTask } from "../../../scheduling-subgraph/.graphclient";
+import { ALLOWLIST_CONTACT_URL } from "../../../utils/constants";
 import { dateNowSeconds, getTimeInSeconds } from "../../../utils/dateUtils";
 import { getDecimalPlacesToRoundTo } from "../../../utils/DecimalUtils";
 import {
@@ -47,8 +52,12 @@ import TooltipWithIcon from "../../common/TooltipWithIcon";
 import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
 import { Network, networkDefinition } from "../../network/networks";
 import NetworkSwitchLink from "../../network/NetworkSwitchLink";
-import { platformApi } from "../../redux/platformApi/platformApi";
 import { rpcApi } from "../../redux/store";
+import {
+  normalizeScheduleTimestamp,
+  useDeleteFlowWithScheduling,
+  useUpsertFlowWithScheduling,
+} from "../useFlowSchedulingWrites";
 import Amount from "../../token/Amount";
 import TokenIcon from "../../token/TokenIcon";
 import { BalanceSuperToken } from "../../tokenWrapping/BalanceSuperToken";
@@ -82,6 +91,14 @@ import { useSuperTokens } from "../../../hooks/useSuperTokens";
 import { SuperTokenMinimal, isWrappable } from "../../redux/endpoints/tokenTypes";
 import { useTokenQuery } from "../../../hooks/useTokenQuery";
 import { useWhitelist } from "../../../hooks/useWhitelist";
+import { useAccount } from "@/hooks/useAccount";
+import { ClearMacroRelayOption } from "../../clearMacro/ClearMacroRelayOption";
+import {
+  isClearMacroSupportedOnNetwork,
+  useClearMacroEligibility,
+} from "../../clearMacro/useClearMacroEligibility";
+import type { ClearMacroActionKind } from "../../clearMacro/dashboardClearMacro";
+import type { ScheduleFlowQuoteAction } from "../../clearMacro/useRelayFee";
 
 // Minimum start and end date difference in seconds.
 export const SCHEDULE_START_END_MIN_DIFF_S = 15 * UnitOfTime.Minute;
@@ -160,6 +177,7 @@ export default memo(function SendStream() {
     resetFormData();
     setStreamScheduling(false);
     setTotalStreamedEther("");
+    setShowBufferAlert(false);
   }, [resetFormData]);
 
   const [
@@ -376,20 +394,30 @@ export default memo(function SendStream() {
 
         setTotalStreamedEther(newValue);
       }}
-      InputProps={{
-        startAdornment: <>≈&nbsp;</>,
-        endAdornment: (
-          <Stack direction="row" gap={0.75} sx={{ ml: 0.5 }}>
-            <TokenIcon isSuper size={24} chainId={network.id} tokenAddress={superToken?.address} />
-            <Typography variant="h6" component="span">
-              {superToken?.symbol ?? ""}
-            </Typography>
-          </Stack>
-        ),
+      slotProps={{
+        input: {
+          startAdornment: <>≈&nbsp;</>,
+          endAdornment: (
+            <Stack
+              direction="row"
+              sx={{
+                gap: 0.75,
+                ml: 0.5
+              }}>
+              <TokenIcon isSuper size={24} chainId={network.id} tokenAddress={superToken?.address} />
+              <Typography variant="h6" component="span">
+                {superToken?.symbol ?? ""}
+              </Typography>
+            </Stack>
+          ),
+        }
       }}
     />
   );
 
+  // Per-edit-session latch: once the form has been fully filled the alert stays up
+  // through transient field edits, until `resetForm` clears it after a confirmed
+  // transaction.
   const [showBufferAlert, setShowBufferAlert] = useState(false);
 
   useEffect(() => {
@@ -427,9 +455,11 @@ export default memo(function SendStream() {
     (!activeFlow && !scheduledStream && flowRateEther.amountEther !== "");
 
   // These shenanigans are because of react-hook-form's issue ()
-  const [isSendDisabled, setIsSendDisabled] = useState(true);
+  // "Base" = form validity/change/fetching only; the final `isSendDisabled` below layers
+  // the forced-relay gating on top.
+  const [isSendDisabledBase, setIsSendDisabledBase] = useState(true);
   useEffect(() => {
-    setIsSendDisabled(
+    setIsSendDisabledBase(
       formState.isValidating ||
       !formState.isValid ||
       !hasAnythingChanged ||
@@ -438,21 +468,179 @@ export default memo(function SendStream() {
     );
   }, [formState.isValid, formState.isValidating, hasAnythingChanged, isFlowScheduleFetching, isActiveFlowFetching]);
 
-  const [upsertFlow, upsertFlowResult] =
-    rpcApi.useUpsertFlowWithSchedulingMutation();
+  const [upsertFlow, upsertFlowResult] = useUpsertFlowWithScheduling();
 
   const isModifying = Boolean(activeFlow || scheduledStream);
 
+  // Mirrors which macro action the upsert hook will attach to the PRIMARY button's batch
+  // (the hooks are the runtime source of truth — a mismatch here only affects chip
+  // visibility and pre-click gating; the hook's fail-closed guard covers drift). Toggling
+  // scheduling off clears both timestamps, so the timestamps alone track the hook's
+  // `shouldSchedule`. `undefined` = the batch is not macro-expressible: the chip stays
+  // hidden — it must not advertise a relay next to a direct-executing primary button —
+  // and on forced-relay networks the submit is blocked with an explanatory alert instead.
+  const primaryClearMacroActionKind = useMemo<
+    ClearMacroActionKind | undefined
+  >(() => {
+    const hasExistingSchedule = !!(existingStartTimestamp || existingEndTimestamp);
+    const wantsSchedule = !!(startTimestamp || endTimestamp);
+    const flowRateChanged =
+      !!activeFlow && flowRateWei.toString() !== activeFlow.flowRateWei;
+    if (!wantsSchedule && !hasExistingSchedule) {
+      // An active flow with an unchanged rate builds no operations at all (submit stays
+      // disabled), so there is nothing to relay.
+      return activeFlow
+        ? flowRateChanged
+          ? "updateFlow"
+          : undefined
+        : "createFlow";
+    }
+    if (!wantsSchedule) {
+      // Clearing the existing schedule: relayable only as a lone deleteFlowSchedule —
+      // an immediate createFlow (no active flow) or a rate change joins the batch.
+      return activeFlow && !flowRateChanged ? "deleteFlowSchedule" : undefined;
+    }
+    // A rate change on the active flow adds an updateFlow op — not relayable. A new
+    // stream with only an end date IS: the macro's immediate-start scheduleFlow opens
+    // the flow and schedules the stop in one action.
+    if (flowRateChanged) return undefined;
+    return "scheduleFlow";
+  }, [
+    startTimestamp,
+    endTimestamp,
+    existingStartTimestamp,
+    existingEndTimestamp,
+    activeFlow,
+    flowRateWei,
+  ]);
+
+  // While the primary send/modify button is BASE-disabled on an existing stream, Cancel is
+  // the only live action, so the chip reflects the cancel instead:
+  // `useDeleteFlowWithScheduling` relays it as a lone deleteFlow/deleteFlowSchedule or as
+  // the macro's combined deleteFlow (which also removes the schedule row). Deliberately
+  // keyed on the BASE disabled: when the button is disabled only because the forced relay
+  // toggle is off, the chip must advertise the primary action the user needs to turn on —
+  // not the cancel.
+  const isCancelFallbackChip = isModifying && isSendDisabledBase;
+  const clearMacroActionKind: ClearMacroActionKind | undefined =
+    isCancelFallbackChip
+      ? activeFlow
+        ? "deleteFlow"
+        : "deleteFlowSchedule"
+      : primaryClearMacroActionKind;
+
+  // The chip's exact-fee quote shape — only for the PRIMARY scheduleFlow (cancel
+  // fallbacks and plain kinds are flat 1x). Mirrors the upsert hook's `clearMacro`
+  // attach (startDate/endDate = the form timestamps or 0); the rate never affects the
+  // fee and is canonicalized inside the disclosure hook, so 0n keeps the quote's
+  // query key stable across rate keystrokes. Address validity is re-checked by the
+  // hook before any read fires.
+  const scheduleQuoteAction = useMemo<ScheduleFlowQuoteAction | undefined>(() => {
+    if (clearMacroActionKind !== "scheduleFlow") return undefined;
+    if (!tokenAddress || !receiverAddress) return undefined;
+    return {
+      kind: "scheduleFlow",
+      superToken: tokenAddress as `0x${string}`,
+      receiver: receiverAddress as `0x${string}`,
+      startDate: startTimestamp || 0,
+      flowRate: 0n,
+      endDate: endTimestamp || 0,
+    };
+  }, [
+    clearMacroActionKind,
+    tokenAddress,
+    receiverAddress,
+    startTimestamp,
+    endTimestamp,
+  ]);
+
+  const { isAccountEligible, isRelayEnabled } = useClearMacroEligibility(
+    clearMacroActionKind,
+    network
+  );
+  const { address } = useAccount();
+  const isSameSigner =
+    !!address && visibleAddress?.toLowerCase() === address.toLowerCase();
+  const isEOAPending = isEOA === null;
+
+  // Form-level mirror of the upsert hook's (timestamp-normalized) schedule push
+  // conditions: does this submit create/modify/clear a FlowScheduler row? CFA-only
+  // submits — incl. a rate-only edit on an end-dated stream — stay false and are never
+  // relay-forced.
+  const touchesScheduler = useMemo(() => {
+    if (!network.flowSchedulerContractAddress) return false;
+    const wantsSchedule = !!(startTimestamp || endTimestamp);
+    const hasExistingSchedule = !!(existingStartTimestamp || existingEndTimestamp);
+    if (!wantsSchedule) return hasExistingSchedule; // clearing → deleteFlowSchedule op
+    return (
+      normalizeScheduleTimestamp(startTimestamp) !==
+        normalizeScheduleTimestamp(existingStartTimestamp) ||
+      normalizeScheduleTimestamp(endTimestamp) !==
+        normalizeScheduleTimestamp(existingEndTimestamp) ||
+      // The hook re-writes the schedule row when a scheduled start's rate changes.
+      (!!startTimestamp && flowRateWei.toString() !== existingFlowRate)
+    );
+  }, [
+    network.flowSchedulerContractAddress,
+    startTimestamp,
+    endTimestamp,
+    existingStartTimestamp,
+    existingEndTimestamp,
+    flowRateWei,
+    existingFlowRate,
+  ]);
+
+  // On Clear Macro networks the relay fee pays for the scheduling service, so
+  // scheduler-touching submits are forced through the relay: submit stays disabled until
+  // the relay toggle is on, and macro-inexpressible combinations (e.g. rate + schedule
+  // change in one submit) are blocked with the alert below. Also held disabled while a
+  // same-signer wallet is still being classified (`isEOA === null`) so an actual EOA can
+  // never race a direct scheduler write through the brief unclassified window. Cancel is
+  // deliberately ungated — stopping an outflow is a safety action.
+  const isSchedulerRelayForced = isAccountEligible && touchesScheduler;
+  const isSchedulerRelayPending =
+    isClearMacroSupportedOnNetwork(network) &&
+    isSameSigner &&
+    isEOAPending &&
+    touchesScheduler;
+
+  // The submit hold above is immediate (safety), but its explanatory caption is
+  // delayed: classification normally resolves in one fast RPC read, and the caption
+  // must not flash for that moment — it only appears once the pending state has
+  // actually stalled.
+  const [showClassificationPendingCaption, setShowClassificationPendingCaption] =
+    useState(false);
+  useEffect(() => {
+    if (!isSchedulerRelayPending) {
+      setShowClassificationPendingCaption(false);
+      return;
+    }
+    const timer = setTimeout(
+      () => setShowClassificationPendingCaption(true),
+      1000
+    );
+    return () => clearTimeout(timer);
+  }, [isSchedulerRelayPending]);
+  const isCombinedEditBlocked =
+    isSchedulerRelayForced &&
+    !isSendDisabledBase &&
+    primaryClearMacroActionKind === undefined;
+  const isSendDisabled =
+    isSendDisabledBase ||
+    isSchedulerRelayPending ||
+    (isSchedulerRelayForced &&
+      (!isRelayEnabled || primaryClearMacroActionKind === undefined));
+
   const SendTransactionBoundary = (
     <TransactionBoundary mutationResult={upsertFlowResult}>
-      {({ closeDialog, setDialogSuccessActions, setDialogLoadingInfo, getOverrides, txAnalytics }) => (
+      {({ closeDialog, setDialogSuccessActions, setDialogLoadingInfo, txAnalytics, accountAddress }) => (
         <TransactionButton
           dataCy={"send-transaction-button"}
           disabled={isSendDisabled}
           ButtonProps={{
             variant: "contained",
           }}
-          onClick={async (signer) => {
+          onClick={async () => {
             if (isSendDisabled) {
               throw Error(
                 `This should never happen. Form state: ${JSON.stringify(
@@ -493,25 +681,29 @@ export default memo(function SendStream() {
                 : {}),
             };
 
+            if (!accountAddress) {
+              throw Error("Account not connected.");
+            }
+
             const primaryArgs = {
               chainId: network.id,
-              senderAddress: await signer.getAddress(),
+              senderAddress: accountAddress,
               receiverAddress: formData.receiverAddress,
               superTokenAddress: formData.tokenAddress,
               flowRateWei,
               userDataBytes: undefined,
-              startTimestamp: formData.startTimestamp,
-              endTimestamp: formData.endTimestamp,
+              startTimestamp: formData.startTimestamp ?? null,
+              endTimestamp: formData.endTimestamp ?? null,
             };
             upsertFlow({
               ...primaryArgs,
+              // Forced relay for scheduler-touching submits on Clear Macro networks;
+              // the hook fails closed if the runtime batch disagrees with the form.
+              requireClearMacroRelay: isSchedulerRelayForced,
               transactionExtraData: {
                 restoration: transactionRestoration,
               },
-              signer,
-              overrides: await getOverrides(),
             })
-              .unwrap()
               .then(
                 ...txAnalytics(
                   isModifying
@@ -524,7 +716,9 @@ export default memo(function SendStream() {
               .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
 
             setDialogLoadingInfo(
-              <Typography variant="h5" color="text.secondary" translate="yes">
+              <Typography variant="h5" translate="yes" sx={{
+                color: "text.secondary"
+              }}>
                 You are{" "}
                 {isModifying ? "modifying" : "sending"} a{" "}
                 {startTimestamp || endTimestamp ? "scheduled" : ""} stream.
@@ -554,7 +748,11 @@ export default memo(function SendStream() {
             } else {
               setDialogSuccessActions(
                 <TransactionDialogActions>
-                  <Stack gap={1} sx={{ width: "100%" }}>
+                  <Stack
+                    sx={{
+                      gap: 1,
+                      width: "100%"
+                    }}>
                     <TransactionDialogButton
                       data-cy={"send-more-streams-button"}
                       color="secondary"
@@ -589,12 +787,11 @@ export default memo(function SendStream() {
     </TransactionBoundary>
   );
 
-  const [flowDeleteTrigger, flowDeleteResult] =
-    rpcApi.useDeleteFlowWithSchedulingMutation();
+  const [flowDeleteTrigger, flowDeleteResult] = useDeleteFlowWithScheduling();
 
   const DeleteFlowBoundary = (
     <TransactionBoundary mutationResult={flowDeleteResult}>
-      {({ setDialogLoadingInfo, txAnalytics, getOverrides }) =>
+      {({ setDialogLoadingInfo, txAnalytics }) =>
         isModifying && (
           <TransactionButton
             dataCy={"cancel-stream-button"}
@@ -602,7 +799,7 @@ export default memo(function SendStream() {
               variant: "outlined",
               color: "error",
             }}
-            onClick={async (signer) => {
+            onClick={async () => {
               const superTokenAddress = tokenAddress;
               const senderAddress = visibleAddress;
               if (!receiverAddress || !superTokenAddress || !senderAddress) {
@@ -610,7 +807,9 @@ export default memo(function SendStream() {
               }
 
               setDialogLoadingInfo(
-                <Typography variant="h5" color="text.secondary" translate="yes">
+                <Typography variant="h5" translate="yes" sx={{
+                  color: "text.secondary"
+                }}>
                   You are canceling a stream.
                 </Typography>
               );
@@ -622,12 +821,9 @@ export default memo(function SendStream() {
                 receiverAddress,
                 userDataBytes: undefined,
               };
-              flowDeleteTrigger({
-                ...primaryArgs,
-                signer,
-                overrides: await getOverrides(),
-              })
-                .unwrap()
+              // The form renders the relay chip, so its cancel may relay (the table-row
+              // cancel buttons don't pass this).
+              flowDeleteTrigger({ ...primaryArgs, withClearMacro: true })
                 .then(...txAnalytics("Cancel Stream", primaryArgs))
                 .then(() => resetForm())
                 .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
@@ -659,7 +855,20 @@ export default memo(function SendStream() {
     return null;
   }, [activeFlow, scheduledStream]);
 
-  const { isPlatformWhitelisted, isWhitelistLoading } = useWhitelist({ accountAddress: visibleAddress, network });
+  // Clear Macro networks replace the platform allowlist for eligible signers — the
+  // macro's relay fee pays for the scheduling service. Optimistic while the wallet is
+  // still being classified so an EOA never sees the overlay flash; same-signer only, so
+  // view/impersonation mode never skips the overlay, even transiently. Visual gate only —
+  // the submit gating above stays strict.
+  const isAllowlistBypassed =
+    isAccountEligible ||
+    (isClearMacroSupportedOnNetwork(network) && isSameSigner && isEOAPending);
+  const { isPlatformWhitelisted } = useWhitelist({
+    // Skips the allowlist API query entirely for bypassed users.
+    accountAddress: isAllowlistBypassed ? undefined : visibleAddress,
+    network,
+  });
+  const showAllowlistGate = !isPlatformWhitelisted && !isAllowlistBypassed;
 
   // TODO: Remove when The Platform is deployed to Base.
   const doesNetworkSupportScheduling = !!network.flowSchedulerContractAddress || network.id === networkDefinition.base.id;
@@ -682,10 +891,11 @@ export default memo(function SendStream() {
       <Box>
         <Stack
           direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-          sx={{ mr: 0.75 }}
-        >
+          sx={{
+            alignItems: "center",
+            justifyContent: "space-between",
+            mr: 0.75
+          }}>
           <FormLabel>Receiver Wallet Address</FormLabel>
           <TooltipWithIcon title="Must not be an exchange address" />
         </Stack>
@@ -701,17 +911,20 @@ export default memo(function SendStream() {
           },
         }}
       >
-        <Stack justifyContent="stretch">
+        <Stack sx={{
+          justifyContent: "stretch"
+        }}>
           <FormLabel>Super Token</FormLabel>
           <TokenController network={network} superToken={superToken} />
         </Stack>
         <Box>
           <Stack
             direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-            sx={{ mr: 0.75 }}
-          >
+            sx={{
+              alignItems: "center",
+              justifyContent: "space-between",
+              mr: 0.75
+            }}>
             <FormLabel>Flow Rate</FormLabel>
             <TooltipWithIcon title="Flow rate is the velocity of tokens being streamed." />
           </Stack>
@@ -724,7 +937,12 @@ export default memo(function SendStream() {
             data-cy={"scheduling-tooltip"}
             control={<StreamSchedulingController streamScheduling={streamScheduling} setStreamScheduling={setStreamScheduling} />}
             label={
-              <Stack direction="row" alignItems="center" gap={0.75}>
+              <Stack
+                direction="row"
+                sx={{
+                  alignItems: "center",
+                  gap: 0.75
+                }}>
                 Stream Scheduling
                 <TooltipWithIcon title="Schedule start and end dates for future or fixed-duration streams" />
               </Stack>
@@ -737,23 +955,29 @@ export default memo(function SendStream() {
             unmountOnExit
             sx={{ mx: -0.5, marginTop: "0 !important", overflow: "hidden" }}
           >
-            <Stack gap={2.5} sx={{ position: "relative", p: 0.5, pt: 3 }}>
+            <Stack
+              sx={{
+                gap: 2.5,
+                position: "relative",
+                p: 0.5,
+                pt: 3
+              }}>
               <Stack
                 sx={{
+                  gap: 2.5,
                   display: "grid",
                   gridTemplateColumns: "1fr 1fr",
-                  ...(!isPlatformWhitelisted ? { opacity: 0.5 } : {}),
-                }}
-                gap={2.5}
-              >
+                  ...(showAllowlistGate ? { opacity: 0.5 } : {})
+                }}>
                 <Stack>
                   <Stack
                     direction="row"
-                    alignItems="center"
-                    justifyContent="space-between"
-                    sx={{ mr: 0.75 }}
-                    flex={1}
-                  >
+                    sx={{
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      flex: 1,
+                      mr: 0.75
+                    }}>
                     <FormLabel>Start Date</FormLabel>
                     <TooltipWithIcon title="The date when stream scheduler tries to start the stream." />
                   </Stack>
@@ -762,11 +986,12 @@ export default memo(function SendStream() {
                 <Stack>
                   <Stack
                     direction="row"
-                    alignItems="center"
-                    justifyContent="space-between"
-                    sx={{ mr: 0.75 }}
-                    flex={1}
-                  >
+                    sx={{
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      flex: 1,
+                      mr: 0.75
+                    }}>
                     <FormLabel>End Date</FormLabel>
                     <TooltipWithIcon title="The date when stream scheduler tries to cancel the stream." />
                   </Stack>
@@ -776,32 +1001,30 @@ export default memo(function SendStream() {
 
               <Stack
                 sx={{
-                  ...(!isPlatformWhitelisted ? { opacity: 0.5 } : {}),
+                  ...(showAllowlistGate ? { opacity: 0.5 } : {}),
                 }}
               >
                 <Stack
                   direction="row"
-                  alignItems="center"
-                  justifyContent="space-between"
-                  sx={{ mr: 0.75 }}
-                  flex={1}
-                >
+                  sx={{
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    flex: 1,
+                    mr: 0.75
+                  }}>
                   <FormLabel>Total Stream</FormLabel>
                   <TooltipWithIcon title="The approximate amount that will be streamed until the scheduler cancels the stream." />
                 </Stack>
                 {TotalStreamedController}
               </Stack>
 
-              {!isPlatformWhitelisted && <WhitelistTransparentBox />}
+              {showAllowlistGate && <WhitelistTransparentBox />}
             </Stack>
           </Collapse>
         </>
       )}
-
       <SendBalance network={network} visibleAddress={visibleAddress} token={superToken} />
-
       {(superToken && visibleAddress) && <Divider />}
-
       {!!(receiverAddress && superToken) && (
         <StreamingPreview
           receiver={receiverAddress}
@@ -815,9 +1038,7 @@ export default memo(function SendStream() {
           oldEndDate={existingEndDate}
         />
       )}
-
       {showBufferAlert && <BufferAlert bufferAmount={bufferAmount} superToken={superToken} />}
-
       <ConnectionBoundary>
         <ConnectionBoundaryButton
           ButtonProps={{
@@ -826,9 +1047,58 @@ export default memo(function SendStream() {
             size: "xl",
           }}
         >
-          <Stack gap={1}>
-            {SendTransactionBoundary}
-            {DeleteFlowBoundary}
+          {/* 2.5 matches the form's block rhythm (root Stack spacing) so the relay
+              strip reads as its own block; the inner 1 keeps the button group tight. */}
+          <Stack sx={{
+            gap: 2.5
+          }}>
+            <Stack sx={{
+              gap: 1
+            }}>
+              {isCombinedEditBlocked && (
+                // The chip is hidden in this state (no macro action exists for the batch),
+                // so this alert is the only explanation for the disabled button.
+                <Alert
+                  severity="info"
+                  data-cy="clear-macro-combined-edit-alert"
+                >
+                  These changes can&apos;t be combined into one gasless
+                  transaction. Please make them in two separate steps.
+                </Alert>
+              )}
+              {showClassificationPendingCaption && (
+                // Normally a moment (one RPC read), but if classification stalls the
+                // button must not sit disabled with no explanation — the chip is also
+                // hidden in this state (eligibility needs a confirmed EOA).
+                <Typography
+                  data-cy="clear-macro-classification-pending"
+                  variant="caption"
+                  translate="yes"
+                  sx={{
+                    color: "text.secondary",
+                    textAlign: "center",
+                  }}
+                >
+                  Checking wallet compatibility…
+                </Typography>
+              )}
+              {SendTransactionBoundary}
+              {DeleteFlowBoundary}
+            </Stack>
+            <ClearMacroRelayOption
+              actionKind={clearMacroActionKind}
+              network={network}
+              relayRequired={
+                // Keyed on raw watched scheduling state so the warning shows the moment
+                // a start/end date forces the relay — not once the whole form is valid.
+                // Suppressed only while the chip represents the cancel fallback (which
+                // is deliberately relay-ungated).
+                !isCancelFallbackChip &&
+                isSchedulerRelayForced &&
+                primaryClearMacroActionKind !== undefined
+              }
+              scheduleAction={scheduleQuoteAction}
+            />
           </Stack>
         </ConnectionBoundaryButton>
       </ConnectionBoundary>
@@ -865,10 +1135,10 @@ const WhitelistTransparentBox = memo(function WhitelistTransparentBox() {
           If you want to set start and end dates for your streams,{" "}
           <Link
             data-cy={"allowlist-link"}
-            href="https://use.superfluid.finance/schedulestreams"
+            href={ALLOWLIST_CONTACT_URL}
             target="_blank"
           >
-            Apply for access
+            Contact us for access
           </Link>{" "}
           or try it out on{" "}
           <NetworkSwitchLink
@@ -896,11 +1166,17 @@ export const SendBalance = memo(function SendBalance(props: {
   return (
     <Stack
       direction="row"
-      alignItems="center"
-      justifyContent="center"
-      gap={1}
-    >
-      <Stack direction="row" alignItems="center" gap={0.5}>
+      sx={{
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 1
+      }}>
+      <Stack
+        direction="row"
+        sx={{
+          alignItems: "center",
+          gap: 0.5
+        }}>
         <BalanceSuperToken
           showFiat
           data-cy={"balance"}
@@ -1081,13 +1357,14 @@ const StartDateController = memo(function StartDateController(
         name="data.startTimestamp"
         render={({ field: { onChange, onBlur } }) => (
           <DateTimePicker
+            slots={mobileTapPickerSlots}
             slotProps={{
-              textField: {
+              textField: mobileTapTextFieldProps({
                 'data-cy': 'start-date',
                 autoComplete: "off",
                 fullWidth: true,
                 onBlur,
-              },
+              }),
             }}
             value={props.startDate}
             minDateTime={props.MIN_DATE}
@@ -1121,13 +1398,14 @@ const EndDateController = memo(function EndDateController(
         name="data.endTimestamp"
         render={({ field: { onChange, onBlur } }) => (
           <DateTimePicker
+            slots={mobileTapPickerSlots}
             slotProps={{
-              textField: {
+              textField: mobileTapTextFieldProps({
                 'data-cy': 'end-date',
                 autoComplete: "off",
                 fullWidth: true,
                 onBlur,
-              },
+              }),
             }}
             value={props.endDate}
             minDateTime={props.endDateMin}

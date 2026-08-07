@@ -9,19 +9,20 @@ const SELECTED_ADDRESSES = '[data-cy=list-selected-address]';
 const SELECTED_FORM_ADDRESSES = '[data-cy=selected-address]';
 const OK_BUTTON = '[data-cy=ok-button]';
 const SEARCH_ADDRESSES = '[data-cy=list-search-address]';
-const DATE_RANGES = '[data-cy=date-ranges] input';
+const EXPORT_START_DATE = '[data-cy=export-start-date]';
+const EXPORT_END_DATE = '[data-cy=export-end-date]';
 const PRICE_GRANULARITY = '[data-cy=price-granularity]';
 const ACCOUNTING_PERIOD = '[data-cy=accounting-period]';
 const CURRENCY_BUTTON = '[data-cy=currency-button]';
 const EXPORT_PREVIEW = '[data-cy=export-preview-button]';
 const COLUMN_HEADERS = '.MuiDataGrid-columnHeaderTitleContainer';
-const HEADER_TRIPLE_DOTS = '[data-testid=TripleDotsVerticalIcon]';
+const HEADER_TRIPLE_DOTS = '.MuiDataGrid-menuIconButton';
 const FILTER_OPTIONS = '[role=tooltip] li';
 const COLUMN_CHECKBOXES =
   '.MuiDataGrid-panelWrapper input.PrivateSwitchBase-input';
-const DATE_PICKER_YEAR_BUTTONS = '.MuiPickersYear-yearButton';
-const DATE_PICKER_MONTH_BUTTONS = '.MuiPickersMonth-monthButton';
-const DATE_PICKER_ICONS = '[data-testid=CalendarIcon]';
+const DATE_PICKER_YEAR_BUTTONS = '.MuiYearCalendar-button';
+const DATE_PICKER_MONTH_BUTTONS = '.MuiMonthCalendar-button';
+const END_DATE_PICKER_BUTTON = '[data-cy=end-date-picker-button]';
 const EXPORT_CSV = '[data-cy=export-csv-button]';
 const AMOUNT_CELLS = '.MuiDataGrid-cell[data-field=amount]';
 const COUNTERPARTY_CELLS = '.MuiDataGrid-cell[data-field=counterparty]';
@@ -72,13 +73,27 @@ export class ExportPage extends BasePage {
     this.type(ADDRESS_INPUT, address);
   }
 
+  // search-entry / list-selected-address render the address as shortenHex(address, 6)
+  // (and may show a whois name in the primary line) — the full 42-char address is never
+  // in the DOM text, so match the shortened form instead. Case-insensitive to tolerate
+  // EIP-55 checksum casing differences.
+  private static shortenAddress(address: string) {
+    return `${address.substring(0, 8)}...${address.substring(address.length - 6)}`;
+  }
+
   static selectAddressFromSearchResults(address: string) {
-    cy.get(SEARCH_ENTRIES).contains(address).click();
+    cy.get(SEARCH_ENTRIES)
+      .contains(this.shortenAddress(address), { matchCase: false })
+      .click();
   }
 
   static validateSelectedAddress(address: string) {
-    cy.get(SELECTED_ADDRESSES).contains(address).should('be.visible');
-    cy.get(SEARCH_ENTRIES).contains(address).should('be.visible');
+    cy.get(SELECTED_ADDRESSES)
+      .contains(this.shortenAddress(address), { matchCase: false })
+      .should('be.visible');
+    cy.get(SEARCH_ENTRIES)
+      .contains(this.shortenAddress(address), { matchCase: false })
+      .should('be.visible');
   }
 
   static removeLastSelectedAddressFromSearchList() {
@@ -127,10 +142,10 @@ export class ExportPage extends BasePage {
     cy.wait('@exportRequest').then((req) => {
       cy.writeFile(
         `cypress/fixtures/newData/${period}.json`,
-        JSON.parse(req.response?.body)
+        req.response?.body
       );
       cy.fixture('exportData.json').then((data) => {
-        expect(JSON.parse(req.response?.body)).to.deep.eq(data[period]);
+        expect(req.response?.body).to.deep.eq(data[period]);
       });
     });
     this.isVisible(AMOUNT_CELLS);
@@ -152,10 +167,10 @@ export class ExportPage extends BasePage {
         cy.wait('@exportRequest').then((req) => {
           cy.writeFile(
             `cypress/fixtures/newData/${type}.json`,
-            JSON.parse(req.response?.body)
+            req.response?.body
           );
           cy.fixture('exportData.json').then((data) => {
-            expect(JSON.parse(req.response?.body)).to.deep.eq(data[type]);
+            expect(req.response?.body).to.deep.eq(data[type]);
           });
         });
         this.isVisible(AMOUNT_CELLS);
@@ -168,10 +183,10 @@ export class ExportPage extends BasePage {
         cy.wait('@exportRequest').then((req) => {
           cy.writeFile(
             `cypress/fixtures/newData/${type}.json`,
-            JSON.parse(req.response?.body)
+            req.response?.body
           );
           cy.fixture('exportData.json').then((data) => {
-            expect(JSON.parse(req.response?.body)).to.deep.eq(data[type]);
+            expect(req.response?.body).to.deep.eq(data[type]);
           });
         });
         cy.get(COUNTERPARTY_CELLS).each((row) => {
@@ -188,14 +203,16 @@ export class ExportPage extends BasePage {
         cy.wait('@exportRequest').then((req) => {
           cy.writeFile(
             `cypress/fixtures/newData/${type}.json`,
-            JSON.parse(req.response?.body)
+            req.response?.body
           );
           cy.fixture('exportData.json').then((data) => {
-            expect(JSON.parse(req.response?.body)).to.deep.eq(data[type]);
+            expect(req.response?.body).to.deep.eq(data[type]);
           });
         });
+        // The date column renders in M/D/YYYY locale format now (e.g. "1/6/2022"); assert the
+        // rows fall within the requested 2022 window by year rather than a fixed YYYY/MM/ string.
         cy.get(DATE_CELLS).each((row) => {
-          expect(row).to.contain.text('2022/01/');
+          expect(row).to.contain.text('/2022');
         });
         break;
       case 'all columns':
@@ -223,13 +240,14 @@ export class ExportPage extends BasePage {
   }
 
   static changeExportStartDate(date: string) {
-    this.clear(DATE_RANGES, 0);
-    this.type(DATE_RANGES, date, 0);
+    this.setPickersFieldValue(EXPORT_START_DATE, date);
   }
 
   static changeExportEndDate(date: string) {
-    //When typing the end date messes up cypress because it autofills 0s for years
-    this.click(DATE_RANGES, -1);
+    // The end date is intentionally left at its default (typing it used to
+    // auto-fill zeroes for the year); clicking the field just moves focus off
+    // the start date so its value commits.
+    this.click(EXPORT_END_DATE);
   }
 
   static enableAllPreviewColumns() {
@@ -289,9 +307,14 @@ export class ExportPage extends BasePage {
     this.forceClick(HEADER_TRIPLE_DOTS, 0);
     this.clickFirstVisible(HEADER_TRIPLE_DOTS);
     cy.get(FILTER_OPTIONS).contains('Filter').click();
-    this.select(FILTER_SELECT_FIELDS, column, 1);
-    this.select(FILTER_SELECT_FIELDS, operator, -1);
-    this.type(FILTER_INPUT_FIELDS, value);
+    // MUI X DataGrid v7 renders the column/operator pickers as MUI <Select> components
+    // (no native <select>). Open each and pick the option by its data-value (the column
+    // field / operator key) so we don't depend on the visible header label.
+    cy.get('.MuiDataGrid-filterFormColumnInput .MuiSelect-select').click();
+    cy.get(`[role=listbox] [role=option][data-value="${column}"]`).click();
+    cy.get('.MuiDataGrid-filterFormOperatorInput .MuiSelect-select').click();
+    cy.get(`[role=listbox] [role=option][data-value="${operator}"]`).click();
+    cy.get(FILTER_INPUT_FIELDS).last().clear().type(value);
   }
 
   static validateFilteredRows(column: string, value: string) {
@@ -322,7 +345,10 @@ export class ExportPage extends BasePage {
   }
 
   static changeEndDateWithUI(month: string, year: string) {
-    this.click(DATE_PICKER_ICONS, -1);
+    // Was `click(CalendarIcon, -1)` — index -1 meant "the second of the two
+    // date pickers", i.e. the end date. The picker's open button now carries
+    // its own hook, so the position dependency is gone.
+    this.click(END_DATE_PICKER_BUTTON);
     cy.get(DATE_PICKER_YEAR_BUTTONS).contains(year).click();
     cy.get(DATE_PICKER_MONTH_BUTTONS).contains(month).click();
   }

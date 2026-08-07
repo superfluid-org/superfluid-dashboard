@@ -1,7 +1,6 @@
 import { FC, ReactNode } from "react";
 import { useTransactionBoundary } from "./TransactionBoundary";
 import { Button, ButtonProps } from "@mui/material";
-import { Signer } from "ethers";
 import ConnectionBoundaryButton, {
   ConnectionBoundaryButtonProps,
 } from "./ConnectionBoundaryButton";
@@ -18,7 +17,7 @@ export interface TransactionButtonProps {
   disabled?: boolean;
   loading?: boolean;
 
-  onClick: (signer: Signer) => Promise<void>; // TODO(KK): Longer-term, get rid of async to avoid wagmi's UX pitfalls
+  onClick: () => Promise<void>;
   ButtonProps?: ButtonProps;
   ConnectionBoundaryButtonProps?: Partial<ConnectionBoundaryButtonProps>;
 }
@@ -32,7 +31,8 @@ export const TransactionButton: FC<TransactionButtonProps> = ({
   ButtonProps = {},
   ConnectionBoundaryButtonProps = {},
 }) => {
-  const { signer, mutationResult, transaction } = useTransactionBoundary();
+  const { accountAddress, mutationResult, transaction } =
+    useTransactionBoundary();
 
   const buttonProps: ButtonProps = {
     ...transactionButtonDefaultProps,
@@ -51,10 +51,10 @@ export const TransactionButton: FC<TransactionButtonProps> = ({
         color="primary"
         {...buttonProps}
         loading={isLoading}
-        disabled={disabled || !signer}
+        disabled={disabled || !accountAddress}
         onClick={() => {
-          if (!signer) throw Error("Signer not defined.");
-          onClick(signer);
+          if (!accountAddress) throw Error("Account not connected.");
+          onClick();
         }}
       >
         <span>{children}</span>

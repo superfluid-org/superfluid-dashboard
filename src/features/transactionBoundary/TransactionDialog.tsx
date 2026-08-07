@@ -3,7 +3,6 @@ import {
   Box,
   Button,
   ButtonProps,
-  CircularProgress,
   DialogActions,
   DialogContent,
   DialogTitle,
@@ -11,17 +10,56 @@ import {
   Stack,
   styled,
   Typography,
+  useMediaQuery,
   useTheme,
 } from "@mui/material";
+import { keyframes } from "@emotion/react";
 import CloseIcon from "@mui/icons-material/Close";
-import ArrowUpwardRoundedIcon from "@mui/icons-material/ArrowUpwardRounded";
+import HourglassEmptyRoundedIcon from "@mui/icons-material/HourglassEmptyRounded";
 import TransactionDialogErrorAlert from "../transactions/TransactionDialogErrorAlert";
 import { FC, PropsWithChildren, ReactNode } from "react";
+import { TransactionProgressIndicator } from "./TransactionProgressIndicator";
 import { useTransactionBoundary } from "./TransactionBoundary";
 import ResponsiveDialog from "../common/ResponsiveDialog";
+import AnimatedHeight from "../common/AnimatedHeight";
 import React from "react";
 import { useConnectionBoundary } from "./ConnectionBoundary";
 import { supportId } from "../analytics/useAppInstanceDetails";
+
+const successRevealRise = keyframes`
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+`;
+const successRevealFade = keyframes`
+  from { opacity: 0; }
+  to { opacity: 1; }
+`;
+
+/**
+ * Entrance for the success branch's text and actions: held invisible through a short
+ * delay (the "both" fill) so the badge's ring-close leads the beat, then fades/rises in.
+ * Reduced motion drops the rise; data-force-reduced-motion is the dev rehearsal page's
+ * hook for previewing that without the media query. Exported for that page.
+ *
+ * Object styles on purpose: Emotion only resolves keyframes objects interpolated into
+ * `animation`/`animationName` VALUES — in a plain template string they stringify to an
+ * _EMO_ sentinel that leaks into the CSS in production.
+ */
+export const SuccessReveal = styled("div", {
+  shouldForwardProp: (prop) => prop !== "delayMs",
+})<{ delayMs?: number }>(({ theme, delayMs = 0 }) => ({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "inherit",
+  gap: theme.spacing(1),
+  animation: `${successRevealRise} 300ms ease-out ${delayMs}ms both`,
+  "@media (prefers-reduced-motion: reduce)": {
+    animationName: `${successRevealFade}`,
+  },
+  '&[data-force-reduced-motion="true"]': {
+    animationName: `${successRevealFade}`,
+  },
+}));
 
 interface TransactionDialogProps {
   children: ReactNode;
@@ -35,20 +73,38 @@ export const TransactionDialog: FC<TransactionDialogProps> = ({
   successActions,
 }) => {
   const { dialogOpen, closeDialog } = useTransactionBoundary();
+  const theme = useTheme();
+  // Keep in sync with ResponsiveDialog's fullScreen switch: there the paper's height is
+  // viewport-fixed, so animating the content height would only detach the actions from
+  // the bottom.
+  const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
     <ResponsiveDialog
       open={dialogOpen}
-      onClose={closeDialog}
-      PaperProps={{ sx: { borderRadius: "20px", maxHeight: "100%" } }}
+      onClose={(_event, reason) => {
+        if (reason !== "backdropClick") {
+          closeDialog();
+        }
+      }}
+      slotProps={{
+        paper: {
+          // overflow hidden: the paper never scrolls itself (DialogContent does), and its
+          // default overflow-y: auto would flash a scrollbar whenever an entrance/ripple
+          // transform momentarily extends the scrollable overflow past the paper's edge.
+          sx: { borderRadius: "20px", maxHeight: "100%", overflow: "hidden" },
+        },
+      }}
       translate="yes"
     >
-      <TransactionDialogCore
-        loadingInfo={loadingInfo}
-        successActions={successActions}
-      >
-        {children}
-      </TransactionDialogCore>
+      <AnimatedHeight disableAnimation={fullScreen}>
+        <TransactionDialogCore
+          loadingInfo={loadingInfo}
+          successActions={successActions}
+        >
+          {children}
+        </TransactionDialogCore>
+      </AnimatedHeight>
     </ResponsiveDialog>
   );
 };
@@ -61,25 +117,68 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
   const { mutationResult, closeDialog } = useTransactionBoundary();
   const { expectedNetwork } = useConnectionBoundary();
 
+  // The relay's in-flight phases show the bolt; everything else that is loading — a plain
+  // write or a relay fallback — is waiting for the wallet confirmation, which renders
+  // identically to the relay's signature wait (breathing wallet). The success branch
+  // reuses the SAME component at the SAME tree position — including the identical padded
+  // wrapper Box at the Stack's first slot — so the ring closes into the success badge
+  // without remounting. The wrapper's padding (NOT margin: this Stack uses `spacing`,
+  // whose child-margin reset beats sx margins) gives the success ripples headroom against
+  // DialogContent's clip edge, whose padding-top is 0 under a DialogTitle.
+  const loadingVisualPhase =
+    mutationResult.relayPhase === "preparing" ||
+    mutationResult.relayPhase === "awaiting-signature" ||
+    mutationResult.relayPhase === "relaying"
+      ? mutationResult.relayPhase
+      : "awaiting-approval";
+
   if (mutationResult.isLoading) {
+    // The Clear Macro relay path has phases a plain broadcast doesn't — narrate them.
+    const loadingHeadline =
+      mutationResult.relayPhase === "preparing"
+        ? "Preparing gasless transaction..."
+        : mutationResult.relayPhase === "awaiting-signature"
+          ? "Waiting for your signature..."
+          : mutationResult.relayPhase === "relaying"
+            ? "Submitting your transaction..."
+            : "Waiting for transaction approval...";
+
     return (
       <>
         <TransactionDialogTitle></TransactionDialogTitle>
         <TransactionDialogContent>
-          <Stack spacing={1} alignItems="center" textAlign="center">
-            <Box sx={{ mb: 4 }}>
-              <CircularProgress size={80} />
+          <Stack
+            spacing={1}
+            sx={{
+              alignItems: "center",
+              textAlign: "center"
+            }}>
+            <Box sx={{ pt: 3, pb: 3 }}>
+              <TransactionProgressIndicator phase={loadingVisualPhase} />
             </Box>
             <Typography variant="h4">
               <span data-cy="approval-message" translate="yes">
-                Waiting for transaction approval...
+                {loadingHeadline}
               </span>{" "}
               <span data-cy="tx-network" translate="no">
                 ({expectedNetwork.name})
               </span>
             </Typography>
+            {mutationResult.relayPhase === "fallback" && (
+              <Typography
+                data-cy={"relay-fallback-message"}
+                variant="body2"
+                translate="yes"
+                sx={{
+                  color: "text.secondary"
+                }}
+              >
+                Gasless sending isn&apos;t available right now. This transaction
+                will use regular network fees.
+              </Typography>
+            )}
             {/* // TODO(KK): wrong font! */}
-            <Stack sx={{ my: 2 }}>{loadingInfo}</Stack>
+            <Stack sx={{ pt: 2 }}>{loadingInfo}</Stack>
           </Stack>
         </TransactionDialogContent>
       </>
@@ -91,30 +190,111 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
       <>
         <TransactionDialogTitle></TransactionDialogTitle>
         <TransactionDialogContent>
-          <Stack spacing={1} alignItems="center" textAlign="center">
-            <OutlineIcon data-cy={"broadcasted-icon"}>
-              <ArrowUpwardRoundedIcon fontSize="large" color="primary" />
-            </OutlineIcon>
-            <Typography
-              data-cy={"broadcasted-message"}
-              sx={{ my: 2 }}
-              variant="h4"
-              color="text.secondary"
-            >
-              Transaction broadcasted
-            </Typography>
+          <Stack
+            spacing={1}
+            sx={{
+              alignItems: "center",
+              textAlign: "center"
+            }}>
+            <Box sx={{ pt: 3, pb: 1 }}>
+              <TransactionProgressIndicator phase="success" />
+            </Box>
+            <SuccessReveal delayMs={150}>
+              <Typography
+                data-cy={"broadcasted-message"}
+                variant="h4"
+                sx={{
+                  color: "text.secondary"
+                }}
+              >
+                Transaction broadcasted
+              </Typography>
+              {mutationResult.relayPhase === "relaying" && (
+                <Typography
+                  data-cy={"relayed-message"}
+                  variant="body2"
+                  translate="yes"
+                  sx={{
+                    color: "text.secondary"
+                  }}
+                >
+                  Sent gaslessly, no network fee paid.
+                </Typography>
+              )}
+            </SuccessReveal>
           </Stack>
         </TransactionDialogContent>
-        {successActions ?? (
-          <TransactionDialogActions>
-            <TransactionDialogButton
-              data-cy={"ok-button"}
-              onClick={closeDialog}
+        <SuccessReveal delayMs={280}>
+          {successActions ?? (
+            <TransactionDialogActions>
+              <TransactionDialogButton
+                data-cy={"ok-button"}
+                onClick={closeDialog}
+              >
+                OK
+              </TransactionDialogButton>
+            </TransactionDialogActions>
+          )}
+        </SuccessReveal>
+      </>
+    );
+  }
+
+  // Distinct from a hard error: the signed gasless payload was accepted but the 120s poll timed
+  // out, so the outcome is unknown (the tx may still land). Coincides with `isError`, so this
+  // branch must precede it. The background poller keeps resolving it and tracks a late success.
+  if (mutationResult.relayPhase === "relay-status-unknown") {
+    const executionId = mutationResult.relayStatusUnknown?.executionId;
+    return (
+      <>
+        <TransactionDialogTitle>Still confirming</TransactionDialogTitle>
+        <TransactionDialogContent>
+          <Stack
+            sx={{
+              gap: 2,
+              alignItems: "center",
+              textAlign: "center"
+            }}>
+            <OutlineIcon data-cy={"relay-status-unknown-icon"}>
+              <HourglassEmptyRoundedIcon fontSize="large" color="primary" />
+            </OutlineIcon>
+            <Typography
+              data-cy={"relay-status-unknown-message"}
+              variant="h5"
+              translate="yes"
             >
-              OK
-            </TransactionDialogButton>
-          </TransactionDialogActions>
-        )}
+              Your gasless transaction is still being confirmed
+            </Typography>
+            <Typography variant="body2" translate="yes" sx={{
+              color: "text.secondary"
+            }}>
+              You signed it and we sent it to the relay, but couldn&apos;t confirm
+              it within the time limit. It may still complete. We&apos;ll keep
+              checking, and it will appear in your transactions if it succeeds.
+              Please don&apos;t retry.
+            </Typography>
+            {executionId && (
+              <Typography
+                data-cy={"relay-status-unknown-execution-id"}
+                variant="body2"
+                translate="no"
+                sx={{
+                  color: "text.secondary"
+                }}
+              >
+                Execution ID: {executionId}
+              </Typography>
+            )}
+          </Stack>
+        </TransactionDialogContent>
+        <TransactionDialogActions>
+          <TransactionDialogButton
+            data-cy={"relay-status-unknown-close"}
+            onClick={closeDialog}
+          >
+            Close
+          </TransactionDialogButton>
+        </TransactionDialogActions>
       </>
     );
   }
@@ -124,7 +304,11 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
       <>
         <TransactionDialogTitle>Error</TransactionDialogTitle>
         <TransactionDialogContent>
-          <Stack gap={3} alignItems="center">
+          <Stack
+            sx={{
+              gap: 3,
+              alignItems: "center"
+            }}>
             <TransactionDialogErrorAlert mutationError={mutationResult.error} />
             <Typography variant="body2">Support ID: {supportId}</Typography>
           </Stack>
@@ -157,7 +341,7 @@ export const TransactionDialogTitle: FC<PropsWithChildren> = ({ children }) => {
           top: theme.spacing(3),
         }}
       >
-        <CloseIcon />
+        <CloseIcon data-cy="close-icon" />
       </IconButton>
     </Stack>
   );

@@ -3,14 +3,14 @@ import { BasePage } from '../BasePage';
 import { networksBySlug } from '../../superData/networks';
 import {
   TOP_BAR_NETWORK_BUTTON,
-  CONNECT_WALLET_BUTTON,
   CONNECTED_WALLET,
   WALLET_CONNECTION_STATUS,
 } from './Common';
 
 const GNOSIS_BUTTONS = '.MuiButton-contained';
 const GNOSIS_SAFE_WALLET_OPTION = '[data-testid=wallet-selector-external-safe]';
-const SUPERFLUID_IFRAME = 'iframe[title="unknown"]';
+// Safe sets the iframe title to the app's manifest name (previously a generic "unknown").
+const SUPERFLUID_IFRAME = 'iframe[title="Superfluid Dashboard"]';
 const LOADING_SPINNER = '.MuiCircularProgress-root';
 const GNOSIS_WARNING_CHECKBOX = '.PrivateSwitchBase-input';
 const CUSTOM_APP_URL_FIELD = 'input[name=appUrl]';
@@ -19,10 +19,9 @@ const CUSTOM_APP_DESCRIPTION = '[class*=customAppContainer] p';
 const CUSTOM_APP_ERROR_ELEMENT = '[class*=customAppPlaceholderContainer]';
 const CUSTOM_APP_WARNING_CHECKBOX = 'input[name=riskAcknowledgement]';
 const CUSTOM_APP_ADD_BUTTON = '[role=dialog] [type=submit]';
-const ADDED_CUSTOM_APP_TITLE =
-  '[class*=safeAppsContainer] a[rel=noreferrer] div h5';
+const ADDED_CUSTOM_APP_TITLE = 'a[rel=noreferrer] [class*=safeAppTitle]';
 const ADDED_CUSTOM_APP_DESCRIPTION =
-  '[class*=safeAppsContainer] a[rel=noreferrer] div p';
+  'a[rel=noreferrer] [class*=safeAppDescription]';
 //Strings
 const APP_TITLE = 'Superfluid Dashboard';
 const APP_DESCRIPTION = 'Manage your Superfluid Protocol tokens';
@@ -51,29 +50,61 @@ const GnosisSafeAddressesPerNetwork = {
 };
 
 export class GnosisSafe extends BasePage {
+  // Safe migrated to a new "Workspaces" UI that hides the classic Safe Apps flow behind a
+  // sign-in wall. These storage entries replicate what clicking "Use the old UI" + accepting
+  // the cookie banner + the third-party app disclaimer would set, so no modal blocks the app.
+  static seedSafeClassicView(window: Window, chainId?: number) {
+    // What the "Use the old UI" button sets - keeps us on the classic Safe Apps experience.
+    window.sessionStorage.setItem('SAFE_v2__classicViewEnabled', 'true');
+    // Pre-accept the cookie banner.
+    window.localStorage.setItem(
+      'SAFE_v2__cookies_terms',
+      JSON.stringify({
+        terms: true,
+        necessary: true,
+        updates: true,
+        analytics: true,
+        termsVersion: '1.3',
+      })
+    );
+    // Pre-accept the "third-party apps" disclaimer (keyed per chainId).
+    if (chainId !== undefined) {
+      window.localStorage.setItem(
+        'SAFE_v2__SafeApps__infoModal',
+        JSON.stringify({
+          [chainId]: { consentsAccepted: true, warningCheckedCustomApps: [] },
+        })
+      );
+    }
+  }
+
   static openSafeOnNetwork(network: string) {
+    const chainId = networksBySlug.get(network)?.id;
     cy.visit(
       `${GNOSIS_SAFE_BASEURL}apps/open?safe=${
         GnosisSafePrefixByNetworkSlug[network]
       }${GnosisSafeAddressesPerNetwork[network]}&appUrl=${Cypress.config(
         'baseUrl'
-      )}`
+      )}`,
+      {
+        onBeforeLoad: (window) => {
+          this.seedSafeClassicView(window, chainId);
+        },
+      }
     );
   }
 
   static continueDisclaimer() {
-    //The disclaimer is quite annoying and messes up when cypress quickly clicks on it
-    //Waiting for other stuff to be visible / not be visible / exist / not exist didn't help here :(
-    cy.get(GNOSIS_BUTTONS, { timeout: 30000 }).contains('Accept all').click();
-    cy.get(GNOSIS_BUTTONS).contains('Accept all').should('not.exist');
-    cy.wait(1000);
-    cy.get(GNOSIS_BUTTONS, { timeout: 30000 }).contains('Continue').click();
-    cy.wait(1000);
-    cy.get(GNOSIS_BUTTONS, { timeout: 30000 }).contains('Continue').click();
-    cy.get(GNOSIS_BUTTONS).contains('Continue').should('not.exist');
-    cy.wait(1000);
-    // this.isVisible(LOADING_SPINNER);
-    // this.doesNotExist(LOADING_SPINNER, undefined, { timeout: 45000 });
+    // The cookie banner and disclaimer are pre-accepted via seeded storage in openSafeOnNetwork.
+    // Kept as a guarded fallback in case Safe still renders the disclaimer "Continue" button.
+    cy.get('body').then(($body) => {
+      const continueButton = $body
+        .find(GNOSIS_BUTTONS)
+        .filter((_i, el) => el.textContent?.trim() === 'Continue');
+      if (continueButton.length) {
+        cy.wrap(continueButton.first()).click();
+      }
+    });
   }
 
   static validateThatDashboardLoaded() {
@@ -81,14 +112,10 @@ export class GnosisSafe extends BasePage {
   }
 
   static connectGnosisSafeWallet() {
-    //A workaround for gnosis safe connecting during cypress tests/ otherwise it would not connect
-    cy.wait(10000);
-    cy.enter(SUPERFLUID_IFRAME).then((getBody) => {
-      getBody().find(CONNECT_WALLET_BUTTON).first().click();
-      cy.wait(10000);
-      getBody().click(750, 100);
-      cy.wait(1000);
-      getBody().click(750, 300);
+    // The dashboard auto-connects to the Safe through the Safe Apps SDK, so no manual
+    // connect-wallet click is needed; just wait for the connection to settle.
+    cy.enter(SUPERFLUID_IFRAME, { timeout: 45000 }).then((getBody) => {
+      getBody().find(WALLET_CONNECTION_STATUS).should('contain.text', 'Connected');
     });
   }
 
@@ -107,14 +134,25 @@ export class GnosisSafe extends BasePage {
     });
   }
 
-  static openCustomAppPage(network) {
+  static openCustomAppPage(network: string) {
+    const chainId = networksBySlug.get(network)?.id;
+    // The custom-apps page is reached via the `?safe=<prefix><address>` query param (the old
+    // `/<prefix><address>/apps/custom` path now redirects to the welcome screen). No wallet is
+    // needed - the classic Safe Apps view lets you manage custom apps in read-only mode.
     cy.visit(
-      `${GNOSIS_SAFE_BASEURL}${GnosisSafePrefixByNetworkSlug[network]}${GnosisSafeAddressesPerNetwork[network]}/apps/custom`,
-      { failOnStatusCode: false }
+      `${GNOSIS_SAFE_BASEURL}apps/custom?safe=${
+        GnosisSafePrefixByNetworkSlug[network]
+      }${GnosisSafeAddressesPerNetwork[network]}`,
+      {
+        failOnStatusCode: false,
+        onBeforeLoad: (window) => {
+          this.seedSafeClassicView(window, chainId);
+        },
+      }
     );
+    // Always register the production dashboard URL: Safe fetches the app manifest server-side,
+    // and preview deployments can be access-restricted.
     Cypress.config('baseUrl', 'https://app.superfluid.org');
-    cy.wait(1000);
-    cy.get(GNOSIS_BUTTONS, { timeout: 30000 }).contains('Accept all').click();
   }
 
   static addCustomSuperfluidApp() {

@@ -20,9 +20,18 @@ const SnapshotRowSkeleton = () => {
   return (
     <TableRow data-cy={"loading-skeletons"}>
       <TableCell>
-        <Stack direction="row" gap={2}>
+        <Stack
+          direction="row"
+          sx={{
+            gap: 2,
+          }}
+        >
           <Skeleton variant="circular" width={36} height={36} />
-          <Stack justifyContent="center">
+          <Stack
+            sx={{
+              justifyContent: "center",
+            }}
+          >
             {!isBelowMd && <Skeleton width={80} />}
             <Skeleton width={40} />
           </Stack>
@@ -44,7 +53,11 @@ const SnapshotRowSkeleton = () => {
         </>
       ) : (
         <TableCell>
-          <Stack alignItems="end">
+          <Stack
+            sx={{
+              alignItems: "end",
+            }}
+          >
             <Skeleton width={60} />
             <Skeleton width={30} />
           </Stack>
@@ -75,7 +88,7 @@ const TokenSnapshotLoadingTable = () => {
         },
       }}
     >
-      <Table>
+      <Table sx={{ minWidth: { md: 1040 } }}>
         <TableHead>
           <TableRow>
             <TableCell
@@ -88,9 +101,13 @@ const TokenSnapshotLoadingTable = () => {
             >
               <Stack
                 direction="row"
-                alignItems="center"
-                gap={2}
-                sx={{ py: 2, px: 4, [theme.breakpoints.down("md")]: { p: 2 } }}
+                sx={{
+                  alignItems: "center",
+                  gap: 2,
+                  py: 2,
+                  px: 4,
+                  [theme.breakpoints.down("md")]: { p: 2 },
+                }}
               >
                 <Skeleton variant="circular" width={36} height={36} />
 
@@ -102,11 +119,11 @@ const TokenSnapshotLoadingTable = () => {
           </TableRow>
           {!isBelowMd && (
             <TableRow>
-              <TableCell width="200">Asset</TableCell>
-              <TableCell>Balance</TableCell>
-              <TableCell width="300">Net Flow</TableCell>
-              <TableCell width="300">Inflow/Outflow</TableCell>
-              <TableCell width="120" align="center"></TableCell>
+              <TableCell width="22%">Asset</TableCell>
+              <TableCell width="16%">Balance</TableCell>
+              <TableCell width="18%">Net Flow Rate</TableCell>
+              <TableCell width="36%">Actions</TableCell>
+              <TableCell width="8%" align="center"></TableCell>
             </TableRow>
           )}
         </TableHead>

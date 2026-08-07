@@ -12,7 +12,6 @@ export const chainIds = {
   base: 8453,
   baseSepolia: 84532,
   scroll: 534352,
-  scrollSepolia: 534351,
   optimismSepolia: 11155420,
   degen: 666666666,
 } as const;
@@ -97,7 +96,7 @@ export const vestingSubgraphUrls = {
   arbitrum:
     "https://subgraph-endpoints.superfluid.dev/arbitrum-one/vesting-scheduler",
   optimism:
-    "https://api.goldsky.com/api/public/project_clsnd6xsoma5j012qepvucfpp/subgraphs/vesting-v1-optimism-mainnet/prod/gn",
+    "https://subgraph-endpoints.superfluid.dev/optimism-mainnet/vesting-scheduler",
   avalancheC:
     "https://subgraph-endpoints.superfluid.dev/avalanche-c/vesting-scheduler",
   bnbSmartChain:
@@ -158,7 +157,6 @@ export const superfluidRpcUrls = {
   base: "https://rpc-endpoints.superfluid.dev/base-mainnet",
   "base-sepolia": "https://rpc-endpoints.superfluid.dev/base-sepolia",
   scroll: "https://rpc-endpoints.superfluid.dev/scroll-mainnet",
-  "scroll-sepolia": "https://rpc-endpoints.superfluid.dev/scroll-sepolia",
   "optimism-sepolia": "https://rpc-endpoints.superfluid.dev/optimism-sepolia",
 } as const;
 

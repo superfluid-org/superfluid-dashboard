@@ -11,10 +11,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `pnpm lint` - Run Next.js linting
 - `pnpm typecheck` - Run TypeScript type checking
 
-### Code Generation (run after modifying contracts or GraphQL)
+### Code Generation (run after modifying GraphQL)
 - `pnpm generate` - Run all code generation tasks
-- `pnpm generate:eth-sdk` - Generate contract interfaces from ABIs
-- `pnpm generate:wagmi` - Generate Wagmi contract hooks
 - `pnpm generate:vesting-graphql` - Generate GraphQL types for vesting subgraph
 - `pnpm generate:auto-wrap-graphql` - Generate GraphQL types for auto-wrap subgraph
 
@@ -23,16 +21,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - `pnpm cypress open` - Open Cypress test runner
   - `pnpm cypress run --env network=opsepolia` - Run tests for specific network
   - Test files use Cucumber/Gherkin syntax (`.feature` files)
+  - New e2e selectors must use explicit `data-cy` hooks on app-owned elements — MUI icons do not carry `data-testid` in production builds (which is what CI tests against), and MUI class tokens are implementation details
 
 ## Architecture Overview
 
 ### Core Technologies
-- **Next.js 15** deployed to Vercel as serverless
+- **Next.js 16** deployed to Vercel as serverless
 - **TypeScript** with strict mode
 - **Redux Toolkit** with RTK Query for state management and API calls
 - **Wagmi v2** for Web3 wallet connections
 - **Ethers v5** for legacy Web3 interactions involving @superfluid-finance/sdk-core & @superfluid-finance/sdk-redux
-- **Material-UI v6** for UI components
+- **Material-UI v9** for UI components (exact-pinned versions, never `^` — see `docs/plans/mui-v6-to-v9-upgrade.md`)
 - **Emotion** for CSS-in-JS styling
 
 ### Key Architectural Patterns
@@ -55,10 +54,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
    - Redux Persist for state persistence with migrations
    - Separate slices for UI state (notifications, preferences) and data
 
-5. **Code Generation Pipeline**:
-   - Contract types generated from ABIs using eth-sdk and Wagmi CLI
+5. **Contract ABIs & Code Generation**:
+   - Contract ABIs/addresses come from `@sfpro/sdk` (`abi`, `abi/core`, `abi/automation`, `constant`); plain ERC20 uses viem's `erc20Abi`
    - GraphQL types generated from subgraph schemas
-   - All generated code goes into specific directories (`src/eth-sdk/`, `generated.ts`)
 
 ### Important Patterns
 
@@ -87,9 +85,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 When working with:
 - **New Features**: Create a new directory in `src/features/`
 - **API Integration**: Add new endpoints to existing RTK Query slices or create new ones
-- **Smart Contracts**: Add ABIs to `src/eth-sdk/abis/` and run code generation
-- **UI Components**: Use Material-UI components and follow existing patterns in `src/components/`
+- **Smart Contracts**: Use ABIs/addresses from `@sfpro/sdk`; for contracts it lacks, define the ABI inline (viem `const`-asserted) in the consuming feature or ask whether it belongs in the SDK
+- **UI Components**: Use Material-UI components and follow existing patterns in `src/components/`. Style via `sx` (v9 removed component system props like `gap`/`alignItems` on `Stack`/`Typography`) and use `slotProps.*` — never legacy `PaperProps`/`inputProps`/`*TypographyProps` (some deprecated props still type-check, so the compiler won't flag them)
 
 ### Notes
 - Advanced features available via `window.superfluid_dashboard.advanced` (see README)
-- When `eth-sdk` generation fails with ES module error, temporarily remove `"type": "module"` from package.json

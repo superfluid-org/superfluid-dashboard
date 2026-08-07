@@ -162,8 +162,10 @@ const TokenIcon: FC<TokenIconProps> = ({
               width: diameter,
               height: diameter,
             }}
-            imgProps={{ sx: { objectFit: "contain", borderRadius: "50%" } }}
             src={logoURI || token?.logoURI || "/icons/token-default.webp"}
+            slotProps={{
+              img: { sx: { objectFit: "contain", borderRadius: "50%" } },
+            }}
           />
         )}
       </AvatarWrapper>

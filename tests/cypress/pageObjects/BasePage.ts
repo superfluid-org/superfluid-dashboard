@@ -43,6 +43,57 @@ export class BasePage {
     });
   }
 
+  // Select a token in the shared token dialog and confirm it actually "stuck".
+  // The old helpers clicked the list item and moved on, so a missed pick only
+  // surfaced much later as a disabled/placeholder action button. We instead
+  // assert the select button shows the chosen token before continuing (the
+  // assertion retries, giving the form state time to settle).
+  static selectTokenFromDialog(token: string) {
+    const SELECT_TOKEN_BUTTON = '[data-cy=select-token-button]';
+    const SELECTED_TOKEN = `${SELECT_TOKEN_BUTTON} span[translate=no]`;
+    const TOKEN_SEARCH_INPUT = '[data-cy=token-search-input] input';
+
+    return this.getSelectedToken(token).then((selectedToken) => {
+      // Some flows open the dialog in a previous step; only open it if needed.
+      cy.get('body', { log: false }).then(($body) => {
+        if ($body.find(TOKEN_SEARCH_INPUT).filter(':visible').length) return;
+        // force:true because a *previous* transaction/confirmation dialog can still be fading
+        // out (MuiDialog-container, 225ms opacity) and transiently "cover" this button on slow
+        // CI — and in the ACL / auto-wrap flows the button legitimately lives *inside* a dialog,
+        // so we can't wait for all dialogs to disappear. The open is confirmed below by waiting
+        // for the token search input + list to render.
+        cy.get(SELECT_TOKEN_BUTTON, { timeout: 30000 })
+          .filter(':visible')
+          .first()
+          .scrollIntoView()
+          .click({ force: true });
+      });
+      cy.get(TOKEN_SEARCH_INPUT, { timeout: 30000 }).should('be.visible');
+      // Wait for the initial token fetch to render the list BEFORE typing. The dialog shows a
+      // spinner while fetching and re-renders as balances load; typing/clearing mid-re-render
+      // detaches the search input on slower CI ("cy.clear() failed because the page updated").
+      cy.get('[data-cy$="-list-item"]', { timeout: 30000 }).should(
+        'have.length.gte',
+        1
+      );
+      // Filter the (balance-sorted) list by symbol so a token the connected account holds no
+      // balance of still surfaces. The dialog resets the search to empty on open, so type
+      // directly — no chained .clear() (which would detach the chain on re-render).
+      cy.get(TOKEN_SEARCH_INPUT).type(selectedToken);
+      cy.get(`[data-cy="${selectedToken}-list-item"]`, { timeout: 30000 })
+        .filter(':visible')
+        .first()
+        .scrollIntoView()
+        .should('be.visible')
+        .click();
+      return cy
+        .get(SELECTED_TOKEN, { timeout: 30000 })
+        .filter(':visible')
+        .first()
+        .should('have.text', selectedToken);
+    });
+  }
+
   static ensureDefined<T>(value: T | undefined | null): T {
     if (!value) throw Error('Value has to be defined.');
     return value;
@@ -172,6 +223,27 @@ export class BasePage {
           $input[0].dispatchEvent(new Event('blur'));
         }
       });
+  }
+
+  // MUI X v9 renders picker values as contenteditable section spans; the only
+  // <input> inside a picker field is a visually hidden mirror, which fails
+  // Cypress' actionability checks, so `.type()`/`.clear()` cannot target it.
+  // Its onChange parses a full value string instead, so set the value natively,
+  // fire an input event, and then assert the field actually accepted the value
+  // (a rejected parse would otherwise be a silent no-op).
+  static setPickersFieldValue(fieldSelector: string, value: string) {
+    this.get(fieldSelector, undefined, { timeout: 30000 }).should('be.visible');
+    this.get(`${fieldSelector} input`).then(($input) => {
+      const input = $input[0] as HTMLInputElement;
+      const autWindow = input.ownerDocument.defaultView ?? window;
+      const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+        autWindow.HTMLInputElement.prototype,
+        'value'
+      )?.set;
+      nativeInputValueSetter?.call(input, value);
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+    this.hasValue(`${fieldSelector} input`, value);
   }
 
   static hasText(
@@ -463,18 +535,6 @@ export class BasePage {
     let today = new Date();
     let timestamp = today.setDate(today.getDate() + days);
     return Number((timestamp.valueOf() / 1000).toFixed());
-  }
-
-  static getNotificationDateString(date: Date) {
-    return date.toLocaleString('en-US', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-      timeZone: 'UTC',
-    });
   }
 
   static generateNewWallet() {

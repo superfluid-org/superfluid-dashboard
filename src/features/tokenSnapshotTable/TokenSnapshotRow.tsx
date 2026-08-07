@@ -1,4 +1,5 @@
 import ExpandCircleDownOutlinedIcon from "@mui/icons-material/ExpandCircleDownOutlined";
+import CurrencyExchangeRoundedIcon from "@mui/icons-material/CurrencyExchangeRounded";
 import SendRoundedIcon from "@mui/icons-material/SendRounded";
 import SwapHorizRoundedIcon from "@mui/icons-material/SwapHorizRounded";
 import {
@@ -52,6 +53,7 @@ import BalanceCriticalIndicator from "./BalanceCriticalIndicator";
 import { isDefined } from "../../utils/ensureDefined";
 import { useTokenQuery } from "../../hooks/useTokenQuery";
 import { PortfolioValueCallback } from "./TokenSnapshotTables";
+import { getBridgePagePath } from "../bridge/getBridgePagePath";
 
 interface SnapshotRowProps {
   lastElement?: boolean;
@@ -167,18 +169,42 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
         : undefined,
     [balanceData, tokenPrice]
   );
+  const monthlyFlowValues = useMemo(() => {
+    if (tokenPrice === undefined) return undefined;
+
+    const valueOfMonthlyRate = (rate: BigNumber) =>
+      new Decimal(utils.formatUnits(rate.mul(UnitOfTime.Month), 18))
+        .mul(tokenPrice)
+        .toString();
+
+    return {
+      monthlyNetFlowValue: balanceData
+        ? valueOfMonthlyRate(BigNumber.from(balanceData.flowRate))
+        : undefined,
+      monthlyInflowValue: valueOfMonthlyRate(BigNumber.from(totalInflowRate)),
+      monthlyOutflowValue: valueOfMonthlyRate(BigNumber.from(totalOutflowRate)),
+    };
+  }, [balanceData, tokenPrice, totalInflowRate, totalOutflowRate]);
+  const hasFlow =
+    totalInflowRate !== "0" ||
+    totalOutflowRate !== "0" ||
+    Boolean(balanceData && balanceData.flowRate !== "0");
 
   useEffect(() => {
     portfolioValueCallback(portfolioValueId, {
       symbol: tokenSymbol || "Unknown token",
       hasBalance,
+      hasFlow,
       hasPrice: tokenPrice !== undefined,
       value: portfolioValue,
+      ...monthlyFlowValues,
     });
 
     return () => portfolioValueCallback(portfolioValueId, undefined);
   }, [
     hasBalance,
+    hasFlow,
+    monthlyFlowValues,
     portfolioValue,
     portfolioValueCallback,
     portfolioValueId,
@@ -204,6 +230,10 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
   const transferPath = getTransferPagePath({
     token: tokenAddress,
     network: network.slugName,
+  });
+  const swapPath = getBridgePagePath({
+    fromChain: network.id,
+    fromToken: tokenAddress,
   });
 
   const criticalDate = useMemo(() => {
@@ -235,6 +265,11 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
   }, [balanceData]);
 
   const hasNetFlow = balanceData && balanceData.flowRate !== "0";
+  const netFlowColor = !hasNetFlow
+    ? "text.secondary"
+    : balanceData.flowRate.startsWith("-")
+    ? "error.main"
+    : "primary.main";
 
   return (
     <>
@@ -263,13 +298,16 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                   <FiatAmount wei={1} decimals={0} price={tokenPrice} />
                 )
               }
-              primaryTypographyProps={{
-                variant: "h6",
-                sx: !tokenPrice ? { lineHeight: "44px" } : {},
-              }}
-              secondaryTypographyProps={{
-                variant: "body2mono",
-                color: "text.secondary",
+              slotProps={{
+                primary: {
+                  variant: "h6",
+                  sx: !tokenPrice ? { lineHeight: "44px" } : {},
+                },
+
+                secondary: {
+                  variant: "body2mono",
+                  color: "textSecondary",
+                },
               }}
             />
           </ListItem>
@@ -278,12 +316,23 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
         {!isBelowMd ? (
           <>
             <TableCell onClick={openTokenPage}>
-              <ListItem
-                disablePadding
-                sx={{ py: 0, ml: criticalDate ? -4 : 0 }}
+              <Box
+                sx={{
+                  position: "relative",
+                  display: "flex",
+                  alignItems: "center",
+                  minHeight: 44,
+                }}
               >
                 {criticalDate && (
-                  <ListItemIcon sx={{ mr: 1 }}>
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      right: "calc(100% + 8px)",
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                  >
                     <BalanceCriticalIndicator
                       network={network}
                       tokenAddress={tokenAddress}
@@ -291,7 +340,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                       criticalDate={criticalDate}
                       onClick={stopPropagation}
                     />
-                  </ListItemIcon>
+                  </Box>
                 )}
 
                 <ListItemText
@@ -310,13 +359,16 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                       />
                     )
                   }
-                  primaryTypographyProps={{ variant: "h6mono" }}
-                  secondaryTypographyProps={{
-                    variant: "body2mono",
-                    color: "text.secondary",
+                  slotProps={{
+                    primary: { variant: "h6mono" },
+
+                    secondary: {
+                      variant: "body2mono",
+                      color: "textSecondary",
+                    },
                   }}
                 />
-              </ListItem>
+              </Box>
             </TableCell>
 
             <TableCell data-cy={"net-flow"} onClick={openTokenPage}>
@@ -335,30 +387,52 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                   }
                   secondary={
                     tokenPrice && isDefined(flowRateMonthly) ? (
-                      <FiatAmount
-                        price={tokenPrice}
-                        wei={flowRateMonthly.abs()}
-                      >
-                        {" "}
-                        /mo
-                      </FiatAmount>
+                      <>
+                        {balanceData?.flowRate.startsWith("-") ? "−" : "+"}
+                        <FiatAmount
+                          price={tokenPrice}
+                          wei={flowRateMonthly.abs()}
+                        >
+                          {" "}
+                          /mo
+                        </FiatAmount>
+                      </>
                     ) : (
                       <></>
                     )
                   }
-                  primaryTypographyProps={{ variant: "body2mono" }}
-                  secondaryTypographyProps={{
-                    variant: "body2mono",
-                    color: "text.secondary",
+                  slotProps={{
+                    primary: {
+                      variant: "body2mono",
+                      sx: { color: netFlowColor },
+                    },
+
+                    secondary: {
+                      variant: "body2mono",
+                      sx: { color: netFlowColor },
+                    },
                   }}
                 />
               ) : (
-                <Typography data-cy={"net-flow-value"}>{"-"}</Typography>
+                <Typography
+                  data-cy={"net-flow-value"}
+                  sx={{
+                    color: "text.secondary",
+                  }}
+                >
+                  {"-"}
+                </Typography>
               )}
             </TableCell>
 
             <TableCell>
-              <Stack direction="row" gap={1} onClick={stopPropagation}>
+              <Stack
+                direction="row"
+                onClick={stopPropagation}
+                sx={{
+                  gap: 0.75,
+                }}
+              >
                 <Button
                   data-cy="portfolio-stream-button"
                   LinkComponent={Link}
@@ -379,6 +453,18 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                 >
                   Transfer
                 </Button>
+                {!network.testnet && (
+                  <Button
+                    data-cy="portfolio-swap-button"
+                    LinkComponent={Link}
+                    href={swapPath}
+                    size="small"
+                    variant="text"
+                    startIcon={<CurrencyExchangeRoundedIcon />}
+                  >
+                    Swap
+                  </Button>
+                )}
               </Stack>
             </TableCell>
           </>
@@ -418,10 +504,13 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                     "-"
                   )
                 }
-                primaryTypographyProps={{ variant: "h7mono" }}
-                secondaryTypographyProps={{
-                  variant: "body2mono",
-                  color: "text.secondary",
+                slotProps={{
+                  primary: { variant: "h7mono" },
+
+                  secondary: {
+                    variant: "body2mono",
+                    sx: { color: netFlowColor },
+                  },
                 }}
               />
             </ListItem>
@@ -439,11 +528,18 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
             },
           }}
         >
-          <Stack direction="row" justifyContent="center" gap={0.25}>
+          <Stack
+            direction="row"
+            sx={{
+              justifyContent: "center",
+              gap: 0.25,
+            }}
+          >
             {isBelowMd ? (
               <>
                 <Tooltip title="Stream">
                   <IconButton
+                    size="small"
                     data-cy="portfolio-stream-button"
                     LinkComponent={Link}
                     href={sendPath}
@@ -456,6 +552,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                 </Tooltip>
                 <Tooltip title="Transfer">
                   <IconButton
+                    size="small"
                     data-cy="portfolio-transfer-button"
                     LinkComponent={Link}
                     href={transferPath}
@@ -466,10 +563,26 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                     <SwapHorizRoundedIcon fontSize="small" />
                   </IconButton>
                 </Tooltip>
+                {!network.testnet && (
+                  <Tooltip title="Swap">
+                    <IconButton
+                      size="small"
+                      data-cy="portfolio-swap-button"
+                      LinkComponent={Link}
+                      href={swapPath}
+                      color="primary"
+                      onClick={stopPropagation}
+                      aria-label={`Swap ${tokenSymbol}`}
+                    >
+                      <CurrencyExchangeRoundedIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                )}
               </>
             ) : null}
             <Tooltip title="Stream history">
               <IconButton
+                size={isBelowMd ? "small" : "medium"}
                 data-cy={"show-streams-button"}
                 color="inherit"
                 onClick={toggleOpen}
@@ -522,8 +635,10 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                 <Box>
                   <Typography
                     variant="caption"
-                    color="text.secondary"
-                    sx={{ display: "block" }}
+                    sx={{
+                      color: "text.secondary",
+                      display: "block",
+                    }}
                   >
                     TOTAL INFLOW
                   </Typography>
@@ -544,8 +659,10 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                 <Box>
                   <Typography
                     variant="caption"
-                    color="text.secondary"
-                    sx={{ display: "block" }}
+                    sx={{
+                      color: "text.secondary",
+                      display: "block",
+                    }}
                   >
                     TOTAL OUTFLOW
                   </Typography>
@@ -566,8 +683,10 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                 <Box>
                   <Typography
                     variant="caption"
-                    color="text.secondary"
-                    sx={{ display: "block" }}
+                    sx={{
+                      color: "text.secondary",
+                      display: "block",
+                    }}
                   >
                     ACTIVE STREAMS
                   </Typography>

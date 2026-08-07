@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ValidBatchVestingForm } from "../batch/BatchVestingFormProvider";
 import { useFormContext } from "react-hook-form";
-import { rpcApi } from "../../redux/store";
+import { useExecuteBatchVesting } from "../useVestingWrites";
 import { CreateVestingCardView } from "../CreateVestingSection";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
 import { Typography } from "@mui/material";
@@ -30,82 +30,82 @@ export function BatchVestingTransactionButton({ setView, isVisible: isVisible_ =
     }, [isValid, isValidating]);
 
     const [executeBatchVesting, mutationResult] =
-        rpcApi.useExecuteBatchVestingMutation();
+        useExecuteBatchVesting();
 
     const isVisible = !mutationResult.isSuccess && isVisible_;
 
-    return (<TransactionBoundary mutationResult={mutationResult}>
-        {({
-            network,
-            getOverrides, // Should I use this?
-            setDialogLoadingInfo,
-            setDialogSuccessActions,
-            txAnalytics,
-            closeDialog
-        }) =>
-            isVisible && (
-                <TransactionButton
-                    dataCy={"batch-vesting-tx-button"}
-                    disabled={isDisabled}
-                    onClick={async (signer) => {
-                        setDialogLoadingInfo(
-                            <Typography
-                                variant="h5"
-                                color="text.secondary"
-                                translate="yes"
-                            >
-                                You are creating a batch of vesting schedules.
-                            </Typography>
-                        );
+    return (
+        <TransactionBoundary mutationResult={mutationResult}>
+            {({
+                network,
+                setDialogLoadingInfo,
+                setDialogSuccessActions,
+                txAnalytics,
+                closeDialog
+            }) =>
+                isVisible && (
+                    <TransactionButton
+                        dataCy={"batch-vesting-tx-button"}
+                        disabled={isDisabled}
+                        onClick={async () => {
+                            setDialogLoadingInfo(
+                                <Typography
+                                    variant="h5"
+                                    translate="yes"
+                                    sx={{
+                                        color: "text.secondary"
+                                    }}
+                                >
+                                    You are creating a batch of vesting schedules.
+                                </Typography>
+                            );
 
-                        setView(CreateVestingCardView.Approving);
+                            setView(CreateVestingCardView.Approving);
 
-                        const primaryArgs = {
-                            params: convertBatchFormToParams(validForm, network.id),
-                            chainId: network.id,
-                            superTokenAddress: validForm.data.superTokenAddress,
-                            signer,
-                            version: validForm.data.version
-                        };
+                            const primaryArgs = {
+                                params: convertBatchFormToParams(validForm, network.id),
+                                chainId: network.id,
+                                superTokenAddress: validForm.data.superTokenAddress,
+                                version: validForm.data.version
+                            };
 
-                        executeBatchVesting(primaryArgs)
-                            .unwrap()
-                            .then(
-                                ...txAnalytics("Create Batch of Vesting Schedules", primaryArgs)
-                            )
-                            .then(() => setView(CreateVestingCardView.Success))
-                            .catch(() => setView(CreateVestingCardView.Preview)); // Error is already logged and handled in the middleware & UI.
+                            executeBatchVesting(primaryArgs)
+                                .then(
+                                    ...txAnalytics("Create Batch of Vesting Schedules", primaryArgs)
+                                )
+                                .then(() => setView(CreateVestingCardView.Success))
+                                .catch(() => setView(CreateVestingCardView.Preview)); // Error is already logged and handled in the middleware & UI.
 
-                        setDialogSuccessActions(
-                            <TransactionDialogActions>
-                                {
-                                    okBehaviour === "redirect" ? (
-                                        <NextLink href="/vesting" passHref legacyBehavior>
+                            setDialogSuccessActions(
+                                <TransactionDialogActions>
+                                    {
+                                        okBehaviour === "redirect" ? (
+                                            <NextLink href="/vesting" passHref legacyBehavior>
+                                                <TransactionDialogButton
+                                                    data-cy="ok-button"
+                                                    color="primary"
+                                                >
+                                                    OK
+                                                </TransactionDialogButton>
+                                            </NextLink>
+                                        ) : (
                                             <TransactionDialogButton
                                                 data-cy="ok-button"
                                                 color="primary"
+                                                onClick={closeDialog}
                                             >
                                                 OK
                                             </TransactionDialogButton>
-                                        </NextLink>
-                                    ) : (
-                                        <TransactionDialogButton
-                                            data-cy="ok-button"
-                                            color="primary"
-                                            onClick={closeDialog}
-                                        >
-                                            OK
-                                        </TransactionDialogButton>
-                                    )
-                                }
-                            </TransactionDialogActions>
-                        );
-                    }}
-                >
-                    Create Batch of Vesting Schedules
-                </TransactionButton>
-            )
-        }
-    </TransactionBoundary>
+                                        )
+                                    }
+                                </TransactionDialogActions>
+                            );
+                        }}
+                    >
+                        Create Batch of Vesting Schedules
+                    </TransactionButton>
+                )
+            }
+        </TransactionBoundary>
     );
 }

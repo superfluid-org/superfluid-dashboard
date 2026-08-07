@@ -30,12 +30,19 @@ const BalanceCriticalIndicator: FC<BalanceCriticalIndicatorProps> = ({
     <Tooltip
       arrow
       placement="top"
-      componentsProps={{
+      slotProps={{
         tooltip: { sx: { px: 1.5, py: 1, maxWidth: "260px" } },
       }}
       title={
-        <Stack gap={1.5}>
-          <Typography variant="tooltip" color="text.primary" textAlign="center">
+        <Stack sx={{
+          gap: 1.5
+        }}>
+          <Typography
+            variant="tooltip"
+            sx={{
+              color: "text.primary",
+              textAlign: "center"
+            }}>
             Your {tokenSymbol ?? "token"} balance is running low and will run out on{" "}
             <Typography variant="tooltip" color="error">
               {`${format(criticalDate, "MM/dd/yy")} at ${format(

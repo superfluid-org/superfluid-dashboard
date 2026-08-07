@@ -1,4 +1,3 @@
-import { BigNumber } from "ethers";
 import { Address } from "viem"
 
 export type VestingScheduleFromAmountAndDurationsParams = {
@@ -30,9 +29,9 @@ export function convertVestingScheduleFromAmountAndDurationsToAbsolutes(params: 
     const endDate = startDate + totalDuration;
     const claimValidityDate = startDate + claimPeriod;
 
-    const flowRate = BigNumber.from(totalAmount).div(totalDuration);
-    const remainderAmount = BigNumber.from(totalAmount).sub(flowRate.mul(totalDuration));
-    const cliffAmount = BigNumber.from(cliffPeriod).mul(flowRate);
+    const flowRate = BigInt(totalAmount) / BigInt(totalDuration);
+    const remainderAmount = BigInt(totalAmount) - flowRate * BigInt(totalDuration);
+    const cliffAmount = BigInt(cliffPeriod) * flowRate;
 
     return {
         superToken,

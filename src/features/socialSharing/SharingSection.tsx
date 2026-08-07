@@ -22,12 +22,17 @@ const SharingSection: FC<SharingSectionProps> = ({
   const encodedUrlToShare = encodeURIComponent(url);
 
   return (
-    <Stack direction="row" alignItems="center" justifyContent="center" gap={1}>
+    <Stack
+      direction="row"
+      sx={{
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 1
+      }}>
       <ShareIcon sx={{ width: 18, height: 18 }} />
       <Typography variant="h5" translate="yes" sx={{ mr: 1 }}>
         Share:
       </Typography>
-
       <CopyTooltip content={url} copyText="Copy link">
         {({ copy }) => (
           <IconButton

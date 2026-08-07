@@ -43,23 +43,24 @@ const IndexCreatedActivityRow: FC<IndexCreatedActivityRowProps> = ({
     <TableRow>
       <TableCell>
         <ListItem sx={{ p: 0 }}>
-          <ActivityIcon icon={AddRoundedIcon} />
+          <ActivityIcon icon={AddRoundedIcon} dataCy="activity-index-created-icon" />
           <ListItemText
             data-cy={"activity"}
             primary="Index Created"
             secondary={format(timestamp * 1000, dateFormat)}
-            primaryTypographyProps={{
-              variant: isBelowMd ? "h7" : "h6",
-              translate: "yes",
-            }}
-            secondaryTypographyProps={{
-              variant: "body2mono",
-              color: "text.secondary",
-            }}
-          />
+            slotProps={{
+              primary: {
+                variant: isBelowMd ? "h7" : "h6",
+                translate: "yes",
+              },
+
+              secondary: {
+                variant: "body2mono",
+                color: "textSecondary",
+              }
+            }} />
         </ListItem>
       </TableCell>
-
       {!isBelowMd ? (
         <>
           <TableCell>
@@ -87,7 +88,12 @@ const IndexCreatedActivityRow: FC<IndexCreatedActivityRowProps> = ({
         </>
       ) : (
         <TableCell align="right">
-          <Stack direction="row" alignItems="center" gap={1}>
+          <Stack
+            direction="row"
+            sx={{
+              alignItems: "center",
+              gap: 1
+            }}>
             <ListItemText primary={tokenQuery.data?.symbol} />
             <TokenIcon
               isSuper

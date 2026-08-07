@@ -29,17 +29,17 @@ const NO_ACTIVITY_TEXT = '[data-cy=no-history-text]';
 const ACTIVITY_FILTER = '[data-cy=activity-filter-button]';
 const CONNECT_WALLET_BUTTON = '[data-cy=connect-wallet-button]';
 
-const DISTRIBUTION_ICON = '[data-testid=CallSplitRoundedIcon]';
-const SUBSCRIPTION_APPROVED_ICON = '[data-testid=CheckRoundedIcon]';
-const SUBSCRIPTION_REJECTED_ICON = '[data-testid=NotInterestedRoundedIcon]';
-const SUBSCRIPTION_UPDATED_ICON = '[data-testid=PercentRoundedIcon]';
-const INDEX_CREATED_ICON = '[data-testid=AddRoundedIcon]';
-const STREAM_CANCELLED_ICON = '[data-testid=CloseRoundedIcon]';
-const STREAM_UPDATED_ICON = '[data-testid=EditRoundedIcon]';
-const RECEIVE_ICON = '[data-testid=ArrowBackRoundedIcon]';
-const SEND_ICON = '[data-testid=ArrowForwardRoundedIcon]';
-const WRAP_UNWRAP_ICON = '[data-testid=SwapVertIcon]';
-const LIQUIDATED_ICON = '[data-testid=PriorityHighIcon]';
+const DISTRIBUTION_ICON = '[data-cy=activity-distribution-icon]';
+const SUBSCRIPTION_APPROVED_ICON = '[data-cy=activity-subscription-approved-icon]';
+const SUBSCRIPTION_REJECTED_ICON = '[data-cy=activity-subscription-rejected-icon]';
+const SUBSCRIPTION_UPDATED_ICON = '[data-cy=activity-subscription-updated-icon]';
+const INDEX_CREATED_ICON = '[data-cy=activity-index-created-icon]';
+const STREAM_CANCELLED_ICON = '[data-cy=activity-stream-cancelled-icon]';
+const STREAM_UPDATED_ICON = '[data-cy=activity-stream-updated-icon]';
+const RECEIVE_ICON = '[data-cy=activity-receive-icon]';
+const SEND_ICON = '[data-cy=activity-send-icon]';
+const WRAP_UNWRAP_ICON = '[data-cy=activity-wrap-unwrap-icon]';
+const LIQUIDATED_ICON = '[data-cy=activity-liquidated-icon]';
 const ADDRESS_COMPONENTS = '[data-cy=address-to-copy]';
 const COPY_TOOLTIPS = '.MuiTypography-tooltip';
 const NOW_TIMESTAMP = Date.now();
@@ -200,8 +200,17 @@ export class ActivityPage extends BasePage {
   }
 
   static validateNoActivityByTypeShown(type: string) {
-    cy.get(ACTIVITY_NAME).each((el) => {
-      cy.wrap(el).should('not.have.text', type);
+    // "No <type> shown" is satisfied by EITHER remaining rows (none of `type`) OR
+    // the empty-state card. A bare `cy.get(ACTIVITY_NAME)` would fail on a valid
+    // empty result (cy.get requires >= 1 element), so branch on the empty state.
+    cy.get('body').then(($body) => {
+      if ($body.find(NO_ACTIVITY_TITLE).filter(':visible').length > 0) {
+        this.isVisible(NO_ACTIVITY_TITLE);
+        return;
+      }
+      cy.get(ACTIVITY_NAME).each((el) => {
+        cy.wrap(el).should('not.have.text', type);
+      });
     });
   }
 

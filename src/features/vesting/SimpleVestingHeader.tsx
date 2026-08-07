@@ -22,15 +22,17 @@ const SimpleVestingHeader: FC = () => {
   return (
     <Stack
       direction="row"
-      justifyContent="space-between"
-      alignItems="center"
-      sx={{ mb: 4.5 }}
-    >
+      sx={{
+        justifyContent: "space-between",
+        alignItems: "center",
+        mb: 4.5
+      }}>
       <Typography component="h1" variant="h4">
         Vesting
       </Typography>
-
-      <Stack direction="row" gap={1}>
+      <Stack direction="row" sx={{
+        gap: 1
+      }}>
         {doesNetworkSupportAgora && isAgoraWhitelistedWallet && (
           <Button
             LinkComponent={Link}

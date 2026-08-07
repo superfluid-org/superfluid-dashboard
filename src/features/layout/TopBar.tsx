@@ -11,7 +11,6 @@ import {
   useTheme,
 } from "@mui/material";
 import { memo } from "react";
-import NotificationsBell from "../../components/NotificationsBell/NotificationsBell";
 import useBodyScrolled from "../../hooks/useBodyScrolled";
 import ImpersonationChip from "../impersonation/ImpersonationChip";
 import { useImpersonation } from "../impersonation/ImpersonationContext";
@@ -106,16 +105,25 @@ export default memo(function TopBar() {
       position="fixed"
       elevation={0}
     >
-      <Stack component={Toolbar} direction="row" alignItems="center">
+      <Stack component={Toolbar} direction="row" sx={{
+        alignItems: "center"
+      }}>
         {isBelowLg && (
           <IconButton onClick={openNavigationDrawer} color="inherit">
             <MenuRoundedIcon />
           </IconButton>
         )}
 
-        <Box flex={1} />
+        <Box sx={{
+          flex: 1
+        }} />
 
-        <Stack direction="row" gap={isBelowMd ? 1 : 2} alignItems="center">
+        <Stack
+          direction="row"
+          sx={{
+            gap: isBelowMd ? 1 : 2,
+            alignItems: "center"
+          }}>
           {isBelowLg && !isImpersonated && (
             <ConnectWallet ButtonProps={{ size: "small" }} />
           )}
@@ -126,10 +134,6 @@ export default memo(function TopBar() {
             onChange={onNetworkChange}
             placeholder={"Select Network"}
           />
-          {/* 
-            // Notifications hidden until a source of notifications is added.
-          <NotificationsBell /> 
-          */}
           <TransactionBell />
         </Stack>
       </Stack>

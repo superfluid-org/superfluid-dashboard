@@ -29,7 +29,7 @@ const AddToWalletButton: FC<AddToWalletButtonProps> = ({
   const { watchAssetAsync } = useWatchAsset();
 
   const addToWallet = useCallback(async () => {
-    if (connector && connector.watchAsset && accountAddress) {
+    if (connector && accountAddress) {
       const tokenImage = token?.logoURI;
 
       watchAssetAsync({

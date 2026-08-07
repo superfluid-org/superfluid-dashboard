@@ -391,6 +391,8 @@ const AccountingExportPreview: FC<AccountingExportPreviewProps> = ({ }) => {
         slots={{
           toolbar: CustomToolbar,
         }}
+        // X v8 requires this for a custom toolbar slot to render at all.
+        showToolbar
       />
     </Paper>
   );

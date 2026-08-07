@@ -5,7 +5,6 @@ import { formatEther, formatUnits, parseEther } from "ethers/lib/utils";
 import { useRouter } from "next/router";
 import { FC, useEffect, useMemo, useRef, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
-import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { inputPropsForEtherAmount } from "../../utils/inputPropsForEtherAmount";
 import { parseAmountOrZero } from "../../utils/tokenUtils";
 import { useAnalytics } from "../analytics/useAnalytics";
@@ -37,10 +36,13 @@ import { BalanceUnderlyingToken } from "./BalanceUnderlyingToken";
 import { SwitchWrapModeBtn } from "./SwitchWrapModeBtn";
 import { TokenDialogButton } from "./TokenDialogButton";
 import { useTokenPairQuery } from "./useTokenPairQuery";
+import { useTokenApprove, useTokenWrap } from "./useTokenWrapWrites";
 import { WrapInputCard } from "./WrapInputCard";
 import { ValidWrappingForm, WrappingForm } from "./WrappingFormProvider";
 import { useTokenQuery } from "../../hooks/useTokenQuery";
 import { useTokenPairsQuery } from "./useTokenPairsQuery";
+import { ClearMacroRelayOption } from "../clearMacro/ClearMacroRelayOption";
+import { useClearMacroFeeFacts } from "../clearMacro/useClearMacroFeeFacts";
 
 const underlyingIbAlluoTokenOverrides = [
   // StIbAlluoEth
@@ -65,7 +67,6 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
   const router = useRouter();
   const { visibleAddress } = useVisibleAddress();
   const { setTransactionDrawerOpen } = useLayoutContext();
-  const getTransactionOverrides = useGetTransactionOverrides();
   const { txAnalytics } = useAnalytics();
 
   const {
@@ -142,8 +143,8 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
       : BigNumber.from(amountWei).sub(currentAllowance)
     : ethers.BigNumber.from(0);
 
-  const [approveTrigger, approveResult] = rpcApi.useApproveMutation();
-  const [wrapTrigger, wrapResult] = rpcApi.useSuperTokenUpgradeMutation();
+  const [approveTrigger, approveResult] = useTokenApprove();
+  const [wrapTrigger, wrapResult] = useTokenWrap();
 
   const isApproveAllowanceVisible = !!(
     underlyingToken &&
@@ -162,6 +163,24 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
     !formState.isValid ||
     isApproveAllowanceVisible ||
     allowanceQuery.isLoading;
+
+  const relayChipActionKind =
+    isUnderlyingBlockchainNativeAsset || isApproveAllowanceVisible
+      ? undefined
+      : ("upgrade" as const);
+
+  // Best-effort convenience only: leave the relay fee's USDC share behind so MAX lands on a
+  // submittable amount. Correctness is the form's fee validation, which re-runs — notably
+  // through the wrapper-approval window, where an amount chosen now is still the amount
+  // submitted after the approval clears.
+  const feeFacts = useClearMacroFeeFacts(network);
+  const feeReservationWei =
+    feeFacts.couldPayFromUnderlying &&
+    feeFacts.feeUnderlyingWei != null &&
+    feeFacts.feeUnderlyingToken?.toLowerCase() ===
+      tokenPair?.underlyingTokenAddress.toLowerCase()
+      ? feeFacts.feeUnderlyingWei
+      : 0n;
 
   const amountInputRef = useRef<HTMLInputElement>(undefined!);
 
@@ -192,7 +211,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
         return allowedTokenPairs.concat([tokenPair]);
       }, [] as SuperTokenPair[])
       .map((x) => x.underlyingToken);
-  }, [tokenPairs.length]);
+  }, [tokenPairs]);
 
   const { underlyingBalance } = rpcApi.useUnderlyingBalanceQuery(
     tokenPair && visibleAddress
@@ -221,7 +240,9 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
   const isListedLoading = superTokenQuery.isLoading
 
   return (
-    <Stack data-cy={"wrap-screen"} direction="column" alignItems="center">
+    <Stack data-cy={"wrap-screen"} direction="column" sx={{
+      alignItems: "center"
+    }}>
       <WrapInputCard>
         <Stack direction="row" spacing={2}>
           <Controller
@@ -237,11 +258,13 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                 value={amountDecimal}
                 onChange={onChange}
                 onBlur={onBlur}
-                inputProps={{
-                  ...inputPropsForEtherAmount,
-                  sx: {
-                    ...theme.typography.largeInput,
-                    p: 0,
+                slotProps={{
+                  input: {
+                    ...inputPropsForEtherAmount,
+                    sx: {
+                      ...theme.typography.largeInput,
+                      p: 0,
+                    },
                   },
                 }}
                 sx={{ background: "transparent" }}
@@ -286,16 +309,20 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
           />
         </Stack>
         {underlyingToken && visibleAddress && (
-          <Stack direction="row" justifyContent="space-between" gap={0.5}>
+          <Stack
+            direction="row"
+            sx={{
+              justifyContent: "space-between",
+              gap: 0.5
+            }}>
             <Typography
               variant="body2mono"
-              color="text.secondary"
               sx={{
+                color: "text.secondary",
                 flexShrink: 1,
                 overflow: "hidden",
-                textOverflow: "ellipsis",
-              }}
-            >
+                textOverflow: "ellipsis"
+              }}>
               {tokenPrice && (
                 <FiatAmount
                   wei={amountWei}
@@ -321,9 +348,17 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                       variant="textContained"
                       size="xxs"
                       onClick={() => {
+                        const maxBalance =
+                          BigNumber.from(underlyingBalance).sub(
+                            BigNumber.from(feeReservationWei.toString())
+                          );
                         return onChange(
                           formatUnits(
-                            underlyingBalance,
+                            // A balance at or below the fee has no relayable maximum; clamp
+                            // rather than offer a negative the form would reject.
+                            maxBalance.isNegative()
+                              ? BigNumber.from(0)
+                              : maxBalance,
                             underlyingToken.decimals
                           ) as WrappingForm["data"]["amountDecimal"]
                         );
@@ -339,9 +374,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
           </Stack>
         )}
       </WrapInputCard>
-
       <SwitchWrapModeBtn onClick={onSwitchMode} />
-
       {superToken && (
         <WrapInputCard>
           <Stack direction="row" spacing={2}>
@@ -352,10 +385,12 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
               disableUnderline
               placeholder="0.0"
               value={amountDecimal}
-              inputProps={{
-                sx: {
-                  ...theme.typography.largeInput,
-                  p: 0,
+              slotProps={{
+                input: {
+                  sx: {
+                    ...theme.typography.largeInput,
+                    p: 0,
+                  },
                 },
               }}
               sx={{ background: "transparent" }}
@@ -381,16 +416,17 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
           </Stack>
 
           {!!(underlyingToken && superToken && visibleAddress) && (
-            <Stack direction="row" justifyContent="space-between">
+            <Stack direction="row" sx={{
+              justifyContent: "space-between"
+            }}>
               <Typography
                 variant="body2mono"
-                color="text.secondary"
                 sx={{
+                  color: "text.secondary",
                   flexShrink: 1,
                   overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}
-              >
+                  textOverflow: "ellipsis"
+                }}>
                 {tokenPrice && (
                   <FiatAmount
                     wei={amountWei}
@@ -403,20 +439,26 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
                 chainId={network.id}
                 accountAddress={visibleAddress}
                 tokenAddress={superToken.address}
-                TypographyProps={{ color: "text.secondary" }}
+                TypographyProps={{ color: "textSecondary" }}
               />
             </Stack>
           )}
         </WrapInputCard>
       )}
-
       {!!(superToken && underlyingToken) && (
-        <Stack direction="row" alignItems="center" gap={0.5}>
+        <Stack
+          direction="row"
+          sx={{
+            alignItems: "center",
+            gap: 0.5
+          }}>
           <Typography data-cy="token-pair" align="center" sx={{ my: 3 }}>
             {`1 ${underlyingToken.symbol} = 1 ${superToken.symbol}`}
           </Typography>
           {tokenPrice && (
-            <Typography variant="body2mono" color="text.secondary">
+            <Typography variant="body2mono" sx={{
+              color: "text.secondary"
+            }}>
               (
               <FiatAmount
                 wei={amountWei}
@@ -428,165 +470,178 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
           )}
         </Stack>
       )}
-
-      <Stack gap={2} direction="column" sx={{ width: "100%" }}>
+      {/* 2.5 matches the block rhythm around TX buttons app-wide so the relay
+          strip reads as its own block; the buttons keep their tighter grouping. */}
+      <Stack
+        direction="column"
+        sx={{
+          gap: 2.5,
+          width: "100%"
+        }}>
         <ConnectionBoundary>
-          <TransactionBoundary mutationResult={approveResult}>
-            {({ setDialogLoadingInfo }) =>
-              isApproveAllowanceVisible && (
+          <Stack direction="column" sx={{
+            gap: 2
+          }}>
+            <TransactionBoundary mutationResult={approveResult}>
+              {({ setDialogLoadingInfo }) =>
+                isApproveAllowanceVisible && (
+                  <TransactionButton
+                    dataCy={"approve-allowance-button"}
+                    onClick={async () => {
+                      const approveAllowanceAmountWei =
+                        currentAllowance.add(missingAllowance);
+  
+                      setDialogLoadingInfo(
+                        <AllowancePreview
+                          {...{
+                            amountWei: approveAllowanceAmountWei.toString(),
+                            decimals: underlyingToken.decimals,
+                            tokenSymbol: underlyingToken.symbol,
+                          }}
+                        />
+                      );
+  
+                      const restoration: ApproveAllowanceRestoration = {
+                        type: RestorationType.Approve,
+                        chainId: network.id,
+                        amountWei: approveAllowanceAmountWei.toString(),
+                        tokenAddress: tokenPair.underlyingTokenAddress,
+                      };
+  
+                      const primaryArgs = {
+                        chainId: network.id,
+                        amountWei: approveAllowanceAmountWei.toString(),
+                        superTokenAddress: tokenPair.superTokenAddress,
+                      };
+                      approveTrigger({
+                        ...primaryArgs,
+                        underlyingTokenAddress: tokenPair.underlyingTokenAddress,
+                        transactionExtraData: {
+                          restoration,
+                        },
+                      })
+                        .then(...txAnalytics("Approve Allowance", primaryArgs))
+                        .then(() => setTransactionDrawerOpen(true))
+                        .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
+                    }}
+                  >
+                    Allow Superfluid Protocol to wrap your{" "}
+                    {underlyingToken.symbol}
+                  </TransactionButton>
+                )
+              }
+            </TransactionBoundary>
+  
+            <TransactionBoundary mutationResult={wrapResult}>
+              {({
+                closeDialog,
+                setDialogLoadingInfo,
+                setDialogSuccessActions,
+              }) => (
                 <TransactionButton
-                  dataCy={"approve-allowance-button"}
-                  onClick={async (signer) => {
-                    const approveAllowanceAmountWei =
-                      currentAllowance.add(missingAllowance);
-
+                  dataCy={"upgrade-button"}
+                  disabled={isWrapButtonDisabled}
+                  onClick={async () => {
+                    if (isWrapButtonDisabled) {
+                      throw Error(
+                        `This should never happen. Form state: ${JSON.stringify(
+                          formState,
+                          null,
+                          2
+                        )}`
+                      );
+                    }
+  
+                    const { data: formData } = getValues() as ValidWrappingForm;
+  
+                    // Use super token's decimals for upgrading, not the underlying's.
+                    const amountWei = parseEther(formData.amountDecimal);
+  
+                    const restoration: SuperTokenUpgradeRestoration = {
+                      type: RestorationType.Wrap,
+                      version: 2,
+                      chainId: network.id,
+                      tokenPair: tokenPair,
+                      amountWei: amountWei.toString(),
+                    };
+  
+                    // Temp custom override for "IbAlluo" tokens on polygon
+                    // TODO: Find a better solution
+                    const isIbAlluoUnderlying =
+                      network.id === 137 &&
+                      underlyingIbAlluoTokenOverrides.includes(
+                        tokenPair.underlyingTokenAddress.toLowerCase()
+                      );
+  
                     setDialogLoadingInfo(
-                      <AllowancePreview
+                      <WrapPreview
                         {...{
-                          amountWei: approveAllowanceAmountWei.toString(),
-                          decimals: underlyingToken.decimals,
-                          tokenSymbol: underlyingToken.symbol,
+                          amountWei: amountWei,
+                          superTokenSymbol: superToken.symbol,
+                          underlyingTokenSymbol: underlyingToken.symbol,
                         }}
                       />
                     );
-
-                    const restoration: ApproveAllowanceRestoration = {
-                      type: RestorationType.Approve,
-                      chainId: network.id,
-                      amountWei: approveAllowanceAmountWei.toString(),
-                      tokenAddress: tokenPair.underlyingTokenAddress,
-                    };
-
+  
                     const primaryArgs = {
                       chainId: network.id,
-                      amountWei: approveAllowanceAmountWei.toString(),
-                      superTokenAddress: tokenPair.superTokenAddress,
+                      amountWei: amountWei.toString(),
+                      superTokenAddress: formData.tokenPair.superTokenAddress,
                     };
-                    approveTrigger({
+                    wrapTrigger({
                       ...primaryArgs,
+                      isNativeAssetUnderlyingToken:
+                        isUnderlyingBlockchainNativeAsset,
                       transactionExtraData: {
                         restoration,
                       },
-                      signer,
-                      overrides: await getTransactionOverrides(network),
+                      ...(isIbAlluoUnderlying
+                        ? { overrides: { gas: 200_000n } }
+                        : {}),
                     })
-                      .unwrap()
-                      .then(...txAnalytics("Approve Allowance", primaryArgs))
-                      .then(() => setTransactionDrawerOpen(true))
+                      .then(...txAnalytics("Wrap", primaryArgs))
+                      .then(() => resetForm())
                       .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
+  
+                    setDialogSuccessActions(
+                      <TransactionDialogActions>
+                        <Stack
+                          sx={{
+                            gap: 1,
+                            width: "100%"
+                          }}>
+                          <TransactionDialogButton
+                            data-cy={"wrap-more-tokens-button"}
+                            color="secondary"
+                            onClick={closeDialog}
+                          >
+                            Wrap more tokens
+                          </TransactionDialogButton>
+                          <TransactionDialogButton
+                            data-cy={"go-to-tokens-page-button"}
+                            color="primary"
+                            onClick={() =>
+                              router
+                                .push("/")
+                                .then(() => setTransactionDrawerOpen(true))
+                            }
+                          >
+                            Go to tokens page ➜
+                          </TransactionDialogButton>
+                        </Stack>
+                      </TransactionDialogActions>
+                    );
                   }}
                 >
-                  Allow Superfluid Protocol to wrap your{" "}
-                  {underlyingToken.symbol}
+                  Wrap
                 </TransactionButton>
-              )
-            }
-          </TransactionBoundary>
-
-          <TransactionBoundary mutationResult={wrapResult}>
-            {({
-              closeDialog,
-              setDialogLoadingInfo,
-              setDialogSuccessActions,
-            }) => (
-              <TransactionButton
-                dataCy={"upgrade-button"}
-                disabled={isWrapButtonDisabled}
-                onClick={async (signer) => {
-                  if (isWrapButtonDisabled) {
-                    throw Error(
-                      `This should never happen. Form state: ${JSON.stringify(
-                        formState,
-                        null,
-                        2
-                      )}`
-                    );
-                  }
-
-                  const { data: formData } = getValues() as ValidWrappingForm;
-
-                  // Use super token's decimals for upgrading, not the underlying's.
-                  const amountWei = parseEther(formData.amountDecimal);
-
-                  const restoration: SuperTokenUpgradeRestoration = {
-                    type: RestorationType.Wrap,
-                    version: 2,
-                    chainId: network.id,
-                    tokenPair: tokenPair,
-                    amountWei: amountWei.toString(),
-                  };
-
-                  const overrides = await getTransactionOverrides(network);
-
-                  // Temp custom override for "IbAlluo" tokens on polygon
-                  // TODO: Find a better solution
-                  if (
-                    network.id === 137 &&
-                    underlyingIbAlluoTokenOverrides.includes(
-                      tokenPair.underlyingTokenAddress.toLowerCase()
-                    )
-                  ) {
-                    overrides.gasLimit = 200_000;
-                  }
-
-                  setDialogLoadingInfo(
-                    <WrapPreview
-                      {...{
-                        amountWei: amountWei,
-                        superTokenSymbol: superToken.symbol,
-                        underlyingTokenSymbol: underlyingToken.symbol,
-                      }}
-                    />
-                  );
-
-                  const primaryArgs = {
-                    chainId: network.id,
-                    amountWei: amountWei.toString(),
-                    superTokenAddress: formData.tokenPair.superTokenAddress,
-                  };
-                  wrapTrigger({
-                    ...primaryArgs,
-                    transactionExtraData: {
-                      restoration,
-                    },
-                    signer,
-                    overrides
-                  })
-                    .unwrap()
-                    .then(...txAnalytics("Wrap", primaryArgs))
-                    .then(() => resetForm())
-                    .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
-
-                  setDialogSuccessActions(
-                    <TransactionDialogActions>
-                      <Stack gap={1} sx={{ width: "100%" }}>
-                        <TransactionDialogButton
-                          data-cy={"wrap-more-tokens-button"}
-                          color="secondary"
-                          onClick={closeDialog}
-                        >
-                          Wrap more tokens
-                        </TransactionDialogButton>
-                        <TransactionDialogButton
-                          data-cy={"go-to-tokens-page-button"}
-                          color="primary"
-                          onClick={() =>
-                            router
-                              .push("/")
-                              .then(() => setTransactionDrawerOpen(true))
-                          }
-                        >
-                          Go to tokens page ➜
-                        </TransactionDialogButton>
-                      </Stack>
-                    </TransactionDialogActions>
-                  );
-                }}
-              >
-                Wrap
-              </TransactionButton>
-            )}
-          </TransactionBoundary>
+              )}
+            </TransactionBoundary>
+          </Stack>
+          <ClearMacroRelayOption
+            actionKind={relayChipActionKind}
+            network={network}
+          />
         </ConnectionBoundary>
       </Stack>
     </Stack>
@@ -602,15 +657,15 @@ const WrapPreview: FC<{
     <Typography
       data-cy="wrap-message"
       variant="h5"
-      color="text.secondary"
       translate="yes"
-    >
-      You are wrapping{" "}
+      sx={{
+        color: "text.secondary"
+      }}
+    >You are wrapping{" "}
       <span translate="no">
         {formatEther(amountWei)} {underlyingTokenSymbol}
-      </span>{" "}
-      to the super token <span translate="no">{superTokenSymbol}</span>.
-    </Typography>
+      </span>{" "}to the super token <span translate="no">{superTokenSymbol}</span>.
+          </Typography>
   );
 };
 
@@ -623,14 +678,14 @@ const AllowancePreview: FC<{
     <Typography
       data-cy="allowance-message"
       variant="h5"
-      color="text.secondary"
       translate="yes"
-    >
-      You are approving additional allowance of{" "}
+      sx={{
+        color: "text.secondary"
+      }}
+    >You are approving additional allowance of{" "}
       <span translate="no">
         {formatUnits(amountWei, decimals)} {tokenSymbol}
-      </span>{" "}
-      for Superfluid Protocol to use.
-    </Typography>
+      </span>{" "}for Superfluid Protocol to use.
+          </Typography>
   );
 };

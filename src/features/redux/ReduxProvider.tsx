@@ -12,6 +12,7 @@ import readOnlyFrameworks from "../network/readOnlyFrameworks";
 import { reduxPersistor, reduxStore, useAppDispatch } from "./store";
 import { useSchedulerTransactionTracking } from "./UseSchedulerTransactionTracking";
 import { useVestingTransactionTracking } from "./UseVestingTransactionTracking";
+import { ClearMacroRelayRecovery } from "../clearMacro/useClearMacroRelayRecovery";
 import { useEthersSigner } from "../../utils/wagmiEthersAdapters";
 import { PersistGate } from "redux-persist/integration/react";
 import { useMutation } from "@tanstack/react-query";
@@ -77,7 +78,7 @@ const ReduxProviderCore: FC<PropsWithChildren> = () => {
   useVestingTransactionTracking();
   useSchedulerTransactionTracking();
 
-  return null;
+  return <ClearMacroRelayRecovery />;
 };
 
 const ReduxProvider: FC<PropsWithChildren> = ({ children }) => {

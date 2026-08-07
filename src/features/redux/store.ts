@@ -38,6 +38,7 @@ import { deserializeError } from "serialize-error";
 import { schedulingSubgraphApi } from "../../scheduling-subgraph/schedulingSubgraphApi";
 import { vestingSubgraphApi } from "../../vesting-subgraph/vestingSubgraphApi";
 import accountingApi from "../accounting/accountingApi.slice";
+import balanceApi from "../balance/balanceApi.slice";
 import { addressBookSlice, AddressBookState } from "../addressBook/addressBook.slice";
 import { customTokensSlice, getCustomTokenId, NetworkCustomTokenState } from "../customTokens/customTokens.slice";
 import { efpApi } from "../efp/efpApi.slice";
@@ -47,29 +48,22 @@ import faucetApi from "../faucet/faucetApi.slice";
 import { flagsSlice } from "../flags/flags.slice";
 import gasApi from "../gas/gasApi.slice";
 import { impersonationSlice } from "../impersonation/impersonation.slice";
-import { notificationsSlice } from "../notifications/notifications.slice";
 import { networkPreferencesSlice, NetworkPreferencesState } from "../network/networkPreferences.slice";
 import { pendingUpdateSlice } from "../pendingUpdates/pendingUpdate.slice";
+import { relayRecoverySlice } from "../clearMacro/relayRecovery.slice";
 import appSettingsReducer from "../settings/appSettings.slice";
 import tokenPriceApi from "../tokenPrice/tokenPriceApi.slice";
 import { adHocRpcEndpoints } from "./endpoints/adHocRpcEndpoints";
 import { adHocSubgraphEndpoints } from "./endpoints/adHocSubgraphEndpoints";
 import { flowSchedulerEndpoints } from "./endpoints/flowSchedulerEndpoints";
-import {
-  vestingSchedulerMutationEndpoints,
-  vestingSchedulerQueryEndpoints,
-} from "./endpoints/vestingSchedulerEndpoints";
+import { vestingSchedulerQueryEndpoints } from "./endpoints/vestingSchedulerEndpoints";
 import { platformApi } from "./platformApi/platformApi";
 import addressBookRpcApi from "../addressBook/addressBookRpcApi.slice";
 import { autoWrapEndpoints } from "./endpoints/autoWrapEndpoints";
 import { autoWrapSubgraphApi } from "../../auto-wrap-subgraph/autoWrapSubgraphApi";
-import { tokenAccessMutationEndpoints } from "./endpoints/tokenAccessEndpoints";
-import { gdaEndpoints } from "./endpoints/gdaEndpoints";
 import { deprecatedNetworkChainIds } from "../network/networks";
 import _ from "lodash";
 import { isDefined } from "../../utils/ensureDefined";
-import { batchVestingEndpoints } from "./endpoints/batchVestingEndpoints";
-import { vestingAgoraEndpoints } from "./endpoints/vestingAgoraEndpoints";
 
 export const rpcApi = initializeRpcApiSlice((options) =>
   {
@@ -84,13 +78,8 @@ export const rpcApi = initializeRpcApiSlice((options) =>
   .injectEndpoints(allRpcEndpoints)
   .injectEndpoints(adHocRpcEndpoints)
   .injectEndpoints(flowSchedulerEndpoints)
-  .injectEndpoints(vestingSchedulerMutationEndpoints)
-  .injectEndpoints(tokenAccessMutationEndpoints)
   .injectEndpoints(vestingSchedulerQueryEndpoints)
-  .injectEndpoints(autoWrapEndpoints)
-  .injectEndpoints(gdaEndpoints)
-  .injectEndpoints(batchVestingEndpoints)
-  .injectEndpoints(vestingAgoraEndpoints);
+  .injectEndpoints(autoWrapEndpoints);
   
 export const subgraphApi = initializeSubgraphApiSlice((options) =>
   createApiWithReactHooks({
@@ -114,11 +103,17 @@ export const subgraphApi = initializeSubgraphApiSlice((options) =>
 
 export const transactionTracker = initializeTransactionTrackerSlice();
 
+// NOTE: redux-persist passes the *target* version from this config as `migrate`'s second
+// argument -- not the version the persisted state was written at. The previous `currentVersion === 1`
+// guards were therefore dead code once these slices moved past version 1, which meant entities
+// belonging to removed networks were never actually purged. These sanitizers now run on every
+// rehydrate instead; they are idempotent, so that is safe and keeps working for future removals.
 const transactionTrackerPersistedReducer = persistReducer(
-  { storage, key: "transactions", version: 2, migrate: async (persistedState, currentVersion) => {
-    if (persistedState && currentVersion === 1) {
+  { storage, key: "transactions", version: 2, migrate: async (persistedState) => {
+    if (persistedState) {
       const oldState = persistedState as PersistedState & EntityState<TrackedTransaction, string>;
       const transactionsToRemove = Object.values(oldState.entities).filter(isDefined).filter(x => deprecatedNetworkChainIds.includes(x.chainId)) as TrackedTransaction[];
+      if (!transactionsToRemove.length) return persistedState;
       const newEntities = { ...oldState.entities };
       for (const tx of transactionsToRemove) {
         delete newEntities[tx.hash];
@@ -140,8 +135,8 @@ const impersonationPersistedReducer = persistReducer(
 );
 
 const addressBookPersistedReducer = persistReducer(
-  { storage, key: "addressBook", version: 2, migrate: async (persistedState, currentVersion) => {
-    if (persistedState && currentVersion === 1) {
+  { storage, key: "addressBook", version: 2, migrate: async (persistedState) => {
+    if (persistedState) {
       const oldState = persistedState as PersistedState & AddressBookState;
       const newEntities = { ...oldState.entities };
       Object.values(newEntities).filter(isDefined).forEach((x) => {
@@ -160,13 +155,14 @@ const addressBookPersistedReducer = persistReducer(
 );
 
 const customTokensPersistedReducer = persistReducer(
-  { storage, key: "customTokens", version: 2, migrate: async (persistedState, currentVersion) => {
-    if (persistedState && currentVersion === 1) {
+  { storage, key: "customTokens", version: 2, migrate: async (persistedState) => {
+    if (persistedState) {
       const oldState = persistedState as PersistedState & NetworkCustomTokenState;
       const newEntities = { ...oldState.entities };
       Object.values(newEntities).forEach((x) => {
         if (x && deprecatedNetworkChainIds.includes(x.chainId)) {
-          delete newEntities[x.customToken];
+          // Entities are keyed by `${chainId}-${address}`, not by the bare address.
+          delete newEntities[getCustomTokenId(x.chainId, x.customToken)];
         }
       });
       return {
@@ -181,8 +177,8 @@ const customTokensPersistedReducer = persistReducer(
 );
 
 const networkPreferencesPersistedReducer = persistReducer(
-  { storage, key: "networkPreferences", version: 3, migrate: async (persistedState, currentVersion) => {
-    if (persistedState && currentVersion === 1) {
+  { storage, key: "networkPreferences", version: 3, migrate: async (persistedState) => {
+    if (persistedState) {
       const oldState = persistedState as PersistedState & NetworkPreferencesState;
       const newEntities = { ...oldState.entities };
       Object.values(newEntities).forEach((x) => {
@@ -195,8 +191,9 @@ const networkPreferencesPersistedReducer = persistReducer(
         entities: newEntities
       }
     }
-
-    // TODO: migrate?
+    // Must return the state: falling through to `undefined` here made rehydration
+    // discard the user's persisted network preferences on every load.
+    return persistedState;
   } },
   networkPreferencesSlice.reducer
 );
@@ -211,9 +208,11 @@ const appSettingsPersistedReducer = persistReducer(
   appSettingsReducer
 );
 
-const notificatonsPersistedReducer = persistReducer(
-  { storage, key: "notifications", version: 1 },
-  notificationsSlice.reducer
+// In-flight Clear Macro relay executions. Persisted so a 120s poll timeout / closed tab / reload
+// never orphans a signed execution — the background poller resumes them on load.
+const relayRecoveryPersistedReducer = persistReducer(
+  { storage, key: "relayRecovery", version: 1 },
+  relayRecoverySlice.reducer
 );
 
 export const listenerMiddleware = createListenerMiddleware();
@@ -269,6 +268,7 @@ export const reduxStore = configureStore({
     [faucetApi.reducerPath]: faucetApi.reducer,
     [tokenPriceApi.reducerPath]: tokenPriceApi.reducer,
     [accountingApi.reducerPath]: accountingApi.reducer,
+    [balanceApi.reducerPath]: balanceApi.reducer,
     [vestingSubgraphApi.reducerPath]: vestingSubgraphApi.reducer,
     [autoWrapSubgraphApi.reducerPath]: autoWrapSubgraphApi.reducer,
     [schedulingSubgraphApi.reducerPath]: schedulingSubgraphApi.reducer,
@@ -280,8 +280,8 @@ export const reduxStore = configureStore({
     addressBook: addressBookPersistedReducer,
     customTokens: customTokensPersistedReducer,
     networkPreferences: networkPreferencesPersistedReducer,
-    notifications: notificatonsPersistedReducer,
     flags: flagsPersistedReducer,
+    relayRecovery: relayRecoveryPersistedReducer,
 
     // Default slices
     pendingUpdates: pendingUpdateSlice.reducer,
@@ -306,6 +306,7 @@ export const reduxStore = configureStore({
     .concat(faucetApi.middleware)
     .concat(tokenPriceApi.middleware)
     .concat(accountingApi.middleware)
+    .concat(balanceApi.middleware)
     .concat(addressBookRpcApi.middleware),
   enhancers: (getDefaultEnhancers) =>
     getDefaultEnhancers({

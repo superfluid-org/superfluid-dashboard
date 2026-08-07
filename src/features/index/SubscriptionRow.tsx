@@ -18,13 +18,15 @@ import { BigNumber } from "ethers";
 import { FC, useMemo } from "react";
 import AddressAvatar from "../../components/Avatar/AddressAvatar";
 import AddressName from "../../components/AddressName/AddressName";
-import useGetTransactionOverrides from "../../hooks/useGetTransactionOverrides";
 import { subscriptionWeiAmountReceived } from "../../utils/tokenUtils";
 import AddressCopyTooltip from "../common/AddressCopyTooltip";
 import { Network } from "../network/networks";
 import { usePendingIndexSubscriptionApprove } from "../pendingUpdates/PendingIndexSubscriptionApprove";
 import { usePendingIndexSubscriptionRevoke } from "../pendingUpdates/PendingIndexSubscriptionRevoke";
-import { rpcApi } from "../redux/store";
+import {
+  useIndexSubscriptionApprove,
+  useIndexSubscriptionRevoke,
+} from "./useIndexSubscriptionWrites";
 import Amount from "../token/Amount";
 import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
@@ -40,7 +42,12 @@ export const SubscriptionLoadingRow = () => {
       {!isBelowMd ? (
         <>
           <TableCell>
-            <Stack direction="row" alignItems="center" gap={1.5}>
+            <Stack
+              direction="row"
+              sx={{
+                alignItems: "center",
+                gap: 1.5
+              }}>
               <Skeleton
                 variant="circular"
                 width={24}
@@ -67,7 +74,12 @@ export const SubscriptionLoadingRow = () => {
       ) : (
         <>
           <TableCell>
-            <Stack direction="row" alignItems="center" gap={1.5}>
+            <Stack
+              direction="row"
+              sx={{
+                alignItems: "center",
+                gap: 1.5
+              }}>
               <Skeleton
                 variant="circular"
                 width={24}
@@ -81,7 +93,9 @@ export const SubscriptionLoadingRow = () => {
             </Stack>
           </TableCell>
           <TableCell>
-            <Stack alignItems="end">
+            <Stack sx={{
+              alignItems: "end"
+            }}>
               <Skeleton width={60} />
               <Skeleton width={40} />
             </Stack>
@@ -128,12 +142,10 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
     ]
   );
 
-  const getTransactionOverrides = useGetTransactionOverrides();
-
   const [approveSubscription, approveSubscriptionResult] =
-    rpcApi.useIndexSubscriptionApproveMutation();
+    useIndexSubscriptionApprove();
   const [revokeSubscription, revokeSubscriptionResult] =
-    rpcApi.useIndexSubscriptionRevokeMutation();
+    useIndexSubscriptionRevoke();
 
   const pendingApproval = usePendingIndexSubscriptionApprove({
     chainId: network.id,
@@ -152,7 +164,12 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
   return (
     <TableRow data-cy={"distribution-row"}>
       <TableCell>
-        <Stack direction="row" alignItems="center" gap={1.5}>
+        <Stack
+          direction="row"
+          sx={{
+            alignItems: "center",
+            gap: 1.5
+          }}>
           <AddressAvatar
             address={subscription.publisher}
             AvatarProps={{
@@ -174,11 +191,12 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
                 ? format(subscription.updatedAtTimestamp * 1000, "d MMM. yyyy")
                 : undefined
             }
-            primaryTypographyProps={{ variant: "h7" }}
+            slotProps={{
+              primary: { variant: "h7" }
+            }}
           />
         </Stack>
       </TableCell>
-
       {!isBelowMd ? (
         <>
           <TableCell>
@@ -190,7 +208,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
             <Typography
               data-cy={"status"}
               variant="body2"
-              color={subscription.approved ? "primary" : "warning.main"}
+              color={subscription.approved ? "primary" : "warning"}
               translate="yes"
             >
               {subscription.approved ? (
@@ -216,23 +234,24 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
                 <span>Awaiting Approval</span>
               )
             }
-            primaryTypographyProps={{ variant: "h7mono" }}
-            secondaryTypographyProps={{
-              variant: "body2",
-              translate: "yes",
-              color: subscription.approved ? "primary" : "warning.main",
-              sx: { whiteSpace: "pre" },
-            }}
-          />
+            slotProps={{
+              primary: { variant: "h7mono" },
+
+              secondary: {
+                variant: "body2",
+                translate: "yes",
+                color: subscription.approved ? "primary" : "warning",
+                sx: { whiteSpace: "pre" },
+              }
+            }} />
         </TableCell>
       )}
-
       <TableCell>
         <ConnectionBoundary expectedNetwork={network}>
           {({ isConnected, isCorrectNetwork, expectedNetwork }) => (
             <>
               <TransactionBoundary mutationResult={approveSubscriptionResult}>
-                {({ mutationResult, signer, setDialogLoadingInfo }) =>
+                {({ mutationResult, accountAddress, setDialogLoadingInfo }) =>
                   !subscription.approved && (
                     <>
                       {mutationResult.isLoading || pendingApproval ? (
@@ -266,20 +285,19 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
                               color="primary"
                               size="small"
                               disabled={
-                                !signer || !isConnected || !isCorrectNetwork
+                                !accountAddress ||
+                                !isConnected ||
+                                !isCorrectNetwork
                               }
                               onClick={async () => {
-                                if (!signer)
-                                  throw new Error(
-                                    "Signer should always be available here."
-                                  );
-
                                 setDialogLoadingInfo(
                                   <Typography
                                     data-cy={"approve-index-message"}
                                     variant="h5"
-                                    color="text.secondary"
                                     translate="yes"
+                                    sx={{
+                                      color: "text.secondary"
+                                    }}
                                   >
                                     You are approving an index subscription.
                                   </Typography>
@@ -293,14 +311,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
                                   superTokenAddress: subscription.token,
                                   userDataBytes: undefined,
                                 };
-                                approveSubscription({
-                                  ...primaryArgs,
-                                  signer,
-                                  overrides: await getTransactionOverrides(
-                                    network
-                                  )
-                                })
-                                  .unwrap()
+                                approveSubscription(primaryArgs)
                                   .then(
                                     ...txAnalytics(
                                       "Approve IDA Subscription",
@@ -320,7 +331,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
                 }
               </TransactionBoundary>
               <TransactionBoundary mutationResult={revokeSubscriptionResult}>
-                {({ mutationResult, signer, setDialogLoadingInfo }) =>
+                {({ mutationResult, accountAddress, setDialogLoadingInfo }) =>
                   subscription.approved && (
                     <>
                       {mutationResult.isLoading || pendingRevoke ? (
@@ -352,20 +363,19 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
                               color="error"
                               size="small"
                               disabled={
-                                !signer || !isConnected || !isCorrectNetwork
+                                !accountAddress ||
+                                !isConnected ||
+                                !isCorrectNetwork
                               }
                               onClick={async () => {
-                                if (!signer)
-                                  throw new Error(
-                                    "Signer should always bet available here."
-                                  );
-
                                 setDialogLoadingInfo(
                                   <Typography
                                     data-cy={"revoke-message"}
                                     variant="h5"
-                                    color="text.secondary"
                                     translate="yes"
+                                    sx={{
+                                      color: "text.secondary"
+                                    }}
                                   >
                                     You are revoking approval of an index
                                     subscription.
@@ -380,14 +390,7 @@ const SubscriptionRow: FC<SubscriptionRowProps> = ({
                                   superTokenAddress: subscription.token,
                                   userDataBytes: undefined,
                                 };
-                                revokeSubscription({
-                                  ...primaryArgs,
-                                  signer,
-                                  overrides: await getTransactionOverrides(
-                                    network
-                                  )
-                                })
-                                  .unwrap()
+                                revokeSubscription(primaryArgs)
                                   .then(
                                     ...txAnalytics(
                                       "Revoke IDA Subscription",

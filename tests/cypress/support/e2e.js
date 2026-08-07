@@ -31,15 +31,15 @@ Cypress.on("uncaught:exception", (err, runnable) => {
     err.message.includes(
       "Request failed with status code 429 Too Many Requests"
     ) ||
-    //An error popping up on scroll sepolia , cannot reproduce manually
-    err.message.includes("getInitialProps") ||
     //Error popping up when loading gnosis safe custom apps page
     err.message.includes("Minified React error #418") ||
     err.message.includes("Minified React error #423") ||
     //Failing request to LiFi due to some of the chains supported in the dashboard
     err.message.includes("Request failed with status code 400 Bad Request") ||
     //Dev mode error in bridge page
-    err.message.includes("_data$event.startsWith is not a function")
+    err.message.includes("_data$event.startsWith is not a function") ||
+    //Benign, spec-defined ResizeObserver overflow warning surfacing via window.onerror
+    err.message.includes("ResizeObserver loop")
   ) {
     return false;
   }

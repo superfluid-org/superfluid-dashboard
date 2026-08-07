@@ -10,17 +10,17 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useMemo } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import TooltipWithIcon from "../../common/TooltipWithIcon";
 import { useExpectedNetwork } from "../../network/ExpectedNetworkContext";
-import { rpcApi } from "../../redux/store";
 import { TokenDialogButton } from "../../tokenWrapping/TokenDialogButton";
 import ConnectionBoundary from "../../transactionBoundary/ConnectionBoundary";
 import ConnectionBoundaryButton from "../../transactionBoundary/ConnectionBoundaryButton";
 import { useVisibleAddress } from "../../wallet/VisibleAddressContext";
 import AddressSearch from "../AddressSearch";
 import { PartialTransferForm, ValidTransferForm } from "./TransferFormProvider";
+import { useTransfer } from "./useTransfer";
 import { TransactionBoundary } from "../../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../../transactionBoundary/TransactionButton";
 import { parseUnits } from "ethers/lib/utils";
@@ -28,12 +28,16 @@ import { useTokenQuery } from "../../../hooks/useTokenQuery";
 import { SendBalance } from "../stream/SendStream";
 import { inputPropsForEtherAmount } from "../../../utils/inputPropsForEtherAmount";
 import { Address } from "@superfluid-finance/sdk-core";
-import { RestorationType, SendTransferRestoration } from "../../transactionRestoration/transactionRestorations";
+import {
+  RestorationType,
+  SendTransferRestoration,
+} from "../../transactionRestoration/transactionRestorations";
 import { skipToken } from "@reduxjs/toolkit/query/react";
 import { Network } from "../../network/networks";
 import { isSuper, TokenMinimal } from "../../redux/endpoints/tokenTypes";
 import { BalanceUnderlyingToken } from "../../tokenWrapping/BalanceUnderlyingToken";
 import { useTransferTokens } from "./useTransferTokens";
+import { ClearMacroRelayOption } from "../../clearMacro/ClearMacroRelayOption";
 
 export default memo(function SendTransfer() {
   const theme = useTheme();
@@ -52,22 +56,25 @@ export default memo(function SendTransfer() {
     resetFormData();
   }, [resetFormData]);
 
-  const [
-    receiverAddress,
-    tokenAddress,
-    amountEther
-  ] = watch([
+  const [receiverAddress, tokenAddress, amountEther] = watch([
     "data.receiverAddress",
     "data.tokenAddress",
     "data.amountEther",
   ]);
 
-  const { tokens, balances, isFetching: areTokensFetching } = useTransferTokens({
+  const {
+    tokens,
+    balances,
+    isFetching: areTokensFetching,
+  } = useTransferTokens({
     network,
     address: visibleAddress,
   });
   const selectedTransferToken = useMemo(
-    () => tokens.find(({ address }) => address.toLowerCase() === tokenAddress?.toLowerCase()),
+    () =>
+      tokens.find(
+        ({ address }) => address.toLowerCase() === tokenAddress?.toLowerCase()
+      ),
     [tokenAddress, tokens]
   );
   const { data: fallbackToken } = useTokenQuery(
@@ -77,73 +84,75 @@ export default memo(function SendTransfer() {
   );
   const token = selectedTransferToken ?? fallbackToken;
 
-  const [transfer, transferResult] =
-    rpcApi.useTransferMutation();
+  const [transfer, transferResult] = useTransfer();
 
-  const [isSendDisabled, setIsSendDisabled] = useState(true);
-  useEffect(() => {
-    setIsSendDisabled(
-      isValidating ||
-      !isValid ||
-      !token
-    );
-  }, [isValid, isValidating, token]);
+  const isSendDisabled = isValidating || !isValid || !token;
 
   const SendTransactionBoundary = (
     <TransactionBoundary mutationResult={transferResult}>
-      {({ setDialogLoadingInfo, getOverrides, txAnalytics }) =>
-      (<TransactionButton
-        disabled={isSendDisabled}
-        dataCy={"transfer-button"}
-        onClick={async (signer) => {
-          if (isSendDisabled || !token) {
-            throw Error(
-              `This should never happen.`);
-          }
-
-          setDialogLoadingInfo(
-            <Typography variant="h5" color="text.secondary" translate="yes">
-              You are sending {amountEther} {token?.symbol} to {receiverAddress}.
-            </Typography>
-          );
-
-          const { data: formData } = getValues() as ValidTransferForm;
-
-          const senderAddress = await signer.getAddress() as Address
-
-          const transactionRestoration: SendTransferRestoration = {
-            type: RestorationType.SendTransfer,
-            chainId: network.id,
-            tokenAddress: formData.tokenAddress,
-            receiverAddress: formData.receiverAddress,
-            amountEther: formData.amountEther
-          };
-
-          const primaryArgs = {
-            chainId: network.id,
-            tokenAddress: formData.tokenAddress,
-            senderAddress,
-            receiverAddress: formData.receiverAddress,
-            amountWei: parseUnits(formData.amountEther, token.decimals).toString()
-          };
-
-          transfer({
-            ...primaryArgs,
-            signer,
-            overrides: await getOverrides(),
-            transactionExtraData: {
-              restoration: transactionRestoration,
+      {({ setDialogLoadingInfo, txAnalytics, accountAddress }) => (
+        <TransactionButton
+          disabled={isSendDisabled}
+          dataCy={"transfer-button"}
+          onClick={async () => {
+            if (isSendDisabled || !token) {
+              throw Error(`This should never happen.`);
             }
-          })
-            .unwrap()
-            .then(...txAnalytics("Send Transfer", primaryArgs))
-            .then(() => resetForm())
-            .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
-        }}
-      >
-        Send Transfer
-      </TransactionButton>)
-      }
+
+            setDialogLoadingInfo(
+              <Typography
+                variant="h5"
+                translate="yes"
+                sx={{
+                  color: "text.secondary",
+                }}
+              >
+                You are sending {amountEther} {token.symbol} to{" "}
+                {receiverAddress}.
+              </Typography>
+            );
+
+            const { data: formData } = getValues() as ValidTransferForm;
+
+            if (!accountAddress) {
+              throw Error("Account not connected.");
+            }
+            const senderAddress = accountAddress as Address;
+
+            const transactionRestoration: SendTransferRestoration = {
+              type: RestorationType.SendTransfer,
+              chainId: network.id,
+              tokenAddress: formData.tokenAddress,
+              receiverAddress: formData.receiverAddress,
+              amountEther: formData.amountEther,
+            };
+
+            const primaryArgs = {
+              chainId: network.id,
+              tokenAddress: formData.tokenAddress,
+              senderAddress,
+              receiverAddress: formData.receiverAddress,
+              amountWei: parseUnits(
+                formData.amountEther,
+                token.decimals
+              ).toString(),
+              isSuperToken: isSuper(token),
+            };
+
+            transfer({
+              ...primaryArgs,
+              transactionExtraData: {
+                restoration: transactionRestoration,
+              },
+            })
+              .then(...txAnalytics("Send Transfer", primaryArgs))
+              .then(() => resetForm())
+              .catch((error: unknown) => void error); // Error is already logged and handled in the middleware & UI.
+          }}
+        >
+          Send Transfer
+        </TransactionButton>
+      )}
     </TransactionBoundary>
   );
 
@@ -165,9 +174,11 @@ export default memo(function SendTransfer() {
       <Box>
         <Stack
           direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-          sx={{ mr: 0.75 }}
+          sx={{
+            alignItems: "center",
+            justifyContent: "space-between",
+            mr: 0.75,
+          }}
         >
           <FormLabel>Receiver Wallet Address</FormLabel>
           <TooltipWithIcon title="Must not be an exchange address" />
@@ -184,7 +195,11 @@ export default memo(function SendTransfer() {
           },
         }}
       >
-        <Stack justifyContent="stretch">
+        <Stack
+          sx={{
+            justifyContent: "stretch",
+          }}
+        >
           <FormLabel>Token</FormLabel>
           <TokenController
             network={network}
@@ -194,16 +209,22 @@ export default memo(function SendTransfer() {
             isFetching={areTokensFetching}
           />
         </Stack>
-        <Stack justifyContent="stretch">
+        <Stack
+          sx={{
+            justifyContent: "stretch",
+          }}
+        >
           <FormLabel>Amount</FormLabel>
           <AmountController token={token} />
         </Stack>
       </Box>
+      <TransferBalance
+        network={network}
+        visibleAddress={visibleAddress}
+        token={token}
+      />
 
-      <TransferBalance network={network} visibleAddress={visibleAddress} token={token} />
-
-      {(token && visibleAddress) && <Divider />}
-
+      {token && visibleAddress && <Divider />}
       <ConnectionBoundary>
         <ConnectionBoundaryButton
           ButtonProps={{
@@ -212,49 +233,55 @@ export default memo(function SendTransfer() {
             size: "xl",
           }}
         >
-          <Stack gap={1}>
+          {/* 2.5 matches the form's block rhythm so the relay strip reads as its own block. */}
+          <Stack
+            sx={{
+              gap: 2.5,
+            }}
+          >
             {SendTransactionBoundary}
+            <ClearMacroRelayOption
+              actionKind={token && isSuper(token) ? "transfer" : undefined}
+              network={network}
+            />
           </Stack>
         </ConnectionBoundaryButton>
       </ConnectionBoundary>
-
     </Stack>
   );
 });
 
 // # Controllers
-const ReceiverAddressController = memo(function ReceiverAddressController(props: {
-  isBelowMd: boolean;
-}) {
-  const { control, watch } = useFormContext<PartialTransferForm>();
-  const receiverAddress = watch("data.receiverAddress");
+const ReceiverAddressController = memo(
+  function ReceiverAddressController(props: { isBelowMd: boolean }) {
+    const { control, watch } = useFormContext<PartialTransferForm>();
+    const receiverAddress = watch("data.receiverAddress");
 
-  return (
-    <Controller
-      control={control}
-      name="data.receiverAddress"
-      render={({ field: { onChange, onBlur } }) => (
-        <AddressSearch
-          address={receiverAddress}
-          onChange={onChange}
-          onBlur={onBlur}
-          addressLength={props.isBelowMd ? "medium" : "long"}
-          ButtonProps={{ fullWidth: true }}
-        />
-      )}
-    />
-  );
-});
-
-const TokenController = memo(function TokenController(
-  props: {
-    network: Network,
-    token: TokenMinimal | null | undefined,
-    tokens: TokenMinimal[],
-    tokenBalances: Record<string, string>,
-    isFetching: boolean
+    return (
+      <Controller
+        control={control}
+        name="data.receiverAddress"
+        render={({ field: { onChange, onBlur } }) => (
+          <AddressSearch
+            address={receiverAddress}
+            onChange={onChange}
+            onBlur={onBlur}
+            addressLength={props.isBelowMd ? "medium" : "long"}
+            ButtonProps={{ fullWidth: true }}
+          />
+        )}
+      />
+    );
   }
-) {
+);
+
+const TokenController = memo(function TokenController(props: {
+  network: Network;
+  token: TokenMinimal | null | undefined;
+  tokens: TokenMinimal[];
+  tokenBalances: Record<string, string>;
+  isFetching: boolean;
+}) {
   const { control } = useFormContext<PartialTransferForm>();
 
   return (
@@ -275,11 +302,11 @@ const TokenController = memo(function TokenController(
         />
       )}
     />
-  )
+  );
 });
 
 const AmountController = memo(function AmountController(props: {
-  token: TokenMinimal | null | undefined
+  token: TokenMinimal | null | undefined;
 }) {
   const { control } = useFormContext<PartialTransferForm>();
 
@@ -296,26 +323,33 @@ const AmountController = memo(function AmountController(props: {
           autoComplete="off"
           autoCorrect="off"
           placeholder="0.0"
-          InputProps={{
-            endAdornment: (
-              <Typography component="span" color={"text.secondary"}>
-                {props.token?.symbol ?? ""}
-              </Typography>
-            ),
-          }}
-          inputProps={{
-            ...inputPropsForEtherAmount,
+          slotProps={{
+            input: {
+              endAdornment: (
+                <Typography
+                  component="span"
+                  sx={{
+                    color: "text.secondary",
+                  }}
+                >
+                  {props.token?.symbol ?? ""}
+                </Typography>
+              ),
+            },
+
+            htmlInput: {
+              ...inputPropsForEtherAmount,
+            },
           }}
         />
       )}
     />
   );
 });
-
 const TransferBalance = memo(function TransferBalance(props: {
-  network: Network,
-  visibleAddress: string | undefined,
-  token: TokenMinimal | null | undefined
+  network: Network;
+  visibleAddress: string | undefined;
+  token: TokenMinimal | null | undefined;
 }) {
   if (!props.visibleAddress || !props.token) return null;
 
@@ -324,7 +358,14 @@ const TransferBalance = memo(function TransferBalance(props: {
   }
 
   return (
-    <Stack direction="row" alignItems="center" justifyContent="center" gap={0.5}>
+    <Stack
+      direction="row"
+      sx={{
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 0.5,
+      }}
+    >
       <BalanceUnderlyingToken
         chainId={props.network.id}
         accountAddress={props.visibleAddress}

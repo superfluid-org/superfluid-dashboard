@@ -203,15 +203,20 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
         },
       }}
     >
-      <Table sx={{ tableLayout: { xs: "auto", md: "fixed" } }}>
+      <Table
+        sx={{
+          tableLayout: { xs: "auto", md: "fixed" },
+          minWidth: { md: 1040 },
+        }}
+      >
         <TableHead>
           <NetworkHeadingRow colSpan={5} network={network} />
           {!isBelowMd && (
             <TableRow>
-              <TableCell width="24%">Asset</TableCell>
-              <TableCell width="17%">Balance</TableCell>
-              <TableCell width="23%">Net Flow Rate</TableCell>
-              <TableCell width="28%">Actions</TableCell>
+              <TableCell width="22%">Asset</TableCell>
+              <TableCell width="16%">Balance</TableCell>
+              <TableCell width="18%">Net Flow Rate</TableCell>
+              <TableCell width="36%">Actions</TableCell>
               <TableCell width="8%" align="center"></TableCell>
             </TableRow>
           )}

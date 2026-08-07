@@ -44,18 +44,21 @@ import TokenToolbar from "../../../features/token/TokenToolbar";
 import FlowingFiatBalance from "../../../features/tokenPrice/FlowingFiatBalance";
 import useTokenPrice from "../../../features/tokenPrice/useTokenPrice";
 import TransferEventsTable from "../../../features/transfers/TransferEventsTable";
+import { useImpersonation } from "../../../features/impersonation/ImpersonationContext";
 import { useVisibleAddress } from "../../../features/wallet/VisibleAddressContext";
 import useNavigateBack from "../../../hooks/useNavigateBack";
 import Page404 from "../../404";
 import PoolMembersTable from "../../../features/pool/PoolMembersTable";
-import { useAccount } from "@/hooks/useAccount"
+import { useAccount } from "@/hooks/useAccount";
 import { useTokenQuery } from "../../../hooks/useTokenQuery";
-import { BIG_NUMBER_ZERO, calculateMaybeCriticalAtTimestamp } from "../../../utils/tokenUtils";
+import {
+  BIG_NUMBER_ZERO,
+  calculateMaybeCriticalAtTimestamp,
+} from "../../../utils/tokenUtils";
 import { platformApi } from "../../../features/redux/platformApi/platformApi";
 import ERC20TokenPageContent, {
   ERC20TokenPageMetadata,
 } from "../../../features/portfolio/ERC20TokenPageContent";
-
 
 export const getTokenPagePath = ({
   network,
@@ -83,7 +86,8 @@ const TokenPage: NextPage = () => {
   const [network, setNetwork] = useState<Network | undefined>();
   const [tokenAddress, setTokenAddress] = useState<string | undefined>();
   const { visibleAddress } = useVisibleAddress();
-  const { isReconnecting } = useAccount();
+  const { isConnecting, isReconnecting } = useAccount();
+  const { isInitializingFromUrl } = useImpersonation();
 
   const [routeHandled, setRouteHandled] = useState(false);
 
@@ -95,19 +99,30 @@ const TokenPage: NextPage = () => {
       );
       setRouteHandled(true);
     }
-  }, [setRouteHandled, router.isReady, router.query._token, router.query._network]);
+  }, [
+    setRouteHandled,
+    router.isReady,
+    router.query._token,
+    router.query._network,
+  ]);
 
   useEffect(() => {
-    const isImpersonationHydrating = isString(router.query.view);
-    if (
-      router.isReady &&
-      !isReconnecting &&
-      !visibleAddress &&
-      !isImpersonationHydrating
-    ) {
+    if (!router.isReady) return; // wait for the query string (`?view=`)
+    // Don't redirect while a wallet is (re)connecting or while a `?view=`
+    // param is still resolving into an impersonated address — otherwise direct
+    // `/token/...?view=<address>` links bounce to home before impersonation
+    // hydrates.
+    if (isConnecting || isReconnecting || isInitializingFromUrl) return;
+    if (!visibleAddress) {
       router.push("/");
     }
-  }, [isReconnecting, router, router.isReady, router.query.view, visibleAddress]);
+  }, [
+    router.isReady,
+    isConnecting,
+    isReconnecting,
+    isInitializingFromUrl,
+    visibleAddress,
+  ]);
 
   const isPageReady = routeHandled && visibleAddress;
   if (!isPageReady) return <TokenPageContainer />;
@@ -176,14 +191,14 @@ const TokenPageResolver: FC<{
         priceUsd: portfolioToken.priceUsd,
       }
     : tokenQuery.data && !tokenQuery.data.isSuperToken
-      ? {
-          address: tokenQuery.data.address,
-          name: tokenQuery.data.name,
-          symbol: tokenQuery.data.symbol,
-          decimals: tokenQuery.data.decimals,
-          logoURI: tokenQuery.data.logoURI,
-        }
-      : undefined;
+    ? {
+        address: tokenQuery.data.address,
+        name: tokenQuery.data.name,
+        symbol: tokenQuery.data.symbol,
+        decimals: tokenQuery.data.decimals,
+        logoURI: tokenQuery.data.logoURI,
+      }
+    : undefined;
 
   if (!erc20Token) {
     return <Page404 />;
@@ -225,8 +240,11 @@ const TokenPageContent: FC<{
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
   const [activeTab, setActiveTab] = useState(TokenDetailsTabs.Streams);
-  const [graphFilter, setGraphFilter] = useState(TimeUnitFilterType.All);
-  const [showForecast, setShowForecast] = useState(true);
+  const [graphFilter, setGraphFilter] = useState(TimeUnitFilterType.Week);
+  // null = follow data (default off when flow rate is zero); boolean = user override.
+  const [showForecastOverride, setShowForecastOverride] = useState<
+    boolean | null
+  >(null);
   const navigateBack = useNavigateBack();
 
   const tokenPrice = useTokenPrice(network.id, tokenAddress);
@@ -240,18 +258,26 @@ const TokenPageContent: FC<{
   const superTokenQuery = useTokenQuery({
     chainId: network.id,
     id: tokenAddress,
-    onlySuperToken: true
+    onlySuperToken: true,
   });
 
-  const tokenSnapshotQuery = subgraphApi.useAccountTokenSnapshotQuery({
-    chainId: network.id,
-    id: `${accountAddress.toLowerCase()}-${tokenAddress.toLowerCase()}`,
-  }, {
-    refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
-  });
+  const tokenSnapshotQuery = subgraphApi.useAccountTokenSnapshotQuery(
+    {
+      chainId: network.id,
+      id: `${accountAddress.toLowerCase()}-${tokenAddress.toLowerCase()}`,
+    },
+    {
+      refetchOnFocus: true, // Re-fetch list view more often where there might be something incoming.
+    }
+  );
+
+  const hasOngoingFlow = realTimeBalanceQuery.data
+    ? !BigNumber.from(realTimeBalanceQuery.data.flowRate).isZero()
+    : false;
+  const showForecast = showForecastOverride ?? hasOngoingFlow;
 
   const onShowForecastChange = (_e: unknown, checked: boolean) =>
-    setShowForecast(checked);
+    setShowForecastOverride(checked);
 
   const onTabChange = (_e: unknown, newTab: TokenDetailsTabs) =>
     setActiveTab(newTab);
@@ -277,7 +303,6 @@ const TokenPageContent: FC<{
     return null;
   }, [realTimeBalanceQuery.data]);
 
-
   if (superTokenQuery.isLoading || tokenSnapshotQuery.isLoading) {
     return <TokenPageContainer />;
   }
@@ -291,7 +316,7 @@ const TokenPageContent: FC<{
     totalNetFlowRate,
     totalInflowRate,
     totalOutflowRate,
-    updatedAtTimestamp
+    updatedAtTimestamp,
   } = tokenSnapshotQuery.data;
 
   const {
@@ -304,7 +329,11 @@ const TokenPageContent: FC<{
 
   return (
     <TokenPageContainer tokenSymbol={tokenSymbol}>
-      <Stack gap={isBelowMd ? 3 : 4}>
+      <Stack
+        sx={{
+          gap: isBelowMd ? 3 : 4,
+        }}
+      >
         <TokenToolbar
           token={superTokenQuery.data}
           network={network}
@@ -326,24 +355,37 @@ const TokenPageContent: FC<{
           <Stack
             data-cy={"token-container-by-graph"}
             direction="row"
-            justifyContent="space-between"
             sx={{
+              justifyContent: "space-between",
               mb: 4,
+
               [theme.breakpoints.down("md")]: {
                 mb: 0,
                 alignItems: "end",
               },
             }}
           >
-            <Stack gap={0.5}>
+            <Stack
+              sx={{
+                gap: 0.5,
+              }}
+            >
               <Typography
                 variant={isBelowMd ? "body2" : "body1"}
-                color="text.secondary"
                 translate="yes"
+                sx={{
+                  color: "text.secondary",
+                }}
               >
                 Balance
               </Typography>
-              <Stack direction="row" alignItems="flex-end" columnGap={1}>
+              <Stack
+                direction="row"
+                sx={{
+                  alignItems: "flex-end",
+                  columnGap: 1,
+                }}
+              >
                 <Typography data-cy={"token-balance"} variant="h3mono">
                   <FlowingBalance
                     balance={balance}
@@ -354,8 +396,10 @@ const TokenPageContent: FC<{
                 <Typography
                   data-cy={"token-symbol"}
                   variant="h5mono"
-                  color="text.secondary"
-                  sx={{ lineHeight: "30px" }}
+                  sx={{
+                    color: "text.secondary",
+                    lineHeight: "30px",
+                  }}
                 >
                   {tokenSymbol}
                 </Typography>
@@ -365,7 +409,9 @@ const TokenPageContent: FC<{
                 <Typography
                   data-cy={"token-fiat-balance"}
                   variant="h5mono"
-                  color="text.secondary"
+                  sx={{
+                    color: "text.secondary",
+                  }}
                 >
                   <FlowingFiatBalance
                     balance={balance}
@@ -375,18 +421,28 @@ const TokenPageContent: FC<{
                   />
                 </Typography>
               )}
-              <Stack direction="row" alignItems="center" gap={1}>
+              <Stack
+                direction="row"
+                sx={{
+                  alignItems: "center",
+                  gap: 1,
+                }}
+              >
                 <Typography
                   variant="body2"
-                  color="text.secondary"
                   translate="yes"
+                  sx={{
+                    color: "text.secondary",
+                  }}
                 >
                   Liquidation Date:
                 </Typography>
                 <Typography
                   data-cy={"liquidation-date"}
                   variant="h7"
-                  color="text.secondary"
+                  sx={{
+                    color: "text.secondary",
+                  }}
                 >
                   {!!maybeCriticalAtTimestamp
                     ? format(maybeCriticalAtTimestamp * 1000, "MMMM do, yyyy")
@@ -396,8 +452,10 @@ const TokenPageContent: FC<{
             </Stack>
 
             <Stack
-              alignItems={isBelowMd ? "start" : "end"}
-              justifyContent="space-between"
+              sx={{
+                alignItems: isBelowMd ? "start" : "end",
+                justifyContent: "space-between",
+              }}
             >
               {!isBelowMd && (
                 <TimeUnitFilter
@@ -407,7 +465,11 @@ const TokenPageContent: FC<{
                 />
               )}
 
-              <Stack alignItems="end">
+              <Stack
+                sx={{
+                  alignItems: "end",
+                }}
+              >
                 {isBelowMd && (
                   <Chip
                     size="small"
@@ -418,7 +480,12 @@ const TokenPageContent: FC<{
                     sx={{ mb: 1 }}
                   />
                 )}
-                <Stack direction="row" alignItems="center">
+                <Stack
+                  direction="row"
+                  sx={{
+                    alignItems: "center",
+                  }}
+                >
                   <Typography data-cy={"net-incoming"} variant="h5mono">
                     <Amount
                       wei={BigNumber.from(totalInflowRate).mul(
@@ -430,7 +497,12 @@ const TokenPageContent: FC<{
                   <ArrowDropUpIcon color="primary" />
                 </Stack>
 
-                <Stack direction="row" alignItems="center">
+                <Stack
+                  direction="row"
+                  sx={{
+                    alignItems: "center",
+                  }}
+                >
                   <Typography data-cy={"net-outgoing"} variant="h5mono">
                     <Amount
                       wei={BigNumber.from(totalOutflowRate).mul(
@@ -458,9 +530,11 @@ const TokenPageContent: FC<{
 
           <Stack
             direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-            sx={{ mt: 2 }}
+            sx={{
+              justifyContent: "space-between",
+              alignItems: "center",
+              mt: 2,
+            }}
           >
             {isBelowMd ? (
               <TimeUnitFilter
@@ -537,12 +611,8 @@ const TokenPageContent: FC<{
           )}
 
           {activeTab === TokenDetailsTabs.StreamDistributions && (
-            <PoolMembersTable
-              network={network}
-              tokenAddress={tokenAddress}
-            />
+            <PoolMembersTable network={network} tokenAddress={tokenAddress} />
           )}
-
         </TabContext>
       </Stack>
     </TokenPageContainer>

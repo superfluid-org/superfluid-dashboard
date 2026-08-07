@@ -55,12 +55,8 @@ export default function MyApp(props: AppPropsWithLayout) {
   const getLayout = Component.getLayout || ((page) => page);
 
   useEffect(() => {
-    const { id, sv } = config.hotjar;
-    if (!IsCypress && id && sv) {
-      hotjar.initialize({ id: Number(id), sv: Number(sv) });
-    } else {
-      console.warn("Hotjar not initialized.");
-    }
+    // Tracking disabled: Hotjar initialization intentionally skipped.
+    console.warn("Hotjar not initialized.");
   }, []);
 
   const [mounted, setMounted] = useState(false);
@@ -89,13 +85,13 @@ export default function MyApp(props: AppPropsWithLayout) {
                                 <AnalyticsProvider>
                                   <ToastProvider />
                                   <IntercomProvider>
-                                    <Layout>
-                                      <MinigameProvider>
+                                    <MinigameProvider>
+                                      <Layout>
                                         {mounted ? getLayout(
                                           <Component {...pageProps} />
                                         ) : null}
-                                      </MinigameProvider>
-                                    </Layout>
+                                      </Layout>
+                                    </MinigameProvider>
                                     <MonitorContext />
                                   </IntercomProvider>
                                 </AnalyticsProvider>

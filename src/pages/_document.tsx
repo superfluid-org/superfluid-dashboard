@@ -28,6 +28,8 @@ export default function MyDocument({ emotionStyleTags }: MyDocumentProps) {
         <link rel="apple-touch-icon" href="/icon-120.png" />
         <meta name="apple-mobile-web-app-title" content="Superfluid" />
 
+        <meta name="base:app_id" content="6a0ed448cc2f5ce0182c4687" />
+
         {/* Inject MUI styles first to match with the prepend: true configuration. */}
         <meta name="emotion-insertion-point" content="" />
         {emotionStyleTags}

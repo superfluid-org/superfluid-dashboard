@@ -154,6 +154,12 @@ Given(
 Given(/^User goes to the token page from the transaction dialog$/, () => {
   SendPage.goToTokensPageAfterTx();
 });
+Then(/^The buffer warning is not shown$/, () => {
+  SendPage.validateNoBufferWarning();
+});
+Then(/^The buffer warning is shown$/, () => {
+  SendPage.validateBufferWarningIsVisible();
+});
 Then(
   /^All the details to send "([^"]*)" "([^"]*)" per "([^"]*)" to "([^"]*)" on "([^"]*)" are set in the fields$/,
   (
@@ -251,6 +257,11 @@ Then(/^The start date container outline is red$/, function () {
 Then(/^Allowlist message is shown$/, function () {
   SendPage.runFunctionIfPlatformIsDeployedOnNetwork(() =>
     SendPage.validateVisibleAllowlistMessage()
+  );
+});
+Then(/^Allowlist message is not shown$/, function () {
+  SendPage.runFunctionIfPlatformIsDeployedOnNetwork(() =>
+    SendPage.validateAllowlistMessageIsNotShown()
   );
 });
 Then(/^Scheduled stream fields are visible$/, function () {

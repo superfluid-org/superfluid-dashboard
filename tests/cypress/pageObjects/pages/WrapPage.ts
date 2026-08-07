@@ -38,7 +38,7 @@ const TX_TYPE = `${DRAWER_TX} h6`;
 const TX_DATE = `${DRAWER_TX} [data-cy=tx-date]`;
 const TX_HASH = `${DRAWER_TX} [data-cy=tx-hash]`;
 const TX_HASH_BUTTONS = `${DRAWER_TX} [data-cy=tx-hash-buttons] a`;
-const RESTORE_BUTTONS = '[data-testid=ReplayIcon]';
+const RESTORE_BUTTONS = '[data-cy=restore-transaction-button]';
 const TX_NETWORK_BADGES = `${DRAWER_TX} [data-cy=network-badge-`;
 const PROGRESS_LINE = '[data-cy=progress-line]';
 const UNWRAP_MESSAGE = '[data-cy=unwrap-message]';
@@ -182,11 +182,7 @@ export class WrapPage extends BasePage {
   }
 
   static chooseTokenToWrap(token: string) {
-    this.getSelectedToken(token).then((selectedToken) => {
-      this.click(`[data-cy="${selectedToken}-list-item"]`, undefined, {
-        timeout: 60000,
-      });
-    });
+    this.selectTokenFromDialog(token);
   }
 
   static validateUnwrapTokenSelectionBalances(network: string) {

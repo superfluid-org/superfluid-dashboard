@@ -4,7 +4,7 @@ import { Network } from "../network/networks";
 import { TransactionBoundary } from "../transactionBoundary/TransactionBoundary";
 import { TransactionButton } from "../transactionBoundary/TransactionButton";
 import { useAnalytics } from "../analytics/useAnalytics";
-import { rpcApi } from "../redux/store";
+import { useRevokeAccess } from "./useTokenAccessWrites";
 import { calculateTotalAmountWei } from "../send/FlowRateInput";
 import { TokenAccessProps } from "./dialog/UpsertTokenAccessForm";
 import { SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
@@ -23,7 +23,7 @@ const RevokeButton: FC<RevokeButtonProps> = ({
   access,
 }) => {
   const { txAnalytics } = useAnalytics();
-  const [revoke, revokeResult] = rpcApi.useRevokeAccessMutation();
+  const [revoke, revokeResult] = useRevokeAccess();
 
   const isRevokeAllowed =
     access.flowOperatorPermissions !== 0 ||
@@ -46,9 +46,11 @@ const RevokeButton: FC<RevokeButtonProps> = ({
             variant: "outlined",
           }}
           // TODO(KK): better title?
-          onClick={async (signer) => {
+          onClick={async () => {
             setDialogLoadingInfo(
-              <Typography variant="h5" color="text.secondary" translate="yes">
+              <Typography variant="h5" translate="yes" sx={{
+                color: "text.secondary"
+              }}>
                 You are revoking all permissions and allowances for the {superToken.symbol} token.
               </Typography>
             );
@@ -66,9 +68,7 @@ const RevokeButton: FC<RevokeButtonProps> = ({
             
             revoke({
               ...primaryArgs,
-              signer,
             })
-              .unwrap()
               .then(
                 ...txAnalytics("Revoked Permissions & Allowances", primaryArgs)
               )

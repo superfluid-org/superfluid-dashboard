@@ -1,10 +1,14 @@
-import { Overrides } from "ethers";
 import { Ethereum } from "wagmi/connectors";
 
-export type GlobalGasOverrides = Pick<
-  Overrides,
-  "gasLimit" | "gasPrice" | "maxFeePerGas" | "maxPriorityFeePerGas"
->;
+// Lenient on purpose: this is set by hand from the browser console.
+type GasOverrideInput = bigint | number | string;
+
+export type GlobalGasOverrides = {
+  gasLimit?: GasOverrideInput;
+  gasPrice?: GasOverrideInput;
+  maxFeePerGas?: GasOverrideInput;
+  maxPriorityFeePerGas?: GasOverrideInput;
+};
 
 export type SuperfluidDashboardGlobal = {
   advanced: {

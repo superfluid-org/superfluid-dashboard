@@ -1,11 +1,10 @@
-import { ERC20__factory } from "@superfluid-finance/sdk-core";
-import {
-  getFramework,
-  RpcEndpointBuilder,
-} from "@superfluid-finance/sdk-redux";
-import { BigNumber, constants } from "ethers";
-import { getAutoWrap } from "../../../eth-sdk/getEthSdk";
+import { RpcEndpointBuilder } from "@superfluid-finance/sdk-redux";
+import { Address, zeroAddress } from "viem";
+import { autoWrapManagerAbi } from "@sfpro/sdk/abi/automation";
 import { dateNowSeconds } from "../../../utils/dateUtils";
+import { allNetworks, findNetworkOrThrow } from "../../network/networks";
+import { getErc20Allowance } from "../../transactions/contractReads";
+import { resolvedWagmiClients } from "../../wallet/WagmiManager";
 
 export type WrapSchedule = {
   user: string;
@@ -24,32 +23,47 @@ export type GetWrapSchedule = {
   underlyingTokenAddress: string;
 };
 
+const getAutoWrapAddresses = (chainId: number) => {
+  const network = findNetworkOrThrow(allNetworks, chainId);
+  if (!network.autoWrap) {
+    throw new Error("Auto-Wrap not supported on this network");
+  }
+  return {
+    managerAddress: network.autoWrap.managerContractAddress,
+    strategyAddress: network.autoWrap.strategyContractAddress,
+  };
+};
+
 const getActiveWrapScheduleEndpoint = (builder: RpcEndpointBuilder) =>
   builder.query<WrapSchedule | null, GetWrapSchedule>({
     queryFn: async (arg) => {
-      const framework = await getFramework(arg.chainId);
-      const { manager } = getAutoWrap(arg.chainId, framework.settings.provider);
-      const rawWrapSchedule = await manager.getWrapSchedule(
-        arg.accountAddress,
-        arg.superTokenAddress,
-        arg.underlyingTokenAddress
-      );
+      const publicClient = resolvedWagmiClients[arg.chainId]();
+      const { managerAddress } = getAutoWrapAddresses(arg.chainId);
+
+      const rawWrapSchedule = await publicClient.readContract({
+        abi: autoWrapManagerAbi,
+        address: managerAddress,
+        functionName: "getWrapSchedule",
+        args: [
+          arg.accountAddress as Address,
+          arg.superTokenAddress as Address,
+          arg.underlyingTokenAddress as Address,
+        ],
+      });
       const wrapSchedule: WrapSchedule = {
         user: rawWrapSchedule.user,
         superToken: rawWrapSchedule.superToken,
         strategy: rawWrapSchedule.strategy,
         liquidityToken: rawWrapSchedule.liquidityToken,
-        expiry: rawWrapSchedule.expiry.toString(), // Should have been `number`, not `BigNumber`.
-        lowerLimit: rawWrapSchedule.lowerLimit.toString(), // Should have been `number`, not `BigNumber`.
-        upperLimit: rawWrapSchedule.upperLimit.toString(), // Should have been `number`, not `BigNumber`.
+        expiry: rawWrapSchedule.expiry.toString(),
+        lowerLimit: rawWrapSchedule.lowerLimit.toString(),
+        upperLimit: rawWrapSchedule.upperLimit.toString(),
       };
-      const isExpired = rawWrapSchedule.expiry.lt(
-        BigNumber.from(dateNowSeconds())
-      );
+      const isExpired = rawWrapSchedule.expiry < BigInt(dateNowSeconds());
 
       return {
         data:
-          rawWrapSchedule.strategy === constants.AddressZero || isExpired
+          rawWrapSchedule.strategy === zeroAddress || isExpired
             ? null
             : wrapSchedule,
       };
@@ -65,25 +79,17 @@ const getActiveWrapScheduleEndpoint = (builder: RpcEndpointBuilder) =>
 const isAutoWrapAllowanceSufficientEndpoint = (builder: RpcEndpointBuilder) =>
   builder.query<boolean, GetWrapSchedule & { upperLimit: string }>({
     queryFn: async (arg) => {
-      const framework = await getFramework(arg.chainId);
-      const tokenContract = ERC20__factory.connect(
-        arg.underlyingTokenAddress,
-        framework.settings.provider
-      );
+      const { strategyAddress } = getAutoWrapAddresses(arg.chainId);
 
-      const { strategy } = getAutoWrap(
-        arg.chainId,
-        framework.settings.provider
-      );
-
-      const allowance = await tokenContract.allowance(
-        arg.accountAddress,
-        strategy.address
-      );
-      const upperLimit = BigNumber.from(arg.upperLimit);
+      const allowance = await getErc20Allowance({
+        chainId: arg.chainId,
+        tokenAddress: arg.underlyingTokenAddress,
+        ownerAddress: arg.accountAddress,
+        spenderAddress: strategyAddress,
+      });
 
       return {
-        data: allowance.gte(upperLimit),
+        data: allowance >= BigInt(arg.upperLimit),
       };
     },
     providesTags: (_result, _error, arg) => [
@@ -104,21 +110,14 @@ const getUnderlyingTokenAllowanceEndpoint = (builder: RpcEndpointBuilder) =>
     }
   >({
     queryFn: async (arg) => {
-      const framework = await getFramework(arg.chainId);
-      const token = ERC20__factory.connect(
-        arg.underlyingTokenAddress,
-        framework.settings.provider
-      );
+      const { strategyAddress } = getAutoWrapAddresses(arg.chainId);
 
-      const { strategy } = getAutoWrap(
-        arg.chainId,
-        framework.settings.provider
-      );
-
-      const allowance = await token.allowance(
-        arg.accountAddress,
-        strategy.address
-      );
+      const allowance = await getErc20Allowance({
+        chainId: arg.chainId,
+        tokenAddress: arg.underlyingTokenAddress,
+        ownerAddress: arg.accountAddress,
+        spenderAddress: strategyAddress,
+      });
 
       return {
         data: allowance.toString(),

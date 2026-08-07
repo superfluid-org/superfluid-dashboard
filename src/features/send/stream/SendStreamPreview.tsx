@@ -66,21 +66,23 @@ const PreviewItem: FC<PropsWithChildren<PreviewItemProps>> = ({
       data-cy={dataCy}
       component="span"
       variant="body2"
-      fontWeight="500"
-      sx={{
-        color: isError ? "red" : theme.palette.primary.main, // TODO(KK): handle colors better?
-      }}
       {...TypographyProps}
-    >
+      sx={[{
+        fontWeight: "500",
+
+        // TODO(KK): handle colors better?
+        color: isError ? "red" : theme.palette.primary.main
+      }, ...(Array.isArray(TypographyProps.sx) ? TypographyProps.sx : [TypographyProps.sx])]}>
       {children}
     </Typography>
   );
   return (
     <Stack
       direction={isBelowMd ? "column" : "row"}
-      alignItems={isBelowMd ? "start" : "center"}
-      justifyContent="space-between"
-    >
+      sx={{
+        alignItems: isBelowMd ? "start" : "center",
+        justifyContent: "space-between"
+      }}>
       {isValidElement(label) ? (
         label
       ) : (
@@ -262,8 +264,9 @@ export const StreamingPreview: FC<StreamingPreviewProps> = ({
       translate="no"
     >
       <Stack
-        gap={0.5}
         sx={{
+          gap: 0.5,
+
           [theme.breakpoints.down("md")]: {
             flexDirection: "row",
             flexWrap: "wrap",
@@ -271,9 +274,8 @@ export const StreamingPreview: FC<StreamingPreviewProps> = ({
             "> *": {
               minWidth: `calc(50% - ${theme.spacing(1)})`,
             },
-          },
-        }}
-      >
+          }
+        }}>
         <PreviewItem dataCy="preview-receiver" label="Receiver">
           {isBelowMd ? shortenHex(receiver, 14) : receiver}
         </PreviewItem>
@@ -307,7 +309,12 @@ export const StreamingPreview: FC<StreamingPreviewProps> = ({
         {/* TODO: Handle start date if modifying stream */}
         {newScheduledFlowRate.startTimestamp && (
           <PreviewItem dataCy="preview-starts-on" label="Start date">
-            <Stack direction="row" alignItems="center" gap={0.5}>
+            <Stack
+              direction="row"
+              sx={{
+                alignItems: "center",
+                gap: 0.5
+              }}>
               <ScheduledStreamIcon scheduledStart />
               {format(
                 fromUnixTime(newScheduledFlowRate.startTimestamp),
@@ -326,7 +333,12 @@ export const StreamingPreview: FC<StreamingPreviewProps> = ({
             existingFlowRate && oldEndDate != newEndDate && oldEndDateString
           }
         >
-          <Stack direction="row" alignItems="center" gap={0.5}>
+          <Stack
+            direction="row"
+            sx={{
+              alignItems: "center",
+              gap: 0.5
+            }}>
             {newEndDate ? (
               <>
                 <ScheduledStreamIcon scheduledEnd />

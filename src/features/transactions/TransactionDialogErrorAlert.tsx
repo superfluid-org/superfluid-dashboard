@@ -23,20 +23,19 @@ export default memo(function TransactionDialogErrorAlert({
       );
     } else {
       // NOTE: Sometimes errors are nested in each other. Check for the most specific one first.
-
+      // Primary signal is the viem-aware `code` set by `classifyError` in the write executor
+      // (USER_REJECTED / INSUFFICIENT_FUNDS / CONTRACT_REVERT). Message checks remain only as a
+      // fallback for paths that don't carry a code (e.g. the auto-wrap permission flow, or a
+      // Cypress-injected error string).
       const errorMessageLowerCase = mutationError.message?.toLowerCase() ?? "";
+
       const didUserRejectTransaction =
-        errorMessageLowerCase.includes("rejected") &&
-        errorMessageLowerCase.includes("transaction") || 
-        //Auto-wrap permission + Cypress
+        mutationError.code === "USER_REJECTED" ||
+        // viem's UserRejectedRequestError short message is "User rejected the request."
+        (errorMessageLowerCase.includes("rejected") &&
+          errorMessageLowerCase.includes("request")) ||
+        // Auto-wrap permission + Cypress
         errorMessageLowerCase.includes("denied transaction signature");
-
-      // Old approach:
-      // mutationError.message?.includes('4001') || // MetaMask error version
-      // mutationError.message?.includes("User rejected the transaction") || // WalletConnect error version
-      // mutationError.message?.includes("Transaction was rejected") || // Gnosis Safe error version
-      // mutationError.message?.includes("user rejected transaction") // Brave?
-
       if (didUserRejectTransaction) {
         return "Transaction Rejected";
       }
@@ -54,26 +53,14 @@ export default memo(function TransactionDialogErrorAlert({
       }
 
       const insufficientFunds =
-        mutationError.message?.includes("INSUFFICIENT_FUNDS");
+        mutationError.code === "INSUFFICIENT_FUNDS" ||
+        errorMessageLowerCase.includes("insufficient funds");
       if (insufficientFunds) {
         return (
           <>
             <AlertTitle>Insufficient Funds</AlertTitle>
             Do you have enough {network.nativeCurrency.symbol} for covering the
             transaction?
-          </>
-        );
-      }
-
-      const unpredictableGasLimit = mutationError.message?.includes(
-        "UNPREDICTABLE_GAS_LIMIT"
-      );
-      if (unpredictableGasLimit) {
-        return (
-          <>
-            <AlertTitle>Unpredictable Gas Limit</AlertTitle>
-            Could not predict gas for the transaction. Do you have enough{" "}
-            {network.nativeCurrency.symbol} for covering the transaction?
           </>
         );
       }

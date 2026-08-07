@@ -14,12 +14,10 @@ const isOnNetlify = !!netlifyContext;
 const interfaceFeeAddress = process.env.NEXT_PUBLIC_INTERFACE_FEE_ADDRESS;
 const shouldInstrumentCode = "INSTRUMENT_CODE" in process.env;
 const appUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : process.env.URL ?? "http://localhost:3000";
-const enableReactCompiler = false;
-  // process.env.NODE_ENV !== "development";
 const sentryOrg = process.env.SENTRY_ORG;
 const sentryProject = process.env.SENTRY_PROJECT;
 
-function withSentryIfNecessary(nextConfig: NextConfig) {
+function withSentry(nextConfig: NextConfig) {
   console.log({
     sentryEnvironment,
     netlifyContext,
@@ -31,13 +29,15 @@ function withSentryIfNecessary(nextConfig: NextConfig) {
     sentryProject
   });
 
-  const SENTRY_AUTH_TOKEN = process.env.SENTRY_AUTH_TOKEN;
+  const hasAuthToken = !!process.env.SENTRY_AUTH_TOKEN;
 
-  if (!SENTRY_AUTH_TOKEN) {
+  if (!hasAuthToken) {
+    // We still wrap with withSentryConfig (rather than returning early) so that error
+    // tunneling (tunnelRoute) is injected in every environment. Source maps are skipped
+    // entirely when the auth token is absent (nothing to upload — see `sourcemaps` below).
     console.warn(
-      "Sentry release not created because SENTRY_AUTH_TOKEN is not set."
+      "SENTRY_AUTH_TOKEN is not set — skipping source maps (error tunneling stays enabled)."
     );
-    return nextConfig;
   }
 
   // Make sure adding Sentry options is the last code to run before exporting, to
@@ -68,10 +68,11 @@ function withSentryIfNecessary(nextConfig: NextConfig) {
     // https://vercel.com/docs/cron-jobs
     automaticVercelMonitors: true,
 
-    sourcemaps: {
-      // Don't serve sourcemaps to the users
-      deleteSourcemapsAfterUpload: true,
-    },
+    sourcemaps: hasAuthToken
+      ? // Generate + upload source maps, then delete them so they're never served to users.
+        { deleteSourcemapsAfterUpload: true }
+      : // No token → nothing to upload, so skip source map generation entirely.
+        { disable: true },
 
     // TODO: This was causing build issues on Vercel. Stuff like address dialog not selecting addresses.
     // // The thirdPartyErrorFilterIntegration allows you to filter out errors originating from third parties,
@@ -81,10 +82,13 @@ function withSentryIfNecessary(nextConfig: NextConfig) {
       applicationKey: "superfluid-dashboard",
     },
 
-    // Route browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers.
-    // This can increase your server load as well as your hosting bill.
-    // Note: Check that the configured route will not match with your Next.js middleware, otherwise reporting of client-
-    // side errors will fail.
+    // Route browser requests to Sentry through a same-origin Next.js rewrite to circumvent ad-blockers.
+    // Sentry wraps our rewrites() and forwards `/monitoring?o=<org>&p=<project>` straight to the
+    // DSN's ingest endpoint at the edge (no serverless function). Always enabled — see the
+    // withSentry() note above — so client errors aren't dropped in token-less builds.
+    // Kept as a fixed path (not `true`/randomized) so reports from already-open tabs still resolve
+    // after a redeploy. Note: `src/proxy.ts` (the geofence middleware) early-returns for `/monitoring`
+    // so it never intercepts the tunnel — see Sentry's guidance on excluding the tunnel route.
     tunnelRoute: "/monitoring",
   });
 }
@@ -108,10 +112,30 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  redirects: async () => [
+    {
+      // The Settings page was repurposed and renamed to Approvals.
+      source: "/settings",
+      destination: "/approvals",
+      permanent: true,
+    },
+    {
+      // The embedded minigame page was removed; the game is linked from the
+      // sidebar instead. Kept temporary since the destination is external.
+      source: "/superfluid-runner",
+      destination: "https://astrobunny.superfluid.finance/",
+      permanent: false,
+    },
+  ],
   rewrites: async () => [
     {
-      source: "/monitoring",
-      destination: "/api/monitoring",
+      source: "/balance-api/:path*",
+      destination: `${process.env.BALANCE_API_REWRITE_TARGET || "https://balances.superfluid.dev"}/:path*`,
+    },
+    {
+      // The Clear Macro relay provider serves no CORS headers — proxy it same-origin.
+      source: "/clearmacro-provider/:path*",
+      destination: `${process.env.CLEARMACRO_PROVIDER_REWRITE_TARGET || "https://clearmacro-provider.superfluid.dev"}/:path*`,
     },
   ],
   env: {
@@ -125,17 +149,13 @@ const nextConfig: NextConfig = {
   experimental: {
     forceSwcTransforms: !shouldInstrumentCode, // .babelrc.js existence is because of code instrumentation.
     cpus: isOnNetlify ? 6 : undefined, // Fixes the issue of memory running out on Netlify (error 127)
-    reactCompiler: enableReactCompiler,
     optimizePackageImports: [
       '@mui/lab',
       '@mui/x-data-grid',
       '@mui/x-date-pickers',
       'chart.js'
     ] // It's enabled automatically for many packages in use: https://nextjs.org/docs/app/api-reference/next-config-js/optimizePackageImports
-  },
-  eslint: {
-    ignoreDuringBuilds: isOnNetlify,
   }
 };
 
-export default withSentryIfNecessary(nextConfig);
+export default withSentry(nextConfig);

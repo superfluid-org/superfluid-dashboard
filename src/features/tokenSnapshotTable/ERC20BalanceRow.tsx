@@ -1,6 +1,9 @@
 import ArrowDownwardRoundedIcon from "@mui/icons-material/ArrowDownwardRounded";
 import ArrowUpwardRoundedIcon from "@mui/icons-material/ArrowUpwardRounded";
+import AddCircleOutlineRoundedIcon from "@mui/icons-material/AddCircleOutlineRounded";
+import CurrencyExchangeRoundedIcon from "@mui/icons-material/CurrencyExchangeRounded";
 import ExpandCircleDownOutlinedIcon from "@mui/icons-material/ExpandCircleDownOutlined";
+import SendRoundedIcon from "@mui/icons-material/SendRounded";
 import SwapHorizRoundedIcon from "@mui/icons-material/SwapHorizRounded";
 import {
   Box,
@@ -28,7 +31,9 @@ import { useRouter } from "next/router";
 import { FC, memo, useEffect, useMemo, useState } from "react";
 import OpenIcon from "../../components/OpenIcon/OpenIcon";
 import { getTransferPagePath } from "../../pages/transfer";
+import { getSendPagePath } from "../../pages/send";
 import { getTokenPagePath } from "../../pages/token/[_network]/[_token]";
+import { getTokenPairsFromTokenList } from "../../hooks/useTokenQuery";
 import { Currency } from "../../utils/currencyUtils";
 import Link from "../common/Link";
 import TxHashLink from "../common/TxHashLink";
@@ -43,6 +48,7 @@ import tokenPriceApi from "../tokenPrice/tokenPriceApi.slice";
 import useTokenPrice from "../tokenPrice/useTokenPrice";
 import { PortfolioValueCallback } from "./TokenSnapshotTables";
 import { ERC20Balance } from "./useERC20Balances";
+import { getBridgePagePath } from "../bridge/getBridgePagePath";
 
 interface ERC20BalanceRowProps extends ERC20Balance {
   address: Address;
@@ -80,16 +86,28 @@ const ERC20BalanceUpdatesPanel: FC<{
     >
       <Stack
         direction="row"
-        alignItems="center"
-        justifyContent="space-between"
-        gap={2}
-        sx={{ mb: recentTransfers.length > 0 ? 1.5 : 0 }}
+        sx={{
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 2,
+          mb: recentTransfers.length > 0 ? 1.5 : 0,
+        }}
       >
         <Box>
-          <Typography variant="caption" color="text.secondary">
+          <Typography
+            variant="caption"
+            sx={{
+              color: "text.secondary",
+            }}
+          >
             RECENT BALANCE UPDATES
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography
+            variant="body2"
+            sx={{
+              color: "text.secondary",
+            }}
+          >
             Incoming and outgoing ERC-20 transfers
           </Typography>
         </Box>
@@ -110,7 +128,12 @@ const ERC20BalanceUpdatesPanel: FC<{
           Balance history is unavailable right now.
         </Typography>
       ) : recentTransfers.length === 0 ? (
-        <Typography variant="body2" color="text.secondary">
+        <Typography
+          variant="body2"
+          sx={{
+            color: "text.secondary",
+          }}
+        >
           No transfer activity yet.
         </Typography>
       ) : (
@@ -146,9 +169,11 @@ const ERC20BalanceUpdatesPanel: FC<{
               >
                 <Stack
                   direction="row"
-                  alignItems="center"
-                  gap={1.5}
-                  minWidth={0}
+                  sx={{
+                    alignItems: "center",
+                    gap: 1.5,
+                    minWidth: 0,
+                  }}
                 >
                   <Box
                     sx={(currentTheme) => ({
@@ -170,9 +195,18 @@ const ERC20BalanceUpdatesPanel: FC<{
                       <ArrowDownwardRoundedIcon fontSize="small" />
                     )}
                   </Box>
-                  <Box minWidth={0}>
+                  <Box
+                    sx={{
+                      minWidth: 0,
+                    }}
+                  >
                     <Typography variant="body2">{direction}</Typography>
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: "text.secondary",
+                      }}
+                    >
                       {format(
                         new Date(transfer.timestamp),
                         "d MMM yyyy, HH:mm"
@@ -182,7 +216,6 @@ const ERC20BalanceUpdatesPanel: FC<{
                 </Stack>
                 <Typography
                   variant="body2mono"
-                  textAlign="right"
                   color={
                     isSelfTransfer
                       ? "text.primary"
@@ -190,6 +223,9 @@ const ERC20BalanceUpdatesPanel: FC<{
                       ? "error"
                       : "primary"
                   }
+                  sx={{
+                    textAlign: "right",
+                  }}
                 >
                   {amountPrefix}
                   <Amount
@@ -201,8 +237,10 @@ const ERC20BalanceUpdatesPanel: FC<{
                 </Typography>
                 <Typography
                   variant="body2mono"
-                  color="text.secondary"
-                  sx={{ display: { xs: "none", md: "block" } }}
+                  sx={{
+                    color: "text.secondary",
+                    display: { xs: "none", md: "block" },
+                  }}
                 >
                   {isOutgoing ? "To" : "From"} {shortenAddress(counterparty)}
                 </Typography>
@@ -269,24 +307,45 @@ const ERC20BalanceRow: FC<ERC20BalanceRowProps> = ({
     portfolioValueCallback(portfolioValueId, {
       symbol: token.symbol,
       hasBalance: !BigNumber.from(balance).isZero(),
-      hasPrice: priceUsd !== undefined || tokenPrice !== undefined,
+      hasFlow: false,
+      hasPrice: effectivePrice !== undefined,
       value: portfolioValue,
     });
 
     return () => portfolioValueCallback(portfolioValueId, undefined);
   }, [
     balance,
+    effectivePrice,
     portfolioValue,
     portfolioValueCallback,
     portfolioValueId,
-    priceUsd,
     token.symbol,
-    tokenPrice,
   ]);
 
   const transferPath = getTransferPagePath({
     token: token.address,
     network: network.slugName,
+  });
+  const tokenPair = useMemo(
+    () =>
+      getTokenPairsFromTokenList(network.id).find(
+        ({ underlyingToken }) =>
+          underlyingToken.address.toLowerCase() === token.address.toLowerCase()
+      ),
+    [network.id, token.address]
+  );
+  const streamPath = tokenPair
+    ? getSendPagePath({
+        token: tokenPair.superToken.address,
+        network: network.slugName,
+      })
+    : undefined;
+  const wrapPath = tokenPair
+    ? `/wrap?upgrade&token=${tokenPair.superToken.address}&network=${network.slugName}`
+    : undefined;
+  const swapPath = getBridgePagePath({
+    fromChain: network.id,
+    fromToken: token.address,
   });
   const tokenPath = getTokenPagePath({
     token: token.address,
@@ -313,7 +372,14 @@ const ERC20BalanceRow: FC<ERC20BalanceRowProps> = ({
             </ListItemAvatar>
             <ListItemText
               primary={
-                <Stack direction="row" alignItems="center" gap={1} minWidth={0}>
+                <Stack
+                  direction="row"
+                  sx={{
+                    alignItems: "center",
+                    gap: 1,
+                    minWidth: 0,
+                  }}
+                >
                   <Box component="span" sx={{ flexShrink: 0 }}>
                     {token.symbol}
                   </Box>
@@ -327,79 +393,180 @@ const ERC20BalanceRow: FC<ERC20BalanceRowProps> = ({
                 </Stack>
               }
               secondary={token.name}
-              primaryTypographyProps={{ variant: "h6", component: "div" }}
-              secondaryTypographyProps={{
-                variant: "body2",
-                color: "text.secondary",
-                noWrap: true,
+              slotProps={{
+                primary: { variant: "h6", component: "div" },
+                secondary: {
+                  variant: "body2",
+                  color: "text.secondary",
+                  noWrap: true,
+                },
               }}
               sx={{ minWidth: 0 }}
             />
           </ListItem>
         </TableCell>
         <TableCell onClick={openTokenPage} sx={{ cursor: "pointer" }}>
-          <ListItemText
-            primary={<Amount wei={balance} decimals={token.decimals} />}
-            secondary={
-              priceUsd !== undefined ? (
-                <PortfolioFiatAmount
-                  balance={balance}
-                  decimals={token.decimals}
-                  priceUsd={priceUsd}
-                />
-              ) : tokenPrice ? (
-                <FiatAmount
-                  wei={balance}
-                  decimals={token.decimals}
-                  price={tokenPrice}
-                />
-              ) : null
-            }
-            primaryTypographyProps={{
-              variant: isBelowMd ? "h7mono" : "h6mono",
-            }}
-            secondaryTypographyProps={{
-              variant: "body2mono",
-              color: "text.secondary",
-            }}
-          />
+          <Box sx={{ display: "flex", alignItems: "center", minHeight: 44 }}>
+            <ListItemText
+              primary={<Amount wei={balance} decimals={token.decimals} />}
+              secondary={
+                priceUsd !== undefined ? (
+                  <PortfolioFiatAmount
+                    balance={balance}
+                    decimals={token.decimals}
+                    priceUsd={priceUsd}
+                  />
+                ) : tokenPrice ? (
+                  <FiatAmount
+                    wei={balance}
+                    decimals={token.decimals}
+                    price={tokenPrice}
+                  />
+                ) : null
+              }
+              slotProps={{
+                primary: {
+                  variant: isBelowMd ? "h7mono" : "h6mono",
+                },
+                secondary: {
+                  variant: "body2mono",
+                  color: "text.secondary",
+                },
+              }}
+            />
+          </Box>
         </TableCell>
         {!isBelowMd ? (
           <>
             <TableCell>
-              <Typography color="text.secondary">—</Typography>
+              <Typography
+                sx={{
+                  color: "text.secondary",
+                }}
+              >
+                —
+              </Typography>
             </TableCell>
             <TableCell>
-              <Button
-                data-cy="portfolio-transfer-button"
-                LinkComponent={Link}
-                href={transferPath}
-                size="small"
-                variant="outlined"
-                startIcon={<SwapHorizRoundedIcon />}
-              >
-                Transfer
-              </Button>
+              <Stack direction="row" sx={{ gap: 0.75 }}>
+                {streamPath && (
+                  <Button
+                    data-cy="portfolio-stream-button"
+                    LinkComponent={Link}
+                    href={streamPath}
+                    size="small"
+                    variant="contained"
+                    startIcon={<SendRoundedIcon />}
+                  >
+                    Stream
+                  </Button>
+                )}
+                {wrapPath && (
+                  <Button
+                    data-cy="portfolio-wrap-button"
+                    LinkComponent={Link}
+                    href={wrapPath}
+                    size="small"
+                    variant="text"
+                  >
+                    Wrap
+                  </Button>
+                )}
+                <Button
+                  data-cy="portfolio-transfer-button"
+                  LinkComponent={Link}
+                  href={transferPath}
+                  size="small"
+                  variant="outlined"
+                  startIcon={<SwapHorizRoundedIcon />}
+                >
+                  Transfer
+                </Button>
+                {!network.testnet && (
+                  <Button
+                    data-cy="portfolio-swap-button"
+                    LinkComponent={Link}
+                    href={swapPath}
+                    size="small"
+                    variant="text"
+                    startIcon={<CurrencyExchangeRoundedIcon />}
+                  >
+                    Swap
+                  </Button>
+                )}
+              </Stack>
             </TableCell>
           </>
         ) : null}
         <TableCell align="center" sx={{ px: { xs: 0.5, md: 2 } }}>
-          <Stack direction="row" justifyContent="center" gap={0.25}>
+          <Stack
+            direction="row"
+            sx={{
+              justifyContent: "center",
+              gap: 0.25,
+            }}
+          >
             {isBelowMd ? (
-              <Tooltip title="Transfer">
-                <IconButton
-                  data-cy="portfolio-transfer-button"
-                  LinkComponent={Link}
-                  href={transferPath}
-                  color="primary"
-                  aria-label={`Transfer ${token.symbol}`}
-                >
-                  <SwapHorizRoundedIcon fontSize="small" />
-                </IconButton>
-              </Tooltip>
+              <>
+                {streamPath && (
+                  <Tooltip title="Stream">
+                    <IconButton
+                      size="small"
+                      data-cy="portfolio-stream-button"
+                      LinkComponent={Link}
+                      href={streamPath}
+                      color="primary"
+                      aria-label={`Stream ${token.symbol}`}
+                    >
+                      <SendRoundedIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                )}
+                {wrapPath && (
+                  <Tooltip title="Wrap">
+                    <IconButton
+                      size="small"
+                      data-cy="portfolio-wrap-button"
+                      LinkComponent={Link}
+                      href={wrapPath}
+                      color="primary"
+                      aria-label={`Wrap ${token.symbol}`}
+                    >
+                      <AddCircleOutlineRoundedIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                )}
+                <Tooltip title="Transfer">
+                  <IconButton
+                    size="small"
+                    data-cy="portfolio-transfer-button"
+                    LinkComponent={Link}
+                    href={transferPath}
+                    color="primary"
+                    aria-label={`Transfer ${token.symbol}`}
+                  >
+                    <SwapHorizRoundedIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+                {!network.testnet && (
+                  <Tooltip title="Swap">
+                    <IconButton
+                      size="small"
+                      data-cy="portfolio-swap-button"
+                      LinkComponent={Link}
+                      href={swapPath}
+                      color="primary"
+                      aria-label={`Swap ${token.symbol}`}
+                    >
+                      <CurrencyExchangeRoundedIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                )}
+              </>
             ) : null}
             <Tooltip title="Balance updates">
               <IconButton
+                size={isBelowMd ? "small" : "medium"}
                 data-cy="show-balance-updates-button"
                 color="inherit"
                 onClick={() => setOpen((currentlyOpen) => !currentlyOpen)}

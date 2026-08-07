@@ -2,7 +2,7 @@ import { isString, orderBy } from "lodash";
 import memoize from "lodash/memoize";
 import * as chain from "wagmi/chains";
 import { Chain } from "wagmi/chains";
-import ensureDefined from "../../utils/ensureDefined";
+import ensureDefined, { isDefined } from "../../utils/ensureDefined";
 import {
   NATIVE_ASSET_ADDRESS,
   NativeAsset,
@@ -109,6 +109,10 @@ export type Network = Chain & {
   supportsGDA: boolean;
   flowSchedulerContractAddress?: `0x${string}`;
   flowSchedulerSubgraphUrl?: `https://${string}` | undefined;
+  /** Networks with a DashboardClearMacro deployment (gasless relay via Clear Macro). */
+  dashboardClearMacro?: {
+    macroAddress: `0x${string}`;
+  };
   
   vestingContractAddress: {
     v1: VestingContractInfo | undefined,
@@ -210,6 +214,9 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.gnosis,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.gnosis,
+    dashboardClearMacro: {
+      macroAddress: "0x7786Da9DEC051b1CE13AA5d6701f6D2655D01De6",
+    },
     vestingContractAddress: {
       v1: {
         address: vestingContractAddresses_v1.gnosis,
@@ -265,6 +272,9 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.polygon,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.polygon,
+    dashboardClearMacro: {
+      macroAddress: "0x478A32945F569FB3c14B72080c9e6f9AcEAAAc7D",
+    },
     vestingContractAddress: {
       v1: {
         address: vestingContractAddresses_v1.polygon,
@@ -372,6 +382,9 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.optimism,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.optimism,
+    dashboardClearMacro: {
+      macroAddress: "0x4D11B0b59948d81EEAaF667CCDaA212f824949d4",
+    },
     vestingContractAddress: {
       v1: {
         address: vestingContractAddresses_v1.optimism,
@@ -432,6 +445,9 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.arbitrum,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.arbitrum,
+    dashboardClearMacro: {
+      macroAddress: "0x3BDd82FFbCcB9DBD0c233Ecd950642edbF60D667",
+    },
     vestingContractAddress: {
       v1: {
         address: vestingContractAddresses_v1.arbitrum,
@@ -491,6 +507,9 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.avalancheC,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.avalancheC,
+    dashboardClearMacro: {
+      macroAddress: "0x02CF8483b15eb1211235D8bb5041BE5024Ef657F",
+    },
     vestingContractAddress: {
       v1: {
         address: vestingContractAddresses_v1.avalancheC,
@@ -550,6 +569,9 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.bnbSmartChain,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.bnbSmartChain,
+    dashboardClearMacro: {
+      macroAddress: "0x53d00397f03147A9bD9c40443A105A82780deAF1",
+    },
     vestingContractAddress: {
       v1: {
         address: vestingContractAddresses_v1.bnbSmartChain,
@@ -605,6 +627,9 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.ethereum,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.ethereum,
+    dashboardClearMacro: {
+      macroAddress: "0x1bBc06F00b9F5964eb8F7ED044e15C8dE13368bE",
+    },
     vestingContractAddress: {
       v1: {
         address: vestingContractAddresses_v1.ethereum,
@@ -806,6 +831,9 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.base,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.base,
+    dashboardClearMacro: {
+      macroAddress: "0xC04FE9940e460457B75C3Aa4871bF142E0f49744",
+    },
   },
   baseSepolia: {
     ...chain.baseSepolia,
@@ -884,42 +912,6 @@ export const networkDefinition = {
     vestingSubgraphUrl: undefined,
     autoWrapSubgraphUrl: undefined,
   },
-  scrollSepolia: {
-    ...chain.scrollSepolia,
-    supportsGDA: getSupportsGDA(chainIds.scrollSepolia),
-    metadata: ensureDefined(
-      sfMeta.getNetworkByChainId(chainIds.scrollSepolia),
-      chainIds.scrollSepolia
-    ),
-    blockExplorers: ensureDefined(chain.scrollSepolia.blockExplorers),
-    slugName: "scrsepolia",
-    v1ShortName: "scrsepolia",
-    bufferTimeInMinutes: 60,
-    color: "#EECDA6",
-    rpcUrls: {
-      ...chain.scrollSepolia.rpcUrls,
-      superfluid: { http: [superfluidRpcUrls["scroll-sepolia"]] },
-    },
-    getLinkForTransaction: (txHash: string): string =>
-      `https://sepolia.scrollscan.com/tx/${txHash}`,
-    getLinkForAddress: (address: string): string =>
-      `https://sepolia.scrollscan.com/address/${address}`,
-    nativeCurrency: {
-      ...ensureDefined(chain.scrollSepolia.nativeCurrency),
-      address: NATIVE_ASSET_ADDRESS,
-      type: TokenType.NativeAssetUnderlyingToken,
-      superToken: ensureDefined(findNativeAssetSuperTokenFromTokenList({ chainId: chain.scrollSepolia.id, address: "0x58f0A7c6c143074f5D824c2f27a85f6dA311A6FB" })),
-      logoURI: "https://tokenlist.superfluid.org/icons/eth.svg",
-      isSuperToken: false,
-    },
-    vestingContractAddress: {
-      v1: undefined,
-      v2: undefined,
-      v3: undefined,
-    },
-    vestingSubgraphUrl: undefined,
-    autoWrapSubgraphUrl: undefined,
-  },
   optimismSepolia: {
     ...chain.optimismSepolia,
     supportsGDA: getSupportsGDA(chainIds.optimismSepolia),
@@ -979,6 +971,9 @@ export const networkDefinition = {
     },
     flowSchedulerContractAddress: flowSchedulerContractAddresses.optimismSepolia,
     flowSchedulerSubgraphUrl: flowSchedulerSubgraphUrls.optimismSepolia,
+    dashboardClearMacro: {
+      macroAddress: "0x96ec6a06fb72c8C3e42E9DD3ae3525e7847078c3",
+    },
   },
 } as const satisfies Record<string, Network>;
 
@@ -999,7 +994,6 @@ export const allNetworks: [Network, ...Network[]] = orderBy(
       networkDefinition.base,
       networkDefinition.baseSepolia,
       networkDefinition.scroll,
-      networkDefinition.scrollSepolia,
       networkDefinition.degenChain,
     ],
     (x) => x.id // Put lower ids first (Ethereum mainnet will be first)
@@ -1077,4 +1071,59 @@ export const deprecatedNetworkChainIds = [
   421613, // Arbitrum Goerli
   1442, // Polygon zkEVM Testnet
   84531, // Base Goerli
+  534351, // Scroll Sepolia
 ];
+
+/**
+ * Networks present in `@superfluid-finance/metadata` that the Dashboard intentionally does not
+ * support. Every entry needs a reason. This exists so that the completeness check below can stay
+ * strict: an *accidental* omission still fails loudly, while a deliberate one is documented here.
+ *
+ * Note we cannot derive this from metadata's own `isDeprecated` flag -- Scroll Sepolia is not
+ * flagged there.
+ */
+const metadataNetworkExclusions = new Map<number, string>([
+  [
+    534351,
+    "Scroll Sepolia is discontinued, and its canonical Superfluid subgraph alias was serving Optimism Sepolia data (reported upstream).",
+  ],
+]);
+
+// Fail loudly if metadata gains a network nobody added here (or if an exclusion becomes obsolete).
+// Both sides of this comparison are fixed at build time, so a violation surfaces during `next build`
+// / SSR rather than in a user's browser -- hence the console.error rather than a throw on the client.
+{
+  const unaccounted = sfMeta.networks
+    .filter(
+      ({ chainId }) =>
+        !allNetworks.some((network) => network.id === chainId) &&
+        !metadataNetworkExclusions.has(chainId)
+    )
+    .map(({ chainId, name }) => `${name} (${chainId})`);
+
+  const staleExclusions = [...metadataNetworkExclusions.keys()].filter(
+    (chainId) => !sfMeta.networks.some((network) => network.chainId === chainId)
+  );
+
+  const problems = [
+    unaccounted.length
+      ? `Superfluid metadata networks not supported by the Dashboard and not explicitly excluded: ${unaccounted.join(
+          ", "
+        )}. Add them to \`allNetworks\`, or to \`metadataNetworkExclusions\` with a reason.`
+      : undefined,
+    staleExclusions.length
+      ? `\`metadataNetworkExclusions\` lists chain ids no longer present in Superfluid metadata: ${staleExclusions.join(
+          ", "
+        )}. Drop them.`
+      : undefined,
+  ].filter(isDefined);
+
+  if (problems.length) {
+    const message = problems.join(" ");
+    if (typeof window === "undefined") {
+      throw new Error(message);
+    } else {
+      console.error(message);
+    }
+  }
+}

@@ -71,13 +71,14 @@ const BalanceUpdateRow: FC<{
   network: Network;
 }> = ({ transfer, accountAddress, token, network }) => {
   const isOutgoing = transfer.from === accountAddress.toLowerCase();
-  const isSelfTransfer = isOutgoing && transfer.to === accountAddress.toLowerCase();
+  const isSelfTransfer =
+    isOutgoing && transfer.to === accountAddress.toLowerCase();
   const counterparty = isOutgoing ? transfer.to : transfer.from;
   const directionLabel = isSelfTransfer
     ? "Self transfer"
     : isOutgoing
-      ? "Sent"
-      : "Received";
+    ? "Sent"
+    : "Received";
   const amountPrefix = isSelfTransfer ? "" : isOutgoing ? "−" : "+";
 
   return (
@@ -107,11 +108,16 @@ const BalanceUpdateRow: FC<{
           </ListItemAvatar>
           <ListItemText
             primary={directionLabel}
-            secondary={format(new Date(transfer.timestamp), "d MMM yyyy, HH:mm")}
-            primaryTypographyProps={{ variant: "h6" }}
-            secondaryTypographyProps={{
-              variant: "body2mono",
-              color: "text.secondary",
+            secondary={format(
+              new Date(transfer.timestamp),
+              "d MMM yyyy, HH:mm"
+            )}
+            slotProps={{
+              primary: { variant: "h6" },
+              secondary: {
+                variant: "body2mono",
+                color: "text.secondary",
+              },
             }}
           />
         </ListItem>
@@ -119,7 +125,9 @@ const BalanceUpdateRow: FC<{
       <TableCell align="right">
         <Typography
           variant="h6mono"
-          color={isSelfTransfer ? "text.primary" : isOutgoing ? "error" : "primary"}
+          color={
+            isSelfTransfer ? "text.primary" : isOutgoing ? "error" : "primary"
+          }
         >
           {amountPrefix}
           <Amount
@@ -136,19 +144,32 @@ const BalanceUpdateRow: FC<{
             <AddressAvatar address={counterparty} />
           </ListItemAvatar>
           <ListItemText
-            primary={isSelfTransfer ? "Same wallet" : isOutgoing ? "To" : "From"}
+            primary={
+              isSelfTransfer ? "Same wallet" : isOutgoing ? "To" : "From"
+            }
             secondary={
               <AddressCopyTooltip address={counterparty}>
-                <Typography variant="body2" color="text.primary" component="span">
+                <Typography
+                  variant="body2"
+                  component="span"
+                  sx={{
+                    color: "text.primary",
+                  }}
+                >
                   <AddressName address={counterparty} />
                 </Typography>
               </AddressCopyTooltip>
             }
-            primaryTypographyProps={{ variant: "caption", color: "text.secondary" }}
+            slotProps={{
+              primary: { variant: "caption", color: "text.secondary" },
+            }}
           />
         </ListItem>
       </TableCell>
-      <TableCell align="right" sx={{ display: { xs: "none", md: "table-cell" } }}>
+      <TableCell
+        align="right"
+        sx={{ display: { xs: "none", md: "table-cell" } }}
+      >
         <TxHashLink txHash={transfer.transactionHash} network={network} />
       </TableCell>
     </TableRow>
@@ -166,8 +187,7 @@ const ERC20TokenPageContent: FC<{
   const [filter, setFilter] = useState(TransferFilter.All);
   const [requestCursor, setRequestCursor] =
     useState<ERC20TransferHistoryCursor>();
-  const [nextCursor, setNextCursor] =
-    useState<ERC20TransferHistoryCursor>();
+  const [nextCursor, setNextCursor] = useState<ERC20TransferHistoryCursor>();
   const [hasMore, setHasMore] = useState(false);
   const [transfers, setTransfers] = useState<ERC20TransferHistoryItem[]>([]);
 
@@ -223,8 +243,18 @@ const ERC20TokenPageContent: FC<{
   const balance = balanceQuery.currentData?.balance;
 
   return (
-    <Stack gap={isBelowMd ? 3 : 4}>
-      <Stack direction="row" alignItems="center" gap={2}>
+    <Stack
+      sx={{
+        gap: isBelowMd ? 3 : 4,
+      }}
+    >
+      <Stack
+        direction="row"
+        sx={{
+          alignItems: "center",
+          gap: 2,
+        }}
+      >
         <IconButton color="inherit" onClick={navigateBack} aria-label="Back">
           <ArrowBackRoundedIcon />
         </IconButton>
@@ -235,11 +265,23 @@ const ERC20TokenPageContent: FC<{
           symbol={token.symbol}
         />
         <Box sx={{ minWidth: 0 }}>
-          <Stack direction="row" alignItems="baseline" gap={1} flexWrap="wrap">
+          <Stack
+            direction="row"
+            sx={{
+              alignItems: "baseline",
+              gap: 1,
+              flexWrap: "wrap",
+            }}
+          >
             <Typography variant={isBelowMd ? "h4" : "h3"} component="h1">
               {token.name}
             </Typography>
-            <Typography variant="h5" color="text.secondary">
+            <Typography
+              variant="h5"
+              sx={{
+                color: "text.secondary",
+              }}
+            >
               {token.symbol}
             </Typography>
           </Stack>
@@ -264,28 +306,52 @@ const ERC20TokenPageContent: FC<{
       <Card sx={{ p: { xs: 2.5, md: 3 } }}>
         <Stack
           direction={{ xs: "column", md: "row" }}
-          alignItems={{ md: "flex-end" }}
-          justifyContent="space-between"
-          gap={3}
+          sx={{
+            alignItems: { md: "flex-end" },
+            justifyContent: "space-between",
+            gap: 3,
+          }}
         >
           <Box>
-            <Typography color="text.secondary">Balance</Typography>
+            <Typography
+              sx={{
+                color: "text.secondary",
+              }}
+            >
+              Balance
+            </Typography>
             {balanceQuery.isLoading ? (
               <Skeleton width={220} height={54} />
             ) : balanceQuery.isError ? (
               <Typography variant="h3">—</Typography>
             ) : (
-              <Stack direction="row" alignItems="baseline" gap={1}>
+              <Stack
+                direction="row"
+                sx={{
+                  alignItems: "baseline",
+                  gap: 1,
+                }}
+              >
                 <Typography variant="h3mono" data-cy="erc20-token-balance">
                   <Amount wei={balance ?? "0"} decimals={token.decimals} />
                 </Typography>
-                <Typography variant="h5mono" color="text.secondary">
+                <Typography
+                  variant="h5mono"
+                  sx={{
+                    color: "text.secondary",
+                  }}
+                >
                   {token.symbol}
                 </Typography>
               </Stack>
             )}
             {balance ? (
-              <Typography variant="h5mono" color="text.secondary">
+              <Typography
+                variant="h5mono"
+                sx={{
+                  color: "text.secondary",
+                }}
+              >
                 {token.priceUsd !== undefined ? (
                   <PortfolioFiatAmount
                     balance={balance}
@@ -303,12 +369,29 @@ const ERC20TokenPageContent: FC<{
             ) : null}
           </Box>
           <Box sx={{ textAlign: { md: "right" } }}>
-            <Typography variant="caption" color="text.secondary">
+            <Typography
+              variant="caption"
+              sx={{
+                color: "text.secondary",
+              }}
+            >
               TOKEN TYPE
             </Typography>
-            <Stack direction="row" gap={1} alignItems="center" justifyContent={{ md: "flex-end" }}>
+            <Stack
+              direction="row"
+              sx={{
+                gap: 1,
+                alignItems: "center",
+                justifyContent: { md: "flex-end" },
+              }}
+            >
               <Chip label="ERC-20" size="small" variant="outlined" />
-              <Typography variant="body2" color="text.secondary">
+              <Typography
+                variant="body2"
+                sx={{
+                  color: "text.secondary",
+                }}
+              >
                 Transfer-based history
               </Typography>
             </Stack>
@@ -318,7 +401,13 @@ const ERC20TokenPageContent: FC<{
 
       <Box>
         <Typography variant="h5">Balance updates</Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+        <Typography
+          variant="body2"
+          sx={{
+            color: "text.secondary",
+            mt: 0.5,
+          }}
+        >
           Incoming and outgoing ERC-20 transfers indexed by Alchemy. Rebases and
           other non-transfer balance changes may not appear here.
         </Typography>
@@ -345,20 +434,28 @@ const ERC20TokenPageContent: FC<{
             <TableHead>
               <TableRow>
                 <TableCell colSpan={4}>
-                  <Stack direction="row" alignItems="center" gap={1}>
+                  <Stack
+                    direction="row"
+                    sx={{
+                      alignItems: "center",
+                      gap: 1,
+                    }}
+                  >
                     {Object.values(TransferFilter).map((filterOption) => (
                       <Button
                         key={filterOption}
                         size={isBelowMd ? "small" : "medium"}
                         variant="textContained"
-                        color={filter === filterOption ? "primary" : "secondary"}
+                        color={
+                          filter === filterOption ? "primary" : "secondary"
+                        }
                         onClick={() => setFilter(filterOption)}
                       >
                         {filterOption === TransferFilter.All
                           ? "All"
                           : filterOption === TransferFilter.Sent
-                            ? "Sent"
-                            : "Received"}
+                          ? "Sent"
+                          : "Received"}
                       </Button>
                     ))}
                   </Stack>
@@ -376,7 +473,9 @@ const ERC20TokenPageContent: FC<{
             <TableBody>
               {historyQuery.isLoading && transfers.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={4}><Skeleton height={58} /></TableCell>
+                  <TableCell colSpan={4}>
+                    <Skeleton height={58} />
+                  </TableCell>
                 </TableRow>
               ) : filteredTransfers.length === 0 ? (
                 <EmptyRow span={4} />
@@ -394,7 +493,13 @@ const ERC20TokenPageContent: FC<{
             </TableBody>
           </Table>
           {hasMore ? (
-            <Stack alignItems="center" sx={{ p: 2, borderTop: `1px solid ${theme.palette.divider}` }}>
+            <Stack
+              sx={{
+                alignItems: "center",
+                p: 2,
+                borderTop: `1px solid ${theme.palette.divider}`,
+              }}
+            >
               <Button
                 variant="outlined"
                 disabled={historyQuery.isFetching || !nextCursor}

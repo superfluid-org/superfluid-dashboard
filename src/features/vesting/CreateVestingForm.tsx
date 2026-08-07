@@ -14,12 +14,16 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV2";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { add } from "date-fns";
 import { memo, useMemo } from "react";
 import { Controller, useFormContext } from "react-hook-form";
+import {
+  mobileTapPickerSlots,
+  mobileTapTextFieldProps,
+} from "../../components/PickerField/mobileTapPicker";
 import { inputPropsForEtherAmount } from "../../utils/inputPropsForEtherAmount";
 import TooltipWithIcon from "../common/TooltipWithIcon";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
@@ -108,22 +112,29 @@ const CreateVestingForm = memo(function CreateVestingForm(props: {
     !isAutoWrapAllowanceSufficient;
 
   return (
-    <Stack component={"form"} gap={4}>
-      <Stack gap={2.5}>
+    <Stack component={"form"} sx={{
+      gap: 4
+    }}>
+      <Stack sx={{
+        gap: 2.5
+      }}>
         <ValidationSummary />
         <FormGroup>
           <Stack
             direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-          >
+            sx={{
+              alignItems: "center",
+              justifyContent: "space-between"
+            }}>
             <FormLabel>{VestingFormLabels.Receiver}</FormLabel>
             <TooltipWithIcon title="Must not be an exchange address" />
           </Stack>
           <ReceiverController isBelowMd={isBelowMd} />
         </FormGroup>
 
-        <Stack data-cy="claim-switch-and-tooltip" direction="row" alignItems="center">
+        <Stack data-cy="claim-switch-and-tooltip" direction="row" sx={{
+          alignItems: "center"
+        }}>
           <ClaimController />
           <TooltipWithIcon title={VestingTooltips.Claim} />
         </Stack>
@@ -155,9 +166,10 @@ const CreateVestingForm = memo(function CreateVestingForm(props: {
           <FormGroup>
             <Stack
               direction="row"
-              alignItems="center"
-              justifyContent="space-between"
-            >
+              sx={{
+                alignItems: "center",
+                justifyContent: "space-between"
+              }}>
               <FormLabel>{VestingFormLabels.TotalVestedAmount}</FormLabel>
               <TooltipWithIcon title="Set the total amount to be vested" />
             </Stack>
@@ -167,9 +179,10 @@ const CreateVestingForm = memo(function CreateVestingForm(props: {
           <FormGroup>
             <Stack
               direction="row"
-              alignItems="center"
-              justifyContent="space-between"
-            >
+              sx={{
+                alignItems: "center",
+                justifyContent: "space-between"
+              }}>
               <FormLabel>{VestingFormLabels.TotalVestingPeriod}</FormLabel>
               <TooltipWithIcon title="Set the total length of time for vesting" />
             </Stack>
@@ -177,7 +190,9 @@ const CreateVestingForm = memo(function CreateVestingForm(props: {
           </FormGroup>
         </Box>
 
-        <Stack direction="row" alignItems="center">
+        <Stack direction="row" sx={{
+          alignItems: "center"
+        }}>
           <CliffEnabledController />
           <TooltipWithIcon title="Set the cliff date and amount to be granted." />
         </Stack>
@@ -193,9 +208,10 @@ const CreateVestingForm = memo(function CreateVestingForm(props: {
             <FormGroup>
               <Stack
                 direction="row"
-                alignItems="center"
-                justifyContent="space-between"
-              >
+                sx={{
+                  alignItems: "center",
+                  justifyContent: "space-between"
+                }}>
                 <FormLabel>{VestingFormLabels.CliffAmount}</FormLabel>
                 <TooltipWithIcon title="Set the amount to be vested at the cliff" />
               </Stack>
@@ -205,9 +221,10 @@ const CreateVestingForm = memo(function CreateVestingForm(props: {
             <FormGroup>
               <Stack
                 direction="row"
-                alignItems="center"
-                justifyContent="space-between"
-              >
+                sx={{
+                  alignItems: "center",
+                  justifyContent: "space-between"
+                }}>
                 <FormLabel>{VestingFormLabels.CliffPeriod}</FormLabel>
                 <TooltipWithIcon title="Set the time until the cliff from the start date" />
               </Stack>
@@ -217,7 +234,9 @@ const CreateVestingForm = memo(function CreateVestingForm(props: {
         )}
 
         {isAutoWrapInputVisible && (
-          <Stack data-cy="auto-wrap-switch-and-tooltip" direction="row" alignItems="center">
+          <Stack data-cy="auto-wrap-switch-and-tooltip" direction="row" sx={{
+            alignItems: "center"
+          }}>
             <AutoWrapController />
             <TooltipWithIcon title={VestingTooltips.AutoWrap} />
           </Stack>
@@ -262,7 +281,6 @@ const CreateVestingForm = memo(function CreateVestingForm(props: {
           </Alert>
         )}
       </Stack>
-
       <PreviewButton setView={setView} />
     </Stack>
   );
@@ -339,12 +357,16 @@ const VestingAmountController = memo(function VestingAmountController(props: {
           value={value}
           onChange={onChange}
           onBlur={onBlur}
-          InputProps={{
-            endAdornment: (
-              <Typography component="span" color={"text.secondary"}>
-                {props.token?.symbol ?? ""}
-              </Typography>
-            ),
+          slotProps={{
+            input: {
+              endAdornment: (
+                <Typography component="span" sx={{
+                  color: "text.secondary"
+                }}>
+                  {props.token?.symbol ?? ""}
+                </Typography>
+              ),
+            }
           }}
         />
       )}
@@ -382,12 +404,13 @@ export const StartDateController = memo(function StartDateController() {
         name="data.startDate"
         render={({ field: { value, onChange, onBlur } }) => (
           <DateTimePicker
+            slots={mobileTapPickerSlots}
             slotProps={{
-              textField: {
+              textField: mobileTapTextFieldProps({
                 'data-cy': 'date-input',
                 fullWidth: true,
                 onBlur,
-              },
+              }),
             }}
             value={value}
             ampm={false}
@@ -415,15 +438,20 @@ const CliffAmountController = memo(function CliffAmountController(props: {
           value={value}
           onChange={onChange}
           onBlur={onBlur}
-          InputProps={{
-            endAdornment: (
-              <Typography component="span" color={"text.secondary"}>
-                {props.token?.symbol ?? ""}
-              </Typography>
-            ),
-          }}
-          inputProps={{
-            ...inputPropsForEtherAmount,
+          slotProps={{
+            input: {
+              endAdornment: (
+                <Typography component="span" sx={{
+                  color: "text.secondary"
+                }}>
+                  {props.token?.symbol ?? ""}
+                </Typography>
+              ),
+            },
+
+            htmlInput: {
+              ...inputPropsForEtherAmount,
+            }
           }} />
       )} />
   );
@@ -455,14 +483,16 @@ export const CliffPeriodController = memo(function CliffPeriodController(props: 
               denominator: value.denominator,
             })}
             onBlur={onBlur}
-            InputProps={{
-              sx: {
-                borderTopRightRadius: 0,
-                borderBottomRightRadius: 0,
-              },
-            }}
             type="number"
-            inputMode="numeric" />
+            inputMode="numeric"
+            slotProps={{
+              input: {
+                sx: {
+                  borderTopRightRadius: 0,
+                  borderBottomRightRadius: 0,
+                },
+              }
+            }} />
           <Select
             data-cy={"cliff-period-unit"}
             value={value.denominator}
@@ -527,14 +557,16 @@ export const VestingPeriodController = memo(function VestingPeriodController(pro
                 });
               }}
               onBlur={onBlur}
-              InputProps={{
-                sx: {
-                  borderTopRightRadius: 0,
-                  borderBottomRightRadius: 0,
-                },
-              }}
               type="number"
-              inputMode="numeric" />
+              inputMode="numeric"
+              slotProps={{
+                input: {
+                  sx: {
+                    borderTopRightRadius: 0,
+                    borderBottomRightRadius: 0,
+                  },
+                }
+              }} />
             <Select
               data-cy={"total-period-unit"}
               value={value.denominator}

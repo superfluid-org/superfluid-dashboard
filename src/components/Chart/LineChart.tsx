@@ -1,6 +1,11 @@
 import { useTheme } from "@mui/material";
 import Box from "@mui/material/Box";
-import Chart, { ChartDataset, ChartOptions, TooltipItem } from "chart.js/auto";
+import Chart, {
+  ChartDataset,
+  ChartOptions,
+  Plugin,
+  TooltipItem,
+} from "chart.js/auto";
 import { format } from "date-fns";
 import merge from "lodash/fp/merge";
 import set from "lodash/fp/set";
@@ -12,24 +17,73 @@ export interface DataPoint {
   x: number;
   y: number;
   ether: string;
+  // Optional pre-formatted (ether) breakdown surfaced in the tooltip. Only the
+  // historical balance series populates these; forecast/live points leave them
+  // undefined so the tooltip can omit unavailable rows.
+  connected?: string;
+  disconnected?: string;
+  deposit?: string;
+  total?: string;
+  // Set only on the forecast's exact zero-crossing point (genuine projected
+  // liquidation), so it can be distinguished from balances merely clamped to 0.
+  isLiquidation?: boolean;
+  // Set on claimable points where the disconnected balance is the dominant share
+  // of total — used to gradient-fill only those segments of the claimable line.
+  claimableDominant?: boolean;
 }
 
 type DatasetConfigCallback = (
   ctx: CanvasRenderingContext2D
 ) => Omit<ChartDataset<"line">, "data">;
 
+const DEFAULT_TOOLTIP_CALLBACKS = {
+  // Null-safe: a tooltip `filter` can leave the active item set empty (chart.js
+  // still calls these), so never assume context[0]/raw exists.
+  title: (context: Array<TooltipItem<"line">>) => {
+    const dp = context[0]?.raw as DataPoint | undefined;
+    return dp ? format(new Date(dp.x), "MMMM do, yyyy HH:mm") : "";
+  },
+  label: (context: TooltipItem<"line">) =>
+    (context.raw as DataPoint | undefined)?.ether ?? "",
+};
+
+// Build the full options object by layering the caller's `options` over a fresh
+// copy of the shared defaults (with default tooltip callbacks). Rebuilding from
+// the defaults on every update — rather than merging into the live
+// chart.options — prevents stale keys (e.g. a previous range's x min/max, or
+// callbacks) from lingering when a later `options` object omits them.
+const buildChartOptions = (
+  options: Partial<ChartOptions<"line">>
+): ChartOptions<"line"> =>
+  merge(
+    set(
+      "plugins.tooltip.callbacks",
+      DEFAULT_TOOLTIP_CALLBACKS,
+      DEFAULT_LINE_CHART_OPTIONS
+    ),
+    options
+  );
+
 interface LineChartProps {
   datasets: DataPoint[][];
   datasetsConfigCallbacks: DatasetConfigCallback[];
   height: number;
   options?: Partial<ChartOptions<"line">>;
+  // Stable instance plugins. Chart.js instance plugins must be passed at chart
+  // construction, so this should be a stable (module-level) array. Per-render
+  // plugin state should be driven through `options` (each plugin reads its own
+  // `options.plugins[<id>]`), not by swapping the array.
+  plugins?: Plugin<"line">[];
 }
+
+const EMPTY_PLUGINS: Plugin<"line">[] = [];
 
 const LineChart: FC<LineChartProps> = ({
   datasets,
   datasetsConfigCallbacks,
   height,
   options = {},
+  plugins = EMPTY_PLUGINS,
 }) => {
   const theme = useTheme();
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -44,29 +98,14 @@ const LineChart: FC<LineChartProps> = ({
       ...cb(canvasContext),
     }));
 
-    const defaultDatasetsOptions = set(
-      "plugins.tooltip.callbacks",
-      {
-        title: (context: Array<TooltipItem<"line">>) =>
-          format(
-            new Date((context[0]?.raw as DataPoint).x),
-            "MMMM do, yyyy HH:mm"
-          ),
-        label: (context: TooltipItem<"line">) =>
-          (context.raw as DataPoint).ether,
-      },
-      DEFAULT_LINE_CHART_OPTIONS
-    );
-
-    const datasetsOptions = merge(defaultDatasetsOptions, options);
-
     const chart = new Chart(canvasContext, {
       type: "line",
       data: {
         labels: [],
         datasets: initialDatasetsConfig,
       },
-      options: datasetsOptions,
+      options: buildChartOptions(options),
+      plugins,
     });
 
     chartRef.current = chart;
@@ -100,8 +139,7 @@ const LineChart: FC<LineChartProps> = ({
 
     if (!currentChart) return;
 
-    const newOptions = merge(currentChart.options, options);
-    mutateSet(currentChart, "options", newOptions);
+    mutateSet(currentChart, "options", buildChartOptions(options));
 
     currentChart.update();
   }, [chartRef, options]);

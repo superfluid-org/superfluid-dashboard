@@ -1,13 +1,16 @@
 import { BasePage, wordTimeUnitMap } from '../BasePage';
 import { networksBySlug } from '../../superData/networks';
-import HDWalletProvider from '@truffle/hdwallet-provider';
-import { ProviderAdapter } from '@truffle/encoder';
-import { http, createPublicClient } from 'viem';
+import {
+  http,
+  createPublicClient,
+  createWalletClient,
+  numberToHex,
+} from 'viem';
+import { privateKeyToAccount } from 'viem/accounts';
 
 export const TOP_BAR_NETWORK_BUTTON = '[data-cy=top-bar-network-button]';
 export const CONNECTED_WALLET = '[data-cy=wallet-connection-status] h6';
 export const WALLET_CONNECTION_STATUS = '[data-cy=wallet-connection-status] p';
-export const NAVIGATION_MORE_BUTTON = '[data-cy=nav-more-button]';
 export const ACCESS_CODE_BUTTON = '[data-cy=more-access-code-btn]';
 export const ACCESS_CODE_INPUT = '[data-cy=access-code-input]';
 export const ACCESS_CODE_SUBMIT = '[data-cy=submit-access-code]';
@@ -16,7 +19,7 @@ export const TOKEN_ANIMATION = '[data-cy=animation]';
 export const TOKEN_BALANCE = '[data-cy=token-balance]';
 export const CHANGE_NETWORK_BUTTON = '[data-cy=change-network-button]';
 export const DROPDOWN_BACKDROP = '[role=presentation]';
-export const LIQUIDATED_OR_CANCEL_ICON = '[data-testid=CancelIcon]';
+export const LIQUIDATED_OR_CANCEL_ICON = '.MuiChip-deleteIcon';
 export const SELECT_TOKEN_BUTTON = '[data-cy=select-token-button]';
 export const ADDRESS_BUTTON = '[data-cy=address-button]';
 export const STOP_VIEWING_BUTTON = '[data-cy=view-mode-button]';
@@ -28,7 +31,7 @@ const VIEW_MODE_INPUT = '[data-cy=view-mode-inputs]';
 const ADDRESS_DIALOG_INPUT = '[data-cy=address-dialog-input] input';
 const VIEWED_ACCOUNT = '[data-cy=view-mode-chip] > span';
 const VIEW_MODE_CHIP_CLOSE =
-  '[data-cy=view-mode-chip] [data-testid=CancelIcon]';
+  '[data-cy=view-mode-chip] .MuiChip-deleteIcon';
 const WEB3_MODAL = 'w3m-modal';
 const ADDRESS_BOOK_ENTRIES = '[data-cy=address-book-entry]';
 const ADDRESS_BOOK_RESULT_NAMES = '[data-cy=address-book-entry] h6';
@@ -39,21 +42,20 @@ const NETWORK_SELECTION_BUTTON = '[data-cy=network-selection-button]';
 const ERROR_PAGE_MESSAGE = '[data-cy=404-message]';
 const RETURN_TO_DASHBOARD_BUTTON = '[data-cy=return-to-dashboard-button]';
 const HELP_CENTER_LINK = '[data-cy=help-center-link]';
-const RESTORE_BUTTONS = '[data-testid=ReplayIcon]';
+const RESTORE_BUTTONS = '[data-cy=restore-transaction-button]';
 const SENDER_RECEIVER_ADDRESSES = '[data-cy=sender-receiver-address]';
 const STREAM_FLOW_RATES = '[data-cy=flow-rate]';
 const START_END_DATES = '[data-cy=start-end-date]';
 const RAINBOWKIT_CLOSE_BUTTON = '[aria-label=Close]';
 const TX_ERROR = '[data-cy=tx-error]';
-const CLOSE_BUTTON = '[data-testid=CloseRoundedIcon]';
+const CLOSE_BUTTON = '[data-cy=close-rounded-icon]';
 const ACCESS_CODE_DIALOG = '[data-cy=access-code-dialog]';
 const ACCESS_CODE_ERROR = '[data-cy=access-code-error]';
 const ACCESS_CODE_MESSAGE = '[data-cy=access-code-error-msg]';
 const VESTING_ACCESS_CODE_BUTTON = '[data-cy=more-vesting-code-btn]';
 const STREAM_ROWS = '[data-cy=stream-row]';
-const TIMER_ICONS = '[data-testid=TimerOutlinedIcon]';
+const TIMER_ICONS = '[data-cy=scheduled-stream-icon]';
 const FAUCET_BUTTON = '[data-cy=more-faucet-btn]';
-const AUTO_WRAP_NAVIGATION_BUTTON = '[data-cy=wrap-utility-btn]';
 const CLAIM_TOKENS_BUTTON = '[data-cy=claim-button]';
 const FAUCET_SUCCESS_MESSAGE = '[data-cy=faucet-success]';
 const FAUCET_ERROR_MESSAGE = '[data-cy=faucet-error]';
@@ -65,45 +67,28 @@ const TOKEN_CHIPS = '.MuiChip-root';
 const FAUCET_CONTRACT_ADDRESS = '0x74CDF863b00789c29734F8dFd9F83423Bc55E4cE';
 const FAUCET_EXECUTION_CONTRACT_ADDRESS =
   '0x2e043853CC01ccc8275A3913B82F122C20Bc1256';
-const NOTIFICATIONS_BUTTON = '[data-testid=NotificationsIcon]';
-const NOTIF_SETTINGS_BUTTON = '[data-testid=SettingsOutlinedIcon]';
-const NOTIF_ARCHIVE_BUTTON = '[data-cy=archive-button]';
-const NOTIF_BADGE = '[aria-describedby=notifications-bell] span span';
-const NOTIF_MESSAGE = '[data-cy=notification-message]';
-const NOTIF_TITLE = '[data-cy=notification-title]';
-const EMPTY_NOTIF_MESSAGE = '[data-cy=empty-notifs-message]';
-const NOTIF_NO_WALLET_MESSAGE = '[data-cy=notif-no-wallet]';
-const NOTIFICATION_MODAL = '#notifications-bell';
-const NEW_NOTIF_DOT = '[data-cy=new-notif-dot]';
-const WARNING_ICON = '[data-testid=ErrorIcon]';
-const INFO_ICON = '[data-testid=InfoIcon]';
-const TOAST_MESSAGE = '[data-cy=toast-notification-message]';
-const TOAST_TITLE = '[data-cy=toast-notification-title]';
-const TOAST_CLOSE_BUTTON = 'button[aria-label=close]';
-const NOTIF_WRAP_TOKEN_BUTTON = '[data-cy=wrap-tokens-button]';
 const LOADING_SKELETONS = '.MuiSkeleton-root';
 const ADDRESS_SEARCH_DIALOG = '[data-cy=receiver-dialog]';
 const CONNECTED_WALLET_BUTTON = '[data-cy=connected-wallet-button]';
 const CONNECTED_WALLET_DIALOG = '[data-cy=account-modal]';
 const DISCONNECT_BUTTON = '[data-cy=disconnect-button]';
 const ADDRESS_MODAL_COPY_BUTTON = '[data-cy=address-modal-copy-button]';
-const COPY_ICON = '[data-testid=ContentCopyRoundedIcon]';
-const CHECKMARK_ICON = '[data-testid=CheckOutlinedIcon]';
+const COPY_ICON = '[data-cy=copy-icon]';
+const CHECKMARK_ICON = '[data-cy=copied-checkmark-icon]';
 
 const ADDRESS_SEARCH_AVATAR_IMAGES =
   '[role=dialog] [class*=MuiListItemAvatar] img';
 const DARK_MODE_BUTTON = '[data-cy=dark-mode-button]';
 const LIGHT_MODE_BUTTON = '[data-cy=light-mode-button]';
-const DARK_MODE_ICON = '[data-testid=DarkModeOutlinedIcon]';
-const LIGHT_MODE_ICON = '[data-testid=LightModeOutlinedIcon]';
+const DARK_MODE_ICON = '[data-cy=dark-mode-button]';
+const LIGHT_MODE_ICON = '[data-cy=light-mode-button]';
 const GET_SUPER_TOKENS_ONBOARDING_CARD = '[data-cy=get-tokens-onboarding-card]';
 const SEND_STREAM_ONBOARDING_CARD = '[data-cy=send-stream-onboarding-card]';
 const MODIFY_OR_CANCEL_STREAM_ONBOARDING_CARD =
   '[data-cy=modify-or-cancel-streams-onboarding-card]';
 const TRY_SUPERFLUID_ONBOARDING_CARD =
   '[data-cy=try-out-superfluid-onboarding-card]';
-const MINIGAME_WARNING = '[data-cy=superfluid-runner-game-alert-text]';
-const MINIGAME_COMPONENT = '[data-cy=minigame-component]';
+const SUPERFLUID_RUNNER_NAV_LINK = '[data-cy=nav-superfluid-runner]';
 const RECEIVER_BUTTON = '[data-cy=address-button]';
 const RECENT_ENTRIES = '[data-cy=recents-entry]';
 const TOKEN_SELECT_SYMBOL = '[data-cy=token-symbol-and-name] h6';
@@ -111,52 +96,43 @@ const TOKEN_SEARCH_INPUT = '[data-cy=token-search-input] input';
 const TOKEN_NO_SEARCH_RESULTS = '[data-cy=token-search-no-results]';
 const PREVIEW_BALANCE = '[data-cy=balance]';
 
-const NEW_NOTIF_DATE = new Date(Date.now());
-const NEW_NOTIF_STRING_DATE =
-  BasePage.getNotificationDateString(NEW_NOTIF_DATE);
-const OLD_NOTIF_DATE = new Date(1000 * BasePage.getDayTimestamp(-30));
-const OLD_DATE_STRING = BasePage.getNotificationDateString(OLD_NOTIF_DATE);
 
 export class Common extends BasePage {
   static validateEcosystemNavigationButtonHref() {
     cy.get('[data-cy=nav-ecosystem')
       .parent()
-      .should('have.attr', 'href', 'https://www.superfluid.finance/ecosystem');
+      .should('have.attr', 'href', 'https://superfluid.org/ecosystem');
     cy.get('[data-cy=nav-ecosystem')
       .parent()
       .should('have.attr', 'target', '_blank');
   }
 
-  static validateMiniGameContainerWithoutWalletConnected() {
-    //Locally it just loads to an 403 :/
-    this.hasAttributeWithValue(
-      MINIGAME_COMPONENT,
-      'src',
-      'https://astrobunny.superfluid.finance/?level=1'
-    );
+  static validateSuperfluidRunnerLinkWithoutAddress() {
+    cy.get(SUPERFLUID_RUNNER_NAV_LINK)
+      .parent()
+      .should('have.attr', 'target', '_blank')
+      .invoke('attr', 'href')
+      .should((href) => {
+        expect(href).to.contain('https://astrobunny.superfluid.finance/?level=');
+        expect(href).to.not.contain('address=');
+      });
   }
-  static validateMiniGameCosmeticsWarningIsVisible() {
-    this.isVisible(MINIGAME_WARNING);
-    this.hasText(
-      MINIGAME_WARNING,
-      'To access and unlock in-game cosmetics, please connect your wallet before beginning the game.'
-    );
-  }
-  static validateMiniGameCosmeticsWarningDoesNotExist() {
-    this.doesNotExist(MINIGAME_WARNING);
-  }
-  static validateMiniGameContainerWithWalletConnected() {
-    //Locally it just loads to an 403 :/
+  static validateSuperfluidRunnerLinkWithAddress(account: string) {
     cy.fixture('commonData').then((addresses) => {
-      this.hasAttributeWithValue(
-        MINIGAME_COMPONENT,
-        'src',
-        `https://astrobunny.superfluid.finance/?level=1&address=${addresses['john']}`
-      );
+      cy.get(SUPERFLUID_RUNNER_NAV_LINK)
+        .parent()
+        .should('have.attr', 'target', '_blank')
+        .invoke('attr', 'href')
+        .should((href) => {
+          expect(href).to.contain(
+            'https://astrobunny.superfluid.finance/?level='
+          );
+          // Case-insensitive: the address checksum casing depends on the connector.
+          expect(href!.toLowerCase()).to.contain(
+            `address=${addresses[account].toLowerCase()}`
+          );
+        });
     });
-  }
-  static clickMoreMenuButton(button: string) {
-    this.click(`[data-cy=more-${button}-btn]`);
   }
   static hoverOnModifyStreamsOnboardingCard() {
     this.isVisible(MODIFY_OR_CANCEL_STREAM_ONBOARDING_CARD);
@@ -174,13 +150,16 @@ export class Common extends BasePage {
     this.isVisible(WEB3_MODAL);
   }
   static blockENSApiRequests() {
-    cy.intercept('POST', 'https://rpc-endpoints.superfluid.dev/eth-mainnet', {
+    // ENS/handle resolution now flows through the whois service, not the old mainnet RPC.
+    cy.intercept('GET', 'https://whois.superfluid.finance/api/**', {
       forceNetworkError: true,
     });
   }
 
   static validateErrorShownInRecepientList(serviceType: string) {
-    this.isVisible(`[data-cy=${serviceType.toLowerCase()}-error]`);
+    // whois swallows lookup failures to a null result, so a blocked/failed resolution
+    // surfaces as the graceful "No results found" state rather than a `<service>-error` element.
+    cy.contains('No results found').should('be.visible');
   }
 
   static clickDarkModeButton() {
@@ -216,7 +195,7 @@ export class Common extends BasePage {
     });
   }
   static clickOnFirstLensEntry() {
-    this.click('[data-cy=ens-entry]', 0);
+    this.click('[data-cy=whois-entry]', 0);
   }
   static clickOnAddressModalCopyButton() {
     this.isVisible(COPY_ICON);
@@ -297,52 +276,150 @@ export class Common extends BasePage {
 
     cy.visit(page, {
       onBeforeLoad: (window) => {
+        // Seeded here rather than in a Before hook so it lands in the application window
+        // before redux-persist rehydrates. See the @gaslessRelayEnabled hook for why.
+        if (Cypress.env('gaslessRelayEnabled')) {
+          window.localStorage.setItem(
+            'persist:appSettings',
+            // redux-persist stores each field JSON-stringified and merges over `initialState`,
+            // so only the field under test has to be present here.
+            '{"clearMacroEnabled":"true","_persist":"{\\"version\\":1,\\"rehydrated\\":true}"}'
+          );
+        }
         try {
-          const hdwallet = new HDWalletProvider({
-            privateKeys: [usedAccountPrivateKey],
-            url: networkRpc,
-            chainId: chainId,
-            pollingInterval: 1000,
-          });
-          console.log('hdwallet', hdwallet);
-          if (Cypress.env('rejected')) {
-            // Make HDWallet automatically reject transaction.
-            // Inspired by: https://github.com/MetaMask/web3-provider-engine/blob/e835b80bf09e76d92b785d797f89baa43ae3fd60/subproviders/hooked-wallet.js#L326
-            for (const provider of hdwallet.engine['_providers']) {
-              console.log('provider', provider);
-              if (provider.checkApproval) {
-                provider.checkApproval = function (type, didApprove, cb) {
-                  cb(new Error(`User denied ${type} signature.`));
-                };
+          const normalizedKey = (
+            usedAccountPrivateKey.startsWith('0x')
+              ? usedAccountPrivateKey
+              : `0x${usedAccountPrivateKey}`
+          ) as `0x${string}`;
+          const account = privateKeyToAccount(normalizedKey);
+
+          // Minimal viem chain definition for the selected network.
+          const chain = {
+            id: chainId,
+            name: selectedNetwork,
+            nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+            rpcUrls: { default: { http: [networkRpc] } },
+          } as const;
+
+          const transport = http(networkRpc);
+          const publicClient = createPublicClient({ chain, transport });
+          const walletClient = createWalletClient({ account, chain, transport });
+
+          const SIGNING_METHODS = [
+            'eth_sendTransaction',
+            'wallet_sendTransaction',
+            'eth_sign',
+            'personal_sign',
+            'eth_signTypedData',
+            'eth_signTypedData_v3',
+            'eth_signTypedData_v4',
+          ];
+          const NUMERIC_TX_FIELDS = [
+            'value',
+            'gas',
+            'gasPrice',
+            'maxFeePerGas',
+            'maxPriorityFeePerGas',
+            'maxFeePerBlobGas',
+          ];
+
+          // viem-native EIP-1193 mock: signs locally with the test key and
+          // forwards reads to the RPC. Replaces @truffle/hdwallet-provider,
+          // which rejected viem 2.x's eth_sendTransaction shape (so viem fell
+          // back to wallet_sendTransaction, which the node can't service).
+          const mockBridge = {
+            request: async ({
+              method,
+              params,
+            }: {
+              method: string;
+              params?: any[];
+            }) => {
+              if (Cypress.env('rejected') && SIGNING_METHODS.includes(method)) {
+                // Real wallets reject with EIP-1193 code 4001 → viem
+                // UserRejectedRequestError → app maps to "Transaction Rejected".
+                throw Object.assign(new Error('User rejected the request.'), {
+                  code: 4001,
+                });
               }
-            }
-          }
+              switch (method) {
+                case 'eth_requestAccounts':
+                case 'eth_accounts':
+                  return [account.address];
+                case 'eth_chainId':
+                  return numberToHex(chainId);
+                case 'wallet_sendTransaction':
+                case 'eth_sendTransaction': {
+                  const tx: any = { ...(params?.[0] ?? {}) };
+                  delete tx.from;
+                  delete tx.type;
+                  for (const f of NUMERIC_TX_FIELDS)
+                    if (tx[f] != null) tx[f] = BigInt(tx[f]);
+                  if (tx.nonce != null) tx.nonce = Number(BigInt(tx.nonce));
+                  // OP Sepolia rejects estimateGas with the default (block-limit)
+                  // gas cap as "intrinsic gas too high" (L1-fee gas inflates it).
+                  // Real wallets pass a sane cap; a local-key viem account does
+                  // not — so when the app didn't pin a limit, estimate with an
+                  // explicit cap here and set it, so viem just signs+broadcasts.
+                  if (tx.gas == null) {
+                    const estParams: any = {
+                      from: account.address,
+                      to: tx.to,
+                      data: tx.data,
+                      gas: numberToHex(8000000),
+                    };
+                    if (tx.value != null) estParams.value = numberToHex(tx.value);
+                    tx.gas = BigInt(
+                      await publicClient.request({
+                        method: 'eth_estimateGas',
+                        params: [estParams],
+                      })
+                    );
+                  }
+                  return await walletClient.sendTransaction({
+                    account,
+                    chain,
+                    ...tx,
+                  });
+                }
+                case 'personal_sign':
+                  return await account.signMessage({
+                    message: { raw: params?.[0] },
+                  });
+                case 'eth_sign':
+                  return await account.signMessage({
+                    message: { raw: params?.[1] },
+                  });
+                case 'eth_signTypedData':
+                case 'eth_signTypedData_v3':
+                case 'eth_signTypedData_v4': {
+                  const raw = params?.[1];
+                  const typed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+                  return await account.signTypedData(typed);
+                }
+                default:
+                  return await publicClient.request({
+                    method: method as any,
+                    params: params as any,
+                  });
+              }
+            },
+            on: () => {},
+            removeListener: () => {},
+            emit: () => {},
+          };
 
-          if (!hdwallet) {
-            console.log('Error: HDWalletProvider not initialized properly');
-            return;
-          }
-
-          const mockBridge = new ProviderAdapter(hdwallet);
           window['mockBridge'] = mockBridge;
-          window['mockWallet'] = hdwallet;
-
+          window['mockWallet'] = {
+            chainId,
+            getAddress: () => account.address,
+          };
           window['mockWalletDebug'] = {
             chainId,
             network: selectedNetwork,
-            address: hdwallet.getAddress(),
+            address: account.address,
           };
-
-          setTimeout(() => {
-            const ethereum = mockBridge;
-            if (ethereum) {
-              console.log('Manually triggering chainChanged event');
-              (ethereum as any).emit?.(
-                'chainChanged',
-                `0x${chainId.toString(16)}`
-              );
-            }
-          }, 500);
         } catch (e) {
           console.log('Error during wallet provider setup: ' + e.message);
           console.error('Error during wallet provider setup: ', e);
@@ -381,7 +458,7 @@ export class Common extends BasePage {
   }
 
   static rejectTransactions() {
-    cy.log('Cypress will reject HDWalletProvider Transactions!');
+    cy.log('Cypress will reject wallet transactions!');
     Cypress.env('rejected', true);
   }
 
@@ -533,6 +610,48 @@ export class Common extends BasePage {
     });
   }
 
+  // The token-page distributions tab queries index subscriptions via sdk-redux,
+  // whose generated query aliases the `indexSubscriptions` field to `result`.
+  // Match the request by its query body (the operationName varies) and empty the
+  // result so the no-data row shows regardless of the account's real on-chain
+  // state. (`mockQueryToEmptyState` can't be reused: it writes `data[operationName]`,
+  // not the aliased `result`.)
+  static mockIndexSubscriptionsToEmptyState() {
+    cy.intercept('POST', '**subgraph**', (req) => {
+      const query = (req.body && req.body.query) || '';
+      if (query.includes('indexSubscriptions')) {
+        req.alias = 'indexSubscriptionsQuery';
+        req.continue((res) => {
+          if (res.body && res.body.data) {
+            if (Array.isArray(res.body.data.result)) res.body.data.result = [];
+            if (Array.isArray(res.body.data.indexSubscriptions))
+              res.body.data.indexSubscriptions = [];
+          }
+        });
+      }
+    });
+  }
+
+  // The receiver dialog's "Recents" come from the live `recents` subgraph query
+  // (maps response.streams -> receiver.id). Mock it to a deterministic receiver so the
+  // scenario doesn't depend on the account's live stream history. Register before opening
+  // the dialog. Subgraph addresses are lowercase; the app checksums them for display.
+  static mockRecentsToKnownReceiver() {
+    cy.intercept('POST', '**subgraph**', (req) => {
+      const query = (req.body && req.body.query) || '';
+      if (req.body?.operationName === 'recents' || query.includes('query recents')) {
+        req.alias = 'recentsQuery';
+        req.reply({
+          data: {
+            streams: [
+              { receiver: { id: '0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2' } },
+            ],
+          },
+        });
+      }
+    });
+  }
+
   static disconnectWallet() {
     this.click(WALLET_CONNECTION_STATUS);
     this.click(DISCONNECT_BUTTON);
@@ -556,10 +675,6 @@ export class Common extends BasePage {
 
   static validateNoEthereumMainnetShownInDropdown() {
     this.doesNotExist('[data-cy=ethereum-button]');
-  }
-
-  static openNavigationMoreMenu() {
-    this.click(NAVIGATION_MORE_BUTTON);
   }
 
   static openAccessCodeMenu() {
@@ -674,7 +789,14 @@ export class Common extends BasePage {
     const minutes = `0${newDate.getMinutes()}`.slice(-2);
     const finalFutureDate = `${month}/${day}/${year} ${hours}:${minutes}`;
 
-    this.type(selector, finalFutureDate);
+    // `selector` is the picker field's data-cy container, not its input: under the
+    // MUI X v9 accessible field DOM the only <input> is a hidden mirror that cannot
+    // be typed into, so the whole value is written through it natively in a single
+    // command (see setPickersFieldValue). This also keeps the no-clear() rule from
+    // v8: clearing re-renders the scheduling form and detaches the element
+    // mid-command on slower CI, and a {selectall}{del} prefix only ever cleared one
+    // section -- writing the full formatted value overwrites every section at once.
+    this.setPickersFieldValue(selector, finalFutureDate);
   }
 
   static validateScheduledStreamRow(
@@ -698,10 +820,6 @@ export class Common extends BasePage {
 
   static openFaucetMenu() {
     this.click(FAUCET_BUTTON);
-  }
-
-  static openAutoWrapPage() {
-    this.click(AUTO_WRAP_NAVIGATION_BUTTON);
   }
 
   static validateConnectWalletButtonInFaucetMenu() {
@@ -787,372 +905,6 @@ export class Common extends BasePage {
     this.isVisible(FAUCET_WALLET_ADDRESS);
   }
 
-  static mockNotificationRequestsTo(type: string) {
-    cy.intercept('GET', '**/feeds**', (req) => {
-      req.continue((res) => {
-        switch (type.toLowerCase()) {
-          case 'liquidated':
-            res.body = {
-              feeds: [
-                {
-                  payload_id: 3769521,
-                  sender: '0xa947E9cFc724f05D83b995e53572c4bcCB00D7Aa',
-                  epoch: NEW_NOTIF_DATE.toISOString(),
-                  payload: {
-                    data: {
-                      app: 'Superfluid',
-                      sid: '40196540',
-                      url: 'https://app.superfluid.org',
-                      acta: 'https://app.superfluid.org/',
-                      aimg: '',
-                      amsg: `Your TDLx(TDLx) on network Polygon was liquidated (at ${NEW_NOTIF_STRING_DATE}).[timestamp: ${
-                        NEW_NOTIF_DATE.getTime() / 100
-                      }]`,
-                      asub: 'Liquidated',
-                      icon: 'https://gateway.ipfs.io/ipfs/bafybeiew4vxj6npyn5j5ck6co64bla4zqfbgrk7mjbdxqv6vbyioei3b2y/QmaFbcUvWdxnbHNLMe9goScf9A5YX8uE7nryetdaEnaPWA',
-                      type: 3,
-                      epoch: NEW_NOTIF_DATE.getTime() / 100,
-                      etime: null,
-                      hidden: '0',
-                      sectype: null,
-                      additionalMeta: null,
-                    },
-                    recipients: {
-                      'eip155:0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2': null,
-                    },
-                    notification: {
-                      body: `type:liquidation,network:polygon,symbol:TDLx,token:TDLx,tokenAddress:0xa794221d92d77490ff319e95da1461bdf2bd3953,liquidation:${(
-                        NEW_NOTIF_DATE.getTime() / 1000
-                      ).toFixed(0)}`,
-                      title: 'Superfluid - Liquidated',
-                    },
-                    verificationProof:
-                      'eip712v2:0x1e2bb5e08b056882baa8e4bbc664c60c058bd9d27082b11b94bc888e77ddad0f667b360304f56626f7e6f908d0051ca7e684cfe5d3c6acce65bce9a75317447b1c::uid::8572f30d-d652-4516-9e2f-914d47b3d989',
-                  },
-                  source: 'ETH_MAINNET',
-                  etime: null,
-                },
-              ],
-            };
-            break;
-          case 'old notification':
-            res.body = {
-              feeds: [
-                {
-                  payload_id: 3769521,
-                  sender: '0xa947E9cFc724f05D83b995e53572c4bcCB00D7Aa',
-                  epoch: OLD_NOTIF_DATE.toISOString(),
-                  payload: {
-                    data: {
-                      app: 'Superfluid',
-                      sid: '40196540',
-                      url: 'https://app.superfluid.org',
-                      acta: 'https://app.superfluid.org/',
-                      aimg: '',
-                      amsg: `Your TDLx(TDLx) on network Polygon is about to be liquidated in less than 7 days(at ${OLD_DATE_STRING}).[timestamp: ${
-                        OLD_NOTIF_DATE.getTime() / 100
-                      }]`,
-                      asub: 'Liquidation Risk',
-                      icon: 'https://gateway.ipfs.io/ipfs/bafybeiew4vxj6npyn5j5ck6co64bla4zqfbgrk7mjbdxqv6vbyioei3b2y/QmaFbcUvWdxnbHNLMe9goScf9A5YX8uE7nryetdaEnaPWA',
-                      type: 3,
-                      epoch: OLD_NOTIF_DATE.getTime() / 100,
-                      etime: null,
-                      hidden: '0',
-                      sectype: null,
-                      additionalMeta: null,
-                    },
-                    recipients: {
-                      'eip155:0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2': null,
-                    },
-                    notification: {
-                      body: `type:liquidation-risk-7day,network:polygon,symbol:TDLx,token:TDLx,tokenAddress:0xa794221d92d77490ff319e95da1461bdf2bd3953,liquidation:${(
-                        OLD_NOTIF_DATE.getTime() / 1000
-                      ).toFixed(0)}`,
-                      title: 'Superfluid - Liquidation Risk',
-                    },
-                    verificationProof:
-                      'eip712v2:0x1e2bb5e08b056882baa8e4bbc664c60c058bd9d27082b11b94bc888e77ddad0f667b360304f56626f7e6f908d0051ca7e684cfe5d3c6acce65bce9a75317447b1c::uid::8572f30d-d652-4516-9e2f-914d47b3d989',
-                  },
-                  source: 'ETH_MAINNET',
-                  etime: null,
-                },
-              ],
-            };
-            break;
-          case 'liquidation risk':
-            res.body = {
-              feeds: [
-                {
-                  payload_id: 3769521,
-                  sender: '0xa947E9cFc724f05D83b995e53572c4bcCB00D7Aa',
-                  epoch: NEW_NOTIF_DATE.toISOString(),
-                  payload: {
-                    data: {
-                      app: 'Superfluid',
-                      sid: '40196540',
-                      url: 'https://app.superfluid.org',
-                      acta: 'https://app.superfluid.org/',
-                      aimg: '',
-                      amsg: `Your TDLx(TDLx) on network Polygon is about to be liquidated in less than 7 days(at ${NEW_NOTIF_STRING_DATE}).[timestamp: ${
-                        NEW_NOTIF_DATE.getTime() / 100
-                      }]`,
-                      asub: 'Liquidation Risk',
-                      icon: 'https://gateway.ipfs.io/ipfs/bafybeiew4vxj6npyn5j5ck6co64bla4zqfbgrk7mjbdxqv6vbyioei3b2y/QmaFbcUvWdxnbHNLMe9goScf9A5YX8uE7nryetdaEnaPWA',
-                      type: 3,
-                      epoch: NEW_NOTIF_DATE.getTime() / 100,
-                      etime: null,
-                      hidden: '0',
-                      sectype: null,
-                      additionalMeta: null,
-                    },
-                    recipients: {
-                      'eip155:0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2': null,
-                    },
-                    notification: {
-                      body: `type:liquidation-risk-7day,network:polygon,symbol:TDLx,token:TDLx,tokenAddress:0xa794221d92d77490ff319e95da1461bdf2bd3953,liquidation:${(
-                        NEW_NOTIF_DATE.getTime() / 1000
-                      ).toFixed(0)}`,
-                      title: 'Superfluid - Liquidation Risk',
-                    },
-                    verificationProof:
-                      'eip712v2:0x1e2bb5e08b056882baa8e4bbc664c60c058bd9d27082b11b94bc888e77ddad0f667b360304f56626f7e6f908d0051ca7e684cfe5d3c6acce65bce9a75317447b1c::uid::8572f30d-d652-4516-9e2f-914d47b3d989',
-                  },
-                  source: 'ETH_MAINNET',
-                  etime: null,
-                },
-              ],
-            };
-            break;
-          case 'urgent liquidation risk':
-            res.body = {
-              feeds: [
-                {
-                  payload_id: 3769521,
-                  sender: '0xa947E9cFc724f05D83b995e53572c4bcCB00D7Aa',
-                  epoch: NEW_NOTIF_DATE.toISOString(),
-                  payload: {
-                    data: {
-                      app: 'Superfluid',
-                      sid: '40196540',
-                      url: 'https://app.superfluid.org',
-                      acta: 'https://app.superfluid.org/',
-                      aimg: '',
-                      amsg: `Your TDLx(TDLx) on network Polygon is about to be liquidated in less than 7 days(at ${NEW_NOTIF_STRING_DATE}).[timestamp: ${
-                        NEW_NOTIF_DATE.getTime() / 100
-                      }]`,
-                      asub: 'Urgent Liquidation Risk',
-                      icon: 'https://gateway.ipfs.io/ipfs/bafybeiew4vxj6npyn5j5ck6co64bla4zqfbgrk7mjbdxqv6vbyioei3b2y/QmaFbcUvWdxnbHNLMe9goScf9A5YX8uE7nryetdaEnaPWA',
-                      type: 3,
-                      epoch: NEW_NOTIF_DATE.getTime() / 100,
-                      etime: null,
-                      hidden: '0',
-                      sectype: null,
-                      additionalMeta: null,
-                    },
-                    recipients: {
-                      'eip155:0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2': null,
-                    },
-                    notification: {
-                      body: `type:liquidation-risk-2day,network:polygon,symbol:TDLx,token:TDLx,tokenAddress:0xa794221d92d77490ff319e95da1461bdf2bd3953,liquidation:${(
-                        NEW_NOTIF_DATE.getTime() / 1000
-                      ).toFixed(0)}`,
-                      title: 'Superfluid - Urgent Liquidation Risk',
-                    },
-                    verificationProof:
-                      'eip712v2:0x1e2bb5e08b056882baa8e4bbc664c60c058bd9d27082b11b94bc888e77ddad0f667b360304f56626f7e6f908d0051ca7e684cfe5d3c6acce65bce9a75317447b1c::uid::8572f30d-d652-4516-9e2f-914d47b3d989',
-                  },
-                  source: 'ETH_MAINNET',
-                  etime: null,
-                },
-              ],
-            };
-            break;
-          case 'outdated format':
-            res.body = {
-              feeds: [
-                {
-                  payload_id: 3769521,
-                  sender: '0xa947E9cFc724f05D83b995e53572c4bcCB00D7Aa',
-                  epoch: NEW_NOTIF_DATE.toISOString(),
-                  payload: {
-                    data: {
-                      app: 'Superfluid',
-                      sid: '40196540',
-                      url: 'https://app.superfluid.org',
-                      acta: 'https://app.superfluid.org/',
-                      aimg: '',
-                      amsg: `Some Test message`,
-                      asub: 'What happens with outdated formats?',
-                      icon: 'https://gateway.ipfs.io/ipfs/bafybeiew4vxj6npyn5j5ck6co64bla4zqfbgrk7mjbdxqv6vbyioei3b2y/QmaFbcUvWdxnbHNLMe9goScf9A5YX8uE7nryetdaEnaPWA',
-                      type: 3,
-                      epoch: NEW_NOTIF_DATE.getTime() / 100,
-                      etime: null,
-                      hidden: '0',
-                      sectype: null,
-                      additionalMeta: null,
-                    },
-                    recipients: {
-                      'eip155:0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2': null,
-                    },
-                    notification: {
-                      body: `This is an outdated format aka something that is not explicitly handled`,
-                      title: 'Outdated Format',
-                    },
-                    verificationProof:
-                      'eip712v2:0x1e2bb5e08b056882baa8e4bbc664c60c058bd9d27082b11b94bc888e77ddad0f667b360304f56626f7e6f908d0051ca7e684cfe5d3c6acce65bce9a75317447b1c::uid::8572f30d-d652-4516-9e2f-914d47b3d989',
-                  },
-                  source: 'ETH_MAINNET',
-                  etime: null,
-                },
-              ],
-            };
-            break;
-          default:
-            throw new Error(`Unknown notification type: ${type}`);
-        }
-      });
-    });
-  }
-
-  static clickNotificationButton() {
-    this.click(NOTIFICATIONS_BUTTON);
-  }
-
-  static validateNoNewNotificationsMessage(tab: string) {
-    this.hasText(
-      EMPTY_NOTIF_MESSAGE,
-      `You don't have any ${tab} notifications.`
-    );
-  }
-
-  static switchNotificationTabTo(tab: string) {
-    this.click(`[data-cy=${tab}-tab]`);
-  }
-
-  static validateNotSubscribedMessage() {
-    this.hasText(
-      EMPTY_NOTIF_MESSAGE,
-      'You are not subscribed. Check settings to enable notifications'
-    );
-  }
-
-  static validateConnectWalletButtonInNotifModal() {
-    this.hasText(
-      NOTIF_NO_WALLET_MESSAGE,
-      'Connect your wallet to check your notifications.'
-    );
-    this.isVisible(`${NOTIFICATION_MODAL} ${CONNECT_WALLET_BUTTON}`);
-  }
-
-  static validateNotificationToast(type: string) {
-    this.validateNotifTitleAndMessage(TOAST_MESSAGE, TOAST_TITLE, type, true);
-  }
-
-  static validateNotificationBadge(amount: string) {
-    if (amount === '0') {
-      this.isNotVisible(NOTIF_BADGE);
-    } else {
-      this.hasText(NOTIF_BADGE, amount);
-    }
-  }
-
-  static archiveLastNotification() {
-    //One of the rare cases where triggering mouseevents or invoking show function does not make the element visible
-    this.forceClick(NOTIF_ARCHIVE_BUTTON, 0);
-  }
-
-  static validateArchivedNotification(type: string) {
-    this.validateNotifTitleAndMessage(NOTIF_MESSAGE, NOTIF_TITLE, type, true);
-  }
-
-  static validateNewNotification(type: string) {
-    this.isVisible(NEW_NOTIF_DOT);
-    this.validateNotifTitleAndMessage(NOTIF_MESSAGE, NOTIF_TITLE, type, false);
-  }
-
-  static validateReadNotification(type: string) {
-    this.doesNotExist(NEW_NOTIF_DOT);
-    this.validateNotifTitleAndMessage(NOTIF_MESSAGE, NOTIF_TITLE, type, false);
-  }
-
-  static validateNotifTitleAndMessage(
-    messageSelector: string,
-    titleSelector: string,
-    type: string,
-    archivedOrToast: boolean
-  ) {
-    const ASSERT_STRING =
-      type.toLowerCase() === 'old notification'
-        ? this.getNotifDateAssertStringFromDate(OLD_NOTIF_DATE)
-        : this.getNotifDateAssertStringFromDate(NEW_NOTIF_DATE);
-    switch (type.toLowerCase()) {
-      case 'liquidated':
-        this.hasText(titleSelector, ` ${type}`);
-        this.isVisible(LIQUIDATED_OR_CANCEL_ICON);
-        this.hasText(
-          messageSelector,
-          `Your TDLx on Polygon was liquidated at ${ASSERT_STRING}.`
-        );
-        this.validateNoWrapButtonsInNotifModal();
-        break;
-      case 'old notification':
-        this.hasText(titleSelector, ` Liquidation Risk`);
-        this.isVisible(WARNING_ICON);
-        this.validateNoWrapButtonsInNotifModal();
-        this.hasText(
-          messageSelector,
-          `Your TDLx on Polygon is about to be liquidated at ${ASSERT_STRING}.`
-        );
-        break;
-      case 'liquidation risk':
-        this.hasText(titleSelector, ` ${type}`);
-        this.isVisible(WARNING_ICON);
-        if (!archivedOrToast) {
-          this.validateWrapButtonsInNotifModal();
-        }
-        this.hasText(
-          messageSelector,
-          `Your TDLx on Polygon is about to be liquidated at ${ASSERT_STRING}.`
-        );
-        break;
-      case 'urgent liquidation risk':
-        this.hasText(titleSelector, ` ${type}`);
-        this.isVisible(WARNING_ICON);
-        if (!archivedOrToast) {
-          this.validateWrapButtonsInNotifModal();
-        }
-        this.hasText(
-          messageSelector,
-          `Your TDLx on Polygon is about to be liquidated at ${ASSERT_STRING}.`
-        );
-        break;
-      case 'outdated format':
-        this.isVisible(INFO_ICON);
-        this.hasText(
-          messageSelector,
-          'This is an outdated format aka something that is not explicitly handled'
-        );
-        this.validateNoWrapButtonsInNotifModal();
-        break;
-    }
-  }
-
-  static validateWrapButtonsInNotifModal() {
-    this.isVisible(NOTIF_WRAP_TOKEN_BUTTON);
-  }
-
-  static clickWrapButtonInNotifModal() {
-    this.clickFirstVisible(NOTIF_WRAP_TOKEN_BUTTON);
-  }
-
-  static validateNoWrapButtonsInNotifModal() {
-    this.doesNotExist(NOTIF_WRAP_TOKEN_BUTTON);
-  }
-
-  static clickNotificationSettingsButton() {
-    this.click(NOTIF_SETTINGS_BUTTON);
-  }
-
   static getPageUrlByName(name: string) {
     return cy.fixture('streamData').then((streamData) => {
       cy.fixture('vestingData').then((vestingData) => {
@@ -1165,7 +917,7 @@ export class Common extends BasePage {
           'address book page': '/address-book',
           'activity history page': '/history',
           'bridge page': '/bridge',
-          'settings page': '/settings',
+          'approvals page': '/approvals',
           'vesting page': '/vesting',
           'accounting export page': '/accounting',
           'auto-wrap page': '/auto-wrap',
@@ -1183,7 +935,6 @@ export class Common extends BasePage {
           'vesting stream details page': `/stream/polygon/${vestingData.polygon.USDCx.vestingStream.id}`,
           '404 token page': '/token/polygon/Testing420HaveANiceDay',
           '404 vesting page': '/vesting/polygon/Testing',
-          'minigame page': '/superfluid-runner',
         };
         if (pagesAliases[name] === undefined) {
           throw new Error(`Hmm, you haven't set up the link for : ${name}`);
@@ -1244,7 +995,11 @@ export class Common extends BasePage {
     cy.fixture('networkSpecificData').then((networkSpecificData) => {
       networkSpecificData[network].staticBalanceAccount.recentReceivers.forEach(
         (receiver: any, index: number) => {
-          this.hasText(RECENT_ENTRIES, receiver.address, index);
+          // The recents-entry (AddressListItem) renders a name + the shortened address,
+          // never the full 42-char address — match the shortened form on the indexed row.
+          cy.get(RECENT_ENTRIES)
+            .eq(index)
+            .should('contain.text', this.shortenHex(receiver.address, 6));
         }
       );
     });

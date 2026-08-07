@@ -41,7 +41,7 @@ const ADDRESS_FILTER_BUTTON = '[data-cy=address-filter]';
 const ADDRESS_FILTER_NAMES = '[data-cy=address]';
 const ADDRESS_FILTER_CLEAR_ALL = '[data-cy=clear-all-chip]';
 const ADDRESS_FILTER_NAME_CHIPS = '[data-cy=address-chip]';
-const COPY_BUTTONS = '[data-testid=ContentCopyRoundedIcon]';
+const COPY_BUTTONS = '[data-cy=address-copy-icon]';
 const COPY_TOOLTIPS = '[role=tooltip] .MuiTooltip-tooltip';
 
 export class AddressBookPage extends BasePage {
@@ -175,7 +175,8 @@ export class AddressBookPage extends BasePage {
   static validateAddressBookResult(name: string, address: string) {
     this.isVisible(ADDRESS_BOOK_ENTRIES);
     this.hasText(ADDRESS_BOOK_ENTRIES_NAME, name);
-    this.hasText(ADDRESS_BOOK_ENTRIES_ADDRESS, address);
+    // The entry's secondary line renders the shortened address, never the full 42-char form.
+    this.hasText(ADDRESS_BOOK_ENTRIES_ADDRESS, this.shortenHex(address, 6));
   }
 
   static validateConnectedWalletName(name: string) {

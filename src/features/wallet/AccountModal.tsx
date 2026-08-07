@@ -84,12 +84,14 @@ const AccountModal: FC<AccountModalProps> = ({ open, onClose }) => {
       data-cy="account-modal"
       open={open}
       onClose={handleClose}
-      PaperProps={{ sx: { width: 500 } }}
+      slotProps={{ paper: { sx: { width: 500 } } }}
     >
       {!addressSearchOpen ? (
         <>
           <DialogTitle sx={{ px: 5, pt: 3.5 }}>
-            <Typography variant="h4" textAlign="center">
+            <Typography variant="h4" sx={{
+              textAlign: "center"
+            }}>
               Wallet Connected
             </Typography>
             <IconButton
@@ -97,7 +99,7 @@ const AccountModal: FC<AccountModalProps> = ({ open, onClose }) => {
               sx={{ position: "absolute", right: 20, top: 24 }}
               color="inherit"
             >
-              <CloseRoundedIcon />
+              <CloseRoundedIcon data-cy="close-rounded-icon" />
             </IconButton>
           </DialogTitle>
           {address && (
@@ -111,19 +113,28 @@ const AccountModal: FC<AccountModalProps> = ({ open, onClose }) => {
                 },
               }}
             >
-              <Stack alignItems="center">
+              <Stack sx={{
+                alignItems: "center"
+              }}>
                 <AddressAvatar address={address} />
                 <Typography variant="h4" component="span" sx={{ mt: 1.5 }}>
                   <AddressName address={address} />
                 </Typography>
                 {balanceData && (
-                  <Typography variant="h5" color="text.secondary">
+                  <Typography variant="h5" sx={{
+                    color: "text.secondary"
+                  }}>
                     <Amount wei={balanceData.value} /> {balanceData.symbol}
                   </Typography>
                 )}
               </Stack>
 
-              <Stack direction="row" gap={1} sx={{ my: 4 }}>
+              <Stack
+                direction="row"
+                sx={{
+                  gap: 1,
+                  my: 4
+                }}>
                 <CopyBtn
                   label="Copy Address"
                   copyText={address}
@@ -155,15 +166,15 @@ const AccountModal: FC<AccountModalProps> = ({ open, onClose }) => {
               <Stack
                 data-cy="view-mode-inputs"
                 direction="row"
-                alignItems="center"
-                gap={1.25}
                 sx={{
+                  alignItems: "center",
+                  gap: 1.25,
                   mt: 2,
+
                   [theme.breakpoints.down("md")]: {
                     mt: 1,
-                  },
-                }}
-              >
+                  }
+                }}>
                 <Button
                   variant="outlined"
                   color="secondary"

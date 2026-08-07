@@ -73,6 +73,9 @@ export class EthHelper {
             to: contractToRevokeAllowanceTo,
             from: this.wallet.address,
             data: data,
+            // OP Sepolia rejects estimateGas's default (block-limit) cap as
+            // "intrinsic gas too high"; pin a limit so ethers skips estimation.
+            gasLimit: 3000000,
           });
           await tx.wait().then((receipt) => {
             console.log(`Allowance revoked: ${receipt.transactionHash}`);
@@ -112,6 +115,9 @@ export class EthHelper {
             to: cfaV1ForwarderAddress,
             from: this.wallet.address,
             data: data,
+            // OP Sepolia rejects estimateGas's default (block-limit) cap as
+            // "intrinsic gas too high"; pin a limit so ethers skips estimation.
+            gasLimit: 3000000,
           });
           await tx.wait().then((receipt) => {
             console.log(`Flow deleted: ${receipt?.transactionHash}`);
@@ -153,6 +159,9 @@ export class EthHelper {
             to: cfaV1ForwarderAddress,
             from: this.wallet.address,
             data: data,
+            // OP Sepolia rejects estimateGas's default (block-limit) cap as
+            // "intrinsic gas too high"; pin a limit so ethers skips estimation.
+            gasLimit: 3000000,
           });
           await tx.wait().then((receipt) => {
             console.log(`Flow created: ${receipt?.transactionHash}`);

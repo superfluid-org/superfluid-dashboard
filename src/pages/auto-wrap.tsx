@@ -26,18 +26,20 @@ const NoWalletConnected: FC = () => {
       <Typography
         data-cy={"no-user-settings"}
         variant={isBelowMd ? "h5" : "h4"}
-        textAlign="center"
+        sx={{
+          textAlign: "center"
+        }}
       >
         Wallet not connected
       </Typography>
       <Typography
         data-cy={"no-history-text"}
-        color="text.secondary"
-        textAlign="center"
-      >
-        Wallet is not connected, please connect wallet to modify settings.
+        sx={{
+          color: "text.secondary",
+          textAlign: "center"
+        }}>
+        Wallet is not connected, please connect wallet to continue.
       </Typography>
-
       <Box sx={{ maxWidth: 400, width: "100%", mx: "auto", mt: 4 }}>
         <ConnectWallet />
       </Box>

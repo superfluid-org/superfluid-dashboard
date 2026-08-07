@@ -1,4 +1,4 @@
-import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
+import AddCircleOutline from "@mui/icons-material/AddCircleOutlineOutlined";
 import {
   IconButton,
   ListItemAvatar,
@@ -101,20 +101,20 @@ export const TokenListItem: FC<TokenListItemProps> = ({
           isUnlisted={!isListed}
         />
       </ListItemAvatar>
-
       <ListItemText
         data-cy={"token-symbol-and-name"}
         primary={token.symbol}
         secondary={token.name}
         translate="no"
       />
-
       <Typography
         variant="h6mono"
         component={Stack}
         direction="row"
-        alignItems="center"
         data-cy={"token-balance"}
+        sx={{
+          alignItems: "center"
+        }}
       >
         {!!accountAddress &&
           checkedBalanceWei &&

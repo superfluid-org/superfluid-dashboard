@@ -30,7 +30,11 @@ export const DEFAULT_LINE_CHART_OPTIONS: ChartOptions<"line"> = {
   scales: {
     x: {
       display: false,
-      type: "logarithmic",
+      // Timestamps are epoch milliseconds, so the axis must be linear for
+      // points to be spaced proportionally to elapsed time. A logarithmic
+      // scale (the previous default) distorts the line geometry and hover
+      // hit-testing even while the axis is hidden.
+      type: "linear",
     },
     y: {
       display: false,

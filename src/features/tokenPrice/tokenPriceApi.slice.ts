@@ -1,5 +1,6 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Address } from "@superfluid-finance/sdk-core";
+import { fetchTokenPriceBatched } from "./tokenPriceBatcher";
 
 const LIFI_API_URL = "https://li.quest/v1";
 
@@ -11,50 +12,57 @@ interface ExchangeRateResponse {
   };
 }
 
-// LiFi-s supported chain. This object has more data but we don't need it here yet.
-// More info: https://docs.li.fi/more-integration-options/li.fi-api/requesting-supported-chains
-interface SupportedChain {
-  id: number;
-}
-
-interface SupportedChainsResponse {
-  chains: SupportedChain[];
-}
-
-// More info: https://docs.li.fi/more-integration-options/li.fi-api/getting-token-information
-interface TokenPriceResponse {
+interface LifiTokenPriceResponse {
   token: Address;
   priceUSD: string;
 }
 
 const tokenPriceApi = createApi({
-  keepUnusedDataFor: 60 * 60 * 12, // 12 hours
+  keepUnusedDataFor: 60 * 60, // 1 hour
   reducerPath: "tokenPrice",
-  baseQuery: fetchBaseQuery(),
+  baseQuery: fakeBaseQuery(),
   endpoints: (builder) => ({
     getUSDExchangeRate: builder.query<ExchangeRateResponse["rates"], void>({
-      query: () => "https://open.er-api.com/v6/latest/USD",
-      transformResponse: (response: ExchangeRateResponse) => response.rates,
+      queryFn: async () => {
+        const response = await fetch(
+          "https://open.er-api.com/v6/latest/USD"
+        );
+        if (!response.ok) {
+          return { error: { status: response.status, data: response.statusText } };
+        }
+        const data: ExchangeRateResponse = await response.json();
+        return { data: data.rates };
+      },
     }),
-    getSupportedChainIds: builder.query<number[], void>({
-      query: () => ({
-        url: `${LIFI_API_URL}/chains`,
-      }),
-      transformResponse: (response: SupportedChainsResponse) =>
-        (response.chains || []).map(
-          (supportedChain: SupportedChain) => supportedChain.id
-        ),
-    }),
-    getTokenData: builder.query<
+    getTokenPrice: builder.query<
       { token: Address; price: number },
       { chainId: number; token: Address }
     >({
-      query: ({ chainId, token }) => ({
-        url: `${LIFI_API_URL}/token`,
-        params: { chain: chainId, token },
-      }),
-      transformResponse: (response: TokenPriceResponse) => {
-        return { ...response, price: Number(response.priceUSD) };
+      queryFn: async ({ chainId, token }) => {
+        try {
+          const result = await fetchTokenPriceBatched(chainId, token);
+          return { data: { token, price: Number(result.priceUsd) } };
+        } catch (error) {
+          return {
+            error: { status: "CUSTOM_ERROR", error: String(error) },
+          };
+        }
+      },
+    }),
+    getTokenPriceFallback: builder.query<
+      { token: Address; price: number },
+      { chainId: number; token: Address }
+    >({
+      queryFn: async ({ chainId, token }) => {
+        const url = new URL(`${LIFI_API_URL}/token`);
+        url.searchParams.set("chain", String(chainId));
+        url.searchParams.set("token", token);
+        const response = await fetch(url.toString());
+        if (!response.ok) {
+          return { error: { status: response.status, data: response.statusText } };
+        }
+        const data: LifiTokenPriceResponse = await response.json();
+        return { data: { token: data.token, price: Number(data.priceUSD) } };
       },
     }),
   }),

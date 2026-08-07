@@ -1,7 +1,7 @@
 import { Button, Input, Stack, Typography, useTheme } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { formatEther, parseEther } from "ethers/lib/utils";
-import { FC, memo, useEffect, useMemo, useRef, useState } from "react";
+import { FC, memo, useEffect, useMemo, useRef } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { inputPropsForEtherAmount } from "../../utils/inputPropsForEtherAmount";
 import {
@@ -26,6 +26,8 @@ import { BalanceUnderlyingToken } from "./BalanceUnderlyingToken";
 import { SwitchWrapModeBtn } from "./SwitchWrapModeBtn";
 import { TokenDialogButton } from "./TokenDialogButton";
 import { useTokenPairQuery } from "./useTokenPairQuery";
+import { useTokenUnwrap } from "./useTokenWrapWrites";
+import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/tokenTypes";
 import { WrapInputCard } from "./WrapInputCard";
 import { ValidWrappingForm, WrappingForm } from "./WrappingFormProvider";
 import { BigNumber } from "ethers";
@@ -33,6 +35,8 @@ import { useTokenPairsQuery } from "./useTokenPairsQuery";
 import { SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
 import { Network } from "../network/networks";
 import { RealtimeBalance } from "../redux/endpoints/balanceFetcher";
+import { ClearMacroRelayOption } from "../clearMacro/ClearMacroRelayOption";
+import { useClearMacroFeeFacts } from "../clearMacro/useClearMacroFeeFacts";
 
 interface TabUnwrapProps {
   onSwitchMode: () => void;
@@ -67,12 +71,10 @@ export const TabUnwrap = memo(function TabUnwrap(props: TabUnwrapProps) {
     tokenPair,
   });
 
-  const [unwrapTrigger, unwrapResult] = rpcApi.useSuperTokenDowngradeMutation();
+  const [unwrapTrigger, unwrapResult] = useTokenUnwrap();
 
-  const [isDowngradeDisabled, setIsDowngradeDisabled] = useState(true);
-  useEffect(() => {
-    setIsDowngradeDisabled(!superToken || !underlyingToken || isValidating || !isValid);
-  }, [superToken, underlyingToken, isValidating, isValid]);
+  const isDowngradeDisabled =
+    !superToken || !underlyingToken || isValidating || !isValid;
 
   const tokenPrice = useTokenPrice(network.id, tokenPair?.superTokenAddress);
 
@@ -92,24 +94,37 @@ export const TabUnwrap = memo(function TabUnwrap(props: TabUnwrapProps) {
     amount ? { value: amount, decimals: 18 } : undefined
   );
 
+  // Chip only. MAX needs no equivalent: the fee token is a Wrapper Super Token, so its
+  // `feeToken === superTokenAddress` check can never match a native-asset pair anyway.
+  const relayActionKind =
+    tokenPair?.underlyingTokenAddress === NATIVE_ASSET_ADDRESS
+      ? undefined
+      : ("downgrade" as const);
+
   return (
-    <Stack direction="column" alignItems="center">
+    <Stack direction="column" sx={{
+      alignItems: "center"
+    }}>
       <WrapInputCard>
         <Stack direction="row" spacing={2}>
           <UnwrapInputController />
           <UnwrapTokenController network={network} superToken={superToken} />
         </Stack>
         {tokenPair && visibleAddress && (
-          <Stack direction="row" justifyContent="space-between" gap={0.5}>
+          <Stack
+            direction="row"
+            sx={{
+              justifyContent: "space-between",
+              gap: 0.5
+            }}>
             <Typography
               variant="body2mono"
-              color="text.secondary"
               sx={{
+                color: "text.secondary",
                 flexShrink: 1,
                 overflow: "hidden",
-                textOverflow: "ellipsis",
-              }}
-            >
+                textOverflow: "ellipsis"
+              }}>
               {tokenPrice && <FiatAmount wei={amountWei} price={tokenPrice} />}
             </Typography>
 
@@ -118,18 +133,22 @@ export const TabUnwrap = memo(function TabUnwrap(props: TabUnwrapProps) {
                 chainId={network.id}
                 accountAddress={visibleAddress}
                 tokenAddress={tokenPair.superTokenAddress}
-                TypographyProps={{ color: "text.secondary" }}
+                TypographyProps={{ color: "textSecondary" }}
               />
               {realtimeBalance && (
-                <MaxAmountController realtimeBalance={realtimeBalance} />
+                <MaxAmountController
+                  realtimeBalance={realtimeBalance}
+                  network={network}
+                  superTokenAddress={
+                    tokenPair.superTokenAddress as `0x${string}`
+                  }
+                />
               )}
             </Stack>
           </Stack>
         )}
       </WrapInputCard>
-
       <SwitchWrapModeBtn onClick={props.onSwitchMode} />
-
       {underlyingToken && (
         <WrapInputCard>
           <Stack direction="row" spacing={2}>
@@ -140,10 +159,12 @@ export const TabUnwrap = memo(function TabUnwrap(props: TabUnwrapProps) {
               disableUnderline
               placeholder="0.0"
               value={amount}
-              inputProps={{
-                sx: {
-                  ...theme.typography.largeInput,
-                  p: 0,
+              slotProps={{
+                input: {
+                  sx: {
+                    ...theme.typography.largeInput,
+                    p: 0,
+                  },
                 },
               }}
               sx={{ background: "transparent" }}
@@ -163,16 +184,17 @@ export const TabUnwrap = memo(function TabUnwrap(props: TabUnwrapProps) {
           </Stack>
 
           {visibleAddress && (
-            <Stack direction="row" justifyContent="space-between">
+            <Stack direction="row" sx={{
+              justifyContent: "space-between"
+            }}>
               <Typography
                 variant="body2mono"
-                color="text.secondary"
                 sx={{
+                  color: "text.secondary",
                   flexShrink: 1,
                   overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}
-              >
+                  textOverflow: "ellipsis"
+                }}>
                 {tokenPrice && (
                   <FiatAmount wei={amountWei} price={tokenPrice} />
                 )}
@@ -187,78 +209,93 @@ export const TabUnwrap = memo(function TabUnwrap(props: TabUnwrapProps) {
           )}
         </WrapInputCard>
       )}
-
       {!!(superToken && underlyingToken) && (
-        <Stack direction="row" alignItems="center" gap={0.5}>
+        <Stack
+          direction="row"
+          sx={{
+            alignItems: "center",
+            gap: 0.5
+          }}>
           <Typography data-cy={"token-pair"} align="center" sx={{ my: 3 }}>
             {`1 ${superToken.symbol} = 1 ${underlyingToken.symbol}`}
           </Typography>
           {tokenPrice && (
-            <Typography variant="body2mono" color="text.secondary">
+            <Typography variant="body2mono" sx={{
+              color: "text.secondary"
+            }}>
               (<FiatAmount wei={1} decimals={0} price={tokenPrice} />)
             </Typography>
           )}
         </Stack>
       )}
-
       <ConnectionBoundary>
-        <TransactionBoundary mutationResult={unwrapResult}>
-          {({ setDialogLoadingInfo, getOverrides, txAnalytics }) => (
-            <TransactionButton
-              dataCy={"downgrade-button"}
-              disabled={isDowngradeDisabled}
-              onClick={async (signer) => {
-                if (isDowngradeDisabled) {
-                  throw Error(
-                    `This should never happen.`
+        {/* 2.5 matches the block rhythm around TX buttons app-wide so the relay
+            strip reads as its own block rather than hugging the button. */}
+        <Stack
+          sx={{
+            gap: 2.5,
+            width: "100%"
+          }}>
+          <TransactionBoundary mutationResult={unwrapResult}>
+            {({ setDialogLoadingInfo, txAnalytics }) => (
+              <TransactionButton
+                dataCy={"downgrade-button"}
+                disabled={isDowngradeDisabled}
+                onClick={async () => {
+                  if (isDowngradeDisabled) {
+                    throw Error(
+                      `This should never happen.`
+                    );
+                  }
+
+                  const { data: formData } = getValues() as ValidWrappingForm;
+
+                  const restoration: SuperTokenDowngradeRestoration = {
+                    type: RestorationType.Unwrap,
+                    version: 2,
+                    chainId: network.id,
+                    tokenPair: formData.tokenPair,
+                    amountWei: parseEther(formData.amountDecimal).toString(),
+                  };
+
+                  setDialogLoadingInfo(
+                    <UnwrapPreview
+                      {...{
+                        amountWei: parseEther(formData.amountDecimal).toString(),
+                        superTokenSymbol: superToken!.symbol,
+                        underlyingTokenSymbol: underlyingToken!.symbol,
+                      }}
+                    />
                   );
-                }
 
-                const { data: formData } = getValues() as ValidWrappingForm;
-
-                const restoration: SuperTokenDowngradeRestoration = {
-                  type: RestorationType.Unwrap,
-                  version: 2,
-                  chainId: network.id,
-                  tokenPair: formData.tokenPair,
-                  amountWei: parseEther(formData.amountDecimal).toString(),
-                };
-
-                const overrides = await getOverrides();
-
-                setDialogLoadingInfo(
-                  <UnwrapPreview
-                    {...{
-                      amountWei: parseEther(formData.amountDecimal).toString(),
-                      superTokenSymbol: superToken!.symbol,
-                      underlyingTokenSymbol: underlyingToken!.symbol,
-                    }}
-                  />
-                );
-
-                const primaryArgs = {
-                  chainId: network.id,
-                  amountWei: parseEther(formData.amountDecimal).toString(),
-                  superTokenAddress: formData.tokenPair.superTokenAddress,
-                };
-                unwrapTrigger({
-                  ...primaryArgs,
-                  transactionExtraData: {
-                    restoration,
-                  },
-                  signer,
-                  overrides
-                })
-                  .unwrap()
-                  .then(...txAnalytics("Unwrap", primaryArgs))
-                  .then(() => resetForm())
-                  .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
-              }}
-            >
-              Unwrap
-            </TransactionButton>
-          )}
-        </TransactionBoundary>
+                  const primaryArgs = {
+                    chainId: network.id,
+                    amountWei: parseEther(formData.amountDecimal).toString(),
+                    superTokenAddress: formData.tokenPair.superTokenAddress,
+                  };
+                  unwrapTrigger({
+                    ...primaryArgs,
+                    isNativeAssetUnderlyingToken:
+                      formData.tokenPair.underlyingTokenAddress ===
+                      NATIVE_ASSET_ADDRESS,
+                    transactionExtraData: {
+                      restoration,
+                    },
+                  })
+                    .then(...txAnalytics("Unwrap", primaryArgs))
+                    .then(() => resetForm())
+                    .catch((error) => void error); // Error is already logged and handled in the middleware & UI.
+                }}
+              >
+                Unwrap
+              </TransactionButton>
+            )}
+          </TransactionBoundary>
+          <ClearMacroRelayOption
+            actionKind={relayActionKind}
+            network={network}
+          />
+        </Stack>
       </ConnectionBoundary>
     </Stack>
   );
@@ -273,16 +310,16 @@ const UnwrapPreview: FC<{
     <Typography
       data-cy={"unwrap-message"}
       variant="h5"
-      color="text.secondary"
       translate="yes"
-    >
-      You are unwrapping{" "}
+      sx={{
+        color: "text.secondary"
+      }}
+    >You are unwrapping{" "}
       <span translate="no">
         {formatEther(amountWei)} {superTokenSymbol}
-      </span>{" "}
-      to the underlying token{" "}
+      </span>{" "}to the underlying token{" "}
       <span translate="no">{underlyingTokenSymbol}</span>.
-    </Typography>
+          </Typography>
   );
 };
 
@@ -312,11 +349,13 @@ const UnwrapInputController = memo(function UnwrapInputController() {
           value={amount}
           onChange={onChange}
           onBlur={onBlur}
-          inputProps={{
-            ...inputPropsForEtherAmount,
-            sx: {
-              ...theme.typography.largeInput,
-              p: 0,
+          slotProps={{
+            input: {
+              ...inputPropsForEtherAmount,
+              sx: {
+                ...theme.typography.largeInput,
+                p: 0,
+              },
             },
           }}
           sx={{ background: "transparent" }}
@@ -337,7 +376,7 @@ const UnwrapTokenController = memo(function UnwrapTokenController(props: {
     network: props.network
   })
 
-  const superTokens = useMemo(() => tokenPairsQuery.data?.map((x) => x.superToken), [tokenPairsQuery.data?.length ?? 0])
+  const superTokens = useMemo(() => tokenPairsQuery.data?.map((x) => x.superToken), [tokenPairsQuery.data])
 
   return (
     <Controller
@@ -380,8 +419,20 @@ const UnwrapTokenController = memo(function UnwrapTokenController(props: {
 
 const MaxAmountController = memo(function MaxAmountController(props: {
   realtimeBalance: RealtimeBalance;
+  network: Network;
+  superTokenAddress: `0x${string}`;
 }) {
   const { control } = useFormContext<WrappingForm>();
+  // Best-effort convenience only: leave the relay fee behind so MAX lands on a submittable
+  // amount. Correctness is the form's fee validation, which re-runs — if this is stale or
+  // zero, the user gets an explanatory error instead of an unsubmittable form.
+  const feeFacts = useClearMacroFeeFacts(props.network);
+  const feeReservationWei =
+    feeFacts.couldPayFromSuperToken &&
+    feeFacts.feeWei != null &&
+    feeFacts.feeToken?.toLowerCase() === props.superTokenAddress.toLowerCase()
+      ? feeFacts.feeWei
+      : 0n;
 
   return (
     <Controller
@@ -405,9 +456,15 @@ const MaxAmountController = memo(function MaxAmountController(props: {
               flowRateWei: props.realtimeBalance.flowRate,
               balanceWei: props.realtimeBalance.balance,
               balanceTimestamp: props.realtimeBalance.balanceTimestamp,
-            }).sub(flowingBalanceSkew);
+            })
+              .sub(flowingBalanceSkew)
+              .sub(BigNumber.from(feeReservationWei.toString()));
 
-            return onChange(formatEther(maxBalance));
+            // A balance at or below the fee has no relayable maximum; clamp rather than
+            // offer a negative amount the form would reject as malformed.
+            return onChange(
+              formatEther(maxBalance.isNegative() ? BigNumber.from(0) : maxBalance)
+            );
           }}
           onBlur={onBlur}
         >

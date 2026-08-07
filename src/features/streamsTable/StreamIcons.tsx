@@ -25,7 +25,11 @@ export const ScheduledStreamIcon: FC<ScheduledStreamIconProps> = ({
       scheduledStart && scheduledEnd ? "and " : ""
     }${scheduledEnd ? "end " : ""}date.`}
   >
-    <TimerOutlined sx={{ display: "block" }} {...IconProps} />
+    <TimerOutlined
+      data-cy="scheduled-stream-icon"
+      sx={{ display: "block" }}
+      {...IconProps}
+    />
   </StreamIconTooltip>
 );
 
