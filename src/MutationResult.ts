@@ -15,7 +15,12 @@ export type RelayPhase =
   | "awaiting-signature"
   | "relaying"
   | "fallback"
-  | "relay-status-unknown";
+  | "relay-status-unknown"
+  // "safe-awaiting-authorization" = the relay accepted the request and the Safe's owners still
+  // have to approve it, which can legitimately take days. Like "relay-status-unknown" this is
+  // NOT a failure and must never be rendered as one — but unlike it, the outcome is not
+  // "unknown": the request is simply open, the tab can be closed, and the user has a Cancel.
+  | "safe-awaiting-authorization";
 
 /**
  * Inspired by: https://redux-toolkit.js.org/rtk-query/api/created-api/hooks#signature-1
@@ -38,6 +43,14 @@ export type MutationResult<T = unknown> = {
   // Set alongside relayPhase === "relay-status-unknown". Carries the relay execution id for the
   // dialog (serialized mutation errors drop custom fields, so it can't be read off `error`).
   relayStatusUnknown?: { executionId: string };
+  // Set alongside relayPhase === "safe-awaiting-authorization", for the same reason as above:
+  // the dialog needs the execution id and the expiry, and serialized errors drop custom fields.
+  safeAwaitingAuthorization?: {
+    executionId: string;
+    validBefore: number;
+    messageLink?: string;
+    clientRequestId?: string;
+  };
 
   reset: () => void; // A method to manually unsubscribe from the mutation call and reset the result to the uninitialized state
 };

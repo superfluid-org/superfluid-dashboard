@@ -1,10 +1,8 @@
 import { useCallback } from "react";
 import { skipToken } from "@reduxjs/toolkit/query";
-import { useQuery } from "@tanstack/react-query";
 import { erc20Abi } from "viem";
 import { useReadContract } from "wagmi";
 import { useAccount } from "@/hooks/useAccount";
-import config from "@/utils/config";
 import { Network } from "../network/networks";
 import { rpcApi, useAppDispatch } from "../redux/store";
 import { applySettings } from "../settings/appSettings.slice";
@@ -12,28 +10,14 @@ import { useClearMacroPaymentMode } from "../settings/appSettingsHooks";
 import { ClearMacroActionKind } from "./dashboardClearMacro";
 import { ClearMacroPaymentMode } from "./executeClearMacro";
 import { PERMIT2_ADDRESS } from "./permit2";
-import { chainSupportsPermit2, getCapabilities } from "./relayApi";
+import { useClearMacroEligibility } from "./useClearMacroEligibility";
+import { useRelayCapabilities } from "./useRelayCapabilities";
+import { chainSupportsPermit2 } from "./relayApi";
 import {
   RelayFeeDisclosure,
   ScheduleFlowQuoteAction,
   useRelayFeeDisclosure,
 } from "./useRelayFee";
-
-/**
- * The relay provider's capabilities as a react-query query. `getCapabilities` is already
- * module-cached (with failed fetches evicted), so this only adds the hook-side state.
- */
-export function useRelayCapabilities() {
-  return useQuery({
-    queryKey: ["clearMacroRelayCapabilities"],
-    queryFn: () => getCapabilities(),
-    staleTime: Infinity,
-    retry: 1,
-    // Don't probe the relay provider at all when the kill switch is on — it is most
-    // likely flipped precisely because the provider is unhealthy.
-    enabled: !config.isClearMacroDisabled,
-  });
-}
 
 export interface ClearMacroUsdcFeePayment {
   fee: RelayFeeDisclosure;
@@ -42,6 +26,12 @@ export interface ClearMacroUsdcFeePayment {
   setPaymentMode: (mode: ClearMacroPaymentMode) => void;
   /** Provider supports `clearMacroPermit2V1` here AND the fee token's underlying resolves. */
   canPayWithUsdc: boolean;
+  /**
+   * The signer is a Safe, so the fee must come from an existing USDCx balance: the provider's
+   * schema rejects an `authorization` block on the Permit2 kind, so there is no just-in-time
+   * wrap. `canPayWithUsdc` is false for a settled reason, not a pending one.
+   */
+  isSafeAuthorization: boolean;
   /**
    * The capabilities fetch hasn't settled yet, so `canPayWithUsdc` is still pessimistic.
    * The chip uses this to keep a persisted USDC selection VISIBLE (disabled) during the
@@ -91,8 +81,17 @@ export function useClearMacroUsdcFeePayment(
     isPending: isCapabilitiesPending,
     isError: isCapabilitiesError,
   } = useRelayCapabilities();
+
+  // The provider's schema rejects an `authorization` block on `clearMacroPermit2V1`, so a Safe
+  // can only ever relay from an existing USDCx balance — never by wrapping USDC just in time.
+  // Ruling it out here (rather than at the chip) keeps one answer for the selector, the
+  // shortfall copy, and the executor's payment-mode resolution.
+  const { authorizationMethod } = useClearMacroEligibility(actionKind, network);
+  const isSafeAuthorization = authorizationMethod === "safeMessageV1";
+
   const canPayWithUsdc = Boolean(
-    capabilities &&
+    !isSafeAuthorization &&
+      capabilities &&
       chainSupportsPermit2(capabilities, network.id) &&
       fee.feeAvailable &&
       fee.underlyingAddress &&
@@ -163,8 +162,12 @@ export function useClearMacroUsdcFeePayment(
     paymentMode,
     setPaymentMode,
     canPayWithUsdc,
+    isSafeAuthorization,
     isCapabilitiesPending,
-    isCapabilitiesUnresolved: isCapabilitiesPending || isCapabilitiesError,
+    // A Safe's Permit2 answer is settled by the provider's schema, not by this fetch, so an
+    // in-flight or failed capabilities read must not make it look tentative.
+    isCapabilitiesUnresolved:
+      !isSafeAuthorization && (isCapabilitiesPending || isCapabilitiesError),
     usdcxBalanceWei,
     usdcBalanceWei,
     usdcxShortfall,

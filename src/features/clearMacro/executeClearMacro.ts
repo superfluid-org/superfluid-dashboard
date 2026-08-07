@@ -41,12 +41,21 @@ import {
 } from "./permit2";
 import {
   chainSupportsPermit2,
+  chainSupportsSafeMessage,
   createRelayExecution,
   getCapabilities,
   getFinalTransactionHash,
+  isRenderableMessageLink,
   pollRelayExecutionUntilTerminal,
+  type RelayAuthorizationMethod,
   type RelayExecution,
 } from "./relayApi";
+import {
+  ClearMacroSafeAuthorizationPendingError,
+  runSafeAuthorization,
+  type SafeAuthorizationFailureReason,
+  type SafeProposalObservation,
+} from "./executeSafeAuthorization";
 
 /**
  * Pre-signature miss: the macro path is not configured/available for this call, and the
@@ -111,11 +120,59 @@ export type ClearMacroPaymentMode = "usdcx-direct" | "usdc-permit2";
 /** The payload's signature validity window, from signing time. */
 const VALIDITY_WINDOW_IN_SECONDS = 600;
 
+/**
+ * The Safe authorization window: 72 hours.
+ *
+ * A Safe's owners are asynchronous, so 600s is nowhere near enough; there is one clock, the
+ * payload's own `validBefore`, and no separate provider poll TTL. 72 hours covers the real
+ * multi-owner case — a Friday-afternoon proposal reaching a Monday-morning co-signer is about
+ * 64 hours — and is bounded deliberately rather than generously. The cost of a longer window
+ * is not provider-side: the execution id is the only handle on a live intent, so a user who
+ * clears browser data or moves device can neither cancel it nor safely write that action
+ * directly until the window closes. Three days bounds that worst case.
+ */
+export const SAFE_VALIDITY_WINDOW_IN_SECONDS = 72 * 60 * 60;
+
 export interface ExecuteClearMacroParams {
   chainId: number;
   signerAddress: Address;
   action: ClearMacroAction;
   macroAddress: Address;
+  /**
+   * How the signer authorizes the digest, as resolved by the caller's eligibility gate.
+   * Defaults to `signature`. For `safeMessageV1` this function must NEVER be allowed to fall
+   * back to a paid write — see the error contract below.
+   */
+  authorizationMethod?: RelayAuthorizationMethod;
+  /** Canonical identity of `action`, persisted with the intent so the guards can match it. */
+  actionFingerprint?: string;
+  /**
+   * Called with the pre-POST intent, BEFORE the create request is sent, and awaited so the
+   * caller can flush it. Only used for Safe authorization, where the POST is issued
+   * concurrently with the signing request and its outcome may never be observed.
+   */
+  onIntentCreated?: (intent: {
+    clientRequestId: string;
+    safeMessageHash: Hex;
+    validBefore: number;
+    postBody: string;
+    fallbackValidityWindowSeconds: number;
+  }) => void | Promise<void>;
+  /**
+   * Called when the Safe authorization is under way but not yet complete: the execution
+   * exists, the owners have not finished approving it, and the dashboard is handing it to
+   * background recovery. Awaited. Throwing from here is how the caller settles its mutation
+   * into a pending (not failed) state.
+   */
+  onSafeAuthorizationPending?: (info: {
+    executionId: string;
+    validBefore: number;
+    threshold: number;
+    safeMessageHash: Hex;
+    messageLink?: string;
+    /** What the tx-service probe said, when the signing request came back rejected. */
+    proposal: SafeProposalObservation;
+  }) => void | Promise<void>;
   /**
    * The already-resolved fallback write request, simulated before the signature prompt to
    * surface reverts (insufficient balance, existing stream, ...) in the dialog. `runMacro`
@@ -141,7 +198,39 @@ export interface ExecuteClearMacroParams {
   onExecutionCreated?: (info: {
     executionId: string;
     validBefore: number;
+    /**
+     * The validity window this execution was built with, so the caller can fall back to it if
+     * the provider's echoed `validBefore` is missing or malformed. A fixed fallback would
+     * force-resolve a long-lived (Safe) execution minutes into its wait.
+     */
+    fallbackValidityWindowSeconds: number;
+    /** Safe authorization only — promotes the pre-POST intent and arms the write guards. */
+    clientRequestId?: string;
+    safeMessageHash?: Hex;
+    messageLink?: string;
+    safeThreshold?: number;
   }) => void | Promise<void>;
+  /**
+   * Durably record that a cancel was decided, BEFORE it is attempted — this is what stops the
+   * pre-POST replay path resurrecting an intent whose cancellation raced the POST.
+   */
+  onCancelRequested?: (ref: {
+    clientRequestId: string;
+    executionId?: string;
+  }) => void | Promise<void>;
+  /** A cancel returned 2xx, so the write guards may be released. */
+  onCancelConfirmed?: (executionId: string) => void | Promise<void>;
+  /**
+   * The Safe signing request settled in a way that cannot complete (hash mismatch, on-chain
+   * signing, or a confirmed decline). Reported rather than thrown because the signing promise
+   * is not awaited — by the time it settles the mutation has usually finished, so the caller
+   * must surface this somewhere that outlives the dialog.
+   */
+  onSigningFailed?: (failure: {
+    reason: SafeAuthorizationFailureReason;
+    message: string;
+    cancelConfirmed: boolean;
+  }) => void;
 }
 
 /** The `security` struct signed into every ClearMacro payload (both payment modes). */
@@ -343,7 +432,19 @@ export async function executeClearMacro(
   params: ExecuteClearMacroParams
 ): Promise<{ hash: Hex; executionId: string }> {
   const { chainId, signerAddress, action, macroAddress } = params;
-  const paymentMode = params.paymentMode ?? "usdcx-direct";
+  const isSafeAuthorization = params.authorizationMethod === "safeMessageV1";
+  // A Safe can only ever pay the fee from an existing USDCx balance — the provider's schema
+  // rejects an `authorization` block on the Permit2 kind. Forced here rather than read from
+  // the persisted chip selection, and deliberately WITHOUT writing it back: the user's global
+  // preference is about their EOA and must survive using a Safe.
+  const paymentMode = isSafeAuthorization
+    ? "usdcx-direct"
+    : (params.paymentMode ?? "usdcx-direct");
+  // One clock. A Safe's owners may need days, and the horizon is the payload's own
+  // `validBefore` — there is no separate provider poll TTL.
+  const validityWindowInSeconds = isSafeAuthorization
+    ? SAFE_VALIDITY_WINDOW_IN_SECONDS
+    : VALIDITY_WINDOW_IN_SECONDS;
   params.onPhase?.("preparing");
 
   // -- Eligibility ---------------------------------------------------------------------
@@ -364,6 +465,14 @@ export async function executeClearMacro(
   if (!capabilities.chains.some((chain) => chain.chainId === chainId)) {
     throw new ClearMacroNotEligibleError(
       `Relay provider does not serve chain ${chainId}.`
+    );
+  }
+  // Re-check the AUTHORIZATION method too, not just that the chain is served. The capabilities
+  // TTL exists so this read is fresh; checking only chain presence would fetch a fresh answer
+  // and then ignore the part that decides whether a Safe message can work here at all.
+  if (isSafeAuthorization && !chainSupportsSafeMessage(capabilities, chainId)) {
+    throw new ClearMacroNotEligibleError(
+      `Relay provider does not accept Safe message authorization on chain ${chainId}.`
     );
   }
   // Defensive re-check of what the chip already gated on — guards a stale persisted
@@ -412,6 +521,9 @@ export async function executeClearMacro(
   let actionParams: Hex;
   // Hoisted for the Permit2 deadline (`security.validBefore`) in the signature step.
   let security: ClearMacroSecurity;
+  // Hoisted so the Safe branch can cross-check it against the Safe app's own view of the
+  // payload's EIP-712 digest before any owner is asked to sign.
+  let innerDigest: Hex | undefined;
   try {
     const nonce = (await readContract(wagmiConfig, {
       chainId,
@@ -435,7 +547,7 @@ export async function executeClearMacro(
       provider: capabilities.providerName,
       validAfter: 0n,
       validBefore: BigInt(
-        Math.floor(Date.now() / 1000) + VALIDITY_WINDOW_IN_SECONDS
+        Math.floor(Date.now() / 1000) + validityWindowInSeconds
       ),
       nonce,
     };
@@ -596,12 +708,12 @@ export async function executeClearMacro(
         functionName: "getDigest",
         args: [macroAddress, encodedPayload],
       })) as Hex;
-      const digestLocal = hashTypedData(
+      innerDigest = hashTypedData(
         typedData as Parameters<typeof hashTypedData>[0]
       );
-      if (digestLocal.toLowerCase() !== digestOnChain.toLowerCase()) {
+      if (innerDigest.toLowerCase() !== digestOnChain.toLowerCase()) {
         throw new ClearMacroNotEligibleError(
-          `Locally computed EIP-712 digest (${digestLocal}) does not match the forwarder's getDigest (${digestOnChain}).`
+          `Locally computed EIP-712 digest (${innerDigest}) does not match the forwarder's getDigest (${digestOnChain}).`
         );
       }
     } else {
@@ -899,7 +1011,61 @@ export async function executeClearMacro(
   // on-chain). Signature validity is already proven by the digest/witness-hash pre-check;
   // the relay runs its own preflight.
   let execution: RelayExecution;
-  if (typedData) {
+  if (isSafeAuthorization) {
+    // A Safe always authorizes the ClearMacro digest itself — the Permit2 kind cannot carry an
+    // authorization block, and the payment mode was forced to usdcx-direct above, so this is
+    // guaranteed by construction rather than hoped for.
+    if (!typedData || !innerDigest) {
+      throw new ClearMacroNotEligibleError(
+        "Safe authorization requires the ClearMacro typed data."
+      );
+    }
+    const safeResult = await runSafeAuthorization({
+      chainId,
+      signerAddress,
+      macroAddress,
+      encodedPayload,
+      typedData,
+      innerDigest,
+      validityWindowInSeconds,
+      callbacks: {
+        onPhase: params.onPhase,
+        onIntentCreated: (intent) => params.onIntentCreated?.(intent),
+        onExecutionCreated: (info) => params.onExecutionCreated?.(info),
+        onCancelRequested: (ref) => params.onCancelRequested?.(ref),
+        onCancelConfirmed: (id) => params.onCancelConfirmed?.(id),
+        onSigningFailed: (failure) => params.onSigningFailed?.(failure),
+      },
+    });
+
+    // Settle by THRESHOLD, not by the returned state. Because the POST is concurrent with the
+    // signing request, no owner can have signed yet, so the create response is essentially
+    // always `awaiting_authorization` — branching on it here would be dead code.
+    if (safeResult.threshold > 1) {
+      // A known multi-owner wait. Hand it to background recovery now rather than burning the
+      // in-dialog poll's 120 seconds on something that cannot resolve inside it.
+      await params.onSafeAuthorizationPending?.({
+        executionId: safeResult.execution.id,
+        validBefore: Number(safeResult.execution.validity.validBefore),
+        threshold: safeResult.threshold,
+        safeMessageHash: safeResult.safeMessageHash,
+        messageLink: safeResult.execution.authorization?.messageLink,
+        proposal: { status: "unknown" },
+      });
+      throw new ClearMacroSafeAuthorizationPendingError(
+        safeResult.execution.id,
+        Number(safeResult.execution.validity.validBefore),
+        isRenderableMessageLink(safeResult.execution.authorization?.messageLink)
+          ? safeResult.execution.authorization?.messageLink
+          : undefined
+      );
+    }
+
+    // Sole owner: the short in-dialog poll below can realistically see the promotion to
+    // `pending`/`submitted`. A rejection handler may still resolve concurrently and cancel;
+    // the poll then observes `canceled` and surfaces it.
+    execution = safeResult.execution;
+  } else if (typedData) {
     const signature = await signTypedData(wagmiConfig, {
       account: signerAddress,
       domain: typedData.domain,
@@ -984,11 +1150,15 @@ export async function executeClearMacro(
   }
 
   // Durably persist the execution BEFORE polling. From here the signed payload may land
-  // on-chain regardless of what the poll observes, so the outcome must never be lost.
-  await params.onExecutionCreated?.({
-    executionId: execution.id,
-    validBefore: Number(execution.validity.validBefore),
-  });
+  // on-chain regardless of what the poll observes, so the outcome must never be lost. The Safe
+  // branch already did this the moment the POST returned, so it must not register twice.
+  if (!isSafeAuthorization) {
+    await params.onExecutionCreated?.({
+      executionId: execution.id,
+      validBefore: Number(execution.validity.validBefore),
+      fallbackValidityWindowSeconds: validityWindowInSeconds,
+    });
+  }
 
   const terminalExecution = await pollRelayExecutionUntilTerminal(execution.id);
   // pollRelayExecutionUntilTerminal only resolves on `succeeded` with a final hash present.
