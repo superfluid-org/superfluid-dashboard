@@ -50,6 +50,7 @@ import { useTokenQuery } from "../../hooks/useTokenQuery";
 import { PortfolioValueCallback } from "./TokenSnapshotTables";
 import { getBridgePagePath } from "../bridge/getBridgePagePath";
 import {
+  getPortfolioMobileNumericTextStyles,
   getPortfolioMobileRowStyles,
   getPortfolioRowActionStyles,
   PORTFOLIO_ROW_ACTIONS_CLASS_NAME,
@@ -318,13 +319,14 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
 
         {!isBelowMd ? (
           <>
-            <TableCell onClick={openTokenPage}>
+            <TableCell align="left" onClick={openTokenPage} sx={{ px: 2 }}>
               <Box
                 sx={{
                   position: "relative",
                   display: "flex",
                   alignItems: "center",
                   minHeight: 44,
+                  width: "100%",
                 }}
               >
                 {criticalDate && (
@@ -347,6 +349,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                 )}
 
                 <ListItemText
+                  sx={{ minWidth: 0, textAlign: "left" }}
                   primary={<FlowingBalance data={balanceData} />}
                   secondary={
                     tokenPrice && (
@@ -455,7 +458,11 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
           >
             <ListItem
               disablePadding
-              sx={{ textAlign: "right", justifyContent: "flex-end" }}
+              sx={{
+                justifyContent: "flex-end",
+                textAlign: "right",
+                width: "100%",
+              }}
             >
               {criticalDate && (
                 <ListItemIcon sx={{ mr: 1 }}>
@@ -469,7 +476,14 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                 </ListItemIcon>
               )}
               <ListItemText
-                sx={{ minWidth: 0, flex: "0 1 auto" }}
+                sx={{
+                  flex: 1,
+                  height: 44,
+                  minWidth: 0,
+                  my: 0,
+                  position: "relative",
+                  textAlign: "right",
+                }}
                 primary={
                   <FlowingBalance
                     data={balanceData ? balanceData : undefined}
@@ -488,11 +502,21 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
                   )
                 }
                 slotProps={{
-                  primary: { variant: "h7mono" },
+                  primary: {
+                    variant: "h7mono",
+                    sx: getPortfolioMobileNumericTextStyles(theme, "top", -12),
+                  },
 
                   secondary: {
                     variant: "body2mono",
-                    sx: { color: netFlowColor },
+                    sx: {
+                      ...getPortfolioMobileNumericTextStyles(
+                        theme,
+                        "bottom",
+                        -12
+                      ),
+                      color: netFlowColor,
+                    },
                   },
                 }}
               />
@@ -514,7 +538,8 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
           <Stack
             direction="row"
             sx={{
-              justifyContent: { xs: "flex-end", md: "center" },
+              alignItems: "center",
+              justifyContent: "center",
               gap: 0.25,
             }}
           >

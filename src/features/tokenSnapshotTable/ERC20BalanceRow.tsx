@@ -48,6 +48,7 @@ import { PortfolioValueCallback } from "./TokenSnapshotTables";
 import { ERC20Balance } from "./useERC20Balances";
 import { getBridgePagePath } from "../bridge/getBridgePagePath";
 import {
+  getPortfolioMobileNumericTextStyles,
   getPortfolioMobileRowStyles,
   getPortfolioRowActionStyles,
   PORTFOLIO_ROW_ACTIONS_CLASS_NAME,
@@ -152,7 +153,7 @@ const ERC20BalanceUpdatesPanel: FC<{
       <Table size="small">
         <TableHead>
           <TableRow>
-            <TableCell colSpan={3}>
+            <TableCell colSpan={3} sx={{ px: { xs: 1, md: 2 } }}>
               <Stack
                 direction="row"
                 sx={{ alignItems: "center", gap: { xs: 0.5, md: 1 } }}
@@ -180,6 +181,10 @@ const ERC20BalanceUpdatesPanel: FC<{
                     variant="textContained"
                     color={filter === value ? "primary" : "secondary"}
                     onClick={() => setFilter(value)}
+                    sx={{
+                      minWidth: { xs: 0, md: 64 },
+                      px: { xs: 0.75, md: 2 },
+                    }}
                   >
                     {label}
                     <Box
@@ -394,10 +399,22 @@ const ERC20BalanceRow: FC<ERC20BalanceRowProps> = ({
               alignItems: "center",
               justifyContent: { xs: "flex-end", md: "flex-start" },
               minHeight: 44,
+              width: "100%",
+              boxSizing: "border-box",
+              pr: { xs: 1, md: 0 },
             }}
           >
             <ListItemText
-              sx={{ minWidth: 0, textAlign: { xs: "right", md: "left" } }}
+              sx={{
+                flex: 1,
+                minWidth: 0,
+                textAlign: { xs: "right", md: "left" },
+                [theme.breakpoints.down("md")]: {
+                  height: 44,
+                  my: 0,
+                  position: "relative",
+                },
+              }}
               primary={<Amount wei={balance} decimals={token.decimals} />}
               secondary={
                 priceUsd !== undefined ? (
@@ -417,10 +434,12 @@ const ERC20BalanceRow: FC<ERC20BalanceRowProps> = ({
               slotProps={{
                 primary: {
                   variant: isBelowMd ? "h7mono" : "h6mono",
+                  sx: getPortfolioMobileNumericTextStyles(theme, "top"),
                 },
                 secondary: {
                   variant: "body2mono",
                   color: "text.secondary",
+                  sx: getPortfolioMobileNumericTextStyles(theme, "bottom"),
                 },
               }}
             />
@@ -457,7 +476,8 @@ const ERC20BalanceRow: FC<ERC20BalanceRowProps> = ({
           <Stack
             direction="row"
             sx={{
-              justifyContent: { xs: "flex-end", md: "center" },
+              alignItems: "center",
+              justifyContent: "center",
               gap: 0.25,
             }}
           >

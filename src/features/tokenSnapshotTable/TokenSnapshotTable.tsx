@@ -207,7 +207,6 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
         sx={{
           tableLayout: "fixed",
           width: "100%",
-          minWidth: { md: 1040 },
           [theme.breakpoints.down("md")]: {
             display: "block",
             "& > thead, & > tbody": {

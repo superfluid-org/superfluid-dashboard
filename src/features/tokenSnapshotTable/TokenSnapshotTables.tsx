@@ -170,8 +170,12 @@ const PortfolioTotalCard: FC<PortfolioTotalCardProps> = ({
         px: { xs: 1.5, md: 3 },
         py: { xs: 2, md: 2.5 },
         mb: 4,
-        borderRadius: 3,
-        boxShadow: 1,
+        bgcolor: { xs: "transparent", md: "background.paper" },
+        borderColor: "divider",
+        borderStyle: "solid",
+        borderWidth: { xs: "1px 0", md: 1 },
+        borderRadius: { xs: 0, md: 3 },
+        boxShadow: { xs: "none", md: 1 },
       }}
     >
       <Box
@@ -415,6 +419,14 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
     [activeNetworks, fetchingStatuses]
   );
 
+  const isPortfolioSummaryLoading = useMemo(
+    () =>
+      !activeNetworks.some(
+        ({ id }) => fetchingStatuses[id]?.isLoading === false
+      ),
+    [activeNetworks, fetchingStatuses]
+  );
+
   return (
     <>
       <Stack
@@ -456,7 +468,7 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
       </Stack>
       <PortfolioTotalCard
         entries={Object.values(portfolioValues)}
-        loading={isLoading}
+        loading={isPortfolioSummaryLoading}
       />
 
       {!hasContent && !isLoading && (

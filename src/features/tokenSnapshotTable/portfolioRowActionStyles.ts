@@ -2,6 +2,21 @@ import { Theme } from "@mui/material/styles";
 
 export const PORTFOLIO_ROW_ACTIONS_CLASS_NAME = "portfolio-row-actions";
 
+export const getPortfolioMobileNumericTextStyles = (
+  theme: Theme,
+  edge: "top" | "bottom",
+  rightOffset = 0
+) => ({
+  [theme.breakpoints.down("md")]: {
+    position: "absolute",
+    right: rightOffset,
+    textAlign: "right",
+    whiteSpace: "nowrap",
+    width: "max-content",
+    [edge]: 0,
+  },
+});
+
 export const getPortfolioRowActionStyles = (theme: Theme) => {
   const actionsSelector = `.${PORTFOLIO_ROW_ACTIONS_CLASS_NAME}`;
 
@@ -38,7 +53,7 @@ export const getPortfolioRowActionStyles = (theme: Theme) => {
 export const getPortfolioMobileRowStyles = (theme: Theme) => ({
   [theme.breakpoints.down("md")]: {
     display: "grid",
-    gridTemplateColumns: "minmax(0, 1fr) minmax(84px, auto) 40px",
+    gridTemplateColumns: "minmax(0, 1fr) 112px 40px",
     width: "100%",
     "& > td": {
       boxSizing: "border-box",
@@ -46,9 +61,19 @@ export const getPortfolioMobileRowStyles = (theme: Theme) => ({
       minWidth: 0,
     },
     "& > td:nth-of-type(2)": {
+      alignItems: "center",
+      alignSelf: "stretch",
+      display: "flex",
+      justifyContent: "flex-end",
+      width: "100%",
       px: 1,
     },
     "& > td:last-of-type": {
+      alignItems: "center",
+      alignSelf: "stretch",
+      display: "flex",
+      justifyContent: "center",
+      transform: "translateX(-4px)",
       width: 40,
       px: 0,
     },

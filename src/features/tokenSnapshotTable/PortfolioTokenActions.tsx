@@ -53,7 +53,12 @@ const PortfolioTokenActions: FC<PortfolioTokenActionsProps> = ({
     <Stack
       direction="row"
       onClick={onClick}
-      sx={{ alignItems: "center", gap: 0.5, whiteSpace: "nowrap" }}
+      sx={{
+        alignItems: "center",
+        flexShrink: 0,
+        gap: 0.5,
+        whiteSpace: "nowrap",
+      }}
     >
       {!hasAddedToWallet ? (
         <ConnectionBoundary expectedNetwork={network}>
