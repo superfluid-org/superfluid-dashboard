@@ -7,6 +7,8 @@ import {
   Paper,
   Skeleton,
   Stack,
+  Tab,
+  Tabs,
   Tooltip,
   Typography,
   useMediaQuery,
@@ -14,7 +16,14 @@ import {
 } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
 import Decimal from "decimal.js";
-import { FC, useCallback, useMemo, useRef, useState } from "react";
+import {
+  FC,
+  SyntheticEvent,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import OpenIcon from "../../components/OpenIcon/OpenIcon";
 import FaucetCard from "../faucet/FaucetCard";
 import { useActiveNetworks } from "../network/ActiveNetworksContext";
@@ -26,6 +35,7 @@ import { platformApi } from "../redux/platformApi/platformApi";
 import { TokenType } from "../redux/endpoints/tokenTypes";
 import { ERC20Balance } from "./useERC20Balances";
 import { useAppCurrency } from "../settings/appSettingsHooks";
+import ZerionDefiPortfolio from "../portfolio/ZerionDefiPortfolio";
 
 export interface FetchingStatus {
   isLoading: boolean;
@@ -59,6 +69,11 @@ interface TokenSnapshotTablesProps {
 interface PortfolioTotalCardProps {
   entries: PortfolioValueEntry[];
   loading: boolean;
+}
+
+enum PortfolioView {
+  Balances = "balances",
+  Defi = "defi",
 }
 
 const PortfolioMissingPriceWarning: FC<{ symbols: string[] }> = ({
@@ -309,6 +324,7 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
     useState<NetworkFetchingStatuses>({});
 
   const [networkSelectionOpen, setNetworkSelectionOpen] = useState(false);
+  const [portfolioView, setPortfolioView] = useState(PortfolioView.Balances);
   const [portfolioValues, setPortfolioValues] = useState<
     Record<string, PortfolioValueEntry>
   >({});
@@ -357,6 +373,13 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
 
   const openNetworkSelection = () => setNetworkSelectionOpen(true);
   const closeNetworkSelection = () => setNetworkSelectionOpen(false);
+  const changePortfolioView = (
+    _event: SyntheticEvent,
+    nextView: PortfolioView
+  ) => {
+    setPortfolioView(nextView);
+    setNetworkSelectionOpen(false);
+  };
 
   const fetchingCallback = useCallback(
     (networkId: number, fetchingStatus: FetchingStatus) =>
@@ -435,69 +458,101 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
         sx={{
           alignItems: "center",
           justifyContent: "space-between",
-          mb: 2,
+          mb: 1,
         }}
       >
         <Typography variant={isBelowMd ? "h3" : "h4"} component="h1">
           Portfolio
         </Typography>
 
-        <Stack
-          direction="row"
-          sx={{
-            alignItems: "center",
-            gap: { xs: 1, sm: 2 },
-          }}
-        >
-          <Button
-            data-cy={"network-selection-button"}
-            ref={networkSelectionRef}
-            variant="outlined"
-            color="secondary"
-            endIcon={<OpenIcon open={networkSelectionOpen} />}
-            onClick={openNetworkSelection}
+        {portfolioView === PortfolioView.Balances ? (
+          <Stack
+            direction="row"
+            sx={{
+              alignItems: "center",
+              gap: { xs: 1, sm: 2 },
+            }}
           >
-            All networks
-          </Button>
-        </Stack>
+            <Button
+              data-cy={"network-selection-button"}
+              ref={networkSelectionRef}
+              variant="outlined"
+              color="secondary"
+              endIcon={<OpenIcon open={networkSelectionOpen} />}
+              onClick={openNetworkSelection}
+            >
+              All networks
+            </Button>
+          </Stack>
+        ) : null}
         <NetworkSelectionFilter
           open={networkSelectionOpen}
           anchorEl={networkSelectionRef.current}
           onClose={closeNetworkSelection}
         />
       </Stack>
-      <PortfolioTotalCard
-        entries={Object.values(portfolioValues)}
-        loading={isPortfolioSummaryLoading}
-      />
-
-      {!hasContent && !isLoading && (
-        <Stack sx={{ gap: 4 }}>
-          <TokenSnapshotEmptyCard includesERC20s />
-          {/* <FaucetCard /> */}
-        </Stack>
-      )}
-      <Stack
+      <Tabs
+        value={portfolioView}
+        onChange={changePortfolioView}
+        variant={isBelowMd ? "fullWidth" : "standard"}
+        aria-label="Portfolio views"
         sx={{
-          gap: 4,
+          mb: 3,
+          borderBottom: "1px solid",
+          borderColor: "divider",
         }}
       >
-        {activeNetworks.map((network) => (
-          <TokenSnapshotTable
-            key={network.id}
-            address={address}
-            network={network}
-            erc20Balances={erc20BalancesByChainId[network.id] || []}
-            erc20BalancesLoading={
-              portfolioTokensQuery.isLoading || portfolioTokensQuery.isFetching
-            }
-            useERC20Fallback={fallbackChainIds.has(network.id)}
-            fetchingCallback={fetchingCallback}
-            portfolioValueCallback={portfolioValueCallback}
+        <Tab
+          value={PortfolioView.Balances}
+          label="Balances"
+          data-cy="portfolio-balances-tab"
+        />
+        <Tab
+          value={PortfolioView.Defi}
+          label="DeFi & NFTs"
+          data-cy="portfolio-defi-tab"
+        />
+      </Tabs>
+
+      {portfolioView === PortfolioView.Balances ? (
+        <>
+          <PortfolioTotalCard
+            entries={Object.values(portfolioValues)}
+            loading={isPortfolioSummaryLoading}
           />
-        ))}
-        {isLoading && <TokenSnapshotLoadingTable />}
-      </Stack>
+
+          {!hasContent && !isLoading ? (
+            <Stack sx={{ gap: 4 }}>
+              <TokenSnapshotEmptyCard includesERC20s />
+              {/* <FaucetCard /> */}
+            </Stack>
+          ) : null}
+          <Stack
+            sx={{
+              gap: 4,
+            }}
+          >
+            {activeNetworks.map((network) => (
+              <TokenSnapshotTable
+                key={network.id}
+                address={address}
+                network={network}
+                erc20Balances={erc20BalancesByChainId[network.id] || []}
+                erc20BalancesLoading={
+                  portfolioTokensQuery.isLoading ||
+                  portfolioTokensQuery.isFetching
+                }
+                useERC20Fallback={fallbackChainIds.has(network.id)}
+                fetchingCallback={fetchingCallback}
+                portfolioValueCallback={portfolioValueCallback}
+              />
+            ))}
+            {isLoading && <TokenSnapshotLoadingTable />}
+          </Stack>
+        </>
+      ) : (
+        <ZerionDefiPortfolio address={address} />
+      )}
     </>
   );
 };

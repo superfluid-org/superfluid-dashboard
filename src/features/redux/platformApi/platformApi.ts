@@ -9,6 +9,10 @@ import {
   ERC20TransferHistoryRequest,
   ERC20TransferHistoryResponse,
 } from "../../portfolio/erc20TransferHistory";
+import {
+  ZerionDefiPortfolioRequest,
+  ZerionDefiPortfolioResponse,
+} from "../../portfolio/zerionDefiPortfolioTypes";
 
 export type IsAccountWhitelistedApiResponse =
   /** status 200 Is User account whitelisted */ boolean;
@@ -45,6 +49,17 @@ export const platformApi = createApi({
         body,
       }),
       keepUnusedDataFor: 60,
+    }),
+    zerionDefiPortfolio: build.query<
+      ZerionDefiPortfolioResponse,
+      ZerionDefiPortfolioRequest
+    >({
+      query: (body) => ({
+        url: "/api/portfolio-zerion-defi",
+        method: "POST",
+        body,
+      }),
+      keepUnusedDataFor: 120,
     }),
     isAccountWhitelisted: build.query<
       IsAccountWhitelistedApiResponse,
