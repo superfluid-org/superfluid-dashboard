@@ -48,6 +48,42 @@ const STREAM_FLOW_RATES = '[data-cy=flow-rate]';
 const START_END_DATES = '[data-cy=start-end-date]';
 const RAINBOWKIT_CLOSE_BUTTON = '[aria-label=Close]';
 const TX_ERROR = '[data-cy=tx-error]';
+const TRANSACTION_REJECTED_MESSAGE = 'Transaction Rejected';
+// The Clear Macro relay's pre-signature fee gate (`ClearMacroInsufficientFeeError` in
+// src/features/clearMacro/executeClearMacro.ts). Amounts and the fee token symbol differ
+// per action and per network, so they are captured and asserted on rather than hardcoded.
+//
+// There are two message shapes and four remedy tails, all of which are legitimate:
+//   * the Super-Token fee guard (executeClearMacro.ts:804-811)
+//       "You need <req> <sym> to pay the fee, but you have <avail> <sym>. "
+//       + "Top up <sym> to continue."                                        (relay required)
+//       + "Top up <sym>, or turn off gasless sending to pay with gas instead." (opt-in)
+//   * the Permit2 underlying-fee guard (executeClearMacro.ts:851-864), which says "cover"
+//     rather than "pay", can fold the wrap amount into the required total, and has its
+//     own two remedy tails
+//       "You need <req> <sym> to cover the fee, but you have <avail> <sym>. "
+//       "You need <req> <sym> to cover the amount you're wrapping plus the fee, but ..."
+//       + "Top up <sym>, or pay the fee with the Super Token instead."        (relay required)
+//       + "Top up <sym>, pay the fee with the Super Token instead, or turn off gasless sending."
+//
+// The symbol is a live `symbol()` read that falls back to the literal string
+// "the fee token" when the call reverts (executeClearMacro.ts:802 and :848), so the symbol
+// groups have to accept that two-space phrase as well as a normal ticker.
+// Capture groups (named groups are unavailable at this tsconfig target):
+//   1 = required fee, 2 = fee token symbol, 3 = available balance,
+//   4 = balance token symbol, 5 = the symbol the user is told to top up.
+const FEE_TOKEN_SYMBOL = String.raw`the fee token|[^\s.]+`;
+const RELAY_FEE_GATE_MESSAGE = new RegExp(
+  String.raw`^You need ([\d.]+) (${FEE_TOKEN_SYMBOL}) to ` +
+    String.raw`(?:pay the fee|cover the fee|cover the amount you're wrapping plus the fee)` +
+    String.raw`, but you have ([\d.]+) (${FEE_TOKEN_SYMBOL})\. ` +
+    String.raw`Top up (the fee token|[^\s,.]+)(?:` +
+    String.raw` to continue\.` +
+    String.raw`|, or turn off gasless sending to pay with gas instead\.` +
+    String.raw`|, or pay the fee with the Super Token instead\.` +
+    String.raw`|, pay the fee with the Super Token instead, or turn off gasless sending\.` +
+    String.raw`)$`
+);
 const CLOSE_BUTTON = '[data-cy=close-rounded-icon]';
 const ACCESS_CODE_DIALOG = '[data-cy=access-code-dialog]';
 const ACCESS_CODE_ERROR = '[data-cy=access-code-error]';
@@ -67,7 +103,6 @@ const TOKEN_CHIPS = '.MuiChip-root';
 const FAUCET_CONTRACT_ADDRESS = '0x74CDF863b00789c29734F8dFd9F83423Bc55E4cE';
 const FAUCET_EXECUTION_CONTRACT_ADDRESS =
   '0x2e043853CC01ccc8275A3913B82F122C20Bc1256';
-const LOADING_SKELETONS = '.MuiSkeleton-root';
 const ADDRESS_SEARCH_DIALOG = '[data-cy=receiver-dialog]';
 const CONNECTED_WALLET_BUTTON = '[data-cy=connected-wallet-button]';
 const CONNECTED_WALLET_DIALOG = '[data-cy=account-modal]';
@@ -221,8 +256,30 @@ export class Common extends BasePage {
     this.doesNotExist(ADDRESS_DIALOG_INPUT);
     this.doesNotExist(ADDRESS_SEARCH_DIALOG);
   }
-  static waitForSpookySkeletonsToDisapear() {
-    this.doesNotExist(LOADING_SKELETONS, undefined, { timeout: 120000 });
+  /**
+   * Network-scoped settle gate. Asserts that the table belonging to the network
+   * under test has rendered.
+   *
+   * This replaces `waitForSpookySkeletonsToDisapear`, which asserted that no
+   * `.MuiSkeleton-root` existed anywhere on the page. That coupled every
+   * scenario to every network's RPC and subgraph health: in CI run 31123182886 a
+   * single Degen approvals table stuck loading failed 30 scenarios across eight
+   * rejected-test shards, none of which were about Degen, and none of which ever
+   * reached the transaction rejection they purport to cover.
+   *
+   * A positive check is also the stronger assertion. "opsepolia's table has
+   * arrived" is what the following step actually needs; "no skeleton anywhere"
+   * was the weaker, indirect form of the same statement.
+   *
+   * Only use this where the network under test is known to have rows -- the
+   * per-network tables render `null` when empty, so on an empty network this
+   * gate will (correctly, loudly) time out rather than pass.
+   */
+  static waitForNetworkTableToLoad(network: string, tableSuffix: string) {
+    let selectedNetwork = this.getSelectedNetwork(network);
+    this.exists(`[data-cy=${selectedNetwork}-${tableSuffix}]`, undefined, {
+      timeout: 60000,
+    });
   }
 
   static clickNavBarButton(button: string) {
@@ -669,8 +726,73 @@ export class Common extends BasePage {
     });
     cy.get(TX_ERROR, { timeout: 60000 }).should(
       'have.text',
-      'Transaction Rejected'
+      TRANSACTION_REJECTED_MESSAGE
     );
+  }
+
+  /**
+   * Assert the Clear Macro relay fee gate, unconditionally.
+   *
+   * When a wallet cannot cover the relay fee, the app blocks *before* requesting a
+   * signature and explains the shortfall. That is intended product behaviour, and it
+   * gets its own scenario against a deliberately unfunded account rather than being
+   * folded into the rejection scenarios as an either/or -- a test that accepts two
+   * different outcomes cannot tell you which one it saw, and would have gone green if
+   * the fee gate started firing for funded wallets too.
+   *
+   * The scenarios that exercise the signature-rejection path keep asserting
+   * `transactionRejectedErrorIsShown` strictly; their wallet is funded with the fee
+   * token so they always reach the signature prompt.
+   *
+   * Known limit, deliberately not papered over: the numbers checked here are parsed
+   * out of the message itself, so this proves the gate is well-formed and internally
+   * consistent, not that the balance it quotes is the wallet's real balance. Asserting
+   * that would need an independent on-chain read of the fee token
+   * (see cypress/support/helpers/liveBalances.ts).
+   */
+  static relayFeeGateErrorIsShown() {
+    cy.get(TX_ERROR, { timeout: 60000 })
+      .should(($alert) => {
+        const text = $alert.text().trim();
+        expect(
+          RELAY_FEE_GATE_MESSAGE.test(text),
+          `Expected the Clear Macro relay fee gate ("You need <amount> <symbol> to pay/cover the fee, ` +
+            `but you have <amount> <symbol>. Top up ..."), but the dialog showed: "${text}"`
+        ).to.equal(true);
+      })
+      .invoke('text')
+      .then((rawText: string) => {
+        const text = rawText.trim();
+        const match = RELAY_FEE_GATE_MESSAGE.exec(text);
+        expect(match, `Failed to parse the relay fee gate message: "${text}"`).to
+          .not.be.null;
+        const required = (match as RegExpExecArray)[1];
+        const requiredSymbol = (match as RegExpExecArray)[2];
+        const available = (match as RegExpExecArray)[3];
+        const availableSymbol = (match as RegExpExecArray)[4];
+        const topUpSymbol = (match as RegExpExecArray)[5];
+
+        cy.log(
+          `Clear Macro relay fee gate shown: needs ${required} ${requiredSymbol}, wallet holds ${available} ${availableSymbol}.`
+        );
+
+        expect(
+          Number(required),
+          'The relay fee gate must quote a non-zero required fee'
+        ).to.be.greaterThan(0);
+        expect(
+          Number(available),
+          'The relay fee gate must only be shown when the balance is actually short of the required fee'
+        ).to.be.lessThan(Number(required));
+        expect(
+          availableSymbol,
+          'The relay fee gate must compare the balance in the same token as the fee'
+        ).to.equal(requiredSymbol);
+        expect(
+          topUpSymbol,
+          'The relay fee gate must tell the user to top up the fee token'
+        ).to.equal(requiredSymbol);
+      });
   }
 
   static validateNoEthereumMainnetShownInDropdown() {

@@ -63,19 +63,19 @@
     "opsepolia": [
       {
         "flowRate": 380517503805,
-        "startedAtUnix": 1721637212000,
-        "sender": "0x9Be85A79D847dFa90584F3FD40cC1f6D4026E2B9",
+        "startedAtUnix": 1785937588000,
+        "sender": "0xEb85888b31FADF79CB264d065EdcB4a14551c28d",
         "receiver": "0x9B6157d44134b21D934468B8bf709294cB298aa7",
-        "scheduledAmount": "23.99",
-        "startDate": "22 Jul. 2024 09:33",
-        "endDate": "22 Jul. 2026 4:00",
+        "startDate": "5 Aug. 2026 13:46",
+        "endDate": "4 Aug. 2028 13:46",
         "amountPerMonth": "1",
-        "projectedLiquidation": "18 Mar. 2041 15:33",
-        "buffer": "0.00137",
-        "v2Link": "/stream/opsepolia/0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0x9b6157d44134b21d934468b8bf709294cb298aa7-0xfd0957cbf7c1638581a3cdeb16256e5f08e7ce75-0.0",
+        "v2Link": "/stream/opsepolia/0xeb85888b31fadf79cb264d065edcb4a14551c28d-0x9b6157d44134b21d934468b8bf709294cb298aa7-0xfd0957cbf7c1638581a3cdeb16256e5f08e7ce75-0.0",
         "token": "fTUSDx",
         "networkName": "OP Sepolia",
-        "txHash": "0x388c74a34824bf4542191c01fa5a84e5b78725fd7420d601dded57c0141eca93"
+        "txHash": "0xa61b769f894834e8cefd6802556753bf93ce39cab79ba4d4dd90fd5cbbb3fa11",
+        "endDateUnix": 1849009562,
+        "networkSlug": "opsepolia",
+        "tokenAddress": "0xfd0957cbf7c1638581a3cdeb16256e5f08e7ce75"
       }
     ]
   }

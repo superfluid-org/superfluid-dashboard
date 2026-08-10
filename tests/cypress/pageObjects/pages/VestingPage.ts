@@ -366,6 +366,24 @@ export class VestingPage extends BasePage {
     this.click(CREATE_VESTING_SCHEDULE_BUTTON);
   }
 
+  /**
+   * Settle gate for the vesting schedules table, scoped to that table rather than
+   * to the whole page.
+   *
+   * Positive check FIRST, deliberately. `VestingScheduleTables` only mounts the
+   * created table while it is loading or once it has rows, so a skeletons-are-gone
+   * assertion on its own also passes when the table never mounted at all -- which
+   * is the vacuous pass this gate exists to prevent. Requiring the table to be
+   * visible makes "no schedules rendered" fail loudly, and the scoped skeleton
+   * wait (the same one `openCreatedSchedule` relies on) then settles it.
+   */
+  static waitForCreatedTableToLoad() {
+    this.isVisible(CREATED_TABLE, undefined, { timeout: 45000 });
+    this.doesNotExist(`${CREATED_TABLE} ${LOADING_SKELETONS}`, undefined, {
+      timeout: 45000,
+    });
+  }
+
   static openLastCreatedSchedule() {
     this.doesNotExist(`${CREATED_TABLE} ${LOADING_SKELETONS}`, undefined, {
       timeout: 45000,

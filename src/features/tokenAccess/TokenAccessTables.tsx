@@ -1,12 +1,15 @@
 import {
+  Button,
   Stack,
   Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { FC, useCallback, useMemo, useState } from "react";
+import { FC, useCallback, useMemo, useRef, useState } from "react";
 import { TokenAccessTable } from "./TokenAccessTable";
-import { useAvailableNetworks } from "../network/AvailableNetworksContext";
+import OpenIcon from "../../components/OpenIcon/OpenIcon";
+import { useActiveNetworks } from "../network/ActiveNetworksContext";
+import NetworkSelectionFilter from "../network/NetworkSelectionFilter";
 import { UpsertTokenAccessButton } from "./TokenAccessRow";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
@@ -35,15 +38,14 @@ export function TokenAccessTables() {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
 
-  const { availableNetworks: availableNetworks_ } = useAvailableNetworks();
+  const { activeNetworks } = useActiveNetworks();
   const { network: expectedNetwork } = useExpectedNetwork();
-  const availableNetworks = useMemo(
-    () => [
-      ...availableNetworks_.filter((x) => x === expectedNetwork), // Order the current network first.
-      ...availableNetworks_.filter((x) => x !== expectedNetwork),
-    ],
-    [availableNetworks_, expectedNetwork]
-  );
+
+  const networkSelectionRef = useRef<HTMLButtonElement>(null);
+  const [networkSelectionOpen, setNetworkSelectionOpen] = useState(false);
+
+  const openNetworkSelection = () => setNetworkSelectionOpen(true);
+  const closeNetworkSelection = () => setNetworkSelectionOpen(false);
 
   const [fetchingStatuses, setFetchingStatuses] =
     useState<NetworkFetchingStatuses>({});
@@ -59,18 +61,18 @@ export function TokenAccessTables() {
 
   const hasContent = useMemo(
     () =>
-      availableNetworks.some(
+      activeNetworks.some(
         (network) => fetchingStatuses[network.id]?.hasContent
       ),
-    [availableNetworks, fetchingStatuses]
+    [activeNetworks, fetchingStatuses]
   );
 
   const isLoading = useMemo(
     () =>
-      availableNetworks.some(
+      activeNetworks.some(
         (network) => fetchingStatuses[network.id]?.isLoading !== false
       ),
-    [availableNetworks, fetchingStatuses]
+    [activeNetworks, fetchingStatuses]
   );
 
   const showEmptyCard = !hasContent && !isLoading;
@@ -91,16 +93,35 @@ export function TokenAccessTables() {
             Manage your Super Token permissions and allowances in one place.
           </Typography>
         </Stack>
-        <UpsertTokenAccessButton
-          dataCy={"token-access-global-button"}
-          initialFormValues={{
-            network: expectedNetwork,
-          }}
-        />
+        <Stack direction="row" sx={{
+          gap: 1.5
+        }}>
+          <UpsertTokenAccessButton
+            dataCy={"token-access-global-button"}
+            initialFormValues={{
+              network: expectedNetwork,
+            }}
+          />
+          <Button
+            data-cy={"network-selection-button"}
+            ref={networkSelectionRef}
+            variant="outlined"
+            color="secondary"
+            endIcon={<OpenIcon open={networkSelectionOpen} />}
+            onClick={openNetworkSelection}
+          >
+            All networks
+          </Button>
+          <NetworkSelectionFilter
+            open={networkSelectionOpen}
+            anchorEl={networkSelectionRef.current}
+            onClose={closeNetworkSelection}
+          />
+        </Stack>
       </Stack>
       {showEmptyCard && <EmptyCard />}
       {
-        visibleAddress && availableNetworks.map((network) => (
+        visibleAddress && activeNetworks.map((network) => (
           <TokenAccessTable
             key={`${network.id}-${visibleAddress}`}
             address={visibleAddress!}

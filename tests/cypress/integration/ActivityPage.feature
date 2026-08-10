@@ -42,11 +42,11 @@ Feature: Activity History Page tests
     And User opens activity filter
     And User clicks on the "Wrap / Unwrap" toggle in the activity filter
     And User closes the dropdown
-    And No loading skeletons are visible in the page
+    And User waits for the activity history to load
     Then No "Wrap" activities are shown in the activity history
     And User opens activity filter
     And User clicks on the "Wrap / Unwrap" toggle in the activity filter
-    And No loading skeletons are visible in the page
+    And User waits for the activity history to load
     Then Activity history entries with "Wrap" are visible
 
   Scenario: Filtering entries by address
