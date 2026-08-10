@@ -36,8 +36,8 @@ const Bridge: NextPage = () => {
             textAlign: "inherit",
           }}
         >
-          The Bridge is operated by LI.FI, and we cannot take responsibility for
-          any issues. For support related to the bridge, please refer to the
+          Swapping and bridging are powered by LI.FI, and we cannot take
+          responsibility for any issues. For support, please refer to the
           LI.FI{" "}
           <Link href="https://discord.com/invite/lifi" target="_blank">
             Discord server
@@ -48,4 +48,4 @@ const Bridge: NextPage = () => {
   );
 };
 
-export default withStaticSEO({ title: "Bridge | Superfluid" }, Bridge);
+export default withStaticSEO({ title: "Swap & Bridge | Superfluid" }, Bridge);

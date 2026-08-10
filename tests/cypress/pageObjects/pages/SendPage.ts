@@ -2,6 +2,7 @@ import { BasePage, UnitOfTime } from '../BasePage';
 import { WrapPage } from './WrapPage';
 import { networksBySlug } from '../../superData/networks';
 import { EthHelper } from '../../support/helpers/ethHelper';
+import { isNetworkExcludedByScenarioAllowlist } from '../../support/scenarioNetworkAllowlist';
 import {
   Common,
   CONNECT_WALLET_BUTTON,
@@ -689,6 +690,14 @@ export class SendPage extends BasePage {
   }
 
   static runFunctionIfPlatformIsDeployedOnNetwork(fn: () => void) {
+    if (isNetworkExcludedByScenarioAllowlist()) {
+      cy.log(
+        `Skipping the step because ${Cypress.env(
+          'network'
+        )} is not on the scenario's network allowlist`
+      );
+      return;
+    }
     if (
       [
         'avalanche-fuji',
@@ -709,6 +718,9 @@ export class SendPage extends BasePage {
   }
 
   static skipTestIfPlatformNotAvailableOnNetwork() {
+    if (isNetworkExcludedByScenarioAllowlist()) {
+      return true;
+    }
     if (
       [
         'avalanche-fuji',

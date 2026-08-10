@@ -2,9 +2,12 @@ Feature: Auto-wrap page test cases
 
   Scenario: Stop viewing buttons in the auto-wrap table
     Given "Auto-wrap page" is open using view mode to look at "john"
-    And No loading skeletons are visible in the page
     And User changes their network to "opsepolia"
     And User clicks on the "auto-wrap" navigation button
+    # Load-bearing, and deliberately placed *after* the navigation rather than
+    # before it: the assertion below is an unscoped doesNotExist on the disable
+    # buttons, so it passes trivially while the table is still loading.
+    And The "token-snapshot-table" table on "opsepolia" has loaded
     Then There are no enable or disable auto-wrap buttons visible
     And User clicks on the stop viewing as an address button
     Then Approvals page wallet not connected screen is visible
@@ -12,19 +15,22 @@ Feature: Auto-wrap page test cases
   Scenario: Change network buttons in the table
     Given "Dashboard Page" is open with "john" connected on "sepolia"
     And User clicks on the "auto-wrap" navigation button
-    And No loading skeletons are visible in the page
+    # Load-bearing: the assertion below opens with two doesNotExist checks scoped
+    # inside the opsepolia table, which pass trivially if it has not rendered.
+    And The "token-snapshot-table" table on "opsepolia" has loaded
     Then All action buttons are changed to switch network buttons on "opsepolia" table
 
   # Flaky on CI, works locally
   @skip
   Scenario: Data shown in the table
     Given "Auto-Wrap Page" is open with "john" connected on "opsepolia"
-    And No loading skeletons are visible in the page
     Then Auto-wrap data shown on "opsepolia" is correct
 
   Scenario: Filtering out a network
     Given "Auto-Wrap Page" is open with "john" connected on "opsepolia"
-    And No loading skeletons are visible in the page
+    # Load-bearing: proves the table existed before the toggle, so that the
+    # doesNotExist below is measuring the filter and not a slow load.
+    And The "token-snapshot-table" table on "opsepolia" has loaded
     And User opens the network selection dropdown
     And User clicks on the "opsepolia" toggle
     Then "opsepolia" balances are not visible
@@ -47,7 +53,6 @@ Feature: Auto-wrap page test cases
     Given HDWallet transactions are rejected
 
     Given "Auto-Wrap Page" is open with "john" connected on "opsepolia"
-    And No loading skeletons are visible in the page
     And User clicks on the add token button
     And User selects "opsepolia" as the network for the auto-wrap
     And User selects "fUSDCx" as the super token to use for the stream
@@ -58,7 +63,6 @@ Feature: Auto-wrap page test cases
     Given HDWallet transactions are rejected
 
     Given "Auto-Wrap Page" is open with "alice" connected on "opsepolia"
-    And No loading skeletons are visible in the page
     And User clicks on the add token button
     And User selects "opsepolia" as the network for the auto-wrap
     And User selects "fDAIx" as the super token to use for the stream

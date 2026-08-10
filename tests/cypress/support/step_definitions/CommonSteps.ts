@@ -234,6 +234,16 @@ Given(/^User waits for (\d+) seconds$/, function (seconds: number) {
 Then(/^Transaction rejected error is shown$/, function () {
   Common.transactionRejectedErrorIsShown();
 });
+// For the stream-scheduling flows, which are forced through the Clear Macro gasless relay
+// on relay-enabled networks. Wrapped in `runFunctionIfPlatformIsDeployedOnNetwork` for the
+// same reason as the scheduling steps it follows: on networks without the flow scheduler
+// the whole scheduling part of the scenario is skipped, so there is no dialog to assert.
+// See Common.relayFeeGateErrorIsShown.
+Then(/^The gasless relay fee gate is shown$/, function () {
+  SendPage.runFunctionIfPlatformIsDeployedOnNetwork(() => {
+    Common.relayFeeGateErrorIsShown();
+  });
+});
 Then(
   /^Transaction rejected error is shown for auto-wrap or vesting transaction$/,
   function () {
@@ -405,9 +415,15 @@ Then(
 Then(/^User clears the receiver input field$/, function () {
   Common.clearReceiverField();
 });
-Then(/^No loading skeletons are visible in the page$/, function () {
-  Common.waitForSpookySkeletonsToDisapear();
-});
+// Replaces "No loading skeletons are visible in the page", which asserted that no
+// MuiSkeleton existed anywhere and therefore made every scenario wait on every
+// network. See Common.waitForNetworkTableToLoad.
+Then(
+  /^The "([^"]*)" table on "([^"]*)" has loaded$/,
+  function (tableSuffix: string, network: string) {
+    Common.waitForNetworkTableToLoad(network, tableSuffix);
+  }
+);
 
 Then(
   /^Ecosystem page navigation button leads to an external site$/,

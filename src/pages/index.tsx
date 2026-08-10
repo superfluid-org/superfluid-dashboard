@@ -166,4 +166,4 @@ const Home: NextPage = () => {
   );
 };
 
-export default withStaticSEO({ title: "Dashboard | Superfluid" }, Home);
+export default withStaticSEO({ title: "Portfolio | Superfluid" }, Home);

@@ -2,6 +2,13 @@ import { BasePage } from '../BasePage';
 import { format, fromUnixTime } from 'date-fns';
 import { TOKEN_ANIMATION } from './Common';
 import cypressConfig from '../../../cypress.config';
+import {
+  assertDisplayedAmountMatchesChain,
+  getScheduledEndDate,
+  getStreamBuffer,
+  getStreamFlowRate,
+  getTotalScheduledAmount,
+} from '../../support/helpers/liveStreams';
 
 const SENT_SO_FAR = '[data-cy=balance]';
 const TOKEN_STREAMED = '[data-cy=streamed-token]';
@@ -345,13 +352,42 @@ export class StreamDetailsPage extends BasePage {
         -1
       );
       this.isVisible(TIMER_ICON);
-      this.hasText(
-        TOTAL_SCHEDULED_AMOUNT,
-        `${closeEndedStream.scheduledAmount} ${closeEndedStream.token}`
+      // Buffer and total scheduled amount are derived values -- the protocol
+      // deposit, and flowRate * (endDate - startDate). They used to be pinned as
+      // constants here, which meant re-creating the underlying stream required
+      // recomputing them by hand; when the original stream ran to completion on
+      // 2026-07-22 nobody did, and the scenario simply stayed red. Read them
+      // from chain so the fixture only carries the stream's identity.
+      const { networkSlug, tokenAddress, sender, receiver } = closeEndedStream;
+      getStreamBuffer(networkSlug, tokenAddress, sender, receiver).then(
+        (deposit) =>
+          assertDisplayedAmountMatchesChain(
+            BUFFER,
+            deposit,
+            closeEndedStream.token,
+            'Buffer'
+          )
       );
-      this.hasText(
-        BUFFER,
-        `${closeEndedStream.buffer} ${closeEndedStream.token}`
+      getStreamFlowRate(networkSlug, tokenAddress, sender, receiver).then(
+        (flowRate) =>
+          getScheduledEndDate(networkSlug, tokenAddress, sender, receiver).then(
+            (endDate) => {
+              expect(
+                endDate,
+                'the stream should still have a scheduled end date in the future'
+              ).to.be.greaterThan(Math.floor(Date.now() / 1000));
+              assertDisplayedAmountMatchesChain(
+                TOTAL_SCHEDULED_AMOUNT,
+                getTotalScheduledAmount(
+                  flowRate,
+                  closeEndedStream.startedAtUnix / 1000,
+                  endDate
+                ),
+                closeEndedStream.token,
+                'Total scheduled amount'
+              );
+            }
+          )
       );
       this.hasText(NETWORK_NAME, closeEndedStream.networkName);
       this.hasText(TX_HASH, BasePage.shortenHex(closeEndedStream.txHash));
