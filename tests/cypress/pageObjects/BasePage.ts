@@ -52,6 +52,12 @@ export class BasePage {
     const SELECT_TOKEN_BUTTON = '[data-cy=select-token-button]';
     const SELECTED_TOKEN = `${SELECT_TOKEN_BUTTON} span[translate=no]`;
     const TOKEN_SEARCH_INPUT = '[data-cy=token-search-input] input';
+    // Cypress applies a timeout to the command it is passed to and to that one
+    // only, so every chained query (`.filter()`, `.first()`) has to repeat it or
+    // it — and the `.should()` hanging off it — silently drops back to the 15s
+    // `defaultCommandTimeout`. Same bug as `BasePage.carryTimeout` guards
+    // against for the generic helpers.
+    const DIALOG_TIMEOUT = { timeout: 30000 };
 
     return this.getSelectedToken(token).then((selectedToken) => {
       // Some flows open the dialog in a previous step; only open it if needed.
@@ -62,17 +68,17 @@ export class BasePage {
         // CI — and in the ACL / auto-wrap flows the button legitimately lives *inside* a dialog,
         // so we can't wait for all dialogs to disappear. The open is confirmed below by waiting
         // for the token search input + list to render.
-        cy.get(SELECT_TOKEN_BUTTON, { timeout: 30000 })
-          .filter(':visible')
-          .first()
+        cy.get(SELECT_TOKEN_BUTTON, DIALOG_TIMEOUT)
+          .filter(':visible', DIALOG_TIMEOUT)
+          .first(DIALOG_TIMEOUT)
           .scrollIntoView()
           .click({ force: true });
       });
-      cy.get(TOKEN_SEARCH_INPUT, { timeout: 30000 }).should('be.visible');
+      cy.get(TOKEN_SEARCH_INPUT, DIALOG_TIMEOUT).should('be.visible');
       // Wait for the initial token fetch to render the list BEFORE typing. The dialog shows a
       // spinner while fetching and re-renders as balances load; typing/clearing mid-re-render
       // detaches the search input on slower CI ("cy.clear() failed because the page updated").
-      cy.get('[data-cy$="-list-item"]', { timeout: 30000 }).should(
+      cy.get('[data-cy$="-list-item"]', DIALOG_TIMEOUT).should(
         'have.length.gte',
         1
       );
@@ -80,16 +86,16 @@ export class BasePage {
       // balance of still surfaces. The dialog resets the search to empty on open, so type
       // directly — no chained .clear() (which would detach the chain on re-render).
       cy.get(TOKEN_SEARCH_INPUT).type(selectedToken);
-      cy.get(`[data-cy="${selectedToken}-list-item"]`, { timeout: 30000 })
-        .filter(':visible')
-        .first()
+      cy.get(`[data-cy="${selectedToken}-list-item"]`, DIALOG_TIMEOUT)
+        .filter(':visible', DIALOG_TIMEOUT)
+        .first(DIALOG_TIMEOUT)
         .scrollIntoView()
         .should('be.visible')
         .click();
       return cy
-        .get(SELECTED_TOKEN, { timeout: 30000 })
-        .filter(':visible')
-        .first()
+        .get(SELECTED_TOKEN, DIALOG_TIMEOUT)
+        .filter(':visible', DIALOG_TIMEOUT)
+        .first(DIALOG_TIMEOUT)
         .should('have.text', selectedToken);
     });
   }
@@ -108,6 +114,34 @@ export class BasePage {
         )}`;
   }
 
+  /**
+   * Carry an explicit `timeout` onto a chained query.
+   *
+   * Cypress applies a command's timeout to that command only. When a query is
+   * chained after `cy.get(selector, { timeout: 60000 })` — `.eq()`, `.filter()`,
+   * `.first()` — the chained query, and therefore the `.should()` retry budget
+   * hanging off it, falls back to `defaultCommandTimeout` (15s here). Callers
+   * that asked for 45s or 60s silently got 15s. EVERY link in the chain has to
+   * repeat it, not just the first one: a single bare `.first()` at the end
+   * resets the budget for everything after it.
+   *
+   * This was not theoretical: the hourly suite's wrap-page balance assertions pass
+   * `{ timeout: 60000 }` and CI reported "Timed out retrying after 15000ms".
+   * `doesNotExist` has no chained query, which is why its 120000ms was honoured.
+   */
+  private static carryTimeout(
+    options?: Partial<
+      Cypress.Loggable &
+        Cypress.Timeoutable &
+        Cypress.Withinable &
+        Cypress.Shadow
+    >
+  ): Partial<Cypress.Loggable & Cypress.Timeoutable> | undefined {
+    return options?.timeout === undefined
+      ? undefined
+      : { timeout: options.timeout };
+  }
+
   static get(
     selector: string,
     index?: number,
@@ -119,7 +153,7 @@ export class BasePage {
     >
   ) {
     if (index !== undefined) {
-      return cy.get(selector, options).eq(index);
+      return cy.get(selector, options).eq(index, this.carryTimeout(options));
     }
     return cy.get(selector, options);
   }
@@ -175,8 +209,8 @@ export class BasePage {
     >
   ) {
     return this.get(selector, index, options)
-      .filter(':visible')
-      .first()
+      .filter(':visible', this.carryTimeout(options))
+      .first(this.carryTimeout(options))
       .click();
   }
 
@@ -192,7 +226,7 @@ export class BasePage {
     >
   ) {
     return this.get(selector, index, options)
-      .filter(':visible')
+      .filter(':visible', this.carryTimeout(options))
       .type(text.toString());
   }
 
@@ -208,7 +242,7 @@ export class BasePage {
     >
   ) {
     return this.get(selector, index, options)
-      .filter(':visible')
+      .filter(':visible', this.carryTimeout(options))
       .then(($input) => {
         const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
           window.HTMLInputElement.prototype,
@@ -258,7 +292,7 @@ export class BasePage {
     >
   ) {
     return this.get(selector, index, options)
-      .filter(':visible')
+      .filter(':visible', this.carryTimeout(options))
       .should('have.text', text);
   }
 
@@ -274,7 +308,7 @@ export class BasePage {
     >
   ) {
     return this.get(selector, index, options)
-      .filter(':visible')
+      .filter(':visible', this.carryTimeout(options))
       .should('not.have.text', text);
   }
 
@@ -303,7 +337,7 @@ export class BasePage {
     >
   ) {
     return this.get(selector, index, options)
-      .scrollIntoView()
+      .scrollIntoView(this.carryTimeout(options))
       .should('have.text', text);
   }
 
@@ -317,7 +351,9 @@ export class BasePage {
         Cypress.Shadow
     >
   ) {
-    return this.get(selector, index, options).scrollIntoView();
+    return this.get(selector, index, options).scrollIntoView(
+      this.carryTimeout(options)
+    );
   }
 
   static doesNotExist(
@@ -452,7 +488,9 @@ export class BasePage {
         Cypress.Shadow
     >
   ) {
-    return this.get(selector, index, options).filter(':visible').clear();
+    return this.get(selector, index, options)
+      .filter(':visible', this.carryTimeout(options))
+      .clear();
   }
 
   static hasCSS(

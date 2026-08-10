@@ -17,8 +17,18 @@
 import "./commands";
 import "@cypress/code-coverage/support";
 import "cypress-real-events";
+// Passive per-test network/console telemetry, dumped to
+// tests/cypress/results/telemetry/ when a test fails. See ./telemetry.js.
+import { recordException } from "./telemetry";
+// Seeds the app's own "hidden networks" preference so Degen Chain -- dead, and
+// serving HTTP 429 -- is switched off before redux-persist rehydrates. Imported
+// for its side effect. See ./degenExclusion.ts.
+import "./degenExclusion";
 
 Cypress.on("uncaught:exception", (err, runnable) => {
+  // Record first, then fall through to the untouched ignore-list below. This
+  // must not change what the handler returns.
+  recordException("uncaught:exception", err);
   if (
     err.name === "ConnectorNotFoundError" ||
     err.message.includes(
@@ -46,6 +56,7 @@ Cypress.on("uncaught:exception", (err, runnable) => {
 });
 
 Cypress.on("fail", (err, runneable) => {
+  recordException("fail", err);
   if (
     err.message.includes(
       "PollingBlockTracker - encountered an error while attempting to update latest block"

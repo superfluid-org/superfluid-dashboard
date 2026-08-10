@@ -129,6 +129,54 @@ Feature: Transactional rejected test cases
     And Scheduled stream transaction dialogs are shown
     And Transaction rejected error is shown
 
+  # The Clear Macro gasless relay charges a fee in USDCx and blocks the action before any
+  # signature is requested when the wallet cannot cover it. That is intended product
+  # behaviour, so it gets its own scenario against a deliberately unfunded wallet rather
+  # than being folded into the rejection scenarios above as an either/or -- a test that
+  # accepts two outcomes cannot tell you which one it saw.
+  #
+  # `dan` is the wallet with the wrong shape of funding here. Two things have to hold at once:
+  #   1. it holds enough TokenTwox for the send form to validate -- the form keeps submit
+  #      disabled until the balance covers the CFA buffer *and* 24h of streaming
+  #      (`getMinimumStreamTimeInMinutes` = bufferTimeInMinutes * 6), so a wallet that is empty
+  #      of the stream token never reaches the fee gate at all;
+  #   2. it holds less of the relay *fee* token than the fee (0.3 USDCx: 1 unit for the relayed
+  #      action plus 2 for the reserved keeper execution, at a 0.1 baseFee).
+  # On the allowlisted networks those are two *different* USDCx contracts, so dan's 0.1 of the
+  # stream token satisfies (1) without touching (2). `john`, used by the rejection scenarios
+  # above, is funded with the fee token so it reaches the signature prompt instead. Do not fund
+  # dan with the fee token, and do not schedule from john here -- the two accounts are what
+  # keeps these paths distinct.
+  #
+  # @relayFeeGateNetworksOnly restricts this to polygon, arbitrum-one and optimism (see
+  # support/step_definitions/Hooks.ts). Excluded, deliberately:
+  #   - gnosis / avalanche / bsc: dan holds zero super tokens there and they cannot be funded,
+  #     so requirement (1) can never be met. They are also the three networks where
+  #     fixtures/rejectedCaseTokens.json maps TokenTwo onto the *same* contract the relay charges
+  #     its fee in (bsc: USDC == feeToken 0x0419e1fA3671754F77EC7D5416219A5f9A08B530), which
+  #     would make (1) and (2) contradict each other anyway. Note bsc is NOT in
+  #     SendPage.skipTestIfPlatformNotAvailableOnNetwork, so before the allowlist it ran and
+  #     failed here -- @platformNeeded does not cover it.
+  #   - base: no flow scheduler, already skipped by @platformNeeded. (ethereum is commented out
+  #     of the CI matrix entirely, so it never runs either way.)
+  # Empirically confirmed by CI run 31113896040, before the allowlist landed: the scenario passed
+  # on exactly polygon, arbitrum-one and optimism and failed on gnosis, avalanche and bsc.
+  # This scenario must print a pass on the three allowlisted networks -- if it reports as
+  # skipped everywhere, the allowlist is broken, not the product.
+  @platformNeeded @gaslessRelayEnabled @relayFeeGateNetworksOnly
+  Scenario: Scheduling is blocked when the wallet cannot cover the gasless relay fee
+    Given The test case is skipped if the platform is not deployed on the network
+
+    Given Transactional account dan is connected to the dashboard on selected network
+    And User clicks on the "send" navigation button
+    And User inputs all the details to send "1" "TokenTwox" per "month" to "0x9B6157d44134b21D934468B8bf709294cB298aa7"
+    And User clicks the scheduling toggle
+    And User inputs a date "1" "year" into the future into the stream end date
+    And User accepts the risk warning
+    And User clicks the send transaction button
+    And Scheduled stream transaction dialogs are shown
+    And The gasless relay fee gate is shown
+
   # Flaky on CI
   @skip
   @platformNeeded
