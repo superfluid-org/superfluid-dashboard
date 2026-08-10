@@ -172,13 +172,19 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
   relayRequired,
   scheduleAction,
 }) => {
-  const { isEligible, isContractWalletBlocked, isRelayEnabled, setRelayEnabled } =
-    useClearMacroEligibility(actionKind, network);
+  const {
+    isEligible,
+    isContractWalletBlocked,
+    ineligibilityReason,
+    isRelayEnabled,
+    setRelayEnabled,
+  } = useClearMacroEligibility(actionKind, network);
   const {
     fee,
     paymentMode,
     setPaymentMode,
     canPayWithUsdc,
+    isSafeAuthorization,
     isCapabilitiesPending,
     isCapabilitiesUnresolved,
     usdcxBalanceWei,
@@ -210,6 +216,41 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
     // actionKind means "no relay for this action" (native-asset wrap, pending
     // approval, …) and must stay hidden for every wallet type.
     if (actionKind && isContractWalletBlocked) {
+      // A Safe reached through WalletConnect or an injected provider is the case worth naming:
+      // the same Safe opened as a Safe App IS supported, so "this wallet type" would be wrong
+      // and the user has a concrete way to get the feature.
+      const isSafeAppSpecific =
+        ineligibilityReason === "contract-wallet-not-safe-app";
+      const unavailableHeadline = isSafeAppSpecific
+        ? "Gasless transactions need this Safe opened as a Safe App"
+        : ineligibilityReason === "safe-unsupported-on-network"
+          ? `Gasless transactions aren't available for Safes on ${network.name}`
+          : "Gasless transactions aren't available for this wallet type";
+      const unavailableExplanation = isSafeAppSpecific ? (
+        <>
+          Gasless transactions for a Safe are authorized by a Safe message, which
+          can only be proposed when the dashboard is opened as an app inside
+          Safe. Open it from your Safe&apos;s Apps section to use them. This
+          transaction will be sent the normal way instead.
+        </>
+      ) : ineligibilityReason === "safe-unsupported-on-network" ? (
+        <>
+          The gasless service doesn&apos;t accept Safe authorization on{" "}
+          {network.name} yet. Transactions from this Safe are sent the normal way
+          instead.
+        </>
+      ) : ineligibilityReason === "capability-unavailable" ? (
+        <>
+          The gasless service can&apos;t be reached right now, so this
+          transaction will be sent the normal way instead. Try again later.
+        </>
+      ) : (
+        <>
+          Gasless transactions currently only support regular wallet accounts and
+          Safes opened as a Safe App. Transactions from this wallet are sent the
+          normal way instead.
+        </>
+      );
       return (
         <Paper
           variant="outlined"
@@ -231,15 +272,13 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
               color: "text.secondary",
               flex: 1
             }}>
-            Gasless transactions aren&apos;t available for this wallet type
+            {unavailableHeadline}
           </Typography>
           <TooltipWithIcon
             TooltipProps={LINK_TOOLTIP_PROPS}
             title={
               <>
-                Gasless transactions currently only support regular wallet
-                accounts. Transactions from this wallet are sent the normal way
-                instead.
+                {unavailableExplanation}
                 <PoweredByClearMacro />
               </>
             }
@@ -372,6 +411,24 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
           }
         />
       </Stack>
+      {/*
+        A Safe has no just-in-time wrap available — the provider's schema rejects the Permit2
+        kind alongside a Safe authorization — so the payment selector is correctly absent and
+        the remedy has to be stated on its own. Without this the shortfall would show no way
+        out at all.
+      */}
+      {isRelayEnabled && isSafeAuthorization && usdcxShortfall && (
+        <Typography
+          variant="caption"
+          color="error"
+          translate="yes"
+          data-cy="clear-macro-safe-usdcx-required"
+        >
+          Safe gasless transactions require {fee.feeSymbol ?? "USDCx"} for the
+          service fee — paying with {underlyingSymbol} isn&apos;t supported for
+          Safe authorization. Wrap or top up {fee.feeSymbol ?? "USDCx"} first.
+        </Typography>
+      )}
       {showPaymentSelector && (
         <Stack data-cy="clear-macro-payment-selector" sx={{
           gap: 1
@@ -426,6 +483,7 @@ export const ClearMacroRelayOption: FC<ClearMacroRelayOptionProps> = ({
               Not enough {fee.feeSymbol} to cover the fee.
             </Typography>
           )}
+
 
           {isUsdcSelected && usdcInsufficient && (
             <Typography variant="caption" color="error" translate="yes">
