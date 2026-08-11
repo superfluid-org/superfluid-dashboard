@@ -33,6 +33,7 @@ export interface ZerionDefiPosition {
   price?: number;
   changePercent24h?: number;
   positionType: ZerionPositionType;
+  isLiquidityPosition: boolean;
   protocol?: string;
   protocolModule?: string;
   protocolIconUrl?: string;
@@ -63,4 +64,22 @@ export interface ZerionDefiPortfolioResponse {
   nftsPending: boolean;
   nftsUnavailable: boolean;
   hasMoreNfts: boolean;
+  nextNftCursor?: string;
+  nftPageSize: number;
+}
+
+export interface ZerionNftPageRequest {
+  address: string;
+  chainId?: string;
+  cursor?: string;
+  nftPage: true;
+}
+
+export interface ZerionNftPageResponse {
+  provider: "zerion";
+  chainId?: string;
+  nfts: ZerionNftPosition[];
+  nftsPending: boolean;
+  nextNftCursor?: string;
+  pageSize: number;
 }

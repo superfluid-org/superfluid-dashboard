@@ -2,6 +2,8 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import {
   ZerionDefiPortfolioResponse,
   ZerionDefiPosition,
+  ZerionNftPageRequest,
+  ZerionNftPageResponse,
   ZerionNftPosition,
 } from "../../features/portfolio/zerionDefiPortfolioTypes";
 
@@ -9,6 +11,7 @@ const ZERION_API_URL = "https://api.zerion.io/v1";
 const REQUEST_TIMEOUT_MS = 30_000;
 const BETWEEN_REQUESTS_MS = 1_050;
 const MAX_RATE_LIMIT_RETRIES = 1;
+const NFT_PAGE_SIZE = 12;
 
 export const config = {
   maxDuration: 60,
@@ -90,7 +93,7 @@ interface ZerionNftBody {
       chain?: { data?: { id?: string } };
     };
   }>;
-  links?: { next?: string | null };
+  links?: { next?: string | null; self?: string | null };
 }
 
 class ZerionRequestError extends Error {
@@ -171,10 +174,31 @@ const fetchZerion = async <T>({
 
 const mapPosition = (
   position: NonNullable<ZerionPositionBody["data"]>[number]
-): ZerionDefiPosition => {
+): ZerionDefiPosition | undefined => {
   const attributes = position.attributes ?? {};
   const info = attributes.fungible_info ?? {};
   const quantity = attributes.quantity;
+  const protocol =
+    attributes.application_metadata?.name || attributes.protocol || undefined;
+  const positionType = attributes.position_type || "investment";
+  const liquidityDescriptor = `${attributes.protocol_module ?? ""} ${
+    attributes.name ?? ""
+  }`;
+  const isLiquidityPosition =
+    /(?:liquidity|liquidity-pool|automated market maker|\bamm\b|\blp\b)/i.test(
+      liquidityDescriptor
+    );
+
+  // Zerion can classify ordinary Super Token holdings as protocol deposits.
+  // They already belong in the wallet balance list and are not DeFi deposits.
+  // Keep an actual LP position when Zerion's module/name identifies it as one.
+  if (
+    positionType === "deposit" &&
+    protocol?.toLowerCase().includes("superfluid") &&
+    !isLiquidityPosition
+  ) {
+    return undefined;
+  }
 
   return {
     id: position.id,
@@ -188,14 +212,62 @@ const mapPosition = (
     value: optionalFiniteNumber(attributes.value),
     price: optionalFiniteNumber(attributes.price),
     changePercent24h: optionalFiniteNumber(attributes.changes?.percent_1d),
-    positionType: attributes.position_type || "investment",
-    protocol:
-      attributes.application_metadata?.name || attributes.protocol || undefined,
+    positionType,
+    isLiquidityPosition,
+    protocol,
     protocolModule: attributes.protocol_module ?? undefined,
     protocolIconUrl: attributes.application_metadata?.icon?.url ?? undefined,
     groupId: attributes.group_id ?? undefined,
     verified: info.flags?.verified ?? false,
   };
+};
+
+const mapNfts = (body?: ZerionNftBody): ZerionNftPosition[] =>
+  (body?.data ?? []).flatMap((position) => {
+    const nft = mapNft(position);
+    return nft ? [nft] : [];
+  });
+
+const buildNftPath = (encodedAddress: string, chainId?: string) => {
+  const parameters = new URLSearchParams({
+    currency: "usd",
+    sort: "-floor_price",
+    "page[size]": String(NFT_PAGE_SIZE),
+  });
+  if (chainId) parameters.set("filter[chain_ids]", chainId);
+  return `/wallets/${encodedAddress}/nft-positions/?${parameters.toString()}`;
+};
+
+const encodeNftCursor = (nextUrl?: string | null) =>
+  nextUrl ? Buffer.from(nextUrl, "utf8").toString("base64url") : undefined;
+
+const decodeNftCursor = ({
+  cursor,
+  address,
+  chainId,
+}: {
+  cursor: string;
+  address: string;
+  chainId?: string;
+}) => {
+  try {
+    const nextUrl = new URL(Buffer.from(cursor, "base64url").toString("utf8"));
+    const expectedPath = `/v1/wallets/${address}/nft-positions/`;
+    const cursorChainId =
+      nextUrl.searchParams.get("filter[chain_ids]") ?? undefined;
+    if (
+      nextUrl.origin !== "https://api.zerion.io" ||
+      nextUrl.pathname.toLowerCase() !== expectedPath.toLowerCase() ||
+      cursorChainId !== chainId ||
+      nextUrl.searchParams.get("page[size]") !== String(NFT_PAGE_SIZE)
+    ) {
+      throw new Error("Cursor does not match this NFT query");
+    }
+
+    return `${nextUrl.pathname.slice("/v1".length)}${nextUrl.search}`;
+  } catch {
+    throw new ZerionRequestError("Invalid NFT cursor", 400);
+  }
 };
 
 const mapNft = (
@@ -239,7 +311,9 @@ const sumPositions = (positions: ZerionDefiPosition[], type?: string) =>
 
 export default async function handler(
   request: NextApiRequest,
-  response: NextApiResponse<ZerionDefiPortfolioResponse | { error: string }>
+  response: NextApiResponse<
+    ZerionDefiPortfolioResponse | ZerionNftPageResponse | { error: string }
+  >
 ) {
   if (request.method !== "POST") {
     response.setHeader("Allow", "POST");
@@ -264,11 +338,37 @@ export default async function handler(
     `/wallets/${encodedAddress}/positions/` +
     "?currency=usd&filter%5Bpositions%5D=only_complex" +
     "&filter%5Btrash%5D=only_non_trash&sort=-value";
-  const nftsPath =
-    `/wallets/${encodedAddress}/nft-positions/` +
-    "?currency=usd&sort=-floor_price&page%5Bsize%5D=24";
+  const nftsPath = buildNftPath(encodedAddress);
 
   try {
+    if ((request.body as Partial<ZerionNftPageRequest>).nftPage === true) {
+      const { chainId, cursor } = request.body as ZerionNftPageRequest;
+      if (
+        (chainId !== undefined && !/^[a-z0-9-]{1,64}$/.test(chainId)) ||
+        (cursor !== undefined && typeof cursor !== "string")
+      ) {
+        return response.status(400).json({ error: "Invalid NFT request" });
+      }
+
+      const pagePath = cursor
+        ? decodeNftCursor({ cursor, address, chainId })
+        : buildNftPath(encodedAddress, chainId);
+      const pageResult = await fetchZerion<ZerionNftBody>({
+        path: pagePath,
+        apiKey,
+      });
+
+      response.setHeader("Cache-Control", "private, no-store");
+      return response.status(200).json({
+        provider: "zerion",
+        chainId,
+        nfts: mapNfts(pageResult.body),
+        nftsPending: pageResult.pending,
+        nextNftCursor: encodeNftCursor(pageResult.body?.links?.next),
+        pageSize: NFT_PAGE_SIZE,
+      });
+    }
+
     // Zerion's entry plan is rate limited per second, so keep enrichment calls
     // sequential and spaced out instead of making the tab throttle itself.
     const portfolioResult = await fetchZerion<ZerionPortfolioBody>({
@@ -314,23 +414,24 @@ export default async function handler(
 
     const overview = portfolioResult.body?.data?.attributes;
     const positions = (positionsResult.body?.data ?? [])
-      .map(mapPosition)
+      .flatMap((position) => {
+        const mappedPosition = mapPosition(position);
+        return mappedPosition ? [mappedPosition] : [];
+      })
       .sort((first, second) => (second.value ?? -1) - (first.value ?? -1));
-    const nfts = (nftsResult.body?.data ?? []).flatMap((position) => {
-      const nft = mapNft(position);
-      return nft ? [nft] : [];
-    });
+    const nfts = mapNfts(nftsResult.body);
     const byPositionType = overview?.positions_distribution_by_type ?? {};
     const portfolioTotal =
       optionalFiniteNumber(overview?.total?.positions) ?? 0;
     const walletTotal = optionalFiniteNumber(byPositionType.wallet);
-    const defiTotal =
-      walletTotal === undefined
-        ? sumPositions(positions)
-        : portfolioTotal - walletTotal;
-    const stakedTotal =
-      optionalFiniteNumber(byPositionType.staked) ??
-      sumPositions(positions, "staked");
+    const defiTotal = positionsUnavailable
+      ? walletTotal === undefined
+        ? 0
+        : portfolioTotal - walletTotal
+      : sumPositions(positions);
+    const stakedTotal = positionsUnavailable
+      ? optionalFiniteNumber(byPositionType.staked) ?? 0
+      : sumPositions(positions, "staked");
 
     response.setHeader("Cache-Control", "private, no-store");
     return response.status(200).json({
@@ -350,6 +451,8 @@ export default async function handler(
       nftsPending: nftsResult.pending,
       nftsUnavailable,
       hasMoreNfts: Boolean(nftsResult.body?.links?.next),
+      nextNftCursor: encodeNftCursor(nftsResult.body?.links?.next),
+      nftPageSize: NFT_PAGE_SIZE,
     });
   } catch (error) {
     console.error(

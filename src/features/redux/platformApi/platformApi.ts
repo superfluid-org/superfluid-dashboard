@@ -12,6 +12,8 @@ import {
 import {
   ZerionDefiPortfolioRequest,
   ZerionDefiPortfolioResponse,
+  ZerionNftPageRequest,
+  ZerionNftPageResponse,
 } from "../../portfolio/zerionDefiPortfolioTypes";
 
 export type IsAccountWhitelistedApiResponse =
@@ -54,6 +56,14 @@ export const platformApi = createApi({
       ZerionDefiPortfolioResponse,
       ZerionDefiPortfolioRequest
     >({
+      query: (body) => ({
+        url: "/api/portfolio-zerion-defi",
+        method: "POST",
+        body,
+      }),
+      keepUnusedDataFor: 120,
+    }),
+    zerionNftPage: build.query<ZerionNftPageResponse, ZerionNftPageRequest>({
       query: (body) => ({
         url: "/api/portfolio-zerion-defi",
         method: "POST",

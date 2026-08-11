@@ -69,6 +69,8 @@ interface TokenSnapshotTablesProps {
 interface PortfolioTotalCardProps {
   entries: PortfolioValueEntry[];
   loading: boolean;
+  zerionTotal?: number;
+  zerionLoading: boolean;
 }
 
 enum PortfolioView {
@@ -115,6 +117,8 @@ const PortfolioMissingPriceWarning: FC<{ symbols: string[] }> = ({
 const PortfolioTotalCard: FC<PortfolioTotalCardProps> = ({
   entries,
   loading,
+  zerionTotal,
+  zerionLoading,
 }) => {
   const currency = useAppCurrency();
   const sumEntries = (key: keyof PortfolioValueEntry) =>
@@ -122,7 +126,11 @@ const PortfolioTotalCard: FC<PortfolioTotalCardProps> = ({
       const value = entry[key];
       return typeof value === "string" ? total.plus(value) : total;
     }, new Decimal(0));
-  const total = sumEntries("value");
+  const calculatedWalletTotal = sumEntries("value");
+  const total =
+    zerionTotal === undefined
+      ? calculatedWalletTotal
+      : new Decimal(zerionTotal);
   const monthlyNetFlow = sumEntries("monthlyNetFlowValue");
   const monthlyInflow = sumEntries("monthlyInflowValue");
   const monthlyOutflow = sumEntries("monthlyOutflowValue");
@@ -143,7 +151,8 @@ const PortfolioTotalCard: FC<PortfolioTotalCardProps> = ({
     if (value.lt(0)) return `−${formattedAbsoluteValue}`;
     return currency.format("0.00");
   };
-  const showSkeleton = loading;
+  const showSkeleton = loading || (zerionLoading && zerionTotal === undefined);
+  const isZerionTotal = zerionTotal !== undefined;
 
   const flowMetrics = [
     {
@@ -249,11 +258,21 @@ const PortfolioTotalCard: FC<PortfolioTotalCardProps> = ({
               >
                 {formattedTotal}
               </Typography>
-              {missingPriceSymbols.length > 0 ? (
+              {!isZerionTotal && missingPriceSymbols.length > 0 ? (
                 <PortfolioMissingPriceWarning symbols={missingPriceSymbols} />
               ) : null}
             </Stack>
           )}
+          {isZerionTotal && !showSkeleton ? (
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              data-cy="portfolio-total-source"
+              sx={{ display: { xs: "none", sm: "block" } }}
+            >
+              Includes protocol positions · Data by Zerion
+            </Typography>
+          ) : null}
         </Stack>
 
         {flowMetrics.map(({ label, mobileLabel, value, color, dataCy }) => (
@@ -333,6 +352,28 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
     address,
     chainIds: activeNetworks.map(({ id }) => id),
   });
+  const zerionPortfolioQuery = platformApi.useZerionDefiPortfolioQuery({
+    address,
+  });
+
+  const zerionPortfolioTotal = useMemo(() => {
+    const byChain = zerionPortfolioQuery.currentData?.overview.byChain;
+    if (!byChain) return undefined;
+
+    const zerionChainAliases: Record<string, string> = {
+      "arbitrum-one": "arbitrum",
+      bsc: "binance-smart-chain",
+      gnosis: "xdai",
+    };
+    let matchedNetwork = false;
+    const total = activeNetworks.reduce((currentTotal, network) => {
+      const chainId = zerionChainAliases[network.slugName] ?? network.slugName;
+      if (!(chainId in byChain)) return currentTotal;
+      matchedNetwork = true;
+      return currentTotal + byChain[chainId];
+    }, 0);
+    return matchedNetwork ? total : undefined;
+  }, [activeNetworks, zerionPortfolioQuery.currentData?.overview.byChain]);
 
   const erc20BalancesByChainId = useMemo(() => {
     const balancesByChainId: Record<number, ERC20Balance[]> = {};
@@ -519,6 +560,8 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
           <PortfolioTotalCard
             entries={Object.values(portfolioValues)}
             loading={isPortfolioSummaryLoading}
+            zerionTotal={zerionPortfolioTotal}
+            zerionLoading={zerionPortfolioQuery.isLoading}
           />
 
           {!hasContent && !isLoading ? (
