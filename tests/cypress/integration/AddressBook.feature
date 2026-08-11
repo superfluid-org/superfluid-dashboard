@@ -96,7 +96,9 @@ Feature: Address Book test cases
     Given Address book test data is set up
 
     Given "Vesting Page" is open with "john" connected on "opsepolia"
-    And No loading skeletons are visible in the page
+    # Load-bearing: the assertion below snapshots the row list after a
+    # length-greater-than-1 check, so a partially populated table satisfies it.
+    And The vesting schedules table has loaded
     Then The receivers shown in the vesting page are named "Multiple networks test"
 
   Scenario: Address book name showing up in - Vesting details page
@@ -118,7 +120,6 @@ Feature: Address Book test cases
     Given Address book test data is set up
 
     Given "Dashboard Page" is open with "john" connected on "opsepolia"
-    And No loading skeletons are visible in the page
     And User clicks on "opsepolia" "fTUSDx" row
     Then "alice,dan,bob" are visible in the table as the receivers or senders of streams
     And User opens "opsepolia" "fTUSDx" individual token page

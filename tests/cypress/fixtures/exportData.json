@@ -1,90 +1,6 @@
 {
   "Yearly": [
     {
-      "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x4f228bf911ed67730e4b51b1f82ac291b49053ee-0.0-0.0",
-      "flowRate": "3858024691",
-      "startedAtTimestamp": "1671185579",
-      "startedAtBlockNumber": "16196585",
-      "stoppedAtTimestamp": null,
-      "stoppedAtBlockNumber": null,
-      "totalAmountStreamed": "0",
-      "chainId": 1,
-      "token": {
-        "id": "0x4f228bf911ed67730e4b51b1f82ac291b49053ee",
-        "symbol": "DAIx",
-        "name": "Super Dai Stablecoin",
-        "underlyingAddress": "0x6b175474e89094c44da98b954eedeac495271d0f"
-      },
-      "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
-      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "startedAtEvent": "0x2026840312d64277db37e453fcb40e7b0093a9015abc92f9de0542e572c36b1c",
-      "virtualPeriods": [
-        {
-          "startTime": 1672524000,
-          "endTime": 1672531199,
-          "amount": "27773919750509",
-          "amountFiat": "0.000027779970320188",
-          "streamedAmount": "27773919750509",
-          "streamedAmountFiat": "0.000027779970320188",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1672531200,
-          "endTime": 1675202399,
-          "amount": "10305551696574509",
-          "amountFiat": "0.010311324357936758",
-          "streamedAmount": "10305551696574509",
-          "streamedAmountFiat": "0.010311324357936758",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        }
-      ],
-      "totalAmountTransferred": "0"
-    },
-    {
-      "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x1e38baa2735128bcc23792ff9aae96ea7aa7ecd2-0.0-0.0",
-      "flowRate": "3858024691",
-      "startedAtTimestamp": "1671106984",
-      "startedAtBlockNumber": "23925296",
-      "stoppedAtTimestamp": null,
-      "stoppedAtBlockNumber": null,
-      "totalAmountStreamed": "0",
-      "chainId": 56,
-      "token": {
-        "id": "0x1e38baa2735128bcc23792ff9aae96ea7aa7ecd2",
-        "symbol": "DAIx",
-        "name": "Super Binance-Peg DAI",
-        "underlyingAddress": "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3"
-      },
-      "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
-      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "startedAtEvent": "0x439d496a7bf74e157184e7a13d1600ba7f71c4cf91d1dc012c4a1bf7758e9682",
-      "virtualPeriods": [
-        {
-          "startTime": 1672524000,
-          "endTime": 1672531199,
-          "amount": "27773919750509",
-          "amountFiat": "0.000000000000000000",
-          "streamedAmount": "27773919750509",
-          "streamedAmountFiat": "0.000000000000000000",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1672531200,
-          "endTime": 1675202399,
-          "amount": "10305551696574509",
-          "amountFiat": "0.000000000000000000",
-          "streamedAmount": "10305551696574509",
-          "streamedAmountFiat": "0.000000000000000000",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        }
-      ],
-      "totalAmountTransferred": "0"
-    },
-    {
       "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x66e454105ae553cfa87ad4dc4cdf128c841fcd73-0.0-0.0",
       "flowRate": "3858024691",
       "startedAtTimestamp": "1671024475",
@@ -226,11 +142,11 @@
           "startTime": 1674746190,
           "endTime": 1675202399,
           "amount": "-7910699404319620",
-          "amountFiat": "-0.007454975510494894",
+          "amountFiat": "-0.007451752682160722",
           "streamedAmount": "-6788824404327420",
-          "streamedAmountFiat": "-0.006397730098513823",
+          "streamedAmountFiat": "-0.006394964323387285",
           "transferredAmount": "-1121874999992200",
-          "transferredAmountFiat": "-0.001057245411981071"
+          "transferredAmountFiat": "-0.001056788358773437"
         }
       ],
       "totalAmountTransferred": "-1121874999992200"
@@ -453,6 +369,134 @@
       "totalAmountTransferred": "0"
     },
     {
+      "id": "0xeb85888b31fadf79cb264d065edcb4a14551c28d-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x7d342726b69c28d942ad8bfe6ac81b972349d524-0.0-0.0",
+      "flowRate": "7716049382",
+      "startedAtTimestamp": "1649157821",
+      "startedAtBlockNumber": "5354235",
+      "stoppedAtTimestamp": "1765572849",
+      "stoppedAtBlockNumber": "144987036",
+      "totalAmountStreamed": "898264104854912696",
+      "chainId": 10,
+      "token": {
+        "id": "0x7d342726b69c28d942ad8bfe6ac81b972349d524",
+        "symbol": "DAIx",
+        "name": "Super Dai Stablecoin",
+        "underlyingAddress": "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
+      },
+      "sender": "0xeb85888b31fadf79cb264d065edcb4a14551c28d",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0xf85a5812e3ac6af52c9da09c324e9a77eaf845da567c79f0b38ef5bb858144c7",
+      "stoppedAtEvent": "0xbe669ed90ea089a567a7fc465fdb90777d12f162b0e02222e493d7d59c5d6c58",
+      "virtualPeriods": [
+        {
+          "startTime": 1672524000,
+          "endTime": 1672531199,
+          "amount": "55547839501018",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "55547839501018",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1672531200,
+          "endTime": 1675202399,
+          "amount": "20611103393149018",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "20611103393149018",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        }
+      ],
+      "totalAmountTransferred": "0"
+    },
+    {
+      "id": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40-0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d-1.0-2.0",
+      "flowRate": "38580",
+      "startedAtTimestamp": "1666786230",
+      "startedAtBlockNumber": "31667386",
+      "stoppedAtTimestamp": "1706535303",
+      "stoppedAtBlockNumber": "115468263",
+      "totalAmountStreamed": "1533519236340",
+      "chainId": 10,
+      "token": {
+        "id": "0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d",
+        "symbol": "ETHx",
+        "name": "Super ETH",
+        "underlyingAddress": "0x0000000000000000000000000000000000000000"
+      },
+      "sender": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "receiver": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
+      "startedAtEvent": "0xf1b69275bfc6f382668b05e1b1642310c2fa95b313e72edf30e918e3946a71a0",
+      "stoppedAtEvent": "0x08fff49cad8f374edc7d5b888d7fda24a0b3a47464fc0b75de467897cdb6ecc9",
+      "virtualPeriods": [
+        {
+          "startTime": 1672524000,
+          "endTime": 1672531199,
+          "amount": "-277737420",
+          "amountFiat": "-0.000000332860529264",
+          "streamedAmount": "-277737420",
+          "streamedAmountFiat": "-0.000000332860529264",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1672531200,
+          "endTime": 1675202399,
+          "amount": "-103054857420",
+          "amountFiat": "-0.000150412246549088",
+          "streamedAmount": "-103054857420",
+          "streamedAmountFiat": "-0.000150412246549088",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        }
+      ],
+      "totalAmountTransferred": "0"
+    },
+    {
+      "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x7d342726b69c28d942ad8bfe6ac81b972349d524-0.0-0.0",
+      "flowRate": "3858024691",
+      "startedAtTimestamp": "1671019624",
+      "startedAtBlockNumber": "49488149",
+      "stoppedAtTimestamp": null,
+      "stoppedAtBlockNumber": null,
+      "totalAmountStreamed": "0",
+      "chainId": 10,
+      "token": {
+        "id": "0x7d342726b69c28d942ad8bfe6ac81b972349d524",
+        "symbol": "DAIx",
+        "name": "Super Dai Stablecoin",
+        "underlyingAddress": "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
+      },
+      "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0xc4839d1078a09bb44b976eb0a481b7537195d0eef247eb75ceaaac9c715fa211",
+      "virtualPeriods": [
+        {
+          "startTime": 1672524000,
+          "endTime": 1672531199,
+          "amount": "27773919750509",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "27773919750509",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1672531200,
+          "endTime": 1675202399,
+          "amount": "10305551696574509",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "10305551696574509",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        }
+      ],
+      "totalAmountTransferred": "0"
+    },
+    {
       "id": "0xeb85888b31fadf79cb264d065edcb4a14551c28d-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0xe6c8d111337d0052b9d88bf5d7d55b7f8385acd3-0.0-0.0",
       "flowRate": "38580246",
       "startedAtTimestamp": "1649160780",
@@ -486,9 +530,9 @@
           "startTime": 1672531200,
           "endTime": 1675202399,
           "amount": "103055514534954",
-          "amountFiat": "0.150446641067884968",
+          "amountFiat": "0.150413205631842495",
           "streamedAmount": "103055514534954",
-          "streamedAmountFiat": "0.150446641067884968",
+          "streamedAmountFiat": "0.150413205631842495",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         }
@@ -536,350 +580,6 @@
         }
       ],
       "totalAmountTransferred": "0"
-    }
-  ],
-  "Daily": [
-    {
-      "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x4f228bf911ed67730e4b51b1f82ac291b49053ee-0.0-0.0",
-      "flowRate": "3858024691",
-      "startedAtTimestamp": "1671185579",
-      "startedAtBlockNumber": "16196585",
-      "stoppedAtTimestamp": null,
-      "stoppedAtBlockNumber": null,
-      "totalAmountStreamed": "0",
-      "chainId": 1,
-      "token": {
-        "id": "0x4f228bf911ed67730e4b51b1f82ac291b49053ee",
-        "symbol": "DAIx",
-        "name": "Super Dai Stablecoin",
-        "underlyingAddress": "0x6b175474e89094c44da98b954eedeac495271d0f"
-      },
-      "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
-      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "startedAtEvent": "0x2026840312d64277db37e453fcb40e7b0093a9015abc92f9de0542e572c36b1c",
-      "virtualPeriods": [
-        {
-          "startTime": 1672524000,
-          "endTime": 1672531199,
-          "amount": "27773919750509",
-          "amountFiat": "0.000027779970320188",
-          "streamedAmount": "27773919750509",
-          "streamedAmountFiat": "0.000027779970320188",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1672531200,
-          "endTime": 1672617599,
-          "amount": "333329475277709",
-          "amountFiat": "0.000333532680291246",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000333532680291246",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1672617600,
-          "endTime": 1672703999,
-          "amount": "333329475277709",
-          "amountFiat": "0.000333411301813118",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000333411301813118",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1672704000,
-          "endTime": 1672790399,
-          "amount": "333329475277709",
-          "amountFiat": "0.000333397066715562",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000333397066715562",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1672790400,
-          "endTime": 1672876799,
-          "amount": "333329475277709",
-          "amountFiat": "0.000333472511038398",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000333472511038398",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1672876800,
-          "endTime": 1672963199,
-          "amount": "333329475277709",
-          "amountFiat": "0.000333397394144206",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000333397394144206",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1672963200,
-          "endTime": 1673049599,
-          "amount": "333329475277709",
-          "amountFiat": "0.000333371925294711",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000333371925294711",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1673049600,
-          "endTime": 1673135999,
-          "amount": "333329475277709",
-          "amountFiat": "0.000333495530759833",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000333495530759833",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1673136000,
-          "endTime": 1673222399,
-          "amount": "333329475277709",
-          "amountFiat": "0.000333530341161743",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000333530341161743",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1673222400,
-          "endTime": 1673308799,
-          "amount": "333329475277709",
-          "amountFiat": "0.000333534249470791",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000333534249470791",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1673308800,
-          "endTime": 1673395199,
-          "amount": "333329475277709",
-          "amountFiat": "0.000333605288957102",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000333605288957102",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1673395200,
-          "endTime": 1673481599,
-          "amount": "333329475277709",
-          "amountFiat": "0.000333433036244353",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000333433036244353",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1673481600,
-          "endTime": 1673567999,
-          "amount": "333329475277709",
-          "amountFiat": "0.000333417296714005",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000333417296714005",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1673568000,
-          "endTime": 1673654399,
-          "amount": "333329475277709",
-          "amountFiat": "0.000333422650666055",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000333422650666055",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1673654400,
-          "endTime": 1673740799,
-          "amount": "333329475277709",
-          "amountFiat": "0.000333313505773499",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000333313505773499",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1673740800,
-          "endTime": 1673827199,
-          "amount": "333329475277709",
-          "amountFiat": "0.000333450263796138",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000333450263796138",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1673827200,
-          "endTime": 1673913599,
-          "amount": "333329475277709",
-          "amountFiat": "0.000333513344216722",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000333513344216722",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1673913600,
-          "endTime": 1673999999,
-          "amount": "333329475277709",
-          "amountFiat": "0.000333347179001199",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000333347179001199",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1674000000,
-          "endTime": 1674086399,
-          "amount": "333329475277709",
-          "amountFiat": "0.000334670534357040",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000334670534357040",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1674086400,
-          "endTime": 1674172799,
-          "amount": "333329475277709",
-          "amountFiat": "0.000333638791187770",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000333638791187770",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1674172800,
-          "endTime": 1674259199,
-          "amount": "333329475277709",
-          "amountFiat": "0.000334229791099642",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000334229791099642",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1674259200,
-          "endTime": 1674345599,
-          "amount": "333329475277709",
-          "amountFiat": "0.000333455584648652",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000333455584648652",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1674345600,
-          "endTime": 1674431999,
-          "amount": "333329475277709",
-          "amountFiat": "0.000333508644569412",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000333508644569412",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1674432000,
-          "endTime": 1674518399,
-          "amount": "333329475277709",
-          "amountFiat": "0.000333502857472903",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000333502857472903",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1674518400,
-          "endTime": 1674604799,
-          "amount": "333329475277709",
-          "amountFiat": "0.000333573778352409",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000333573778352409",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1674604800,
-          "endTime": 1674691199,
-          "amount": "333329475277709",
-          "amountFiat": "0.000333340107712892",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000333340107712892",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1674691200,
-          "endTime": 1674777599,
-          "amount": "333329475277709",
-          "amountFiat": "0.000333522985168748",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000333522985168748",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1674777600,
-          "endTime": 1674863999,
-          "amount": "333329475277709",
-          "amountFiat": "0.000333324489977362",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000333324489977362",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1674864000,
-          "endTime": 1674950399,
-          "amount": "333329475277709",
-          "amountFiat": "0.000333331596728240",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000333331596728240",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1674950400,
-          "endTime": 1675036799,
-          "amount": "333329475277709",
-          "amountFiat": "0.000333392133912842",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000333392133912842",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1675036800,
-          "endTime": 1675123199,
-          "amount": "333329475277709",
-          "amountFiat": "0.000333458309582902",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000333458309582902",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1675123200,
-          "endTime": 1675202399,
-          "amount": "305551697502509",
-          "amountFiat": "0.000305617613285477",
-          "streamedAmount": "305551697502509",
-          "streamedAmountFiat": "0.000305617613285477",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        }
-      ],
-      "totalAmountTransferred": "0"
     },
     {
       "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x1e38baa2735128bcc23792ff9aae96ea7aa7ecd2-0.0-0.0",
@@ -912,310 +612,10 @@
         },
         {
           "startTime": 1672531200,
-          "endTime": 1672617599,
-          "amount": "333329475277709",
-          "amountFiat": "0.000000000000000000",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000000000000000000",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1672617600,
-          "endTime": 1672703999,
-          "amount": "333329475277709",
-          "amountFiat": "0.000000000000000000",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000000000000000000",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1672704000,
-          "endTime": 1672790399,
-          "amount": "333329475277709",
-          "amountFiat": "0.000000000000000000",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000000000000000000",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1672790400,
-          "endTime": 1672876799,
-          "amount": "333329475277709",
-          "amountFiat": "0.000000000000000000",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000000000000000000",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1672876800,
-          "endTime": 1672963199,
-          "amount": "333329475277709",
-          "amountFiat": "0.000000000000000000",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000000000000000000",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1672963200,
-          "endTime": 1673049599,
-          "amount": "333329475277709",
-          "amountFiat": "0.000000000000000000",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000000000000000000",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1673049600,
-          "endTime": 1673135999,
-          "amount": "333329475277709",
-          "amountFiat": "0.000000000000000000",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000000000000000000",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1673136000,
-          "endTime": 1673222399,
-          "amount": "333329475277709",
-          "amountFiat": "0.000000000000000000",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000000000000000000",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1673222400,
-          "endTime": 1673308799,
-          "amount": "333329475277709",
-          "amountFiat": "0.000000000000000000",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000000000000000000",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1673308800,
-          "endTime": 1673395199,
-          "amount": "333329475277709",
-          "amountFiat": "0.000000000000000000",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000000000000000000",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1673395200,
-          "endTime": 1673481599,
-          "amount": "333329475277709",
-          "amountFiat": "0.000000000000000000",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000000000000000000",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1673481600,
-          "endTime": 1673567999,
-          "amount": "333329475277709",
-          "amountFiat": "0.000000000000000000",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000000000000000000",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1673568000,
-          "endTime": 1673654399,
-          "amount": "333329475277709",
-          "amountFiat": "0.000000000000000000",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000000000000000000",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1673654400,
-          "endTime": 1673740799,
-          "amount": "333329475277709",
-          "amountFiat": "0.000000000000000000",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000000000000000000",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1673740800,
-          "endTime": 1673827199,
-          "amount": "333329475277709",
-          "amountFiat": "0.000000000000000000",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000000000000000000",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1673827200,
-          "endTime": 1673913599,
-          "amount": "333329475277709",
-          "amountFiat": "0.000000000000000000",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000000000000000000",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1673913600,
-          "endTime": 1673999999,
-          "amount": "333329475277709",
-          "amountFiat": "0.000000000000000000",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000000000000000000",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1674000000,
-          "endTime": 1674086399,
-          "amount": "333329475277709",
-          "amountFiat": "0.000000000000000000",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000000000000000000",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1674086400,
-          "endTime": 1674172799,
-          "amount": "333329475277709",
-          "amountFiat": "0.000000000000000000",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000000000000000000",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1674172800,
-          "endTime": 1674259199,
-          "amount": "333329475277709",
-          "amountFiat": "0.000000000000000000",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000000000000000000",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1674259200,
-          "endTime": 1674345599,
-          "amount": "333329475277709",
-          "amountFiat": "0.000000000000000000",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000000000000000000",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1674345600,
-          "endTime": 1674431999,
-          "amount": "333329475277709",
-          "amountFiat": "0.000000000000000000",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000000000000000000",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1674432000,
-          "endTime": 1674518399,
-          "amount": "333329475277709",
-          "amountFiat": "0.000000000000000000",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000000000000000000",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1674518400,
-          "endTime": 1674604799,
-          "amount": "333329475277709",
-          "amountFiat": "0.000000000000000000",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000000000000000000",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1674604800,
-          "endTime": 1674691199,
-          "amount": "333329475277709",
-          "amountFiat": "0.000000000000000000",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000000000000000000",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1674691200,
-          "endTime": 1674777599,
-          "amount": "333329475277709",
-          "amountFiat": "0.000000000000000000",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000000000000000000",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1674777600,
-          "endTime": 1674863999,
-          "amount": "333329475277709",
-          "amountFiat": "0.000000000000000000",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000000000000000000",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1674864000,
-          "endTime": 1674950399,
-          "amount": "333329475277709",
-          "amountFiat": "0.000000000000000000",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000000000000000000",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1674950400,
-          "endTime": 1675036799,
-          "amount": "333329475277709",
-          "amountFiat": "0.000000000000000000",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000000000000000000",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1675036800,
-          "endTime": 1675123199,
-          "amount": "333329475277709",
-          "amountFiat": "0.000000000000000000",
-          "streamedAmount": "333329475277709",
-          "streamedAmountFiat": "0.000000000000000000",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1675123200,
           "endTime": 1675202399,
-          "amount": "305551697502509",
+          "amount": "10305551696574509",
           "amountFiat": "0.000000000000000000",
-          "streamedAmount": "305551697502509",
+          "streamedAmount": "10305551696574509",
           "streamedAmountFiat": "0.000000000000000000",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
@@ -1223,6 +623,50 @@
       ],
       "totalAmountTransferred": "0"
     },
+    {
+      "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x4f228bf911ed67730e4b51b1f82ac291b49053ee-0.0-0.0",
+      "flowRate": "3858024691",
+      "startedAtTimestamp": "1671185579",
+      "startedAtBlockNumber": "16196585",
+      "stoppedAtTimestamp": null,
+      "stoppedAtBlockNumber": null,
+      "totalAmountStreamed": "0",
+      "chainId": 1,
+      "token": {
+        "id": "0x4f228bf911ed67730e4b51b1f82ac291b49053ee",
+        "symbol": "DAIx",
+        "name": "Super Dai Stablecoin",
+        "underlyingAddress": "0x6b175474e89094c44da98b954eedeac495271d0f"
+      },
+      "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0x2026840312d64277db37e453fcb40e7b0093a9015abc92f9de0542e572c36b1c",
+      "virtualPeriods": [
+        {
+          "startTime": 1672524000,
+          "endTime": 1672531199,
+          "amount": "27773919750509",
+          "amountFiat": "0.000027815236781464",
+          "streamedAmount": "27773919750509",
+          "streamedAmountFiat": "0.000027815236781464",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1672531200,
+          "endTime": 1675202399,
+          "amount": "10305551696574509",
+          "amountFiat": "0.010312017941911621",
+          "streamedAmount": "10305551696574509",
+          "streamedAmountFiat": "0.010312017941911621",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        }
+      ],
+      "totalAmountTransferred": "0"
+    }
+  ],
+  "Daily": [
     {
       "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x66e454105ae553cfa87ad4dc4cdf128c841fcd73-0.0-0.0",
       "flowRate": "3858024691",
@@ -2015,19 +1459,19 @@
           "startTime": 1674746190,
           "endTime": 1674777599,
           "amount": "-1589270833295620",
-          "amountFiat": "-0.001643268336572861",
+          "amountFiat": "-0.001645188931098809",
           "streamedAmount": "-467395833303420",
-          "streamedAmountFiat": "-0.000483276202785967",
+          "streamedAmountFiat": "-0.000483841039099632",
           "transferredAmount": "-1121874999992200",
-          "transferredAmountFiat": "-0.001159992133786894"
+          "transferredAmountFiat": "-0.001161347891999177"
         },
         {
           "startTime": 1674777600,
           "endTime": 1674863999,
           "amount": "-1285699404679620",
-          "amountFiat": "-0.001436228776429112",
+          "amountFiat": "-0.001436478930425295",
           "streamedAmount": "-1285699404679620",
-          "streamedAmountFiat": "-0.001436228776429112",
+          "streamedAmountFiat": "-0.001436478930425295",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
@@ -2035,9 +1479,9 @@
           "startTime": 1674864000,
           "endTime": 1674950399,
           "amount": "-1285699404679620",
-          "amountFiat": "-0.001463231609403426",
+          "amountFiat": "-0.001462862586977418",
           "streamedAmount": "-1285699404679620",
-          "streamedAmountFiat": "-0.001463231609403426",
+          "streamedAmountFiat": "-0.001462862586977418",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
@@ -2045,9 +1489,9 @@
           "startTime": 1674950400,
           "endTime": 1675036799,
           "amount": "-1285699404679620",
-          "amountFiat": "-0.001496685416762671",
+          "amountFiat": "-0.001496682499316290",
           "streamedAmount": "-1285699404679620",
-          "streamedAmountFiat": "-0.001496685416762671",
+          "streamedAmountFiat": "-0.001496682499316290",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
@@ -2055,9 +1499,9 @@
           "startTime": 1675036800,
           "endTime": 1675123199,
           "amount": "-1285699404679620",
-          "amountFiat": "-0.001453414376924398",
+          "amountFiat": "-0.001450909615590122",
           "streamedAmount": "-1285699404679620",
-          "streamedAmountFiat": "-0.001453414376924398",
+          "streamedAmountFiat": "-0.001450909615590122",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
@@ -2065,9 +1509,9 @@
           "startTime": 1675123200,
           "endTime": 1675202399,
           "amount": "-1178556547543620",
-          "amountFiat": "-0.001294210575989247",
+          "amountFiat": "-0.001294492212309706",
           "streamedAmount": "-1178556547543620",
-          "streamedAmountFiat": "-0.001294210575989247",
+          "streamedAmountFiat": "-0.001294492212309706",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         }
@@ -3102,6 +2546,1034 @@
       "totalAmountTransferred": "0"
     },
     {
+      "id": "0xeb85888b31fadf79cb264d065edcb4a14551c28d-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x7d342726b69c28d942ad8bfe6ac81b972349d524-0.0-0.0",
+      "flowRate": "7716049382",
+      "startedAtTimestamp": "1649157821",
+      "startedAtBlockNumber": "5354235",
+      "stoppedAtTimestamp": "1765572849",
+      "stoppedAtBlockNumber": "144987036",
+      "totalAmountStreamed": "898264104854912696",
+      "chainId": 10,
+      "token": {
+        "id": "0x7d342726b69c28d942ad8bfe6ac81b972349d524",
+        "symbol": "DAIx",
+        "name": "Super Dai Stablecoin",
+        "underlyingAddress": "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
+      },
+      "sender": "0xeb85888b31fadf79cb264d065edcb4a14551c28d",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0xf85a5812e3ac6af52c9da09c324e9a77eaf845da567c79f0b38ef5bb858144c7",
+      "stoppedAtEvent": "0xbe669ed90ea089a567a7fc465fdb90777d12f162b0e02222e493d7d59c5d6c58",
+      "virtualPeriods": [
+        {
+          "startTime": 1672524000,
+          "endTime": 1672531199,
+          "amount": "55547839501018",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "55547839501018",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1672531200,
+          "endTime": 1672617599,
+          "amount": "666658950555418",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "666658950555418",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1672617600,
+          "endTime": 1672703999,
+          "amount": "666658950555418",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "666658950555418",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1672704000,
+          "endTime": 1672790399,
+          "amount": "666658950555418",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "666658950555418",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1672790400,
+          "endTime": 1672876799,
+          "amount": "666658950555418",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "666658950555418",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1672876800,
+          "endTime": 1672963199,
+          "amount": "666658950555418",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "666658950555418",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1672963200,
+          "endTime": 1673049599,
+          "amount": "666658950555418",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "666658950555418",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673049600,
+          "endTime": 1673135999,
+          "amount": "666658950555418",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "666658950555418",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673136000,
+          "endTime": 1673222399,
+          "amount": "666658950555418",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "666658950555418",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673222400,
+          "endTime": 1673308799,
+          "amount": "666658950555418",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "666658950555418",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673308800,
+          "endTime": 1673395199,
+          "amount": "666658950555418",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "666658950555418",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673395200,
+          "endTime": 1673481599,
+          "amount": "666658950555418",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "666658950555418",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673481600,
+          "endTime": 1673567999,
+          "amount": "666658950555418",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "666658950555418",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673568000,
+          "endTime": 1673654399,
+          "amount": "666658950555418",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "666658950555418",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673654400,
+          "endTime": 1673740799,
+          "amount": "666658950555418",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "666658950555418",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673740800,
+          "endTime": 1673827199,
+          "amount": "666658950555418",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "666658950555418",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673827200,
+          "endTime": 1673913599,
+          "amount": "666658950555418",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "666658950555418",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673913600,
+          "endTime": 1673999999,
+          "amount": "666658950555418",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "666658950555418",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674000000,
+          "endTime": 1674086399,
+          "amount": "666658950555418",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "666658950555418",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674086400,
+          "endTime": 1674172799,
+          "amount": "666658950555418",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "666658950555418",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674172800,
+          "endTime": 1674259199,
+          "amount": "666658950555418",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "666658950555418",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674259200,
+          "endTime": 1674345599,
+          "amount": "666658950555418",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "666658950555418",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674345600,
+          "endTime": 1674431999,
+          "amount": "666658950555418",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "666658950555418",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674432000,
+          "endTime": 1674518399,
+          "amount": "666658950555418",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "666658950555418",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674518400,
+          "endTime": 1674604799,
+          "amount": "666658950555418",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "666658950555418",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674604800,
+          "endTime": 1674691199,
+          "amount": "666658950555418",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "666658950555418",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674691200,
+          "endTime": 1674777599,
+          "amount": "666658950555418",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "666658950555418",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674777600,
+          "endTime": 1674863999,
+          "amount": "666658950555418",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "666658950555418",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674864000,
+          "endTime": 1674950399,
+          "amount": "666658950555418",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "666658950555418",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674950400,
+          "endTime": 1675036799,
+          "amount": "666658950555418",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "666658950555418",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1675036800,
+          "endTime": 1675123199,
+          "amount": "666658950555418",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "666658950555418",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1675123200,
+          "endTime": 1675202399,
+          "amount": "611103395005018",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "611103395005018",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        }
+      ],
+      "totalAmountTransferred": "0"
+    },
+    {
+      "id": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40-0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d-1.0-2.0",
+      "flowRate": "38580",
+      "startedAtTimestamp": "1666786230",
+      "startedAtBlockNumber": "31667386",
+      "stoppedAtTimestamp": "1706535303",
+      "stoppedAtBlockNumber": "115468263",
+      "totalAmountStreamed": "1533519236340",
+      "chainId": 10,
+      "token": {
+        "id": "0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d",
+        "symbol": "ETHx",
+        "name": "Super ETH",
+        "underlyingAddress": "0x0000000000000000000000000000000000000000"
+      },
+      "sender": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "receiver": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
+      "startedAtEvent": "0xf1b69275bfc6f382668b05e1b1642310c2fa95b313e72edf30e918e3946a71a0",
+      "stoppedAtEvent": "0x08fff49cad8f374edc7d5b888d7fda24a0b3a47464fc0b75de467897cdb6ecc9",
+      "virtualPeriods": [
+        {
+          "startTime": 1672524000,
+          "endTime": 1672531199,
+          "amount": "-277737420",
+          "amountFiat": "-0.000000332860529264",
+          "streamedAmount": "-277737420",
+          "streamedAmountFiat": "-0.000000332860529264",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1672531200,
+          "endTime": 1672617599,
+          "amount": "-3333273420",
+          "amountFiat": "-0.000003990674721642",
+          "streamedAmount": "-3333273420",
+          "streamedAmountFiat": "-0.000003990674721642",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1672617600,
+          "endTime": 1672703999,
+          "amount": "-3333273420",
+          "amountFiat": "-0.000004036637490580",
+          "streamedAmount": "-3333273420",
+          "streamedAmountFiat": "-0.000004036637490580",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1672704000,
+          "endTime": 1672790399,
+          "amount": "-3333273420",
+          "amountFiat": "-0.000004045564742427",
+          "streamedAmount": "-3333273420",
+          "streamedAmountFiat": "-0.000004045564742427",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1672790400,
+          "endTime": 1672876799,
+          "amount": "-3333273420",
+          "amountFiat": "-0.000004158237516831",
+          "streamedAmount": "-3333273420",
+          "streamedAmountFiat": "-0.000004158237516831",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1672876800,
+          "endTime": 1672963199,
+          "amount": "-3333273420",
+          "amountFiat": "-0.000004172534432718",
+          "streamedAmount": "-3333273420",
+          "streamedAmountFiat": "-0.000004172534432718",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1672963200,
+          "endTime": 1673049599,
+          "amount": "-3333273420",
+          "amountFiat": "-0.000004184148536836",
+          "streamedAmount": "-3333273420",
+          "streamedAmountFiat": "-0.000004184148536836",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673049600,
+          "endTime": 1673135999,
+          "amount": "-3333273420",
+          "amountFiat": "-0.000004218275086577",
+          "streamedAmount": "-3333273420",
+          "streamedAmountFiat": "-0.000004218275086577",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673136000,
+          "endTime": 1673222399,
+          "amount": "-3333273420",
+          "amountFiat": "-0.000004216926900552",
+          "streamedAmount": "-3333273420",
+          "streamedAmountFiat": "-0.000004216926900552",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673222400,
+          "endTime": 1673308799,
+          "amount": "-3333273420",
+          "amountFiat": "-0.000004391177372628",
+          "streamedAmount": "-3333273420",
+          "streamedAmountFiat": "-0.000004391177372628",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673308800,
+          "endTime": 1673395199,
+          "amount": "-3333273420",
+          "amountFiat": "-0.000004433753934275",
+          "streamedAmount": "-3333273420",
+          "streamedAmountFiat": "-0.000004433753934275",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673395200,
+          "endTime": 1673481599,
+          "amount": "-3333273420",
+          "amountFiat": "-0.000004449982749927",
+          "streamedAmount": "-3333273420",
+          "streamedAmountFiat": "-0.000004449982749927",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673481600,
+          "endTime": 1673567999,
+          "amount": "-3333273420",
+          "amountFiat": "-0.000004684116389302",
+          "streamedAmount": "-3333273420",
+          "streamedAmountFiat": "-0.000004684116389302",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673568000,
+          "endTime": 1673654399,
+          "amount": "-3333273420",
+          "amountFiat": "-0.000004721524544986",
+          "streamedAmount": "-3333273420",
+          "streamedAmountFiat": "-0.000004721524544986",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673654400,
+          "endTime": 1673740799,
+          "amount": "-3333273420",
+          "amountFiat": "-0.000005121034224231",
+          "streamedAmount": "-3333273420",
+          "streamedAmountFiat": "-0.000005121034224231",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673740800,
+          "endTime": 1673827199,
+          "amount": "-3333273420",
+          "amountFiat": "-0.000005125925659055",
+          "streamedAmount": "-3333273420",
+          "streamedAmountFiat": "-0.000005125925659055",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673827200,
+          "endTime": 1673913599,
+          "amount": "-3333273420",
+          "amountFiat": "-0.000005208400955255",
+          "streamedAmount": "-3333273420",
+          "streamedAmountFiat": "-0.000005208400955255",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673913600,
+          "endTime": 1673999999,
+          "amount": "-3333273420",
+          "amountFiat": "-0.000005237495329961",
+          "streamedAmount": "-3333273420",
+          "streamedAmountFiat": "-0.000005237495329961",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674000000,
+          "endTime": 1674086399,
+          "amount": "-3333273420",
+          "amountFiat": "-0.000005223250061459",
+          "streamedAmount": "-3333273420",
+          "streamedAmountFiat": "-0.000005223250061459",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674086400,
+          "endTime": 1674172799,
+          "amount": "-3333273420",
+          "amountFiat": "-0.000005104539510602",
+          "streamedAmount": "-3333273420",
+          "streamedAmountFiat": "-0.000005104539510602",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674172800,
+          "endTime": 1674259199,
+          "amount": "-3333273420",
+          "amountFiat": "-0.000005235122659084",
+          "streamedAmount": "-3333273420",
+          "streamedAmountFiat": "-0.000005235122659084",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674259200,
+          "endTime": 1674345599,
+          "amount": "-3333273420",
+          "amountFiat": "-0.000005513199372807",
+          "streamedAmount": "-3333273420",
+          "streamedAmountFiat": "-0.000005513199372807",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674345600,
+          "endTime": 1674431999,
+          "amount": "-3333273420",
+          "amountFiat": "-0.000005435469830824",
+          "streamedAmount": "-3333273420",
+          "streamedAmountFiat": "-0.000005435469830824",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674432000,
+          "endTime": 1674518399,
+          "amount": "-3333273420",
+          "amountFiat": "-0.000005440616072803",
+          "streamedAmount": "-3333273420",
+          "streamedAmountFiat": "-0.000005440616072803",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674518400,
+          "endTime": 1674604799,
+          "amount": "-3333273420",
+          "amountFiat": "-0.000005413348406504",
+          "streamedAmount": "-3333273420",
+          "streamedAmountFiat": "-0.000005413348406504",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674604800,
+          "endTime": 1674691199,
+          "amount": "-3333273420",
+          "amountFiat": "-0.000005184107765523",
+          "streamedAmount": "-3333273420",
+          "streamedAmountFiat": "-0.000005184107765523",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674691200,
+          "endTime": 1674777599,
+          "amount": "-3333273420",
+          "amountFiat": "-0.000005362182403699",
+          "streamedAmount": "-3333273420",
+          "streamedAmountFiat": "-0.000005362182403699",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674777600,
+          "endTime": 1674863999,
+          "amount": "-3333273420",
+          "amountFiat": "-0.000005284052413210",
+          "streamedAmount": "-3333273420",
+          "streamedAmountFiat": "-0.000005284052413210",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674864000,
+          "endTime": 1674950399,
+          "amount": "-3333273420",
+          "amountFiat": "-0.000005286809370658",
+          "streamedAmount": "-3333273420",
+          "streamedAmountFiat": "-0.000005286809370658",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674950400,
+          "endTime": 1675036799,
+          "amount": "-3333273420",
+          "amountFiat": "-0.000005369603084231",
+          "streamedAmount": "-3333273420",
+          "streamedAmountFiat": "-0.000005369603084231",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1675036800,
+          "endTime": 1675123199,
+          "amount": "-3333273420",
+          "amountFiat": "-0.000005336524043399",
+          "streamedAmount": "-3333273420",
+          "streamedAmountFiat": "-0.000005336524043399",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1675123200,
+          "endTime": 1675202399,
+          "amount": "-3055497420",
+          "amountFiat": "-0.000004825321315046",
+          "streamedAmount": "-3055497420",
+          "streamedAmountFiat": "-0.000004825321315046",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        }
+      ],
+      "totalAmountTransferred": "0"
+    },
+    {
+      "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x7d342726b69c28d942ad8bfe6ac81b972349d524-0.0-0.0",
+      "flowRate": "3858024691",
+      "startedAtTimestamp": "1671019624",
+      "startedAtBlockNumber": "49488149",
+      "stoppedAtTimestamp": null,
+      "stoppedAtBlockNumber": null,
+      "totalAmountStreamed": "0",
+      "chainId": 10,
+      "token": {
+        "id": "0x7d342726b69c28d942ad8bfe6ac81b972349d524",
+        "symbol": "DAIx",
+        "name": "Super Dai Stablecoin",
+        "underlyingAddress": "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
+      },
+      "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0xc4839d1078a09bb44b976eb0a481b7537195d0eef247eb75ceaaac9c715fa211",
+      "virtualPeriods": [
+        {
+          "startTime": 1672524000,
+          "endTime": 1672531199,
+          "amount": "27773919750509",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "27773919750509",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1672531200,
+          "endTime": 1672617599,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1672617600,
+          "endTime": 1672703999,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1672704000,
+          "endTime": 1672790399,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1672790400,
+          "endTime": 1672876799,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1672876800,
+          "endTime": 1672963199,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1672963200,
+          "endTime": 1673049599,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673049600,
+          "endTime": 1673135999,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673136000,
+          "endTime": 1673222399,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673222400,
+          "endTime": 1673308799,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673308800,
+          "endTime": 1673395199,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673395200,
+          "endTime": 1673481599,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673481600,
+          "endTime": 1673567999,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673568000,
+          "endTime": 1673654399,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673654400,
+          "endTime": 1673740799,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673740800,
+          "endTime": 1673827199,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673827200,
+          "endTime": 1673913599,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673913600,
+          "endTime": 1673999999,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674000000,
+          "endTime": 1674086399,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674086400,
+          "endTime": 1674172799,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674172800,
+          "endTime": 1674259199,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674259200,
+          "endTime": 1674345599,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674345600,
+          "endTime": 1674431999,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674432000,
+          "endTime": 1674518399,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674518400,
+          "endTime": 1674604799,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674604800,
+          "endTime": 1674691199,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674691200,
+          "endTime": 1674777599,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674777600,
+          "endTime": 1674863999,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674864000,
+          "endTime": 1674950399,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674950400,
+          "endTime": 1675036799,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1675036800,
+          "endTime": 1675123199,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1675123200,
+          "endTime": 1675202399,
+          "amount": "305551697502509",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "305551697502509",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        }
+      ],
+      "totalAmountTransferred": "0"
+    },
+    {
       "id": "0xeb85888b31fadf79cb264d065edcb4a14551c28d-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0xe6c8d111337d0052b9d88bf5d7d55b7f8385acd3-0.0-0.0",
       "flowRate": "38580246",
       "startedAtTimestamp": "1649160780",
@@ -3135,9 +3607,9 @@
           "startTime": 1672531200,
           "endTime": 1672617599,
           "amount": "3333294674154",
-          "amountFiat": "0.003990671901674989",
+          "amountFiat": "0.003990700167623557",
           "streamedAmount": "3333294674154",
-          "streamedAmountFiat": "0.003990671901674989",
+          "streamedAmountFiat": "0.003990700167623557",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
@@ -3145,9 +3617,9 @@
           "startTime": 1672617600,
           "endTime": 1672703999,
           "amount": "3333294674154",
-          "amountFiat": "0.004037179573308911",
+          "amountFiat": "0.004036663229636608",
           "streamedAmount": "3333294674154",
-          "streamedAmountFiat": "0.004037179573308911",
+          "streamedAmountFiat": "0.004036663229636608",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
@@ -3155,9 +3627,9 @@
           "startTime": 1672704000,
           "endTime": 1672790399,
           "amount": "3333294674154",
-          "amountFiat": "0.004045570620523008",
+          "amountFiat": "0.004045590538407545",
           "streamedAmount": "3333294674154",
-          "streamedAmountFiat": "0.004045570620523008",
+          "streamedAmountFiat": "0.004045590538407545",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
@@ -3165,9 +3637,9 @@
           "startTime": 1672790400,
           "endTime": 1672876799,
           "amount": "3333294674154",
-          "amountFiat": "0.004158461529934227",
+          "amountFiat": "0.004158264031254146",
           "streamedAmount": "3333294674154",
-          "streamedAmountFiat": "0.004158461529934227",
+          "streamedAmountFiat": "0.004158264031254146",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
@@ -3175,9 +3647,9 @@
           "startTime": 1672876800,
           "endTime": 1672963199,
           "amount": "3333294674154",
-          "amountFiat": "0.004172419399911343",
+          "amountFiat": "0.004172561038303195",
           "streamedAmount": "3333294674154",
-          "streamedAmountFiat": "0.004172419399911343",
+          "streamedAmountFiat": "0.004172561038303195",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
@@ -3185,9 +3657,9 @@
           "startTime": 1672963200,
           "endTime": 1673049599,
           "amount": "3333294674154",
-          "amountFiat": "0.004183891081783273",
+          "amountFiat": "0.004184175216477223",
           "streamedAmount": "3333294674154",
-          "streamedAmountFiat": "0.004183891081783273",
+          "streamedAmountFiat": "0.004184175216477223",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
@@ -3195,9 +3667,9 @@
           "startTime": 1673049600,
           "endTime": 1673135999,
           "amount": "3333294674154",
-          "amountFiat": "0.004218572009348804",
+          "amountFiat": "0.004218301983820783",
           "streamedAmount": "3333294674154",
-          "streamedAmountFiat": "0.004218572009348804",
+          "streamedAmountFiat": "0.004218301983820783",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
@@ -3205,9 +3677,9 @@
           "startTime": 1673136000,
           "endTime": 1673222399,
           "amount": "3333294674154",
-          "amountFiat": "0.004216871062572580",
+          "amountFiat": "0.004216953789199113",
           "streamedAmount": "3333294674154",
-          "streamedAmountFiat": "0.004216871062572580",
+          "streamedAmountFiat": "0.004216953789199113",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
@@ -3215,9 +3687,9 @@
           "startTime": 1673222400,
           "endTime": 1673308799,
           "amount": "3333294674154",
-          "amountFiat": "0.004390976066737855",
+          "amountFiat": "0.004391205372359068",
           "streamedAmount": "3333294674154",
-          "streamedAmountFiat": "0.004390976066737855",
+          "streamedAmountFiat": "0.004391205372359068",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
@@ -3225,9 +3697,9 @@
           "startTime": 1673308800,
           "endTime": 1673395199,
           "amount": "3333294674154",
-          "amountFiat": "0.004434978668579197",
+          "amountFiat": "0.004433782205489952",
           "streamedAmount": "3333294674154",
-          "streamedAmountFiat": "0.004434978668579197",
+          "streamedAmountFiat": "0.004433782205489952",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
@@ -3235,9 +3707,9 @@
           "startTime": 1673395200,
           "endTime": 1673481599,
           "amount": "3333294674154",
-          "amountFiat": "0.004450620237669194",
+          "amountFiat": "0.004450011124623100",
           "streamedAmount": "3333294674154",
-          "streamedAmountFiat": "0.004450620237669194",
+          "streamedAmountFiat": "0.004450011124623100",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
@@ -3245,9 +3717,9 @@
           "startTime": 1673481600,
           "endTime": 1673567999,
           "amount": "3333294674154",
-          "amountFiat": "0.004682762449524617",
+          "amountFiat": "0.004684146256918168",
           "streamedAmount": "3333294674154",
-          "streamedAmountFiat": "0.004682762449524617",
+          "streamedAmountFiat": "0.004684146256918168",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
@@ -3255,9 +3727,9 @@
           "startTime": 1673568000,
           "endTime": 1673654399,
           "amount": "3333294674154",
-          "amountFiat": "0.004721555817888525",
+          "amountFiat": "0.004721554651129801",
           "streamedAmount": "3333294674154",
-          "streamedAmountFiat": "0.004721555817888525",
+          "streamedAmountFiat": "0.004721554651129801",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
@@ -3265,9 +3737,9 @@
           "startTime": 1673654400,
           "endTime": 1673740799,
           "amount": "3333294674154",
-          "amountFiat": "0.005120348491577302",
+          "amountFiat": "0.005121066877792504",
           "streamedAmount": "3333294674154",
-          "streamedAmountFiat": "0.005120348491577302",
+          "streamedAmountFiat": "0.005121066877792504",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
@@ -3275,9 +3747,9 @@
           "startTime": 1673740800,
           "endTime": 1673827199,
           "amount": "3333294674154",
-          "amountFiat": "0.005124910623629804",
+          "amountFiat": "0.005125958343806208",
           "streamedAmount": "3333294674154",
-          "streamedAmountFiat": "0.005124910623629804",
+          "streamedAmountFiat": "0.005125958343806208",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
@@ -3285,9 +3757,9 @@
           "startTime": 1673827200,
           "endTime": 1673913599,
           "amount": "3333294674154",
-          "amountFiat": "0.005207681265811805",
+          "amountFiat": "0.005208434165899217",
           "streamedAmount": "3333294674154",
-          "streamedAmountFiat": "0.005207681265811805",
+          "streamedAmountFiat": "0.005208434165899217",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
@@ -3295,9 +3767,9 @@
           "startTime": 1673913600,
           "endTime": 1673999999,
           "amount": "3333294674154",
-          "amountFiat": "0.005238012674578827",
+          "amountFiat": "0.005237528726121210",
           "streamedAmount": "3333294674154",
-          "streamedAmountFiat": "0.005238012674578827",
+          "streamedAmountFiat": "0.005237528726121210",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
@@ -3305,9 +3777,9 @@
           "startTime": 1674000000,
           "endTime": 1674086399,
           "amount": "3333294674154",
-          "amountFiat": "0.005219605238939115",
+          "amountFiat": "0.005223283366786128",
           "streamedAmount": "3333294674154",
-          "streamedAmountFiat": "0.005219605238939115",
+          "streamedAmountFiat": "0.005223283366786128",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
@@ -3315,9 +3787,9 @@
           "startTime": 1674086400,
           "endTime": 1674172799,
           "amount": "3333294674154",
-          "amountFiat": "0.005103623975897321",
+          "amountFiat": "0.005104572058987324",
           "streamedAmount": "3333294674154",
-          "streamedAmountFiat": "0.005103623975897321",
+          "streamedAmountFiat": "0.005104572058987324",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
@@ -3325,9 +3797,9 @@
           "startTime": 1674172800,
           "endTime": 1674259199,
           "amount": "3333294674154",
-          "amountFiat": "0.005235406735945063",
+          "amountFiat": "0.005235156040114751",
           "streamedAmount": "3333294674154",
-          "streamedAmountFiat": "0.005235406735945063",
+          "streamedAmountFiat": "0.005235156040114751",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
@@ -3335,9 +3807,9 @@
           "startTime": 1674259200,
           "endTime": 1674345599,
           "amount": "3333294674154",
-          "amountFiat": "0.005512562556050744",
+          "amountFiat": "0.005513234526955758",
           "streamedAmount": "3333294674154",
-          "streamedAmountFiat": "0.005512562556050744",
+          "streamedAmountFiat": "0.005513234526955758",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
@@ -3345,9 +3817,9 @@
           "startTime": 1674345600,
           "endTime": 1674431999,
           "amount": "3333294674154",
-          "amountFiat": "0.005438821994892865",
+          "amountFiat": "0.005435504489340322",
           "streamedAmount": "3333294674154",
-          "streamedAmountFiat": "0.005438821994892865",
+          "streamedAmountFiat": "0.005435504489340322",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
@@ -3355,9 +3827,9 @@
           "startTime": 1674432000,
           "endTime": 1674518399,
           "amount": "3333294674154",
-          "amountFiat": "0.005439804228296413",
+          "amountFiat": "0.005440650764134185",
           "streamedAmount": "3333294674154",
-          "streamedAmountFiat": "0.005439804228296413",
+          "streamedAmountFiat": "0.005440650764134185",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
@@ -3365,9 +3837,9 @@
           "startTime": 1674518400,
           "endTime": 1674604799,
           "amount": "3333294674154",
-          "amountFiat": "0.005416062568272039",
+          "amountFiat": "0.005413382923966230",
           "streamedAmount": "3333294674154",
-          "streamedAmountFiat": "0.005416062568272039",
+          "streamedAmountFiat": "0.005413382923966230",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
@@ -3375,9 +3847,9 @@
           "startTime": 1674604800,
           "endTime": 1674691199,
           "amount": "3333294674154",
-          "amountFiat": "0.005183180208090718",
+          "amountFiat": "0.005184140821264131",
           "streamedAmount": "3333294674154",
-          "streamedAmountFiat": "0.005183180208090718",
+          "streamedAmountFiat": "0.005184140821264131",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
@@ -3385,9 +3857,9 @@
           "startTime": 1674691200,
           "endTime": 1674777599,
           "amount": "3333294674154",
-          "amountFiat": "0.005362359237188860",
+          "amountFiat": "0.005362216594908541",
           "streamedAmount": "3333294674154",
-          "streamedAmountFiat": "0.005362359237188860",
+          "streamedAmountFiat": "0.005362216594908541",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
@@ -3395,9 +3867,9 @@
           "startTime": 1674777600,
           "endTime": 1674863999,
           "amount": "3333294674154",
-          "amountFiat": "0.005282762985276031",
+          "amountFiat": "0.005284086106234573",
           "streamedAmount": "3333294674154",
-          "streamedAmountFiat": "0.005282762985276031",
+          "streamedAmountFiat": "0.005284086106234573",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
@@ -3405,9 +3877,9 @@
           "startTime": 1674864000,
           "endTime": 1674950399,
           "amount": "3333294674154",
-          "amountFiat": "0.005287806199855777",
+          "amountFiat": "0.005286843081261976",
           "streamedAmount": "3333294674154",
-          "streamedAmountFiat": "0.005287806199855777",
+          "streamedAmountFiat": "0.005286843081261976",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
@@ -3415,9 +3887,9 @@
           "startTime": 1674950400,
           "endTime": 1675036799,
           "amount": "3333294674154",
-          "amountFiat": "0.005367845983902905",
+          "amountFiat": "0.005369637322757552",
           "streamedAmount": "3333294674154",
-          "streamedAmountFiat": "0.005367845983902905",
+          "streamedAmountFiat": "0.005369637322757552",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
@@ -3425,9 +3897,9 @@
           "startTime": 1675036800,
           "endTime": 1675123199,
           "amount": "3333294674154",
-          "amountFiat": "0.005343849715947175",
+          "amountFiat": "0.005336558071001382",
           "streamedAmount": "3333294674154",
-          "streamedAmountFiat": "0.005343849715947175",
+          "streamedAmountFiat": "0.005336558071001382",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
@@ -3435,9 +3907,9 @@
           "startTime": 1675123200,
           "endTime": 1675202399,
           "amount": "3055516902954",
-          "amountFiat": "0.004824778275368636",
+          "amountFiat": "0.004825352083035894",
           "streamedAmount": "3055516902954",
-          "streamedAmountFiat": "0.004824778275368636",
+          "streamedAmountFiat": "0.004825352083035894",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         }
@@ -3785,90 +4257,6 @@
         }
       ],
       "totalAmountTransferred": "0"
-    }
-  ],
-  "Weekly": [
-    {
-      "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x4f228bf911ed67730e4b51b1f82ac291b49053ee-0.0-0.0",
-      "flowRate": "3858024691",
-      "startedAtTimestamp": "1671185579",
-      "startedAtBlockNumber": "16196585",
-      "stoppedAtTimestamp": null,
-      "stoppedAtBlockNumber": null,
-      "totalAmountStreamed": "0",
-      "chainId": 1,
-      "token": {
-        "id": "0x4f228bf911ed67730e4b51b1f82ac291b49053ee",
-        "symbol": "DAIx",
-        "name": "Super Dai Stablecoin",
-        "underlyingAddress": "0x6b175474e89094c44da98b954eedeac495271d0f"
-      },
-      "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
-      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "startedAtEvent": "0x2026840312d64277db37e453fcb40e7b0093a9015abc92f9de0542e572c36b1c",
-      "virtualPeriods": [
-        {
-          "startTime": 1672524000,
-          "endTime": 1672531199,
-          "amount": "27773919750509",
-          "amountFiat": "0.000027779970320188",
-          "streamedAmount": "27773919750509",
-          "streamedAmountFiat": "0.000027779970320188",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1672531200,
-          "endTime": 1673135999,
-          "amount": "2333329475092109",
-          "amountFiat": "0.002334102921897319",
-          "streamedAmount": "2333329475092109",
-          "streamedAmountFiat": "0.002334102921897319",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1673136000,
-          "endTime": 1673740799,
-          "amount": "2333329475092109",
-          "amountFiat": "0.002334279526560824",
-          "streamedAmount": "2333329475092109",
-          "streamedAmountFiat": "0.002334279526560824",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1673740800,
-          "endTime": 1674345599,
-          "amount": "2333329475092109",
-          "amountFiat": "0.002336328666209241",
-          "streamedAmount": "2333329475092109",
-          "streamedAmountFiat": "0.002336328666209241",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1674345600,
-          "endTime": 1674950399,
-          "amount": "2333329475092109",
-          "amountFiat": "0.002334127616048189",
-          "streamedAmount": "2333329475092109",
-          "streamedAmountFiat": "0.002334127616048189",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1674950400,
-          "endTime": 1675202399,
-          "amount": "972218364107309",
-          "amountFiat": "0.000972477441883577",
-          "streamedAmount": "972218364107309",
-          "streamedAmountFiat": "0.000972477441883577",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        }
-      ],
-      "totalAmountTransferred": "0"
     },
     {
       "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x1e38baa2735128bcc23792ff9aae96ea7aa7ecd2-0.0-0.0",
@@ -3901,50 +4289,310 @@
         },
         {
           "startTime": 1672531200,
-          "endTime": 1673135999,
-          "amount": "2333329475092109",
+          "endTime": 1672617599,
+          "amount": "333329475277709",
           "amountFiat": "0.000000000000000000",
-          "streamedAmount": "2333329475092109",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1672617600,
+          "endTime": 1672703999,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1672704000,
+          "endTime": 1672790399,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1672790400,
+          "endTime": 1672876799,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1672876800,
+          "endTime": 1672963199,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1672963200,
+          "endTime": 1673049599,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673049600,
+          "endTime": 1673135999,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
           "streamedAmountFiat": "0.000000000000000000",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
         {
           "startTime": 1673136000,
-          "endTime": 1673740799,
-          "amount": "2333329475092109",
+          "endTime": 1673222399,
+          "amount": "333329475277709",
           "amountFiat": "0.000000000000000000",
-          "streamedAmount": "2333329475092109",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673222400,
+          "endTime": 1673308799,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673308800,
+          "endTime": 1673395199,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673395200,
+          "endTime": 1673481599,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673481600,
+          "endTime": 1673567999,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673568000,
+          "endTime": 1673654399,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673654400,
+          "endTime": 1673740799,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
           "streamedAmountFiat": "0.000000000000000000",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
         {
           "startTime": 1673740800,
-          "endTime": 1674345599,
-          "amount": "2333329475092109",
+          "endTime": 1673827199,
+          "amount": "333329475277709",
           "amountFiat": "0.000000000000000000",
-          "streamedAmount": "2333329475092109",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673827200,
+          "endTime": 1673913599,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673913600,
+          "endTime": 1673999999,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674000000,
+          "endTime": 1674086399,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674086400,
+          "endTime": 1674172799,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674172800,
+          "endTime": 1674259199,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674259200,
+          "endTime": 1674345599,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
           "streamedAmountFiat": "0.000000000000000000",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
         {
           "startTime": 1674345600,
-          "endTime": 1674950399,
-          "amount": "2333329475092109",
+          "endTime": 1674431999,
+          "amount": "333329475277709",
           "amountFiat": "0.000000000000000000",
-          "streamedAmount": "2333329475092109",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674432000,
+          "endTime": 1674518399,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674518400,
+          "endTime": 1674604799,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674604800,
+          "endTime": 1674691199,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674691200,
+          "endTime": 1674777599,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674777600,
+          "endTime": 1674863999,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674864000,
+          "endTime": 1674950399,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
           "streamedAmountFiat": "0.000000000000000000",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
         {
           "startTime": 1674950400,
-          "endTime": 1675202399,
-          "amount": "972218364107309",
+          "endTime": 1675036799,
+          "amount": "333329475277709",
           "amountFiat": "0.000000000000000000",
-          "streamedAmount": "972218364107309",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1675036800,
+          "endTime": 1675123199,
+          "amount": "333329475277709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1675123200,
+          "endTime": 1675202399,
+          "amount": "305551697502509",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "305551697502509",
           "streamedAmountFiat": "0.000000000000000000",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
@@ -3952,6 +4600,350 @@
       ],
       "totalAmountTransferred": "0"
     },
+    {
+      "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x4f228bf911ed67730e4b51b1f82ac291b49053ee-0.0-0.0",
+      "flowRate": "3858024691",
+      "startedAtTimestamp": "1671185579",
+      "startedAtBlockNumber": "16196585",
+      "stoppedAtTimestamp": null,
+      "stoppedAtBlockNumber": null,
+      "totalAmountStreamed": "0",
+      "chainId": 1,
+      "token": {
+        "id": "0x4f228bf911ed67730e4b51b1f82ac291b49053ee",
+        "symbol": "DAIx",
+        "name": "Super Dai Stablecoin",
+        "underlyingAddress": "0x6b175474e89094c44da98b954eedeac495271d0f"
+      },
+      "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0x2026840312d64277db37e453fcb40e7b0093a9015abc92f9de0542e572c36b1c",
+      "virtualPeriods": [
+        {
+          "startTime": 1672524000,
+          "endTime": 1672531199,
+          "amount": "27773919750509",
+          "amountFiat": "0.000027815236781464",
+          "streamedAmount": "27773919750509",
+          "streamedAmountFiat": "0.000027815236781464",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1672531200,
+          "endTime": 1672617599,
+          "amount": "333329475277709",
+          "amountFiat": "0.000333530252492297",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000333530252492297",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1672617600,
+          "endTime": 1672703999,
+          "amount": "333329475277709",
+          "amountFiat": "0.000333407982604269",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000333407982604269",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1672704000,
+          "endTime": 1672790399,
+          "amount": "333329475277709",
+          "amountFiat": "0.000333432030650610",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000333432030650610",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1672790400,
+          "endTime": 1672876799,
+          "amount": "333329475277709",
+          "amountFiat": "0.000333493255345876",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000333493255345876",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1672876800,
+          "endTime": 1672963199,
+          "amount": "333329475277709",
+          "amountFiat": "0.000333362597218420",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000333362597218420",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1672963200,
+          "endTime": 1673049599,
+          "amount": "333329475277709",
+          "amountFiat": "0.000333434586447547",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000333434586447547",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673049600,
+          "endTime": 1673135999,
+          "amount": "333329475277709",
+          "amountFiat": "0.000333490107930530",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000333490107930530",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673136000,
+          "endTime": 1673222399,
+          "amount": "333329475277709",
+          "amountFiat": "0.000333539616139269",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000333539616139269",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673222400,
+          "endTime": 1673308799,
+          "amount": "333329475277709",
+          "amountFiat": "0.000333507512152211",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000333507512152211",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673308800,
+          "endTime": 1673395199,
+          "amount": "333329475277709",
+          "amountFiat": "0.000333659922535702",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000333659922535702",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673395200,
+          "endTime": 1673481599,
+          "amount": "333329475277709",
+          "amountFiat": "0.000333524099202110",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000333524099202110",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673481600,
+          "endTime": 1673567999,
+          "amount": "333329475277709",
+          "amountFiat": "0.000333646913433592",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000333646913433592",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673568000,
+          "endTime": 1673654399,
+          "amount": "333329475277709",
+          "amountFiat": "0.000333624777910475",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000333624777910475",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673654400,
+          "endTime": 1673740799,
+          "amount": "333329475277709",
+          "amountFiat": "0.000333538702986586",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000333538702986586",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673740800,
+          "endTime": 1673827199,
+          "amount": "333329475277709",
+          "amountFiat": "0.000333428135286196",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000333428135286196",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673827200,
+          "endTime": 1673913599,
+          "amount": "333329475277709",
+          "amountFiat": "0.000333442316881915",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000333442316881915",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673913600,
+          "endTime": 1673999999,
+          "amount": "333329475277709",
+          "amountFiat": "0.000333360026501730",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000333360026501730",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674000000,
+          "endTime": 1674086399,
+          "amount": "333329475277709",
+          "amountFiat": "0.000334752491229693",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000334752491229693",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674086400,
+          "endTime": 1674172799,
+          "amount": "333329475277709",
+          "amountFiat": "0.000333677494737970",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000333677494737970",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674172800,
+          "endTime": 1674259199,
+          "amount": "333329475277709",
+          "amountFiat": "0.000333875245570466",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000333875245570466",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674259200,
+          "endTime": 1674345599,
+          "amount": "333329475277709",
+          "amountFiat": "0.000333596282146976",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000333596282146976",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674345600,
+          "endTime": 1674431999,
+          "amount": "333329475277709",
+          "amountFiat": "0.000333485518714197",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000333485518714197",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674432000,
+          "endTime": 1674518399,
+          "amount": "333329475277709",
+          "amountFiat": "0.000333626291942948",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000333626291942948",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674518400,
+          "endTime": 1674604799,
+          "amount": "333329475277709",
+          "amountFiat": "0.000333540091642255",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000333540091642255",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674604800,
+          "endTime": 1674691199,
+          "amount": "333329475277709",
+          "amountFiat": "0.000333232342900304",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000333232342900304",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674691200,
+          "endTime": 1674777599,
+          "amount": "333329475277709",
+          "amountFiat": "0.000333619802058020",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000333619802058020",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674777600,
+          "endTime": 1674863999,
+          "amount": "333329475277709",
+          "amountFiat": "0.000333316506418115",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000333316506418115",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674864000,
+          "endTime": 1674950399,
+          "amount": "333329475277709",
+          "amountFiat": "0.000333283653926854",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000333283653926854",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674950400,
+          "endTime": 1675036799,
+          "amount": "333329475277709",
+          "amountFiat": "0.000333346132639759",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000333346132639759",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1675036800,
+          "endTime": 1675123199,
+          "amount": "333329475277709",
+          "amountFiat": "0.000333495784936045",
+          "streamedAmount": "333329475277709",
+          "streamedAmountFiat": "0.000333495784936045",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1675123200,
+          "endTime": 1675202399,
+          "amount": "305551697502509",
+          "amountFiat": "0.000305631654083719",
+          "streamedAmount": "305551697502509",
+          "streamedAmountFiat": "0.000305631654083719",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        }
+      ],
+      "totalAmountTransferred": "0"
+    }
+  ],
+  "Weekly": [
     {
       "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x66e454105ae553cfa87ad4dc4cdf128c841fcd73-0.0-0.0",
       "flowRate": "3858024691",
@@ -4184,19 +5176,19 @@
           "startTime": 1674746190,
           "endTime": 1674950399,
           "amount": "-4160699404559620",
-          "amountFiat": "-0.004311240217469406",
+          "amountFiat": "-0.004311443601764455",
           "streamedAmount": "-3038824404567420",
-          "streamedAmountFiat": "-0.003148773971136047",
+          "streamedAmountFiat": "-0.003148922515671282",
           "transferredAmount": "-1121874999992200",
-          "transferredAmountFiat": "-0.001162466246333359"
+          "transferredAmountFiat": "-0.001162521086093173"
         },
         {
           "startTime": 1674950400,
           "endTime": 1675202399,
           "amount": "-3749985118807620",
-          "amountFiat": "-0.004244199943712605",
+          "amountFiat": "-0.004242117954197264",
           "streamedAmount": "-3749985118807620",
-          "streamedAmountFiat": "-0.004244199943712605",
+          "streamedAmountFiat": "-0.004242117954197264",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         }
@@ -4541,6 +5533,254 @@
       "totalAmountTransferred": "0"
     },
     {
+      "id": "0xeb85888b31fadf79cb264d065edcb4a14551c28d-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x7d342726b69c28d942ad8bfe6ac81b972349d524-0.0-0.0",
+      "flowRate": "7716049382",
+      "startedAtTimestamp": "1649157821",
+      "startedAtBlockNumber": "5354235",
+      "stoppedAtTimestamp": "1765572849",
+      "stoppedAtBlockNumber": "144987036",
+      "totalAmountStreamed": "898264104854912696",
+      "chainId": 10,
+      "token": {
+        "id": "0x7d342726b69c28d942ad8bfe6ac81b972349d524",
+        "symbol": "DAIx",
+        "name": "Super Dai Stablecoin",
+        "underlyingAddress": "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
+      },
+      "sender": "0xeb85888b31fadf79cb264d065edcb4a14551c28d",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0xf85a5812e3ac6af52c9da09c324e9a77eaf845da567c79f0b38ef5bb858144c7",
+      "stoppedAtEvent": "0xbe669ed90ea089a567a7fc465fdb90777d12f162b0e02222e493d7d59c5d6c58",
+      "virtualPeriods": [
+        {
+          "startTime": 1672524000,
+          "endTime": 1672531199,
+          "amount": "55547839501018",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "55547839501018",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1672531200,
+          "endTime": 1673135999,
+          "amount": "4666658950184218",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "4666658950184218",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673136000,
+          "endTime": 1673740799,
+          "amount": "4666658950184218",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "4666658950184218",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673740800,
+          "endTime": 1674345599,
+          "amount": "4666658950184218",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "4666658950184218",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674345600,
+          "endTime": 1674950399,
+          "amount": "4666658950184218",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "4666658950184218",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674950400,
+          "endTime": 1675202399,
+          "amount": "1944436728214618",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "1944436728214618",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        }
+      ],
+      "totalAmountTransferred": "0"
+    },
+    {
+      "id": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40-0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d-1.0-2.0",
+      "flowRate": "38580",
+      "startedAtTimestamp": "1666786230",
+      "startedAtBlockNumber": "31667386",
+      "stoppedAtTimestamp": "1706535303",
+      "stoppedAtBlockNumber": "115468263",
+      "totalAmountStreamed": "1533519236340",
+      "chainId": 10,
+      "token": {
+        "id": "0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d",
+        "symbol": "ETHx",
+        "name": "Super ETH",
+        "underlyingAddress": "0x0000000000000000000000000000000000000000"
+      },
+      "sender": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "receiver": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
+      "startedAtEvent": "0xf1b69275bfc6f382668b05e1b1642310c2fa95b313e72edf30e918e3946a71a0",
+      "stoppedAtEvent": "0x08fff49cad8f374edc7d5b888d7fda24a0b3a47464fc0b75de467897cdb6ecc9",
+      "virtualPeriods": [
+        {
+          "startTime": 1672524000,
+          "endTime": 1672531199,
+          "amount": "-277737420",
+          "amountFiat": "-0.000000332860529264",
+          "streamedAmount": "-277737420",
+          "streamedAmountFiat": "-0.000000332860529264",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1672531200,
+          "endTime": 1673135999,
+          "amount": "-23333145420",
+          "amountFiat": "-0.000028806358305448",
+          "streamedAmount": "-23333145420",
+          "streamedAmountFiat": "-0.000028806358305448",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673136000,
+          "endTime": 1673740799,
+          "amount": "-23333145420",
+          "amountFiat": "-0.000032018833763586",
+          "streamedAmount": "-23333145420",
+          "streamedAmountFiat": "-0.000032018833763586",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673740800,
+          "endTime": 1674345599,
+          "amount": "-23333145420",
+          "amountFiat": "-0.000036648297123201",
+          "streamedAmount": "-23333145420",
+          "streamedAmountFiat": "-0.000036648297123201",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674345600,
+          "endTime": 1674950399,
+          "amount": "-23333145420",
+          "amountFiat": "-0.000037406957364600",
+          "streamedAmount": "-23333145420",
+          "streamedAmountFiat": "-0.000037406957364600",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674950400,
+          "endTime": 1675202399,
+          "amount": "-9722121420",
+          "amountFiat": "-0.000015531571650696",
+          "streamedAmount": "-9722121420",
+          "streamedAmountFiat": "-0.000015531571650696",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        }
+      ],
+      "totalAmountTransferred": "0"
+    },
+    {
+      "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x7d342726b69c28d942ad8bfe6ac81b972349d524-0.0-0.0",
+      "flowRate": "3858024691",
+      "startedAtTimestamp": "1671019624",
+      "startedAtBlockNumber": "49488149",
+      "stoppedAtTimestamp": null,
+      "stoppedAtBlockNumber": null,
+      "totalAmountStreamed": "0",
+      "chainId": 10,
+      "token": {
+        "id": "0x7d342726b69c28d942ad8bfe6ac81b972349d524",
+        "symbol": "DAIx",
+        "name": "Super Dai Stablecoin",
+        "underlyingAddress": "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
+      },
+      "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0xc4839d1078a09bb44b976eb0a481b7537195d0eef247eb75ceaaac9c715fa211",
+      "virtualPeriods": [
+        {
+          "startTime": 1672524000,
+          "endTime": 1672531199,
+          "amount": "27773919750509",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "27773919750509",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1672531200,
+          "endTime": 1673135999,
+          "amount": "2333329475092109",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "2333329475092109",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673136000,
+          "endTime": 1673740799,
+          "amount": "2333329475092109",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "2333329475092109",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673740800,
+          "endTime": 1674345599,
+          "amount": "2333329475092109",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "2333329475092109",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674345600,
+          "endTime": 1674950399,
+          "amount": "2333329475092109",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "2333329475092109",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674950400,
+          "endTime": 1675202399,
+          "amount": "972218364107309",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "972218364107309",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        }
+      ],
+      "totalAmountTransferred": "0"
+    },
+    {
       "id": "0xeb85888b31fadf79cb264d065edcb4a14551c28d-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0xe6c8d111337d0052b9d88bf5d7d55b7f8385acd3-0.0-0.0",
       "flowRate": "38580246",
       "startedAtTimestamp": "1649160780",
@@ -4574,9 +5814,9 @@
           "startTime": 1672531200,
           "endTime": 1673135999,
           "amount": "23333294200554",
-          "amountFiat": "0.028808841650277461",
+          "amountFiat": "0.028806541985181941",
           "streamedAmount": "23333294200554",
-          "streamedAmountFiat": "0.028808841650277461",
+          "streamedAmountFiat": "0.028806541985181941",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
@@ -4584,9 +5824,9 @@
           "startTime": 1673136000,
           "endTime": 1673740799,
           "amount": "23333294200554",
-          "amountFiat": "0.032018430438233586",
+          "amountFiat": "0.032019037927222701",
           "streamedAmount": "23333294200554",
-          "streamedAmountFiat": "0.032018430438233586",
+          "streamedAmountFiat": "0.032019037927222701",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
@@ -4594,9 +5834,9 @@
           "startTime": 1673740800,
           "endTime": 1674345599,
           "amount": "23333294200554",
-          "amountFiat": "0.036642166585011120",
+          "amountFiat": "0.036648530805966266",
           "streamedAmount": "23333294200554",
-          "streamedAmountFiat": "0.036642166585011120",
+          "streamedAmountFiat": "0.036648530805966266",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
@@ -4604,9 +5844,9 @@
           "startTime": 1674345600,
           "endTime": 1674950399,
           "amount": "23333294200554",
-          "amountFiat": "0.037411912461396477",
+          "amountFiat": "0.037407195884857323",
           "streamedAmount": "23333294200554",
-          "streamedAmountFiat": "0.037411912461396477",
+          "streamedAmountFiat": "0.037407195884857323",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
@@ -4614,9 +5854,9 @@
           "startTime": 1674950400,
           "endTime": 1675202399,
           "amount": "9722183411754",
-          "amountFiat": "0.015537979156022518",
+          "amountFiat": "0.015531670685601111",
           "streamedAmount": "9722183411754",
-          "streamedAmountFiat": "0.015537979156022518",
+          "streamedAmountFiat": "0.015531670685601111",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         }
@@ -4704,50 +5944,6 @@
         }
       ],
       "totalAmountTransferred": "0"
-    }
-  ],
-  "Monthly": [
-    {
-      "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x4f228bf911ed67730e4b51b1f82ac291b49053ee-0.0-0.0",
-      "flowRate": "3858024691",
-      "startedAtTimestamp": "1671185579",
-      "startedAtBlockNumber": "16196585",
-      "stoppedAtTimestamp": null,
-      "stoppedAtBlockNumber": null,
-      "totalAmountStreamed": "0",
-      "chainId": 1,
-      "token": {
-        "id": "0x4f228bf911ed67730e4b51b1f82ac291b49053ee",
-        "symbol": "DAIx",
-        "name": "Super Dai Stablecoin",
-        "underlyingAddress": "0x6b175474e89094c44da98b954eedeac495271d0f"
-      },
-      "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
-      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "startedAtEvent": "0x2026840312d64277db37e453fcb40e7b0093a9015abc92f9de0542e572c36b1c",
-      "virtualPeriods": [
-        {
-          "startTime": 1672524000,
-          "endTime": 1672531199,
-          "amount": "27773919750509",
-          "amountFiat": "0.000027779970320188",
-          "streamedAmount": "27773919750509",
-          "streamedAmountFiat": "0.000027779970320188",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        },
-        {
-          "startTime": 1672531200,
-          "endTime": 1675202399,
-          "amount": "10305551696574509",
-          "amountFiat": "0.010311324357936758",
-          "streamedAmount": "10305551696574509",
-          "streamedAmountFiat": "0.010311324357936758",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        }
-      ],
-      "totalAmountTransferred": "0"
     },
     {
       "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x1e38baa2735128bcc23792ff9aae96ea7aa7ecd2-0.0-0.0",
@@ -4780,10 +5976,50 @@
         },
         {
           "startTime": 1672531200,
-          "endTime": 1675202399,
-          "amount": "10305551696574509",
+          "endTime": 1673135999,
+          "amount": "2333329475092109",
           "amountFiat": "0.000000000000000000",
-          "streamedAmount": "10305551696574509",
+          "streamedAmount": "2333329475092109",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673136000,
+          "endTime": 1673740799,
+          "amount": "2333329475092109",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "2333329475092109",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673740800,
+          "endTime": 1674345599,
+          "amount": "2333329475092109",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "2333329475092109",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674345600,
+          "endTime": 1674950399,
+          "amount": "2333329475092109",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "2333329475092109",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674950400,
+          "endTime": 1675202399,
+          "amount": "972218364107309",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "972218364107309",
           "streamedAmountFiat": "0.000000000000000000",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
@@ -4791,6 +6027,90 @@
       ],
       "totalAmountTransferred": "0"
     },
+    {
+      "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x4f228bf911ed67730e4b51b1f82ac291b49053ee-0.0-0.0",
+      "flowRate": "3858024691",
+      "startedAtTimestamp": "1671185579",
+      "startedAtBlockNumber": "16196585",
+      "stoppedAtTimestamp": null,
+      "stoppedAtBlockNumber": null,
+      "totalAmountStreamed": "0",
+      "chainId": 1,
+      "token": {
+        "id": "0x4f228bf911ed67730e4b51b1f82ac291b49053ee",
+        "symbol": "DAIx",
+        "name": "Super Dai Stablecoin",
+        "underlyingAddress": "0x6b175474e89094c44da98b954eedeac495271d0f"
+      },
+      "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0x2026840312d64277db37e453fcb40e7b0093a9015abc92f9de0542e572c36b1c",
+      "virtualPeriods": [
+        {
+          "startTime": 1672524000,
+          "endTime": 1672531199,
+          "amount": "27773919750509",
+          "amountFiat": "0.000027815236781464",
+          "streamedAmount": "27773919750509",
+          "streamedAmountFiat": "0.000027815236781464",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1672531200,
+          "endTime": 1673135999,
+          "amount": "2333329475092109",
+          "amountFiat": "0.002334173969215626",
+          "streamedAmount": "2333329475092109",
+          "streamedAmountFiat": "0.002334173969215626",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673136000,
+          "endTime": 1673740799,
+          "amount": "2333329475092109",
+          "amountFiat": "0.002335064709722750",
+          "streamedAmount": "2333329475092109",
+          "streamedAmountFiat": "0.002335064709722750",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1673740800,
+          "endTime": 1674345599,
+          "amount": "2333329475092109",
+          "amountFiat": "0.002336155168535810",
+          "streamedAmount": "2333329475092109",
+          "streamedAmountFiat": "0.002336155168535810",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674345600,
+          "endTime": 1674950399,
+          "amount": "2333329475092109",
+          "amountFiat": "0.002334127363666413",
+          "streamedAmount": "2333329475092109",
+          "streamedAmountFiat": "0.002334127363666413",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1674950400,
+          "endTime": 1675202399,
+          "amount": "972218364107309",
+          "amountFiat": "0.000972481289792809",
+          "streamedAmount": "972218364107309",
+          "streamedAmountFiat": "0.000972481289792809",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        }
+      ],
+      "totalAmountTransferred": "0"
+    }
+  ],
+  "Monthly": [
     {
       "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x66e454105ae553cfa87ad4dc4cdf128c841fcd73-0.0-0.0",
       "flowRate": "3858024691",
@@ -4933,11 +6253,11 @@
           "startTime": 1674746190,
           "endTime": 1675202399,
           "amount": "-7910699404319620",
-          "amountFiat": "-0.007454975510494894",
+          "amountFiat": "-0.007451752682160722",
           "streamedAmount": "-6788824404327420",
-          "streamedAmountFiat": "-0.006397730098513823",
+          "streamedAmountFiat": "-0.006394964323387285",
           "transferredAmount": "-1121874999992200",
-          "transferredAmountFiat": "-0.001057245411981071"
+          "transferredAmountFiat": "-0.001056788358773437"
         }
       ],
       "totalAmountTransferred": "-1121874999992200"
@@ -5160,6 +6480,134 @@
       "totalAmountTransferred": "0"
     },
     {
+      "id": "0xeb85888b31fadf79cb264d065edcb4a14551c28d-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x7d342726b69c28d942ad8bfe6ac81b972349d524-0.0-0.0",
+      "flowRate": "7716049382",
+      "startedAtTimestamp": "1649157821",
+      "startedAtBlockNumber": "5354235",
+      "stoppedAtTimestamp": "1765572849",
+      "stoppedAtBlockNumber": "144987036",
+      "totalAmountStreamed": "898264104854912696",
+      "chainId": 10,
+      "token": {
+        "id": "0x7d342726b69c28d942ad8bfe6ac81b972349d524",
+        "symbol": "DAIx",
+        "name": "Super Dai Stablecoin",
+        "underlyingAddress": "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
+      },
+      "sender": "0xeb85888b31fadf79cb264d065edcb4a14551c28d",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0xf85a5812e3ac6af52c9da09c324e9a77eaf845da567c79f0b38ef5bb858144c7",
+      "stoppedAtEvent": "0xbe669ed90ea089a567a7fc465fdb90777d12f162b0e02222e493d7d59c5d6c58",
+      "virtualPeriods": [
+        {
+          "startTime": 1672524000,
+          "endTime": 1672531199,
+          "amount": "55547839501018",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "55547839501018",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1672531200,
+          "endTime": 1675202399,
+          "amount": "20611103393149018",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "20611103393149018",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        }
+      ],
+      "totalAmountTransferred": "0"
+    },
+    {
+      "id": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40-0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d-1.0-2.0",
+      "flowRate": "38580",
+      "startedAtTimestamp": "1666786230",
+      "startedAtBlockNumber": "31667386",
+      "stoppedAtTimestamp": "1706535303",
+      "stoppedAtBlockNumber": "115468263",
+      "totalAmountStreamed": "1533519236340",
+      "chainId": 10,
+      "token": {
+        "id": "0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d",
+        "symbol": "ETHx",
+        "name": "Super ETH",
+        "underlyingAddress": "0x0000000000000000000000000000000000000000"
+      },
+      "sender": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "receiver": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
+      "startedAtEvent": "0xf1b69275bfc6f382668b05e1b1642310c2fa95b313e72edf30e918e3946a71a0",
+      "stoppedAtEvent": "0x08fff49cad8f374edc7d5b888d7fda24a0b3a47464fc0b75de467897cdb6ecc9",
+      "virtualPeriods": [
+        {
+          "startTime": 1672524000,
+          "endTime": 1672531199,
+          "amount": "-277737420",
+          "amountFiat": "-0.000000332860529264",
+          "streamedAmount": "-277737420",
+          "streamedAmountFiat": "-0.000000332860529264",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1672531200,
+          "endTime": 1675202399,
+          "amount": "-103054857420",
+          "amountFiat": "-0.000150412246549088",
+          "streamedAmount": "-103054857420",
+          "streamedAmountFiat": "-0.000150412246549088",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        }
+      ],
+      "totalAmountTransferred": "0"
+    },
+    {
+      "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x7d342726b69c28d942ad8bfe6ac81b972349d524-0.0-0.0",
+      "flowRate": "3858024691",
+      "startedAtTimestamp": "1671019624",
+      "startedAtBlockNumber": "49488149",
+      "stoppedAtTimestamp": null,
+      "stoppedAtBlockNumber": null,
+      "totalAmountStreamed": "0",
+      "chainId": 10,
+      "token": {
+        "id": "0x7d342726b69c28d942ad8bfe6ac81b972349d524",
+        "symbol": "DAIx",
+        "name": "Super Dai Stablecoin",
+        "underlyingAddress": "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
+      },
+      "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0xc4839d1078a09bb44b976eb0a481b7537195d0eef247eb75ceaaac9c715fa211",
+      "virtualPeriods": [
+        {
+          "startTime": 1672524000,
+          "endTime": 1672531199,
+          "amount": "27773919750509",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "27773919750509",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1672531200,
+          "endTime": 1675202399,
+          "amount": "10305551696574509",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "10305551696574509",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        }
+      ],
+      "totalAmountTransferred": "0"
+    },
+    {
       "id": "0xeb85888b31fadf79cb264d065edcb4a14551c28d-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0xe6c8d111337d0052b9d88bf5d7d55b7f8385acd3-0.0-0.0",
       "flowRate": "38580246",
       "startedAtTimestamp": "1649160780",
@@ -5193,9 +6641,9 @@
           "startTime": 1672531200,
           "endTime": 1675202399,
           "amount": "103055514534954",
-          "amountFiat": "0.150446641067884968",
+          "amountFiat": "0.150413205631842495",
           "streamedAmount": "103055514534954",
-          "streamedAmountFiat": "0.150446641067884968",
+          "streamedAmountFiat": "0.150413205631842495",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         }
@@ -5243,40 +6691,6 @@
         }
       ],
       "totalAmountTransferred": "0"
-    }
-  ],
-  "multiple accounts": [
-    {
-      "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x4f228bf911ed67730e4b51b1f82ac291b49053ee-0.0-0.0",
-      "flowRate": "3858024691",
-      "startedAtTimestamp": "1671185579",
-      "startedAtBlockNumber": "16196585",
-      "stoppedAtTimestamp": null,
-      "stoppedAtBlockNumber": null,
-      "totalAmountStreamed": "0",
-      "chainId": 1,
-      "token": {
-        "id": "0x4f228bf911ed67730e4b51b1f82ac291b49053ee",
-        "symbol": "DAIx",
-        "name": "Super Dai Stablecoin",
-        "underlyingAddress": "0x6b175474e89094c44da98b954eedeac495271d0f"
-      },
-      "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
-      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
-      "startedAtEvent": "0x2026840312d64277db37e453fcb40e7b0093a9015abc92f9de0542e572c36b1c",
-      "virtualPeriods": [
-        {
-          "startTime": 1672531200,
-          "endTime": 1675209599,
-          "amount": "10333329474349709",
-          "amountFiat": "0.010339011150755216",
-          "streamedAmount": "10333329474349709",
-          "streamedAmountFiat": "0.010339011150755216",
-          "transferredAmount": "0",
-          "transferredAmountFiat": "0"
-        }
-      ],
-      "totalAmountTransferred": "0"
     },
     {
       "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x1e38baa2735128bcc23792ff9aae96ea7aa7ecd2-0.0-0.0",
@@ -5298,11 +6712,21 @@
       "startedAtEvent": "0x439d496a7bf74e157184e7a13d1600ba7f71c4cf91d1dc012c4a1bf7758e9682",
       "virtualPeriods": [
         {
-          "startTime": 1672531200,
-          "endTime": 1675209599,
-          "amount": "10333329474349709",
+          "startTime": 1672524000,
+          "endTime": 1672531199,
+          "amount": "27773919750509",
           "amountFiat": "0.000000000000000000",
-          "streamedAmount": "10333329474349709",
+          "streamedAmount": "27773919750509",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1672531200,
+          "endTime": 1675202399,
+          "amount": "10305551696574509",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "10305551696574509",
           "streamedAmountFiat": "0.000000000000000000",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
@@ -5310,6 +6734,50 @@
       ],
       "totalAmountTransferred": "0"
     },
+    {
+      "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x4f228bf911ed67730e4b51b1f82ac291b49053ee-0.0-0.0",
+      "flowRate": "3858024691",
+      "startedAtTimestamp": "1671185579",
+      "startedAtBlockNumber": "16196585",
+      "stoppedAtTimestamp": null,
+      "stoppedAtBlockNumber": null,
+      "totalAmountStreamed": "0",
+      "chainId": 1,
+      "token": {
+        "id": "0x4f228bf911ed67730e4b51b1f82ac291b49053ee",
+        "symbol": "DAIx",
+        "name": "Super Dai Stablecoin",
+        "underlyingAddress": "0x6b175474e89094c44da98b954eedeac495271d0f"
+      },
+      "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0x2026840312d64277db37e453fcb40e7b0093a9015abc92f9de0542e572c36b1c",
+      "virtualPeriods": [
+        {
+          "startTime": 1672524000,
+          "endTime": 1672531199,
+          "amount": "27773919750509",
+          "amountFiat": "0.000027815236781464",
+          "streamedAmount": "27773919750509",
+          "streamedAmountFiat": "0.000027815236781464",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        },
+        {
+          "startTime": 1672531200,
+          "endTime": 1675202399,
+          "amount": "10305551696574509",
+          "amountFiat": "0.010312017941911621",
+          "streamedAmount": "10305551696574509",
+          "streamedAmountFiat": "0.010312017941911621",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        }
+      ],
+      "totalAmountTransferred": "0"
+    }
+  ],
+  "multiple accounts": [
     {
       "id": "0xeb85888b31fadf79cb264d065edcb4a14551c28d-0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40-0x59988e47a3503aafaa0368b9def095c818fdca01-0.0-0.0",
       "flowRate": "7716049382",
@@ -5334,9 +6802,9 @@
           "startTime": 1672531200,
           "endTime": 1675209599,
           "amount": "20666658948699418",
-          "amountFiat": "0.020664821179859302",
+          "amountFiat": "0.020668020494311101",
           "streamedAmount": "20666658948699418",
-          "streamedAmountFiat": "0.020664821179859302",
+          "streamedAmountFiat": "0.020668020494311101",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         }
@@ -5432,9 +6900,9 @@
           "startTime": 1672531200,
           "endTime": 1675209599,
           "amount": "10333329474349709",
-          "amountFiat": "0.009737941234345650",
+          "amountFiat": "0.009738344983336497",
           "streamedAmount": "10333329474349709",
-          "streamedAmountFiat": "0.009737941234345650",
+          "streamedAmountFiat": "0.009738344983336497",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         }
@@ -5498,11 +6966,11 @@
           "startTime": 1674746190,
           "endTime": 1675209599,
           "amount": "-9139717261447820",
-          "amountFiat": "-0.010065191941943265",
+          "amountFiat": "-0.010066383804324210",
           "streamedAmount": "-6895967261463420",
-          "streamedAmountFiat": "-0.007745207674369477",
+          "streamedAmountFiat": "-0.007743688020325856",
           "transferredAmount": "-2243749999984400",
-          "transferredAmountFiat": "-0.002319984267573788"
+          "transferredAmountFiat": "-0.002322695783998354"
         }
       ],
       "totalAmountTransferred": "-2243749999984400"
@@ -5663,9 +7131,9 @@
           "startTime": 1674746190,
           "endTime": 1675209599,
           "amount": "-6895967261463420",
-          "amountFiat": "-0.007745207674369477",
+          "amountFiat": "-0.007743688020325856",
           "streamedAmount": "-6895967261463420",
-          "streamedAmountFiat": "-0.007745207674369477",
+          "streamedAmountFiat": "-0.007743688020325856",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         }
@@ -5870,6 +7338,137 @@
       "totalAmountTransferred": "0"
     },
     {
+      "id": "0xeb85888b31fadf79cb264d065edcb4a14551c28d-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x7d342726b69c28d942ad8bfe6ac81b972349d524-0.0-0.0",
+      "flowRate": "7716049382",
+      "startedAtTimestamp": "1649157821",
+      "startedAtBlockNumber": "5354235",
+      "stoppedAtTimestamp": "1765572849",
+      "stoppedAtBlockNumber": "144987036",
+      "totalAmountStreamed": "898264104854912696",
+      "chainId": 10,
+      "token": {
+        "id": "0x7d342726b69c28d942ad8bfe6ac81b972349d524",
+        "symbol": "DAIx",
+        "name": "Super Dai Stablecoin",
+        "underlyingAddress": "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
+      },
+      "sender": "0xeb85888b31fadf79cb264d065edcb4a14551c28d",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0xf85a5812e3ac6af52c9da09c324e9a77eaf845da567c79f0b38ef5bb858144c7",
+      "stoppedAtEvent": "0xbe669ed90ea089a567a7fc465fdb90777d12f162b0e02222e493d7d59c5d6c58",
+      "virtualPeriods": [
+        {
+          "startTime": 1672531200,
+          "endTime": 1675209599,
+          "amount": "20666658948699418",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "20666658948699418",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        }
+      ],
+      "totalAmountTransferred": "0"
+    },
+    {
+      "id": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40-0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d-1.0-2.0",
+      "flowRate": "38580",
+      "startedAtTimestamp": "1666786230",
+      "startedAtBlockNumber": "31667386",
+      "stoppedAtTimestamp": "1706535303",
+      "stoppedAtBlockNumber": "115468263",
+      "totalAmountStreamed": "1533519236340",
+      "chainId": 10,
+      "token": {
+        "id": "0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d",
+        "symbol": "ETHx",
+        "name": "Super ETH",
+        "underlyingAddress": "0x0000000000000000000000000000000000000000"
+      },
+      "sender": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "receiver": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
+      "startedAtEvent": "0xf1b69275bfc6f382668b05e1b1642310c2fa95b313e72edf30e918e3946a71a0",
+      "stoppedAtEvent": "0x08fff49cad8f374edc7d5b888d7fda24a0b3a47464fc0b75de467897cdb6ecc9",
+      "virtualPeriods": [
+        {
+          "startTime": 1672531200,
+          "endTime": 1675209599,
+          "amount": "-103332633420",
+          "amountFiat": "-0.000150850329674613",
+          "streamedAmount": "-103332633420",
+          "streamedAmountFiat": "-0.000150850329674613",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        }
+      ],
+      "totalAmountTransferred": "0"
+    },
+    {
+      "id": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40-0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d-1.0-2.0",
+      "flowRate": "38580",
+      "startedAtTimestamp": "1666786230",
+      "startedAtBlockNumber": "31667386",
+      "stoppedAtTimestamp": "1706535303",
+      "stoppedAtBlockNumber": "115468263",
+      "totalAmountStreamed": "1533519236340",
+      "chainId": 10,
+      "token": {
+        "id": "0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d",
+        "symbol": "ETHx",
+        "name": "Super ETH",
+        "underlyingAddress": "0x0000000000000000000000000000000000000000"
+      },
+      "sender": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "receiver": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
+      "startedAtEvent": "0xf1b69275bfc6f382668b05e1b1642310c2fa95b313e72edf30e918e3946a71a0",
+      "stoppedAtEvent": "0x08fff49cad8f374edc7d5b888d7fda24a0b3a47464fc0b75de467897cdb6ecc9",
+      "virtualPeriods": [
+        {
+          "startTime": 1672531200,
+          "endTime": 1675209599,
+          "amount": "-103332633420",
+          "amountFiat": "-0.000150850329674613",
+          "streamedAmount": "-103332633420",
+          "streamedAmountFiat": "-0.000150850329674613",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        }
+      ],
+      "totalAmountTransferred": "0"
+    },
+    {
+      "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x7d342726b69c28d942ad8bfe6ac81b972349d524-0.0-0.0",
+      "flowRate": "3858024691",
+      "startedAtTimestamp": "1671019624",
+      "startedAtBlockNumber": "49488149",
+      "stoppedAtTimestamp": null,
+      "stoppedAtBlockNumber": null,
+      "totalAmountStreamed": "0",
+      "chainId": 10,
+      "token": {
+        "id": "0x7d342726b69c28d942ad8bfe6ac81b972349d524",
+        "symbol": "DAIx",
+        "name": "Super Dai Stablecoin",
+        "underlyingAddress": "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
+      },
+      "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0xc4839d1078a09bb44b976eb0a481b7537195d0eef247eb75ceaaac9c715fa211",
+      "virtualPeriods": [
+        {
+          "startTime": 1672531200,
+          "endTime": 1675209599,
+          "amount": "10333329474349709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "10333329474349709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        }
+      ],
+      "totalAmountTransferred": "0"
+    },
+    {
       "id": "0xeb85888b31fadf79cb264d065edcb4a14551c28d-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0xe6c8d111337d0052b9d88bf5d7d55b7f8385acd3-0.0-0.0",
       "flowRate": "38580246",
       "startedAtTimestamp": "1649160780",
@@ -5893,9 +7492,9 @@
           "startTime": 1672531200,
           "endTime": 1675209599,
           "amount": "103333292306154",
-          "amountFiat": "0.150853728994359085",
+          "amountFiat": "0.150851291550742619",
           "streamedAmount": "103333292306154",
-          "streamedAmountFiat": "0.150853728994359085",
+          "streamedAmountFiat": "0.150851291550742619",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         }
@@ -5928,6 +7527,70 @@
           "amountFiat": "0.000000000000000000",
           "streamedAmount": "10333329474349709",
           "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        }
+      ],
+      "totalAmountTransferred": "0"
+    },
+    {
+      "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x1e38baa2735128bcc23792ff9aae96ea7aa7ecd2-0.0-0.0",
+      "flowRate": "3858024691",
+      "startedAtTimestamp": "1671106984",
+      "startedAtBlockNumber": "23925296",
+      "stoppedAtTimestamp": null,
+      "stoppedAtBlockNumber": null,
+      "totalAmountStreamed": "0",
+      "chainId": 56,
+      "token": {
+        "id": "0x1e38baa2735128bcc23792ff9aae96ea7aa7ecd2",
+        "symbol": "DAIx",
+        "name": "Super Binance-Peg DAI",
+        "underlyingAddress": "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3"
+      },
+      "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0x439d496a7bf74e157184e7a13d1600ba7f71c4cf91d1dc012c4a1bf7758e9682",
+      "virtualPeriods": [
+        {
+          "startTime": 1672531200,
+          "endTime": 1675209599,
+          "amount": "10333329474349709",
+          "amountFiat": "0.000000000000000000",
+          "streamedAmount": "10333329474349709",
+          "streamedAmountFiat": "0.000000000000000000",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        }
+      ],
+      "totalAmountTransferred": "0"
+    },
+    {
+      "id": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9-0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x4f228bf911ed67730e4b51b1f82ac291b49053ee-0.0-0.0",
+      "flowRate": "3858024691",
+      "startedAtTimestamp": "1671185579",
+      "startedAtBlockNumber": "16196585",
+      "stoppedAtTimestamp": null,
+      "stoppedAtBlockNumber": null,
+      "totalAmountStreamed": "0",
+      "chainId": 1,
+      "token": {
+        "id": "0x4f228bf911ed67730e4b51b1f82ac291b49053ee",
+        "symbol": "DAIx",
+        "name": "Super Dai Stablecoin",
+        "underlyingAddress": "0x6b175474e89094c44da98b954eedeac495271d0f"
+      },
+      "sender": "0x9be85a79d847dfa90584f3fd40cc1f6d4026e2b9",
+      "receiver": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "startedAtEvent": "0x2026840312d64277db37e453fcb40e7b0093a9015abc92f9de0542e572c36b1c",
+      "virtualPeriods": [
+        {
+          "startTime": 1672531200,
+          "endTime": 1675209599,
+          "amount": "10333329474349709",
+          "amountFiat": "0.010339700503137780",
+          "streamedAmount": "10333329474349709",
+          "streamedAmountFiat": "0.010339700503137780",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         }
@@ -5993,11 +7656,11 @@
           "startTime": 1674746190,
           "endTime": 1675209599,
           "amount": "-8017842261455620",
-          "amountFiat": "-0.008905199808156371",
+          "amountFiat": "-0.008905035912325033",
           "streamedAmount": "-6895967261463420",
-          "streamedAmountFiat": "-0.007745207674369477",
+          "streamedAmountFiat": "-0.007743688020325856",
           "transferredAmount": "-1121874999992200",
-          "transferredAmountFiat": "-0.001159992133786894"
+          "transferredAmountFiat": "-0.001161347891999177"
         }
       ],
       "totalAmountTransferred": "-1121874999992200"
@@ -6102,6 +7765,39 @@
       "totalAmountTransferred": "-1120982142849400"
     },
     {
+      "id": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2-0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40-0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d-1.0-2.0",
+      "flowRate": "38580",
+      "startedAtTimestamp": "1666786230",
+      "startedAtBlockNumber": "31667386",
+      "stoppedAtTimestamp": "1706535303",
+      "stoppedAtBlockNumber": "115468263",
+      "totalAmountStreamed": "1533519236340",
+      "chainId": 10,
+      "token": {
+        "id": "0x4ac8bd1bdae47beef2d1c6aa62229509b962aa0d",
+        "symbol": "ETHx",
+        "name": "Super ETH",
+        "underlyingAddress": "0x0000000000000000000000000000000000000000"
+      },
+      "sender": "0xf9ce34dfcd3cc92804772f3022af27bcd5e43ff2",
+      "receiver": "0x618ada3f9f7bc1b2f2765ba1728bec5057b3de40",
+      "startedAtEvent": "0xf1b69275bfc6f382668b05e1b1642310c2fa95b313e72edf30e918e3946a71a0",
+      "stoppedAtEvent": "0x08fff49cad8f374edc7d5b888d7fda24a0b3a47464fc0b75de467897cdb6ecc9",
+      "virtualPeriods": [
+        {
+          "startTime": 1672531200,
+          "endTime": 1675209599,
+          "amount": "-103332633420",
+          "amountFiat": "-0.000150850329674613",
+          "streamedAmount": "-103332633420",
+          "streamedAmountFiat": "-0.000150850329674613",
+          "transferredAmount": "0",
+          "transferredAmountFiat": "0"
+        }
+      ],
+      "totalAmountTransferred": "0"
+    },
+    {
       "id": "Transfer-0x23fc52fb796fd4113317a5b47b19780bab2412af78b05d2f8b72f6bbe75a00cf-3",
       "flowRate": "200000000000000000",
       "chainId": 100,
@@ -6125,11 +7821,11 @@
           "startTime": "1647333605",
           "endTime": "1647333605",
           "amount": "200000000000000000",
-          "amountFiat": "0.198963289325167640",
+          "amountFiat": "0.198981854310778340",
           "streamedAmount": "0",
           "streamedAmountFiat": "0",
           "transferredAmount": "200000000000000000",
-          "transferredAmountFiat": "0.198963289325167640"
+          "transferredAmountFiat": "0.198981854310778340"
         }
       ],
       "totalAmountTransferred": "200000000000000000"
@@ -6158,11 +7854,11 @@
           "startTime": "1642581700",
           "endTime": "1642581700",
           "amount": "1000000000000000000",
-          "amountFiat": "0.994816446625838200",
+          "amountFiat": "0.994909271553891700",
           "streamedAmount": "0",
           "streamedAmountFiat": "0",
           "transferredAmount": "1000000000000000000",
-          "transferredAmountFiat": "0.994816446625838200"
+          "transferredAmountFiat": "0.994909271553891700"
         }
       ],
       "totalAmountTransferred": "1000000000000000000"
@@ -6191,11 +7887,11 @@
           "startTime": "1651057025",
           "endTime": "1651057025",
           "amount": "100000000000000000",
-          "amountFiat": "0.099481644662583820",
+          "amountFiat": "0.099490927155389170",
           "streamedAmount": "0",
           "streamedAmountFiat": "0",
           "transferredAmount": "100000000000000000",
-          "transferredAmountFiat": "0.099481644662583820"
+          "transferredAmountFiat": "0.099490927155389170"
         }
       ],
       "totalAmountTransferred": "100000000000000000"
@@ -6224,11 +7920,11 @@
           "startTime": "1648551875",
           "endTime": "1648551875",
           "amount": "100000000000000000",
-          "amountFiat": "0.099481644662583820",
+          "amountFiat": "0.099490927155389170",
           "streamedAmount": "0",
           "streamedAmountFiat": "0",
           "transferredAmount": "100000000000000000",
-          "transferredAmountFiat": "0.099481644662583820"
+          "transferredAmountFiat": "0.099490927155389170"
         }
       ],
       "totalAmountTransferred": "100000000000000000"
@@ -6488,11 +8184,11 @@
           "startTime": "1650622056",
           "endTime": "1650622056",
           "amount": "2085680291543207062821",
-          "amountFiat": "1577.398484038341799900",
+          "amountFiat": "1577.418855068201529700",
           "streamedAmount": "0",
           "streamedAmountFiat": "0",
           "transferredAmount": "2085680291543207062821",
-          "transferredAmountFiat": "1577.398484038341799900"
+          "transferredAmountFiat": "1577.418855068201529700"
         }
       ],
       "totalAmountTransferred": "2085680291543207062821"
@@ -6653,11 +8349,11 @@
           "startTime": "1642682251",
           "endTime": "1642682251",
           "amount": "100000000000000000",
-          "amountFiat": "0.075629927100246770",
+          "amountFiat": "0.075630903809378190",
           "streamedAmount": "0",
           "streamedAmountFiat": "0",
           "transferredAmount": "100000000000000000",
-          "transferredAmountFiat": "0.075629927100246770"
+          "transferredAmountFiat": "0.075630903809378190"
         }
       ],
       "totalAmountTransferred": "100000000000000000"
@@ -6688,9 +8384,9 @@
           "startTime": 1643732915,
           "endTime": 1643732960,
           "amount": "69444444444435",
-          "amountFiat": "0.000069425742014253",
+          "amountFiat": "0.000069406126839948",
           "streamedAmount": "69444444444435",
-          "streamedAmountFiat": "0.000069425742014253",
+          "streamedAmountFiat": "0.000069406126839948",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         }
@@ -6721,9 +8417,9 @@
           "startTime": 1643732960,
           "endTime": 1643733770,
           "amount": "937499999999670",
-          "amountFiat": "0.000937247517192212",
+          "amountFiat": "0.000936982712339091",
           "streamedAmount": "937499999999670",
-          "streamedAmountFiat": "0.000937247517192212",
+          "streamedAmountFiat": "0.000936982712339091",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         }
@@ -6754,9 +8450,9 @@
           "startTime": 1640995200,
           "endTime": 1643673599,
           "amount": "20666658948699418",
-          "amountFiat": "0.020679124262344966",
+          "amountFiat": "0.020679355771639783",
           "streamedAmount": "20666658948699418",
-          "streamedAmountFiat": "0.020679124262344966",
+          "streamedAmountFiat": "0.020679355771639783",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
@@ -6764,9 +8460,9 @@
           "startTime": 1643673600,
           "endTime": 1646092799,
           "amount": "18666658948885018",
-          "amountFiat": "0.018668448019655495",
+          "amountFiat": "0.018669456133770007",
           "streamedAmount": "18666658948885018",
-          "streamedAmountFiat": "0.018668448019655495",
+          "streamedAmountFiat": "0.018669456133770007",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         }
@@ -6797,9 +8493,9 @@
           "startTime": 1643644710,
           "endTime": 1643659375,
           "amount": "7128819444444442815",
-          "amountFiat": "7.113437158956700938",
+          "amountFiat": "7.118138363685260352",
           "streamedAmount": "7128819444444442815",
-          "streamedAmountFiat": "7.113437158956700938",
+          "streamedAmountFiat": "7.118138363685260352",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         }
@@ -6830,9 +8526,9 @@
           "startTime": 1644326320,
           "endTime": 1644326355,
           "amount": "1350308641955",
-          "amountFiat": "0.000001349581510010",
+          "amountFiat": "0.000001350116797991",
           "streamedAmount": "1350308641955",
-          "streamedAmountFiat": "0.000001349581510010",
+          "streamedAmountFiat": "0.000001350116797991",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         }
@@ -6863,9 +8559,9 @@
           "startTime": 1644326355,
           "endTime": 1644326385,
           "amount": "2314814814810",
-          "amountFiat": "0.000002313568302904",
+          "amountFiat": "0.000002314485939444",
           "streamedAmount": "2314814814810",
-          "streamedAmountFiat": "0.000002313568302904",
+          "streamedAmountFiat": "0.000002314485939444",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         }
@@ -6896,9 +8592,9 @@
           "startTime": 1642581520,
           "endTime": 1642581565,
           "amount": "-17361111111075",
-          "amountFiat": "-0.000017341901685749",
+          "amountFiat": "-0.000017354876435437",
           "streamedAmount": "-17361111111075",
-          "streamedAmountFiat": "-0.000017341901685749",
+          "streamedAmountFiat": "-0.000017354876435437",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         }
@@ -6929,9 +8625,9 @@
           "startTime": 1642581565,
           "endTime": 1642581655,
           "amount": "-69444444444390",
-          "amountFiat": "-0.000069367606743084",
+          "amountFiat": "-0.000069419505741836",
           "streamedAmount": "-69444444444390",
-          "streamedAmountFiat": "-0.000069367606743084",
+          "streamedAmountFiat": "-0.000069419505741836",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         }
@@ -6962,9 +8658,9 @@
           "startTime": 1642581775,
           "endTime": 1642596740,
           "amount": "-4156944444444432805",
-          "amountFiat": "-4.152344939644256074",
+          "amountFiat": "-4.155451613709566997",
           "streamedAmount": "-4156944444444432805",
-          "streamedAmountFiat": "-4.152344939644256074",
+          "streamedAmountFiat": "-4.155451613709566997",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         }
@@ -6995,9 +8691,9 @@
           "startTime": 1642682890,
           "endTime": 1642682925,
           "amount": "-135030864197530",
-          "amountFiat": "-0.000135227628626898",
+          "amountFiat": "-0.000135250793618936",
           "streamedAmount": "-135030864197530",
-          "streamedAmountFiat": "-0.000135227628626898",
+          "streamedAmountFiat": "-0.000135250793618936",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         }
@@ -7028,9 +8724,9 @@
           "startTime": 1642682925,
           "endTime": 1642682955,
           "amount": "-173611111111110",
-          "amountFiat": "-0.000173864093948869",
+          "amountFiat": "-0.000173893877510060",
           "streamedAmount": "-173611111111110",
-          "streamedAmountFiat": "-0.000173864093948869",
+          "streamedAmountFiat": "-0.000173893877510060",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         }
@@ -7061,9 +8757,9 @@
           "startTime": 1642754020,
           "endTime": 1642768445,
           "amount": "-1001736111111104700",
-          "amountFiat": "-1.001221967274623114",
+          "amountFiat": "-1.001469805638819990",
           "streamedAmount": "-1001736111111104700",
-          "streamedAmountFiat": "-1.001221967274623114",
+          "streamedAmountFiat": "-1.001469805638819990",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         }
@@ -7094,9 +8790,9 @@
           "startTime": 1643703850,
           "endTime": 1643704190,
           "amount": "-82638888888888700",
-          "amountFiat": "-0.082616632996972013",
+          "amountFiat": "-0.082593290939548782",
           "streamedAmount": "-82638888888888700",
-          "streamedAmountFiat": "-0.082616632996972013",
+          "streamedAmountFiat": "-0.082593290939548782",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         }
@@ -7127,9 +8823,9 @@
           "startTime": 1643704190,
           "endTime": 1643704640,
           "amount": "-173611111110750",
-          "amountFiat": "-0.000173564355035295",
+          "amountFiat": "-0.000173515317099532",
           "streamedAmount": "-173611111110750",
-          "streamedAmountFiat": "-0.000173564355035295",
+          "streamedAmountFiat": "-0.000173515317099532",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         }
@@ -7160,9 +8856,9 @@
           "startTime": 1643754522,
           "endTime": 1643754566,
           "amount": "16975308641940",
-          "amountFiat": "0.000027981252512099",
+          "amountFiat": "0.000027987196303933",
           "streamedAmount": "16975308641940",
-          "streamedAmountFiat": "0.000027981252512099",
+          "streamedAmountFiat": "0.000027987196303933",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         }
@@ -7193,9 +8889,9 @@
           "startTime": 1643754566,
           "endTime": 1643754604,
           "amount": "29320987654298",
-          "amountFiat": "0.000048331254339142",
+          "amountFiat": "0.000048341520888675",
           "streamedAmount": "29320987654298",
-          "streamedAmountFiat": "0.000048331254339142",
+          "streamedAmountFiat": "0.000048341520888675",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         }
@@ -7226,9 +8922,9 @@
           "startTime": 1640995200,
           "endTime": 1643673599,
           "amount": "10333329474349709",
-          "amountFiat": "0.021066409866654274",
+          "amountFiat": "0.021064800311239938",
           "streamedAmount": "10333329474349709",
-          "streamedAmountFiat": "0.021066409866654274",
+          "streamedAmountFiat": "0.021064800311239938",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         },
@@ -7236,9 +8932,9 @@
           "startTime": 1643673600,
           "endTime": 1646092799,
           "amount": "9333329474442509",
-          "amountFiat": "0.015489601101503242",
+          "amountFiat": "0.015491297574895785",
           "streamedAmount": "9333329474442509",
-          "streamedAmountFiat": "0.015489601101503242",
+          "streamedAmountFiat": "0.015491297574895785",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         }
@@ -7269,9 +8965,9 @@
           "startTime": 1643641566,
           "endTime": 1643641982,
           "amount": "53925925925925664",
-          "amountFiat": "0.060492099879406554",
+          "amountFiat": "0.060523071200837317",
           "streamedAmount": "53925925925925664",
-          "streamedAmountFiat": "0.060492099879406554",
+          "streamedAmountFiat": "0.060523071200837317",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         }
@@ -7302,9 +8998,9 @@
           "startTime": 1643641982,
           "endTime": 1643646817,
           "amount": "671527777777773480",
-          "amountFiat": "0.753294907924785987",
+          "amountFiat": "0.753680587026222467",
           "streamedAmount": "671527777777773480",
-          "streamedAmountFiat": "0.753294907924785987",
+          "streamedAmountFiat": "0.753680587026222467",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         }
@@ -7335,9 +9031,9 @@
           "startTime": 1643646893,
           "endTime": 1643661690,
           "amount": "1541354166666656802",
-          "amountFiat": "1.729033829249698797",
+          "amountFiat": "1.729919076457137618",
           "streamedAmount": "1541354166666656802",
-          "streamedAmountFiat": "1.729033829249698797",
+          "streamedAmountFiat": "1.729919076457137618",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         }
@@ -7368,9 +9064,9 @@
           "startTime": 1644325467,
           "endTime": 1644325537,
           "amount": "27006172839450",
-          "amountFiat": "0.000030790641960184",
+          "amountFiat": "0.000030812271469063",
           "streamedAmount": "27006172839450",
-          "streamedAmountFiat": "0.000030790641960184",
+          "streamedAmountFiat": "0.000030812271469063",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         }
@@ -7401,9 +9097,9 @@
           "startTime": 1644325537,
           "endTime": 1644325577,
           "amount": "30864197530840",
-          "amountFiat": "0.000035189305097399",
+          "amountFiat": "0.000035214024536118",
           "streamedAmount": "30864197530840",
-          "streamedAmountFiat": "0.000035189305097399",
+          "streamedAmountFiat": "0.000035214024536118",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         }
@@ -7434,9 +9130,9 @@
           "startTime": 1644332660,
           "endTime": 1646092799,
           "amount": "67906597221200907",
-          "amountFiat": "0.076895901198942633",
+          "amountFiat": "0.076904777386817504",
           "streamedAmount": "67906597221200907",
-          "streamedAmountFiat": "0.076895901198942633",
+          "streamedAmountFiat": "0.076904777386817504",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         }
@@ -7467,9 +9163,9 @@
           "startTime": 1642587794,
           "endTime": 1642599281,
           "amount": "44317129629629346",
-          "amountFiat": "0.092311594127596788",
+          "amountFiat": "0.092337608012644325",
           "streamedAmount": "44317129629629346",
-          "streamedAmountFiat": "0.092311594127596788",
+          "streamedAmountFiat": "0.092337608012644325",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         }
@@ -7599,9 +9295,9 @@
           "startTime": 1643707276,
           "endTime": 1643707390,
           "amount": "-9895833333333270",
-          "amountFiat": "-0.011166809888025462",
+          "amountFiat": "-0.011160666502157748",
           "streamedAmount": "-9895833333333270",
-          "streamedAmountFiat": "-0.011166809888025462",
+          "streamedAmountFiat": "-0.011160666502157748",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         }
@@ -7632,9 +9328,9 @@
           "startTime": 1643708282,
           "endTime": 1643718848,
           "amount": "-904958333333331768",
-          "amountFiat": "-1.021187132454846958",
+          "amountFiat": "-1.020625329517327386",
           "streamedAmount": "-904958333333331768",
-          "streamedAmountFiat": "-1.021187132454846958",
+          "streamedAmountFiat": "-1.020625329517327386",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         }
@@ -7665,9 +9361,9 @@
           "startTime": 1643718918,
           "endTime": 1643725478,
           "amount": "-356851851851850880",
-          "amountFiat": "-0.402684306979651843",
+          "amountFiat": "-0.402462771455589406",
           "streamedAmount": "-356851851851850880",
-          "streamedAmountFiat": "-0.402684306979651843",
+          "streamedAmountFiat": "-0.402462771455589406",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         }
@@ -7698,9 +9394,9 @@
           "startTime": 1642682423,
           "endTime": 1642682557,
           "amount": "-516975308594",
-          "amountFiat": "-0.000001080190550489",
+          "amountFiat": "-0.000001080290261706",
           "streamedAmount": "-516975308594",
-          "streamedAmountFiat": "-0.000001080190550489",
+          "streamedAmountFiat": "-0.000001080290261706",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         }
@@ -7731,9 +9427,9 @@
           "startTime": 1642682557,
           "endTime": 1642682679,
           "amount": "-23533950617174",
-          "amountFiat": "-0.000049172853422094",
+          "amountFiat": "-0.000049177392514816",
           "streamedAmount": "-23533950617174",
-          "streamedAmountFiat": "-0.000049172853422094",
+          "streamedAmountFiat": "-0.000049177392514816",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         }
@@ -7764,9 +9460,9 @@
           "startTime": 1642754650,
           "endTime": 1642769345,
           "amount": "-176884259259258715",
-          "amountFiat": "-0.330893151060477944",
+          "amountFiat": "-0.331161146645022683",
           "streamedAmount": "-176884259259258715",
-          "streamedAmountFiat": "-0.330893151060477944",
+          "streamedAmountFiat": "-0.331161146645022683",
           "transferredAmount": "0",
           "transferredAmountFiat": "0"
         }
@@ -7830,11 +9526,11 @@
           "startTime": "1642581700",
           "endTime": "1642581700",
           "amount": "-1000000000000000000",
-          "amountFiat": "-0.998893537101193700",
+          "amountFiat": "-0.999640882683226400",
           "streamedAmount": "0",
           "streamedAmountFiat": "0",
           "transferredAmount": "-1000000000000000000",
-          "transferredAmountFiat": "-0.998893537101193700"
+          "transferredAmountFiat": "-0.999640882683226400"
         }
       ],
       "totalAmountTransferred": "1000000000000000000"
@@ -7863,11 +9559,11 @@
           "startTime": "1643754668",
           "endTime": "1643754668",
           "amount": "100000000000000000",
-          "amountFiat": "0.164835014798887100",
+          "amountFiat": "0.164870029136240500",
           "streamedAmount": "0",
           "streamedAmountFiat": "0",
           "transferredAmount": "100000000000000000",
-          "transferredAmountFiat": "0.164835014798887100"
+          "transferredAmountFiat": "0.164870029136240500"
         }
       ],
       "totalAmountTransferred": "100000000000000000"
@@ -7929,11 +9625,11 @@
           "startTime": "1642682251",
           "endTime": "1642682251",
           "amount": "-100000000000000000",
-          "amountFiat": "-0.208944321427315670",
+          "amountFiat": "-0.208963608850817240",
           "streamedAmount": "0",
           "streamedAmountFiat": "0",
           "transferredAmount": "-100000000000000000",
-          "transferredAmountFiat": "-0.208944321427315670"
+          "transferredAmountFiat": "-0.208963608850817240"
         }
       ],
       "totalAmountTransferred": "100000000000000000"

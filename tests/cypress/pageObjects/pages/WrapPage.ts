@@ -1,5 +1,12 @@
 import { BasePage } from '../BasePage';
 import { networksBySlug } from '../../superData/networks';
+import {
+  assertDisplayedBalanceMatchesChain,
+  getNativeAssetBalance,
+  getNativeAssetSuperTokenBalance,
+  getNetworkBySlug,
+  warnIfExpectedBalanceIsMissing,
+} from '../../support/helpers/liveBalances';
 import { format } from 'date-fns';
 import {
   CONNECT_WALLET_BUTTON,
@@ -553,25 +560,68 @@ export class WrapPage extends BasePage {
       });
   }
 
+  /**
+   * Resolves the account alias used in the feature files (e.g.
+   * "staticBalanceAccount") to an address, and sanity-checks that the native
+   * asset symbol the Examples table names is really this network's native
+   * asset before we go and read that asset's balance.
+   */
+  private static getNativeTokenCheckContext(
+    token: string,
+    account: string,
+    network: string
+  ) {
+    return cy.fixture('commonData').then((commonData) => {
+      const accountAddress: string = commonData[account] || account;
+      const nativeCurrency = getNetworkBySlug(network).nativeCurrency;
+      expect(
+        nativeCurrency.symbol,
+        `native asset symbol of ${network}`
+      ).to.equal(token);
+      return { accountAddress: accountAddress, nativeCurrency: nativeCurrency };
+    });
+  }
+
   static validateWrapPageNativeTokenBalance(
     token: string,
     account: string,
     network: string
   ) {
-    cy.fixture('nativeTokenBalances').then((fixture) => {
-      this.hasText(
-        UNDERLYING_BALANCE,
-        `Balance: ${fixture[account][network][token].underlyingBalance}`,
-        undefined,
-        { timeout: 60000 }
-      );
-      this.hasText(
-        SUPER_TOKEN_BALANCE,
-        `${fixture[account][network][token].superTokenBalance} `,
-        undefined,
-        { timeout: 60000 }
-      );
-    });
+    this.getNativeTokenCheckContext(token, account, network).then(
+      ({ accountAddress, nativeCurrency }) => {
+        getNativeAssetBalance(network, accountAddress).then((balanceWei) => {
+          warnIfExpectedBalanceIsMissing(
+            `${token} balance`,
+            network,
+            accountAddress,
+            balanceWei
+          );
+          assertDisplayedBalanceMatchesChain(
+            UNDERLYING_BALANCE,
+            `${token} balance under the token selection button on ${network}`,
+            balanceWei,
+            nativeCurrency.decimals
+          );
+        });
+
+        getNativeAssetSuperTokenBalance(network, accountAddress).then(
+          (balanceWei) => {
+            warnIfExpectedBalanceIsMissing(
+              `${nativeCurrency.superToken.symbol} balance`,
+              network,
+              accountAddress,
+              balanceWei
+            );
+            assertDisplayedBalanceMatchesChain(
+              SUPER_TOKEN_BALANCE,
+              `${nativeCurrency.superToken.symbol} balance on the wrap page on ${network}`,
+              balanceWei,
+              nativeCurrency.superToken.decimals
+            );
+          }
+        );
+      }
+    );
   }
 
   static validateNoTokenMessageNotVisible() {
@@ -583,17 +633,28 @@ export class WrapPage extends BasePage {
     account: string,
     network: string
   ) {
-    cy.fixture('nativeTokenBalances').then((fixture) => {
-      let expectedString =
-        fixture[account][network][token].underlyingBalance === '0'
-          ? fixture[account][network][token].underlyingBalance
-          : `~${fixture[account][network][token].underlyingBalance}`;
-      this.get(`[data-cy=${token}-list-item]`).scrollIntoView();
-      this.hasText(
-        `[data-cy=${token}-list-item] ${TOKEN_BALANCE}`,
-        expectedString
-      );
-    });
+    this.getNativeTokenCheckContext(token, account, network).then(
+      ({ accountAddress, nativeCurrency }) => {
+        getNativeAssetBalance(network, accountAddress).then((balanceWei) => {
+          warnIfExpectedBalanceIsMissing(
+            `${token} balance`,
+            network,
+            accountAddress,
+            balanceWei
+          );
+          this.get(`[data-cy=${token}-list-item]`).scrollIntoView();
+          // The list item renders the same amount with roundingIndicator="~",
+          // so the text can be either "0" or "~0.9989"; the numeric comparison
+          // ignores the indicator.
+          assertDisplayedBalanceMatchesChain(
+            `[data-cy=${token}-list-item] ${TOKEN_BALANCE}`,
+            `${token} balance in the wrap page token list on ${network}`,
+            balanceWei,
+            nativeCurrency.decimals
+          );
+        });
+      }
+    );
   }
 
   static validateTokenSelectedForWrapping(token: string) {

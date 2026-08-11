@@ -33,9 +33,9 @@ const Bridge: NextPage = () => {
             textAlign: "inherit",
           }}
         >
-          Swap &amp; Bridge is operated by LI.FI, and we cannot take
-          responsibility for any issues. For support related to the bridge,
-          please refer to the LI.FI{" "}
+          Swapping and bridging are powered by LI.FI, and we cannot take
+          responsibility for any issues. For support, please refer to the
+          LI.FI{" "}
           <Link href="https://discord.com/invite/lifi" target="_blank">
             Discord server
           </Link>

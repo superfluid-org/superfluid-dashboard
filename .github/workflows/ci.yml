@@ -4,7 +4,12 @@ on:
   deployment_status:
 
 jobs:
+  # Gated on the same condition as the test jobs that depend on it. Without the
+  # guard it ran (and could fail) on every single deployment_status firing —
+  # pending, in_progress, error, inactive — so a transient checkout failure on an
+  # event that was never going to run any tests turned the run red for no reason.
   test_setup:
+    if: (github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success')
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -81,6 +86,15 @@ jobs:
         env:
           CYPRESS_baseUrl: ${{ github.event.deployment_status.environment_url }}
 
+      - name: Upload failure telemetry
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: telemetry-ui-${{ matrix.container }}
+          path: tests/cypress/results/telemetry
+          if-no-files-found: ignore
+          retention-days: 14
+
   rejected-tests:
     timeout-minutes: 45
     needs: test_setup
@@ -144,6 +158,15 @@ jobs:
         env:
           CYPRESS_baseUrl: ${{ github.event.deployment_status.environment_url }}
 
+      - name: Upload failure telemetry
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: telemetry-rejected-${{ matrix.network }}-${{ matrix.container }}
+          path: tests/cypress/results/telemetry
+          if-no-files-found: ignore
+          retention-days: 14
+
   gnosis-safe-tests:
     timeout-minutes: 30
     needs: test_setup
@@ -190,3 +213,157 @@ jobs:
           command: pnpm cypress-cloud run --browser chrome --config chromeWebSecurity=false --record --parallel --key ${{ secrets.V2_CYPRESS_RECORD_KEY }} --group Gnosis --ci-build-id ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt}} --env TAGS=@Gnosis
         env:
           CYPRESS_baseUrl: ${{ github.event.deployment_status.environment_url }}
+
+      - name: Upload failure telemetry
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: telemetry-gnosis-safe
+          path: tests/cypress/results/telemetry
+          if-no-files-found: ignore
+          retention-days: 14
+
+  # ---------------------------------------------------------------------------
+  # Test gate.
+  #
+  # THE INVARIANT: this workflow may only report success when the Cypress jobs
+  # that were *supposed* to run for this deployment_status event actually ran
+  # and passed.
+  #
+  # Why it is needed: `deployment_status` fires for every state (pending,
+  # in_progress, error, failure, success) and for both Preview and Production
+  # environments, and the test jobs are gated with `if:` conditions. GitHub
+  # reports a workflow run whose jobs were all skipped as *successful*. For 13
+  # months every "green" run of this workflow was a run in which all three test
+  # job groups were skipped — the suite had rotted and nothing said so.
+  # "Ran nothing" and "passed" must not look the same.
+  #
+  # What it enforces:
+  #   * state == 'success' && environment == 'Preview'    -> test_setup,
+  #     ui-tests, rejected-tests and gnosis-safe-tests MUST all report success.
+  #   * state == 'success' && environment == 'Production' -> test_setup and
+  #     ui-tests MUST report success; rejected-tests and gnosis-safe-tests are
+  #     legitimately skipped by their own `if:` and may report 'skipped'.
+  #   * state == 'success' && any other environment -> FAIL. The test jobs' `if:`
+  #     conditions match the environment name literally, so if Vercel ever
+  #     relabels the environment ('preview', 'Preview – dashboard', a staging
+  #     env, ...) 21 matrix jobs would silently stop running. Failing loudly here
+  #     forces the rename to be dealt with instead of quietly losing coverage.
+  #   * state == 'error' / 'failure' -> FAIL. The deployment never came up, so no
+  #     test could have run against it. Reporting that SHA as green is the same
+  #     class of bug as reporting an all-skipped run as green.
+  #   * state == 'pending' / 'in_progress' / 'queued' / 'inactive' / anything
+  #     else non-terminal -> the gate passes (these fire constantly and failing
+  #     them would be pure spam), but it still fails if a test job somehow ran
+  #     and did not succeed.
+  #   * 'failure' and 'cancelled' are never acceptable for a job that applies.
+  #
+  # RESIDUAL CAVEAT, stated honestly: a `deployment_status` event creates a
+  # *separate* workflow run per firing, and a commit status is only attached once
+  # a run for that SHA exists. During the pending window — after the 'pending'
+  # firing's gate has passed and before the 'success' firing's run has started
+  # (or while it is still running) — branch protection can see a green "Test
+  # gate" for the SHA even though the real, test-running gate has not reported
+  # yet. This gate cannot close that window on its own; what closes it is that
+  # the later 'success' run posts its own "Test gate" status which supersedes the
+  # earlier one, so the window is transient, not permanent. Do not treat a green
+  # gate as final until the deployment has reached a terminal state.
+  #
+  # NOTE: for this to actually protect anything, "Test gate" must be added as a
+  # required status check on the branch protection rule — the other jobs should
+  # not be required directly, since they legitimately skip.
+  # ---------------------------------------------------------------------------
+  test-gate:
+    name: Test gate
+    if: always()
+    needs: [test_setup, ui-tests, rejected-tests, gnosis-safe-tests]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Verify the tests that should have run did run and pass
+        env:
+          DEPLOYMENT_STATE: ${{ github.event.deployment_status.state }}
+          DEPLOYMENT_ENVIRONMENT: ${{ github.event.deployment_status.environment }}
+          SETUP_RESULT: ${{ needs.test_setup.result }}
+          UI_RESULT: ${{ needs['ui-tests'].result }}
+          REJECTED_RESULT: ${{ needs['rejected-tests'].result }}
+          GNOSIS_RESULT: ${{ needs['gnosis-safe-tests'].result }}
+        run: |
+          set -euo pipefail
+
+          echo "deployment_status.state       = ${DEPLOYMENT_STATE:-<none>}"
+          echo "deployment_status.environment = ${DEPLOYMENT_ENVIRONMENT:-<none>}"
+          echo "test_setup        = ${SETUP_RESULT}"
+          echo "ui-tests          = ${UI_RESULT}"
+          echo "rejected-tests    = ${REJECTED_RESULT}"
+          echo "gnosis-safe-tests = ${GNOSIS_RESULT}"
+          echo
+
+          failures=0
+
+          # A job that applies must be 'success'. Anything else - including
+          # 'skipped' - is a failure, because skipping is exactly the silent
+          # mode this gate exists to catch.
+          require_success() {
+            local name="$1" result="$2"
+            if [ "$result" != "success" ]; then
+              echo "::error::${name} was expected to run and pass for this deployment, but reported '${result}'."
+              failures=$((failures + 1))
+            fi
+          }
+
+          # A job that does not apply may be 'skipped' or 'success', but must
+          # never be 'failure' / 'cancelled'.
+          allow_skip() {
+            local name="$1" result="$2"
+            case "$result" in
+              success|skipped) ;;
+              *)
+                echo "::error::${name} does not apply to this deployment but reported '${result}'."
+                failures=$((failures + 1))
+                ;;
+            esac
+          }
+
+          case "${DEPLOYMENT_STATE:-}" in
+            success)
+              require_success "test_setup" "${SETUP_RESULT}"
+              # Switch explicitly on the environment name. The test jobs' `if:`
+              # conditions compare it literally, so an unrecognised value means
+              # nobody knows which jobs were supposed to run -> fail.
+              case "${DEPLOYMENT_ENVIRONMENT:-}" in
+                Preview)
+                  require_success "ui-tests" "${UI_RESULT}"
+                  require_success "rejected-tests" "${REJECTED_RESULT}"
+                  require_success "gnosis-safe-tests" "${GNOSIS_RESULT}"
+                  ;;
+                Production)
+                  require_success "ui-tests" "${UI_RESULT}"
+                  echo "Production environment: rejected-tests and gnosis-safe-tests are allowed to skip."
+                  allow_skip "rejected-tests" "${REJECTED_RESULT}"
+                  allow_skip "gnosis-safe-tests" "${GNOSIS_RESULT}"
+                  ;;
+                *)
+                  echo "::error::Unrecognised deployment environment '${DEPLOYMENT_ENVIRONMENT:-<none>}' on a successful deployment. The Cypress jobs match the environment name literally ('Preview' / 'Production'), so an unexpected name means an unknown set of jobs was skipped. Update the 'if:' conditions on ui-tests / rejected-tests / gnosis-safe-tests AND this gate."
+                  failures=$((failures + 1))
+                  ;;
+              esac
+              ;;
+            error|failure)
+              echo "::error::The deployment reported '${DEPLOYMENT_STATE}', so no Cypress job could have run against it. This SHA has no test coverage and must not report a green test gate."
+              failures=$((failures + 1))
+              ;;
+            *)
+              echo "deployment_status.state is '${DEPLOYMENT_STATE:-<none>}' (non-terminal): the Cypress jobs correctly do not apply."
+              allow_skip "test_setup" "${SETUP_RESULT}"
+              allow_skip "ui-tests" "${UI_RESULT}"
+              allow_skip "rejected-tests" "${REJECTED_RESULT}"
+              allow_skip "gnosis-safe-tests" "${GNOSIS_RESULT}"
+              ;;
+          esac
+
+          if [ "$failures" -ne 0 ]; then
+            echo "Test gate failed with ${failures} problem(s)."
+            exit 1
+          fi
+          echo "Test gate passed."

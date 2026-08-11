@@ -68,6 +68,19 @@ export class DashboardPage extends BasePage {
     this.click(`[data-cy=${network}${NETWORK_SELECTION_TOGGLE_APPENDIX}`);
   }
 
+  /**
+   * Asserts a network's switch in the network selection dropdown is off. Used by
+   * the Degen exclusion smoke scenario -- the seeded `persist:networkPreferences`
+   * in support/degenExclusion.ts can only be verified through the UI, since app-side
+   * drift (renamed slug, bumped persist version, changed slice shape) is invisible
+   * to the test process and would otherwise disable the exclusion silently.
+   */
+  static networkToggleIsOff(network: string) {
+    cy.get(`[data-cy=${network}${NETWORK_SELECTION_TOGGLE_APPENDIX} input`)
+      .should('exist')
+      .and('not.be.checked');
+  }
+
   static tokenBalancesAreNotVisible(network: string) {
     this.doesNotExist(`[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX}`);
   }
