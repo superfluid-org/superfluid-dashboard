@@ -60,24 +60,29 @@ export interface ZerionDefiPortfolioResponse {
   overview: ZerionDefiOverview;
   positions: ZerionDefiPosition[];
   positionsUnavailable: boolean;
-  nfts: ZerionNftPosition[];
+}
+
+export interface ZerionNftNetworksRequest {
+  address: string;
+  nftNetworks: true;
+}
+
+export interface ZerionNftNetworksResponse {
+  provider: "zerion";
+  byChain: Record<string, number>;
   nftsPending: boolean;
-  nftsUnavailable: boolean;
-  hasMoreNfts: boolean;
-  nextNftCursor?: string;
-  nftPageSize: number;
 }
 
 export interface ZerionNftPageRequest {
   address: string;
-  chainId?: string;
+  chainId: string;
   cursor?: string;
   nftPage: true;
 }
 
 export interface ZerionNftPageResponse {
   provider: "zerion";
-  chainId?: string;
+  chainId: string;
   nfts: ZerionNftPosition[];
   nftsPending: boolean;
   nextNftCursor?: string;

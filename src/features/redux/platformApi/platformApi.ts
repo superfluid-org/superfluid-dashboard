@@ -12,6 +12,8 @@ import {
 import {
   ZerionDefiPortfolioRequest,
   ZerionDefiPortfolioResponse,
+  ZerionNftNetworksRequest,
+  ZerionNftNetworksResponse,
   ZerionNftPageRequest,
   ZerionNftPageResponse,
 } from "../../portfolio/zerionDefiPortfolioTypes";
@@ -64,6 +66,17 @@ export const platformApi = createApi({
       keepUnusedDataFor: 120,
     }),
     zerionNftPage: build.query<ZerionNftPageResponse, ZerionNftPageRequest>({
+      query: (body) => ({
+        url: "/api/portfolio-zerion-defi",
+        method: "POST",
+        body,
+      }),
+      keepUnusedDataFor: 120,
+    }),
+    zerionNftNetworks: build.query<
+      ZerionNftNetworksResponse,
+      ZerionNftNetworksRequest
+    >({
       query: (body) => ({
         url: "/api/portfolio-zerion-defi",
         method: "POST",

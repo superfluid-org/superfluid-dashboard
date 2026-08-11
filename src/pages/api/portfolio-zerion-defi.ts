@@ -2,6 +2,8 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import {
   ZerionDefiPortfolioResponse,
   ZerionDefiPosition,
+  ZerionNftNetworksRequest,
+  ZerionNftNetworksResponse,
   ZerionNftPageRequest,
   ZerionNftPageResponse,
   ZerionNftPosition,
@@ -94,6 +96,14 @@ interface ZerionNftBody {
     };
   }>;
   links?: { next?: string | null; self?: string | null };
+}
+
+interface ZerionNftPortfolioBody {
+  data?: {
+    attributes?: {
+      positions_distribution_by_chain?: Record<string, number>;
+    };
+  };
 }
 
 class ZerionRequestError extends Error {
@@ -228,13 +238,13 @@ const mapNfts = (body?: ZerionNftBody): ZerionNftPosition[] =>
     return nft ? [nft] : [];
   });
 
-const buildNftPath = (encodedAddress: string, chainId?: string) => {
+const buildNftPath = (encodedAddress: string, chainId: string) => {
   const parameters = new URLSearchParams({
     currency: "usd",
     sort: "-floor_price",
     "page[size]": String(NFT_PAGE_SIZE),
   });
-  if (chainId) parameters.set("filter[chain_ids]", chainId);
+  parameters.set("filter[chain_ids]", chainId);
   return `/wallets/${encodedAddress}/nft-positions/?${parameters.toString()}`;
 };
 
@@ -248,7 +258,7 @@ const decodeNftCursor = ({
 }: {
   cursor: string;
   address: string;
-  chainId?: string;
+  chainId: string;
 }) => {
   try {
     const nextUrl = new URL(Buffer.from(cursor, "base64url").toString("utf8"));
@@ -312,7 +322,10 @@ const sumPositions = (positions: ZerionDefiPosition[], type?: string) =>
 export default async function handler(
   request: NextApiRequest,
   response: NextApiResponse<
-    ZerionDefiPortfolioResponse | ZerionNftPageResponse | { error: string }
+    | ZerionDefiPortfolioResponse
+    | ZerionNftNetworksResponse
+    | ZerionNftPageResponse
+    | { error: string }
   >
 ) {
   if (request.method !== "POST") {
@@ -338,13 +351,31 @@ export default async function handler(
     `/wallets/${encodedAddress}/positions/` +
     "?currency=usd&filter%5Bpositions%5D=only_complex" +
     "&filter%5Btrash%5D=only_non_trash&sort=-value";
-  const nftsPath = buildNftPath(encodedAddress);
 
   try {
+    if (
+      (request.body as Partial<ZerionNftNetworksRequest>).nftNetworks === true
+    ) {
+      const nftPortfolioResult = await fetchZerion<ZerionNftPortfolioBody>({
+        path: `/wallets/${encodedAddress}/nft-portfolio?currency=usd`,
+        apiKey,
+      });
+
+      response.setHeader("Cache-Control", "private, no-store");
+      return response.status(200).json({
+        provider: "zerion",
+        byChain:
+          nftPortfolioResult.body?.data?.attributes
+            ?.positions_distribution_by_chain ?? {},
+        nftsPending: nftPortfolioResult.pending,
+      });
+    }
+
     if ((request.body as Partial<ZerionNftPageRequest>).nftPage === true) {
       const { chainId, cursor } = request.body as ZerionNftPageRequest;
       if (
-        (chainId !== undefined && !/^[a-z0-9-]{1,64}$/.test(chainId)) ||
+        typeof chainId !== "string" ||
+        !/^[a-z0-9-]{1,64}$/.test(chainId) ||
         (cursor !== undefined && typeof cursor !== "string")
       ) {
         return response.status(400).json({ error: "Invalid NFT request" });
@@ -394,24 +425,6 @@ export default async function handler(
         error instanceof Error ? error.message : "Unknown error"
       );
     }
-    await wait(BETWEEN_REQUESTS_MS);
-
-    let nftsResult: Awaited<ReturnType<typeof fetchZerion<ZerionNftBody>>>;
-    let nftsUnavailable = false;
-    try {
-      nftsResult = await fetchZerion<ZerionNftBody>({
-        path: nftsPath,
-        apiKey,
-      });
-    } catch (error) {
-      nftsUnavailable = true;
-      nftsResult = { pending: false };
-      console.warn(
-        "Zerion NFT positions were unavailable; returning fungible portfolio",
-        error instanceof Error ? error.message : "Unknown error"
-      );
-    }
-
     const overview = portfolioResult.body?.data?.attributes;
     const positions = (positionsResult.body?.data ?? [])
       .flatMap((position) => {
@@ -419,7 +432,6 @@ export default async function handler(
         return mappedPosition ? [mappedPosition] : [];
       })
       .sort((first, second) => (second.value ?? -1) - (first.value ?? -1));
-    const nfts = mapNfts(nftsResult.body);
     const byPositionType = overview?.positions_distribution_by_type ?? {};
     const portfolioTotal =
       optionalFiniteNumber(overview?.total?.positions) ?? 0;
@@ -447,12 +459,6 @@ export default async function handler(
       },
       positions,
       positionsUnavailable,
-      nfts,
-      nftsPending: nftsResult.pending,
-      nftsUnavailable,
-      hasMoreNfts: Boolean(nftsResult.body?.links?.next),
-      nextNftCursor: encodeNftCursor(nftsResult.body?.links?.next),
-      nftPageSize: NFT_PAGE_SIZE,
     });
   } catch (error) {
     console.error(

@@ -36,6 +36,7 @@ import { TokenType } from "../redux/endpoints/tokenTypes";
 import { ERC20Balance } from "./useERC20Balances";
 import { useAppCurrency } from "../settings/appSettingsHooks";
 import ZerionDefiPortfolio from "../portfolio/ZerionDefiPortfolio";
+import ZerionNftPortfolio from "../portfolio/ZerionNftPortfolio";
 
 export interface FetchingStatus {
   isLoading: boolean;
@@ -76,6 +77,7 @@ interface PortfolioTotalCardProps {
 enum PortfolioView {
   Balances = "balances",
   Defi = "defi",
+  Nfts = "nfts",
 }
 
 const PortfolioMissingPriceWarning: FC<{ symbols: string[] }> = ({
@@ -263,16 +265,6 @@ const PortfolioTotalCard: FC<PortfolioTotalCardProps> = ({
               ) : null}
             </Stack>
           )}
-          {isZerionTotal && !showSkeleton ? (
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              data-cy="portfolio-total-source"
-              sx={{ display: { xs: "none", sm: "block" } }}
-            >
-              Includes protocol positions · Data by Zerion
-            </Typography>
-          ) : null}
         </Stack>
 
         {flowMetrics.map(({ label, mobileLabel, value, color, dataCy }) => (
@@ -550,8 +542,13 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
         />
         <Tab
           value={PortfolioView.Defi}
-          label="DeFi & NFTs"
+          label="DeFi"
           data-cy="portfolio-defi-tab"
+        />
+        <Tab
+          value={PortfolioView.Nfts}
+          label="NFTs"
+          data-cy="portfolio-nfts-tab"
         />
       </Tabs>
 
@@ -593,8 +590,10 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
             {isLoading && <TokenSnapshotLoadingTable />}
           </Stack>
         </>
-      ) : (
+      ) : portfolioView === PortfolioView.Defi ? (
         <ZerionDefiPortfolio address={address} />
+      ) : (
+        <ZerionNftPortfolio address={address} />
       )}
     </>
   );

@@ -1,30 +1,20 @@
-import ChevronLeftRoundedIcon from "@mui/icons-material/ChevronLeftRounded";
-import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
-import CollectionsRoundedIcon from "@mui/icons-material/CollectionsRounded";
-import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
 import {
   Alert,
   Avatar,
   Box,
   Button,
   Chip,
-  Link,
-  MenuItem,
   Paper,
-  Select,
   Skeleton,
   Stack,
   Typography,
 } from "@mui/material";
-import { FC, ReactNode, useMemo, useState } from "react";
+import { FC, useMemo, useState } from "react";
 import NetworkIcon from "../network/NetworkIcon";
 import { allNetworks, tryFindNetwork } from "../network/networks";
 import { platformApi } from "../redux/platformApi/platformApi";
 import { useAppCurrency } from "../settings/appSettingsHooks";
-import {
-  ZerionDefiPosition,
-  ZerionNftPosition,
-} from "./zerionDefiPortfolioTypes";
+import { ZerionDefiPosition } from "./zerionDefiPortfolioTypes";
 
 interface ZerionDefiPortfolioProps {
   address: string;
@@ -125,13 +115,16 @@ const Change: FC<{ value?: number }> = ({ value }) => {
   );
 };
 
-const NetworkLabel: FC<{ chainId: string; count?: number }> = ({
+const NetworkSectionHeading: FC<{ chainId: string; count: number }> = ({
   chainId,
   count,
 }) => {
   const network = getDashboardNetwork(chainId);
   return (
-    <Stack direction="row" sx={{ alignItems: "center", gap: 2 }}>
+    <Stack
+      direction="row"
+      sx={{ alignItems: "center", gap: 2, px: { xs: 2, md: 4 }, py: 2 }}
+    >
       {network ? (
         <NetworkIcon network={network} size={36} />
       ) : (
@@ -143,35 +136,13 @@ const NetworkLabel: FC<{ chainId: string; count?: number }> = ({
         <Typography variant="h5" translate="no">
           {getNetworkName(chainId)}
         </Typography>
-        {count !== undefined ? (
-          <Typography variant="body2" color="text.secondary">
-            {count} {count === 1 ? "item" : "items"}
-          </Typography>
-        ) : null}
+        <Typography variant="body2" color="text.secondary">
+          {count} {count === 1 ? "position" : "positions"}
+        </Typography>
       </Box>
     </Stack>
   );
 };
-
-const NetworkSectionHeading: FC<{
-  chainId: string;
-  count?: number;
-  trailing?: ReactNode;
-}> = ({ chainId, count, trailing }) => (
-  <Stack
-    direction="row"
-    sx={{
-      alignItems: "center",
-      justifyContent: "space-between",
-      gap: 2,
-      px: { xs: 2, md: 4 },
-      py: 2,
-    }}
-  >
-    <NetworkLabel chainId={chainId} count={count} />
-    {trailing}
-  </Stack>
-);
 
 const AssetAvatar: FC<{
   name: string;
@@ -263,91 +234,10 @@ const DefiPositionRow: FC<{
   </Box>
 );
 
-const NftCard: FC<{
-  nft: ZerionNftPosition;
-  formatCurrency: (value?: number) => string;
-}> = ({ nft, formatCurrency }) => (
-  <Box
-    data-cy="zerion-nft-position"
-    sx={{
-      border: "1px solid",
-      borderColor: "divider",
-      borderRadius: 2,
-      overflow: "hidden",
-      minWidth: 0,
-      bgcolor: "background.paper",
-    }}
-  >
-    <Box
-      sx={{
-        aspectRatio: "1 / 1",
-        bgcolor: "background.default",
-        display: "grid",
-        placeItems: "center",
-        overflow: "hidden",
-      }}
-    >
-      {nft.imageUrl ? (
-        <Box
-          component="img"
-          src={nft.imageUrl}
-          alt={nft.name}
-          loading="lazy"
-          sx={{ width: "100%", height: "100%", objectFit: "cover" }}
-        />
-      ) : (
-        <CollectionsRoundedIcon sx={{ color: "text.disabled", fontSize: 42 }} />
-      )}
-    </Box>
-    <Stack sx={{ p: 1.5, gap: 0.25, minWidth: 0 }}>
-      <Typography variant="h7" noWrap>
-        {nft.name}
-      </Typography>
-      <Typography variant="body2" color="text.secondary" noWrap>
-        {nft.collectionName || getNetworkName(nft.chainId)}
-      </Typography>
-      <Stack
-        direction="row"
-        sx={{ justifyContent: "space-between", gap: 1, mt: 0.75, minWidth: 0 }}
-      >
-        <Typography variant="caption" color="text.secondary" noWrap>
-          {nft.amount !== "1" ? `×${nft.amount}` : getNetworkName(nft.chainId)}
-        </Typography>
-        {nft.value !== undefined ? (
-          <Typography
-            variant="body2mono"
-            sx={{ fontWeight: 600, whiteSpace: "nowrap" }}
-          >
-            {formatCurrency(nft.value)}
-          </Typography>
-        ) : null}
-      </Stack>
-    </Stack>
-  </Box>
-);
-
 const ZerionDefiPortfolio: FC<ZerionDefiPortfolioProps> = ({ address }) => {
   const currency = useAppCurrency();
   const [positionFilter, setPositionFilter] = useState<PositionFilter>("all");
-  const [nftNetwork, setNftNetwork] = useState("all");
-  const [nftPage, setNftPage] = useState(0);
-  const [nftCursors, setNftCursors] = useState<Array<string | undefined>>([
-    undefined,
-  ]);
   const query = platformApi.useZerionDefiPortfolioQuery({ address });
-  const currentNftCursor = nftCursors[nftPage];
-  const usesEmbeddedNftPage = nftNetwork === "all" && nftPage === 0;
-  const nftPageQuery = platformApi.useZerionNftPageQuery(
-    {
-      address,
-      nftPage: true,
-      chainId: nftNetwork === "all" ? undefined : nftNetwork,
-      cursor: currentNftCursor,
-    },
-    {
-      skip: usesEmbeddedNftPage || query.isLoading || query.isError,
-    }
-  );
 
   const formatCurrency = (value?: number) => {
     if (value === undefined) return "—";
@@ -379,63 +269,6 @@ const ZerionDefiPortfolio: FC<ZerionDefiPortfolioProps> = ({ address }) => {
     );
   }, [filteredPositions]);
 
-  const availableNftNetworks = useMemo(() => {
-    const chainIds = new Set<string>();
-    Object.entries(query.data?.overview.byChain ?? {}).forEach(
-      ([chainId, value]) => {
-        if (value > 0) chainIds.add(chainId);
-      }
-    );
-    query.data?.nfts.forEach(({ chainId }) => chainIds.add(chainId));
-    chainIds.delete("unknown");
-    return [...chainIds].sort((first, second) =>
-      getNetworkName(first).localeCompare(getNetworkName(second))
-    );
-  }, [query.data?.nfts, query.data?.overview.byChain]);
-
-  const currentNfts = usesEmbeddedNftPage
-    ? query.data?.nfts ?? []
-    : nftPageQuery.currentData?.nfts ?? [];
-  const nextNftCursor = usesEmbeddedNftPage
-    ? query.data?.nextNftCursor
-    : nftPageQuery.currentData?.nextNftCursor;
-  const nftsPending = usesEmbeddedNftPage
-    ? query.data?.nftsPending
-    : nftPageQuery.currentData?.nftsPending;
-  const nftsLoading =
-    query.isLoading ||
-    (!usesEmbeddedNftPage &&
-      (nftPageQuery.isLoading || nftPageQuery.isFetching));
-
-  const nftGroups = useMemo(() => {
-    const groups = currentNfts.reduce<Record<string, ZerionNftPosition[]>>(
-      (currentGroups, nft) => {
-        (currentGroups[nft.chainId] ??= []).push(nft);
-        return currentGroups;
-      },
-      {}
-    );
-    return Object.entries(groups).sort(([firstChain], [secondChain]) =>
-      getNetworkName(firstChain).localeCompare(getNetworkName(secondChain))
-    );
-  }, [currentNfts]);
-
-  const changeNftNetwork = (chainId: string) => {
-    setNftNetwork(chainId);
-    setNftPage(0);
-    setNftCursors([undefined]);
-  };
-
-  const goToNextNftPage = () => {
-    if (!nextNftCursor) return;
-    setNftCursors((currentCursors) => {
-      const nextCursors = currentCursors.slice(0, nftPage + 1);
-      nextCursors[nftPage + 1] = nextNftCursor;
-      return nextCursors;
-    });
-    setNftPage((currentPage) => currentPage + 1);
-  };
-
   if (query.isError) {
     return (
       <Alert
@@ -446,7 +279,7 @@ const ZerionDefiPortfolio: FC<ZerionDefiPortfolioProps> = ({ address }) => {
           </Button>
         }
       >
-        Zerion portfolio data could not be loaded.
+        Portfolio positions could not be loaded.
       </Alert>
     );
   }
@@ -465,12 +298,8 @@ const ZerionDefiPortfolio: FC<ZerionDefiPortfolioProps> = ({ address }) => {
         }}
       >
         <Stack
-          direction={{ xs: "column", sm: "row" }}
-          sx={{
-            alignItems: { xs: "flex-start", sm: "center" },
-            justifyContent: "space-between",
-            gap: 2,
-          }}
+          direction="row"
+          sx={{ alignItems: "center", justifyContent: "space-between", gap: 3 }}
         >
           <Box>
             <Typography variant="body2" color="text.secondary">
@@ -487,34 +316,18 @@ const ZerionDefiPortfolio: FC<ZerionDefiPortfolioProps> = ({ address }) => {
               <Change value={query.data?.overview.changePercent24h} />
             ) : null}
           </Box>
-          <Stack
-            direction="row"
-            sx={{ alignItems: "center", gap: { xs: 3, md: 6 } }}
-          >
-            <Box>
-              <Typography variant="body2" color="text.secondary">
-                Staked
+          <Box sx={{ textAlign: "right" }}>
+            <Typography variant="body2" color="text.secondary">
+              Staked
+            </Typography>
+            {query.isLoading ? (
+              <Skeleton width={100} />
+            ) : (
+              <Typography variant="h6mono" data-cy="zerion-staked-total">
+                {formatCurrency(query.data?.overview.stakedTotal)}
               </Typography>
-              {query.isLoading ? (
-                <Skeleton width={100} />
-              ) : (
-                <Typography variant="h6mono" data-cy="zerion-staked-total">
-                  {formatCurrency(query.data?.overview.stakedTotal)}
-                </Typography>
-              )}
-            </Box>
-            <Link
-              href="https://zerion.io"
-              target="_blank"
-              rel="noreferrer"
-              underline="hover"
-              color="text.secondary"
-              sx={{ display: "inline-flex", alignItems: "center", gap: 0.5 }}
-            >
-              <Typography variant="body2">Data by Zerion</Typography>
-              <OpenInNewRoundedIcon sx={{ fontSize: 16 }} />
-            </Link>
-          </Stack>
+            )}
+          </Box>
         </Stack>
       </Paper>
 
@@ -527,12 +340,7 @@ const ZerionDefiPortfolio: FC<ZerionDefiPortfolioProps> = ({ address }) => {
             gap: 1.5,
           }}
         >
-          <Box>
-            <Typography variant="h5">Protocol positions</Typography>
-            <Typography variant="body2" color="text.secondary">
-              {query.data?.positions.length ?? 0} assets across protocols
-            </Typography>
-          </Box>
+          <Typography variant="h5">Protocol positions</Typography>
           <Stack
             direction="row"
             sx={{ gap: 0.5, maxWidth: "100%", flexWrap: "wrap" }}
@@ -642,195 +450,17 @@ const ZerionDefiPortfolio: FC<ZerionDefiPortfolioProps> = ({ address }) => {
         ) : (
           <Paper
             variant="outlined"
-            sx={{ p: 3, mx: { xs: -2, md: 0 }, borderRadius: { xs: 0, md: 3 } }}
+            sx={{
+              p: 3,
+              mx: { xs: -2, md: 0 },
+              borderRadius: { xs: 0, md: 3 },
+            }}
           >
             <Typography color="text.secondary">
               No matching protocol positions found.
             </Typography>
           </Paper>
         )}
-      </Stack>
-
-      <Stack sx={{ gap: 2 }}>
-        <Stack
-          direction="row"
-          sx={{ alignItems: "center", justifyContent: "space-between", gap: 2 }}
-        >
-          <Box>
-            <Typography variant="h5">NFTs</Typography>
-            <Typography variant="body2" color="text.secondary">
-              Paginated by network
-            </Typography>
-          </Box>
-          <Select
-            size="small"
-            value={nftNetwork}
-            onChange={(event) => changeNftNetwork(String(event.target.value))}
-            aria-label="NFT network"
-            data-cy="zerion-nft-network"
-            sx={{ minWidth: { xs: 150, sm: 210 } }}
-          >
-            <MenuItem value="all">All networks</MenuItem>
-            {availableNftNetworks.map((chainId) => (
-              <MenuItem key={chainId} value={chainId}>
-                {getNetworkName(chainId)}
-              </MenuItem>
-            ))}
-          </Select>
-        </Stack>
-
-        {query.data?.nftsUnavailable ? (
-          <Alert severity="warning">
-            NFT positions are temporarily unavailable. Protocol totals are still
-            up to date.
-          </Alert>
-        ) : null}
-        {nftsPending ? (
-          <Alert severity="info">
-            Zerion is still indexing NFTs for this wallet.
-          </Alert>
-        ) : null}
-        {nftPageQuery.isError ? (
-          <Alert
-            severity="warning"
-            action={
-              <Button
-                color="inherit"
-                size="small"
-                onClick={() => nftPageQuery.refetch()}
-              >
-                Retry
-              </Button>
-            }
-          >
-            This NFT page could not be loaded.
-          </Alert>
-        ) : null}
-
-        <Paper
-          variant="outlined"
-          aria-busy={nftsLoading}
-          sx={{
-            mx: { xs: -2, md: 0 },
-            borderRadius: { xs: 0, md: 3 },
-            overflow: "hidden",
-            boxShadow: { xs: "none", md: 1 },
-          }}
-        >
-          {nftsLoading ? (
-            <Box
-              sx={{
-                display: "grid",
-                gridTemplateColumns: {
-                  xs: "repeat(2, minmax(0, 1fr))",
-                  sm: "repeat(3, minmax(0, 1fr))",
-                  md: "repeat(4, minmax(0, 1fr))",
-                },
-                gap: 2,
-                p: { xs: 2, md: 3 },
-              }}
-            >
-              {Array.from({ length: 4 }).map((_, index) => (
-                <Skeleton
-                  key={index}
-                  variant="rounded"
-                  sx={{ aspectRatio: "4 / 5" }}
-                />
-              ))}
-            </Box>
-          ) : nftGroups.length ? (
-            nftGroups.map(([chainId, nfts]) => (
-              <Box
-                key={chainId}
-                sx={{
-                  borderTop: "1px solid",
-                  borderColor: "divider",
-                  "&:first-of-type": { borderTop: "none" },
-                }}
-              >
-                <NetworkSectionHeading chainId={chainId} count={nfts.length} />
-                <Box
-                  sx={{
-                    display: "grid",
-                    gridTemplateColumns: {
-                      xs: "repeat(2, minmax(0, 1fr))",
-                      sm: "repeat(3, minmax(0, 1fr))",
-                      md: "repeat(4, minmax(0, 1fr))",
-                    },
-                    gap: 2,
-                    px: { xs: 2, md: 3 },
-                    pb: 3,
-                  }}
-                >
-                  {nfts.map((nft) => (
-                    <NftCard
-                      key={nft.id}
-                      nft={nft}
-                      formatCurrency={formatCurrency}
-                    />
-                  ))}
-                </Box>
-              </Box>
-            ))
-          ) : !nftsPending &&
-            !query.data?.nftsUnavailable &&
-            !nftPageQuery.isError ? (
-            <Stack
-              sx={{ alignItems: "center", textAlign: "center", gap: 1, p: 5 }}
-            >
-              <CollectionsRoundedIcon
-                sx={{ color: "text.disabled", fontSize: 44 }}
-              />
-              <Typography variant="h6">No NFTs found</Typography>
-              <Typography variant="body2" color="text.secondary">
-                This wallet has no visible NFTs on the selected network.
-              </Typography>
-            </Stack>
-          ) : null}
-
-          {(nftPage > 0 || nextNftCursor) && !nftPageQuery.isError ? (
-            <Stack
-              direction="row"
-              sx={{
-                alignItems: "center",
-                justifyContent: "flex-end",
-                gap: 1,
-                px: { xs: 2, md: 3 },
-                py: 1.5,
-                borderTop: "1px solid",
-                borderColor: "divider",
-              }}
-            >
-              <Button
-                size="small"
-                color="secondary"
-                startIcon={<ChevronLeftRoundedIcon />}
-                disabled={nftPage === 0 || nftsLoading}
-                onClick={() =>
-                  setNftPage((currentPage) => Math.max(0, currentPage - 1))
-                }
-              >
-                Previous
-              </Button>
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                sx={{ minWidth: 56, textAlign: "center" }}
-              >
-                Page {nftPage + 1}
-              </Typography>
-              <Button
-                size="small"
-                color="secondary"
-                endIcon={<ChevronRightRoundedIcon />}
-                disabled={!nextNftCursor || nftsLoading}
-                onClick={goToNextNftPage}
-              >
-                Next
-              </Button>
-            </Stack>
-          ) : null}
-        </Paper>
       </Stack>
     </Stack>
   );
