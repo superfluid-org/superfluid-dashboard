@@ -265,11 +265,10 @@ const ZerionDefiPortfolio: FC<ZerionDefiPortfolioProps> = ({ address }) => {
 
   const formatCurrency = (value?: number) => {
     if (value === undefined) return "—";
-    const maximumFractionDigits = Math.abs(value) >= 1_000 ? 0 : 2;
     return currency.format(
       value.toLocaleString(undefined, {
         minimumFractionDigits: 2,
-        maximumFractionDigits,
+        maximumFractionDigits: 2,
       })
     );
   };

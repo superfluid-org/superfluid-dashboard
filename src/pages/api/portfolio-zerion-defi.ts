@@ -231,7 +231,8 @@ const sumPositions = (positions: ZerionDefiPosition[], type?: string) =>
   positions.reduce(
     (total, position) =>
       !type || position.positionType === type
-        ? total + (position.value ?? 0)
+        ? total +
+          (position.positionType === "loan" ? -1 : 1) * (position.value ?? 0)
         : total,
     0
   );
@@ -322,8 +323,11 @@ export default async function handler(
     const byPositionType = overview?.positions_distribution_by_type ?? {};
     const portfolioTotal =
       optionalFiniteNumber(overview?.total?.positions) ?? 0;
-    const walletTotal = optionalFiniteNumber(byPositionType.wallet) ?? 0;
-    const defiTotal = sumPositions(positions) || portfolioTotal - walletTotal;
+    const walletTotal = optionalFiniteNumber(byPositionType.wallet);
+    const defiTotal =
+      walletTotal === undefined
+        ? sumPositions(positions)
+        : portfolioTotal - walletTotal;
     const stakedTotal =
       optionalFiniteNumber(byPositionType.staked) ??
       sumPositions(positions, "staked");
