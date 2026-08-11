@@ -9,14 +9,6 @@ import {
   ERC20TransferHistoryRequest,
   ERC20TransferHistoryResponse,
 } from "../../portfolio/erc20TransferHistory";
-import {
-  ZerionDefiPortfolioRequest,
-  ZerionDefiPortfolioResponse,
-  ZerionNftNetworksRequest,
-  ZerionNftNetworksResponse,
-  ZerionNftPageRequest,
-  ZerionNftPageResponse,
-} from "../../portfolio/zerionDefiPortfolioTypes";
 
 export type IsAccountWhitelistedApiResponse =
   /** status 200 Is User account whitelisted */ boolean;
@@ -53,36 +45,6 @@ export const platformApi = createApi({
         body,
       }),
       keepUnusedDataFor: 60,
-    }),
-    zerionDefiPortfolio: build.query<
-      ZerionDefiPortfolioResponse,
-      ZerionDefiPortfolioRequest
-    >({
-      query: (body) => ({
-        url: "/api/portfolio-zerion-defi",
-        method: "POST",
-        body,
-      }),
-      keepUnusedDataFor: 120,
-    }),
-    zerionNftPage: build.query<ZerionNftPageResponse, ZerionNftPageRequest>({
-      query: (body) => ({
-        url: "/api/portfolio-zerion-defi",
-        method: "POST",
-        body,
-      }),
-      keepUnusedDataFor: 120,
-    }),
-    zerionNftNetworks: build.query<
-      ZerionNftNetworksResponse,
-      ZerionNftNetworksRequest
-    >({
-      query: (body) => ({
-        url: "/api/portfolio-zerion-defi",
-        method: "POST",
-        body,
-      }),
-      keepUnusedDataFor: 120,
     }),
     isAccountWhitelisted: build.query<
       IsAccountWhitelistedApiResponse,

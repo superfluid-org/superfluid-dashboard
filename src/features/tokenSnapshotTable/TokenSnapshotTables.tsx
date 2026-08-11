@@ -7,8 +7,6 @@ import {
   Paper,
   Skeleton,
   Stack,
-  Tab,
-  Tabs,
   Tooltip,
   Typography,
   useMediaQuery,
@@ -16,14 +14,7 @@ import {
 } from "@mui/material";
 import { Address } from "@superfluid-finance/sdk-core";
 import Decimal from "decimal.js";
-import {
-  FC,
-  SyntheticEvent,
-  useCallback,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { FC, useCallback, useMemo, useRef, useState } from "react";
 import OpenIcon from "../../components/OpenIcon/OpenIcon";
 import FaucetCard from "../faucet/FaucetCard";
 import { useActiveNetworks } from "../network/ActiveNetworksContext";
@@ -35,8 +26,6 @@ import { platformApi } from "../redux/platformApi/platformApi";
 import { TokenType } from "../redux/endpoints/tokenTypes";
 import { ERC20Balance } from "./useERC20Balances";
 import { useAppCurrency } from "../settings/appSettingsHooks";
-import ZerionDefiPortfolio from "../portfolio/ZerionDefiPortfolio";
-import ZerionNftPortfolio from "../portfolio/ZerionNftPortfolio";
 
 export interface FetchingStatus {
   isLoading: boolean;
@@ -70,14 +59,6 @@ interface TokenSnapshotTablesProps {
 interface PortfolioTotalCardProps {
   entries: PortfolioValueEntry[];
   loading: boolean;
-  zerionTotal?: number;
-  zerionLoading: boolean;
-}
-
-enum PortfolioView {
-  Balances = "balances",
-  Defi = "defi",
-  Nfts = "nfts",
 }
 
 const PortfolioMissingPriceWarning: FC<{ symbols: string[] }> = ({
@@ -119,8 +100,6 @@ const PortfolioMissingPriceWarning: FC<{ symbols: string[] }> = ({
 const PortfolioTotalCard: FC<PortfolioTotalCardProps> = ({
   entries,
   loading,
-  zerionTotal,
-  zerionLoading,
 }) => {
   const currency = useAppCurrency();
   const sumEntries = (key: keyof PortfolioValueEntry) =>
@@ -128,11 +107,7 @@ const PortfolioTotalCard: FC<PortfolioTotalCardProps> = ({
       const value = entry[key];
       return typeof value === "string" ? total.plus(value) : total;
     }, new Decimal(0));
-  const calculatedWalletTotal = sumEntries("value");
-  const total =
-    zerionTotal === undefined
-      ? calculatedWalletTotal
-      : new Decimal(zerionTotal);
+  const total = sumEntries("value");
   const monthlyNetFlow = sumEntries("monthlyNetFlowValue");
   const monthlyInflow = sumEntries("monthlyInflowValue");
   const monthlyOutflow = sumEntries("monthlyOutflowValue");
@@ -153,8 +128,7 @@ const PortfolioTotalCard: FC<PortfolioTotalCardProps> = ({
     if (value.lt(0)) return `−${formattedAbsoluteValue}`;
     return currency.format("0.00");
   };
-  const showSkeleton = loading || (zerionLoading && zerionTotal === undefined);
-  const isZerionTotal = zerionTotal !== undefined;
+  const showSkeleton = loading;
 
   const flowMetrics = [
     {
@@ -260,7 +234,7 @@ const PortfolioTotalCard: FC<PortfolioTotalCardProps> = ({
               >
                 {formattedTotal}
               </Typography>
-              {!isZerionTotal && missingPriceSymbols.length > 0 ? (
+              {missingPriceSymbols.length > 0 ? (
                 <PortfolioMissingPriceWarning symbols={missingPriceSymbols} />
               ) : null}
             </Stack>
@@ -335,7 +309,6 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
     useState<NetworkFetchingStatuses>({});
 
   const [networkSelectionOpen, setNetworkSelectionOpen] = useState(false);
-  const [portfolioView, setPortfolioView] = useState(PortfolioView.Balances);
   const [portfolioValues, setPortfolioValues] = useState<
     Record<string, PortfolioValueEntry>
   >({});
@@ -344,28 +317,6 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
     address,
     chainIds: activeNetworks.map(({ id }) => id),
   });
-  const zerionPortfolioQuery = platformApi.useZerionDefiPortfolioQuery({
-    address,
-  });
-
-  const zerionPortfolioTotal = useMemo(() => {
-    const byChain = zerionPortfolioQuery.currentData?.overview.byChain;
-    if (!byChain) return undefined;
-
-    const zerionChainAliases: Record<string, string> = {
-      "arbitrum-one": "arbitrum",
-      bsc: "binance-smart-chain",
-      gnosis: "xdai",
-    };
-    let matchedNetwork = false;
-    const total = activeNetworks.reduce((currentTotal, network) => {
-      const chainId = zerionChainAliases[network.slugName] ?? network.slugName;
-      if (!(chainId in byChain)) return currentTotal;
-      matchedNetwork = true;
-      return currentTotal + byChain[chainId];
-    }, 0);
-    return matchedNetwork ? total : undefined;
-  }, [activeNetworks, zerionPortfolioQuery.currentData?.overview.byChain]);
 
   const erc20BalancesByChainId = useMemo(() => {
     const balancesByChainId: Record<number, ERC20Balance[]> = {};
@@ -406,13 +357,6 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
 
   const openNetworkSelection = () => setNetworkSelectionOpen(true);
   const closeNetworkSelection = () => setNetworkSelectionOpen(false);
-  const changePortfolioView = (
-    _event: SyntheticEvent,
-    nextView: PortfolioView
-  ) => {
-    setPortfolioView(nextView);
-    setNetworkSelectionOpen(false);
-  };
 
   const fetchingCallback = useCallback(
     (networkId: number, fetchingStatus: FetchingStatus) =>
@@ -491,110 +435,69 @@ const TokenSnapshotTables: FC<TokenSnapshotTablesProps> = ({ address }) => {
         sx={{
           alignItems: "center",
           justifyContent: "space-between",
-          mb: 1,
+          mb: 2,
         }}
       >
         <Typography variant={isBelowMd ? "h3" : "h4"} component="h1">
           Portfolio
         </Typography>
 
-        {portfolioView === PortfolioView.Balances ? (
-          <Stack
-            direction="row"
-            sx={{
-              alignItems: "center",
-              gap: { xs: 1, sm: 2 },
-            }}
+        <Stack
+          direction="row"
+          sx={{
+            alignItems: "center",
+            gap: { xs: 1, sm: 2 },
+          }}
+        >
+          <Button
+            data-cy={"network-selection-button"}
+            ref={networkSelectionRef}
+            variant="outlined"
+            color="secondary"
+            endIcon={<OpenIcon open={networkSelectionOpen} />}
+            onClick={openNetworkSelection}
           >
-            <Button
-              data-cy={"network-selection-button"}
-              ref={networkSelectionRef}
-              variant="outlined"
-              color="secondary"
-              endIcon={<OpenIcon open={networkSelectionOpen} />}
-              onClick={openNetworkSelection}
-            >
-              All networks
-            </Button>
-          </Stack>
-        ) : null}
+            All networks
+          </Button>
+        </Stack>
         <NetworkSelectionFilter
           open={networkSelectionOpen}
           anchorEl={networkSelectionRef.current}
           onClose={closeNetworkSelection}
         />
       </Stack>
-      <Tabs
-        value={portfolioView}
-        onChange={changePortfolioView}
-        variant={isBelowMd ? "fullWidth" : "standard"}
-        aria-label="Portfolio views"
+      <PortfolioTotalCard
+        entries={Object.values(portfolioValues)}
+        loading={isPortfolioSummaryLoading}
+      />
+
+      {!hasContent && !isLoading && (
+        <Stack sx={{ gap: 4 }}>
+          <TokenSnapshotEmptyCard includesERC20s />
+          {/* <FaucetCard /> */}
+        </Stack>
+      )}
+      <Stack
         sx={{
-          mb: 3,
-          borderBottom: "1px solid",
-          borderColor: "divider",
+          gap: 4,
         }}
       >
-        <Tab
-          value={PortfolioView.Balances}
-          label="Balances"
-          data-cy="portfolio-balances-tab"
-        />
-        <Tab
-          value={PortfolioView.Defi}
-          label="DeFi"
-          data-cy="portfolio-defi-tab"
-        />
-        <Tab
-          value={PortfolioView.Nfts}
-          label="NFTs"
-          data-cy="portfolio-nfts-tab"
-        />
-      </Tabs>
-
-      {portfolioView === PortfolioView.Balances ? (
-        <>
-          <PortfolioTotalCard
-            entries={Object.values(portfolioValues)}
-            loading={isPortfolioSummaryLoading}
-            zerionTotal={zerionPortfolioTotal}
-            zerionLoading={zerionPortfolioQuery.isLoading}
+        {activeNetworks.map((network) => (
+          <TokenSnapshotTable
+            key={network.id}
+            address={address}
+            network={network}
+            erc20Balances={erc20BalancesByChainId[network.id] || []}
+            erc20BalancesLoading={
+              portfolioTokensQuery.isLoading || portfolioTokensQuery.isFetching
+            }
+            useERC20Fallback={fallbackChainIds.has(network.id)}
+            fetchingCallback={fetchingCallback}
+            portfolioValueCallback={portfolioValueCallback}
           />
-
-          {!hasContent && !isLoading ? (
-            <Stack sx={{ gap: 4 }}>
-              <TokenSnapshotEmptyCard includesERC20s />
-              {/* <FaucetCard /> */}
-            </Stack>
-          ) : null}
-          <Stack
-            sx={{
-              gap: 4,
-            }}
-          >
-            {activeNetworks.map((network) => (
-              <TokenSnapshotTable
-                key={network.id}
-                address={address}
-                network={network}
-                erc20Balances={erc20BalancesByChainId[network.id] || []}
-                erc20BalancesLoading={
-                  portfolioTokensQuery.isLoading ||
-                  portfolioTokensQuery.isFetching
-                }
-                useERC20Fallback={fallbackChainIds.has(network.id)}
-                fetchingCallback={fetchingCallback}
-                portfolioValueCallback={portfolioValueCallback}
-              />
-            ))}
-            {isLoading && <TokenSnapshotLoadingTable />}
-          </Stack>
-        </>
-      ) : portfolioView === PortfolioView.Defi ? (
-        <ZerionDefiPortfolio address={address} />
-      ) : (
-        <ZerionNftPortfolio address={address} />
-      )}
+        ))}
+        {isLoading && <TokenSnapshotLoadingTable />}
+      </Stack>
     </>
   );
 };
