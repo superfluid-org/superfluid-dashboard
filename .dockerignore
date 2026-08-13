@@ -1,0 +1,17 @@
+.git
+.github
+.idea
+.cache
+.env*
+.next
+.pnpm-store
+node_modules
+contracts
+docs
+specs
+superfluid-wallet
+tests
+tmp
+*.tsbuildinfo
+npm-debug.log*
+Dockerfile*
