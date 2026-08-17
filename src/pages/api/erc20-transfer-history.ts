@@ -176,7 +176,7 @@ export default async function handler(
     return response.status(405).json({ error: "Method not allowed" });
   }
 
-  const apiKey = process.env.ALCHEMY_TEST_KEY;
+  const apiKey = process.env.ALCHEMY_API_KEY;
   if (!apiKey) {
     return response.status(503).json({ error: "Alchemy is not configured" });
   }

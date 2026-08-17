@@ -16,13 +16,6 @@ Then(/^"([^"]*)" balances are not visible$/, (network: string) => {
   DashboardPage.tokenBalancesAreNotVisible(network);
 });
 
-Then(
-  /^"([^"]*)" is toggled off in the network selection dropdown$/,
-  (network: string) => {
-    DashboardPage.networkToggleIsOff(network);
-  }
-);
-
 Then(/^No Super Token balance is shown$/, () => {
   DashboardPage.noBalancesScreenIsVisible();
 });

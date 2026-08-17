@@ -170,12 +170,6 @@ const blockExplorers = {
       url: "https://celoscan.io/",
     },
   },
-  degenscan: {
-    mainnet: {
-      name: "Degen Scan",
-      url: "https://explorer.degen.tips/",
-    },
-  },
 } as const;
 
 export const networkDefinition = {
@@ -694,48 +688,6 @@ export const networkDefinition = {
     vestingSubgraphUrl: undefined,
     autoWrapSubgraphUrl: undefined,
   },
-  degenChain: {
-    ...chain.degen,
-    supportsGDA: getSupportsGDA(chainIds.degen),
-    metadata: ensureDefined(
-      sfMeta.getNetworkByChainId(chainIds.degen),
-      chainIds.degen
-    ),
-    blockExplorers: {
-      ...chain.degen.blockExplorers,
-      default: blockExplorers.degenscan.mainnet,
-    },
-    slugName: "degen",
-    v1ShortName: "degen",
-    bufferTimeInMinutes: 240,
-    icon: "/icons/network/degen.svg",
-    color: "#A46EFD",
-    rpcUrls: {
-      ...chain.degen.rpcUrls,
-      superfluid: { http: [superfluidRpcUrls["degenChain"]] },
-    },
-    fallbackSubgraphUrl:
-      "https://degenchain.subgraph.superfluid.dev",
-    getLinkForTransaction: (txHash: string): string =>
-      `https://explorer.degen.tips/tx/${txHash}`,
-    getLinkForAddress: (address: string): string =>
-      `https://explorer.degen.tips/address/${address}`,
-    nativeCurrency: {
-      ...ensureDefined(chain.degen.nativeCurrency),
-      address: NATIVE_ASSET_ADDRESS,
-      type: TokenType.NativeAssetUnderlyingToken,
-      superToken: ensureDefined(findNativeAssetSuperTokenFromTokenList({ chainId: chain.degen.id, address: "0xda58FA9bfc3D3960df33ddD8D4d762Cf8Fa6F7ad" })),
-      logoURI: "https://tokenlist.superfluid.org/icons/degen.png",
-      isSuperToken: false,
-    },
-    vestingContractAddress: {
-      v1: undefined,
-      v2: undefined,
-      v3: undefined,
-    },
-    vestingSubgraphUrl: undefined,
-    autoWrapSubgraphUrl: undefined,
-  },
   sepolia: {
     ...chain.sepolia,
     supportsGDA: getSupportsGDA(chainIds.sepolia),
@@ -993,7 +945,6 @@ export const allNetworks: [Network, ...Network[]] = orderBy(
       networkDefinition.sepolia,
       networkDefinition.base,
       networkDefinition.baseSepolia,
-      networkDefinition.degenChain,
       networkDefinition.scroll,
     ],
     (x) => x.id // Put lower ids first (Ethereum mainnet will be first)
@@ -1083,6 +1034,10 @@ export const deprecatedNetworkChainIds = [
  * flagged there.
  */
 const metadataNetworkExclusions = new Map<number, string>([
+  [
+    666666666,
+    "Degen Chain is no longer supported by the Dashboard because its public infrastructure is unavailable.",
+  ],
   [
     534351,
     "Scroll Sepolia is discontinued, and its canonical Superfluid subgraph alias was serving Optimism Sepolia data (reported upstream).",

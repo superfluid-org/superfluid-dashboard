@@ -1,18 +1,17 @@
-import sfMetadata from "@superfluid-finance/metadata";
+import type { NextApiRequest, NextApiResponse } from "next";
 import { extendedSuperTokenList } from "@superfluid-finance/tokenlist";
 import Decimal from "decimal.js";
 import { utils } from "ethers";
-import type { NextApiRequest, NextApiResponse } from "next";
 import {
   PortfolioToken,
   PortfolioTokensRequest,
   PortfolioTokensResponse,
 } from "../../features/portfolio/portfolioTokens";
 
-const ARCHIVE_RPC_DOMAIN = "arpc.x.superfluid.dev";
+const ALCHEMY_PORTFOLIO_URL = "https://api.g.alchemy.com/data/v1";
 const LIFI_TOKENS_URL = "https://li.quest/v1/tokens";
+const MAX_NETWORKS_PER_REQUEST = 5;
 const MAX_PAGES_PER_REQUEST = 50;
-const MAX_METADATA_BATCH_SIZE = 100;
 const MIN_PORTFOLIO_VALUE_USD = 0.01;
 const LIFI_PRICE_CACHE_TTL_MS = 5 * 60 * 1000;
 
@@ -20,70 +19,65 @@ export const config = {
   maxDuration: 60,
 };
 
-interface TokenDisplayMetadata {
-  decimals?: number;
-  logoURI?: string;
-  name?: string;
-  symbol?: string;
-}
-
-const trustedTokensById = new Map<string, TokenDisplayMetadata>(
-  extendedSuperTokenList.tokens.map((token) => [
-    `${token.chainId}-${token.address.toLowerCase()}`,
-    {
-      decimals: token.decimals,
-      logoURI: token.logoURI,
-      name: token.name,
-      symbol: token.symbol,
-    },
-  ])
+const trustedTokenIds = new Set(
+  extendedSuperTokenList.tokens.map(
+    ({ chainId, address }) => `${chainId}-${address.toLowerCase()}`
+  )
 );
 
-interface ArchiveNetwork {
-  chainId: number;
-  name: string;
-  rpcUrl: string;
+const alchemyNetworkByChainId: Record<number, string> = {
+  1: "eth-mainnet",
+  10: "opt-mainnet",
+  56: "bnb-mainnet",
+  100: "gnosis-mainnet",
+  137: "polygon-mainnet",
+  8453: "base-mainnet",
+  42161: "arb-mainnet",
+  42220: "celo-mainnet",
+  43113: "avax-fuji",
+  43114: "avax-mainnet",
+  84532: "base-sepolia",
+  534351: "scroll-sepolia",
+  534352: "scroll-mainnet",
+  11155111: "eth-sepolia",
+  11155420: "opt-sepolia",
+};
+
+const chainIdByAlchemyNetwork = Object.fromEntries(
+  Object.entries(alchemyNetworkByChainId).map(([chainId, network]) => [
+    network,
+    Number(chainId),
+  ])
+) as Record<string, number>;
+
+// Alchemy currently normalizes Polygon's requested network name in responses.
+chainIdByAlchemyNetwork["matic-mainnet"] = 137;
+
+interface AlchemyToken {
+  network: string;
+  tokenAddress: string | null;
+  tokenBalance: string;
+  tokenMetadata?: {
+    decimals?: number | null;
+    logo?: string | null;
+    name?: string | null;
+    symbol?: string | null;
+  };
+  tokenPrices?: Array<{
+    currency: string;
+    value: string;
+  }>;
+  error?: string;
 }
 
-interface JsonRpcRequest {
-  jsonrpc: "2.0";
-  id: number;
-  method: string;
-  params: unknown[];
-}
-
-interface JsonRpcResponse<T> {
-  jsonrpc?: string;
-  id?: number | string | null;
-  result?: T;
+interface AlchemyResponse {
+  data?: {
+    tokens?: AlchemyToken[];
+    pageKey?: string;
+  };
   error?: {
-    code?: number;
     message?: string;
   };
-}
-
-interface ArchiveTokenBalance {
-  contractAddress?: string | null;
-  tokenBalance?: string | null;
-}
-
-interface ArchiveTokenBalancesResult {
-  tokenBalances?: ArchiveTokenBalance[];
-  pageKey?: string;
-}
-
-interface ArchiveTokenMetadata {
-  decimals?: number | null;
-  logo?: string | null;
-  name?: string | null;
-  symbol?: string | null;
-}
-
-interface ArchiveToken {
-  chainId: number;
-  tokenAddress: string;
-  tokenBalance: string;
-  tokenMetadata?: TokenDisplayMetadata;
 }
 
 interface LifiToken {
@@ -120,213 +114,21 @@ const hasBalance = (balance: string): boolean => {
   }
 };
 
-const getArchiveNetwork = (chainId: number): ArchiveNetwork | undefined => {
-  const networkName = sfMetadata.getNetworkByChainId(chainId)?.name;
-  if (!networkName || !/^[a-z0-9-]+$/.test(networkName)) return undefined;
-
-  return {
-    chainId,
-    name: networkName,
-    rpcUrl: `https://${networkName}.${ARCHIVE_RPC_DOMAIN}`,
-  };
-};
-
-const getRpcErrorMessage = <T>(body: JsonRpcResponse<T>, fallback: string) =>
-  body.error?.message || fallback;
-
-const callArchiveRpc = async <T>({
-  rpcUrl,
-  method,
-  params,
-}: {
-  rpcUrl: string;
-  method: string;
-  params: unknown[];
-}): Promise<T> => {
-  const rpcResponse = await fetch(rpcUrl, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({
-      jsonrpc: "2.0",
-      id: 1,
-      method,
-      params,
-    } satisfies JsonRpcRequest),
-  });
-  const body = (await rpcResponse.json()) as JsonRpcResponse<T>;
-
-  if (!rpcResponse.ok || body.error) {
-    throw new Error(
-      getRpcErrorMessage(
-        body,
-        `Archive RPC responded with ${rpcResponse.status}`
-      )
-    );
-  }
-  if (!("result" in body)) {
-    throw new Error(`Archive RPC returned no result for ${method}`);
-  }
-
-  return body.result as T;
-};
-
-const callArchiveRpcBatch = async <T>({
-  rpcUrl,
-  requests,
-}: {
-  rpcUrl: string;
-  requests: JsonRpcRequest[];
-}): Promise<JsonRpcResponse<T>[]> => {
-  const rpcResponse = await fetch(rpcUrl, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify(requests),
-  });
-  const body = (await rpcResponse.json()) as
-    | JsonRpcResponse<T>[]
-    | JsonRpcResponse<never>;
-
-  if (!rpcResponse.ok || !Array.isArray(body)) {
-    throw new Error(
-      Array.isArray(body)
-        ? `Archive RPC responded with ${rpcResponse.status}`
-        : getRpcErrorMessage(
-            body,
-            `Archive RPC responded with ${rpcResponse.status}`
-          )
-    );
-  }
-
-  return body;
-};
-
-const fetchTokenBalances = async ({
-  address,
-  rpcUrl,
-}: {
-  address: string;
-  rpcUrl: string;
-}) => {
-  const balancesByAddress = new Map<string, string>();
-  const seenPageKeys = new Set<string>();
-  let pageKey: string | undefined;
-
-  for (let page = 0; page < MAX_PAGES_PER_REQUEST; page += 1) {
-    const params: unknown[] = [address, "erc20"];
-    if (pageKey) params.push({ pageKey });
-
-    const result = await callArchiveRpc<ArchiveTokenBalancesResult>({
-      rpcUrl,
-      method: "alchemy_getTokenBalances",
-      params,
-    });
-
-    (result.tokenBalances ?? []).forEach(
-      ({ contractAddress, tokenBalance }) => {
-        const normalizedAddress = contractAddress?.toLowerCase();
-        if (
-          normalizedAddress &&
-          /^0x[0-9a-f]{40}$/.test(normalizedAddress) &&
-          tokenBalance &&
-          hasBalance(tokenBalance)
-        ) {
-          balancesByAddress.set(normalizedAddress, tokenBalance);
-        }
-      }
-    );
-
-    const nextPageKey = result.pageKey;
-    if (!nextPageKey || seenPageKeys.has(nextPageKey)) break;
-
-    seenPageKeys.add(nextPageKey);
-    pageKey = nextPageKey;
-  }
-
-  return balancesByAddress;
-};
-
-const fetchTokenMetadata = async ({
-  rpcUrl,
-  tokenAddresses,
-}: {
-  rpcUrl: string;
-  tokenAddresses: string[];
-}): Promise<Map<string, TokenDisplayMetadata>> => {
-  const metadataByAddress = new Map<string, TokenDisplayMetadata>();
-
-  for (const tokenChunk of chunk(tokenAddresses, MAX_METADATA_BATCH_SIZE)) {
-    const addressByRequestId = new Map<number, string>();
-    const requests = tokenChunk.map((tokenAddress, index) => {
-      const id = index + 1;
-      addressByRequestId.set(id, tokenAddress);
-      return {
-        jsonrpc: "2.0" as const,
-        id,
-        method: "alchemy_getTokenMetadata",
-        params: [tokenAddress],
-      };
-    });
-    const responses = await callArchiveRpcBatch<ArchiveTokenMetadata>({
-      rpcUrl,
-      requests,
-    });
-
-    responses.forEach((response) => {
-      const requestId = Number(response.id);
-      const tokenAddress = addressByRequestId.get(requestId);
-      const metadata = response.result;
-      if (!tokenAddress || !metadata || response.error) return;
-
-      const decimals =
-        typeof metadata.decimals === "number" &&
-        Number.isInteger(metadata.decimals) &&
-        metadata.decimals >= 0
-          ? metadata.decimals
-          : undefined;
-      metadataByAddress.set(tokenAddress, {
-        decimals,
-        logoURI: metadata.logo || undefined,
-        name: metadata.name || undefined,
-        symbol: metadata.symbol || undefined,
-      });
-    });
-  }
-
-  return metadataByAddress;
-};
-
-const fetchNetworkTokens = async ({
-  address,
-  network,
-}: {
-  address: string;
-  network: ArchiveNetwork;
-}): Promise<ArchiveToken[]> => {
-  const balancesByAddress = await fetchTokenBalances({
-    address,
-    rpcUrl: network.rpcUrl,
-  });
-  const tokenAddresses = [...balancesByAddress.keys()];
-  const metadataByAddress = tokenAddresses.length
-    ? await fetchTokenMetadata({
-        rpcUrl: network.rpcUrl,
-        tokenAddresses,
-      })
-    : new Map<string, TokenDisplayMetadata>();
-
-  return tokenAddresses.map((tokenAddress) => ({
-    chainId: network.chainId,
-    tokenAddress,
-    tokenBalance: balancesByAddress.get(tokenAddress)!,
-    tokenMetadata: metadataByAddress.get(tokenAddress),
-  }));
-};
-
-const fetchLifiPrices = async (
+const getLifiPrices = async (
   chainIds: number[]
 ): Promise<Map<string, number>> => {
+  const cacheKey = [...chainIds]
+    .sort((first, second) => first - second)
+    .join(",");
+  if (
+    lifiPriceCache?.cacheKey === cacheKey &&
+    lifiPriceCache.expiresAt > Date.now()
+  ) {
+    return lifiPriceCache.prices;
+  }
+
   const requestUrl = new URL(LIFI_TOKENS_URL);
-  requestUrl.searchParams.set("chains", chainIds.join(","));
+  requestUrl.searchParams.set("chains", cacheKey);
   requestUrl.searchParams.set("minPriceUSD", "0");
   const response = await fetch(requestUrl);
   if (!response.ok) {
@@ -348,50 +150,6 @@ const fetchLifiPrices = async (
     })
   );
 
-  return prices;
-};
-
-const getLifiPrices = async (
-  chainIds: number[]
-): Promise<Map<string, number>> => {
-  const sortedChainIds = [...new Set(chainIds)].sort(
-    (first, second) => first - second
-  );
-  const cacheKey = sortedChainIds.join(",");
-  if (
-    lifiPriceCache?.cacheKey === cacheKey &&
-    lifiPriceCache.expiresAt > Date.now()
-  ) {
-    return lifiPriceCache.prices;
-  }
-
-  let prices: Map<string, number>;
-  try {
-    prices = await fetchLifiPrices(sortedChainIds);
-  } catch (error) {
-    if (sortedChainIds.length === 1) throw error;
-
-    prices = new Map<string, number>();
-    const perChainResults = await Promise.allSettled(
-      sortedChainIds.map(async (chainId) => ({
-        chainId,
-        prices: await fetchLifiPrices([chainId]),
-      }))
-    );
-    perChainResults.forEach((result, index) => {
-      if (result.status === "fulfilled") {
-        result.value.prices.forEach((price, tokenId) =>
-          prices.set(tokenId, price)
-        );
-      } else {
-        console.warn(
-          `LI.FI portfolio pricing failed for chain ${sortedChainIds[index]}`,
-          result.reason
-        );
-      }
-    });
-  }
-
   lifiPriceCache = {
     cacheKey,
     expiresAt: Date.now() + LIFI_PRICE_CACHE_TTL_MS,
@@ -401,40 +159,106 @@ const getLifiPrices = async (
 };
 
 const mapToken = (
-  token: ArchiveToken,
+  token: AlchemyToken,
   lifiPrices: Map<string, number>
 ): PortfolioToken | null => {
-  const tokenId = `${token.chainId}-${token.tokenAddress}`;
-  const trustedMetadata = trustedTokensById.get(tokenId);
+  const chainId = chainIdByAlchemyNetwork[token.network];
+  const tokenAddress = token.tokenAddress?.toLowerCase();
   const metadata = token.tokenMetadata;
-  const decimals = metadata?.decimals ?? trustedMetadata?.decimals ?? 18;
-  const effectivePrice = lifiPrices.get(tokenId);
+
+  if (
+    !chainId ||
+    !tokenAddress ||
+    token.error ||
+    !hasBalance(token.tokenBalance)
+  ) {
+    return null;
+  }
+
+  const priceUsd = token.tokenPrices?.find(
+    ({ currency }) => currency.toLowerCase() === "usd"
+  )?.value;
+  const parsedAlchemyPrice = priceUsd ? Number(priceUsd) : undefined;
+  const alchemyPrice =
+    parsedAlchemyPrice !== undefined &&
+    Number.isFinite(parsedAlchemyPrice) &&
+    parsedAlchemyPrice > 0
+      ? parsedAlchemyPrice
+      : undefined;
+  const tokenId = `${chainId}-${tokenAddress}`;
+  const effectivePrice = alchemyPrice ?? lifiPrices.get(tokenId);
+  const isTrusted = trustedTokenIds.has(tokenId);
   const valueUsd =
     effectivePrice !== undefined
-      ? new Decimal(utils.formatUnits(token.tokenBalance, decimals)).mul(
-          effectivePrice
-        )
+      ? new Decimal(
+          utils.formatUnits(token.tokenBalance, metadata?.decimals ?? 18)
+        ).mul(effectivePrice)
       : undefined;
   const hasMeaningfulValue = valueUsd?.gte(MIN_PORTFOLIO_VALUE_USD) ?? false;
 
-  // Token discovery returns every non-zero airdrop, including spam. Keep
-  // valued holdings plus assets maintained in the Superfluid token list.
-  if (!hasMeaningfulValue && !trustedMetadata) return null;
+  // Alchemy returns every non-zero airdrop, including thousands of spam tokens.
+  // Keep holdings valued by either provider plus the maintained token list.
+  if (!hasMeaningfulValue && !isTrusted) return null;
 
   return {
-    chainId: token.chainId,
-    tokenAddress: token.tokenAddress,
+    chainId,
+    tokenAddress,
     balance: token.tokenBalance,
-    decimals,
-    name: metadata?.name || trustedMetadata?.name || "Unknown token",
-    symbol:
-      metadata?.symbol ||
-      trustedMetadata?.symbol ||
-      `${token.tokenAddress.slice(0, 6)}…`,
-    logoURI: metadata?.logoURI || trustedMetadata?.logoURI,
+    decimals: metadata?.decimals ?? 18,
+    name: metadata?.name || "Unknown token",
+    symbol: metadata?.symbol || `${tokenAddress.slice(0, 6)}…`,
+    logoURI: metadata?.logo || undefined,
     priceUsd: effectivePrice,
     valueUsd: valueUsd && valueUsd.isFinite() ? valueUsd.toNumber() : undefined,
   };
+};
+
+const fetchNetworkChunk = async ({
+  apiKey,
+  address,
+  networks,
+}: {
+  apiKey: string;
+  address: string;
+  networks: string[];
+}): Promise<AlchemyToken[]> => {
+  const tokens: AlchemyToken[] = [];
+  let pageKey: string | undefined;
+  const seenPageKeys = new Set<string>();
+
+  for (let page = 0; page < MAX_PAGES_PER_REQUEST; page += 1) {
+    const response = await fetch(
+      `${ALCHEMY_PORTFOLIO_URL}/${apiKey}/assets/tokens/by-address`,
+      {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          addresses: [{ address, networks }],
+          withMetadata: true,
+          withPrices: true,
+          includeNativeTokens: false,
+          includeErc20Tokens: true,
+          ...(pageKey ? { pageKey } : {}),
+        }),
+      }
+    );
+
+    const body = (await response.json()) as AlchemyResponse;
+    if (!response.ok) {
+      throw new Error(
+        body.error?.message || `Alchemy responded with ${response.status}`
+      );
+    }
+
+    tokens.push(...(body.data?.tokens ?? []));
+    const nextPageKey = body.data?.pageKey;
+    if (!nextPageKey || seenPageKeys.has(nextPageKey)) break;
+
+    seenPageKeys.add(nextPageKey);
+    pageKey = nextPageKey;
+  }
+
+  return tokens;
 };
 
 export default async function handler(
@@ -444,6 +268,11 @@ export default async function handler(
   if (request.method !== "POST") {
     response.setHeader("Allow", "POST");
     return response.status(405).json({ error: "Method not allowed" });
+  }
+
+  const apiKey = process.env.ALCHEMY_API_KEY;
+  if (!apiKey) {
+    return response.status(503).json({ error: "Alchemy is not configured" });
   }
 
   const { address, chainIds } = request.body as Partial<PortfolioTokensRequest>;
@@ -457,25 +286,27 @@ export default async function handler(
   }
 
   const uniqueChainIds = [...new Set(chainIds)];
-  const archiveNetworks = uniqueChainIds.flatMap((chainId) => {
-    const network = getArchiveNetwork(chainId);
-    return network ? [network] : [];
+  const supported = uniqueChainIds.flatMap((chainId) => {
+    const network = alchemyNetworkByChainId[chainId];
+    return network ? [{ chainId, network }] : [];
   });
   const fallbackChainIds = uniqueChainIds.filter(
-    (chainId) => !getArchiveNetwork(chainId)
+    (chainId) => !alchemyNetworkByChainId[chainId]
   );
 
+  const networkChunks = chunk(supported, MAX_NETWORKS_PER_REQUEST);
   const [results, lifiPrices] = await Promise.all([
     Promise.allSettled(
-      archiveNetworks.map((network) =>
-        fetchNetworkTokens({ address, network }).then((tokens) => ({
-          network,
-          tokens,
-        }))
+      networkChunks.map((networkChunk) =>
+        fetchNetworkChunk({
+          apiKey,
+          address,
+          networks: networkChunk.map(({ network }) => network),
+        }).then((tokens) => ({ tokens, networkChunk }))
       )
     ),
-    archiveNetworks.length > 0
-      ? getLifiPrices(archiveNetworks.map(({ chainId }) => chainId)).catch(
+    supported.length > 0
+      ? getLifiPrices(supported.map(({ chainId }) => chainId)).catch(
           (error) => {
             console.error("LI.FI portfolio pricing request failed", error);
             return new Map<string, number>();
@@ -484,23 +315,20 @@ export default async function handler(
       : Promise.resolve(new Map<string, number>()),
   ]);
 
-  const archiveTokens: ArchiveToken[] = [];
+  const alchemyTokens: AlchemyToken[] = [];
   results.forEach((result, index) => {
     if (result.status === "fulfilled") {
-      archiveTokens.push(...result.value.tokens);
+      alchemyTokens.push(...result.value.tokens);
       return;
     }
 
-    const failedNetwork = archiveNetworks[index];
-    fallbackChainIds.push(failedNetwork.chainId);
-    console.error(
-      `Archive portfolio request failed for ${failedNetwork.name}`,
-      result.reason
-    );
+    const failedChunk = networkChunks[index];
+    fallbackChainIds.push(...failedChunk.map(({ chainId }) => chainId));
+    console.error("Alchemy portfolio request failed", result.reason);
   });
 
   const tokensById = new Map<string, PortfolioToken>();
-  archiveTokens.forEach((token) => {
+  alchemyTokens.forEach((token) => {
     const mapped = mapToken(token, lifiPrices);
     if (mapped) {
       tokensById.set(`${mapped.chainId}-${mapped.tokenAddress}`, mapped);
