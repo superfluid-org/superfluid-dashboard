@@ -263,9 +263,9 @@ export class Common extends BasePage {
    * This replaces `waitForSpookySkeletonsToDisapear`, which asserted that no
    * `.MuiSkeleton-root` existed anywhere on the page. That coupled every
    * scenario to every network's RPC and subgraph health: in CI run 31123182886 a
-   * single Degen approvals table stuck loading failed 30 scenarios across eight
-   * rejected-test shards, none of which were about Degen, and none of which ever
-   * reached the transaction rejection they purport to cover.
+   * single unhealthy network table stuck loading failed 30 scenarios across
+   * eight rejected-test shards, none of which reached the transaction rejection
+   * they purport to cover.
    *
    * A positive check is also the stronger assertion. "opsepolia's table has
    * arrived" is what the following step actually needs; "no skeleton anywhere"

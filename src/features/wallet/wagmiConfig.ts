@@ -22,17 +22,8 @@ const projectId = appConfig.walletConnectProjectId;
 const customRpcUrls = allNetworks.reduce<CustomRpcUrlMap>((acc, x) => {
   const chainId = x.id;
 
-  // const transport = fallback([
-  //   http(x.rpcUrls.superfluid.http[0]), // Prioritize Superfluid API
-  //   http(x.rpcUrls.default.http[0]) // Fallback to wagmi-defined default public RPC
-  // ], {
-  //   rank: false
-  // })
-
   acc[`eip155:${chainId}`] = [{
     url: x.rpcUrls.superfluid.http[0],
-  }, {
-    url: x.rpcUrls.default.http[0]
   }];
 
   return acc;

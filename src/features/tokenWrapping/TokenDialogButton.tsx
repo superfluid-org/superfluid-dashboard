@@ -18,11 +18,13 @@ export const TokenDialogButton: FC<{
   onBlur?: () => void;
   network: Network;
   tokens: TokenMinimal[];
+  tokenBalances?: Record<string, string>;
   isTokensFetching: boolean;
   showUpgrade?: boolean;
 }> = ({
   token = null,
   tokens = EMPTY_ARRAY,
+  tokenBalances,
   isTokensFetching = false,
   ButtonProps = {},
   onTokenSelect,
@@ -48,6 +50,8 @@ export const TokenDialogButton: FC<{
                 isSuper={!!isSuperToken}
                 chainId={network.id}
                 tokenAddress={token.address}
+                logoURI={token.logoURI}
+                symbol={token.symbol}
                 isUnlisted={!isUnderlyingToken && !isListed}
                 isLoading={false}
               />
@@ -82,6 +86,7 @@ export const TokenDialogButton: FC<{
             onBlur();
           }}
           tokens={tokens}
+          tokenBalances={tokenBalances}
           isTokensFetching={isTokensFetching}
           network={network}
           showUpgrade={showUpgrade}
