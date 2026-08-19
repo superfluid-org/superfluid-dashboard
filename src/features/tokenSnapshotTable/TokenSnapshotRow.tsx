@@ -27,14 +27,12 @@ import OpenIcon from "../../components/OpenIcon/OpenIcon";
 import { getTokenPagePath } from "../../pages/token/[_network]/[_token]";
 import { getSendPagePath } from "../../pages/send";
 import { getTransferPagePath } from "../../pages/transfer";
-import { Currency } from "../../utils/currencyUtils";
 import {
   BIG_NUMBER_ZERO,
   calculateMaybeCriticalAtTimestamp,
 } from "../../utils/tokenUtils";
 import { Network } from "../network/networks";
 import { rpcApi } from "../redux/store";
-import { useAppCurrency } from "../settings/appSettingsHooks";
 import { UnitOfTime } from "../send/FlowRateInput";
 import StreamsTable from "../streamsTable/StreamsTable";
 import Amount from "../token/Amount";
@@ -42,7 +40,6 @@ import FlowingBalance from "../token/FlowingBalance";
 import TokenIcon from "../token/TokenIcon";
 import FiatAmount from "../tokenPrice/FiatAmount";
 import FlowingFiatBalance from "../tokenPrice/FlowingFiatBalance";
-import tokenPriceApi from "../tokenPrice/tokenPriceApi.slice";
 import useTokenPrice from "../tokenPrice/useTokenPrice";
 import BalanceCriticalIndicator from "./BalanceCriticalIndicator";
 import { isDefined } from "../../utils/ensureDefined";
@@ -105,7 +102,6 @@ interface TokenSnapshotRowProps {
   network: Network;
   snapshot: ExtendedAccountTokenSnapshot;
   lastElement: boolean;
-  priceUsd?: number;
   portfolioValueCallback: PortfolioValueCallback;
 }
 
@@ -113,7 +109,6 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
   network,
   snapshot,
   lastElement,
-  priceUsd,
   portfolioValueCallback,
 }) => {
   const theme = useTheme();
@@ -137,20 +132,7 @@ const TokenSnapshotRow: FC<TokenSnapshotRowProps> = ({
   });
   const tokenSymbol = token?.data?.symbol;
 
-  const currency = useAppCurrency();
-  const fallbackTokenPrice = useTokenPrice(
-    network.id,
-    priceUsd === undefined ? tokenAddress : undefined
-  );
-  const exchangeRates = tokenPriceApi.useGetUSDExchangeRateQuery();
-  const exchangeRate =
-    currency === Currency.USD
-      ? 1
-      : exchangeRates.currentData?.[currency.toString()];
-  const tokenPrice =
-    priceUsd !== undefined && exchangeRate !== undefined
-      ? priceUsd * exchangeRate
-      : fallbackTokenPrice;
+  const tokenPrice = useTokenPrice(network.id, tokenAddress);
 
   const { currentData: balanceData } = rpcApi.useRealtimeBalanceQuery({
     chainId: network.id,

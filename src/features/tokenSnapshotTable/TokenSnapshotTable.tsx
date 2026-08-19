@@ -109,17 +109,6 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
     () => listedTokenSnapshots.concat(unlistedTokenSnapshots),
     [listedTokenSnapshots, unlistedTokenSnapshots]
   );
-  const portfolioPriceUsdByAddress = useMemo(
-    () =>
-      new Map(
-        portfolioERC20Balances.flatMap(({ token, priceUsd }) =>
-          priceUsd === undefined
-            ? []
-            : [[token.address.toLowerCase(), priceUsd] as const]
-        )
-      ),
-    [portfolioERC20Balances]
-  );
 
   const {
     tokensWithBalances: fallbackERC20Balances,
@@ -243,9 +232,6 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
               key={snapshot.id}
               network={network}
               snapshot={snapshot}
-              priceUsd={portfolioPriceUsdByAddress.get(
-                snapshot.token.toLowerCase()
-              )}
               portfolioValueCallback={portfolioValueCallback}
               lastElement={
                 erc20Balances.length === 0 && tokenSnapshots.length <= index + 1
