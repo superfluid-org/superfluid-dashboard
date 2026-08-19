@@ -374,14 +374,22 @@ const ERC20BalanceRow: FC<ERC20BalanceRowProps> = ({
               />
             </ListItemAvatar>
             <ListItemText
+              data-cy="token-symbol"
               primary={token.symbol}
-              secondary={token.name}
+              secondary={
+                effectivePrice && (
+                  <FiatAmount wei={1} decimals={0} price={effectivePrice} />
+                )
+              }
               slotProps={{
-                primary: { variant: "h6", component: "div" },
+                primary: {
+                  variant: "h6",
+                  component: "div",
+                  sx: !effectivePrice ? { lineHeight: "44px" } : {},
+                },
                 secondary: {
-                  variant: "body2",
-                  color: "text.secondary",
-                  noWrap: true,
+                  variant: "body2mono",
+                  color: "textSecondary",
                 },
               }}
               sx={{ minWidth: 0 }}
@@ -438,7 +446,7 @@ const ERC20BalanceRow: FC<ERC20BalanceRowProps> = ({
                 },
                 secondary: {
                   variant: "body2mono",
-                  color: "text.secondary",
+                  color: "textSecondary",
                   sx: getPortfolioMobileNumericTextStyles(theme, "bottom"),
                 },
               }}
