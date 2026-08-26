@@ -98,9 +98,14 @@ export const TransactionBoundary: FC<TransactionBoundaryProps> = ({
   }, [mutationResult.isLoading]);
 
   // Reopen the dialog if the relay poll times out into "status unknown" after the user already
-  // closed the loading dialog — they must see the "don't retry" warning + execution id.
+  // closed the loading dialog — they must see the "don't retry" warning + execution id. Same for
+  // a Safe request that has been handed to its owners: the execution id is the only handle on a
+  // live intent, so the user must get a chance to keep it.
   useEffect(() => {
-    if (mutationResult.relayPhase === "relay-status-unknown") {
+    if (
+      mutationResult.relayPhase === "relay-status-unknown" ||
+      mutationResult.relayPhase === "safe-awaiting-authorization"
+    ) {
       setDialogOpen(true);
     }
   }, [mutationResult.relayPhase]);
