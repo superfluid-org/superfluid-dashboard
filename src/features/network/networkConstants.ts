@@ -13,6 +13,7 @@ export const chainIds = {
   baseSepolia: 84532,
   scroll: 534352,
   optimismSepolia: 11155420,
+  arcTestnet: 5042002,
 } as const;
 
 export const autoWrapManagerAddresses = {
@@ -156,6 +157,7 @@ export const superfluidRpcUrls = {
   "base-sepolia": "https://rpc-endpoints.superfluid.dev/base-sepolia",
   scroll: "https://rpc-endpoints.superfluid.dev/scroll-mainnet",
   "optimism-sepolia": "https://rpc-endpoints.superfluid.dev/optimism-sepolia",
+  "arc-testnet": "https://rpc-endpoints.superfluid.dev/arc-testnet",
 } as const;
 
 export const superfluidPlatformUrls = [
