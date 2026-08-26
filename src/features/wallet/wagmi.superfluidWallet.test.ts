@@ -1,15 +1,49 @@
-import { createConfig, http, type CreateConnectorFn } from "@wagmi/core";
+import { createConfig, type CreateConnectorFn } from "@wagmi/core";
 import {
   DEFAULT_STORAGE_KEY,
   superfluidWallet,
 } from "@d10r/wagmi-superfluid-wallet";
+import { custom, type EIP1193Provider } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { optimismSepolia } from "viem/chains";
+import { baseSepolia, optimismSepolia } from "viem/chains";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const TEST_PRIVATE_KEY =
   "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80" as const;
 const TEST_CHAIN_ID = optimismSepolia.id;
+const FAKE_TX_HASH =
+  "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef";
+
+const mockRpcTransport = custom({
+  async request({ method }) {
+    switch (method) {
+      case "eth_chainId":
+        return `0x${baseSepolia.id.toString(16)}`;
+      case "eth_getTransactionCount":
+        return "0x1";
+      case "eth_gasPrice":
+      case "eth_maxPriorityFeePerGas":
+        return "0x59682f00";
+      case "eth_estimateGas":
+        return "0x5208";
+      case "eth_blockNumber":
+        return "0x1";
+      case "eth_getBlockByNumber":
+        return { baseFeePerGas: "0x1", number: "0x1" };
+      case "eth_feeHistory":
+        return {
+          oldestBlock: "0x1",
+          baseFeePerGas: ["0x1", "0x1"],
+          gasUsedRatio: [0.5],
+          reward: [["0x1"]],
+        };
+      case "eth_sendRawTransaction":
+        return FAKE_TX_HASH;
+      default:
+        throw new Error(`mock rpc: unsupported method ${method}`);
+    }
+  },
+});
 
 function createLocalStorageMock() {
   const store = new Map<string, string>();
@@ -78,6 +112,9 @@ function setupBrowserMocks() {
           data: tx.data as `0x${string}` | undefined,
         });
       }
+      if (method === "eth_sendTransaction") {
+        return FAKE_TX_HASH;
+      }
       throw new Error(`mock wallet: unsupported method ${method}`);
     },
   };
@@ -102,9 +139,10 @@ describe("Dashboard superfluid wallet integration", () => {
     const walletUrl = "http://localhost:3001";
     const sf = superfluidWallet({ walletUrl });
     return createConfig({
-      chains: [optimismSepolia],
+      chains: [optimismSepolia, baseSepolia],
       transports: {
-        [optimismSepolia.id]: http("https://sepolia.optimism.io"),
+        [optimismSepolia.id]: mockRpcTransport,
+        [baseSepolia.id]: mockRpcTransport,
       },
       connectors: [sf.connector() as CreateConnectorFn],
       multiInjectedProviderDiscovery: false,
@@ -123,22 +161,46 @@ describe("Dashboard superfluid wallet integration", () => {
   });
 
   it("switchChain keeps provider store in sync", async () => {
-    const walletUrl = "http://localhost:3001";
-    const sf = superfluidWallet({ walletUrl });
-    const config = createConfig({
-      chains: [optimismSepolia],
-      transports: {
-        [optimismSepolia.id]: http("https://sepolia.optimism.io"),
-      },
-      connectors: [sf.connector() as CreateConnectorFn],
-      multiInjectedProviderDiscovery: false,
-    });
+    const config = createDashboardStyleConfig();
     const connector = config.connectors[0];
     await connector.connect({ chainId: optimismSepolia.id });
 
-    await connector.switchChain?.({ chainId: optimismSepolia.id });
+    await connector.switchChain?.({ chainId: baseSepolia.id });
 
-    expect(await connector.getChainId()).toBe(optimismSepolia.id);
-    expect(readStoredState()?.chainId).toBe(optimismSepolia.id);
+    expect(await connector.getChainId()).toBe(baseSepolia.id);
+    expect(readStoredState()?.chainId).toBe(baseSepolia.id);
+
+    type MockHandler = (method: string, params: unknown) => Promise<unknown>;
+    const win = window as Window & { __SUPERFLUID_WALLET_MOCK_HANDLER__?: MockHandler };
+    const original = win.__SUPERFLUID_WALLET_MOCK_HANDLER__!;
+    let captured: { method: string; params: unknown } | undefined;
+    win.__SUPERFLUID_WALLET_MOCK_HANDLER__ = async (method, params) => {
+      captured = { method, params };
+      return original(method, params);
+    };
+
+    const account = privateKeyToAccount(TEST_PRIVATE_KEY);
+    const provider = (await connector.getProvider()) as EIP1193Provider;
+    await provider.request({
+      method: "eth_sendTransaction",
+      params: [
+        {
+          from: account.address,
+          to: account.address,
+          value: "0x0",
+          data: "0x",
+        },
+      ],
+    });
+
+    expect(["eth_sendTransaction", "eth_signTransaction"]).toContain(
+      captured?.method
+    );
+    const tx = (captured?.params as [{ chainId?: string | number }])[0];
+    const numericChainId =
+      typeof tx.chainId === "string" && tx.chainId.startsWith("0x")
+        ? Number.parseInt(tx.chainId, 16)
+        : Number(tx.chainId);
+    expect(numericChainId).toBe(baseSepolia.id);
   });
 });
