@@ -193,9 +193,7 @@ describe("Dashboard superfluid wallet integration", () => {
       ],
     });
 
-    expect(["eth_sendTransaction", "eth_signTransaction"]).toContain(
-      captured?.method
-    );
+    expect(captured?.method).toBe("eth_sendTransaction");
     const tx = (captured?.params as [{ chainId?: string | number }])[0];
     const numericChainId =
       typeof tx.chainId === "string" && tx.chainId.startsWith("0x")
