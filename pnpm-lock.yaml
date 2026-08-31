@@ -15,8 +15,8 @@ importers:
         specifier: ^2.5.1
         version: 2.5.6(@types/react@19.2.17)(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(immer@10.2.0)(react@19.2.7)(typescript@5.9.3)(use-sync-external-store@1.6.0(react@19.2.7))(utf-8-validate@5.0.10)(zod@4.4.3)
       '@d10r/wagmi-superfluid-wallet':
-        specifier: 0.1.0-rc.3
-        version: 0.1.0-rc.3(@wagmi/core@3.5.0)(viem@2.52.2(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.4.3))(wagmi@3.6.16)
+        specifier: 0.2.0-rc.1
+        version: 0.2.0-rc.1(@wagmi/core@3.5.0)(viem@2.52.2(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.4.3))(wagmi@3.6.16)
       '@emotion/cache':
         specifier: ^11.14.0
         version: 11.14.0
@@ -713,8 +713,8 @@ packages:
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
     engines: {node: '>=12'}
 
-  '@d10r/wagmi-superfluid-wallet@0.1.0-rc.3':
-    resolution: {integrity: sha512-Py0R+QZkM4hj+y0l8/0ADfW/qcK9sh00JAuRCgK0rjxWUSlxxTY+HFVj18RcNx6D51UCSpJKRwPW0d21Sl2EAg==}
+  '@d10r/wagmi-superfluid-wallet@0.2.0-rc.1':
+    resolution: {integrity: sha512-3yccWMNJXjmv+EksvrJ/fv8j1zGzIAAzS0aHh++hpsj/okljKV62p4tirihhC/geLXd1mSOTUIw1gVggcl98TA==}
     peerDependencies:
       '@wagmi/core': '>=2.0.0'
       viem: '>=2.0.0'
@@ -11550,7 +11550,7 @@ snapshots:
     dependencies:
       '@jridgewell/trace-mapping': 0.3.9
 
-  '@d10r/wagmi-superfluid-wallet@0.1.0-rc.3(@wagmi/core@3.5.0)(viem@2.52.2(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.4.3))(wagmi@3.6.16)':
+  '@d10r/wagmi-superfluid-wallet@0.2.0-rc.1(@wagmi/core@3.5.0)(viem@2.52.2(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.4.3))(wagmi@3.6.16)':
     dependencies:
       '@wagmi/core': 3.5.0(@tanstack/query-core@5.101.0)(@types/react@19.2.17)(accounts@0.12.2)(immer@10.2.0)(react@19.2.7)(typescript@5.9.3)(use-sync-external-store@1.6.0(react@19.2.7))(viem@2.52.2(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.4.3))
       viem: 2.52.2(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.4.3)

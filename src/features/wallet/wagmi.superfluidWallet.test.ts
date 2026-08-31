@@ -68,14 +68,14 @@ function readStoredState() {
     : null;
 }
 
-function setupBrowserMocks() {
+function setupBrowserMocks({ withMockHandler = true } = {}) {
   const localStorageMock = createLocalStorageMock();
   const account = privateKeyToAccount(TEST_PRIVATE_KEY);
-  const popup = { closed: false };
+  const popup = { closed: false, postMessage: vi.fn() };
   const openMock = vi.fn(() => popup);
   const messageListeners = new Map<string, Set<EventListener>>();
 
-  const windowStub = {
+  const windowStub: Record<string, unknown> = {
     localStorage: localStorageMock,
     open: openMock,
     location: { origin: "http://localhost:3000" },
@@ -96,7 +96,10 @@ function setupBrowserMocks() {
       }
       return true;
     },
-    __SUPERFLUID_WALLET_MOCK_HANDLER__: async (
+  };
+
+  if (withMockHandler) {
+    windowStub.__SUPERFLUID_WALLET_MOCK_HANDLER__ = async (
       method: string,
       params: unknown
     ) => {
@@ -116,8 +119,8 @@ function setupBrowserMocks() {
         return FAKE_TX_HASH;
       }
       throw new Error(`mock wallet: unsupported method ${method}`);
-    },
-  };
+    };
+  }
 
   vi.stubGlobal("window", windowStub);
   vi.stubGlobal("localStorage", localStorageMock);
@@ -200,5 +203,22 @@ describe("Dashboard superfluid wallet integration", () => {
         ? Number.parseInt(tx.chainId, 16)
         : Number(tx.chainId);
     expect(numericChainId).toBe(baseSepolia.id);
+  });
+
+  it("opens the wallet popup with the postMessage handshake, not the legacy query URL", async () => {
+    const { openMock } = setupBrowserMocks({ withMockHandler: false });
+    const config = createDashboardStyleConfig();
+    const connector = config.connectors[0];
+
+    void connector.connect({ chainId: optimismSepolia.id });
+    await vi.waitFor(() => {
+      expect(openMock).toHaveBeenCalled();
+    });
+
+    const openedUrl = String(openMock.mock.calls[0][0]);
+    const url = new URL(openedUrl);
+    expect(url.searchParams.get("popup")).toBe("1");
+    expect(openedUrl).not.toContain("request=");
+    expect(openedUrl).not.toContain("dappOrigin=");
   });
 });
