@@ -1074,14 +1074,7 @@ export const deprecatedNetworkChainIds = [
  * flagged there.
  */
 const metadataNetworkExclusions = new Map<number, string>([
-  [
-    666666666,
-    "Degen Chain is no longer supported by the Dashboard because its public infrastructure is unavailable.",
-  ],
-  [
-    534351,
-    "Scroll Sepolia is discontinued, and its canonical Superfluid subgraph alias was serving Optimism Sepolia data (reported upstream).",
-  ],
+  // keep only currently valid exclusions
 ]);
 
 // Fail loudly if metadata gains a network nobody added here (or if an exclusion becomes obsolete).
