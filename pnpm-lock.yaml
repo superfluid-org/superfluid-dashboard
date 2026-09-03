@@ -123,8 +123,8 @@ importers:
         specifier: ^0.7.0
         version: 0.7.0(@reduxjs/toolkit@2.12.0(react-redux@9.3.0(@types/react@19.2.17)(react@19.2.7)(redux@5.0.1))(react@19.2.7))(@superfluid-finance/sdk-core@0.9.0(@openzeppelin/test-helpers@0.5.16(bn.js@5.2.5)(bufferutil@4.0.9)(utf-8-validate@5.0.10))(browserify@17.0.1)(bufferutil@4.0.9)(ethers@5.8.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))(graphql@16.14.2)(ts-node@10.9.2(@types/node@25.9.2)(typescript@5.9.3))(typescript@5.9.3)(utf-8-validate@5.0.10))(graphql@16.14.2)
       '@superfluid-finance/tokenlist':
-        specifier: ^5.44.0
-        version: 5.44.0
+        specifier: ^5.47.0
+        version: 5.47.0
       '@tanstack/react-query':
         specifier: ^5.101.2
         version: 5.101.2(react@19.2.7)
@@ -3497,8 +3497,8 @@ packages:
       '@reduxjs/toolkit': '>=2'
       '@superfluid-finance/sdk-core': '>=0.7.0'
 
-  '@superfluid-finance/tokenlist@5.44.0':
-    resolution: {integrity: sha512-N9Jzj+9fn65odT3/glmy582Xk+O4RQ/LuzALGtgkKMLTFfquK0B8Eu7YYbX+6nTqOptWBFlwQKAWgnJuhvEuSg==}
+  '@superfluid-finance/tokenlist@5.47.0':
+    resolution: {integrity: sha512-d99iBAwiYre4vwKlSxm8wElLbf5y2pdyKgklCSw3X+/HK2fU8+NeV1e6g6f/xEp7mR0g+u1Ha69QmgNeUVjwpA==}
 
   '@swc/helpers@0.5.15':
     resolution: {integrity: sha512-JQ5TuMi45Owi4/BIMAJBoSQoOJu12oOk/gADqlcUL9JEdHB8vyjUSsxqeNXnmXHjYKMi2WcYtezGEEhqUI/E2g==}
@@ -15899,7 +15899,7 @@ snapshots:
       - encoding
       - graphql
 
-  '@superfluid-finance/tokenlist@5.44.0':
+  '@superfluid-finance/tokenlist@5.47.0':
     dependencies:
       '@uniswap/token-lists': 1.0.0-beta.34
 
