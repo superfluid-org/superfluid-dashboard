@@ -827,6 +827,45 @@ export const networkDefinition = {
     flowSchedulerContractAddress: undefined,
     flowSchedulerSubgraphUrl: undefined,
   },
+  arcTestnet: {
+    ...chain.arcTestnet,
+    supportsGDA: getSupportsGDA(chainIds.arcTestnet),
+    metadata: ensureDefined(
+      sfMeta.getNetworkByChainId(chainIds.arcTestnet),
+      chainIds.arcTestnet
+    ),
+    blockExplorers: ensureDefined(chain.arcTestnet.blockExplorers),
+    slugName: "arc-testnet",
+    v1ShortName: "arc",
+    bufferTimeInMinutes: 60,
+    color: "#2775CA",
+    rpcUrls: {
+      ...chain.arcTestnet.rpcUrls,
+      superfluid: { http: [superfluidRpcUrls["arc-testnet"]] },
+    },
+    getLinkForTransaction: (txHash: string): string =>
+      `https://testnet.arcscan.app/tx/${txHash}`,
+    getLinkForAddress: (address: string): string =>
+      `https://testnet.arcscan.app/address/${address}`,
+    nativeCurrency: {
+      ...ensureDefined(chain.arcTestnet.nativeCurrency),
+      address: NATIVE_ASSET_ADDRESS,
+      type: TokenType.NativeAssetUnderlyingToken,
+      superToken: ensureDefined(findNativeAssetSuperTokenFromTokenList({ chainId: chainIds.arcTestnet, address: "0x233a5Bfd65Da07AeB08F2082d2B5B270bc4eA804" })),
+      logoURI: "https://tokenlist.superfluid.org/icons/usdc.svg",
+      isSuperToken: false,
+    },
+    vestingContractAddress: {
+      v1: undefined,
+      v2: undefined,
+      v3: undefined,
+    },
+    vestingSubgraphUrl: undefined,
+    autoWrapSubgraphUrl: undefined,
+    autoWrap: undefined,
+    flowSchedulerContractAddress: undefined,
+    flowSchedulerSubgraphUrl: undefined,
+  },
   scroll: {
     ...chain.scroll,
     supportsGDA: getSupportsGDA(chainIds.scroll),
@@ -945,6 +984,7 @@ export const allNetworks: [Network, ...Network[]] = orderBy(
       networkDefinition.sepolia,
       networkDefinition.base,
       networkDefinition.baseSepolia,
+      networkDefinition.arcTestnet,
       networkDefinition.scroll,
     ],
     (x) => x.id // Put lower ids first (Ethereum mainnet will be first)
@@ -1034,14 +1074,7 @@ export const deprecatedNetworkChainIds = [
  * flagged there.
  */
 const metadataNetworkExclusions = new Map<number, string>([
-  [
-    666666666,
-    "Degen Chain is no longer supported by the Dashboard because its public infrastructure is unavailable.",
-  ],
-  [
-    534351,
-    "Scroll Sepolia is discontinued, and its canonical Superfluid subgraph alias was serving Optimism Sepolia data (reported upstream).",
-  ],
+  // keep only currently valid exclusions
 ]);
 
 // Fail loudly if metadata gains a network nobody added here (or if an exclusion becomes obsolete).
