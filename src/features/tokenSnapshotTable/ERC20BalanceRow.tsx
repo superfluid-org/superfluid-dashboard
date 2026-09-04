@@ -31,7 +31,7 @@ import OpenIcon from "../../components/OpenIcon/OpenIcon";
 import { getTransferPagePath } from "../../pages/transfer";
 import { getSendPagePath } from "../../pages/send";
 import { getTokenPagePath } from "../../pages/token/[_network]/[_token]";
-import { getTokenPairsFromTokenList } from "../../hooks/useTokenQuery";
+import { findTokenPairForUnderlyingAddress } from "../../hooks/useTokenQuery";
 import { Currency } from "../../utils/currencyUtils";
 import { EmptyRow } from "../common/EmptyRow";
 import { Network } from "../network/networks";
@@ -326,11 +326,10 @@ const ERC20BalanceRow: FC<ERC20BalanceRowProps> = ({
     network: network.slugName,
   });
   const tokenPair = useMemo(
-    () =>
-      getTokenPairsFromTokenList(network.id).find(
-        ({ underlyingToken }) =>
-          underlyingToken.address.toLowerCase() === token.address.toLowerCase()
-      ),
+    () => findTokenPairForUnderlyingAddress({
+      chainId: network.id,
+      address: token.address,
+    }),
     [network.id, token.address]
   );
   const streamPath = tokenPair

@@ -140,6 +140,44 @@ export const getTokenPairsFromTokenList = memoize((chainId: number): SuperTokenP
         .filter(isDefined);
 }, (chainId) => `${chainId}-${tokenListVersionKey()}`);
 
+/**
+ * Finds the wrappable Super Token pair represented by an underlying-token row.
+ *
+ * Native assets normally use the Dashboard's `native-asset` sentinel. Some chains,
+ * notably Arc, also expose that same native asset through a canonical ERC-20 system
+ * contract. The token list records that contract as the native Super Token's
+ * `underlyingTokenAddress`, so accept it as an alias while keeping the returned pair's
+ * native-asset sentinel (and therefore the payable `upgradeByETH` wrap path).
+ */
+export const findTokenPairForUnderlyingAddress = memoize(
+    (input: { chainId: number; address: string }): SuperTokenPair | undefined => {
+        const address = input.address.toLowerCase();
+        const tokenPairs = getTokenPairsFromTokenList(input.chainId);
+        const exactMatch = tokenPairs.find(
+            ({ underlyingToken }) => underlyingToken.address.toLowerCase() === address
+        );
+        if (exactMatch) {
+            return exactMatch;
+        }
+
+        const nativeAssetSuperToken = extendedSuperTokenList().tokens.find(token => {
+            const superTokenInfo = token.extensions?.superTokenInfo;
+            return token.chainId === input.chainId &&
+                superTokenInfo?.type === "Native Asset" &&
+                superTokenInfo.underlyingTokenAddress?.toLowerCase() === address;
+        });
+
+        return nativeAssetSuperToken
+            ? tokenPairs.find(
+                ({ superToken }) =>
+                    superToken.address.toLowerCase() === nativeAssetSuperToken.address.toLowerCase()
+            )
+            : undefined;
+    },
+    ({ chainId, address }) =>
+        `${chainId}-${address.toLowerCase()}-${tokenListVersionKey()}`
+);
+
 export const mapTokenListTokenToTokenMinimal = (tokenListToken: TokenInfo & SuperTokenExtensions) => {
     const superTokenInfo = tokenListToken.extensions?.superTokenInfo;
     if (superTokenInfo) {
