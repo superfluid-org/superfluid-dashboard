@@ -66,7 +66,9 @@ const VestingScheduleProgressCheckpoint: FC<
             key={title}
             data-cy={`${dataCy}-title`}
             variant="h6"
-            color="text.secondary"
+            sx={{
+              color: "text.secondary"
+            }}
           >
             {title}
           </Typography>

@@ -76,7 +76,12 @@ export const StreamRowLoading = () => {
   return (
     <TableRow>
       <TableCell>
-        <Stack direction="row" alignItems="center" gap={1.5}>
+        <Stack
+          direction="row"
+          sx={{
+            alignItems: "center",
+            gap: 1.5
+          }}>
           <Skeleton variant="circular" width={24} height={24} />
           <Skeleton
             variant="circular"
@@ -112,7 +117,9 @@ export const StreamRowLoading = () => {
         </>
       ) : (
         <TableCell>
-          <Stack alignItems="end">
+          <Stack sx={{
+            alignItems: "end"
+          }}>
             <Skeleton width={60} />
             <Skeleton width={30} />
           </Stack>
@@ -179,6 +186,8 @@ const StreamRow: FC<StreamRowProps> = ({
 
   const isActive = !isPending && !startDateScheduled && currentFlowRate !== "0";
   const isDistributionStream = !!(stream as PoolDistributionStream).pool;
+  const showFlowRate = isActive || isPending || !!startDateScheduled;
+  const flowRateColor = isOutgoing ? "error.main" : "primary.main";
 
   const tableCellProps: Partial<TableCellProps> =
     isPending || startDateScheduled || isDistributionStream
@@ -192,8 +201,17 @@ const StreamRow: FC<StreamRowProps> = ({
   return (
     <TableRow hover data-cy={"stream-row"}>
       <TableCell {...tableCellProps}>
-        <Stack direction="row" alignItems="center" gap={1.5}>
-          {isOutgoing ? <ArrowForwardIcon /> : <ArrowBackIcon />}
+        <Stack
+          direction="row"
+          sx={{
+            alignItems: "center",
+            gap: 1.5
+          }}>
+          {isOutgoing ? (
+            <ArrowForwardIcon data-cy="stream-outgoing-icon" />
+          ) : (
+            <ArrowBackIcon data-cy="stream-incoming-icon" />
+          )}
           <AddressAvatar
             address={isOutgoing ? receiver : sender}
             AvatarProps={{
@@ -208,7 +226,6 @@ const StreamRow: FC<StreamRowProps> = ({
           </AddressCopyTooltip>
         </Stack>
       </TableCell>
-
       {!isBelowMd ? (
         <>
           <TableCell {...tableCellProps}>
@@ -223,8 +240,12 @@ const StreamRow: FC<StreamRowProps> = ({
             </Typography>
           </TableCell>
           <TableCell {...tableCellProps}>
-            {isActive || isPending || startDateScheduled ? (
-              <Typography data-cy={"flow-rate"} variant="body2mono">
+            {showFlowRate ? (
+              <Typography
+                data-cy={"flow-rate"}
+                variant="body2mono"
+                sx={{ color: flowRateColor }}
+              >
                 {isOutgoing ? "-" : "+"}
                 <Amount
                   wei={BigNumber.from(currentFlowRate).mul(UnitOfTime.Month)}
@@ -270,7 +291,7 @@ const StreamRow: FC<StreamRowProps> = ({
               />
             }
             secondary={
-              isActive || isPending || !!startDateScheduled ? (
+              showFlowRate ? (
                 <>
                   {isOutgoing ? "-" : "+"}
                   <Amount
@@ -282,20 +303,26 @@ const StreamRow: FC<StreamRowProps> = ({
                 "-"
               )
             }
-            primaryTypographyProps={{ variant: "h7mono" }}
-            secondaryTypographyProps={{ variant: "body2mono" }}
-          />
+            slotProps={{
+              primary: { variant: "h7mono" },
+              secondary: {
+                variant: "body2mono",
+                sx: {
+                  color: showFlowRate ? flowRateColor : "text.secondary",
+                },
+              }
+            }} />
         </TableCell>
       )}
-
       {!isBelowMd && (
         <TableCell align="right">
           <Stack
             direction="row"
-            alignItems="center"
-            justifyContent="end"
-            gap={1}
-          >
+            sx={{
+              alignItems: "center",
+              justifyContent: "end",
+              gap: 1
+            }}>
             {isPending && (
               <>
                 <CircularProgress color="warning" size="16px" />

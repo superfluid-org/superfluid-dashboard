@@ -91,20 +91,22 @@ const SubscriptionApprovedActivityRow: FC<
     <TableRow>
       <TableCell>
         <ListItem sx={{ p: 0 }}>
-          <ActivityIcon icon={CheckRoundedIcon} />
+          <ActivityIcon icon={CheckRoundedIcon} dataCy="activity-subscription-approved-icon" />
           <ListItemText
             data-cy={"activity"}
             primary="Subscription Approved"
             secondary={format(timestamp * 1000, dateFormat)}
-            primaryTypographyProps={{
-              variant: isBelowMd ? "h7" : "h6",
-              translate: "yes",
-            }}
-            secondaryTypographyProps={{
-              variant: "body2mono",
-              color: "text.secondary",
-            }}
-          />
+            slotProps={{
+              primary: {
+                variant: isBelowMd ? "h7" : "h6",
+                translate: "yes",
+              },
+
+              secondary: {
+                variant: "body2mono",
+                color: "textSecondary",
+              }
+            }} />
         </ListItem>
       </TableCell>
       {!isBelowMd ? (
@@ -132,12 +134,14 @@ const SubscriptionApprovedActivityRow: FC<
                     {tokenQuery.data?.symbol}
                   </>
                 }
-                primaryTypographyProps={{
-                  variant: "h6mono",
-                  color:
-                    amountReceived && amountReceived !== "0"
-                      ? "primary"
-                      : "inherit",
+                slotProps={{
+                  primary: {
+                    variant: "h6mono",
+                    color:
+                      amountReceived && amountReceived !== "0"
+                        ? "primary"
+                        : "inherit",
+                  }
                 }}
               />
             </ListItem>
@@ -156,8 +160,10 @@ const SubscriptionApprovedActivityRow: FC<
                   >
                     <Typography
                       variant="h6"
-                      color="text.primary"
                       component="span"
+                      sx={{
+                        color: "text.primary"
+                      }}
                     >
                       <AddressName
                         address={isPublisher ? subscriber : publisher}
@@ -165,10 +171,12 @@ const SubscriptionApprovedActivityRow: FC<
                     </Typography>
                   </AddressCopyTooltip>
                 }
-                primaryTypographyProps={{
-                  variant: "body2",
-                  color: "text.secondary",
-                  translate: "yes",
+                slotProps={{
+                  primary: {
+                    variant: "body2",
+                    color: "textSecondary",
+                    translate: "yes",
+                  }
                 }}
               />
             </ListItem>
@@ -183,7 +191,12 @@ const SubscriptionApprovedActivityRow: FC<
         </>
       ) : (
         <TableCell align="right">
-          <Stack direction="row" alignItems="center" gap={1}>
+          <Stack
+            direction="row"
+            sx={{
+              alignItems: "center",
+              gap: 1
+            }}>
             <ListItemText
               primary={
                 amountReceived && (
@@ -193,12 +206,14 @@ const SubscriptionApprovedActivityRow: FC<
                 )
               }
               secondary={tokenQuery.data?.symbol}
-              primaryTypographyProps={{
-                variant: "h6mono",
-                color:
-                  amountReceived && amountReceived !== "0"
-                    ? "primary"
-                    : "inherit",
+              slotProps={{
+                primary: {
+                  variant: "h6mono",
+                  color:
+                    amountReceived && amountReceived !== "0"
+                      ? "primary"
+                      : "inherit",
+                }
               }}
             />
             <TokenIcon

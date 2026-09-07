@@ -18,7 +18,7 @@ const RECEIVED_TABLE = '[data-cy=received-table]';
 const FORM_ERROR = '.MuiAlert-message';
 const CREATE_VESTING_SCHEDULE_BUTTON = '[data-cy=create-schedule-button]';
 const PREVIEW_SCHEDULE_BUTTON = '[data-cy=preview-schedule-button]';
-const DATE_INPUT = '[data-cy=date-input] input';
+const DATE_INPUT = '[data-cy=date-input]';
 const CLIFF_AMOUNT_INPUT = '[data-cy=cliff-amount-input] input';
 const CLIFF_PERIOD_INPUT = '[data-cy=cliff-period-input] input';
 const CLIFF_PERIOD_UNIT = '[data-cy=cliff-period-unit]';
@@ -29,8 +29,16 @@ const TOTAL_PERIOD_UNIT = '[data-cy=total-period-unit]';
 const TOTAL_PERIOD_SELECTED_UNIT = `${TOTAL_PERIOD_UNIT} div`;
 const LOADING_SKELETONS = '[class*=MuiSkeleton]';
 const DELETE_SCHEDULE_BUTTON = '[data-cy=delete-schedule-button]';
-const FORWARD_BUTTON = '[data-testid=ArrowForwardIcon]';
-const BACK_BUTTON = '[data-testid=ArrowBackIcon]';
+// FIXME: this probe has never matched. It was `[data-testid=ArrowForwardIcon]`,
+// but nothing under src/features/vesting renders that icon — the only two
+// importers of @mui/icons-material/ArrowForward are StreamRow and
+// TransferEventRow, neither of which is on the vesting page. So the
+// `deleteScheduleIfNecessary` block it guards has always been dead code.
+// Deliberately kept non-matching here so the Material UI v7 upgrade is
+// behaviour-neutral; the real fix is to use VESTING_ROWS, which is what the
+// surrounding code actually means, but that would start running a delete flow
+// that has never run before and belongs in its own change.
+const FORWARD_BUTTON = '[data-cy=vesting-forward-icon]';
 const VESTING_ROWS = '[data-cy=vesting-row]';
 const OK_BUTTON = '[data-cy=ok-button]';
 const TX_DRAWER_BUTTON = '[data-cy=tx-drawer-button]';
@@ -358,6 +366,24 @@ export class VestingPage extends BasePage {
     this.click(CREATE_VESTING_SCHEDULE_BUTTON);
   }
 
+  /**
+   * Settle gate for the vesting schedules table, scoped to that table rather than
+   * to the whole page.
+   *
+   * Positive check FIRST, deliberately. `VestingScheduleTables` only mounts the
+   * created table while it is loading or once it has rows, so a skeletons-are-gone
+   * assertion on its own also passes when the table never mounted at all -- which
+   * is the vacuous pass this gate exists to prevent. Requiring the table to be
+   * visible makes "no schedules rendered" fail loudly, and the scoped skeleton
+   * wait (the same one `openCreatedSchedule` relies on) then settles it.
+   */
+  static waitForCreatedTableToLoad() {
+    this.isVisible(CREATED_TABLE, undefined, { timeout: 45000 });
+    this.doesNotExist(`${CREATED_TABLE} ${LOADING_SKELETONS}`, undefined, {
+      timeout: 45000,
+    });
+  }
+
   static openLastCreatedSchedule() {
     this.doesNotExist(`${CREATED_TABLE} ${LOADING_SKELETONS}`, undefined, {
       timeout: 45000,
@@ -424,7 +450,10 @@ export class VestingPage extends BasePage {
     cy.get(TABLE_START_END_DATES)
       .eq(0)
       .invoke('text')
-      .should('match', /[A-Z][a-z]{2}\s\d{1,2},\s\d{4}.*[A-Z][a-z]{2}\s\d{1,2},\s\d{4}/);
+      .should(
+        'match',
+        /[A-Z][a-z]{2}\s\d{1,2},\s\d{4}.*[A-Z][a-z]{2}\s\d{1,2},\s\d{4}/
+      );
   }
 
   static validateSchedulePreviewDetails(
@@ -517,7 +546,7 @@ export class VestingPage extends BasePage {
   static openTokenPermissionRow(token: string) {
     this.getSelectedToken(token).then((selectedToken) => {
       this.click(
-        `[data-cy="${selectedToken}-row"] [data-testid=ExpandMoreRoundedIcon]`,
+        `[data-cy="${selectedToken}-row"] [data-cy=open-icon]`,
         undefined,
         { timeout: 120000 }
       );
@@ -806,13 +835,13 @@ export class VestingPage extends BasePage {
   static validateAllowListMessage() {
     this.hasText(
       ALLOWLIST_MESSAGE,
-      'You are not on the allow list.If you want to create vesting schedules, Apply for access or try it out on OP Sepolia.'
+      'You are not on the allow list.If you want to create vesting schedules, Contact us for access or try it out on OP Sepolia.'
     );
     this.isVisible(ALLOWLIST_LINK);
     this.hasAttributeWithValue(
       ALLOWLIST_LINK,
       'href',
-      'https://use.superfluid.finance/vesting'
+      'https://superfluid.org/contact'
     );
     this.isVisible(TRY_OP_SEPOLIA_BUTTON);
   }

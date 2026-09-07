@@ -18,30 +18,33 @@ const ScheduledWrapEmptyCard: FC<{
   return (
     <Stack
       data-cy="empty-permissions-screen"
-      gap={1}
       component={Paper}
-      alignItems={"center"}
       sx={{
+        gap: 1,
+        alignItems: "center",
         px: 4,
         py: 7,
+
         [theme.breakpoints.down("md")]: {
           px: 2,
           py: 3,
-        },
-      }}
-    >
+        }
+      }}>
       <Typography
         data-cy={`title`}
         variant={isBelowMd ? "h5" : "h4"}
-        textAlign="center"
+        sx={{
+          textAlign: "center"
+        }}
       >
         Nothing to see here
       </Typography>
       <Typography
         data-cy={`description`}
-        color="text.secondary"
-        textAlign="center"
-      >
+        sx={{
+          color: "text.secondary",
+          textAlign: "center"
+        }}>
         Add your first Auto-Wrap configuration
       </Typography>
       <AutoWrapAddTokenButtonSection

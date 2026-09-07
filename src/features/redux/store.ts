@@ -48,7 +48,6 @@ import faucetApi from "../faucet/faucetApi.slice";
 import { flagsSlice } from "../flags/flags.slice";
 import gasApi from "../gas/gasApi.slice";
 import { impersonationSlice } from "../impersonation/impersonation.slice";
-import { notificationsSlice } from "../notifications/notifications.slice";
 import { networkPreferencesSlice, NetworkPreferencesState } from "../network/networkPreferences.slice";
 import { pendingUpdateSlice } from "../pendingUpdates/pendingUpdate.slice";
 import { relayRecoverySlice } from "../clearMacro/relayRecovery.slice";
@@ -104,11 +103,17 @@ export const subgraphApi = initializeSubgraphApiSlice((options) =>
 
 export const transactionTracker = initializeTransactionTrackerSlice();
 
+// NOTE: redux-persist passes the *target* version from this config as `migrate`'s second
+// argument -- not the version the persisted state was written at. The previous `currentVersion === 1`
+// guards were therefore dead code once these slices moved past version 1, which meant entities
+// belonging to removed networks were never actually purged. These sanitizers now run on every
+// rehydrate instead; they are idempotent, so that is safe and keeps working for future removals.
 const transactionTrackerPersistedReducer = persistReducer(
-  { storage, key: "transactions", version: 2, migrate: async (persistedState, currentVersion) => {
-    if (persistedState && currentVersion === 1) {
+  { storage, key: "transactions", version: 2, migrate: async (persistedState) => {
+    if (persistedState) {
       const oldState = persistedState as PersistedState & EntityState<TrackedTransaction, string>;
       const transactionsToRemove = Object.values(oldState.entities).filter(isDefined).filter(x => deprecatedNetworkChainIds.includes(x.chainId)) as TrackedTransaction[];
+      if (!transactionsToRemove.length) return persistedState;
       const newEntities = { ...oldState.entities };
       for (const tx of transactionsToRemove) {
         delete newEntities[tx.hash];
@@ -130,8 +135,8 @@ const impersonationPersistedReducer = persistReducer(
 );
 
 const addressBookPersistedReducer = persistReducer(
-  { storage, key: "addressBook", version: 2, migrate: async (persistedState, currentVersion) => {
-    if (persistedState && currentVersion === 1) {
+  { storage, key: "addressBook", version: 2, migrate: async (persistedState) => {
+    if (persistedState) {
       const oldState = persistedState as PersistedState & AddressBookState;
       const newEntities = { ...oldState.entities };
       Object.values(newEntities).filter(isDefined).forEach((x) => {
@@ -150,13 +155,14 @@ const addressBookPersistedReducer = persistReducer(
 );
 
 const customTokensPersistedReducer = persistReducer(
-  { storage, key: "customTokens", version: 2, migrate: async (persistedState, currentVersion) => {
-    if (persistedState && currentVersion === 1) {
+  { storage, key: "customTokens", version: 2, migrate: async (persistedState) => {
+    if (persistedState) {
       const oldState = persistedState as PersistedState & NetworkCustomTokenState;
       const newEntities = { ...oldState.entities };
       Object.values(newEntities).forEach((x) => {
         if (x && deprecatedNetworkChainIds.includes(x.chainId)) {
-          delete newEntities[x.customToken];
+          // Entities are keyed by `${chainId}-${address}`, not by the bare address.
+          delete newEntities[getCustomTokenId(x.chainId, x.customToken)];
         }
       });
       return {
@@ -171,8 +177,8 @@ const customTokensPersistedReducer = persistReducer(
 );
 
 const networkPreferencesPersistedReducer = persistReducer(
-  { storage, key: "networkPreferences", version: 3, migrate: async (persistedState, currentVersion) => {
-    if (persistedState && currentVersion === 1) {
+  { storage, key: "networkPreferences", version: 3, migrate: async (persistedState) => {
+    if (persistedState) {
       const oldState = persistedState as PersistedState & NetworkPreferencesState;
       const newEntities = { ...oldState.entities };
       Object.values(newEntities).forEach((x) => {
@@ -185,8 +191,9 @@ const networkPreferencesPersistedReducer = persistReducer(
         entities: newEntities
       }
     }
-
-    // TODO: migrate?
+    // Must return the state: falling through to `undefined` here made rehydration
+    // discard the user's persisted network preferences on every load.
+    return persistedState;
   } },
   networkPreferencesSlice.reducer
 );
@@ -199,11 +206,6 @@ const flagsPersistedReducer = persistReducer(
 const appSettingsPersistedReducer = persistReducer(
   { storage, key: "appSettings", version: 1 },
   appSettingsReducer
-);
-
-const notificatonsPersistedReducer = persistReducer(
-  { storage, key: "notifications", version: 1 },
-  notificationsSlice.reducer
 );
 
 // In-flight Clear Macro relay executions. Persisted so a 120s poll timeout / closed tab / reload
@@ -278,7 +280,6 @@ export const reduxStore = configureStore({
     addressBook: addressBookPersistedReducer,
     customTokens: customTokensPersistedReducer,
     networkPreferences: networkPreferencesPersistedReducer,
-    notifications: notificatonsPersistedReducer,
     flags: flagsPersistedReducer,
     relayRecovery: relayRecoveryPersistedReducer,
 

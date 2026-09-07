@@ -72,7 +72,7 @@ function setupBrowserMocks({ withMockHandler = true } = {}) {
   const localStorageMock = createLocalStorageMock();
   const account = privateKeyToAccount(TEST_PRIVATE_KEY);
   const popup = { closed: false, postMessage: vi.fn() };
-  const openMock = vi.fn(() => popup);
+  const openMock = vi.fn((_url?: string | URL) => popup);
   const messageListeners = new Map<string, Set<EventListener>>();
 
   const windowStub: Record<string, unknown> = {

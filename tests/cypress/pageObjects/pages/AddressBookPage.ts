@@ -41,7 +41,7 @@ const ADDRESS_FILTER_BUTTON = '[data-cy=address-filter]';
 const ADDRESS_FILTER_NAMES = '[data-cy=address]';
 const ADDRESS_FILTER_CLEAR_ALL = '[data-cy=clear-all-chip]';
 const ADDRESS_FILTER_NAME_CHIPS = '[data-cy=address-chip]';
-const COPY_BUTTONS = '[data-testid=ContentCopyRoundedIcon]';
+const COPY_BUTTONS = '[data-cy=address-copy-icon]';
 const COPY_TOOLTIPS = '[role=tooltip] .MuiTooltip-tooltip';
 
 export class AddressBookPage extends BasePage {

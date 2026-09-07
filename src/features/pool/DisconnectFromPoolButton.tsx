@@ -70,8 +70,10 @@ export const DisconnectFromPoolButton: FC<Props> = ({ network, poolMember }) => 
                                                 <Typography
                                                     data-cy={"disconnect-from-pool-message"}
                                                     variant="h5"
-                                                    color="text.secondary"
                                                     translate="yes"
+                                                    sx={{
+                                                        color: "text.secondary"
+                                                    }}
                                                 >
                                                     You are disconnecting from the pool.
                                                 </Typography>
@@ -104,5 +106,5 @@ export const DisconnectFromPoolButton: FC<Props> = ({ network, poolMember }) => 
                 )
             }
         </TransactionBoundary>
-    )
+    );
 };

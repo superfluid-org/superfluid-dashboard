@@ -106,9 +106,7 @@ export const superfluidRpcUrls = {
   sepolia: 'https://rpc-endpoints.superfluid.dev/eth-sepolia',
   base: 'https://rpc-endpoints.superfluid.dev/base-mainnet',
   scroll: 'https://rpc-endpoints.superfluid.dev/scroll-mainnet',
-  'scroll-sepolia': 'https://rpc-endpoints.superfluid.dev/scroll-sepolia',
   'optimism-sepolia': 'https://rpc-endpoints.superfluid.dev/optimism-sepolia',
-  degenChain: 'https://rpc-endpoints.superfluid.dev/degenchain',
 };
 
 export const networkDefinition: {
@@ -124,9 +122,7 @@ export const networkDefinition: {
   sepolia: Network;
   base: Network;
   scroll: Network;
-  scrollSepolia: Network;
   optimismSepolia: Network;
-  degenChain: Network;
 } = {
   gnosis: {
     name: 'Gnosis',
@@ -517,34 +513,6 @@ export const networkDefinition: {
       },
     },
   },
-  scrollSepolia: {
-    id: 534351,
-    name: 'Scroll Sepolia',
-    network: 'scroll-sepolia',
-    slugName: 'scrsepolia',
-    v1ShortName: 'scrsepolia',
-    testnet: true,
-    bufferTimeInMinutes: 60,
-    color: '#FFDBB0',
-    superfluidRpcUrl: superfluidRpcUrls['scroll-sepolia'],
-    subgraphUrl: 'https://scroll-sepolia.subgraph.x.superfluid.dev/',
-    getLinkForTransaction: (txHash: string): string =>
-      `https://sepolia.scrollscan.com/tx/${txHash}`,
-    getLinkForAddress: (address: string): string =>
-      `https://sepolia.scrollscan.com/tx/address/${address}`,
-    nativeCurrency: {
-      ...ensureDefined(chain.scrollSepolia.nativeCurrency),
-      address: NATIVE_ASSET_ADDRESS,
-      type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: 'ETHx',
-        address: '0x58f0A7c6c143074f5D824c2f27a85f6dA311A6FB',
-        name: 'Super ETH',
-        decimals: 18,
-      },
-    },
-  },
   optimismSepolia: {
     id: 11155420,
     name: 'OP Sepolia',
@@ -583,36 +551,6 @@ export const networkDefinition: {
       upperLimit: BigNumber.from(UnitOfTime.Day * 14),
     },
   },
-  degenChain: {
-    name: 'Degen Chain',
-    network: 'degen',
-    id: 666666666,
-    slugName: 'degenchain',
-    v1ShortName: 'degen',
-    bufferTimeInMinutes: 240,
-    icon: '/icons/network/degen.svg',
-    color: '#a46efd',
-    subgraphUrl: 'https://optimism-sepolia.subgraph.x.superfluid.dev/',
-    superfluidRpcUrl: superfluidRpcUrls['degenChain'],
-    getLinkForTransaction: (txHash: string): string =>
-      `https://explorer.degen.tips/tx/${txHash}`,
-    getLinkForAddress: (address: string): string =>
-      `https://explorer.degen.tips/address/${address}`,
-    nativeCurrency: {
-      name: 'Degen',
-      symbol: 'DEGEN',
-      decimals: 18,
-      address: NATIVE_ASSET_ADDRESS,
-      type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: 'DEGENx',
-        address: '0x671425ae1f272bc6f79bec3ed5c4b00e9c628240',
-        name: 'Super DEGEN',
-        decimals: 18,
-      },
-    },
-  },
 };
 
 export const networks: Network[] = [
@@ -628,9 +566,7 @@ export const networks: Network[] = [
   networkDefinition.sepolia,
   networkDefinition.base,
   networkDefinition.scroll,
-  networkDefinition.scrollSepolia,
   networkDefinition.optimismSepolia,
-  networkDefinition.degenChain,
 ];
 
 export const getNetworkDefaultTokenPair = memoize(

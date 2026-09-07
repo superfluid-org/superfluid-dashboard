@@ -72,7 +72,7 @@ const RelayRecoveryWatcher: FC<{ entry: RecoveringRelayExecution }> = ({
   useEffect(() => {
     const toastId = `relay-recovery-${executionId}`;
     toast.info(
-      `A gasless transaction is still being confirmed — please don't retry. (execution ${executionId})`,
+      `A gasless transaction is still being confirmed. Please don't retry. (execution ${executionId})`,
       { toastId, autoClose: false, position: "bottom-right" }
     );
     return () => toast.dismiss(toastId);

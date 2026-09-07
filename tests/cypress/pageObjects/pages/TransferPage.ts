@@ -8,7 +8,7 @@ const RECEIVER_BUTTON = '[data-cy=address-button]';
 const SELECT_TOKEN_BUTTON = '[data-cy=select-token-button]';
 const AMOUNT_INPUT = '[data-cy=amount-input]';
 const ADDRESS_DIALOG_INPUT = '[data-cy=address-dialog-input]';
-const OTHER_CLOSE_DIALOG_BUTTON = '[data-testid=CloseIcon]';
+const OTHER_CLOSE_DIALOG_BUTTON = '[data-cy=close-icon]';
 const ADDRESS_BUTTON_TEXT = '[data-cy=address-button]';
 const TOKEN_SELECT_SYMBOL = '[data-cy=token-symbol-and-name] h6';
 const PREVIEW_BALANCE = '[data-cy=balance]';
@@ -55,6 +55,37 @@ export class TransferPage extends BasePage {
       this.clickFirstVisible(TOKEN_SEARCH_RESULTS);
       this.type(AMOUNT_INPUT, '1');
     });
+  }
+
+  // Same form filling as `inputTransferTestData`, but with an explicitly named token instead
+  // of "whatever sorts first". The insufficient-balance scenario needs a token the connected
+  // account provably holds none of; picking the top of the balance-sorted list makes that
+  // scenario depend on the *amount* of the wallet's best balance, which breaks the next time
+  // the test wallets are funded.
+  // The token is selected through `selectTokenFromDialog` (not `inputTransferDetails`) because
+  // that helper filters the list by symbol, so a token with no balance still surfaces.
+  static inputTransferDetailsWithSelectedToken(token: string, amount: string) {
+    this.click(RECEIVER_BUTTON);
+    cy.fixture('commonData').then((commonData) => {
+      this.type(ADDRESS_DIALOG_INPUT, commonData.staticBalanceAccount);
+      this.doesNotExist(ADDRESS_DIALOG_INPUT);
+      this.hasText(ADDRESS_BUTTON_TEXT, commonData.staticBalanceAccount);
+      this.selectTokenFromDialog(token);
+      this.type(AMOUNT_INPUT, amount);
+    });
+  }
+
+  // Asserts the preview balance of the selected token is zero, so a scenario that relies on an
+  // empty wallet fails with "the wallet is not empty any more" instead of an opaque timeout on
+  // the error alert.
+  static validateTransferPreviewBalanceIsZero() {
+    cy.get(PREVIEW_BALANCE, { timeout: 45000 })
+      .should('be.visible')
+      .should(($balance) => {
+        expect($balance.text().trim(), 'selected token balance').to.match(
+          /^0(\.0+)?$/
+        );
+      });
   }
 
   static validateTransferPagePreviewBalance() {

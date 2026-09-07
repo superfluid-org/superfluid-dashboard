@@ -38,14 +38,20 @@ export const VestingDataCardContent: FC<VestingDataCardProps> = ({
       >
         {title}
       </Typography>
-      <Stack direction="row" alignItems="center" gap={1.5}>
+      <Stack
+        direction="row"
+        sx={{
+          alignItems: "center",
+          gap: 1.5
+        }}>
         <TokenIcon chainId={chainId} tokenAddress={tokenAddress} isSuper />
         <Stack
           data-cy={dataCy}
           direction={isBelowMd ? "column" : "row"}
-          alignItems={isBelowMd ? "start" : "flex-end"}
-          gap={isBelowMd ? 0 : 0.5}
-        >
+          sx={{
+            alignItems: isBelowMd ? "start" : "flex-end",
+            gap: isBelowMd ? 0 : 0.5
+          }}>
           {tokenAmount && (
             <Typography
               variant={isBelowMd ? "h5mono" : "h4mono"}
@@ -56,9 +62,10 @@ export const VestingDataCardContent: FC<VestingDataCardProps> = ({
           )}
           <Typography
             variant={isBelowMd ? "h7" : "h6"}
-            color="text.secondary"
-            sx={{ lineHeight: "20px" }}
-          >
+            sx={{
+              color: "text.secondary",
+              lineHeight: "20px"
+            }}>
             {tokenSymbol}
           </Typography>
         </Stack>
@@ -67,9 +74,11 @@ export const VestingDataCardContent: FC<VestingDataCardProps> = ({
         <Typography
           data-cy={`${dataCy}-fiat`}
           variant="h6"
-          color="text.secondary"
-          sx={{ ml: 6, [theme.breakpoints.down("md")]: { ml: 5.5 } }}
-        >
+          sx={{
+            color: "text.secondary",
+            ml: 6,
+            [theme.breakpoints.down("md")]: { ml: 5.5 }
+          }}>
           {fiatAmount}
         </Typography>
       )}

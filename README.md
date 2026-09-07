@@ -39,6 +39,10 @@ This repository implements the Superfluid Dashboard v2 as a Next.js web app buil
 
 ## Notes
 
+### Browser support
+
+Minimum supported browsers: Chrome 117, Safari 17, Firefox 121 — the floor set by Material UI v9. Older browsers may render a broken or unstyled dashboard without any error message. The floor was accepted 2026-07-28 without analytics verification; revisit if broken-rendering reports arrive from older browsers (see `docs/plans/mui-v6-to-v9-upgrade.md`, §Step 4 outcome).
+
 ### `window.superfluid_dashboard.advanced.nextGasOverrides`
 
 Gas settings (`gasLimit`, `gasPrice`, `maxFeePerGas`, `maxPriorityFeePerGas` as `bigint`, `number` or `string`) to override for only the next transaction attempt. Example usage: `window.superfluid_dashboard.advanced.nextGasOverrides.gasLimit = 1_000_000`

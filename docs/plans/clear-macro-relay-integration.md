@@ -313,11 +313,40 @@ Mirror the `direct` pattern: `SubOperation` (in `operations.ts`) gains optional
 | Unwrap (non-native only) | same | `downgrade` |
 | Super-token allowance approve (lone op) | `src/features/tokenAccess/useTokenAccessWrites.ts` (`tokenAllowanceSubOperation`) | `approve` |
 | Create/Update/Close stream (lone CFA op, unscheduled) | `src/features/send/useFlowSchedulingWrites.ts` | `createFlow` / `updateFlow` / `deleteFlow` |
+| Schedule / modify schedule (lone schedule op, or grant+schedule batch) | same | `scheduleFlow` (see "FlowScheduler actions" below) |
+| Unschedule / cancel a scheduled-not-started stream (lone scheduler op) | same | `deleteFlowSchedule` |
 
 Explicitly **not** eligible (no descriptor; always current path): wrap-approve (underlying ERC-20 —
 the macro's Approve targets a super token), native-asset wrap/unwrap (`upgradeByETH` is payable),
 flow-operator/ACL ops, IDA, GDA/pools, vesting (its lone-CFA delete always pairs with a scheduler
-op), auto-wrap, anything multi-op.
+op), auto-wrap, anything multi-op — with one exception: the grant+schedule batch promotes to
+`scheduleFlow` because the macro performs the grant itself (below). Batches that mix a scheduler
+op with `createFlow`/`updateFlow`/`deleteFlow` remain self-pay (two macro actions can't share one
+payload), e.g. new-stream-with-end-date-only and close-stream-that-has-a-schedule.
+
+### 5b. FlowScheduler actions (added 2026-07-02)
+
+The v2 macro adds `scheduleFlow` (`{superToken, receiver, startDate: uint32, flowRate: int96,
+endDate: uint32}`) and `deleteFlowSchedule` (`{superToken, receiver}`).
+
+- **The macro bundles the permission grant.** On-chain, `scheduleFlow` reads the FlowScheduler's
+  existing flow-operator permissions/allowance for the signer and grants only the missing bits
+  (create for a start, delete for a stop, allowance top-up to `flowRate`), then calls
+  `createFlowSchedule` with `startMaxDelay` fixed at 1 day and `startAmount` 0 — the exact values
+  the dashboard hardcodes in `useFlowSchedulingWrites.ts`. That is why `useUpsertFlowWithScheduling`
+  promotes an exactly-`[Approve Stream Scheduler, Create/Modify Schedule]` batch to a top-level
+  `clearMacro` even though `subOperationsWriteFragment` only forwards lone-op descriptors.
+- **Relayable scenarios:** `[schedule]` (permissions already sufficient), `[grant, schedule]`
+  (promotion), `[deleteFlowSchedule]` (unscheduling in the form, or cancelling a
+  scheduled-not-yet-started stream with `withClearMacro`).
+- **Idempotency** (re: the double-execution warning in the timeout-recovery retrospective):
+  `createFlowSchedule` is an upsert, so a duplicate execution converges to the same schedule; a
+  duplicate `deleteFlowSchedule` reverts harmlessly. Both are safe for fresh-nonce manual retries.
+- **Pre-deploy behavior:** the deployed OP Sepolia macro (`0x7723...b898`) predates these actions.
+  `executeClearMacro`'s pre-signature `encodeScheduleFlow` read reverts on it →
+  `ClearMacroNotEligibleError` → deterministic fallback to the self-pay write. Ship-safe; after
+  deploying the two-arg macro (`contracts/script/DeployDashboardClearMacro.s.sol`), repoint
+  `dashboardClearMacro.macroAddress` in `networks.ts` and the relay path activates.
 
 ### 6. Bookkeeping
 

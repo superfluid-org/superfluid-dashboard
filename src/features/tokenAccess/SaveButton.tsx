@@ -45,7 +45,11 @@ const SaveButton: FC<SaveButtonProps> = ({
       editedAccess.flowRateAllowance.amountWei.toString();
 
   return (
-    <Stack gap={1}>
+    // 2.5 matches the block rhythm around TX buttons app-wide so the relay
+    // strip reads as its own block rather than hugging the button.
+    <Stack sx={{
+      gap: 2.5
+    }}>
       <TransactionBoundary mutationResult={updateAccessResult}>
         {({ setDialogLoadingInfo, txAnalytics }) => (
           <TransactionButton
@@ -68,7 +72,9 @@ const SaveButton: FC<SaveButtonProps> = ({
               }
 
               setDialogLoadingInfo(
-                <Typography variant="h5" color="text.secondary" translate="yes">
+                <Typography variant="h5" translate="yes" sx={{
+                  color: "text.secondary"
+                }}>
                   You are modifying permissions and allowances for the {superToken.symbol} token.
                 </Typography>
               );

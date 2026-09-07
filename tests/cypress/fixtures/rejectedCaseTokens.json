@@ -66,20 +66,10 @@
     "TokenTwo": "fUSDC",
     "TokenGas": "ETH"
   },
-  "scrsepolia": {
-    "TokenOne": "fDAI",
-    "TokenTwo": "fUSDC",
-    "TokenGas": "ETH"
-  },
   "opsepolia": {
     "TokenOne": "fDAI",
     "TokenTwo": "fUSDC",
     "TokenThree": "fTUSD",
     "TokenGas": "ETH"
-  },
-  "degen": {
-    "TokenOne": "fDAI",
-    "TokenTwo": "fUSDC",
-    "TokenGas": "DEGEN"
   }
 }

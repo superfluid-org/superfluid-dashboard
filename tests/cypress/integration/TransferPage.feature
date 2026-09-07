@@ -27,7 +27,17 @@ Feature: Transfer Page test cases
     And User fills all transfer inputs "with" a wallet connected
     Then Validate "You can't send to yourself." error
 
+  # Load-bearing and otherwise invisible: `john` (0x46Bdc58eDF8837841A1eBb944e0cb53afCf627d2)
+  # must hold NO TDLx on polygon -- that empty balance is the whole point of this scenario.
+  # Do not fund it when topping up the test wallets; use a different token if you need to.
+  # The token is named explicitly rather than taken off the top of the balance-sorted list
+  # (as the scenario above does): picking the best-funded token made this test depend on that
+  # balance staying under 1, and a funding run that pushed it to exactly 1 turned it green-
+  # to-red. A zero balance is an invariant someone can keep; a magic amount is not.
+  # TDLx is spelled out instead of going through rejectedCaseTokens.json's TokenThree alias
+  # because this scenario pins polygon while the fixture resolves against the matrix network.
   Scenario: Error message is shown to a user who doesn't have enough tokens to transfer
     Given "Transfer Page" is open with "john" connected on "polygon"
-    And User fills all transfer inputs "with" a wallet connected
-    Then Validate "You don't have enough balance for the transfer." error
+    And User fills all transfer inputs with "TDLx" and amount "1"
+    Then The selected token balance in the transfer page is zero
+    And Validate "You don't have enough balance for the transfer." error

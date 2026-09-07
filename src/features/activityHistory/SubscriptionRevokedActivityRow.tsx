@@ -49,20 +49,22 @@ const SubscriptionRevokedActivityRow: FC<
     <TableRow>
       <TableCell>
         <ListItem sx={{ p: 0 }}>
-          <ActivityIcon icon={NotInterestedRoundedIcon} />
+          <ActivityIcon icon={NotInterestedRoundedIcon} dataCy="activity-subscription-rejected-icon" />
           <ListItemText
             data-cy={"activity"}
             primary="Subscription Rejected"
             secondary={format(timestamp * 1000, dateFormat)}
-            primaryTypographyProps={{
-              variant: isBelowMd ? "h7" : "h6",
-              translate: "yes",
-            }}
-            secondaryTypographyProps={{
-              variant: "body2mono",
-              color: "text.secondary",
-            }}
-          />
+            slotProps={{
+              primary: {
+                variant: isBelowMd ? "h7" : "h6",
+                translate: "yes",
+              },
+
+              secondary: {
+                variant: "body2mono",
+                color: "textSecondary",
+              }
+            }} />
         </ListItem>
       </TableCell>
       {!isBelowMd ? (
@@ -95,8 +97,10 @@ const SubscriptionRevokedActivityRow: FC<
                   >
                     <Typography
                       variant="h6"
-                      color="text.primary"
                       component="span"
+                      sx={{
+                        color: "text.primary"
+                      }}
                     >
                       <AddressName
                         address={isPublisher ? subscriber : publisher}
@@ -104,10 +108,12 @@ const SubscriptionRevokedActivityRow: FC<
                     </Typography>
                   </AddressCopyTooltip>
                 }
-                primaryTypographyProps={{
-                  variant: "body2",
-                  color: "text.secondary",
-                  translate: "yes",
+                slotProps={{
+                  primary: {
+                    variant: "body2",
+                    color: "textSecondary",
+                    translate: "yes",
+                  }
                 }}
               />
             </ListItem>
@@ -122,7 +128,12 @@ const SubscriptionRevokedActivityRow: FC<
         </>
       ) : (
         <TableCell align="right">
-          <Stack direction="row" alignItems="center" gap={1}>
+          <Stack
+            direction="row"
+            sx={{
+              alignItems: "center",
+              gap: 1
+            }}>
             <ListItemText primary={tokenQuery.data?.symbol} />
             <TokenIcon
               isSuper

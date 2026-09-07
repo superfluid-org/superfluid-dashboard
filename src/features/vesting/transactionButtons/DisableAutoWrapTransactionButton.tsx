@@ -51,7 +51,9 @@ const DisableAutoWrapTransactionButton: FC<{
                 throw new Error("This should never happen!");
 
               setDialogLoadingInfo(
-                <Typography variant="h5" color="text.secondary" translate="yes">
+                <Typography variant="h5" translate="yes" sx={{
+                  color: "text.secondary"
+                }}>
                   You are revoking Auto-Wrap token allowance for the underlying{" "}
                   {underlyingToken && underlyingToken.symbol} token.
                 </Typography>

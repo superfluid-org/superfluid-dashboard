@@ -186,10 +186,14 @@ const AgoraPage: NextPageWithLayout = () => {
         return (
             <Container maxWidth="lg">
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '50vh', textAlign: 'center' }}>
-                    <Typography variant="h5" color="text.secondary" gutterBottom>
+                    <Typography variant="h5" gutterBottom sx={{
+                        color: "text.secondary"
+                    }}>
                         Please connect your wallet
                     </Typography>
-                    <Typography variant="body1" color="text.secondary">
+                    <Typography variant="body1" sx={{
+                        color: "text.secondary"
+                    }}>
                         You need to connect your wallet to view vesting information.
                     </Typography>
                 </Box>
@@ -214,7 +218,12 @@ const AgoraPage: NextPageWithLayout = () => {
                     <Typography variant="h5" color="error" gutterBottom>
                         Error Occurred
                     </Typography>
-                    <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+                    <Typography
+                        variant="body1"
+                        sx={{
+                            color: "text.secondary",
+                            mb: 2
+                        }}>
                         {errorMessage}
                     </Typography>
                     <Box sx={{ mt: 2 }}>

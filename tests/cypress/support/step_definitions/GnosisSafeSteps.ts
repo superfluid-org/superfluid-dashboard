@@ -1,12 +1,12 @@
-import { Then, Given } from "@badeball/cypress-cucumber-preprocessor";
-import { GnosisSafe } from "../../pageObjects/pages/GnosisSafe";
-import { Common } from "../../pageObjects/pages/Common";
+import { Then, Given } from '@badeball/cypress-cucumber-preprocessor';
+import { GnosisSafe } from '../../pageObjects/pages/GnosisSafe';
+import { Common } from '../../pageObjects/pages/Common';
 
 Given(
   /^Gnosis safe Superfluid app is open on "([^"]*)"$/,
   function (network: string) {
     GnosisSafe.openSafeOnNetwork(network);
-    GnosisSafe.continueDisclaimer();
+    GnosisSafe.dismissSafeGates();
   }
 );
 Given(/^Dashboard page is visible in the gnosis app$/, function () {

@@ -16,9 +16,13 @@ export const TokenChip: FC<{
       avatar={<TokenIcon chainId={chainId} tokenAddress={token.address} isSuper />}
       label={
         <Stack>
-          <Typography color="text.primary">{token.symbol}</Typography>
+          <Typography sx={{
+            color: "text.primary"
+          }}>{token.symbol}</Typography>
           <AddressCopyTooltip address={token.address}>
-            <Typography color="text.secondary">{token.name}</Typography>
+            <Typography sx={{
+              color: "text.secondary"
+            }}>{token.name}</Typography>
           </AddressCopyTooltip>
         </Stack>
       }

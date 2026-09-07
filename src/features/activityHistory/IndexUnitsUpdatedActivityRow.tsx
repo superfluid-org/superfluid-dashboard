@@ -97,19 +97,21 @@ const IndexUnitsUpdatedActivityRow: FC<IndexUnitsUpdatedActivityRowProps> = ({
     <TableRow>
       <TableCell>
         <ListItem sx={{ p: 0 }}>
-          <ActivityIcon icon={PercentRoundedIcon} />
+          <ActivityIcon icon={PercentRoundedIcon} dataCy="activity-subscription-updated-icon" />
           <ListItemText
             data-cy={"activity"}
             primary="Subscription Updated"
             secondary={format(timestamp * 1000, dateFormat)}
-            primaryTypographyProps={{
-              variant: isBelowMd ? "h7" : "h6",
-            }}
-            secondaryTypographyProps={{
-              variant: "body2mono",
-              color: "text.secondary",
-            }}
-          />
+            slotProps={{
+              primary: {
+                variant: isBelowMd ? "h7" : "h6",
+              },
+
+              secondary: {
+                variant: "body2mono",
+                color: "textSecondary",
+              }
+            }} />
         </ListItem>
       </TableCell>
       {!isBelowMd ? (
@@ -129,15 +131,17 @@ const IndexUnitsUpdatedActivityRow: FC<IndexUnitsUpdatedActivityRowProps> = ({
                 data-cy={"amount"}
                 primary={unitsPercentageString}
                 secondary={unitsDiffString}
-                primaryTypographyProps={{
-                  variant: "h6mono",
-                }}
-                secondaryTypographyProps={{
-                  variant: "body2mono",
-                  color: "text.secondary",
-                  translate: "yes",
-                }}
-              />
+                slotProps={{
+                  primary: {
+                    variant: "h6mono",
+                  },
+
+                  secondary: {
+                    variant: "body2mono",
+                    color: "textSecondary",
+                    translate: "yes",
+                  }
+                }} />
             </ListItem>
           </TableCell>
           <TableCell>
@@ -154,8 +158,10 @@ const IndexUnitsUpdatedActivityRow: FC<IndexUnitsUpdatedActivityRowProps> = ({
                   >
                     <Typography
                       variant="h6"
-                      color="text.primary"
                       component="span"
+                      sx={{
+                        color: "text.primary"
+                      }}
                     >
                       <AddressName
                         address={isPublisher ? subscriber : publisher}
@@ -163,10 +169,12 @@ const IndexUnitsUpdatedActivityRow: FC<IndexUnitsUpdatedActivityRowProps> = ({
                     </Typography>
                   </AddressCopyTooltip>
                 }
-                primaryTypographyProps={{
-                  variant: "body2",
-                  color: "text.secondary",
-                  translate: "yes",
+                slotProps={{
+                  primary: {
+                    variant: "body2",
+                    color: "textSecondary",
+                    translate: "yes",
+                  }
                 }}
               />
             </ListItem>
@@ -181,19 +189,26 @@ const IndexUnitsUpdatedActivityRow: FC<IndexUnitsUpdatedActivityRowProps> = ({
         </>
       ) : (
         <TableCell align="right">
-          <Stack direction="row" alignItems="center" gap={1}>
+          <Stack
+            direction="row"
+            sx={{
+              alignItems: "center",
+              gap: 1
+            }}>
             <ListItemText
               primary={unitsPercentageString}
               secondary={unitsDiffString}
-              primaryTypographyProps={{
-                variant: "h6mono",
-              }}
-              secondaryTypographyProps={{
-                variant: "body2mono",
-                color: "text.secondary",
-                translate: "yes",
-              }}
-            />
+              slotProps={{
+                primary: {
+                  variant: "h6mono",
+                },
+
+                secondary: {
+                  variant: "body2mono",
+                  color: "textSecondary",
+                  translate: "yes",
+                }
+              }} />
             <TokenIcon
               isSuper
               chainId={network.id}

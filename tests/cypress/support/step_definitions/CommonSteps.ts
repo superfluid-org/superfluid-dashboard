@@ -175,22 +175,15 @@ Then(/^User clicks on the modify streams onboarding card$/, () => {
   Common.clickModifyStreamsOnboardingCard();
 });
 Then(
-  /^The minigame container iframe is visible without a wallet connected$/,
+  /^The Superfluid Runner navigation link points to the game without an address$/,
   () => {
-    Common.validateMiniGameContainerWithoutWalletConnected();
+    Common.validateSuperfluidRunnerLinkWithoutAddress();
   }
 );
-Then(/^In-game cosmetics warning is shown$/, () => {
-  Common.validateMiniGameCosmeticsWarningIsVisible();
-});
-
-Then(/^In-game cosmetics warning does not exist$/, () => {
-  Common.validateMiniGameCosmeticsWarningDoesNotExist();
-});
 Then(
-  /^The minigame container iframe is visible with a wallet connected$/,
-  () => {
-    Common.validateMiniGameContainerWithWalletConnected();
+  /^The Superfluid Runner navigation link points to the game with "([^"]*)" as the address$/,
+  (account: string) => {
+    Common.validateSuperfluidRunnerLinkWithAddress(account);
   }
 );
 
@@ -251,6 +244,16 @@ Given(/^User waits for (\d+) seconds$/, function (seconds: number) {
 Then(/^Transaction rejected error is shown$/, function () {
   Common.transactionRejectedErrorIsShown();
 });
+// For the stream-scheduling flows, which are forced through the Clear Macro gasless relay
+// on relay-enabled networks. Wrapped in `runFunctionIfPlatformIsDeployedOnNetwork` for the
+// same reason as the scheduling steps it follows: on networks without the flow scheduler
+// the whole scheduling part of the scenario is skipped, so there is no dialog to assert.
+// See Common.relayFeeGateErrorIsShown.
+Then(/^The gasless relay fee gate is shown$/, function () {
+  SendPage.runFunctionIfPlatformIsDeployedOnNetwork(() => {
+    Common.relayFeeGateErrorIsShown();
+  });
+});
 Then(
   /^Transaction rejected error is shown for auto-wrap or vesting transaction$/,
   function () {
@@ -289,18 +292,9 @@ Then(
     Common.validateNoEthereumMainnetShownInDropdown();
   }
 );
-Then(/^User opens the navigation more menu$/, function () {
-  Common.openNavigationMoreMenu();
-});
 Then(/^User opens the access code menu$/, function () {
   Common.openAccessCodeMenu();
 });
-Then(
-  /^User clicks on the "([^"]*)" button in the more menu$/,
-  function (button: string) {
-    Common.clickMoreMenuButton(button);
-  }
-);
 
 Then(/^User types "([^"]*)" in the access code menu$/, function (code: string) {
   Common.inputAccessCode(code);
@@ -350,10 +344,6 @@ Then(
 );
 Given(/^User opens the faucet view from the navigation menu$/, function () {
   Common.openFaucetMenu();
-});
-
-Given(/^User opens the auto-wrap page from the navigation menu$/, function () {
-  Common.openAutoWrapPage();
 });
 
 Then(/^Connect wallet button is visible in the faucet menu$/, function () {
@@ -419,78 +409,6 @@ Given(/^The new wallet address is visible in the faucet menu$/, function () {
 Then(/^Faucet view is visible$/, function () {
   Common.validateOpenFaucetView();
 });
-Given(/^User opens the notifications modal$/, function () {
-  Common.clickNotificationButton();
-});
-
-Then(
-  /^User switches to the "([^"]*)" notification tab$/,
-  function (tab: string) {
-    Common.switchNotificationTabTo(tab);
-  }
-);
-Then(
-  /^You are not subscribed to notifications message is shown$/,
-  function (tab: string) {
-    Common.validateNotSubscribedMessage();
-  }
-);
-Then(
-  /^Connect wallet button is visible in the notification modal$/,
-  function () {
-    Common.validateConnectWalletButtonInNotifModal();
-  }
-);
-Given(
-  /^Notifications requests are mocked to "([^"]*)"$/,
-  function (type: string) {
-    Common.mockNotificationRequestsTo(type);
-  }
-);
-Then(/^Notification toast is visible for "([^"]*)"$/, function (type: string) {
-  Common.validateNotificationToast(type);
-});
-Then(
-  /^Notification badge shows "([^"]*)" new notification$/,
-  function (amount: string) {
-    Common.validateNotificationBadge(amount);
-  }
-);
-
-Then(/^User closes the notification modal$/, function () {
-  Common.closeDropdown();
-});
-
-Then(/^User archives the last notification$/, function () {
-  Common.archiveLastNotification();
-});
-Then(/^Archived "([^"]*)" notification is shown$/, function (type: string) {
-  Common.validateArchivedNotification(type);
-});
-Then(/^Wrap button is visible in the notifications modal$/, function () {
-  Common.validateWrapButtonsInNotifModal();
-});
-Then(
-  /^User clicks on the wrap button in the notifications modal$/,
-  function () {
-    Common.clickWrapButtonInNotifModal();
-  }
-);
-Then(/^No wrap button is visible in the notifications modal$/, function () {
-  Common.validateNoWrapButtonsInNotifModal();
-});
-Then(/^New "([^"]*)" notification is shown$/, function (type: string) {
-  Common.validateNewNotification(type);
-});
-Then(/^Read "([^"]*)" notification is shown$/, function (type: string) {
-  Common.validateReadNotification(type);
-});
-Then(/^No "([^"]*)" notifications message is shown$/, function (tab: string) {
-  Common.validateNoNewNotificationsMessage(tab);
-});
-Given(/^User clicks on the notification settings button$/, function () {
-  Common.clickNotificationSettingsButton();
-});
 Given(
   /^"([^"]*)" is open using view mode to look at "([^"]*)"$/,
   function (page: string, account: string) {
@@ -507,9 +425,15 @@ Then(
 Then(/^User clears the receiver input field$/, function () {
   Common.clearReceiverField();
 });
-Then(/^No loading skeletons are visible in the page$/, function () {
-  Common.waitForSpookySkeletonsToDisapear();
-});
+// Replaces "No loading skeletons are visible in the page", which asserted that no
+// MuiSkeleton existed anywhere and therefore made every scenario wait on every
+// network. See Common.waitForNetworkTableToLoad.
+Then(
+  /^The "([^"]*)" table on "([^"]*)" has loaded$/,
+  function (tableSuffix: string, network: string) {
+    Common.waitForNetworkTableToLoad(network, tableSuffix);
+  }
+);
 
 Then(
   /^Ecosystem page navigation button leads to an external site$/,

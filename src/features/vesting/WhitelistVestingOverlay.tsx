@@ -3,6 +3,7 @@ import { useMediaQuery } from "@mui/material";
 import { Stack, Box, Typography, Link } from "@mui/material";
 import NetworkSwitchLink from "../network/NetworkSwitchLink";
 import { networkDefinition } from "../network/networks";
+import { ALLOWLIST_CONTACT_URL } from "../../utils/constants";
 
 export function WhitelistVestingOverlay() {
     const theme = useTheme();
@@ -34,10 +35,10 @@ export function WhitelistVestingOverlay() {
                     If you want to create vesting schedules,{" "}
                     <Link
                         data-cy={"allowlist-link"}
-                        href="https://use.superfluid.finance/vesting"
+                        href={ALLOWLIST_CONTACT_URL}
                         target="_blank"
                     >
-                        Apply for access
+                        Contact us for access
                     </Link>{" "}
                     or try it out on{" "}
                     <NetworkSwitchLink

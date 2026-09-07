@@ -58,13 +58,13 @@ export const BalanceSuperToken: FC<BalanceSuperTokenProps> = ({
           {symbol}
         </Typography>
       )}
-
       {showFiat && superBalanceQuery.data && tokenPrice && (
         <Typography
           variant="body2mono"
-          color="text.secondary"
           {...FiatTypographyProps}
-        >
+          sx={[{
+            color: "text.secondary"
+          }, ...(Array.isArray(FiatTypographyProps.sx) ? FiatTypographyProps.sx : [FiatTypographyProps.sx])]}>
           (
           <FlowingFiatBalance
             balance={superBalanceQuery.data.balance}

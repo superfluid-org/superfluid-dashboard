@@ -7,7 +7,6 @@ Feature: ACL and Auto-Wrap related rejected test cases
   @platformNeeded
   Scenario: Auto-Wrap page: Adding auto-wrap for a token (no permissions set)
     Given "Auto-Wrap Page" is open with "john" connected on "selected network"
-    And No loading skeletons are visible in the page
     And User clicks on the add token button
     And User selects "selected network" as the network for the auto-wrap
     And User selects "TokenOnex" as the super token to use for auto-wrap or vesting
@@ -17,7 +16,6 @@ Feature: ACL and Auto-Wrap related rejected test cases
   @platformNeeded
   Scenario: Auto-Wrap page: Adding auto-wrap for a token which already has ACL allowance
     Given "Auto-Wrap Page" is open with "john" connected on "selected network"
-    And No loading skeletons are visible in the page
     And User clicks on the add token button
     And User selects "selected network" as the network for the auto-wrap
     And User selects "TokenThreex" as the super token to use for auto-wrap or vesting
@@ -27,7 +25,6 @@ Feature: ACL and Auto-Wrap related rejected test cases
   @platformNeeded
   Scenario: Auto-Wrap page: Enabling auto-wrap for a token which has ACL allowance from the table
     Given "Auto-Wrap Page" is open with "john" connected on "selected network"
-    And No loading skeletons are visible in the page
     And User clicks on the "TokenThreex" enable button in the auto-wrap table on "selected network"
     And User clicks the Allowance button for the auto-wrap
     Then Transaction rejected error is shown for auto-wrap or vesting transaction
@@ -35,7 +32,6 @@ Feature: ACL and Auto-Wrap related rejected test cases
   @platformNeeded
   Scenario: Auto-Wrap page: Disabling auto-wrap from the table
     Given "Auto-Wrap Page" is open with "john" connected on "selected network"
-    And No loading skeletons are visible in the page
     And User clicks on the "TokenTwox" disable auto-wrap button on "selected network"
     Then Transaction rejected error is shown for auto-wrap or vesting transaction
 
@@ -81,8 +77,8 @@ Feature: ACL and Auto-Wrap related rejected test cases
     And User clicks on the Fix permissions button
     Then Transaction rejected error is shown for auto-wrap or vesting transaction
 
-  Scenario: Settings page: Adding a new permission - save changes screen
-    Given "Settings Page" is open with "john" connected on "selected network"
+  Scenario: Approvals page: Adding a new permission - save changes screen
+    Given "Approvals Page" is open with "john" connected on "selected network"
     And User clicks on the add approval button
     And User opens the add approval modal is visible
     And User selects "TokenOnex" as the super token to use for the stream
@@ -98,10 +94,10 @@ Feature: ACL and Auto-Wrap related rejected test cases
     And User clicks on the save changes button
     Then Transaction rejected error is shown
 
-  Scenario: Settings page: Adding a new permission
+  Scenario: Approvals page: Adding a new permission
     Given HDWallet transactions are rejected
 
-    Given "Settings Page" is open with "john" connected on "selected network"
+    Given "Approvals Page" is open with "john" connected on "selected network"
     And User clicks on the add approval button
     And User opens the add approval modal is visible
     And User selects "TokenOnex" as the super token to use for the stream
@@ -119,9 +115,8 @@ Feature: ACL and Auto-Wrap related rejected test cases
     And User closes tx the dialog
     And User closes the unsaved changes modal
 
-  Scenario: Settings page: Changing ACL permissions
-    Given "Settings Page" is open with "john" connected on "selected network"
-    And No loading skeletons are visible in the page
+  Scenario: Approvals page: Changing ACL permissions
+    Given "Approvals Page" is open with "john" connected on "selected network"
     And User opens the first modify permissions form on "selected network"
     And User clicks the create permission toggle
     And User clicks the update permission toggle
@@ -129,25 +124,22 @@ Feature: ACL and Auto-Wrap related rejected test cases
     And User click on approvals add button
     And Transaction rejected error is shown
 
-  Scenario: Settings page: Changing Token allowance
-    Given "Settings Page" is open with "john" connected on "selected network"
-    And No loading skeletons are visible in the page
+  Scenario: Approvals page: Changing Token allowance
+    Given "Approvals Page" is open with "john" connected on "selected network"
     And User opens the first modify permissions form on "selected network"
     And User inputs a allowance "42069" into the field
     And User click on approvals add button
     And Transaction rejected error is shown
 
-  Scenario: Settings page: Changing flow rate allowance
-    Given "Settings Page" is open with "john" connected on "selected network"
-    And No loading skeletons are visible in the page
+  Scenario: Approvals page: Changing flow rate allowance
+    Given "Approvals Page" is open with "john" connected on "selected network"
     And User opens the first modify permissions form on "selected network"
     And User inputs a flow rate "42069" into the field
     And User click on approvals add button
     And Transaction rejected error is shown
 
-  Scenario: Settings page: Revoking a permission
-    Given "Settings Page" is open with "john" connected on "selected network"
-    And No loading skeletons are visible in the page
+  Scenario: Approvals page: Revoking a permission
+    Given "Approvals Page" is open with "john" connected on "selected network"
     And User opens the first modify permissions form on "selected network"
     And User clicks on the revoke button in the permissions form
     Then Transaction rejected error is shown

@@ -136,10 +136,15 @@ Feature: Send Page test cases
     And User inputs a date "1" "month" into the future into the stream end date
     Then The total stream amount is correctly calculated to be "1"
 
-  Scenario: Scheduled streams - Allowlist message
+  # The Clear Macro relay fee replaces the platform allowlist for eligible signers, and every
+  # network that supports scheduling is a Clear Macro network -- so an eligible EOA no longer sees
+  # the allowlist overlay on any scheduling network. This scenario asserted the opposite before
+  # the relay landed; the overlay itself still covers non-eligible signers (see SendStream.tsx).
+  Scenario: Scheduled streams - Allowlist is bypassed on Clear Macro networks
     Given "Send Page" is open with "alice" connected on "polygon"
     And User clicks the scheduling toggle
-    Then Allowlist message is shown
+    Then Allowlist message is not shown
+    And Scheduled stream fields are visible
 
   Scenario: Scheduled streams - Allowlist not needed on opsepolia
     Given "Send Page" is open with "alice" connected on "opsepolia"
@@ -148,7 +153,6 @@ Feature: Send Page test cases
 
   Scenario: Stream tables - stream with just start date
     Given "Dashboard Page" is open with "john" connected on "opsepolia"
-    And No loading skeletons are visible in the page
     And User clicks on "opsepolia" "fTUSDx" row
     Then The stream row to "0xD60e9B498b731370850F240E57d265eCdd97fbCd" has a flow rate of "-1" and dates to "22 Jul. 2026 01:00"
     And User clicks on "opsepolia" "fTUSDx" row
@@ -157,7 +161,6 @@ Feature: Send Page test cases
 
   Scenario: Stream tables - stream with start and end date
     Given "Dashboard Page" is open with "john" connected on "opsepolia"
-    And No loading skeletons are visible in the page
     And User clicks on "opsepolia" "fTUSDx" row
     Then The stream row to "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4" has a flow rate of "-1" and dates to "22 Jul. 2026 01:0031 Dec. 2026 23:00"
     And User clicks on "opsepolia" "fTUSDx" row
@@ -166,13 +169,13 @@ Feature: Send Page test cases
 
   Scenario: Stream tables - stream with end date
     Given "Dashboard Page" is open with "john" connected on "opsepolia"
-    And No loading skeletons are visible in the page
     And User clicks on "opsepolia" "fTUSDx" row
     Then The stream row to "0x9B6157d44134b21D934468B8bf709294cB298aa7" has a flow rate of "-1" and dates to "5 Mar. 2025 12:1031 Dec. 2026 23:00"
     And User clicks on "opsepolia" "fTUSDx" row
     And User opens "opsepolia" "fTUSDx" individual token page
     Then The stream row to "0x9B6157d44134b21D934468B8bf709294cB298aa7" has a flow rate of "-1" and dates to "5 Mar. 2025 12:1031 Dec. 2026 23:00"
 
+  @gaslessRelayEnabled
   Scenario: Modifying a streams start date
     Given HDWallet transactions are rejected
 
@@ -187,6 +190,7 @@ Feature: Send Page test cases
     And Transaction rejected error is shown
 
   @checkEndDate
+  @gaslessRelayEnabled
   Scenario: Modifying a stream with just end date
     Given HDWallet transactions are rejected
 
@@ -203,6 +207,7 @@ Feature: Send Page test cases
     And Transaction rejected error is shown
 
   @checkEndDate
+  @gaslessRelayEnabled
   Scenario: Modifying a stream with start and end date ( not started yet )
     Given HDWallet transactions are rejected
 

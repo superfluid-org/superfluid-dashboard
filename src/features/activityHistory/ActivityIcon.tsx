@@ -23,16 +23,24 @@ const ActivityIconWrapper = styled(Avatar)(({ theme }) => ({
 interface ActivityIconProps {
   icon: typeof SvgIcon;
   IconProps?: Partial<SvgIconProps>;
+  /**
+   * Test hook. Material UI v7 strips the default `data-testid` from icons in
+   * production bundles, and the e2e suite runs against a production build, so
+   * activity rows carry their own hook instead.
+   */
+  dataCy?: string;
 }
 
 const ActivityIcon: FC<ActivityIconProps> = ({
   icon: Icon,
   IconProps = { sx: {} },
+  dataCy,
 }) => (
   <ListItemAvatar>
     <ActivityIconWrapper>
       <Icon
         {...IconProps}
+        data-cy={dataCy}
         sx={{
           fontSize: "20px",
           ...IconProps.sx,

@@ -45,7 +45,10 @@ export const TransactionListItemRestoreButton: FC<{
     case RestorationType.Wrap:
       return (
         <Tooltip title="Restore">
-          <IconButton onClick={restoreTransaction}>
+          <IconButton
+            data-cy={"restore-transaction-button"}
+            onClick={restoreTransaction}
+          >
             <ReplayIcon />
           </IconButton>
         </Tooltip>

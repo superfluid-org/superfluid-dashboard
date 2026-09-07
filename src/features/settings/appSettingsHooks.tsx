@@ -3,6 +3,7 @@ import {currenciesByCode, Currency, CurrencyCode} from "../../utils/currencyUtil
 import {useAppSelector} from "../redux/store";
 import {AppSettingsState, settingSelector} from "./appSettings.slice";
 import {MinigameCosmetics} from "../minigame/MinigameContext";
+import type {ClearMacroPaymentMode} from "../clearMacro/executeClearMacro";
 
 export const useSetting = (setting: keyof AppSettingsState) =>
   useAppSelector((state) => settingSelector(state, setting));
@@ -18,4 +19,8 @@ export const useAppLastSuperfluidRunnerCosmetics = (): MinigameCosmetics => {
 
 export const useClearMacroEnabled = (): boolean => {
   return useSetting("clearMacroEnabled") as boolean;
+};
+
+export const useClearMacroPaymentMode = (): ClearMacroPaymentMode => {
+  return useSetting("clearMacroPaymentMode") as ClearMacroPaymentMode;
 };

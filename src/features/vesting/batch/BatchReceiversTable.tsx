@@ -64,7 +64,12 @@ export const BatchReceiversTable = memo(function ReceiversTable(props: {
                         <TableRow key={index}>
                             <TableCell width="64px">{(page * rowsPerPage) + index + 1}</TableCell>
                             <TableCell>
-                                <Stack direction="row" alignItems="center" gap={1.5}>
+                                <Stack
+                                    direction="row"
+                                    sx={{
+                                        alignItems: "center",
+                                        gap: 1.5
+                                    }}>
                                     <AddressAvatar
                                         address={schedule.receiverAddress}
                                         AvatarProps={{
@@ -79,13 +84,14 @@ export const BatchReceiversTable = memo(function ReceiversTable(props: {
                                     </AddressCopyTooltip>
                                 </Stack>
                             </TableCell>
-                            <TableCell>{schedule.totalAmountEther} {token && <Typography variant="caption" color="text.secondary">{token?.symbol}</Typography>}</TableCell>
+                            <TableCell>{schedule.totalAmountEther} {token && <Typography variant="caption" sx={{
+                                color: "text.secondary"
+                            }}>{token?.symbol}</Typography>}</TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
                 {/* --- */}
             </Table>
-
             {/*  # Pagination */}
             {schedules.length > minPageLength && (
                 <TablePagination
@@ -105,7 +111,6 @@ export const BatchReceiversTable = memo(function ReceiversTable(props: {
                 />
             )}
             {/* --- */}
-
         </TableContainer>
-    )
+    );
 });

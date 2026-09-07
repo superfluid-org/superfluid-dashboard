@@ -40,7 +40,7 @@ export const CopyIconBtn: FC<CopyIconBtnProps> = ({
   return (
     <Tooltip title={isCopied ? "Copied!" : description} {...TooltipProps}>
       <IconButton onClick={handleCopyClick} {...IconButtonProps}>
-        <ContentCopyRoundedIcon />
+        <ContentCopyRoundedIcon data-cy="address-copy-icon" />
       </IconButton>
     </Tooltip>
   );

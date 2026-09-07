@@ -211,7 +211,7 @@ const SelectNetwork: FC<{
         onClose={handleClose}
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-        PaperProps={{ sx: { minWidth: 280 }, square: true }}
+        slotProps={{ paper: { sx: { minWidth: 280 }, square: true } }}
         sx={{ marginTop: theme.spacing(1.5) }}
         onBlur={onBlur}
       >

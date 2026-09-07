@@ -35,7 +35,9 @@ const AutoWrapAllowanceTransactionButton: FC<{
               if (isButtonDisabled)
                 throw new Error("This should never happen!");
               setDialogLoadingInfo(
-                <Typography data-cy="auto-wrap-allowance-tx-message" variant="h5" color="text.secondary" translate="yes">
+                <Typography data-cy="auto-wrap-allowance-tx-message" variant="h5" translate="yes" sx={{
+                  color: "text.secondary"
+                }}>
                   You are approving Auto-Wrap token allowance for the underlying
                   token.
                 </Typography>

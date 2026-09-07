@@ -55,12 +55,14 @@ const FaucetCard: FC = () => {
           data-cy={"dashboard-faucet-message"}
           primary="Get Testnet Tokens"
           secondary="Claim tokens from our free testnet faucet to try out streaming payments."
-          primaryTypographyProps={{ variant: "h5" }}
-          secondaryTypographyProps={{
-            variant: "body1",
-            color: "text.primary",
-          }}
-        />
+          slotProps={{
+            primary: { variant: "h5" },
+
+            secondary: {
+              variant: "body1",
+              color: "textPrimary",
+            }
+          }} />
         {isBelowMd && <ClaimTokensBtn />}
       </ListItem>
     </Paper>

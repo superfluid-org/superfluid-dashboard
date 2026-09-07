@@ -64,6 +64,9 @@ const config = {
       "https://wallet.superfluid.org"
     ).trim(),
   },
+  // Kill switch for the Clear Macro gasless relay. Unset = enabled.
+  isClearMacroDisabled:
+    process.env.NEXT_PUBLIC_DISABLE_CLEAR_MACRO === "true",
 } as const;
 
 export default Object.freeze(config);

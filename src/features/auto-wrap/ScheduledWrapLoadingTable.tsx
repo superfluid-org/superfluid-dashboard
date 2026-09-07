@@ -20,9 +20,13 @@ export const ScheduledWrapRowSkeleton = () => {
   return (
     <TableRow data-cy={"loading-skeletons"}>
       <TableCell>
-        <Stack direction="row" gap={2}>
+        <Stack direction="row" sx={{
+          gap: 2
+        }}>
           <Skeleton variant="circular" width={36} height={36} />
-          <Stack justifyContent="center">
+          <Stack sx={{
+            justifyContent: "center"
+          }}>
             {!isBelowMd && <Skeleton width={80} />}
           </Stack>
         </Stack>
@@ -41,7 +45,9 @@ export const ScheduledWrapRowSkeleton = () => {
         </>
       ) : (
         <TableCell>
-          <Stack alignItems="end">
+          <Stack sx={{
+            alignItems: "end"
+          }}>
             <Skeleton width={60} />
           </Stack>
         </TableCell>
@@ -84,10 +90,13 @@ const ScheduledWrapLoadingTable = () => {
             >
               <Stack
                 direction="row"
-                alignItems="center"
-                gap={2}
-                sx={{ py: 2, px: 4, [theme.breakpoints.down("md")]: { p: 2 } }}
-              >
+                sx={{
+                  alignItems: "center",
+                  gap: 2,
+                  py: 2,
+                  px: 4,
+                  [theme.breakpoints.down("md")]: { p: 2 }
+                }}>
                 <Skeleton variant="circular" width={36} height={36} />
 
                 <Typography variant="h5">

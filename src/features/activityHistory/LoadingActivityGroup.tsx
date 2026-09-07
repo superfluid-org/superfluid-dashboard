@@ -34,7 +34,9 @@ export const LoadingActivityRow = () => {
           <ListItemText
             primary={<Skeleton width={isBelowMd ? "60px" : "120px"} />}
             secondary={<Skeleton width={isBelowMd ? "30px" : "60px"} />}
-            primaryTypographyProps={{ variant: isBelowMd ? "h7" : "h6" }}
+            slotProps={{
+              primary: { variant: isBelowMd ? "h7" : "h6" }
+            }}
           />
         </ListItem>
       </TableCell>
@@ -66,9 +68,10 @@ export const LoadingActivityRow = () => {
               <ListItemText
                 primary={<Skeleton width="34px" />}
                 secondary={<Skeleton width="120px" />}
-                primaryTypographyProps={{ variant: "body2" }}
-                secondaryTypographyProps={{ variant: "h6" }}
-              />
+                slotProps={{
+                  primary: { variant: "body2" },
+                  secondary: { variant: "h6" }
+                }} />
             </ListItem>
           </TableCell>
           <TableCell>
@@ -85,18 +88,21 @@ export const LoadingActivityRow = () => {
         <TableCell align="right">
           <Stack
             direction="row"
-            alignItems="center"
-            justifyContent="end"
-            gap={2}
-          >
+            sx={{
+              alignItems: "center",
+              justifyContent: "end",
+              gap: 2
+            }}>
             <ListItemText
               primary={<Skeleton width="60px" />}
               secondary={<Skeleton width="40px" />}
-              primaryTypographyProps={{ variant: "h7" }}
               sx={{
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "end",
+              }}
+              slotProps={{
+                primary: { variant: "h7" }
               }}
             />
             <Skeleton

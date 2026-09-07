@@ -38,7 +38,9 @@ const FixVestingPermissionsBtn: FC<FixVestingPermissionsBtnProps> = ({
       }
 
       setDialogLoadingInfo(
-        <Typography variant="h5" color="text.secondary" translate="yes">
+        <Typography variant="h5" translate="yes" sx={{
+          color: "text.secondary"
+        }}>
           You are fixing access for the vesting smart contract ({version}) so that it could
           be correctly executed.
         </Typography>

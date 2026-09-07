@@ -31,9 +31,11 @@ const AppSettingsBtn: FC<AppSettingsBtnProps> = ({}) => {
         onClose={handleClose}
         transformOrigin={{ horizontal: "left", vertical: "bottom" }}
         anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
-        PaperProps={{
-          sx: { minWidth: 228 },
-          square: true,
+        slotProps={{
+          paper: {
+            sx: { minWidth: 228 },
+            square: true,
+          }
         }}
       >
         <ThemeChanger />

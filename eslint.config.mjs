@@ -28,6 +28,8 @@ export default [
       "src/eth-sdk/",
       "src/**/generated.ts",
       "src/**/.graphclient/",
+      // The Foundry project and its vendored submodule (contracts/lib) carry their own JS.
+      "contracts/",
     ],
   },
 ];

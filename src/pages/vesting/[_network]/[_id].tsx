@@ -53,7 +53,12 @@ interface VestingLegendItemProps {
 }
 
 const VestingLegendItem: FC<VestingLegendItemProps> = ({ title, color }) => (
-  <Stack direction="row" gap={0.5} alignItems="center">
+  <Stack
+    direction="row"
+    sx={{
+      gap: 0.5,
+      alignItems: "center"
+    }}>
     <Box
       sx={{
         width: "10px",
@@ -356,8 +361,9 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
         vestingSchedule={vestingSchedule}
         token={token}
       />
-
-      <Stack gap={3}>
+      <Stack sx={{
+        gap: 3
+      }}>
         <Card
           sx={{
             pb: 2,
@@ -373,26 +379,35 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
           <Stack
             data-cy={"token-container-by-graph"}
             direction="row"
-            justifyContent="space-between"
-            alignItems="start"
             sx={{
+              justifyContent: "space-between",
+              alignItems: "start",
               mb: 4,
+
               [theme.breakpoints.down("md")]: {
                 mb: 0,
                 alignItems: "end",
-              },
-            }}
-          >
-            <Stack gap={0.5}>
+              }
+            }}>
+            <Stack sx={{
+              gap: 0.5
+            }}>
               <Typography
                 variant={isBelowMd ? "body2" : "body1"}
-                color="text.secondary"
                 translate="yes"
+                sx={{
+                  color: "text.secondary"
+                }}
               >
                 Vested so far
               </Typography>
               <Box>
-                <Stack direction="row" alignItems="flex-end" columnGap={1}>
+                <Stack
+                  direction="row"
+                  sx={{
+                    alignItems: "flex-end",
+                    columnGap: 1
+                  }}>
                   <Typography
                     data-cy={"token-balance"}
                     variant="h3mono"
@@ -403,7 +418,9 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
                   <Typography
                     data-cy={"token-symbol"}
                     variant="h5mono"
-                    color="text.secondary"
+                    sx={{
+                      color: "text.secondary"
+                    }}
                   >
                     {token.symbol}
                   </Typography>
@@ -413,7 +430,9 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
                   <Typography
                     data-cy={"token-fiat-balance"}
                     variant="h5mono"
-                    color="text.secondary"
+                    sx={{
+                      color: "text.secondary"
+                    }}
                   >
                     <FlowingFiatBalance
                       balance={vestingSchedule.cliffAmount}
@@ -427,12 +446,18 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
             </Stack>
 
             {!isBelowMd && (
-              <Stack alignItems="end" gap={2}>
+              <Stack
+                sx={{
+                  alignItems: "end",
+                  gap: 2
+                }}>
                 <TimeUnitFilter
                   activeFilter={graphFilter}
                   onChange={onGraphFilterChange}
                 />
-                <Stack direction="row" gap={2}>
+                <Stack direction="row" sx={{
+                  gap: 2
+                }}>
                   <VestingLegendItem
                     title="Vested"
                     color={theme.palette.primary.main}
@@ -455,9 +480,10 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
 
         <Stack
           direction={isBelowMd ? "column" : "row"}
-          alignItems="stretch"
-          gap={3}
-        >
+          sx={{
+            alignItems: "stretch",
+            gap: 3
+          }}>
           <VestingDataCard
             title="Tokens Allocated"
             chainId={network.id}
@@ -493,7 +519,9 @@ const VestingScheduleDetailsContent: FC<VestingScheduleDetailsContentProps> = ({
         </Stack>
 
         <Card sx={{ p: 3.5, flex: 1 }}>
-          <Stack gap={2}>
+          <Stack sx={{
+            gap: 2
+          }}>
             <Typography variant="h5">Schedule</Typography>
             <VestingScheduleProgress vestingSchedule={vestingSchedule} />
           </Stack>

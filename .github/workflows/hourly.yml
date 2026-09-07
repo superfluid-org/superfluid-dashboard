@@ -55,6 +55,17 @@ jobs:
         env:
           CYPRESS_baseUrl: "https://app.superfluid.org"
 
+      # Per-failed-test network/console telemetry written by
+      # tests/cypress/support/telemetry.js.
+      - name: Upload failure telemetry
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: telemetry-hourly-${{ matrix.container }}
+          path: tests/cypress/results/telemetry
+          if-no-files-found: ignore
+          retention-days: 14
+
       - name: Send slack message
         if: failure()
         run: node tests/hourlySlackMessage.js tests/cypress/results/mochawesome.json

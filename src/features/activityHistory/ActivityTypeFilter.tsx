@@ -98,9 +98,11 @@ const ActivityTypeFilter: FC<ActivityTypeFilterProps> = ({
       open={!!anchorEl}
       anchorEl={anchorEl}
       onClose={onClose}
-      PaperProps={{
-        sx: { mt: theme.spacing(1.5), minWidth: "280px" },
-        square: true,
+      slotProps={{
+        paper: {
+          sx: { mt: theme.spacing(1.5), minWidth: "280px" },
+          square: true,
+        },
       }}
       transformOrigin={{ horizontal: "left", vertical: "top" }}
       anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
@@ -112,8 +114,10 @@ const ActivityTypeFilter: FC<ActivityTypeFilterProps> = ({
           onClick={toggleActivity(key)}
         >
           <ListItemText
-            primaryTypographyProps={{ variant: "menuItem" }}
             translate="yes"
+            slotProps={{
+              primary: { variant: "menuItem" }
+            }}
           >
             {key}
           </ListItemText>

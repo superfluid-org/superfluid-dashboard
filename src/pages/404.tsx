@@ -35,7 +35,7 @@ const Page404: NextPage = () => {
         sx={{ my: 4.5 }}
         href="/"
       >
-        Return to Dashboard
+        Return to Portfolio
       </Button>
 
       <Typography variant="h5">

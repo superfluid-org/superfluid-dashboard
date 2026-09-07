@@ -23,10 +23,17 @@ const NoContentPaper: FC<NoContentPaperProps> = ({ title, description ,dataCy}) 
         },
       }}
     >
-      <Typography data-cy={`${dataCy}-title`} variant={isBelowMd ? "h5" : "h4"} textAlign="center">
+      <Typography data-cy={`${dataCy}-title`} variant={isBelowMd ? "h5" : "h4"} sx={{
+        textAlign: "center"
+      }}>
         {title}
       </Typography>
-      <Typography data-cy={`${dataCy}-description`} color="text.secondary" textAlign="center">
+      <Typography
+        data-cy={`${dataCy}-description`}
+        sx={{
+          color: "text.secondary",
+          textAlign: "center"
+        }}>
         {description}
       </Typography>
     </Paper>

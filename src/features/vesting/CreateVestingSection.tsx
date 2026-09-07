@@ -53,15 +53,23 @@ export const CreateVestingSection: FC<CreateVestingSectionProps> = ({
     <Box>
       <Stack
         direction="row"
-        justifyContent="start"
-        alignItems="center"
-        gap={2}
-        sx={{ mb: 3 }}
-      >
+        sx={{
+          justifyContent: "start",
+          alignItems: "center",
+          gap: 2,
+          mb: 3
+        }}>
         <BackButton view={view} setView={setView} />
 
-        <Stack direction="row" alignItems="center" gap={3}>
-          <Typography component="h2" variant="h5" flex={1}>
+        <Stack
+          direction="row"
+          sx={{
+            alignItems: "center",
+            gap: 3
+          }}>
+          <Typography component="h2" variant="h5" sx={{
+            flex: 1
+          }}>
             Create a Vesting Schedule
           </Typography>
 
@@ -83,7 +91,6 @@ export const CreateVestingSection: FC<CreateVestingSectionProps> = ({
           }}
         />
       </Stack>
-
       <Box sx={{ position: "relative", mx: -1, px: 1 }}>
         {view === CreateVestingCardView.Form && (
           <CreateVestingForm token={token} setView={setView} />

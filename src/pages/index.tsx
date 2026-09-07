@@ -21,7 +21,6 @@ import TokenSnapshotTables from "../features/tokenSnapshotTable/TokenSnapshotTab
 import ConnectWallet from "../features/wallet/ConnectWallet";
 import { useVisibleAddress } from "../features/wallet/VisibleAddressContext";
 
-
 const ConnectView: FC = () => {
   const theme = useTheme();
   const { impersonate } = useImpersonation();
@@ -46,35 +45,43 @@ const ConnectView: FC = () => {
       }}
       translate="yes"
     >
-      <Typography variant="h4" component="h1" textAlign="center" sx={{ mb: 1 }}>
+      <Typography
+        variant="h4"
+        component="h1"
+        sx={{
+          textAlign: "center",
+          mb: 1
+        }}>
         Connect to Superfluid
       </Typography>
       <Typography
         variant="h6"
         component="p"
-        color="text.secondary"
-        textAlign="center"
-        sx={{ mb: 4 }}
-      >
+        sx={{
+          color: "text.secondary",
+          textAlign: "center",
+          mb: 4
+        }}>
         Connect your wallet, view any wallet, or take a look around!
       </Typography>
-
       <OnboardingCards />
-
       <Box sx={{ maxWidth: 400, width: "100%", mx: "auto", mt: 4 }}>
         <ConnectWallet />
 
         <Typography
           variant="h6"
           component="p"
-          textAlign="center"
-          sx={{ my: 2 }}
-        >
+          sx={{
+            textAlign: "center",
+            my: 2
+          }}>
           -or-
         </Typography>
 
         <Box>
-          <Stack data-cy={"view-mode-inputs"} direction="row" gap={2.5}>
+          <Stack data-cy={"view-mode-inputs"} direction="row" sx={{
+            gap: 2.5
+          }}>
             <Button
               variant="outlined"
               color="secondary"
@@ -95,12 +102,13 @@ const ConnectView: FC = () => {
 
         <Divider sx={{ mt: 6, mb: 4.5 }} />
       </Box>
-
       <Typography
         variant="h7"
         component="p"
         color="secondary"
-        textAlign="center"
+        sx={{
+          textAlign: "center"
+        }}
       >
         By connecting your wallet, you accept our{" "}
         <Link href="https://www.superfluid.finance/termsofuse/" target="_blank">
@@ -157,4 +165,4 @@ const Home: NextPage = () => {
   );
 };
 
-export default withStaticSEO({ title: "Dashboard | Superfluid" }, Home);
+export default withStaticSEO({ title: "Portfolio | Superfluid" }, Home);

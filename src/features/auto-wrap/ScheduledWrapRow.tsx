@@ -154,20 +154,27 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
   return (
     <>
       {isBelowMd ? (
-        <Stack gap={2} sx={{ px: 2, py: 2 }}>
+        <Stack
+          sx={{
+            gap: 2,
+            px: 2,
+            py: 2
+          }}>
           <Box>
             <Stack
               direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-            >
+              sx={{
+                justifyContent: "space-between",
+                alignItems: "center"
+              }}>
               <Typography variant="h7">Asset</Typography>
               <Stack
                 data-cy={"auto-wrap-token"}
                 direction="row"
-                alignItems="center"
-                gap={2}
-              >
+                sx={{
+                  alignItems: "center",
+                  gap: 2
+                }}>
                 <TokenIcon
                   isSuper
                   chainId={network.id}
@@ -183,10 +190,16 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
           <Box>
             <Stack
               direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-            >
-              <Stack direction="row" gap={0.5} alignItems="center">
+              sx={{
+                justifyContent: "space-between",
+                alignItems: "center"
+              }}>
+              <Stack
+                direction="row"
+                sx={{
+                  gap: 0.5,
+                  alignItems: "center"
+                }}>
                 Underlying Token Allowance
                 <TooltipWithIcon
                   title="The allowance cap you’ve set up for the underlying ERC-20 tokens."
@@ -215,10 +228,16 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
           <Box>
             <Stack
               direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-            >
-              <Stack direction="row" gap={0.5} alignItems="center">
+              sx={{
+                justifyContent: "space-between",
+                alignItems: "center"
+              }}>
+              <Stack
+                direction="row"
+                sx={{
+                  gap: 0.5,
+                  alignItems: "center"
+                }}>
                 Lower Limit
                 <TooltipWithIcon
                   title="The amount of time left until your stream hits zero at which an automatic top up should be triggered."
@@ -242,10 +261,16 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
           <Box>
             <Stack
               direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-            >
-              <Stack direction="row" gap={0.5} alignItems="center">
+              sx={{
+                justifyContent: "space-between",
+                alignItems: "center"
+              }}>
+              <Stack
+                direction="row"
+                sx={{
+                  gap: 0.5,
+                  alignItems: "center"
+                }}>
                 Upper Limit
                 <TooltipWithIcon
                   title="The amount of time worth of streaming that the wrapped tokens will cover."
@@ -267,7 +292,9 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
               </Typography>
             </Stack>
           </Box>
-          <Box alignContent={"center"}>
+          <Box sx={{
+            alignContent: "center"
+          }}>
             <ConnectionBoundary expectedNetwork={network}>
               {superToken && network.autoWrap ? (
                 isAutoWrapLoading ? (
@@ -338,9 +365,10 @@ const ScheduledWrapRow: FC<ScheduledWrapRowProps> = ({ network, schedule }) => {
             <Stack
               data-cy={"auto-wrap-token"}
               direction="row"
-              alignItems="center"
-              gap={2}
-            >
+              sx={{
+                alignItems: "center",
+                gap: 2
+              }}>
               <TokenIcon
                 isSuper
                 chainId={network.id}

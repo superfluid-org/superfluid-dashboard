@@ -9,7 +9,6 @@ import {
 import * as Sentry from "@sentry/react";
 import { useConfig } from "wagmi";
 import { getPublicClient, simulateContract, writeContract } from "@wagmi/core";
-import { clearMacroForwarderAddress } from "@sfpro/sdk/abi";
 import { TransactionInfo, TransactionTitle } from "@superfluid-finance/sdk-redux";
 import { reduxPersistor, useAppDispatch } from "../redux/store";
 import { useAccount } from "@/hooks/useAccount";
@@ -24,10 +23,16 @@ import {
   isContractRevert,
 } from "./viemTransactionErrors";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
-import { useClearMacroEnabled } from "../settings/appSettingsHooks";
-import { ClearMacroAction } from "../clearMacro/dashboardClearMacro";
 import {
+  useClearMacroEnabled,
+  useClearMacroPaymentMode,
+} from "../settings/appSettingsHooks";
+import { ClearMacroAction } from "../clearMacro/dashboardClearMacro";
+import { isClearMacroSupportedOnNetwork } from "../clearMacro/useClearMacroEligibility";
+import {
+  ClearMacroInsufficientFeeError,
   ClearMacroNotEligibleError,
+  ClearMacroPermit2ApprovalRequiredError,
   executeClearMacro,
 } from "../clearMacro/executeClearMacro";
 import { ClearMacroRelayError } from "../clearMacro/relayApi";
@@ -92,6 +97,14 @@ export interface SuperfluidWriteArgs<
    * pre-signature miss falls back to the normal path below.
    */
   clearMacro?: ClearMacroAction;
+  /**
+   * Caller intent: this write must go through the relay — its batch pays for a service
+   * (scheduling) via the macro's fee. Fail closed instead of self-paying: a pre-signature
+   * relay miss (`ClearMacroNotEligibleError`) surfaces as a readable error rather than
+   * silently falling back, and if the relay gate below can't engage at all (e.g. the
+   * toggle raced off), the write throws instead of executing direct.
+   */
+  clearMacroRequired?: boolean;
 }
 
 /**
@@ -133,6 +146,7 @@ export function useSuperfluidWriteContract() {
   const { address } = useAccount();
   const getTransactionOverrides = useGetTransactionOverrides();
   const clearMacroEnabled = useClearMacroEnabled();
+  const clearMacroPaymentMode = useClearMacroPaymentMode();
   const { isEOA, visibleAddress } = useVisibleAddress();
   const [relayPhase, setRelayPhase] = useState<RelayPhase | undefined>();
   const [relayStatusUnknown, setRelayStatusUnknown] = useState<
@@ -164,6 +178,11 @@ export function useSuperfluidWriteContract() {
         error.code === "POLL_TIMEOUT"
       )
         return;
+      // A known fee-balance shortfall surfaced before signing — the dialog explains it; not a bug.
+      if (error instanceof ClearMacroInsufficientFeeError) return;
+      // A missing one-time Permit2 approval, surfaced before signing — the chip offers the
+      // approve; expected user-side condition, not a bug.
+      if (error instanceof ClearMacroPermit2ApprovalRequiredError) return;
       const code = classifyError(error); // walks for UserRejectedRequestError / InsufficientFundsError
       if (code === "USER_REJECTED" || code === "INSUFFICIENT_FUNDS") return;
       if (hasUserRejectionMessage(error)) return; // rejections viem doesn't type (auto-wrap, Cypress)
@@ -214,10 +233,12 @@ export function useSuperfluidWriteContract() {
         isEOA === true &&
         visibleAddress?.toLowerCase() === address.toLowerCase() &&
         !isSmartWallet &&
-        network.dashboardClearMacro &&
-        clearMacroForwarderAddress[
-          params.chainId as keyof typeof clearMacroForwarderAddress
-        ]
+        // Same predicate the UI eligibility hook uses (network is derived from
+        // `params.chainId` above, so this covers the forwarder check too) — it also
+        // carries the NEXT_PUBLIC_DISABLE_CLEAR_MACRO kill switch, so the gate the
+        // user sees and the gate that executes cannot drift.
+        isClearMacroSupportedOnNetwork(network) &&
+        network.dashboardClearMacro
       ) {
         const clearMacroAction = params.clearMacro;
         // Set once the relay accepts the signed payload — from here the execution exists and an
@@ -233,6 +254,11 @@ export function useSuperfluidWriteContract() {
             // existing stream, ...) in the dialog before the signature prompt.
             fallbackSimulationRequest:
               request as Parameters<typeof simulateContract>[1],
+            // The persisted chip selection: pay the fee from USDCx directly, or fund it
+            // from USDC via Permit2.
+            paymentMode: clearMacroPaymentMode,
+            // Forced writes can't offer "turn the relay off" as a fee-shortfall remedy.
+            relayRequired: params.clearMacroRequired,
             onPhase: setRelayPhase,
             // Persist the execution the moment the relay accepts the signed payload, BEFORE
             // polling — and flush so a closed tab / reload / poll timeout can't orphan it.
@@ -277,6 +303,16 @@ export function useSuperfluidWriteContract() {
           return { hash, chainId: params.chainId };
         } catch (error) {
           if (error instanceof ClearMacroNotEligibleError) {
+            if (params.clearMacroRequired) {
+              // A forced write must never self-pay (the relay fee IS the payment for the
+              // scheduling service) — surface a readable message instead of falling back.
+              // The dialog renders messages verbatim, so the raw cause (digest mismatch,
+              // capabilities fetch failure, ...) must not be the message itself.
+              throw new Error(
+                "The gasless transaction service is unavailable right now. Please try again later.",
+                { cause: error }
+              );
+            }
             // Nothing was signed — fall through to the normal write path below.
             // The cause carries the real reason (failed fetch/read, field mismatch).
             console.warn(
@@ -287,6 +323,15 @@ export function useSuperfluidWriteContract() {
             // Surface the gasless→self-pay switch in the dialog. The phase persists through the
             // self-pay `writeContract` that follows (and into success); the dialog narrates it.
             setRelayPhase("fallback");
+          } else if (
+            error instanceof ClearMacroInsufficientFeeError ||
+            error instanceof ClearMacroPermit2ApprovalRequiredError
+          ) {
+            // Known fee shortfall / missing one-time Permit2 approval, thrown BEFORE signing —
+            // surface it (the error dialog shows the message). Deliberately NOT a silent
+            // self-pay fallback: the user should decide to top up, approve, or switch the
+            // payment mode in the chip. No execution exists to hand off.
+            throw error;
           } else if (error instanceof ClearMacroRelayError) {
             const executionId = error.executionId ?? createdExecutionId;
             if (error.code === "POLL_TIMEOUT") {
@@ -317,6 +362,13 @@ export function useSuperfluidWriteContract() {
             throw error;
           }
         }
+      } else if (params.clearMacroRequired) {
+        // The caller demanded the relay but the gate above couldn't engage (toggle raced
+        // off, wallet reclassified, ...). The form keeps its submit disabled in these
+        // states, so this is a belt-and-suspenders guard — fail closed, never self-pay.
+        throw new Error(
+          "This change needs to be sent gaslessly. Turn on the gasless option and try again."
+        );
       }
 
       // Unified pre-flight (sdk-core parity): one `eth_estimateGas` that both buffers the gas

@@ -69,8 +69,10 @@ export const ConnectToPoolButton: FC<Props> = ({ network, poolMember }) => {
                                                 <Typography
                                                     data-cy={"connect-pool-message"}
                                                     variant="h5"
-                                                    color="text.secondary"
                                                     translate="yes"
+                                                    sx={{
+                                                        color: "text.secondary"
+                                                    }}
                                                 >
                                                     You are connecting to the pool.
                                                 </Typography>
@@ -103,5 +105,5 @@ export const ConnectToPoolButton: FC<Props> = ({ network, poolMember }) => {
                 )
             }
         </TransactionBoundary>
-    )
+    );
 };

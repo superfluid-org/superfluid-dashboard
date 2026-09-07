@@ -20,9 +20,13 @@ export const SnapshotRowSkeleton = () => {
   return (
     <TableRow data-cy={"loading-skeletons"}>
       <TableCell>
-        <Stack direction="row" gap={2}>
+        <Stack direction="row" sx={{
+          gap: 2
+        }}>
           <Skeleton variant="circular" width={36} height={36} />
-          <Stack justifyContent="center">
+          <Stack sx={{
+            justifyContent: "center"
+          }}>
             {!isBelowMd && <Skeleton width={40} />}
           </Stack>
         </Stack>
@@ -30,9 +34,13 @@ export const SnapshotRowSkeleton = () => {
       {!isBelowMd ? (
         <>
           <TableCell>
-            <Stack direction="row" gap={2}>
+            <Stack direction="row" sx={{
+              gap: 2
+            }}>
               <Skeleton variant="circular" width={36} height={36} />
-              <Stack justifyContent="center">
+              <Stack sx={{
+                justifyContent: "center"
+              }}>
                 {!isBelowMd && <Skeleton width={80} />}
               </Stack>
             </Stack>
@@ -48,7 +56,9 @@ export const SnapshotRowSkeleton = () => {
         </>
       ) : (
         <TableCell>
-          <Stack alignItems="end">
+          <Stack sx={{
+            alignItems: "end"
+          }}>
             <Skeleton width={60} />
           </Stack>
         </TableCell>
@@ -57,7 +67,12 @@ export const SnapshotRowSkeleton = () => {
         <Skeleton width={80} />
       </TableCell>
       <TableCell>
-        <Stack direction="column" alignItems="center" gap={0.8}>
+        <Stack
+          direction="column"
+          sx={{
+            alignItems: "center",
+            gap: 0.8
+          }}>
           <Skeleton width={104} height={40} />
         </Stack>
       </TableCell>
@@ -96,10 +111,13 @@ const TokenAccessLoadingTable = () => {
             >
               <Stack
                 direction="row"
-                alignItems="center"
-                gap={2}
-                sx={{ py: 2, px: 4, [theme.breakpoints.down("md")]: { p: 2 } }}
-              >
+                sx={{
+                  alignItems: "center",
+                  gap: 2,
+                  py: 2,
+                  px: 4,
+                  [theme.breakpoints.down("md")]: { p: 2 }
+                }}>
                 <Skeleton variant="circular" width={36} height={36} />
 
                 <Typography variant="h5">

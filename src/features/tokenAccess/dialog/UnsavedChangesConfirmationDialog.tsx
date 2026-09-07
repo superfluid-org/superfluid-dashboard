@@ -33,7 +33,13 @@ const UnsavedChangesConfirmationDialog: FC<{
   return (
     <>
       <EditDialogTitle onClose={onClose}  dataCy={"upsert-approvals-unsaved-form-close-button"}>
-        <Stack alignItems="center" direction="column" gap={1}  data-cy={"approvals-unsaved-confirmation-form"}>
+        <Stack
+          direction="column"
+          data-cy={"approvals-unsaved-confirmation-form"}
+          sx={{
+            alignItems: "center",
+            gap: 1
+          }}>
           <EditIconWrapper>
             <ErrorRounded
               fontSize="large"
@@ -47,7 +53,9 @@ const UnsavedChangesConfirmationDialog: FC<{
         </Stack>
       </EditDialogTitle>
       <Stack component={DialogContent} sx={{ p: 4 }}>
-        <Stack gap={2}>
+        <Stack sx={{
+          gap: 2
+        }}>
           {SaveButtonComponent}
           <Button
             size="large"

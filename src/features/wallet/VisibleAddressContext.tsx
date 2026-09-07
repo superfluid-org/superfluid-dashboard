@@ -4,6 +4,7 @@ import {
   FC,
   PropsWithChildren,
   useContext,
+  useEffect,
   useMemo,
 } from "react";
 import { useImpersonation } from "../impersonation/ImpersonationContext";
@@ -14,6 +15,12 @@ import { useAccount } from "@/hooks/useAccount";
 
 interface VisibleAddressContextValue {
   visibleAddress: Address | undefined;
+  /**
+   * Whether the visible address signs like an EOA. EIP-7702-delegated EOAs count as
+   * `true` (their key still signs plain ECDSA and they estimate gas normally);
+   * `false` means a genuine smart-contract wallet (Safe etc.); `null` while the
+   * classification is pending or unavailable.
+   */
   isEOA: boolean | null;
 }
 
@@ -25,7 +32,7 @@ export const VisibleAddressProvider: FC<PropsWithChildren> = ({ children }) => {
   const { address: accountAddress } = useAccount();
   const visibleAddress = (impersonatedAddress ?? accountAddress) as Address | undefined;
 
-  const { isEOA } = rpcApi.useIsEOAQuery(
+  const { isEOA, isError, isFetching, refetch } = rpcApi.useIsEOAQuery(
     visibleAddress
       ? {
           chainId: network.id,
@@ -33,9 +40,24 @@ export const VisibleAddressProvider: FC<PropsWithChildren> = ({ children }) => {
         }
       : skipToken,
     {
-      selectFromResult: ({ data }) => ({ isEOA: data ?? null }),
+      selectFromResult: ({ data, isError, isFetching }) => ({
+        isEOA: data ?? null,
+        isError,
+        isFetching,
+      }),
     }
   );
+
+  // This provider lives for the whole session, so a rejected classification would
+  // otherwise never re-run (nothing re-subscribes) and `isEOA` would stay null —
+  // hiding Clear Macro eligibility until a full reload. Keep retrying on a slow
+  // timer while errored; `isFetching` in the deps re-arms the timer after each
+  // failed attempt.
+  useEffect(() => {
+    if (!isError || isFetching) return;
+    const timer = setTimeout(() => void refetch(), 15_000);
+    return () => clearTimeout(timer);
+  }, [isError, isFetching, refetch]);
 
   const contextValue = useMemo(
     () => ({

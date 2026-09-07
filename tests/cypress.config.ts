@@ -14,10 +14,40 @@ async function setupNodeEvents(
   }
 
   const fs = require('fs');
+  const path = require('path');
+
+  // Written by cypress/support/telemetry.js when a test fails. One JSON file
+  // per failed test attempt, uploaded as a CI artifact. Must never throw:
+  // a broken telemetry write should not turn into an extra test failure.
+  const TELEMETRY_DIR = path.join(__dirname, 'cypress', 'results', 'telemetry');
+  let telemetryFileCounter = 0;
+
+  const slugify = (value: string) =>
+    String(value || 'unknown')
+      .replace(/[^a-zA-Z0-9-_]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 80) || 'unknown';
 
   on('task', {
     downloads: (downloadspath) => {
       return fs.readdirSync(downloadspath);
+    },
+    recordFailureTelemetry: (report: any) => {
+      try {
+        fs.mkdirSync(TELEMETRY_DIR, { recursive: true });
+        telemetryFileCounter += 1;
+        const fileName = `${String(telemetryFileCounter).padStart(
+          3,
+          '0'
+        )}-${slugify(report?.spec)}-${slugify(report?.test)}.json`;
+        fs.writeFileSync(
+          path.join(TELEMETRY_DIR, fileName),
+          JSON.stringify(report, null, 2)
+        );
+      } catch (error) {
+        console.warn('[telemetry] failed to write failure telemetry', error);
+      }
+      return null;
     },
   });
 

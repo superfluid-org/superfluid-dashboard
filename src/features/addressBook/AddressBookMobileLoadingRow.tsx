@@ -12,7 +12,12 @@ const AddressBookMobileLoadingRow = () => {
   return (
     <TableRow>
       <TableCell>
-        <Stack direction="row" alignItems="center" gap={1.5}>
+        <Stack
+          direction="row"
+          sx={{
+            alignItems: "center",
+            gap: 1.5
+          }}>
           <Skeleton variant="rectangular" width="34px" height="27px" sx={{ borderRadius: "30%" }} />
           <Skeleton variant="text" width="100%" height="26px" />
         </Stack>

@@ -62,7 +62,12 @@ export const VestingSchedulerAllowanceRowSkeleton = () => {
   return (
     <TableRow>
       <TableCell>
-        <Stack direction="row" alignItems="center" gap={1}>
+        <Stack
+          direction="row"
+          sx={{
+            alignItems: "center",
+            gap: 1
+          }}>
           <Skeleton variant="circular" width={36} height={36} />
           <Skeleton width={70} />
         </Stack>
@@ -240,7 +245,12 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
         }
       >
         <TableCell>
-          <Stack direction="row" alignItems="center" gap={1.5}>
+          <Stack
+            direction="row"
+            sx={{
+              alignItems: "center",
+              gap: 1.5
+            }}>
             <TokenIcon
               isSuper
               chainId={network.id}
@@ -253,7 +263,9 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
         {!isBelowMd && (
           <>
             <TableCell>
-              <Stack direction="column" spacing={1} alignItems="center">
+              <Stack direction="column" spacing={1} sx={{
+                alignItems: "center"
+              }}>
                 {isEnoughTokenAllowance ? (
                   <CheckCircleRoundedIcon
                     data-cy={`${tokenSymbol}-allowance-status`}
@@ -268,7 +280,9 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
               </Stack>
             </TableCell>
             <TableCell>
-              <Stack direction="column" spacing={1} alignItems="center">
+              <Stack direction="column" spacing={1} sx={{
+                alignItems: "center"
+              }}>
                 {isEnoughFlowOperatorPermissions ? (
                   <CheckCircleRoundedIcon
                     data-cy={`${tokenSymbol}-permission-status`}
@@ -283,7 +297,9 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
               </Stack>
             </TableCell>
             <TableCell>
-              <Stack direction="column" spacing={1} alignItems="center">
+              <Stack direction="column" spacing={1} sx={{
+                alignItems: "center"
+              }}>
                 {isEnoughFlowRateAllowance ? (
                   <CheckCircleRoundedIcon
                     data-cy={`${tokenSymbol}-flow-allowance-status`}
@@ -494,13 +510,19 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                 </TableBody>
               </Table>
             ) : (
-              <Stack gap={2} sx={{ px: 2, py: 2 }}>
+              <Stack
+                sx={{
+                  gap: 2,
+                  px: 2,
+                  py: 2
+                }}>
                 <Box>
                   <Stack
                     direction="row"
-                    justifyContent="space-between"
-                    alignItems="center"
-                  >
+                    sx={{
+                      justifyContent: "space-between",
+                      alignItems: "center"
+                    }}>
                     <Typography variant="h7">Token Allowance</Typography>
                     {isEnoughTokenAllowance ? (
                       <CheckCircleRoundedIcon
@@ -515,11 +537,12 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                     )}
                   </Stack>
                   <Stack
-                    gap={1}
                     direction="row"
-                    justifyContent="space-between"
-                    alignItems="center"
-                  >
+                    sx={{
+                      gap: 1,
+                      justifyContent: "space-between",
+                      alignItems: "center"
+                    }}>
                     <Typography variant="body2">Current:</Typography>
                     <Typography variant="h6">
                       {isCloseToUnlimitedTokenAllowance(tokenAllowance) ? (
@@ -533,9 +556,10 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                   </Stack>
                   <Stack
                     direction="row"
-                    justifyContent="space-between"
-                    alignItems="center"
-                  >
+                    sx={{
+                      justifyContent: "space-between",
+                      alignItems: "center"
+                    }}>
                     <Typography variant="body2">Required:</Typography>
                     <Typography variant="h6">
                       <Amount wei={recommendedTokenAllowance} /> {tokenSymbol}
@@ -545,9 +569,10 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                 <Box>
                   <Stack
                     direction="row"
-                    justifyContent="space-between"
-                    alignItems="center"
-                  >
+                    sx={{
+                      justifyContent: "space-between",
+                      alignItems: "center"
+                    }}>
                     <Typography variant="h7">Stream Permissions</Typography>
                     {isEnoughFlowOperatorPermissions ? (
                       <CheckCircleRoundedIcon
@@ -563,17 +588,19 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                   </Stack>
                   <Stack
                     direction="row"
-                    justifyContent="space-between"
-                    alignItems="center"
-                  >
+                    sx={{
+                      justifyContent: "space-between",
+                      alignItems: "center"
+                    }}>
                     <Typography variant="body2">Current:</Typography>
                     <Typography variant="h6">{permissionsString}</Typography>
                   </Stack>
                   <Stack
                     direction="row"
-                    justifyContent="space-between"
-                    alignItems="center"
-                  >
+                    sx={{
+                      justifyContent: "space-between",
+                      alignItems: "center"
+                    }}>
                     <Typography variant="body2">Required:</Typography>
                     <Typography variant="h6">
                       {requiredPermissionsString}
@@ -583,9 +610,10 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                 <Box>
                   <Stack
                     direction="row"
-                    justifyContent="space-between"
-                    alignItems="center"
-                  >
+                    sx={{
+                      justifyContent: "space-between",
+                      alignItems: "center"
+                    }}>
                     <Typography variant="h7">Stream Allowance</Typography>
                     {isEnoughFlowRateAllowance ? (
                       <CheckCircleRoundedIcon
@@ -602,9 +630,10 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
 
                   <Stack
                     direction="row"
-                    justifyContent="space-between"
-                    alignItems="center"
-                  >
+                    sx={{
+                      justifyContent: "space-between",
+                      alignItems: "center"
+                    }}>
                     <Typography variant="body2">Current:</Typography>
                     <Typography variant="h6">
                       {isCloseToUnlimitedFlowRateAllowance(
@@ -621,9 +650,10 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                   </Stack>
                   <Stack
                     direction="row"
-                    justifyContent="space-between"
-                    alignItems="center"
-                  >
+                    sx={{
+                      justifyContent: "space-between",
+                      alignItems: "center"
+                    }}>
                     <Typography variant="body2">Required:</Typography>
                     <Typography variant="h6">
                       <Amount wei={requiredFlowRateAllowance} /> {tokenSymbol}
@@ -635,9 +665,10 @@ const VestingSchedulerAllowanceRow: FC<VestingSchedulerAllowanceRowProps> = ({
                 <Box>
                   <Stack
                     direction="row"
-                    justifyContent="space-between"
-                    alignItems="center"
-                  >
+                    sx={{
+                      justifyContent: "space-between",
+                      alignItems: "center"
+                    }}>
                     <Typography variant="h7">Auto-Wrap</Typography>
                     {isAutoWrappable &&
                       (isAutoWrapLoading ? (

@@ -76,18 +76,19 @@ const AddressFilter: FC<AddressFilterProps> = ({
       >
         {addressesFilter.length > 0 ? "Selected Addresses" : "All Addresses"}
       </Button>
-
       <Popover
         open={!!anchorEl}
         anchorEl={anchorEl}
         onClose={closeMenu}
-        PaperProps={{
-          square: true,
-          elevation: 2,
-          sx: { mt: theme.spacing(1.5), maxWidth: "370px", width: "100%" },
-        }}
         transformOrigin={{ horizontal: "left", vertical: "top" }}
         anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
+        slotProps={{
+          paper: {
+            square: true,
+            elevation: 2,
+            sx: { mt: theme.spacing(1.5), maxWidth: "370px", width: "100%" },
+          }
+        }}
       >
         <Box sx={{ p: 3 }}>
           <TextField
@@ -101,7 +102,13 @@ const AddressFilter: FC<AddressFilterProps> = ({
           />
 
           {addressesFilter.length > 0 && (
-            <Stack gap={1} direction="row" flexWrap="wrap" sx={{ pt: 2.5 }}>
+            <Stack
+              direction="row"
+              sx={{
+                gap: 1,
+                flexWrap: "wrap",
+                pt: 2.5
+              }}>
               {addressesFilter.map((address) => (
                 <Chip
                   data-cy={"address-chip"}

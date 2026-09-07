@@ -32,7 +32,9 @@ const NetworkItem: FC<NetworkItemProps> = ({ network, active, onChange }) => {
       <ListItemAvatar sx={{ mr: 1 }}>
         <NetworkIcon size={24} fontSize={16} network={network} />
       </ListItemAvatar>
-      <ListItemText primaryTypographyProps={{ variant: "menuItem" }}>
+      <ListItemText slotProps={{
+        primary: { variant: "menuItem" }
+      }}>
         {network.name}
       </ListItemText>
       <Switch
@@ -83,7 +85,7 @@ const NetworkSelectionFilter: FC<NetworkSelectionFilterProps> = ({
       onClose={onClose}
       transformOrigin={{ horizontal: "right", vertical: "top" }}
       anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-      PaperProps={{ sx: { minWidth: 280 }, square: true }}
+      slotProps={{ paper: { sx: { minWidth: 280 }, square: true } }}
       sx={{ marginTop: theme.spacing(1.5) }}
     >
       <Collapse

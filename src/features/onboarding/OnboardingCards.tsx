@@ -68,10 +68,12 @@ const OnboardingItem: FC<PropsWithChildren<OnboardingItemProps>> = ({
         <CardContent
           component={Stack}
           direction="row"
-          alignItems="center"
-          justifyContent="center"
-          gap={childrenGap}
-          sx={{ pointerEvents: "none" }}
+          sx={{
+            alignItems: "center",
+            justifyContent: "center",
+            gap: childrenGap,
+            pointerEvents: "none",
+          }}
         >
           {children}
         </CardContent>
@@ -87,11 +89,15 @@ interface StreamItemProps {
 const StreamItem: FC<StreamItemProps> = ({ address }) => (
   <Paper
     component={Stack}
-    alignItems="center"
     direction="row"
-    sx={{ px: 1, py: 0.5, borderRadius: "8px" }}
-    gap={1}
-    flex={1}
+    sx={{
+      alignItems: "center",
+      gap: 1,
+      flex: 1,
+      px: 1,
+      py: 0.5,
+      borderRadius: "8px",
+    }}
   >
     <AddressAvatar
       AvatarProps={{
@@ -100,7 +106,11 @@ const StreamItem: FC<StreamItemProps> = ({ address }) => (
       BlockiesProps={{ size: 10, scale: 2 }}
       address={address}
     />
-    <Stack flex={1} alignItems="flex-start">
+    <Stack
+      sx={{
+        flex: 1,
+        alignItems: "flex-start"
+      }}>
       <Skeleton width="100%" height={12} animation={false} />
       <Skeleton width="50%" height={12} animation={false} />
     </Stack>
@@ -122,12 +132,14 @@ const OnboardingCards: FC<OnboardingCardsProps> = ({
 
   return (
     <Stack
-      alignItems="center"
-      justifyContent="center"
-      gap={3.5}
+      translate="yes"
       sx={{
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 3.5,
         display: "grid",
         gridTemplateColumns: "repeat(2, 290px)",
+
         [theme.breakpoints.down("md")]: {
           maxWidth: "100vw",
           mx: -2,
@@ -140,10 +152,8 @@ const OnboardingCards: FC<OnboardingCardsProps> = ({
           scrollSnapType: "x mandatory",
           scrollPadding: `0px ${theme.spacing(3.5)}`,
           ...(vertical ? { gridTemplateColumns: "290px", px: 0 } : {}),
-        },
-      }}
-      translate="yes"
-    >
+        }
+      }}>
       <OnboardingItem
         dataCy="get-tokens-onboarding-card"
         title="Get Super Tokens"
@@ -155,7 +165,6 @@ const OnboardingCards: FC<OnboardingCardsProps> = ({
         <SwapVertIcon color="primary" sx={{ transform: "rotate(90deg)" }} />
         <TokenIcon isSuper size={32} chainId={137} tokenAddress="0x1305F6B6Df9Dc47159D12Eb7aC2804d4A33173c2" /> {/* DAIx */} 
       </OnboardingItem>
-
       <OnboardingItem
         dataCy="send-stream-onboarding-card"
         title="Send a Stream"

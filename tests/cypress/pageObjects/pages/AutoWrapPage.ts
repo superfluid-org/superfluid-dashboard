@@ -106,7 +106,7 @@ export class AutoWrapPage extends BasePage {
     this.hasAttributeWithValue(
       APPLY_FOR_ACCESS_BUTTON,
       'href',
-      'https://use.superfluid.finance/autowrap'
+      'https://superfluid.org/contact'
     );
   }
 

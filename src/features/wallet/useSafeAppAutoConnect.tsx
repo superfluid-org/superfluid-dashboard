@@ -17,14 +17,26 @@ const useSafeAppAutoConnect = () => {
   }, [connectors]);
 
   useEffect(() => {
-    if (!isReconnecting && !isConnected && priorityConnectors.length > 0) {
-      const connector = priorityConnectors[0];
+    if (isReconnecting || isConnected) return;
 
-      if (connector) {
-        console.log(`Auto-connecting to ${connector.id} wallet`);
-        connect({ connector });
-      }
-    }
+    const connector = priorityConnectors[0];
+    if (!connector) return;
+
+    // Only connect when the connector actually has a provider. The Safe connector
+    // returns none outside of a Safe App iframe, and connecting anyway rejects and
+    // leaves wagmi reporting a storage-restored connector stub as "connected".
+    let cancelled = false;
+    void (async () => {
+      const provider = await connector.getProvider().catch(() => undefined);
+      if (cancelled || !provider) return;
+
+      console.log(`Auto-connecting to ${connector.id} wallet`);
+      connect({ connector });
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [connect, isReconnecting, priorityConnectors]); // Don't include `isConnected` to avoid re-trying
 };
 

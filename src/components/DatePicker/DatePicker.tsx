@@ -132,22 +132,30 @@ const DatePicker: FC<DatePickerProps> = ({
       open={!!anchorEl}
       anchorEl={anchorEl}
       onClose={onClose}
-      PaperProps={{
-        square: true,
-        sx: { py: 2, px: 3, mt: theme.spacing(1.5) },
-      }}
       transformOrigin={{ horizontal: "right", vertical: "top" }}
       anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+      slotProps={{
+        paper: {
+          square: true,
+          sx: { py: 2, px: 3, mt: theme.spacing(1.5) },
+        }
+      }}
     >
       <Stack
         direction="row"
-        alignItems="center"
-        justifyContent="space-between"
-        sx={{ mb: 1 }}
-      >
+        sx={{
+          alignItems: "center",
+          justifyContent: "space-between",
+          mb: 1
+        }}>
         <Typography variant="h6" data-cy={"selected-month"}>{format(date, "MMMM yyyy")}</Typography>
 
-        <Stack direction="row" alignItems="center" gap={1}>
+        <Stack
+          direction="row"
+          sx={{
+            alignItems: "center",
+            gap: 1
+          }}>
           <IconButton data-cy={"month-back-button"} onClick={monthBack}>
             <ChevronLeftIcon />
           </IconButton>
@@ -156,7 +164,6 @@ const DatePicker: FC<DatePickerProps> = ({
           </IconButton>
         </Stack>
       </Stack>
-
       <Stack
         sx={{
           display: "grid",

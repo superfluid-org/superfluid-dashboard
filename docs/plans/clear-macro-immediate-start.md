@@ -1,0 +1,112 @@
+# Clear Macro: immediate-start ScheduleFlow (end-date-only streams relay in one action)
+
+> Record of an implemented development (2026-07-08, branch `dashboard-clearmacro-v2`). Follows
+> `clear-macro-relay-integration.md` and `clear-macro-relay-fee.md`.
+
+## Why
+
+A **new** stream with only an **end date** on the send-stream form builds the batch
+`[grant(DELETE perm), createFlowSchedule(end-only), createFlow(immediate)]`. The relay only
+engages for a submission that reduces to ONE signed macro action, so this case never showed the
+relay chip — a real capability gap, not a UI bug: the macro's `ScheduleFlow` rejected
+`startDate == 0` with a non-zero rate and never created the CFA flow itself.
+
+## Contract change (`contracts/src/DashboardClearMacro.sol`)
+
+`ScheduleFlow` gained a third mode, keyed entirely off the existing five params (no ABI or
+EIP-712 typedef change):
+
+| startDate | flowRate | endDate | meaning |
+|---|---|---|---|
+| >0 | >0 | 0 or >0 | scheduled start (+optional stop) — unchanged |
+| 0 | 0 | >0 | stop-only on an existing flow — unchanged |
+| 0 | **>0** | >0 | **immediate start**: batch = `[grant(missing DELETE bit)?, createFlowSchedule(end-only), cfa.createFlow(rate)]` |
+| 0 | <0 | any | `InvalidFlowRate` (was: any non-zero rate with start 0) |
+
+Load-bearing invariants:
+- **The stored schedule row keeps `flowRate = 0`** in immediate-start mode
+  (`p.startDate != 0 ? p.flowRate : int96(0)` at the `createFlowSchedule` call) — parity with the
+  row the dashboard's direct batch stores for end-only schedules. Before this change that was only
+  vacuously true because validation forced the rate to 0.
+- `_missingSchedulerGrant`, `_scheduleTxCount`, `previewRelayFee` needed **no changes**: start==0
+  already means DELETE-bit-only/no-allowance, and the fee was already 2× (setup + keeper stop —
+  the immediate create rides inside the setup tx).
+- If a flow already exists at execution, `cfa.createFlow` reverts and the whole action rolls back
+  **deliberately** — the signed text promises to *start* a stream; silently updating an existing
+  one would exceed that consent. The dashboard preflights `activeExistingFlow` seconds before
+  signing, so the race window is tiny.
+- Signed description (new branch in `_descriptionScheduleFlow`): `"Start a stream of
+  0.10000 SYM/day to 0x… immediately, stopping at <end> (unix time), and authorize the Flow
+  Scheduler" + schedule fee suffix`.
+
+## Dashboard changes
+
+- `src/features/send/useFlowSchedulingWrites.ts`: the schedule sub-op's macro action carries the
+  rate when there is no active flow (`shouldScheduleStart || !activeExistingFlow`), and the old
+  grant+schedule reduction became the exported pure helper `reduceToScheduleFlowAction`, covering
+  `[schedule]`, `[grant, schedule]`, `[schedule, createFlow]`, `[grant, schedule, createFlow]`.
+  The trailing createFlow folds in only with matching token/receiver/rate and `startDate === 0` —
+  the false-positive audit (updateFlow batches, delete-schedule paths, userData batches) is in its
+  doc comment.
+- `src/features/send/stream/SendStream.tsx`: the `clearMacroActionKind` memo no longer bails on
+  `!activeFlow && !startTimestamp`; also fixed a pre-existing inexactness (an active flow with an
+  unchanged rate claimed `updateFlow` although the hook builds zero ops — masked by
+  `hasAnythingChanged` disabling submit).
+- `eslint.config.mjs`: `contracts/` added to the ignore list — the vendored submodule's own JS was
+  failing `pnpm lint` with 25 unrelated errors whenever the submodule is checked out.
+
+## Deployment (OP Sepolia, 2026-07-08)
+
+**`0xa35C9faC83e1673e6f1221979e2843Dea4812e78`**
+(tx `0x20b28c150aa4cc0ada6d108587b6a88f12edce584210c7332cab2061bc364461`): fee token fUSDCx
+`0x131780640EDf9830099AAc2203229073d6D2FE69`, base fee 0.01, fee receiver
+**`0x74cD5673dF7efC148067Ecab494A19a46b0a3167`** — a freshly generated empty address, chosen so
+arriving relay fees are visible as its entire balance (the earlier receiver was the deployer
+itself, making test fees invisible self-transfers). Verified live: `previewRelayFee` reports the
+new receiver and 0.01 base fee.
+
+Supersedes the same-code `0x0725db8cf32CDefa1e822CB336ca5caf4cbE69FD`
+(tx `0xe0b6104f…`, fee receiver = deployer `0x7269B0c7…`), which replaced
+`0x576d1274Ef1E4e1f6093ffC1188c8D32411dDD65` (pre-immediate-start), which replaced the feeless
+`0xa7AA0ff5…`. Verified on the first immediate-start deploy: `baseFee()`/`feeToken()` reads and an
+on-chain `describeScheduleFlow(start=0, rate>0)` returning the immediate-start text with exact fee
+disclosure (0.02 new / 0.01 modify). ABI regen (`pnpm contracts:abi`) was a no-op, as expected —
+only internals and description text changed.
+
+### Known blocker: relay provider gas handling (2026-07-08)
+
+Two live immediate-start relays (executions `fae3db02-39f7…` Permit2, `b7eea1f1-1f55…`
+USDCx-direct) **reverted OutOfGas**: the relayer (`0x29e21461…`) submitted with a hard
+**200,000 gas limit** while the action needs ~687k (tx
+`0x7014e159f0683826d302fd81bfa5d1fd9f421806ba4ec17971bd5e91d47b7793`, died on the host's first
+governance config read). Proven not-our-bug: replaying the exact calldata from the relayer address
+at the pre-failure block succeeds, and `eth_estimateGas` there returns 687,253. The provider API
+accepts no gas hint, so the fix is provider-side (use the estimate; also, `category: "user"`,
+`retryable: false` is a misleading taxonomy for relayer infrastructure behavior). Lighter actions
+fit under 200k — an end-only schedule on an active flow relayed fine — so only multi-op schedule
+actions are blocked. Re-verify immediate-start end-to-end after the provider fix.
+
+## Verification status
+
+- `pnpm contracts:test` 86/86 green — 5 new immediate-start tests (ops shape/grant diffing, keeper
+  stop, full-control no-overflow, active-flow revert atomicity, existing-row 1× fee + preview) plus
+  a new description test (a local added to `testEnglishDescriptionsForAllActions` is
+  stack-too-deep, hence the separate function); `testScheduleFlowRevertsZeroOrNegativeRate`'s
+  stop-only-with-rate expectation inverted by design (now negative-rate).
+- `pnpm typecheck`, `pnpm lint` green.
+- **End-to-end on OP Sepolia not yet exercised** — remaining: send-stream form with end date only →
+  chip visible → one relayed tx → flow live immediately, row `{start:0, end, rate:0}`, DELETE-only
+  grant, 2× fee; plus regression sweep (start+end, start-only, end-added-to-active-flow,
+  rate-change-with-end hides chip).
+
+## Retrospective
+
+- The design-review pass caught the one real trap early: forwarding `p.flowRate` verbatim into
+  `createFlowSchedule` would have stored a non-zero rate on end-only rows, diverging from the
+  dashboard's own rows. When relaxing a validation, re-check every downstream use the old
+  validation was vacuously protecting.
+- Deploying via the in-session `!` runner fails at the keystore password prompt
+  (`Device not configured`) — forge needs a real TTY; run broadcasts from a normal terminal and
+  read the address back from `contracts/broadcast/.../run-latest.json`.
+- `forge script` resolves the script path from CWD, not from `--root` — keep the `contracts/`
+  prefix.

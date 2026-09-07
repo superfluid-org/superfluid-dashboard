@@ -39,21 +39,28 @@ const CounterpartyAddress: FC<CounterpartyAddressProps> = ({
   return (
     <Stack
       direction={isBelowMd ? "column" : "row"}
-      alignItems={isBelowMd ? "start" : "center"}
-      gap={isBelowMd ? 0 : 1}
-    >
+      sx={{
+        alignItems: isBelowMd ? "start" : "center",
+        gap: isBelowMd ? 0 : 1
+      }}>
       <Typography
         variant={isBelowMd ? "body2" : "body1"}
-        color="text.secondary"
         translate="yes"
+        sx={{
+          color: "text.secondary"
+        }}
       >
         {title}
       </Typography>
-      <Stack direction="row" alignItems="center">
+      <Stack direction="row" sx={{
+        alignItems: "center"
+      }}>
         <Typography
           data-cy={`${title.replace(":", "")}-address`}
           variant={isBelowMd ? "h7" : "h6"}
-          color="text.secondary"
+          sx={{
+            color: "text.secondary"
+          }}
         >
           <AddressName address={address} />
         </Typography>
@@ -103,19 +110,32 @@ const VestingDetailsHeader: FC<VestingDetailsHeaderProps> = ({
 
   return (
     <ConnectionBoundary expectedNetwork={network}>
-      <Stack gap={3}>
+      <Stack sx={{
+        gap: 3
+      }}>
         <Stack
           direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-          sx={{ mb: 0 }}
-        >
-          <Stack direction="row" alignItems="center" gap={2}>
+          sx={{
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 0
+          }}>
+          <Stack
+            direction="row"
+            sx={{
+              alignItems: "center",
+              gap: 2
+            }}>
             <IconButton color="inherit" onClick={navigateBack}>
               <ArrowBackRoundedIcon />
             </IconButton>
             <Stack direction="column">
-              <Stack direction="row" alignItems="center" gap={2}>
+              <Stack
+                direction="row"
+                sx={{
+                  alignItems: "center",
+                  gap: 2
+                }}>
                 <TokenIcon isSuper chainId={network.id} tokenAddress={token.address} />
                 <Typography component="h1" variant="h4">
                   Vesting {token.symbol}
@@ -132,7 +152,12 @@ const VestingDetailsHeader: FC<VestingDetailsHeaderProps> = ({
             </Stack>
           </Stack>
           {(canDelete || showClaim) && !isBelowMd && (
-            <Stack direction="row" alignItems="center" gap={1}>
+            <Stack
+              direction="row"
+              sx={{
+                alignItems: "center",
+                gap: 1
+              }}>
               {showClaim && (
                 <ClaimVestingScheduleTransactionButton
                   superTokenAddress={superToken}
@@ -159,21 +184,26 @@ const VestingDetailsHeader: FC<VestingDetailsHeaderProps> = ({
       </Stack>
       <Stack
         direction="row"
-        alignItems="center"
-        gap={isBelowMd ? 1 : 2}
         sx={{
+          alignItems: "center",
+          gap: isBelowMd ? 1 : 2,
           mt: 1.5,
           mb: 3.5,
           ml: 6,
+
           [theme.breakpoints.down("md")]: {
             ml: 0,
-          },
-        }}
-      >
+          }
+        }}>
         <CounterpartyAddress title="Sender:" address={sender} />
         <CounterpartyAddress title="Receiver:" address={receiver} />
 
-        <Stack direction="row" justifyContent="end" flex={1}>
+        <Stack
+          direction="row"
+          sx={{
+            justifyContent: "end",
+            flex: 1
+          }}>
           {isBelowMd && (
             <>
               {showClaim && (

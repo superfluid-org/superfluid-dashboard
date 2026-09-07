@@ -1,4 +1,4 @@
-import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
+import AddCircleOutline from "@mui/icons-material/AddCircleOutlineOutlined";
 import {
   IconButton,
   ListItemAvatar,
@@ -55,7 +55,7 @@ export const TokenListItem: FC<TokenListItemProps> = ({
 
   const { data: _discard, ...underlyingBalanceQuery } =
     rpcApi.useUnderlyingBalanceQuery(
-      chainId && accountAddress && isUnderlyingToken
+      chainId && accountAddress && isUnderlyingToken && balanceWei === undefined
         ? {
           chainId,
           accountAddress,
@@ -96,23 +96,25 @@ export const TokenListItem: FC<TokenListItemProps> = ({
           isSuper={isSuperToken}
           chainId={chainId}
           tokenAddress={token.address}
+          logoURI={token.logoURI}
+          symbol={token.symbol}
           isUnlisted={!isListed}
         />
       </ListItemAvatar>
-
       <ListItemText
         data-cy={"token-symbol-and-name"}
         primary={token.symbol}
         secondary={token.name}
         translate="no"
       />
-
       <Typography
         variant="h6mono"
         component={Stack}
         direction="row"
-        alignItems="center"
         data-cy={"token-balance"}
+        sx={{
+          alignItems: "center"
+        }}
       >
         {!!accountAddress &&
           checkedBalanceWei &&

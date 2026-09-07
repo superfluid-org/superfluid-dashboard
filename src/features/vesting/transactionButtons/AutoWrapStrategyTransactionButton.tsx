@@ -31,7 +31,9 @@ const AutoWrapStrategyTransactionButton: FC<{
               if (isButtonDisabled)
                 throw new Error("This should never happen!");
               setDialogLoadingInfo(
-                <Typography data-cy="auto-wrap-tx-message" variant="h5" color="text.secondary" translate="yes">
+                <Typography data-cy="auto-wrap-tx-message" variant="h5" translate="yes" sx={{
+                  color: "text.secondary"
+                }}>
                   You are enabling Auto-Wrap to top up your {token.symbol}{" "}
                   tokens when balance reaches low.
                 </Typography>

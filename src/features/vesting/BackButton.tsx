@@ -26,7 +26,7 @@ export function BackButton(props: {
             }
           }}
         >
-          <ArrowBackIcon />
+          <ArrowBackIcon data-cy="back-icon" />
         </IconButton>
       </Box>
     );

@@ -190,6 +190,9 @@ Then(
     VestingPage.validateTopUpMessageWithCliff();
   }
 );
+Then(/^The vesting schedules table has loaded$/, function () {
+  VestingPage.waitForCreatedTableToLoad();
+});
 Then(
   /^The receivers shown in the vesting page are named "([^"]*)"$/,
   function (nameOrAddress: string) {

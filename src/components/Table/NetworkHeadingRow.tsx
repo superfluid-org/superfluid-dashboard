@@ -27,16 +27,21 @@ const NetworkHeadingRow: FC<NetworkHeadingRowProps> = ({
       >
         <Stack
           direction="row"
-          alignItems="center"
-          gap={2}
-          sx={{ py: 2, px: 4, [theme.breakpoints.down("md")]: { p: 2 } }}
-        >
+          sx={{
+            alignItems: "center",
+            gap: 2,
+            py: 2,
+            px: 4,
+            [theme.breakpoints.down("md")]: { p: 2 }
+          }}>
           <NetworkIcon network={network} />
           <Typography
             data-cy="network-name"
             variant="h5"
-            color="text.primary"
             translate="no"
+            sx={{
+              color: "text.primary"
+            }}
           >
             {network.name}
           </Typography>

@@ -31,7 +31,12 @@ const VestingScheduleRowSkeleton = () => {
   return (
     <TableRow>
       <TableCell>
-        <Stack direction="row" alignItems="center" gap={1.5}>
+        <Stack
+          direction="row"
+          sx={{
+            alignItems: "center",
+            gap: 1.5
+          }}>
           <Skeleton variant="rounded" width={24} height={24} />
           <Stack>
             <Skeleton width={90} />
@@ -42,7 +47,12 @@ const VestingScheduleRowSkeleton = () => {
       {!isBelowMd ? (
         <>
           <TableCell sx={{ py: 0.5 }}>
-            <Stack direction="row" alignItems="center" gap={1.5}>
+            <Stack
+              direction="row"
+              sx={{
+                alignItems: "center",
+                gap: 1.5
+              }}>
               <Skeleton variant="circular" width={26} height={26} />
               <ListItemText primary={<Skeleton width={80} />} />
             </Stack>
@@ -70,12 +80,17 @@ const VestingScheduleRowSkeleton = () => {
         <TableCell>
           <Stack
             direction="row"
-            alignItems="center"
-            justifyContent="end"
-            gap={1.5}
-          >
-            <Stack direction="column" alignItems="end">
-              <Stack direction="row" gap={0.5}>
+            sx={{
+              alignItems: "center",
+              justifyContent: "end",
+              gap: 1.5
+            }}>
+            <Stack direction="column" sx={{
+              alignItems: "end"
+            }}>
+              <Stack direction="row" sx={{
+                gap: 0.5
+              }}>
                 <Skeleton width={40} />
                 <Skeleton width={40} />
               </Stack>

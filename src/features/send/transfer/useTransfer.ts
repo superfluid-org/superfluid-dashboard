@@ -8,6 +8,7 @@ interface TransferArgs {
   tokenAddress: string;
   receiverAddress: string;
   amountWei: string;
+  isSuperToken: boolean;
   transactionExtraData?: Record<string, unknown>;
   overrides?: ViemFeeOverrides;
 }
@@ -30,12 +31,14 @@ export function useTransfer() {
         title: "Send Transfer" as const,
         extraData: arg.transactionExtraData,
         overrides: arg.overrides,
-        clearMacro: {
-          kind: "transfer" as const,
-          superToken: arg.tokenAddress as Address,
-          receiver: arg.receiverAddress as Address,
-          amount: BigInt(arg.amountWei),
-        },
+        clearMacro: arg.isSuperToken
+          ? {
+              kind: "transfer" as const,
+              superToken: arg.tokenAddress as Address,
+              receiver: arg.receiverAddress as Address,
+              amount: BigInt(arg.amountWei),
+            }
+          : undefined,
       })),
     [write]
   );

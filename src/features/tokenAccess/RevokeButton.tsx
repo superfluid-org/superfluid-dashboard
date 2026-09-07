@@ -48,7 +48,9 @@ const RevokeButton: FC<RevokeButtonProps> = ({
           // TODO(KK): better title?
           onClick={async () => {
             setDialogLoadingInfo(
-              <Typography variant="h5" color="text.secondary" translate="yes">
+              <Typography variant="h5" translate="yes" sx={{
+                color: "text.secondary"
+              }}>
                 You are revoking all permissions and allowances for the {superToken.symbol} token.
               </Typography>
             );

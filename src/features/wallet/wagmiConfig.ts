@@ -23,17 +23,8 @@ const projectId = appConfig.walletConnectProjectId;
 const customRpcUrls = allNetworks.reduce<CustomRpcUrlMap>((acc, x) => {
   const chainId = x.id;
 
-  // const transport = fallback([
-  //   http(x.rpcUrls.superfluid.http[0]), // Prioritize Superfluid API
-  //   http(x.rpcUrls.default.http[0]) // Fallback to wagmi-defined default public RPC
-  // ], {
-  //   rank: false
-  // })
-
   acc[`eip155:${chainId}`] = [{
     url: x.rpcUrls.superfluid.http[0],
-  }, {
-    url: x.rpcUrls.default.http[0]
   }];
 
   return acc;
@@ -199,9 +190,15 @@ const wagmiAdapter = new WagmiAdapter({
   storage: typeof window !== "undefined" ? createStorage({ storage: window.localStorage }) : undefined,
   connectors: [
     safe({
+      // These are matched against `event.origin` of the parent frame and decide whose
+      // messages the Safe Apps SDK will trust (`PostMessageCommunicator.isValidMessage`).
+      // Anchor and escape every pattern: an unanchored `/app.safe.global$/` also admits
+      // `https://appXsafeYglobal`, and an unanchored `/gnosis-safe.io$/` also admits
+      // `https://evilgnosis-safe.io` — both attacker-registrable. Follow the shape the
+      // coinshift entry already uses.
       allowedDomains: [
-        /gnosis-safe.io$/,
-        /app.safe.global$/,
+        /^https:\/\/(?:[^\/]+\.)?gnosis-safe\.io$/,
+        /^https:\/\/(?:[^\/]+\.)?app\.safe\.global$/,
         /^https:\/\/(?:[^\/]+\.)?coinshift\.xyz$/,
         /^http:\/\/(localhost|127\.0\.0\.1):(\d+)$/,
       ],

@@ -7,7 +7,12 @@ export const PendingProgress: FC<{
   pendingUpdate: PendingUpdate | undefined;
   transactingText: string;
 }> = ({ pendingUpdate, transactingText }) => (
-  <Stack direction="row" alignItems="center" gap={1}>
+  <Stack
+    direction="row"
+    sx={{
+      alignItems: "center",
+      gap: 1
+    }}>
     <CircularProgress color="warning" size="16px" />
     <Typography data-cy={"pending-message"} variant="caption" translate="yes">
       {pendingUpdate?.hasTransactionSucceeded ? (

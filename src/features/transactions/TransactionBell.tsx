@@ -26,7 +26,7 @@ export default memo(function TransactionBell() {
   const { transactionDrawerOpen, setTransactionDrawerOpen } =
     useLayoutContext();
 
-  const pendingTransactions = useAccountTransactionsSelector(
+  const { transactions: pendingTransactions } = useAccountTransactionsSelector(
     pendingTransactionsSelector
   );
 

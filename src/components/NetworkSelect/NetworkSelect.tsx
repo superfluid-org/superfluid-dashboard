@@ -17,9 +17,11 @@ import { Stack, colors } from "@mui/material";
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+  slotProps: {
+    paper: {
+      style: {
+        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      },
     },
   },
 };
@@ -74,16 +76,19 @@ const NetworkSelect: FC<NetworkSelectProps> = ({
         onChange={handleChange}
         input={<OutlinedInput placeholder="Select Networks" />}
         renderValue={(selected) => (
-          <Stack direction="row" gap={1}>
+          <Stack direction="row" sx={{
+            gap: 1
+          }}>
             {selected.map((n, i) => {
               const network = findNetworkOrThrow(allNetworks, n);
               return (
                 <Stack
                   key={`MuiStack-${network.name}`}
                   direction="row"
-                  alignItems="center"
-                  gap={0.5}
-                >
+                  sx={{
+                    alignItems: "center",
+                    gap: 0.5
+                  }}>
                   <NetworkIcon size={20} network={network} />
                   {network.name}
                   {i !== selected.length - 1 && ","}
@@ -102,7 +107,12 @@ const NetworkSelect: FC<NetworkSelectProps> = ({
               value={network.slugName}
               sx={{ justifyContent: "space-between" }}
             >
-              <Stack direction="row" gap={1} alignItems="center">
+              <Stack
+                direction="row"
+                sx={{
+                  gap: 1,
+                  alignItems: "center"
+                }}>
                 <NetworkIcon size={20} network={network} />
                 <ListItemText primary={network.name} />
               </Stack>

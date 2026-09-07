@@ -84,7 +84,7 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
     <ResponsiveDialog
       open
       onClose={onClose}
-      PaperProps={{ sx: { borderRadius: "20px", maxWidth: 520 } }}
+      slotProps={{ paper: { sx: { borderRadius: "20px", maxWidth: 520 } } }}
     >
       <DialogTitle sx={{ p: 4 }}>
         <Typography data-cy={"faucet-title"} variant="h4">
@@ -96,13 +96,16 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
         </Typography>
       </DialogTitle>
       <DialogContent sx={{ px: 4, pb: 4 }}>
-        <Stack gap={4}>
+        <Stack sx={{
+          gap: 4
+        }}>
           <Stack
-            alignItems="center"
-            justifyContent="center"
             direction="row"
-            gap={0.5}
-          >
+            sx={{
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 0.5
+            }}>
             <TokenChip
               symbol="OP"
               chainId={10}
@@ -154,7 +157,9 @@ const FaucetDialog: FC<FaucetDialogProps> = ({ onClose }) => {
                 variant: "contained",
               }}
             >
-              <Stack gap={2}>
+              <Stack sx={{
+                gap: 2
+              }}>
                 {!(
                   (claimTestTokensResponse.isError &&
                     claimTestTokensResponse.error === 405) ||

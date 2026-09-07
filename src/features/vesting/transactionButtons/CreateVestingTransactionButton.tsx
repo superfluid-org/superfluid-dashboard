@@ -71,8 +71,10 @@ export const CreateVestingTransactionButton: FC<Props> = ({
                   setDialogLoadingInfo(
                     <Typography
                       variant="h5"
-                      color="text.secondary"
                       translate="yes"
+                      sx={{
+                        color: "text.secondary"
+                      }}
                     >
                       You are creating a vesting schedule.
                     </Typography>
