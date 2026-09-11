@@ -2,9 +2,11 @@
 .github
 .idea
 .cache
+.corepack
 .env*
 .next
 .pnpm-store
+.pnpm-store-writable
 node_modules
 contracts
 docs
