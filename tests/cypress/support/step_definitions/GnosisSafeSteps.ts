@@ -1,6 +1,6 @@
-import { Then, Given } from "@badeball/cypress-cucumber-preprocessor";
-import { GnosisSafe } from "../../pageObjects/pages/GnosisSafe";
-import { Common } from "../../pageObjects/pages/Common";
+import { Then, Given } from '@badeball/cypress-cucumber-preprocessor';
+import { GnosisSafe } from '../../pageObjects/pages/GnosisSafe';
+import { Common } from '../../pageObjects/pages/Common';
 
 Given(
   /^Gnosis safe Superfluid app is open on "([^"]*)"$/,

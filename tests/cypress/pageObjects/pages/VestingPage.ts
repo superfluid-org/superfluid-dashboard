@@ -450,7 +450,10 @@ export class VestingPage extends BasePage {
     cy.get(TABLE_START_END_DATES)
       .eq(0)
       .invoke('text')
-      .should('match', /[A-Z][a-z]{2}\s\d{1,2},\s\d{4}.*[A-Z][a-z]{2}\s\d{1,2},\s\d{4}/);
+      .should(
+        'match',
+        /[A-Z][a-z]{2}\s\d{1,2},\s\d{4}.*[A-Z][a-z]{2}\s\d{1,2},\s\d{4}/
+      );
   }
 
   static validateSchedulePreviewDetails(

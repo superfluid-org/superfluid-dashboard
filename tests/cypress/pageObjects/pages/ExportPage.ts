@@ -186,9 +186,7 @@ export class ExportPage extends BasePage {
             expect(
               Math.abs(actualValue - expectedValue),
               `${label}: ${actualValue} vs recorded ${expectedValue}`
-            ).to.be.at.most(
-              Math.abs(expectedValue) * FIAT_RELATIVE_TOLERANCE
-            );
+            ).to.be.at.most(Math.abs(expectedValue) * FIAT_RELATIVE_TOLERANCE);
           });
         }
       );
@@ -218,7 +216,9 @@ export class ExportPage extends BasePage {
   // in the DOM text, so match the shortened form instead. Case-insensitive to tolerate
   // EIP-55 checksum casing differences.
   private static shortenAddress(address: string) {
-    return `${address.substring(0, 8)}...${address.substring(address.length - 6)}`;
+    return `${address.substring(0, 8)}...${address.substring(
+      address.length - 6
+    )}`;
   }
 
   static selectAddressFromSearchResults(address: string) {
@@ -570,9 +570,10 @@ export class ExportPage extends BasePage {
     for (let row = 1; row < expectedRows.length; row++) {
       const actualCells = actualRows[row];
       const expectedCells = expectedRows[row];
-      expect(actualCells.length, `downloaded CSV row ${row} column count`).to.eq(
-        expectedCells.length
-      );
+      expect(
+        actualCells.length,
+        `downloaded CSV row ${row} column count`
+      ).to.eq(expectedCells.length);
 
       expectedCells.forEach((expectedCell, column) => {
         const actualCell = actualCells[column];

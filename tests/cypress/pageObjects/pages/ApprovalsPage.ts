@@ -1,5 +1,5 @@
-import { networksBySlug } from "../../superData/networks";
-import { BasePage } from "../BasePage";
+import { networksBySlug } from '../../superData/networks';
+import { BasePage } from '../BasePage';
 import {
   CONNECT_WALLET_BUTTON,
   TOP_BAR_NETWORK_BUTTON,
@@ -7,47 +7,47 @@ import {
   ADDRESS_BUTTON,
   STOP_VIEWING_BUTTON,
   CHANGE_NETWORK_BUTTON,
-} from "./Common";
-import { ethers } from "ethers";
+} from './Common';
+import { ethers } from 'ethers';
 
-const WALLET_ADDRESS = "[data-cy=wallet-address]";
-const NOT_CONNECTED_TITLE = "[data-cy=no-user-settings]";
-const NOT_CONNECTED_MESSAGE = "[data-cy=no-history-text]";
-const NO_APPROVAL_TITLE = "[data-cy=no-access-data-title]";
-const NO_APPROVAL_BODY = "[data-cy=no-access-data-description]";
-const ADD_APPROVAL_GLOBAL_BUTTON = "[data-cy=add-token-access-global-button]";
-const APPROVAL_MODAL = "[data-cy=upsert-approvals-form]";
+const WALLET_ADDRESS = '[data-cy=wallet-address]';
+const NOT_CONNECTED_TITLE = '[data-cy=no-user-settings]';
+const NOT_CONNECTED_MESSAGE = '[data-cy=no-history-text]';
+const NO_APPROVAL_TITLE = '[data-cy=no-access-data-title]';
+const NO_APPROVAL_BODY = '[data-cy=no-access-data-description]';
+const ADD_APPROVAL_GLOBAL_BUTTON = '[data-cy=add-token-access-global-button]';
+const APPROVAL_MODAL = '[data-cy=upsert-approvals-form]';
 
-const OTHER_CLOSE_TX_BUTTON = "[data-cy=close-icon]";
+const OTHER_CLOSE_TX_BUTTON = '[data-cy=close-icon]';
 
 const APPROVAL_MODAL_CLOSE_BUTTON =
-  "[data-cy=upsert-approvals-form-close-button]";
+  '[data-cy=upsert-approvals-form-close-button]';
 const APPROVAL_MODAL_ALLOWANCE_FIELD =
-  "[data-cy=approvals-modal-allowance-field]";
-const APPROVAL_MODAL_FLOW_RATE_FIELD = "[data-cy=flow-rate-input]";
+  '[data-cy=approvals-modal-allowance-field]';
+const APPROVAL_MODAL_FLOW_RATE_FIELD = '[data-cy=flow-rate-input]';
 const APPROVAL_MODAL_CREATE_ACL_PERMISSION =
-  "[data-cy=flow-acl-permission-Create-switch]";
+  '[data-cy=flow-acl-permission-Create-switch]';
 const APPROVAL_MODAL_DELETE_ACL_PERMISSION =
-  "[data-cy=flow-acl-permission-Delete-switch]";
+  '[data-cy=flow-acl-permission-Delete-switch]';
 const APPROVAL_MODAL_UPDATE_ACL_PERMISSION =
-  "[data-cy=flow-acl-permission-Update-switch]";
+  '[data-cy=flow-acl-permission-Update-switch]';
 
-const SAVE_CHANGES_BUTTON = "[data-cy=approvals-save-button]";
+const SAVE_CHANGES_BUTTON = '[data-cy=approvals-save-button]';
 
 const UNSAVED_CONFIRMATION_MODAL =
-  "[data-cy=approvals-unsaved-confirmation-form]";
+  '[data-cy=approvals-unsaved-confirmation-form]';
 
 const UNSAVED_CONFIRMATION_MODAL_CLOSE_ICON =
-  "[data-cy=upsert-approvals-unsaved-form-close-button]";
+  '[data-cy=upsert-approvals-unsaved-form-close-button]';
 
-const OPERATOR_ADDRESSES = "[data-cy=access-setting-address]";
-const REVOKE_BUTTON = "[data-cy=revoke-button]";
-const PERMISSIONS_DIALOG = "[data-cy=permissions-dialog]";
-const MODIFY_BUTTONS = "[data-cy=modify-token-access-row-button]";
-const TOKEN_ALLOWANCES = "[data-cy=token-allowance]";
-const STREAM_ALLOWANCES = "[data-cy=flow-rate-allowance]";
-const ASSETS_IN_TABLE = "[data-cy=token-symbol]";
-const PERMISSIONS_FORM_TITLE = "[data-cy=permissions-form-title]";
+const OPERATOR_ADDRESSES = '[data-cy=access-setting-address]';
+const REVOKE_BUTTON = '[data-cy=revoke-button]';
+const PERMISSIONS_DIALOG = '[data-cy=permissions-dialog]';
+const MODIFY_BUTTONS = '[data-cy=modify-token-access-row-button]';
+const TOKEN_ALLOWANCES = '[data-cy=token-allowance]';
+const STREAM_ALLOWANCES = '[data-cy=flow-rate-allowance]';
+const ASSETS_IN_TABLE = '[data-cy=token-symbol]';
+const PERMISSIONS_FORM_TITLE = '[data-cy=permissions-form-title]';
 
 export class ApprovalsPage extends BasePage {
   static clickUpdatePermissionToggle() {
@@ -61,7 +61,7 @@ export class ApprovalsPage extends BasePage {
     operator: string,
     network: string
   ) {
-    cy.fixture("commonData").then((data) => {
+    cy.fixture('commonData').then((data) => {
       let address = data[operator]
         ? data[operator].toLowerCase()
         : operator.toLowerCase();
@@ -81,7 +81,7 @@ export class ApprovalsPage extends BasePage {
     token: string,
     network: string
   ) {
-    cy.fixture("commonData").then((data) => {
+    cy.fixture('commonData').then((data) => {
       let address = data[operator] ? data[operator] : operator;
       this.doesNotExist(
         `[data-cy=${network}-permission-and-allowances-table] [data-cy=${token}-${address}-row]`
@@ -92,9 +92,9 @@ export class ApprovalsPage extends BasePage {
     this.click(REVOKE_BUTTON);
   }
   static validatePreFilledForm() {
-    cy.get("@selectedPermissionNetwork").then((network) => {
-      cy.get("@selectedPermissionToken").then((token) => {
-        cy.get<string>("@selectedPermissionOperator").then((operator) => {
+    cy.get('@selectedPermissionNetwork').then((network) => {
+      cy.get('@selectedPermissionToken').then((token) => {
+        cy.get<string>('@selectedPermissionOperator').then((operator) => {
           this.isDisabled(`${PERMISSIONS_DIALOG} ${TOP_BAR_NETWORK_BUTTON}`);
           this.containsText(
             `${PERMISSIONS_DIALOG} ${TOP_BAR_NETWORK_BUTTON}`,
@@ -105,12 +105,12 @@ export class ApprovalsPage extends BasePage {
           this.isDisabled(`${PERMISSIONS_DIALOG} ${ADDRESS_BUTTON}`);
 
           cy.get(`${PERMISSIONS_DIALOG} ${ADDRESS_BUTTON}`)
-            .invoke("text")
+            .invoke('text')
             .then((text) => {
               let assertableString = ethers.utils.isAddress(text)
                 ? BasePage.shortenHex(text)
                 : text;
-              cy.wrap(operator).should("be.equal", assertableString);
+              cy.wrap(operator).should('be.equal', assertableString);
             });
         });
       });
@@ -131,7 +131,7 @@ export class ApprovalsPage extends BasePage {
     allowance: string,
     network: string
   ) {
-    cy.fixture("commonData").then((data) => {
+    cy.fixture('commonData').then((data) => {
       let address = data[operator]
         ? data[operator].toLowerCase()
         : operator.toLowerCase();
@@ -145,7 +145,7 @@ export class ApprovalsPage extends BasePage {
     allowance: string,
     network: string
   ) {
-    cy.fixture("commonData").then((data) => {
+    cy.fixture('commonData').then((data) => {
       let address = data[operator]
         ? data[operator].toLowerCase()
         : operator.toLowerCase();
@@ -163,16 +163,16 @@ export class ApprovalsPage extends BasePage {
       `[data-cy=${selectedNetwork}-permission-and-allowances-table] ${ASSETS_IN_TABLE}`
     )
       .first()
-      .invoke("text")
-      .as("selectedPermissionToken");
+      .invoke('text')
+      .as('selectedPermissionToken');
     cy.get(
       `[data-cy=${selectedNetwork}-permission-and-allowances-table] ${OPERATOR_ADDRESSES}`
     )
       .first()
-      .invoke("text")
-      .as("selectedPermissionOperator");
+      .invoke('text')
+      .as('selectedPermissionOperator');
     cy.wrap(networksBySlug.get(selectedNetwork).name).as(
-      "selectedPermissionNetwork"
+      'selectedPermissionNetwork'
     );
     this.clickFirstVisible(
       `[data-cy=${selectedNetwork}-permission-and-allowances-table] ${MODIFY_BUTTONS}`
@@ -183,19 +183,19 @@ export class ApprovalsPage extends BasePage {
   }
 
   static validateNotConnectedScreen() {
-    this.hasText(NOT_CONNECTED_TITLE, "Wallet not connected");
+    this.hasText(NOT_CONNECTED_TITLE, 'Wallet not connected');
     this.hasText(
       NOT_CONNECTED_MESSAGE,
-      "Wallet is not connected, please connect wallet to continue."
+      'Wallet is not connected, please connect wallet to continue.'
     );
     this.isVisible(CONNECT_WALLET_BUTTON);
   }
 
   static validateNoAccessDataScreen() {
-    this.hasText(NO_APPROVAL_TITLE, "No Access Data");
+    this.hasText(NO_APPROVAL_TITLE, 'No Access Data');
     this.hasText(
       NO_APPROVAL_BODY,
-      "You currently don’t have any Super Token permissions and allowance set."
+      'You currently don’t have any Super Token permissions and allowance set.'
     );
   }
 

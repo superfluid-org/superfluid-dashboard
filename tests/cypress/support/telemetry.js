@@ -55,7 +55,8 @@ function truncate(value) {
 function safeStringify(value) {
   try {
     if (value instanceof Error) return `${value.name}: ${value.message}`;
-    if (typeof value === 'object' && value !== null) return JSON.stringify(value);
+    if (typeof value === 'object' && value !== null)
+      return JSON.stringify(value);
     return String(value);
   } catch (e) {
     return '[unserializable]';

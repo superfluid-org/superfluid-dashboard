@@ -25,7 +25,8 @@ const CANCEL_STREAM_BUTTON = '[data-cy=cancel-stream-button]';
 const TOOLTIPS = '[role=tooltip]';
 const ROWS_PER_PAGE_ARROW = '.MuiTablePagination-root .MuiSelect-icon';
 const DISPLAYED_ROWS = '[class*=displayedRows]';
-const NEXT_PAGE_BUTTON = '.MuiTablePagination-actions [aria-label="Go to next page"]';
+const NEXT_PAGE_BUTTON =
+  '.MuiTablePagination-actions [aria-label="Go to next page"]';
 const STREAM_ROWS = '[data-cy=stream-row]';
 const ALL_BALANCE_ROWS = '[data-cy*=-cell]';
 const MODIFY_STREAM_BUTTON = '[data-cy=modify-stream-tooltip]';

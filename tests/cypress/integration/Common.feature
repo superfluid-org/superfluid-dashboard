@@ -99,7 +99,6 @@ Feature: Common element test cases
   #     And User opens the navigation more menu
   #     And User opens the faucet view from the navigation menu
   #     Then The claim token is disabled and shows Tokens claimed message
-
   Scenario: Using view mode from the Connect or Impersonate screen
     Given "Vesting page" is open without connecting a wallet
     And User uses view mode to look at "john"
@@ -160,6 +159,7 @@ Feature: Common element test cases
 
   Scenario: ENS API error when fetching a receiver with domain
     Given "Vesting page" is open without connecting a wallet
+
     Given ENS api requests are blocked
     And User clicks on the view mode button
     And User types "elvijs.eth" into the address input
@@ -167,6 +167,7 @@ Feature: Common element test cases
 
   Scenario: ENS API error when fetching a receiver with different domain
     Given "Vesting page" is open without connecting a wallet
+
     Given ENS api requests are blocked
     And User clicks on the view mode button
     And User types "vijay.eth" into the address input

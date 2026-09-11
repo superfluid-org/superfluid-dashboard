@@ -118,7 +118,9 @@ export class GnosisSafe extends BasePage {
     // The dashboard auto-connects to the Safe through the Safe Apps SDK, so no manual
     // connect-wallet click is needed; just wait for the connection to settle.
     cy.enter(SUPERFLUID_IFRAME, { timeout: 45000 }).then((getBody) => {
-      getBody().find(WALLET_CONNECTION_STATUS).should('contain.text', 'Connected');
+      getBody()
+        .find(WALLET_CONNECTION_STATUS)
+        .should('contain.text', 'Connected');
     });
   }
 
@@ -142,9 +144,7 @@ export class GnosisSafe extends BasePage {
     // `/<prefix><address>/apps/custom` path now redirects to the welcome screen). No wallet is
     // needed - the classic Safe Apps view lets you manage custom apps in read-only mode.
     cy.visit(
-      `${GNOSIS_SAFE_BASEURL}apps/custom?safe=${
-        GnosisSafePrefixByNetworkSlug[network]
-      }${GnosisSafeAddressesPerNetwork[network]}`,
+      `${GNOSIS_SAFE_BASEURL}apps/custom?safe=${GnosisSafePrefixByNetworkSlug[network]}${GnosisSafeAddressesPerNetwork[network]}`,
       { failOnStatusCode: false }
     );
     // Always register the production dashboard URL: Safe fetches the app manifest server-side,

@@ -57,6 +57,13 @@ const config = {
   allowlistApiUrl:
     process.env.NEXT_PUBLIC_ALLOWLIST_API ??
     "https://allowlist.superfluid.dev",
+  superfluidWallet: {
+    enabled: process.env.NEXT_PUBLIC_SUPERFLUID_WALLET_ENABLED === "true",
+    url: (
+      process.env.NEXT_PUBLIC_SUPERFLUID_WALLET_URL ||
+      "https://wallet.superfluid.org"
+    ).trim(),
+  },
   // Kill switch for the Clear Macro gasless relay. Unset = enabled.
   isClearMacroDisabled:
     process.env.NEXT_PUBLIC_DISABLE_CLEAR_MACRO === "true",

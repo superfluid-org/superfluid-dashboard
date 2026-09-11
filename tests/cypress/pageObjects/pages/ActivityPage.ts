@@ -30,9 +30,12 @@ const ACTIVITY_FILTER = '[data-cy=activity-filter-button]';
 const CONNECT_WALLET_BUTTON = '[data-cy=connect-wallet-button]';
 
 const DISTRIBUTION_ICON = '[data-cy=activity-distribution-icon]';
-const SUBSCRIPTION_APPROVED_ICON = '[data-cy=activity-subscription-approved-icon]';
-const SUBSCRIPTION_REJECTED_ICON = '[data-cy=activity-subscription-rejected-icon]';
-const SUBSCRIPTION_UPDATED_ICON = '[data-cy=activity-subscription-updated-icon]';
+const SUBSCRIPTION_APPROVED_ICON =
+  '[data-cy=activity-subscription-approved-icon]';
+const SUBSCRIPTION_REJECTED_ICON =
+  '[data-cy=activity-subscription-rejected-icon]';
+const SUBSCRIPTION_UPDATED_ICON =
+  '[data-cy=activity-subscription-updated-icon]';
 const INDEX_CREATED_ICON = '[data-cy=activity-index-created-icon]';
 const STREAM_CANCELLED_ICON = '[data-cy=activity-stream-cancelled-icon]';
 const STREAM_UPDATED_ICON = '[data-cy=activity-stream-updated-icon]';

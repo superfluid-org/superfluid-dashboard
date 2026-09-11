@@ -179,7 +179,9 @@ export class SendPage extends BasePage {
   // The whois-entry secondary line shows the shortened address (shortenHex(addr, 6)),
   // never the full 42-char address.
   private static shortenAddress(address: string) {
-    return `${address.substring(0, 8)}...${address.substring(address.length - 6)}`;
+    return `${address.substring(0, 8)}...${address.substring(
+      address.length - 6
+    )}`;
   }
 
   static recipientEnsResultsContain(result: string) {
@@ -699,13 +701,9 @@ export class SendPage extends BasePage {
       return;
     }
     if (
-      [
-        'avalanche-fuji',
-        'sepolia',
-        'base',
-        'scroll',
-        'opsepolia',
-      ].includes(Cypress.env('network')) &&
+      ['avalanche-fuji', 'sepolia', 'base', 'scroll', 'opsepolia'].includes(
+        Cypress.env('network')
+      ) &&
       Cypress.env('platformNeeded')
     ) {
       cy.log(
@@ -722,13 +720,9 @@ export class SendPage extends BasePage {
       return true;
     }
     if (
-      [
-        'avalanche-fuji',
-        'sepolia',
-        'base',
-        'scroll',
-        'opsepolia',
-      ].includes(Cypress.env('network')) &&
+      ['avalanche-fuji', 'sepolia', 'base', 'scroll', 'opsepolia'].includes(
+        Cypress.env('network')
+      ) &&
       Cypress.env('platformNeeded')
     ) {
       return true;

@@ -86,7 +86,8 @@ Feature: Transactional rejected test cases
     And Distribution revoking dialog on "selected network" shows up
     And Transaction rejected error is shown
 
-  @platformNeeded @gaslessRelayEnabled
+  @platformNeeded
+  @gaslessRelayEnabled
   Scenario: Creating a stream with just start date
     Given The test case is skipped if the platform is not deployed on the network
 
@@ -100,7 +101,8 @@ Feature: Transactional rejected test cases
     And Scheduled stream transaction dialogs are shown
     And Transaction rejected error is shown
 
-  @platformNeeded @gaslessRelayEnabled
+  @platformNeeded
+  @gaslessRelayEnabled
   Scenario: Creating a stream with just end date
     Given The test case is skipped if the platform is not deployed on the network
 
@@ -114,7 +116,8 @@ Feature: Transactional rejected test cases
     And Scheduled stream transaction dialogs are shown
     And Transaction rejected error is shown
 
-  @platformNeeded @gaslessRelayEnabled
+  @platformNeeded
+  @gaslessRelayEnabled
   Scenario: Creating a stream with start and end date
     Given The test case is skipped if the platform is not deployed on the network
 
@@ -163,7 +166,9 @@ Feature: Transactional rejected test cases
   # on exactly polygon, arbitrum-one and optimism and failed on gnosis, avalanche and bsc.
   # This scenario must print a pass on the three allowlisted networks -- if it reports as
   # skipped everywhere, the allowlist is broken, not the product.
-  @platformNeeded @gaslessRelayEnabled @relayFeeGateNetworksOnly
+  @platformNeeded
+  @gaslessRelayEnabled
+  @relayFeeGateNetworksOnly
   Scenario: Scheduling is blocked when the wallet cannot cover the gasless relay fee
     Given The test case is skipped if the platform is not deployed on the network
 

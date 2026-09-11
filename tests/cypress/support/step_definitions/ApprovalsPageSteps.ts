@@ -1,9 +1,12 @@
-import { Given, Then } from "@badeball/cypress-cucumber-preprocessor";
-import { ApprovalsPage } from "../../pageObjects/pages/ApprovalsPage";
+import { Given, Then } from '@badeball/cypress-cucumber-preprocessor';
+import { ApprovalsPage } from '../../pageObjects/pages/ApprovalsPage';
 
-Then(/^"([^"]*)" is visible in the approvals page$/, function (address: string) {
-  ApprovalsPage.validateVisibleAddress(address);
-});
+Then(
+  /^"([^"]*)" is visible in the approvals page$/,
+  function (address: string) {
+    ApprovalsPage.validateVisibleAddress(address);
+  }
+);
 Then(/^Approvals page wallet not connected screen is visible$/, function () {
   ApprovalsPage.validateNotConnectedScreen();
 });
