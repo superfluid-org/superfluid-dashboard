@@ -232,8 +232,8 @@ const _appKit = createAppKit({
     swaps: false,
     socials: false
   },
-  privacyPolicyUrl: "https://www.iubenda.com/privacy-policy/34415583/legal",
-  termsConditionsUrl: "https://www.superfluid.finance/termsofuse",
+  privacyPolicyUrl: "https://www.superfluid.org/privacy/",
+  termsConditionsUrl: "https://superfluid.org/terms-of-use/",
   featuredWalletIds: [
     "971e689d0a5be527bac79629b4ee9b925e82208e5168b733496a09c0faed0709"
   ],
@@ -250,8 +250,8 @@ const _appKit = createAppKit({
 //   enableOnramp: false,
 //   enableSwaps: false,
 //   enableEIP6963: enableEIP6963,
-//   privacyPolicyUrl: "https://www.iubenda.com/privacy-policy/34415583/legal",
-//   termsConditionsUrl: "https://www.superfluid.finance/termsofuse",
+//   privacyPolicyUrl: "https://www.superfluid.org/privacy/",
+//   termsConditionsUrl: "https://superfluid.org/terms-of-use/",
 //   featuredWalletIds: [
 //     "971e689d0a5be527bac79629b4ee9b925e82208e5168b733496a09c0faed0709"
 //   ],

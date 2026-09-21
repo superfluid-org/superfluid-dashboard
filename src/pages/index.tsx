@@ -111,14 +111,11 @@ const ConnectView: FC = () => {
         }}
       >
         By connecting your wallet, you accept our{" "}
-        <Link href="https://www.superfluid.finance/termsofuse/" target="_blank">
+        <Link href="https://superfluid.org/terms-of-use/" target="_blank">
           Terms of Use
         </Link>
         {" and "}
-        <Link
-          href="https://www.iubenda.com/privacy-policy/34415583/legal"
-          target="_blank"
-        >
+        <Link href="https://www.superfluid.org/privacy/" target="_blank">
           Privacy Policy
         </Link>
       </Typography>
