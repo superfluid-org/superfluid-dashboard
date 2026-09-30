@@ -836,7 +836,7 @@ export const networkDefinition = {
     ),
     blockExplorers: ensureDefined(chain.arcTestnet.blockExplorers),
     slugName: "arc-testnet",
-    v1ShortName: "arc",
+    v1ShortName: "arctest",
     bufferTimeInMinutes: 60,
     color: "#2775CA",
     rpcUrls: {
@@ -852,6 +852,57 @@ export const networkDefinition = {
       address: NATIVE_ASSET_ADDRESS,
       type: TokenType.NativeAssetUnderlyingToken,
       superToken: ensureDefined(findNativeAssetSuperTokenFromTokenList({ chainId: chainIds.arcTestnet, address: "0x233a5Bfd65Da07AeB08F2082d2B5B270bc4eA804" })),
+      logoURI: "https://tokenlist.superfluid.org/icons/usdc.svg",
+      isSuperToken: false,
+    },
+    vestingContractAddress: {
+      v1: undefined,
+      v2: undefined,
+      v3: undefined,
+    },
+    vestingSubgraphUrl: undefined,
+    autoWrapSubgraphUrl: undefined,
+    autoWrap: undefined,
+    flowSchedulerContractAddress: undefined,
+    flowSchedulerSubgraphUrl: undefined,
+  },
+  arc: {
+    ...chain.arc,
+    supportsGDA: getSupportsGDA(chainIds.arc),
+    metadata: ensureDefined(
+      sfMeta.getNetworkByChainId(chainIds.arc),
+      chainIds.arc
+    ),
+    // viem's arc chain ships without blockExplorers, default RPCs or multicall3 -- fill them in here.
+    blockExplorers: {
+      default: {
+        name: "Arc Explorer",
+        url: "https://explorer.arc.io",
+      },
+    },
+    slugName: "arc-mainnet",
+    v1ShortName: "arc",
+    bufferTimeInMinutes: 240,
+    color: "#2775CA",
+    rpcUrls: {
+      ...chain.arc.rpcUrls,
+      default: { http: ["https://rpc.mainnet.arc.io"] },
+      superfluid: { http: [superfluidRpcUrls["arc-mainnet"]] },
+    },
+    contracts: {
+      multicall3: {
+        address: "0xcA11bde05977b3631167028862bE2a173976CA11",
+      },
+    },
+    getLinkForTransaction: (txHash: string): string =>
+      `https://explorer.arc.io/tx/${txHash}`,
+    getLinkForAddress: (address: string): string =>
+      `https://explorer.arc.io/address/${address}`,
+    nativeCurrency: {
+      ...ensureDefined(chain.arc.nativeCurrency),
+      address: NATIVE_ASSET_ADDRESS,
+      type: TokenType.NativeAssetUnderlyingToken,
+      superToken: ensureDefined(findNativeAssetSuperTokenFromTokenList({ chainId: chainIds.arc, address: "0xE9E52dC2E2eF561980AC96D00a50D6B59E95CaB9" })),
       logoURI: "https://tokenlist.superfluid.org/icons/usdc.svg",
       isSuperToken: false,
     },
@@ -985,6 +1036,7 @@ export const allNetworks: [Network, ...Network[]] = orderBy(
       networkDefinition.base,
       networkDefinition.baseSepolia,
       networkDefinition.arcTestnet,
+      networkDefinition.arc,
       networkDefinition.scroll,
     ],
     (x) => x.id // Put lower ids first (Ethereum mainnet will be first)
