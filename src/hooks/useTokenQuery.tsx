@@ -228,8 +228,9 @@ export const mapSubgraphTokenToTokenMinimal = <T extends boolean = false>(chainI
 
     if (subgraphToken.isSuperToken) {
         const network = findNetworkOrThrow(allNetworks, chainId);
-        if (subgraphToken.id.toLowerCase() === network.nativeCurrency.superToken.address.toLowerCase()) {
-            return network.nativeCurrency.superToken as TReturn;
+        const nativeAssetSuperToken = network.nativeCurrency.superToken;
+        if (nativeAssetSuperToken && subgraphToken.id.toLowerCase() === nativeAssetSuperToken.address.toLowerCase()) {
+            return nativeAssetSuperToken as TReturn;
         }
 
         return {

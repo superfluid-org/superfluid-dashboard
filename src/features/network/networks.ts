@@ -53,6 +53,9 @@ const findNativeAssetSuperTokenFromTokenList = (input: { chainId: number, addres
   if (!superTokenInfo) {
     throw new Error(`No super token info found for token ${token.address}`);
   }
+  if (superTokenInfo.type !== "Native Asset") {
+    throw new Error(`Token ${token.address} on chainId ${input.chainId} is a "${superTokenInfo.type}" Super Token, not a Native Asset Super Token`);
+  }
 
   return {
     address: token.address,
@@ -103,7 +106,12 @@ export type Network = Chain & {
   bufferTimeInMinutes: number; // Hard-code'ing this per network is actually incorrect approach. It's token-based and can be governed.
   rpcUrls: Chain["rpcUrls"] & { superfluid: { http: readonly string[] } };
   nativeCurrency: Chain["nativeCurrency"] & NativeAsset & {
-    superToken: SuperTokenMinimal;
+    /**
+     * The chain's Native Asset Super Token (wrapped with `upgradeByETH`), if it has one.
+     * Absent on chains like Arc mainnet, where the wrapper of the native token's ERC-20
+     * interface is a regular Wrapper Super Token.
+     */
+    superToken?: SuperTokenMinimal;
     logoURI: string;
   };
   supportsGDA: boolean;
@@ -903,7 +911,8 @@ export const networkDefinition = {
       ...ensureDefined(chain.arc.nativeCurrency),
       address: NATIVE_ASSET_ADDRESS,
       type: TokenType.NativeAssetUnderlyingToken,
-      superToken: ensureDefined(findNativeAssetSuperTokenFromTokenList({ chainId: chainIds.arc, address: "0xE9E52dC2E2eF561980AC96D00a50D6B59E95CaB9" })),
+      // No Native Asset Super Token on Arc mainnet: USDCx (0xE9E5…CaB9) wraps the USDC
+      // ERC-20 interface at 0x3600…0000 and is wrapped with approve + upgrade.
       logoURI: "https://tokenlist.superfluid.org/icons/usdc.svg",
       isSuperToken: false,
     },
@@ -1095,10 +1104,12 @@ export const findNetworkOrThrow = (
 };
 
 export const getNetworkDefaultTokenPairs = memoize(
-  (network: Network): SuperTokenPair[] => ([{
-    superToken: network.nativeCurrency.superToken,
-    underlyingToken: network.nativeCurrency,
-  }])
+  (network: Network): SuperTokenPair[] => {
+    const { superToken } = network.nativeCurrency;
+    return superToken
+      ? [{ superToken, underlyingToken: network.nativeCurrency }]
+      : [];
+  }
 );
 
 export const vestingSupportedNetworks = allNetworks
