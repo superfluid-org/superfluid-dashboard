@@ -884,6 +884,7 @@ export const networkDefinition = {
     v1ShortName: "arc",
     bufferTimeInMinutes: 240,
     color: "#2775CA",
+    icon: "/icons/network/arc.svg",
     rpcUrls: {
       ...chain.arc.rpcUrls,
       default: { http: ["https://rpc.mainnet.arc.io"] },
