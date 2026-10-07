@@ -318,13 +318,17 @@ export const adHocSubgraphEndpoints = {
         );
 
         const network = findNetworkOrThrow(allNetworks, arg.chainId);
+        const networkNativeAssetSuperToken = network.nativeCurrency.superToken;
         const networkNativeAssetSuperTokenAddress =
-          network.nativeCurrency.superToken.address.toLowerCase();
+          networkNativeAssetSuperToken?.address.toLowerCase();
 
         return {
           data: response.result.map((x) => {
-            if (x.token.address === networkNativeAssetSuperTokenAddress) {
-              return { ...network.nativeCurrency.superToken, decimals: 18 };
+            if (
+              networkNativeAssetSuperToken &&
+              x.token.address === networkNativeAssetSuperTokenAddress
+            ) {
+              return { ...networkNativeAssetSuperToken, decimals: 18 };
             }
 
             const tokenFromTokenList = findTokenFromTokenList({ chainId: arg.chainId, address: x.token.address });
@@ -444,9 +448,10 @@ export const getSuperTokenType = (arg: {
   address: string;
   underlyingAddress: string | null | undefined;
 }): SuperTokenType => {
+  const nativeAssetSuperToken = arg.network.nativeCurrency.superToken;
   if (
-    arg.address.toLowerCase() ===
-    arg.network.nativeCurrency.superToken.address.toLowerCase()
+    nativeAssetSuperToken &&
+    arg.address.toLowerCase() === nativeAssetSuperToken.address.toLowerCase()
   ) {
     return TokenType.NativeAssetSuperToken;
   } else if (
