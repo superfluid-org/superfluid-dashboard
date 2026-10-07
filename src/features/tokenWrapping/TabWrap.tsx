@@ -4,8 +4,6 @@ import { BigNumber, BigNumberish, ethers } from "ethers";
 import { formatEther, formatUnits, parseEther } from "ethers/lib/utils";
 import { useRouter } from "next/router";
 import { FC, useEffect, useMemo, useRef, useState } from "react";
-import { Address, erc20Abi, Hash } from "viem";
-import { useReadContract, useWaitForTransactionReceipt } from "wagmi";
 import { Controller, useFormContext } from "react-hook-form";
 import { inputPropsForEtherAmount } from "../../utils/inputPropsForEtherAmount";
 import { parseAmountOrZero } from "../../utils/tokenUtils";
@@ -124,29 +122,30 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
   const isUnderlyingBlockchainNativeAsset =
     tokenPair?.underlyingTokenAddress === NATIVE_ASSET_ADDRESS;
 
-  // Read the underlying ERC-20 allowance directly instead of through sdk-redux: sdk-core
-  // classifies a Super Token as native-asset when its symbol is the native symbol + "x",
-  // which crashes this query for Arc mainnet USDCx (a Wrapper of the USDC ERC-20 interface).
+  // Read the ERC-20 directly (including Arc USDC), with the global transaction
+  // tracker's cache invalidation so confirmations still refresh after tab switches.
   const allowanceArgs =
     tokenPair && !isUnderlyingBlockchainNativeAsset && visibleAddress
-      ? ([visibleAddress as Address, tokenPair.superTokenAddress as Address] as const)
-      : undefined;
-  const allowanceQuery = useReadContract({
-    chainId: network.id,
-    abi: erc20Abi,
-    address: tokenPair?.underlyingTokenAddress as Address | undefined,
-    functionName: "allowance",
-    args: allowanceArgs,
-    query: { enabled: Boolean(allowanceArgs) },
+      ? {
+          chainId: network.id,
+          accountAddress: visibleAddress,
+          underlyingTokenAddress: tokenPair.underlyingTokenAddress,
+          spenderAddress: tokenPair.superTokenAddress,
+        }
+      : skipToken;
+  const allowanceQuery = rpcApi.useGetUnderlyingTokenAllowanceQuery(allowanceArgs, {
+    refetchOnMountOrArgChange: true,
+    refetchOnFocus: true,
   });
-  const { refetch: refetchAllowance } = allowanceQuery;
 
   const currentAllowance =
-    allowanceArgs && allowanceQuery.data !== undefined
-      ? ethers.BigNumber.from(allowanceQuery.data.toString())
+    allowanceQuery.currentData !== undefined
+      ? ethers.BigNumber.from(allowanceQuery.currentData)
       : null;
   // Never let a missing allowance read through to an `upgrade` that would revert.
-  const isAllowanceUnknown = Boolean(allowanceArgs) && currentAllowance === null;
+  const isAllowanceUnknown =
+    allowanceArgs !== skipToken &&
+    (currentAllowance === null || allowanceQuery.isError);
 
   const missingAllowance = currentAllowance
     ? currentAllowance.gt(amountWei)
@@ -156,22 +155,6 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
 
   const [approveTrigger, approveResult] = useTokenApprove();
   const [wrapTrigger, wrapResult] = useTokenWrap();
-
-  // The sdk-redux query was refreshed through cache tags; refetch explicitly once an
-  // approve or wrap transaction is mined.
-  const approveReceipt = useWaitForTransactionReceipt({
-    chainId: network.id,
-    hash: approveResult.data?.hash as Hash | undefined,
-  });
-  const wrapReceipt = useWaitForTransactionReceipt({
-    chainId: network.id,
-    hash: wrapResult.data?.hash as Hash | undefined,
-  });
-  useEffect(() => {
-    if (approveReceipt.isSuccess || wrapReceipt.isSuccess) {
-      void refetchAllowance();
-    }
-  }, [approveReceipt.isSuccess, wrapReceipt.isSuccess, refetchAllowance]);
 
   const isApproveAllowanceVisible = !!(
     underlyingToken &&
