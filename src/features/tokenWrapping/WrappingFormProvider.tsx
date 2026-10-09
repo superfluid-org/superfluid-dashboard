@@ -15,7 +15,6 @@ import {
 } from "../../utils/tokenUtils";
 import { testAddress, testEtherAmount } from "../../utils/yupUtils";
 import { useExpectedNetwork } from "../network/ExpectedNetworkContext";
-import { getNetworkDefaultTokenPairs } from "../network/networks";
 import { NATIVE_ASSET_ADDRESS } from "../redux/endpoints/tokenTypes";
 import { rpcApi } from "../redux/store";
 import {
@@ -24,7 +23,7 @@ import {
   SuperTokenDowngradeRestoration,
   SuperTokenUpgradeRestoration,
 } from "../transactionRestoration/transactionRestorations";
-import { useTokenPairsQuery } from "./useTokenPairsQuery";
+import { getWrapDefaultTokenPairs, useTokenPairsQuery } from "./useTokenPairsQuery";
 import { useVisibleAddress } from "../wallet/VisibleAddressContext";
 import { CommonFormEffects } from "../common/CommonFormEffects";
 import { useClearMacroFeeFacts } from "../clearMacro/useClearMacroFeeFacts";
@@ -280,15 +279,17 @@ The chain ID was: ${network.id}`);
     [network, visibleAddress, tokenPairsQuery.data, isEOA, feeFacts]
   );
 
-  const networkDefaultTokenPair = getNetworkDefaultTokenPairs(network)[0];
+  const networkDefaultTokenPair = getWrapDefaultTokenPairs(network)[0];
   const formMethods = useForm<WrappingForm, undefined, ValidWrappingForm>({
     defaultValues: {
       data: {
-        tokenPair: {
-          superTokenAddress: networkDefaultTokenPair.superToken.address,
-          underlyingTokenAddress:
-            networkDefaultTokenPair.underlyingToken.address,
-        },
+        tokenPair: networkDefaultTokenPair
+          ? {
+              superTokenAddress: networkDefaultTokenPair.superToken.address,
+              underlyingTokenAddress:
+                networkDefaultTokenPair.underlyingToken.address,
+            }
+          : undefined,
         amountDecimal: "",
       },
     },

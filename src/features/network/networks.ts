@@ -53,6 +53,9 @@ const findNativeAssetSuperTokenFromTokenList = (input: { chainId: number, addres
   if (!superTokenInfo) {
     throw new Error(`No super token info found for token ${token.address}`);
   }
+  if (superTokenInfo.type !== "Native Asset") {
+    throw new Error(`Token ${token.address} on chainId ${input.chainId} is a "${superTokenInfo.type}" Super Token, not a Native Asset Super Token`);
+  }
 
   return {
     address: token.address,
@@ -103,7 +106,12 @@ export type Network = Chain & {
   bufferTimeInMinutes: number; // Hard-code'ing this per network is actually incorrect approach. It's token-based and can be governed.
   rpcUrls: Chain["rpcUrls"] & { superfluid: { http: readonly string[] } };
   nativeCurrency: Chain["nativeCurrency"] & NativeAsset & {
-    superToken: SuperTokenMinimal;
+    /**
+     * The chain's Native Asset Super Token (wrapped with `upgradeByETH`), if it has one.
+     * Absent on chains like Arc mainnet, where the wrapper of the native token's ERC-20
+     * interface is a regular Wrapper Super Token.
+     */
+    superToken?: SuperTokenMinimal;
     logoURI: string;
   };
   supportsGDA: boolean;
@@ -836,7 +844,7 @@ export const networkDefinition = {
     ),
     blockExplorers: ensureDefined(chain.arcTestnet.blockExplorers),
     slugName: "arc-testnet",
-    v1ShortName: "arc",
+    v1ShortName: "arctest",
     bufferTimeInMinutes: 60,
     color: "#2775CA",
     rpcUrls: {
@@ -852,6 +860,59 @@ export const networkDefinition = {
       address: NATIVE_ASSET_ADDRESS,
       type: TokenType.NativeAssetUnderlyingToken,
       superToken: ensureDefined(findNativeAssetSuperTokenFromTokenList({ chainId: chainIds.arcTestnet, address: "0x233a5Bfd65Da07AeB08F2082d2B5B270bc4eA804" })),
+      logoURI: "https://tokenlist.superfluid.org/icons/usdc.svg",
+      isSuperToken: false,
+    },
+    vestingContractAddress: {
+      v1: undefined,
+      v2: undefined,
+      v3: undefined,
+    },
+    vestingSubgraphUrl: undefined,
+    autoWrapSubgraphUrl: undefined,
+    autoWrap: undefined,
+    flowSchedulerContractAddress: undefined,
+    flowSchedulerSubgraphUrl: undefined,
+  },
+  arc: {
+    ...chain.arc,
+    supportsGDA: getSupportsGDA(chainIds.arc),
+    metadata: ensureDefined(
+      sfMeta.getNetworkByChainId(chainIds.arc),
+      chainIds.arc
+    ),
+    // viem's arc chain ships without blockExplorers, default RPCs or multicall3 -- fill them in here.
+    blockExplorers: {
+      default: {
+        name: "Arc Explorer",
+        url: "https://explorer.arc.io",
+      },
+    },
+    slugName: "arc-mainnet",
+    v1ShortName: "arc",
+    bufferTimeInMinutes: 240,
+    color: "#2775CA",
+    icon: "/icons/network/arc.svg",
+    rpcUrls: {
+      ...chain.arc.rpcUrls,
+      default: { http: ["https://rpc.mainnet.arc.io"] },
+      superfluid: { http: [superfluidRpcUrls["arc-mainnet"]] },
+    },
+    contracts: {
+      multicall3: {
+        address: "0xcA11bde05977b3631167028862bE2a173976CA11",
+      },
+    },
+    getLinkForTransaction: (txHash: string): string =>
+      `https://explorer.arc.io/tx/${txHash}`,
+    getLinkForAddress: (address: string): string =>
+      `https://explorer.arc.io/address/${address}`,
+    nativeCurrency: {
+      ...ensureDefined(chain.arc.nativeCurrency),
+      address: NATIVE_ASSET_ADDRESS,
+      type: TokenType.NativeAssetUnderlyingToken,
+      // No Native Asset Super Token on Arc mainnet: USDCx (0xE9E5…CaB9) wraps the USDC
+      // ERC-20 interface at 0x3600…0000 and is wrapped with approve + upgrade.
       logoURI: "https://tokenlist.superfluid.org/icons/usdc.svg",
       isSuperToken: false,
     },
@@ -985,6 +1046,7 @@ export const allNetworks: [Network, ...Network[]] = orderBy(
       networkDefinition.base,
       networkDefinition.baseSepolia,
       networkDefinition.arcTestnet,
+      networkDefinition.arc,
       networkDefinition.scroll,
     ],
     (x) => x.id // Put lower ids first (Ethereum mainnet will be first)
@@ -1042,10 +1104,12 @@ export const findNetworkOrThrow = (
 };
 
 export const getNetworkDefaultTokenPairs = memoize(
-  (network: Network): SuperTokenPair[] => ([{
-    superToken: network.nativeCurrency.superToken,
-    underlyingToken: network.nativeCurrency,
-  }])
+  (network: Network): SuperTokenPair[] => {
+    const { superToken } = network.nativeCurrency;
+    return superToken
+      ? [{ superToken, underlyingToken: network.nativeCurrency }]
+      : [];
+  }
 );
 
 export const vestingSupportedNetworks = allNetworks

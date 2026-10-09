@@ -1,6 +1,6 @@
 {
   "name": "@superfluid-finance/dashboard",
-  "version": "68.0.0",
+  "version": "69.0.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -59,11 +59,11 @@
     "@sentry/browser": "^10.66.0",
     "@sentry/nextjs": "^10.66.0",
     "@sentry/react": "^10.66.0",
-    "@sfpro/sdk": "^0.3.0",
-    "@superfluid-finance/metadata": "^1.6.4",
+    "@sfpro/sdk": "^0.3.1",
+    "@superfluid-finance/metadata": "^1.6.5",
     "@superfluid-finance/sdk-core": "^0.9.0",
     "@superfluid-finance/sdk-redux": "^0.7.0",
-    "@superfluid-finance/tokenlist": "^5.47.0",
+    "@superfluid-finance/tokenlist": "^5.48.0",
     "@tanstack/react-query": "^5.101.2",
     "@vercel/functions": "^2.2.13",
     "@wagmi/core": "^3.6.4",
