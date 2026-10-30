@@ -9,6 +9,7 @@ import { Address, createWalletClient } from "viem";
 import { createAppKit } from '@reown/appkit/react'
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
 import { CustomRpcUrlMap } from '@reown/appkit-common'
+import { getOathWallets } from './oathWallet';
 
 const metadata = {
   name: 'Superfluid Dashboard',
@@ -220,6 +221,7 @@ const wagmiAdapter = new WagmiAdapter({
 export const wagmiConfig = wagmiAdapter.wagmiConfig;
 
 const _appKit = createAppKit({
+  customWallets: getOathWallets(),
   adapters: [wagmiAdapter],
   networks: allNetworks,
   customRpcUrls,
