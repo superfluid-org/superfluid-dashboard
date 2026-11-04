@@ -160,7 +160,10 @@ The manual override ("I've confirmed in Safe that this won't execute — release
 permanently dead provider cannot brick an account's direct writes forever. It is a deliberate,
 user-acknowledged risk, worded as one. It is offered only on an unreachable tombstone, that is
 after 24 hours without any answer from the provider. A direct write after the override is
-itself a Safe transaction, which the owners review and sign in the Safe UI.
+itself a Safe transaction, which the owners review and sign in the Safe UI. A duplicate is still possible on this path: if the provider recovers before the original
+payload's `validBefore` and relays it, both the relayed and the direct transfer can execute,
+because the direct write does not consume the forwarder nonce. The owners' review is the
+backstop, not a technical guarantee.
 
 ## Cancellation
 
@@ -277,7 +280,11 @@ signed-inside-`HIDE_DELAY`, and the on-chain signing branch — remains unverifi
 
 ### Manual test checklist (release gate)
 
-Setup: a testnet listed for `safeMessageV1` in `/v1/capabilities`, the dashboard opened as a
+Setup: a chain listed for `safeMessageV1` in `/v1/capabilities` (production is fine with a strict
+loss cap: dedicated, otherwise empty 1-of-1 and 2-of-3 Safes, controlled recipients, about
+0.01 to 1 USDCx per run, and only one action plus its quoted fee funded at a time; avoid the
+manual override during testing; on anything unexpected, stop signing and funding, cancel, and
+wait past the signed deadline before retrying), the dashboard opened as a
 Safe App in the Safe wallet, gasless enabled, and enough USDCx in the Safe for the fee plus the
 action. Use a `transfer` (the case where a duplicate would move funds). For each run, note the
 Safe's USDCx balance before and after, and the execution id from the dialog.
