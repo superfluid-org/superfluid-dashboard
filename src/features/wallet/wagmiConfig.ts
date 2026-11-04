@@ -23,17 +23,8 @@ const projectId = appConfig.walletConnectProjectId;
 const customRpcUrls = allNetworks.reduce<CustomRpcUrlMap>((acc, x) => {
   const chainId = x.id;
 
-  // const transport = fallback([
-  //   http(x.rpcUrls.superfluid.http[0]), // Prioritize Superfluid API
-  //   http(x.rpcUrls.default.http[0]) // Fallback to wagmi-defined default public RPC
-  // ], {
-  //   rank: false
-  // })
-
   acc[`eip155:${chainId}`] = [{
     url: x.rpcUrls.superfluid.http[0],
-  }, {
-    url: x.rpcUrls.default.http[0]
   }];
 
   return acc;
@@ -233,8 +224,8 @@ const _appKit = createAppKit({
     swaps: false,
     socials: false
   },
-  privacyPolicyUrl: "https://www.iubenda.com/privacy-policy/34415583/legal",
-  termsConditionsUrl: "https://www.superfluid.finance/termsofuse",
+  privacyPolicyUrl: "https://www.superfluid.org/privacy/",
+  termsConditionsUrl: "https://superfluid.org/terms-of-use/",
   featuredWalletIds: [
     "971e689d0a5be527bac79629b4ee9b925e82208e5168b733496a09c0faed0709"
   ],
@@ -251,8 +242,8 @@ const _appKit = createAppKit({
 //   enableOnramp: false,
 //   enableSwaps: false,
 //   enableEIP6963: enableEIP6963,
-//   privacyPolicyUrl: "https://www.iubenda.com/privacy-policy/34415583/legal",
-//   termsConditionsUrl: "https://www.superfluid.finance/termsofuse",
+//   privacyPolicyUrl: "https://www.superfluid.org/privacy/",
+//   termsConditionsUrl: "https://superfluid.org/terms-of-use/",
 //   featuredWalletIds: [
 //     "971e689d0a5be527bac79629b4ee9b925e82208e5168b733496a09c0faed0709"
 //   ],

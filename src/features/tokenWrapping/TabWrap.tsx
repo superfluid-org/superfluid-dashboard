@@ -122,20 +122,30 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
   const isUnderlyingBlockchainNativeAsset =
     tokenPair?.underlyingTokenAddress === NATIVE_ASSET_ADDRESS;
 
-  const { data: _discard, ...allowanceQuery } =
-    rpcApi.useSuperTokenUpgradeAllowanceQuery(
-      tokenPair && !isUnderlyingBlockchainNativeAsset && visibleAddress
-        ? {
+  // Read the ERC-20 directly (including Arc USDC), with the global transaction
+  // tracker's cache invalidation so confirmations still refresh after tab switches.
+  const allowanceArgs =
+    tokenPair && !isUnderlyingBlockchainNativeAsset && visibleAddress
+      ? {
           chainId: network.id,
           accountAddress: visibleAddress,
-          superTokenAddress: tokenPair.superTokenAddress,
+          underlyingTokenAddress: tokenPair.underlyingTokenAddress,
+          spenderAddress: tokenPair.superTokenAddress,
         }
-        : skipToken
-    );
+      : skipToken;
+  const allowanceQuery = rpcApi.useGetUnderlyingTokenAllowanceQuery(allowanceArgs, {
+    refetchOnMountOrArgChange: true,
+    refetchOnFocus: true,
+  });
 
-  const currentAllowance = allowanceQuery.currentData
-    ? ethers.BigNumber.from(allowanceQuery.currentData)
-    : null;
+  const currentAllowance =
+    allowanceQuery.currentData !== undefined
+      ? ethers.BigNumber.from(allowanceQuery.currentData)
+      : null;
+  // Never let a missing allowance read through to an `upgrade` that would revert.
+  const isAllowanceUnknown =
+    allowanceArgs !== skipToken &&
+    (currentAllowance === null || allowanceQuery.isError);
 
   const missingAllowance = currentAllowance
     ? currentAllowance.gt(amountWei)
@@ -162,7 +172,7 @@ export const TabWrap: FC<TabWrapProps> = ({ onSwitchMode }) => {
     formState.isValidating ||
     !formState.isValid ||
     isApproveAllowanceVisible ||
-    allowanceQuery.isLoading;
+    isAllowanceUnknown;
 
   const relayChipActionKind =
     isUnderlyingBlockchainNativeAsset || isApproveAllowanceVisible

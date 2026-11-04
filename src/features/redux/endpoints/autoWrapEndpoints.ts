@@ -107,16 +107,17 @@ const getUnderlyingTokenAllowanceEndpoint = (builder: RpcEndpointBuilder) =>
       chainId: number;
       accountAddress: string;
       underlyingTokenAddress: string;
+      /** Defaults to the network's Auto-Wrap strategy. */
+      spenderAddress?: string;
     }
   >({
     queryFn: async (arg) => {
-      const { strategyAddress } = getAutoWrapAddresses(arg.chainId);
-
       const allowance = await getErc20Allowance({
         chainId: arg.chainId,
         tokenAddress: arg.underlyingTokenAddress,
         ownerAddress: arg.accountAddress,
-        spenderAddress: strategyAddress,
+        spenderAddress:
+          arg.spenderAddress ?? getAutoWrapAddresses(arg.chainId).strategyAddress,
       });
 
       return {

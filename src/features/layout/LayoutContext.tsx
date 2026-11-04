@@ -41,9 +41,10 @@ export const LayoutContextProvider: FC<PropsWithChildren> = ({ children }) => {
   }, [router]);
 
   const [transactionDrawerOpen, setTransactionDrawerOpen] = useState(false);
-  const [navigationDrawerOpen, setNavigationDrawerOpen] = useState(
-    !isSmallScreen
-  );
+  // Start closed so the temporary mobile drawer never mounts as an open modal
+  // during hydration and leaves the body scroll-locked. Desktop is opened by
+  // the media-query effect immediately after mount.
+  const [navigationDrawerOpen, setNavigationDrawerOpen] = useState(false);
 
   useEffect(() => {
     setNavigationDrawerOpen(!isSmallScreen);

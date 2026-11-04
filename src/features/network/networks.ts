@@ -53,6 +53,9 @@ const findNativeAssetSuperTokenFromTokenList = (input: { chainId: number, addres
   if (!superTokenInfo) {
     throw new Error(`No super token info found for token ${token.address}`);
   }
+  if (superTokenInfo.type !== "Native Asset") {
+    throw new Error(`Token ${token.address} on chainId ${input.chainId} is a "${superTokenInfo.type}" Super Token, not a Native Asset Super Token`);
+  }
 
   return {
     address: token.address,
@@ -103,7 +106,12 @@ export type Network = Chain & {
   bufferTimeInMinutes: number; // Hard-code'ing this per network is actually incorrect approach. It's token-based and can be governed.
   rpcUrls: Chain["rpcUrls"] & { superfluid: { http: readonly string[] } };
   nativeCurrency: Chain["nativeCurrency"] & NativeAsset & {
-    superToken: SuperTokenMinimal;
+    /**
+     * The chain's Native Asset Super Token (wrapped with `upgradeByETH`), if it has one.
+     * Absent on chains like Arc mainnet, where the wrapper of the native token's ERC-20
+     * interface is a regular Wrapper Super Token.
+     */
+    superToken?: SuperTokenMinimal;
     logoURI: string;
   };
   supportsGDA: boolean;
@@ -168,12 +176,6 @@ const blockExplorers = {
     mainnet: {
       name: "Celo Scan",
       url: "https://celoscan.io/",
-    },
-  },
-  degenscan: {
-    mainnet: {
-      name: "Degen Scan",
-      url: "https://explorer.degen.tips/",
     },
   },
 } as const;
@@ -694,48 +696,6 @@ export const networkDefinition = {
     vestingSubgraphUrl: undefined,
     autoWrapSubgraphUrl: undefined,
   },
-  degenChain: {
-    ...chain.degen,
-    supportsGDA: getSupportsGDA(chainIds.degen),
-    metadata: ensureDefined(
-      sfMeta.getNetworkByChainId(chainIds.degen),
-      chainIds.degen
-    ),
-    blockExplorers: {
-      ...chain.degen.blockExplorers,
-      default: blockExplorers.degenscan.mainnet,
-    },
-    slugName: "degen",
-    v1ShortName: "degen",
-    bufferTimeInMinutes: 240,
-    icon: "/icons/network/degen.svg",
-    color: "#A46EFD",
-    rpcUrls: {
-      ...chain.degen.rpcUrls,
-      superfluid: { http: [superfluidRpcUrls["degenChain"]] },
-    },
-    fallbackSubgraphUrl:
-      "https://degenchain.subgraph.superfluid.dev",
-    getLinkForTransaction: (txHash: string): string =>
-      `https://explorer.degen.tips/tx/${txHash}`,
-    getLinkForAddress: (address: string): string =>
-      `https://explorer.degen.tips/address/${address}`,
-    nativeCurrency: {
-      ...ensureDefined(chain.degen.nativeCurrency),
-      address: NATIVE_ASSET_ADDRESS,
-      type: TokenType.NativeAssetUnderlyingToken,
-      superToken: ensureDefined(findNativeAssetSuperTokenFromTokenList({ chainId: chain.degen.id, address: "0xda58FA9bfc3D3960df33ddD8D4d762Cf8Fa6F7ad" })),
-      logoURI: "https://tokenlist.superfluid.org/icons/degen.png",
-      isSuperToken: false,
-    },
-    vestingContractAddress: {
-      v1: undefined,
-      v2: undefined,
-      v3: undefined,
-    },
-    vestingSubgraphUrl: undefined,
-    autoWrapSubgraphUrl: undefined,
-  },
   sepolia: {
     ...chain.sepolia,
     supportsGDA: getSupportsGDA(chainIds.sepolia),
@@ -875,6 +835,98 @@ export const networkDefinition = {
     flowSchedulerContractAddress: undefined,
     flowSchedulerSubgraphUrl: undefined,
   },
+  arcTestnet: {
+    ...chain.arcTestnet,
+    supportsGDA: getSupportsGDA(chainIds.arcTestnet),
+    metadata: ensureDefined(
+      sfMeta.getNetworkByChainId(chainIds.arcTestnet),
+      chainIds.arcTestnet
+    ),
+    blockExplorers: ensureDefined(chain.arcTestnet.blockExplorers),
+    slugName: "arc-testnet",
+    v1ShortName: "arctest",
+    bufferTimeInMinutes: 60,
+    color: "#2775CA",
+    rpcUrls: {
+      ...chain.arcTestnet.rpcUrls,
+      superfluid: { http: [superfluidRpcUrls["arc-testnet"]] },
+    },
+    getLinkForTransaction: (txHash: string): string =>
+      `https://testnet.arcscan.app/tx/${txHash}`,
+    getLinkForAddress: (address: string): string =>
+      `https://testnet.arcscan.app/address/${address}`,
+    nativeCurrency: {
+      ...ensureDefined(chain.arcTestnet.nativeCurrency),
+      address: NATIVE_ASSET_ADDRESS,
+      type: TokenType.NativeAssetUnderlyingToken,
+      superToken: ensureDefined(findNativeAssetSuperTokenFromTokenList({ chainId: chainIds.arcTestnet, address: "0x233a5Bfd65Da07AeB08F2082d2B5B270bc4eA804" })),
+      logoURI: "https://tokenlist.superfluid.org/icons/usdc.svg",
+      isSuperToken: false,
+    },
+    vestingContractAddress: {
+      v1: undefined,
+      v2: undefined,
+      v3: undefined,
+    },
+    vestingSubgraphUrl: undefined,
+    autoWrapSubgraphUrl: undefined,
+    autoWrap: undefined,
+    flowSchedulerContractAddress: undefined,
+    flowSchedulerSubgraphUrl: undefined,
+  },
+  arc: {
+    ...chain.arc,
+    supportsGDA: getSupportsGDA(chainIds.arc),
+    metadata: ensureDefined(
+      sfMeta.getNetworkByChainId(chainIds.arc),
+      chainIds.arc
+    ),
+    // viem's arc chain ships without blockExplorers, default RPCs or multicall3 -- fill them in here.
+    blockExplorers: {
+      default: {
+        name: "Arc Explorer",
+        url: "https://explorer.arc.io",
+      },
+    },
+    slugName: "arc-mainnet",
+    v1ShortName: "arc",
+    bufferTimeInMinutes: 240,
+    color: "#2775CA",
+    icon: "/icons/network/arc.svg",
+    rpcUrls: {
+      ...chain.arc.rpcUrls,
+      default: { http: ["https://rpc.mainnet.arc.io"] },
+      superfluid: { http: [superfluidRpcUrls["arc-mainnet"]] },
+    },
+    contracts: {
+      multicall3: {
+        address: "0xcA11bde05977b3631167028862bE2a173976CA11",
+      },
+    },
+    getLinkForTransaction: (txHash: string): string =>
+      `https://explorer.arc.io/tx/${txHash}`,
+    getLinkForAddress: (address: string): string =>
+      `https://explorer.arc.io/address/${address}`,
+    nativeCurrency: {
+      ...ensureDefined(chain.arc.nativeCurrency),
+      address: NATIVE_ASSET_ADDRESS,
+      type: TokenType.NativeAssetUnderlyingToken,
+      // No Native Asset Super Token on Arc mainnet: USDCx (0xE9E5…CaB9) wraps the USDC
+      // ERC-20 interface at 0x3600…0000 and is wrapped with approve + upgrade.
+      logoURI: "https://tokenlist.superfluid.org/icons/usdc.svg",
+      isSuperToken: false,
+    },
+    vestingContractAddress: {
+      v1: undefined,
+      v2: undefined,
+      v3: undefined,
+    },
+    vestingSubgraphUrl: undefined,
+    autoWrapSubgraphUrl: undefined,
+    autoWrap: undefined,
+    flowSchedulerContractAddress: undefined,
+    flowSchedulerSubgraphUrl: undefined,
+  },
   scroll: {
     ...chain.scroll,
     supportsGDA: getSupportsGDA(chainIds.scroll),
@@ -993,8 +1045,9 @@ export const allNetworks: [Network, ...Network[]] = orderBy(
       networkDefinition.sepolia,
       networkDefinition.base,
       networkDefinition.baseSepolia,
+      networkDefinition.arcTestnet,
+      networkDefinition.arc,
       networkDefinition.scroll,
-      networkDefinition.degenChain,
     ],
     (x) => x.id // Put lower ids first (Ethereum mainnet will be first)
   ),
@@ -1051,10 +1104,12 @@ export const findNetworkOrThrow = (
 };
 
 export const getNetworkDefaultTokenPairs = memoize(
-  (network: Network): SuperTokenPair[] => ([{
-    superToken: network.nativeCurrency.superToken,
-    underlyingToken: network.nativeCurrency,
-  }])
+  (network: Network): SuperTokenPair[] => {
+    const { superToken } = network.nativeCurrency;
+    return superToken
+      ? [{ superToken, underlyingToken: network.nativeCurrency }]
+      : [];
+  }
 );
 
 export const vestingSupportedNetworks = allNetworks
@@ -1083,10 +1138,7 @@ export const deprecatedNetworkChainIds = [
  * flagged there.
  */
 const metadataNetworkExclusions = new Map<number, string>([
-  [
-    534351,
-    "Scroll Sepolia is discontinued, and its canonical Superfluid subgraph alias was serving Optimism Sepolia data (reported upstream).",
-  ],
+  // keep only currently valid exclusions
 ]);
 
 // Fail loudly if metadata gains a network nobody added here (or if an exclusion becomes obsolete).

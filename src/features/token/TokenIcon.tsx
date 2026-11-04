@@ -29,9 +29,9 @@ const AvatarWrapper = styled("div", {
     padding: isSuperToken ? 2 : 0,
     ...(isUnlisted &&
       !isSuperToken && {
-      border: `1px solid ${theme.palette.warning.main}`,
-      borderRadius: "50%",
-    }),
+        border: `1px solid ${theme.palette.warning.main}`,
+        borderRadius: "50%",
+      }),
   })
 );
 
@@ -42,7 +42,9 @@ export type TokenIconProps = {
   isUnlisted?: boolean;
   isLoading?: boolean;
   size?: number;
-}
+  logoURI?: string;
+  symbol?: string;
+};
 
 const TokenIcon: FC<TokenIconProps> = ({
   chainId,
@@ -51,15 +53,20 @@ const TokenIcon: FC<TokenIconProps> = ({
   isUnlisted = false,
   isLoading = false,
   size = 36,
+  logoURI,
+  symbol,
 }) => {
   const theme = useTheme();
 
-  const token = (chainId && tokenAddress) ? findTokenFromTokenList({
-    chainId,
-    address: tokenAddress,
-  }) : undefined;
+  const token =
+    chainId && tokenAddress
+      ? findTokenFromTokenList({
+          chainId,
+          address: tokenAddress,
+        })
+      : undefined;
 
-  const isSuperToken = isSuper_ || Boolean((token && isSuper(token)));
+  const isSuperToken = isSuper_ || Boolean(token && isSuper(token));
   const diameter = size - (isSuperToken ? 4 : 0);
   const loading = isLoading;
 
@@ -150,16 +157,14 @@ const TokenIcon: FC<TokenIconProps> = ({
         {!loading && !isUnlisted && (
           <Avatar
             data-cy={"token-icon"}
-            alt={`${token?.symbol} token icon`}
+            alt={`${symbol || token?.symbol || "Unknown"} token icon`}
             sx={{
               width: diameter,
               height: diameter,
             }}
-            src={
-              token?.logoURI ?? "/icons/token-default.webp"
-            }
+            src={logoURI || token?.logoURI || "/icons/token-default.webp"}
             slotProps={{
-              img: { sx: { objectFit: "contain", borderRadius: "50%" } }
+              img: { sx: { objectFit: "contain", borderRadius: "50%" } },
             }}
           />
         )}

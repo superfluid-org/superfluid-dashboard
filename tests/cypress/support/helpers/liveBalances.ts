@@ -16,15 +16,6 @@ import { networksBySlug } from '../../superData/networks';
  */
 
 /**
- * The feature files address networks by the slug the *app* uses. The copy of
- * the network table under `cypress/superData` is slightly behind the app's own
- * table, so a few slugs need aliasing.
- */
-const NETWORK_SLUG_ALIASES: { [featureSlug: string]: string } = {
-  degen: 'degenchain',
-};
-
-/**
  * Relative slack on top of the UI's own display precision.
  *
  * A *fixed absolute* tolerance (like the 0.05 used by
@@ -83,11 +74,10 @@ const superTokenInterface = new utils.Interface([
 ]);
 
 export function getNetworkBySlug(networkSlug: string) {
-  const slug = NETWORK_SLUG_ALIASES[networkSlug] || networkSlug;
-  const network = networksBySlug.get(slug);
+  const network = networksBySlug.get(networkSlug);
   if (!network) {
     throw new Error(
-      `No network definition for slug "${networkSlug}". Add it to cypress/superData/networks.ts or to NETWORK_SLUG_ALIASES.`
+      `No network definition for slug "${networkSlug}". Add it to cypress/superData/networks.ts.`
     );
   }
   return network;
@@ -174,7 +164,7 @@ export function getNativeAssetSuperTokenBalance(
  *
  * The deleted `nativeTokenBalances.json` fixture makes that intent explicit, and
  * it was stable for three and a half years: avalanche, bsc and celo were `0`
- * from the file's first commit in February 2023, and base, scroll, degen and
+ * from the file's first commit in February 2023, and base, scroll and
  * sepolia were `0` from the day each was added. Only the list below was ever
  * deliberately funded.
  *

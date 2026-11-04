@@ -14,19 +14,16 @@ const LiFiWidgetManager = dynamic(
   { ssr: false }
 );
 
-
 const Bridge: NextPage = () => {
   return (
-    <Container
-      data-cy={"lifi-widget"}
-      maxWidth="lg"
-    >
+    <Container data-cy={"lifi-widget"} maxWidth="lg">
       <LiFiWidgetManager />
       <Stack
         sx={{
           pt: 6,
-          alignItems: "center"
-        }}>
+          alignItems: "center",
+        }}
+      >
         <Typography
           variant="h7"
           component="p"
@@ -41,7 +38,8 @@ const Bridge: NextPage = () => {
           LI.FI{" "}
           <Link href="https://discord.com/invite/lifi" target="_blank">
             Discord server
-          </Link>.
+          </Link>
+          .
         </Typography>
       </Stack>
     </Container>

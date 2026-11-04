@@ -1,19 +1,5 @@
 Feature: Common element test cases
 
-  # Guards support/degenExclusion.ts. Degen Chain is dead and its public RPC answers
-  # HTTP 429; the suite switches it off by seeding the app's own hidden-networks
-  # preference into localStorage before redux-persist rehydrates. If the app renames
-  # the slug, bumps the persist version or changes the slice shape, that seed stops
-  # working *silently* and Degen quietly re-enters every all-networks fan-out. This
-  # scenario is the only thing that can see such drift from the test process.
-  #
-  # The dropdown lists every network regardless of the preference and only flips the
-  # switch, so Degen is still present here -- just off.
-  Scenario: Degen Chain is excluded from the suite
-    Given "Dashboard Page" is open with "staticBalanceAccount" connected on "polygon"
-    And User opens the network selection dropdown
-    Then "degen" is toggled off in the network selection dropdown
-
   Scenario: Switching between pages using navigation drawer
     Given "Dashboard page" is open without connecting a wallet
     And User clicks on the "dashboard" navigation button

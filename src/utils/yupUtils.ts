@@ -3,6 +3,7 @@ import { parseEther } from "ethers/lib/utils";
 import { AnyObject, TestContext, TestFunction } from "yup";
 import { NATIVE_ASSET_ADDRESS } from "../features/redux/endpoints/tokenTypes";
 import { isAddress } from "viem";
+import Decimal from "decimal.js";
 
 interface IsWeiOrEtherAmountOptions {
   notNegative?: boolean;
@@ -49,6 +50,29 @@ export const testEtherAmount: (
     throw context.createError({
       message: "May not be zero.",
     });
+  }
+
+  return true;
+};
+
+export const testDecimalAmount: (
+  options: IsWeiOrEtherAmountOptions
+) => TestFunction<string, AnyObject> = (options) => (value, context) => {
+  if (!/^-?\d+(?:\.\d*)?$/.test(value)) {
+    throw context.createError({ message: "Not a number." });
+  }
+
+  const decimal = new Decimal(value);
+  if (!decimal.isFinite()) {
+    throw context.createError({ message: "Not a number." });
+  }
+
+  if (options.notNegative && decimal.isNegative()) {
+    throw context.createError({ message: "May not be negative." });
+  }
+
+  if (options.notZero && decimal.isZero()) {
+    throw context.createError({ message: "May not be zero." });
   }
 
   return true;

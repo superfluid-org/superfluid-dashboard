@@ -107,7 +107,6 @@ export const superfluidRpcUrls = {
   base: 'https://rpc-endpoints.superfluid.dev/base-mainnet',
   scroll: 'https://rpc-endpoints.superfluid.dev/scroll-mainnet',
   'optimism-sepolia': 'https://rpc-endpoints.superfluid.dev/optimism-sepolia',
-  degenChain: 'https://rpc-endpoints.superfluid.dev/degenchain',
 };
 
 export const networkDefinition: {
@@ -124,7 +123,6 @@ export const networkDefinition: {
   base: Network;
   scroll: Network;
   optimismSepolia: Network;
-  degenChain: Network;
 } = {
   gnosis: {
     name: 'Gnosis',
@@ -553,40 +551,6 @@ export const networkDefinition: {
       upperLimit: BigNumber.from(UnitOfTime.Day * 14),
     },
   },
-  degenChain: {
-    name: 'Degen Chain',
-    network: 'degen',
-    id: 666666666,
-    slugName: 'degenchain',
-    v1ShortName: 'degen',
-    bufferTimeInMinutes: 240,
-    icon: '/icons/network/degen.svg',
-    color: '#a46efd',
-    subgraphUrl: 'https://optimism-sepolia.subgraph.x.superfluid.dev/',
-    superfluidRpcUrl: superfluidRpcUrls['degenChain'],
-    getLinkForTransaction: (txHash: string): string =>
-      `https://explorer.degen.tips/tx/${txHash}`,
-    getLinkForAddress: (address: string): string =>
-      `https://explorer.degen.tips/address/${address}`,
-    nativeCurrency: {
-      name: 'Degen',
-      symbol: 'DEGEN',
-      decimals: 18,
-      address: NATIVE_ASSET_ADDRESS,
-      type: TokenType.NativeAssetUnderlyingToken,
-      superToken: {
-        type: TokenType.NativeAssetSuperToken,
-        symbol: 'DEGENx',
-        // Was celo's CELOx address (0x671425ae…); nothing is deployed at it on
-        // Degen Chain (eth_getCode returns 0x), so any read against it reverts.
-        // This one answers symbol() == 'DEGENx' on chain 666666666, and matches
-        // the app's own lookup in src/features/network/networks.ts.
-        address: '0xda58FA9bfc3D3960df33ddD8D4d762Cf8Fa6F7ad',
-        name: 'Super DEGEN',
-        decimals: 18,
-      },
-    },
-  },
 };
 
 export const networks: Network[] = [
@@ -603,7 +567,6 @@ export const networks: Network[] = [
   networkDefinition.base,
   networkDefinition.scroll,
   networkDefinition.optimismSepolia,
-  networkDefinition.degenChain,
 ];
 
 export const getNetworkDefaultTokenPair = memoize(

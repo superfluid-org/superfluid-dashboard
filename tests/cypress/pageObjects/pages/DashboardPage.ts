@@ -68,19 +68,6 @@ export class DashboardPage extends BasePage {
     this.click(`[data-cy=${network}${NETWORK_SELECTION_TOGGLE_APPENDIX}`);
   }
 
-  /**
-   * Asserts a network's switch in the network selection dropdown is off. Used by
-   * the Degen exclusion smoke scenario -- the seeded `persist:networkPreferences`
-   * in support/degenExclusion.ts can only be verified through the UI, since app-side
-   * drift (renamed slug, bumped persist version, changed slice shape) is invisible
-   * to the test process and would otherwise disable the exclusion silently.
-   */
-  static networkToggleIsOff(network: string) {
-    cy.get(`[data-cy=${network}${NETWORK_SELECTION_TOGGLE_APPENDIX} input`)
-      .should('exist')
-      .and('not.be.checked');
-  }
-
   static tokenBalancesAreNotVisible(network: string) {
     this.doesNotExist(`[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX}`);
   }
@@ -114,11 +101,11 @@ export class DashboardPage extends BasePage {
         flowValues.netFlowRate
       );
       this.hasText(
-        `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell] ${OUTFLOW_VALUES}`,
+        `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=flow-summary] ${OUTFLOW_VALUES}`,
         flowValues.outFlow
       );
       this.hasText(
-        `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell] ${INFLOW_VALUES}`,
+        `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=flow-summary] ${INFLOW_VALUES}`,
         flowValues.inFlow
       );
     });
@@ -320,17 +307,12 @@ export class DashboardPage extends BasePage {
     }
     if (flowValues[1]) {
       this.hasText(
-        `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell] ${INFLOW_VALUES}`,
+        `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=flow-summary] ${INFLOW_VALUES}`,
         flowValues[2]
       );
       this.hasText(
-        `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell] ${OUTFLOW_VALUES}`,
+        `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=flow-summary] ${OUTFLOW_VALUES}`,
         flowValues[1]
-      );
-    } else {
-      this.hasText(
-        `[data-cy=${network}${NETWORK_SNAPSHOT_TABLE_APPENDIX} [data-cy=${token}-cell] ${OUTFLOW_VALUES}`,
-        flowValues
       );
     }
   }

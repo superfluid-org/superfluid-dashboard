@@ -1,7 +1,11 @@
 import AddIcon from "@mui/icons-material/Add";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
+import CurrencyExchangeRoundedIcon from "@mui/icons-material/CurrencyExchangeRounded";
 import RemoveIcon from "@mui/icons-material/Remove";
+import SendRoundedIcon from "@mui/icons-material/SendRounded";
+import SwapHorizRoundedIcon from "@mui/icons-material/SwapHorizRounded";
 import {
+  Box,
   Chip,
   IconButton,
   Stack,
@@ -12,7 +16,7 @@ import {
 } from "@mui/material";
 import NextLink from "next/link";
 import { FC, useMemo } from "react";
-import { useAccount } from "@/hooks/useAccount"
+import { useAccount } from "@/hooks/useAccount";
 import { getAddress } from "../../utils/memoizedEthersUtils";
 import { Flag } from "../flags/flags.slice";
 import { useHasFlag } from "../flags/flagsHooks";
@@ -23,6 +27,10 @@ import { isWrappable, SuperTokenMinimal } from "../redux/endpoints/tokenTypes";
 import ConnectionBoundary from "../transactionBoundary/ConnectionBoundary";
 import AddToWalletButton from "../wallet/AddToWalletButton";
 import TokenIcon from "./TokenIcon";
+import { getSendPagePath } from "../../pages/send";
+import { getTransferPagePath } from "../../pages/transfer";
+import { getBridgePagePath } from "../bridge/getBridgePagePath";
+import { tokenActionIconButtonSx } from "./tokenActionIconButtonStyles";
 
 interface TokenToolbarData {
   chainId: number;
@@ -44,15 +52,24 @@ const TokenToolbarData: FC<TokenToolbarData> = ({
     direction="row"
     sx={{
       alignItems: "center",
-      gap: 2
-    }}>
-    <TokenIcon chainId={chainId} tokenAddress={tokenAddress} isUnlisted={isUnlisted} />
+      gap: 2,
+    }}
+  >
+    <TokenIcon
+      chainId={chainId}
+      tokenAddress={tokenAddress}
+      isUnlisted={isUnlisted}
+    />
     <Typography data-cy={"token-name"} variant="h3" component="h1">
       {name}
     </Typography>
-    <Typography data-cy={"token-symbol"} variant="h4" sx={{
-      color: "text.secondary"
-    }}>
+    <Typography
+      data-cy={"token-symbol"}
+      variant="h4"
+      sx={{
+        color: "text.secondary",
+      }}
+    >
       {symbol}
     </Typography>
   </Stack>
@@ -99,18 +116,118 @@ const TokenToolbar: FC<TokenToolbarProps> = ({ token, network, onBack }) => {
         }
       : undefined
   );
+  const streamPath = getSendPagePath({
+    token: tokenAddress,
+    network: network.slugName,
+  });
+  const transferPath = getTransferPagePath({
+    token: tokenAddress,
+    network: network.slugName,
+  });
+  const swapPath = getBridgePagePath({
+    fromChain: network.id,
+    fromToken: tokenAddress,
+  });
+  const tokenActions = (
+    <Box
+      sx={{
+        display: "flex",
+        flexWrap: "nowrap",
+        justifyContent: "flex-end",
+        gap: 1,
+      }}
+    >
+      {!hasAddedToWallet ? (
+        <ConnectionBoundary expectedNetwork={network}>
+          {({ isConnected }) =>
+            isConnected ? (
+              <AddToWalletButton
+                token={tokenAddress}
+                symbol={symbol}
+                decimals={decimals}
+              />
+            ) : null
+          }
+        </ConnectionBoundary>
+      ) : null}
+      <Tooltip title="Stream">
+        <IconButton
+          component={NextLink}
+          href={streamPath}
+          data-cy="token-stream-button"
+          aria-label={`Stream ${symbol}`}
+          sx={tokenActionIconButtonSx}
+        >
+          <SendRoundedIcon />
+        </IconButton>
+      </Tooltip>
+      <Tooltip title="Transfer">
+        <IconButton
+          component={NextLink}
+          href={transferPath}
+          data-cy="token-transfer-button"
+          aria-label={`Transfer ${symbol}`}
+          sx={tokenActionIconButtonSx}
+        >
+          <SwapHorizRoundedIcon />
+        </IconButton>
+      </Tooltip>
+      {!network.testnet ? (
+        <Tooltip title="Swap">
+          <IconButton
+            component={NextLink}
+            href={swapPath}
+            data-cy="token-swap-button"
+            aria-label={`Swap ${symbol}`}
+            sx={tokenActionIconButtonSx}
+          >
+            <CurrencyExchangeRoundedIcon />
+          </IconButton>
+        </Tooltip>
+      ) : null}
+      {wrappable ? (
+        <>
+          <Tooltip title="Wrap">
+            <IconButton
+              component={NextLink}
+              href={`/wrap?upgrade&token=${token.address}&network=${network.slugName}`}
+              data-cy="wrap-button"
+              aria-label={`Wrap ${symbol}`}
+              sx={tokenActionIconButtonSx}
+            >
+              <AddIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Unwrap">
+            <IconButton
+              component={NextLink}
+              href={`/wrap?downgrade&token=${token.address}&network=${network.slugName}`}
+              data-cy="unwrap-button"
+              aria-label={`Unwrap ${symbol}`}
+              sx={tokenActionIconButtonSx}
+            >
+              <RemoveIcon />
+            </IconButton>
+          </Tooltip>
+        </>
+      ) : null}
+    </Box>
+  );
 
   return (
-    <Stack sx={{
-      gap: 3
-    }}>
+    <Stack
+      sx={{
+        gap: 3,
+      }}
+    >
       <Stack
         direction="row"
         sx={{
           alignItems: "center",
-          gap: 2
-        }}>
-        <IconButton color="inherit" onClick={onBack}>
+          gap: 2,
+        }}
+      >
+        <IconButton color="inherit" onClick={onBack} aria-label="Back">
           <ArrowBackRoundedIcon />
         </IconButton>
 
@@ -131,54 +248,8 @@ const TokenToolbar: FC<TokenToolbarProps> = ({ token, network, onBack }) => {
             />
           </>
         )}
-
-        <Stack
-          direction="row"
-          sx={{
-            gap: 2,
-            flex: 1,
-            alignItems: "center",
-            justifyContent: "flex-end"
-          }}>
-          {!hasAddedToWallet && (
-            <ConnectionBoundary expectedNetwork={network}>
-              {({ isConnected }) =>
-                isConnected && (
-                  <AddToWalletButton
-                    token={tokenAddress}
-                    symbol={symbol}
-                    decimals={decimals}
-                  />
-                )
-              }
-            </ConnectionBoundary>
-          )}
-          {wrappable && (
-            <>
-              <NextLink
-                href={`/wrap?upgrade&token=${token.address}&network=${network.slugName}`}
-                passHref
-                legacyBehavior
-              >
-                <Tooltip title="Wrap">
-                  <IconButton data-cy={"wrap-button"} color="primary">
-                    <AddIcon />
-                  </IconButton>
-                </Tooltip>
-              </NextLink>
-              <NextLink
-                href={`/wrap?downgrade&token=${token.address}&network=${network.slugName}`}
-                passHref
-              >
-                <Tooltip title="Unwrap">
-                  <IconButton data-cy={"unwrap-button"} color="primary">
-                    <RemoveIcon />
-                  </IconButton>
-                </Tooltip>
-              </NextLink>
-            </>
-          )}
-        </Stack>
+        <Box sx={{ flex: 1 }} />
+        {tokenActions}
       </Stack>
       {isBelowMd && (
         <TokenToolbarData

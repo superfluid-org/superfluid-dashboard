@@ -85,6 +85,7 @@ jobs:
           working-directory: tests
         env:
           CYPRESS_baseUrl: ${{ github.event.deployment_status.environment_url }}
+          CYPRESS_VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
 
       - name: Upload failure telemetry
         if: failure()
@@ -157,6 +158,7 @@ jobs:
           working-directory: tests
         env:
           CYPRESS_baseUrl: ${{ github.event.deployment_status.environment_url }}
+          CYPRESS_VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
 
       - name: Upload failure telemetry
         if: failure()
@@ -213,6 +215,7 @@ jobs:
           command: pnpm cypress-cloud run --browser chrome --config chromeWebSecurity=false --record --parallel --key ${{ secrets.V2_CYPRESS_RECORD_KEY }} --group Gnosis --ci-build-id ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt}} --env TAGS=@Gnosis
         env:
           CYPRESS_baseUrl: ${{ github.event.deployment_status.environment_url }}
+          CYPRESS_VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
 
       - name: Upload failure telemetry
         if: failure()

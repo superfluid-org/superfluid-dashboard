@@ -16,7 +16,7 @@ import {
 import { skipToken } from "@reduxjs/toolkit/query";
 import { Address, PoolDistributor, Stream } from "@superfluid-finance/sdk-core";
 import { getUnixTime } from "date-fns";
-import { FC, memo, useCallback, useEffect, useMemo, useState } from "react";
+import { FC, memo, ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import {
   mapCreateTaskToScheduledStream,
   mapStreamScheduling,
@@ -67,6 +67,7 @@ interface StreamsTableProps {
   tokenAddress: Address;
   subTable?: boolean;
   lastElement?: boolean;
+  headerActions?: ReactNode;
 }
 
 const StreamsTable: FC<StreamsTableProps> = ({
@@ -74,6 +75,7 @@ const StreamsTable: FC<StreamsTableProps> = ({
   tokenAddress,
   subTable,
   lastElement,
+  headerActions,
 }) => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down("md"));
@@ -464,18 +466,22 @@ const StreamsTable: FC<StreamsTableProps> = ({
       >
         <TableHead translate="yes">
           <TableRow>
-            <TableCell colSpan={6}>
+            <TableCell colSpan={6} sx={{ px: { xs: 1, md: 2 } }}>
               <Stack
                 direction="row"
                 sx={{
                   alignItems: "center",
-                  gap: 1
+                  gap: { xs: 0.25, md: 1 },
+                  minWidth: 0,
+                  width: "100%"
                 }}>
                 <Button
                   variant="textContained"
                   size={isBelowMd ? "small" : "medium"}
                   color={getFilterBtnColor(StreamTypeFilter.All)}
                   onClick={setStreamTypeFilter(StreamTypeFilter.All)}
+                  aria-label={`All streams (${streams.length})`}
+                  sx={{ minWidth: { xs: 0, md: 64 }, px: { xs: 0.75, md: 2 } }}
                 >
                   All ({streams.length})
                 </Button>
@@ -484,8 +490,10 @@ const StreamsTable: FC<StreamsTableProps> = ({
                   size={isBelowMd ? "small" : "medium"}
                   color={getFilterBtnColor(StreamTypeFilter.Incoming)}
                   onClick={setStreamTypeFilter(StreamTypeFilter.Incoming)}
+                  aria-label={`Incoming streams (${incomingStreams.length})`}
+                  sx={{ minWidth: { xs: 0, md: 64 }, px: { xs: 0.75, md: 2 } }}
                 >
-                  Incoming{" "}
+                  {isBelowMd ? "In" : "Incoming"}{" "}
                   {incomingStreamsQuery.isSuccess &&
                     `(${incomingStreams.length})`}
                 </Button>
@@ -494,8 +502,10 @@ const StreamsTable: FC<StreamsTableProps> = ({
                   size={isBelowMd ? "small" : "medium"}
                   color={getFilterBtnColor(StreamTypeFilter.Outgoing)}
                   onClick={setStreamTypeFilter(StreamTypeFilter.Outgoing)}
+                  aria-label={`Outgoing streams (${outgoingStreams.length})`}
+                  sx={{ minWidth: { xs: 0, md: 64 }, px: { xs: 0.75, md: 2 } }}
                 >
-                  Outgoing{" "}
+                  {isBelowMd ? "Out" : "Outgoing"}{" "}
                   {outgoingStreamsQuery.isSuccess &&
                     `(${outgoingStreams.length})`}
                 </Button>
@@ -504,8 +514,10 @@ const StreamsTable: FC<StreamsTableProps> = ({
                   direction="row"
                   sx={{
                     flex: 1,
-                    justifyContent: "flex-end"
+                    justifyContent: "flex-end",
+                    minWidth: 0
                   }}>
+                  {subTable && isBelowMd ? headerActions : null}
                   {/* <Button
                       variant="contained"
                       color={selectActive ? "error" : "secondary"}

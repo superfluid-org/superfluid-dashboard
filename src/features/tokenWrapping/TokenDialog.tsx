@@ -28,6 +28,8 @@ import { TokenListItem } from "./TokenListItem";
 import { Network } from "../network/networks";
 import { EMPTY_ARRAY } from "../../utils/constants";
 
+const EMPTY_TOKEN_BALANCES = Object.freeze({}) as Record<string, string>;
+
 interface TokenDialogProps {
   open: boolean;
   onClose: () => void;
@@ -35,6 +37,7 @@ interface TokenDialogProps {
   network: Network;
   showUpgrade?: boolean;
   tokens: TokenMinimal[] | undefined;
+  tokenBalances?: Record<string, string>;
   isTokensFetching: boolean;
 }
 
@@ -43,6 +46,7 @@ export default memo(function TokenDialog({
   onClose,
   onSelect,
   tokens = EMPTY_ARRAY,
+  tokenBalances = EMPTY_TOKEN_BALANCES,
   isTokensFetching,
   showUpgrade = false,
   network,
@@ -64,6 +68,24 @@ export default memo(function TokenDialog({
     () => tokens.filter(isUnderlying) ?? [],
     [network.id, tokens?.length ?? 0]
   );
+  const normalizedProvidedBalances = useMemo(
+    () =>
+      Object.fromEntries(
+        Object.entries(tokenBalances).map(([address, balance]) => [
+          address.toLowerCase(),
+          balance,
+        ])
+      ),
+    [tokenBalances]
+  );
+  const underlyingTokensWithoutProvidedBalances = useMemo(
+    () =>
+      underlyingTokens.filter(
+        ({ address }) =>
+          normalizedProvidedBalances[address.toLowerCase()] === undefined
+      ),
+    [normalizedProvidedBalances, underlyingTokens]
+  );
   const superTokens = useMemo(
     () => tokens?.filter(isSuper) ?? [],
     [network.id, tokens?.length ?? 0]
@@ -71,18 +93,27 @@ export default memo(function TokenDialog({
 
   const { data: _discard, ...underlyingTokenBalancesQuery } =
     rpcApi.useUnderlyingBalancesQuery(
-      underlyingTokens.length && visibleAddress
+      underlyingTokensWithoutProvidedBalances.length && visibleAddress
         ? {
             chainId: network.id,
             accountAddress: visibleAddress,
-            tokenAddresses: underlyingTokens.map((x) => x.address),
+            tokenAddresses: underlyingTokensWithoutProvidedBalances.map(
+              (x) => x.address
+            ),
           }
         : skipToken
     );
 
   const underlyingTokenBalances = useMemo(
-    () => underlyingTokenBalancesQuery.currentData?.balances ?? {},
-    [underlyingTokenBalancesQuery.currentData]
+    () => ({
+      ...Object.fromEntries(
+        Object.entries(
+          underlyingTokenBalancesQuery.currentData?.balances ?? {}
+        ).map(([address, balance]) => [address.toLowerCase(), balance])
+      ),
+      ...normalizedProvidedBalances,
+    }),
+    [normalizedProvidedBalances, underlyingTokenBalancesQuery.currentData]
   );
 
   const { data: _discard2, ...superTokenBalancesQuery } =
@@ -113,13 +144,13 @@ export default memo(function TokenDialog({
 
   const tokenOrdered = useMemo(
     () =>
-      tokens.sort((a, b) => {
+      [...tokens].sort((a, b) => {
         const aBalance = isSuper(a)
           ? superTokenBalances[a.address]?.balanceUntilUpdatedAt
-          : underlyingTokenBalances[a.address];
+          : underlyingTokenBalances[a.address.toLowerCase()];
         const bBalance = isSuper(b)
           ? superTokenBalances[b.address]?.balanceUntilUpdatedAt
-          : underlyingTokenBalances[b.address];
+          : underlyingTokenBalances[b.address.toLowerCase()];
 
         const aBigNumber = ethers.BigNumber.from(aBalance ?? 0);
         const bBigNumber = ethers.BigNumber.from(bBalance ?? 0);
@@ -140,7 +171,7 @@ export default memo(function TokenDialog({
   const getFuse = useCallback(
     () =>
       new Fuse(tokenOrdered, {
-        keys: ["symbol"],
+        keys: ["symbol", "name", "address"],
         threshold: 0.2,
         ignoreLocation: true,
       }),
@@ -225,7 +256,9 @@ export default memo(function TokenDialog({
                 chainId={network.id}
                 accountAddress={visibleAddress}
                 balanceWei={
-                  superTokenBalances[token.address]?.balanceUntilUpdatedAt
+                  isSuper(token)
+                    ? superTokenBalances[token.address]?.balanceUntilUpdatedAt
+                    : underlyingTokenBalances[token.address.toLowerCase()]
                 }
                 balanceTimestamp={
                   isSuper(token)
