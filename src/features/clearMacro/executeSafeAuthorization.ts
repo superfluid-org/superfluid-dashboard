@@ -217,6 +217,21 @@ export async function runSafeAuthorization(
     }
   };
 
+  // Attached BEFORE the POST, so a failed or unanswered POST cannot lose the signing outcome:
+  // a cancel decided while there is no id yet is recorded durably and carried out by the
+  // POST path below or by the pre-POST replay. Never awaited by the caller, and it must never
+  // reject, or it becomes an unhandled rejection long after the mutation has settled.
+  const signingSettled = handleSigningOutcome({
+    outcome: signingOutcome,
+    chainId: args.chainId,
+    safeMessageHash,
+    requestCancel,
+    cancelNow,
+    onSigningFailed: callbacks.onSigningFailed,
+  }).catch(() => {
+    // A failure inside the handler itself leaves the intent alone, which is the safe default.
+  });
+
   // 7. POST immediately, concurrently with the signing request.
   callbacks.onPhase?.("relaying");
   const execution = await createRelayExecution(postBody);
@@ -239,19 +254,6 @@ export async function runSafeAuthorization(
     });
     await cancelNow();
   }
-
-  // Never awaited by the caller — and it must never reject, or it becomes an unhandled
-  // rejection long after the mutation has settled.
-  const signingSettled = handleSigningOutcome({
-    outcome: signingOutcome,
-    chainId: args.chainId,
-    safeMessageHash,
-    requestCancel,
-    cancelNow,
-    onSigningFailed: callbacks.onSigningFailed,
-  }).catch(() => {
-    // A failure inside the handler itself leaves the intent alone, which is the safe default.
-  });
 
   return {
     execution,
@@ -345,20 +347,17 @@ async function probeForProposal(
   safeMessageHash: Hex
 ): Promise<{ status: "found"; confirmations: number } | { status: "absent" } | { status: "unknown" }> {
   const deadline = Date.now() + PROBE_WINDOW_MS;
-  let sawAbsent = false;
+  // Only an absence on EVERY read counts. A single unavailable answer poisons the window for
+  // good: a later 404 cannot turn it back into a sustained absence.
+  let allAbsent = true;
   for (;;) {
     const result = await getSafeMessage(chainId, safeMessageHash);
     if (result.status === "found") {
       return { status: "found", confirmations: result.confirmations };
     }
-    if (result.status === "absent") {
-      sawAbsent = true;
-    } else {
-      // An unavailable answer poisons the window: we can no longer claim a sustained absence.
-      sawAbsent = false;
-    }
+    allAbsent &&= result.status === "absent";
     if (Date.now() >= deadline) {
-      return sawAbsent ? { status: "absent" } : { status: "unknown" };
+      return allAbsent ? { status: "absent" } : { status: "unknown" };
     }
     await new Promise((resolve) => setTimeout(resolve, PROBE_INTERVAL_MS));
   }
