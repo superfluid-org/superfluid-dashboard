@@ -50,7 +50,11 @@ import gasApi from "../gas/gasApi.slice";
 import { impersonationSlice } from "../impersonation/impersonation.slice";
 import { networkPreferencesSlice, NetworkPreferencesState } from "../network/networkPreferences.slice";
 import { pendingUpdateSlice } from "../pendingUpdates/pendingUpdate.slice";
-import { relayRecoverySlice } from "../clearMacro/relayRecovery.slice";
+import {
+  PendingRelayIntent,
+  RecoveringRelayExecution,
+  relayRecoverySlice,
+} from "../clearMacro/relayRecovery.slice";
 import appSettingsReducer from "../settings/appSettings.slice";
 import tokenPriceApi from "../tokenPrice/tokenPriceApi.slice";
 import { adHocRpcEndpoints } from "./endpoints/adHocRpcEndpoints";
@@ -209,9 +213,35 @@ const appSettingsPersistedReducer = persistReducer(
 );
 
 // In-flight Clear Macro relay executions. Persisted so a 120s poll timeout / closed tab / reload
-// never orphans a signed execution — the background poller resumes them on load.
+// never orphans a signed execution — the background poller resumes them on load. Safe-authorized
+// executions additionally stay here for their whole (multi-day) authorization window, and their
+// entries carry the write guards that stop the same action being executed twice.
 const relayRecoveryPersistedReducer = persistReducer(
-  { storage, key: "relayRecovery", version: 1 },
+  {
+    storage,
+    key: "relayRecovery",
+    version: 2,
+    // Idempotent and version-agnostic, per the note above the transactions migration: it runs
+    // on every rehydrate rather than only on a version bump. v1 entries predate the write
+    // guards and the pre-POST intents, so backfill both. `guardState` must default to `active`
+    // — an entry whose outcome we cannot establish is exactly the case the guard exists for —
+    // but v1 entries are all EOA executions (they have no `authorizationType`), so
+    // `selectRelayWriteGuards` skips them regardless and no existing user gets newly blocked.
+    migrate: async (persistedState) => {
+      if (!persistedState) return persistedState;
+      const oldState = persistedState as PersistedState &
+        EntityState<RecoveringRelayExecution, string> & {
+          pendingIntents?: Record<string, PendingRelayIntent>;
+        };
+      const entities = Object.fromEntries(
+        Object.entries(oldState.entities ?? {}).map(([id, entity]) => [
+          id,
+          entity ? { ...entity, guardState: entity.guardState ?? "active" } : entity,
+        ])
+      );
+      return { ...oldState, entities, pendingIntents: oldState.pendingIntents ?? {} };
+    },
+  },
   relayRecoverySlice.reducer
 );
 

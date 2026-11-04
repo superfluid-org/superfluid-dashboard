@@ -25,6 +25,7 @@ import AnimatedHeight from "../common/AnimatedHeight";
 import React from "react";
 import { useConnectionBoundary } from "./ConnectionBoundary";
 import { supportId } from "../analytics/useAppInstanceDetails";
+import { SafeRelayPendingActions } from "../clearMacro/SafeRelayPendingActions";
 
 const successRevealRise = keyframes`
   from { opacity: 0; transform: translateY(10px); }
@@ -236,6 +237,62 @@ export const TransactionDialogCore: FC<TransactionDialogProps> = ({
             </TransactionDialogActions>
           )}
         </SuccessReveal>
+      </>
+    );
+  }
+
+  // Also distinct from a hard error, and distinct from "status unknown" too: the relay accepted
+  // the request and the Safe's owners simply have not finished approving it. Nothing is wrong,
+  // nothing is unknown, and it can legitimately stay this way for days. Coincides with
+  // `isError` (the mutation settles through a control-flow throw), so this must precede it.
+  if (mutationResult.relayPhase === "safe-awaiting-authorization") {
+    const pending = mutationResult.safeAwaitingAuthorization;
+    return (
+      <>
+        <TransactionDialogTitle>Waiting for Safe owners</TransactionDialogTitle>
+        <TransactionDialogContent>
+          <Stack sx={{ gap: 2, alignItems: "center", textAlign: "center" }}>
+            <OutlineIcon data-cy={"safe-awaiting-authorization-icon"}>
+              <HourglassEmptyRoundedIcon fontSize="large" color="primary" />
+            </OutlineIcon>
+            <Typography
+              data-cy={"safe-awaiting-authorization-message"}
+              variant="h5"
+              translate="yes"
+            >
+              Your gasless request has been created
+            </Typography>
+            <Typography
+              variant="body2"
+              translate="yes"
+              sx={{ color: "text.secondary" }}
+            >
+              The other owners of this Safe still need to approve it. Once they
+              confirm it in Safe it will go through on its own — you can close
+              this tab. It stays open until the expiry below, and you can cancel
+              it from the notification at any time before that.
+            </Typography>
+            {pending && (
+              // The execution id is the ONLY handle on a live intent — there is no lookup by
+              // signer — so it has to be keepable from here, not just from a notification the
+              // user may never look at.
+              <SafeRelayPendingActions
+                executionId={pending.executionId}
+                validBefore={pending.validBefore}
+                messageLink={pending.messageLink}
+                clientRequestId={pending.clientRequestId}
+              />
+            )}
+          </Stack>
+        </TransactionDialogContent>
+        <TransactionDialogActions>
+          <TransactionDialogButton
+            data-cy={"safe-awaiting-authorization-close"}
+            onClick={closeDialog}
+          >
+            Close
+          </TransactionDialogButton>
+        </TransactionDialogActions>
       </>
     );
   }
