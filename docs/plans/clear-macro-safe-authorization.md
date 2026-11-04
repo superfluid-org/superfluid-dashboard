@@ -75,6 +75,19 @@ the domain, and a null version throws rather than guessing one.
 The invariant, which is the thing to preserve if this is ever touched: **the default at every
 branch point is to keep the intent, and only a positive "no message exists" cancels one.** There
 is no threshold-based auto-cancel anywhere. Two earlier drafts had one and both were wrong.
+"Provably absent" means a 404 on **every** read across the probe window: a single unavailable
+answer makes the result unknown, even if later reads return 404.
+
+The outcome handler is attached **before** the POST, so a POST that fails or goes unanswered
+does not lose a cancel decision: with no id yet, the durable `cancelRequested` flag on the
+intent is set, and the POST path or the pre-POST replay carries the cancel out.
+**Known gap, accepted:** if the POST fails transiently and the background replay promotes the
+intent *before* the signing outcome arrives, the flag lands on nothing (the intent is gone and a
+promoted entry's flag has no consumer). The execution then stays pending until the user presses
+Cancel on the pending toast or the window closes. No funds are at risk: a declined or misbound
+message cannot authorize, and Guard B still blocks the direct write. For a hash mismatch or
+on-chain signing the error toast still explains why signing can't complete; a decline shows only
+the pending toast.
 
 Note the SDK's off-chain response carries **only** `messageHash` — there is no `signature` field
 on it in safe-apps-sdk v9.
@@ -145,7 +158,9 @@ That is what the override is for, and it is the only remaining release path for 
 
 The manual override ("I've confirmed in Safe that this won't execute — release it") exists so a
 permanently dead provider cannot brick an account's direct writes forever. It is a deliberate,
-user-acknowledged risk, worded as one.
+user-acknowledged risk, worded as one. It is offered only on an unreachable tombstone, that is
+after 24 hours without any answer from the provider. A direct write after the override is
+itself a Safe transaction, which the owners review and sign in the Safe UI.
 
 ## Cancellation
 
@@ -182,6 +197,10 @@ execution:
 - It expires at `validBefore + grace`, where the payload can no longer land. Without that, an
   intent whose POST was never answered would hold both guards forever — the same
   never-release-on-uncertainty failure, in the one place that has no execution id to tombstone.
+  Expiry cannot cause a second execution, because the forwarder rejects the payload past
+  `validBefore`. What is lost is visibility: if the original POST did land and the owners signed
+  while every replay failed, the dashboard never tracks that transaction. The Safe's history and
+  balances still show it, so the user can check there before re-sending the action.
 - An unparseable persisted body is **not** treated as proof that no execution exists. The intent
   exists precisely because the original POST may have committed; the double spend runs through
   the provider, not through the id.
@@ -251,6 +270,33 @@ capability set enables for `safeMessageV1`, with enough USDCx for the fee. Deriv
 at test time from `/v1/capabilities` rather than from any list written down here.
 
 Unit tests cover the hash derivation (including a sub-1.3.0 domain), the version comparison, the
-action fingerprint, the guard predicates, and the tx-service probe's failure modes. Everything
+action fingerprint, the guard predicates, the tx-service probe's failure modes, the
+sustained-absence rule, and a cancel decision surviving a failed POST. Everything
 involving a real Safe — the 2-of-3 happy path, first-owner-signs-then-closes, decline,
 signed-inside-`HIDE_DELAY`, and the on-chain signing branch — remains unverified.
+
+### Manual test checklist (release gate)
+
+Setup: a testnet listed for `safeMessageV1` in `/v1/capabilities`, the dashboard opened as a
+Safe App in the Safe wallet, gasless enabled, and enough USDCx in the Safe for the fee plus the
+action. Use a `transfer` (the case where a duplicate would move funds). For each run, note the
+Safe's USDCx balance before and after, and the execution id from the dialog.
+
+1. **1-of-1 Safe, happy path.** Send; sign the message in the Safe UI. Expect: the relay
+   executes, the dialog or the drawer shows the transaction hash, the recipient receives the
+   amount once, and the balance drops by exactly amount + one fee. No pending toast remains
+   after a reload.
+2. **2-of-3 Safe, happy path.** Owner 1 sends and signs, then closes the Safe modal. Expect: the
+   dialog settles into "waiting for the other owners", it is **not** cancelled after about 30s,
+   and the pending toast (with expiry, execution id, Review in Safe, Cancel) is still there after
+   a reload. Owner 2 confirms the message in the Safe UI. Expect: the relay executes, the
+   pending toast resolves to "confirmed", and the amount and fee are each charged once.
+3. **Guard while pending (2-of-3).** While case 2 is waiting, try the same transfer again, once
+   gasless and once with gasless off. Expect: both are blocked, with the pending execution
+   named.
+4. **Decline (any threshold).** Send, then reject in the Safe modal without signing. Expect,
+   within about 30s: a "declined, cancelled, nothing was charged" toast, no fee charged, and
+   the same transfer with gasless off is no longer blocked.
+5. **Cancel from the pending toast (2-of-3).** Send, owner 1 signs, press Cancel on the
+   pending toast before owner 2 signs. Expect: cancel confirmed, the direct write unblocked,
+   and nothing executes even if owner 2 later confirms the message in the Safe UI.
