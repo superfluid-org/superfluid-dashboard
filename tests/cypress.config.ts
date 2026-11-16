@@ -106,10 +106,11 @@ export default defineConfig({
     specPattern: '**/*.feature',
     env: {
       vesting: '',
+      // Cypress-only. Override with CYPRESS_SAFE_RPC_URL_TEMPLATE.
       // `{networkName}` is the network's `name` in @superfluid-finance/metadata
-      // (xdai-mainnet, polygon-mainnet, ...). Safe reads the result from
-      // SAFE_v2__settings instead of calling rpc.safe.global.
-      SAFE_RPC_TEMPLATE: 'https://{networkName}.rpc.x.superfluid.dev',
+      // (xdai-mainnet, polygon-mainnet, ...). The spec writes the resolved URL
+      // into Safe's localStorage before the page loads.
+      SAFE_RPC_URL_TEMPLATE: 'https://{networkName}.rpc.x.superfluid.dev',
       TAGS: 'not @ignore',
       codeCoverage: {
         url: 'http://localhost:3000/__coverage__',

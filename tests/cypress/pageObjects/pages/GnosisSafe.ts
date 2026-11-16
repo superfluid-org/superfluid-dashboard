@@ -36,7 +36,7 @@ const GNOSIS_SAFE_BASEURL = 'https://app.safe.global/';
 const SAFE_SETTINGS_KEY = 'SAFE_v2__settings';
 
 function superfluidRpcForSafe(network: string): string | undefined {
-  const template = Cypress.env('SAFE_RPC_TEMPLATE');
+  const template = Cypress.env('SAFE_RPC_URL_TEMPLATE');
   if (typeof template !== 'string' || template.length === 0) return;
   const chainId = networksBySlug.get(network)?.id;
   if (chainId == null) return;
