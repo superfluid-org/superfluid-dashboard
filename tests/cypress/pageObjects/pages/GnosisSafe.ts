@@ -1,4 +1,5 @@
 ///<reference types="cypress-iframe" />
+import sfMeta from '@superfluid-finance/metadata';
 import { BasePage } from '../BasePage';
 import { networksBySlug } from '../../superData/networks';
 import {
@@ -30,6 +31,39 @@ const ADDED_CUSTOM_APP_DESCRIPTION =
 const APP_TITLE = 'Superfluid Dashboard';
 const APP_DESCRIPTION = 'Manage your Superfluid Protocol tokens';
 const GNOSIS_SAFE_BASEURL = 'https://app.safe.global/';
+// Safe persists Settings → Environment variables → RPC provider here and prefers
+// it over the chain's default rpc.safe.global endpoint.
+const SAFE_SETTINGS_KEY = 'SAFE_v2__settings';
+
+function superfluidRpcForSafe(network: string): string | undefined {
+  const template = Cypress.env('SAFE_RPC_TEMPLATE');
+  if (typeof template !== 'string' || template.length === 0) return;
+  const chainId = networksBySlug.get(network)?.id;
+  if (chainId == null) return;
+  const networkName = sfMeta.getNetworkByChainId(chainId)?.name;
+  if (!networkName) return;
+  return template.split('{networkName}').join(networkName);
+}
+
+function useSuperfluidRpc(win: Cypress.AUTWindow, network: string) {
+  const rpcUrl = superfluidRpcForSafe(network);
+  const chainId = networksBySlug.get(network)?.id;
+  if (!rpcUrl || chainId == null) return;
+  let settings: { env?: { rpc?: Record<string, string> } } = {};
+  const raw = win.localStorage.getItem(SAFE_SETTINGS_KEY);
+  if (raw) {
+    try {
+      settings = JSON.parse(raw);
+    } catch {
+      settings = {};
+    }
+  }
+  settings.env = {
+    ...settings.env,
+    rpc: { ...settings.env?.rpc, [String(chainId)]: rpcUrl },
+  };
+  win.localStorage.setItem(SAFE_SETTINGS_KEY, JSON.stringify(settings));
+}
 
 const GnosisSafePrefixByNetworkSlug = {
   gnosis: 'gno:',
@@ -60,7 +94,12 @@ export class GnosisSafe extends BasePage {
         GnosisSafePrefixByNetworkSlug[network]
       }${GnosisSafeAddressesPerNetwork[network]}&appUrl=${Cypress.config(
         'baseUrl'
-      )}`
+      )}`,
+      {
+        onBeforeLoad(win) {
+          useSuperfluidRpc(win, network);
+        },
+      }
     );
   }
 
@@ -145,7 +184,12 @@ export class GnosisSafe extends BasePage {
       `${GNOSIS_SAFE_BASEURL}apps/custom?safe=${
         GnosisSafePrefixByNetworkSlug[network]
       }${GnosisSafeAddressesPerNetwork[network]}`,
-      { failOnStatusCode: false }
+      {
+        failOnStatusCode: false,
+        onBeforeLoad(win) {
+          useSuperfluidRpc(win, network);
+        },
+      }
     );
     // Always register the production dashboard URL: Safe fetches the app manifest server-side,
     // and preview deployments can be access-restricted.

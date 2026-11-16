@@ -106,6 +106,10 @@ export default defineConfig({
     specPattern: '**/*.feature',
     env: {
       vesting: '',
+      // `{networkName}` is the network's `name` in @superfluid-finance/metadata
+      // (xdai-mainnet, polygon-mainnet, ...). Safe reads the result from
+      // SAFE_v2__settings instead of calling rpc.safe.global.
+      SAFE_RPC_TEMPLATE: 'https://{networkName}.rpc.x.superfluid.dev',
       TAGS: 'not @ignore',
       codeCoverage: {
         url: 'http://localhost:3000/__coverage__',
