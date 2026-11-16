@@ -57,9 +57,10 @@ const config = {
   allowlistApiUrl:
     process.env.NEXT_PUBLIC_ALLOWLIST_API ??
     "https://allowlist.superfluid.dev",
-  // Kill switch for the Clear Macro gasless relay. Unset = enabled.
+  // Kill switch for the Clear Macro gasless relay. Temporarily OFF by default:
+  // unset = disabled; set NEXT_PUBLIC_DISABLE_CLEAR_MACRO="false" to re-enable.
   isClearMacroDisabled:
-    process.env.NEXT_PUBLIC_DISABLE_CLEAR_MACRO === "true",
+    process.env.NEXT_PUBLIC_DISABLE_CLEAR_MACRO !== "false",
 } as const;
 
 export default Object.freeze(config);
