@@ -36,18 +36,16 @@ const GNOSIS_SAFE_BASEURL = 'https://app.safe.global/';
 const SAFE_SETTINGS_KEY = 'SAFE_v2__settings';
 
 function superfluidRpcForSafe(network: string): string | undefined {
-  const template = Cypress.env('SAFE_RPC_URL_TEMPLATE');
-  if (typeof template !== 'string' || template.length === 0) return;
   const chainId = networksBySlug.get(network)?.id;
   if (chainId == null) return;
-  const networkName = sfMeta.getNetworkByChainId(chainId)?.name;
-  if (!networkName) return;
-  return template.split('{networkName}').join(networkName);
+  const name = sfMeta.getNetworkByChainId(chainId)?.name;
+  if (!name) return;
+  return `https://${name}.rpc.x.superfluid.dev`;
 }
 
 function useSuperfluidRpc(win: Cypress.AUTWindow, network: string) {
-  const rpcUrl = superfluidRpcForSafe(network);
   const chainId = networksBySlug.get(network)?.id;
+  const rpcUrl = superfluidRpcForSafe(network);
   if (!rpcUrl || chainId == null) return;
   let settings: { env?: { rpc?: Record<string, string> } } = {};
   const raw = win.localStorage.getItem(SAFE_SETTINGS_KEY);
