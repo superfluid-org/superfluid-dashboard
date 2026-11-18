@@ -151,9 +151,11 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
 
   const { setCosmetics } = useMinigame();
 
+  // isFetching without data also covers a Retry after a failed first load.
   const isLoading =
-    listedTokensSnapshotsQuery.isLoading ||
-    unlistedTokensSnapshotsQuery.isLoading ||
+    (listedTokensSnapshotsQuery.isFetching && !listedTokensSnapshotsQuery.data) ||
+    (unlistedTokensSnapshotsQuery.isFetching &&
+      !unlistedTokensSnapshotsQuery.data) ||
     erc20BalancesLoading ||
     fallbackERC20BalancesLoading;
   const isSnapshotsError =
