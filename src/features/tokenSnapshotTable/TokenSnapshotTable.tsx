@@ -1,4 +1,5 @@
 import {
+  Button,
   Paper,
   Table,
   TableBody,
@@ -6,6 +7,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
@@ -22,6 +24,7 @@ import { FetchingStatus, PortfolioValueCallback } from "./TokenSnapshotTables";
 import { EMPTY_ARRAY } from "../../utils/constants";
 import ERC20BalanceRow from "./ERC20BalanceRow";
 import useERC20Balances, { ERC20Balance } from "./useERC20Balances";
+import { extendedSuperTokenList } from "../../tokenlist";
 
 interface TokenSnapshotTableProps {
   address: Address;
@@ -120,9 +123,17 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
   });
 
   const erc20Balances = useMemo(() => {
-    const superTokenAddresses = new Set(
-      tokenSnapshots.map(({ token }) => token.toLowerCase())
-    );
+    // Also exclude listed Super Tokens, so they never show as plain ERC20 rows
+    // (without streams) when the account's snapshots fail to load.
+    const superTokenAddresses = new Set([
+      ...tokenSnapshots.map(({ token }) => token.toLowerCase()),
+      ...extendedSuperTokenList()
+        .tokens.filter(
+          (token) =>
+            token.chainId === network.id && token.extensions?.superTokenInfo
+        )
+        .map((token) => token.address.toLowerCase()),
+    ]);
     const balances = useERC20Fallback
       ? fallbackERC20Balances
       : portfolioERC20Balances;
@@ -135,16 +146,22 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
     portfolioERC20Balances,
     tokenSnapshots,
     useERC20Fallback,
+    network.id,
   ]);
 
   const { setCosmetics } = useMinigame();
 
+  // isFetching without data also covers a Retry after a failed first load.
   const isLoading =
-    listedTokensSnapshotsQuery.isLoading ||
-    unlistedTokensSnapshotsQuery.isLoading ||
+    (listedTokensSnapshotsQuery.isFetching && !listedTokensSnapshotsQuery.data) ||
+    (unlistedTokensSnapshotsQuery.isFetching &&
+      !unlistedTokensSnapshotsQuery.data) ||
     erc20BalancesLoading ||
     fallbackERC20BalancesLoading;
-  const hasContent = tokenSnapshots.length > 0 || erc20Balances.length > 0;
+  const isSnapshotsError =
+    listedTokensSnapshotsQuery.isError || unlistedTokensSnapshotsQuery.isError;
+  const hasContent =
+    tokenSnapshots.length > 0 || erc20Balances.length > 0 || isSnapshotsError;
   useEffect(() => {
     fetchingCallback(network.id, {
       isLoading,
@@ -227,6 +244,25 @@ const TokenSnapshotTable: FC<TokenSnapshotTableProps> = ({
           )}
         </TableHead>
         <TableBody>
+          {isSnapshotsError && (
+            <TableRow data-cy="token-snapshots-error-row">
+              <TableCell colSpan={5} align="center">
+                <Typography variant="body2" component="span">
+                  Couldn&apos;t load Super Tokens and streams on this network.
+                </Typography>
+                <Button
+                  size="small"
+                  onClick={() => {
+                    listedTokensSnapshotsQuery.refetch();
+                    unlistedTokensSnapshotsQuery.refetch();
+                  }}
+                  sx={{ ml: 1 }}
+                >
+                  Retry
+                </Button>
+              </TableCell>
+            </TableRow>
+          )}
           {tokenSnapshots.map((snapshot, index) => (
             <TokenSnapshotRow
               key={snapshot.id}
