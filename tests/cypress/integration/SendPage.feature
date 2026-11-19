@@ -209,12 +209,9 @@ Feature: Send Page test cases
     And User clicks the scheduling toggle
     And Stream start date field is disabled
     And User inputs a date "2" "year" into the future into the stream end date
-    #Race condition
-    And User waits for 2 seconds
-    And User accepts the risk warning
-    And User clicks the send transaction button
-    And Scheduled stream transaction dialogs are shown
-    And Transaction rejected error is shown
+    # The stream is already running, and this also changes its rate. Those two
+    # edits are not one gasless transaction, so send stays disabled.
+    And The stream edits cannot be sent together
 
   Scenario: Cancelling a scheduled stream - just end date
     Given HDWallet transactions are rejected

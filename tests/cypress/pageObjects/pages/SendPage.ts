@@ -675,6 +675,13 @@ export class SendPage extends BasePage {
     this.isDisabled(`${START_DATE} input`, undefined, { timeout: 45000 });
   }
 
+  static validateStreamEditsCannotBeSentTogether() {
+    cy.get('[data-cy=clear-macro-combined-edit-alert]', {
+      timeout: 45000,
+    }).should('be.visible');
+    this.isDisabled(SEND_BUTTON);
+  }
+
   static validateSetFlowRate(flowrate: string) {
     this.hasValue(`${FLOW_RATE_INPUT} input`, flowrate, undefined, {
       timeout: 45000,

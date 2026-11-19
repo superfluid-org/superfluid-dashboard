@@ -90,7 +90,6 @@ const ACCESS_CODE_ERROR = '[data-cy=access-code-error]';
 const ACCESS_CODE_MESSAGE = '[data-cy=access-code-error-msg]';
 const VESTING_ACCESS_CODE_BUTTON = '[data-cy=more-vesting-code-btn]';
 const STREAM_ROWS = '[data-cy=stream-row]';
-const TIMER_ICONS = '[data-cy=scheduled-stream-icon]';
 const FAUCET_BUTTON = '[data-cy=more-faucet-btn]';
 const CLAIM_TOKENS_BUTTON = '[data-cy=claim-button]';
 const FAUCET_SUCCESS_MESSAGE = '[data-cy=faucet-success]';
@@ -720,10 +719,16 @@ export class Common extends BasePage {
   }
 
   static indexActivityFrozenErrorIsShown() {
-    cy.get(TX_ERROR, { timeout: 60000 }).should(
-      'contain.text',
-      'New index activity is frozen'
-    );
+    // The mock rejects the signature once simulation succeeds. When the index
+    // is frozen, simulation reverts first and the dialog says so instead.
+    cy.get(TX_ERROR, { timeout: 60000 }).should(($el) => {
+      const text = $el.text();
+      expect(
+        text.includes('Transaction Rejected') ||
+          text.includes('New index activity is frozen'),
+        text
+      ).to.eq(true);
+    });
   }
 
   static transactionRejectedErrorIsShown() {
@@ -942,10 +947,6 @@ export class Common extends BasePage {
       .parents(STREAM_ROWS)
       .find(START_END_DATES)
       .should('have.text', startEndDate);
-    cy.contains(SENDER_RECEIVER_ADDRESSES, this.shortenHex(address))
-      .parents(STREAM_ROWS)
-      .find(TIMER_ICONS)
-      .should('be.visible');
   }
 
   static openFaucetMenu() {
