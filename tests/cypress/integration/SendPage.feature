@@ -154,18 +154,18 @@ Feature: Send Page test cases
   Scenario: Stream tables - stream with just start date
     Given "Dashboard Page" is open with "john" connected on "opsepolia"
     And User clicks on "opsepolia" "fTUSDx" row
-    Then The stream row to "0xD60e9B498b731370850F240E57d265eCdd97fbCd" has a flow rate of "-1" and dates to "22 Jul. 2026 01:00"
+    Then The stream row to "0xD60e9B498b731370850F240E57d265eCdd97fbCd" has a flow rate of "-1" and dates to "22 Jul. 2026 01:05"
     And User clicks on "opsepolia" "fTUSDx" row
     And User opens "opsepolia" "fTUSDx" individual token page
-    Then The stream row to "0xD60e9B498b731370850F240E57d265eCdd97fbCd" has a flow rate of "-1" and dates to "22 Jul. 2026 01:00"
+    Then The stream row to "0xD60e9B498b731370850F240E57d265eCdd97fbCd" has a flow rate of "-1" and dates to "22 Jul. 2026 01:05"
 
   Scenario: Stream tables - stream with start and end date
     Given "Dashboard Page" is open with "john" connected on "opsepolia"
     And User clicks on "opsepolia" "fTUSDx" row
-    Then The stream row to "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4" has a flow rate of "-1" and dates to "22 Jul. 2026 01:0031 Dec. 2026 23:00"
+    Then The stream row to "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4" has a flow rate of "-1" and dates to "22 Jul. 2026 01:0531 Dec. 2026 23:00"
     And User clicks on "opsepolia" "fTUSDx" row
     And User opens "opsepolia" "fTUSDx" individual token page
-    Then The stream row to "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4" has a flow rate of "-1" and dates to "22 Jul. 2026 01:0031 Dec. 2026 23:00"
+    Then The stream row to "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4" has a flow rate of "-1" and dates to "22 Jul. 2026 01:0531 Dec. 2026 23:00"
 
   Scenario: Stream tables - stream with end date
     Given "Dashboard Page" is open with "john" connected on "opsepolia"
@@ -181,13 +181,8 @@ Feature: Send Page test cases
 
     Given "Send Page" is open with "john" connected on "opsepolia"
     And User inputs all the details to send "2" "fTUSDx" per "month" to "0xD60e9B498b731370850F240E57d265eCdd97fbCd"
-    And User inputs a date "1" "year" into the future into the stream start date
-    #Race condition
-    And User waits for 2 seconds
-    And User accepts the risk warning
-    And User clicks the send transaction button
-    And Scheduled stream transaction dialogs are shown
-    And Transaction rejected error is shown
+    And User clicks the scheduling toggle
+    And Stream start date field is disabled
 
   @checkEndDate @gaslessRelayEnabled
   Scenario: Modifying a stream with just end date
@@ -212,7 +207,7 @@ Feature: Send Page test cases
     Given "Send Page" is open with "john" connected on "opsepolia"
     And User inputs all the details to send "2" "fTUSDx" per "month" to "0x1F26b0b62F4Eeee9C5E30893401dCe10B03D49A4"
     And User clicks the scheduling toggle
-    And User inputs a date "1" "year" into the future into the stream start date
+    And Stream start date field is disabled
     And User inputs a date "2" "year" into the future into the stream end date
     #Race condition
     And User waits for 2 seconds

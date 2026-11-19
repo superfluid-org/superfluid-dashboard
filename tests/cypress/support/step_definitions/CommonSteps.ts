@@ -234,6 +234,9 @@ Given(/^User waits for (\d+) seconds$/, function (seconds: number) {
 Then(/^Transaction rejected error is shown$/, function () {
   Common.transactionRejectedErrorIsShown();
 });
+Then(/^New index activity is frozen$/, function () {
+  Common.indexActivityFrozenErrorIsShown();
+});
 // For the stream-scheduling flows, which are forced through the Clear Macro gasless relay
 // on relay-enabled networks. Wrapped in `runFunctionIfPlatformIsDeployedOnNetwork` for the
 // same reason as the scheduling steps it follows: on networks without the flow scheduler

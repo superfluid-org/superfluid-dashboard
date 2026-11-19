@@ -76,7 +76,7 @@ Feature: Transactional rejected test cases
     And User opens the distributions tab
     And User approves the last index distributions
     And Distribution approval dialog on "selected network" shows up
-    And Transaction rejected error is shown
+    And New index activity is frozen
 
   Scenario: Revoking a subscription on selected network
     Given Transactional account john is connected to the dashboard on selected network

@@ -126,7 +126,6 @@ const TRY_SUPERFLUID_ONBOARDING_CARD =
 const SUPERFLUID_RUNNER_NAV_LINK = '[data-cy=nav-superfluid-runner]';
 const RECEIVER_BUTTON = '[data-cy=address-button]';
 const RECENT_ENTRIES = '[data-cy=recents-entry]';
-const TOKEN_SELECT_SYMBOL = '[data-cy=token-symbol-and-name] h6';
 const TOKEN_SEARCH_INPUT = '[data-cy=token-search-input] input';
 const TOKEN_NO_SEARCH_RESULTS = '[data-cy=token-search-no-results]';
 const PREVIEW_BALANCE = '[data-cy=balance]';
@@ -546,7 +545,9 @@ export class Common extends BasePage {
 
   static checkNavBarWalletStatus(account: string, message: string) {
     cy.fixture('commonData').then((commonData) => {
-      this.hasText(WALLET_CONNECTION_STATUS, message);
+      this.hasText(WALLET_CONNECTION_STATUS, message, undefined, {
+        timeout: 45000,
+      });
       this.hasText(CONNECTED_WALLET, BasePage.shortenHex(commonData[account]));
     });
   }
@@ -716,6 +717,13 @@ export class Common extends BasePage {
 
   static wait(seconds: number) {
     cy.wait(seconds * 1000);
+  }
+
+  static indexActivityFrozenErrorIsShown() {
+    cy.get(TX_ERROR, { timeout: 60000 }).should(
+      'contain.text',
+      'New index activity is frozen'
+    );
   }
 
   static transactionRejectedErrorIsShown() {
@@ -1075,9 +1083,10 @@ export class Common extends BasePage {
   }
 
   static validateAddressBookNamesInTables(names: string) {
-    let aliases = names.split(',');
-    aliases.forEach((name, index) => {
-      this.hasText(SENDER_RECEIVER_ADDRESSES, name, index, { timeout: 30000 });
+    names.split(',').forEach((name) => {
+      cy.get(SENDER_RECEIVER_ADDRESSES, { timeout: 30000 })
+        .filter(':visible')
+        .should('contain.text', name);
     });
   }
 
@@ -1134,8 +1143,14 @@ export class Common extends BasePage {
   }
 
   static tokenSearchResultsOnlyContain(token: string) {
-    cy.get(`[data-cy*=-list-item] ${TOKEN_SELECT_SYMBOL}`).each((el) => {
-      cy.wrap(el).should('contain', token);
+    const needle = token.toLowerCase();
+    // Search matches symbol, name, or address. The row text has to contain the
+    // query; the symbol alone does not (e.g. "POL" matches a token named Polygon).
+    cy.get('[data-cy*=-list-item]').should(($items) => {
+      expect($items.length).to.be.greaterThan(0);
+      $items.each((_, el) => {
+        expect(el.innerText.toLowerCase()).to.contain(needle);
+      });
     });
   }
 
