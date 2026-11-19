@@ -1,5 +1,4 @@
 ///<reference types="cypress-iframe" />
-import sfMeta from '@superfluid-finance/metadata';
 import { BasePage } from '../BasePage';
 import { networksBySlug } from '../../superData/networks';
 import {
@@ -35,18 +34,9 @@ const GNOSIS_SAFE_BASEURL = 'https://app.safe.global/';
 // it over the chain's default rpc.safe.global endpoint.
 const SAFE_SETTINGS_KEY = 'SAFE_v2__settings';
 
-function superfluidRpcForSafe(network: string): string | undefined {
-  const chainId = networksBySlug.get(network)?.id;
-  if (chainId == null) return;
-  const name = sfMeta.getNetworkByChainId(chainId)?.name;
-  if (!name) return;
-  return `https://${name}.rpc.x.superfluid.dev`;
-}
-
 function useSuperfluidRpc(win: Cypress.AUTWindow, network: string) {
-  const chainId = networksBySlug.get(network)?.id;
-  const rpcUrl = superfluidRpcForSafe(network);
-  if (!rpcUrl || chainId == null) return;
+  const chain = networksBySlug.get(network);
+  if (!chain?.superfluidRpcUrl) return;
   let settings: { env?: { rpc?: Record<string, string> } } = {};
   const raw = win.localStorage.getItem(SAFE_SETTINGS_KEY);
   if (raw) {
@@ -58,7 +48,7 @@ function useSuperfluidRpc(win: Cypress.AUTWindow, network: string) {
   }
   settings.env = {
     ...settings.env,
-    rpc: { ...settings.env?.rpc, [String(chainId)]: rpcUrl },
+    rpc: { ...settings.env?.rpc, [String(chain.id)]: chain.superfluidRpcUrl },
   };
   win.localStorage.setItem(SAFE_SETTINGS_KEY, JSON.stringify(settings));
 }
