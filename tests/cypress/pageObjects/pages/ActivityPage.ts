@@ -230,7 +230,8 @@ export class ActivityPage extends BasePage {
   }
 
   static waitForSkeletonsToDisappear() {
-    this.isVisible(SKELETON_ROW, undefined, { timeout: 45000 });
+    // A cached response never paints the skeleton. Waiting until it is gone
+    // covers both that case and a fetch that is still in flight.
     this.doesNotExist(SKELETON_ROW, undefined, { timeout: 45000 });
   }
 

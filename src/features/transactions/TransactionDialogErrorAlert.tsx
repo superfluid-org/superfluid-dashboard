@@ -40,6 +40,12 @@ export default memo(function TransactionDialogErrorAlert({
         return "Transaction Rejected";
       }
 
+      // IDA_NEW_ACTIVITY_FROZEN(). viem cannot decode it from the Host ABI, so the
+      // dialog would otherwise show the raw selector.
+      if (mutationError.message?.includes("0xace0382a")) {
+        return "New index activity is frozen on this network.";
+      }
+
       const burnAmountExceedsBalance = mutationError.message?.includes(
         "burn amount exceeds balance"
       );
