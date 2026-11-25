@@ -7,7 +7,6 @@ import {
   WALLET_CONNECTION_STATUS,
 } from './Common';
 
-const GNOSIS_BUTTONS = '.MuiButton-contained';
 const GNOSIS_SAFE_WALLET_OPTION = '[data-testid=wallet-selector-external-safe]';
 // Safe's own stable hooks for the two gates it shows before mounting a third-party app.
 const CONSENT_BANNER = '[data-testid=cookies-popup]';
@@ -18,18 +17,36 @@ const SUPERFLUID_IFRAME = 'iframe[title="Superfluid Dashboard"]';
 const LOADING_SPINNER = '.MuiCircularProgress-root';
 const GNOSIS_WARNING_CHECKBOX = '.PrivateSwitchBase-input';
 const CUSTOM_APP_URL_FIELD = 'input[name=appUrl]';
-const CUSTOM_APP_TITLE = '[class*=customAppContainer] h2';
-const CUSTOM_APP_DESCRIPTION = '[class*=customAppContainer] p';
-const CUSTOM_APP_ERROR_ELEMENT = '[class*=customAppPlaceholderContainer]';
-const CUSTOM_APP_WARNING_CHECKBOX = 'input[name=riskAcknowledgement]';
 const CUSTOM_APP_ADD_BUTTON = '[role=dialog] [type=submit]';
-const ADDED_CUSTOM_APP_TITLE = 'a[rel=noreferrer] [class*=safeAppTitle]';
-const ADDED_CUSTOM_APP_DESCRIPTION =
-  'a[rel=noreferrer] [class*=safeAppDescription]';
+// Safe renders the acknowledgement as a checkbox whose id is stable and whose
+// name attribute is empty, so it cannot be addressed by name.
+const CUSTOM_APP_RISK_CHECKBOX = '#riskAcknowledgement';
 //Strings
 const APP_TITLE = 'Superfluid Dashboard';
 const APP_DESCRIPTION = 'Manage your Superfluid Protocol tokens';
 const GNOSIS_SAFE_BASEURL = 'https://app.safe.global/';
+// Safe persists Settings → Environment variables → RPC provider here and prefers
+// it over the chain's default rpc.safe.global endpoint.
+const SAFE_SETTINGS_KEY = 'SAFE_v2__settings';
+
+function useSuperfluidRpc(win: Cypress.AUTWindow, network: string) {
+  const chain = networksBySlug.get(network);
+  if (!chain?.superfluidRpcUrl) return;
+  let settings: { env?: { rpc?: Record<string, string> } } = {};
+  const raw = win.localStorage.getItem(SAFE_SETTINGS_KEY);
+  if (raw) {
+    try {
+      settings = JSON.parse(raw);
+    } catch {
+      settings = {};
+    }
+  }
+  settings.env = {
+    ...settings.env,
+    rpc: { ...settings.env?.rpc, [String(chain.id)]: chain.superfluidRpcUrl },
+  };
+  win.localStorage.setItem(SAFE_SETTINGS_KEY, JSON.stringify(settings));
+}
 
 const GnosisSafePrefixByNetworkSlug = {
   gnosis: 'gno:',
@@ -60,7 +77,12 @@ export class GnosisSafe extends BasePage {
         GnosisSafePrefixByNetworkSlug[network]
       }${GnosisSafeAddressesPerNetwork[network]}&appUrl=${Cypress.config(
         'baseUrl'
-      )}`
+      )}`,
+      {
+        onBeforeLoad(win) {
+          useSuperfluidRpc(win, network);
+        },
+      }
     );
   }
 
@@ -111,7 +133,11 @@ export class GnosisSafe extends BasePage {
   }
 
   static validateThatDashboardLoaded() {
-    cy.frameLoaded(SUPERFLUID_IFRAME, { timeout: 45000 });
+    // cypress-iframe applies `timeout` to the load callback, not to the
+    // `cy.get` that finds the iframe, so a slow Safe mount fails at the 15s
+    // default before the iframe exists. Wait for the element first.
+    cy.get(SUPERFLUID_IFRAME, { timeout: 45000 });
+    cy.frameLoaded(SUPERFLUID_IFRAME);
   }
 
   static connectGnosisSafeWallet() {
@@ -145,7 +171,12 @@ export class GnosisSafe extends BasePage {
       `${GNOSIS_SAFE_BASEURL}apps/custom?safe=${
         GnosisSafePrefixByNetworkSlug[network]
       }${GnosisSafeAddressesPerNetwork[network]}`,
-      { failOnStatusCode: false }
+      {
+        failOnStatusCode: false,
+        onBeforeLoad(win) {
+          useSuperfluidRpc(win, network);
+        },
+      }
     );
     // Always register the production dashboard URL: Safe fetches the app manifest server-side,
     // and preview deployments can be access-restricted.
@@ -153,20 +184,25 @@ export class GnosisSafe extends BasePage {
   }
 
   static addCustomSuperfluidApp() {
-    cy.get(GNOSIS_BUTTONS).contains('Add custom Safe App').click();
+    // Safe no longer renders this control as an MUI contained button.
+    cy.contains('button', 'Add custom Safe App', { timeout: 45000 }).click();
     this.type(CUSTOM_APP_URL_FIELD, Cypress.config('baseUrl'));
   }
 
   static validateSuperfluidManifestAndAddApp() {
-    this.doesNotExist(CUSTOM_APP_ERROR_ELEMENT);
-    this.hasText(CUSTOM_APP_TITLE, APP_TITLE);
-    this.hasText(CUSTOM_APP_DESCRIPTION, APP_DESCRIPTION);
-    this.click(CUSTOM_APP_WARNING_CHECKBOX);
+    cy.contains('[role=dialog] h2', APP_TITLE, { timeout: 45000 }).should(
+      'be.visible'
+    );
+    cy.contains('[role=dialog]', APP_DESCRIPTION).should('be.visible');
+    cy.get(CUSTOM_APP_RISK_CHECKBOX).check({ force: true });
     this.click(CUSTOM_APP_ADD_BUTTON);
   }
 
   static validateCustomAppExistsInGnosisSafe() {
-    this.hasText(ADDED_CUSTOM_APP_TITLE, APP_TITLE);
-    this.hasText(ADDED_CUSTOM_APP_DESCRIPTION, APP_DESCRIPTION);
+    cy.get('[class*=safeAppTitle]', { timeout: 45000 }).should(
+      'contain.text',
+      APP_TITLE
+    );
+    cy.get('[class*=safeAppDescription]').should('contain.text', APP_DESCRIPTION);
   }
 }

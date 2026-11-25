@@ -37,22 +37,26 @@ export class TransferPage extends BasePage {
       this.click(SELECT_TOKEN_BUTTON);
 
       if (connected) {
-        //Wait for all balances to load, then open and close the menu to sort them
-        cy.get(TOKEN_SEARCH_RESULTS).then((el) => {
-          this.hasLength(PREVIEW_BALANCE, el.length);
-        });
+        // Tokens with a zero balance never render [data-cy=balance], so the
+        // balance count cannot equal the row count. Pick a funded row.
+        cy.get(`${TOKEN_SEARCH_RESULTS}:has(${PREVIEW_BALANCE})`, {
+          timeout: 30000,
+        }).should('have.length.greaterThan', 0);
         this.click(`${DIALOG} ${OTHER_CLOSE_DIALOG_BUTTON}`);
         this.click(SELECT_TOKEN_BUTTON);
       } else {
         this.doesNotExist(PREVIEW_BALANCE);
       }
-      cy.get(TOKEN_SEARCH_RESULTS)
+      const result = connected
+        ? `${TOKEN_SEARCH_RESULTS}:has(${PREVIEW_BALANCE})`
+        : TOKEN_SEARCH_RESULTS;
+      cy.get(result)
         .eq(0)
         .find(TOKEN_SELECT_SYMBOL)
         .then(($tokenSearchResultName) => {
           cy.wrap($tokenSearchResultName.text()).as('lastChosenToken');
         });
-      this.clickFirstVisible(TOKEN_SEARCH_RESULTS);
+      this.clickFirstVisible(result);
       this.type(AMOUNT_INPUT, '1');
     });
   }

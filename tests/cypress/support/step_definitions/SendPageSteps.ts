@@ -290,6 +290,11 @@ Given(/^Stream start date field is disabled$/, function () {
     SendPage.validateDisabledStartDateField()
   );
 });
+Then(/^The stream edits cannot be sent together$/, function () {
+  SendPage.runFunctionIfPlatformIsDeployedOnNetwork(() =>
+    SendPage.validateStreamEditsCannotBeSentTogether()
+  );
+});
 Then(
   /^The flow rate field in the send page is "([^"]*)"$/,
   function (flowrate: string) {
