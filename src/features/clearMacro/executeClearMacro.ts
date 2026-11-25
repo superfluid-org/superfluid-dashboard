@@ -430,7 +430,7 @@ export async function executeClearMacro(
     } as Parameters<typeof readContract>[1])) as Hex;
 
     security = {
-      domain: capabilities.providerName,
+      domain: "app.superfluid.org",
       macroContract: macroAddress,
       provider: capabilities.providerName,
       validAfter: 0n,
